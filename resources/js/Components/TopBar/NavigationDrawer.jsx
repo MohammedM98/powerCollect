@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
+import BrandLogo from '@/Components/BrandLogo';
 import { shouldPrefetchPage, HOME_LINK, currentGroup, isActiveLink, lockedLinkProps, sectionLinks } from '@/lib/navigation';
 import { Avatar, LogoutForm } from './AccountMenu';
 import { LockMark } from './MegaMenu';
@@ -108,7 +109,7 @@ export default function NavigationDrawer({ open, groups, badges, onClose, onOpen
             <div className="tn-scrim" onClick={onClose} />
             <aside ref={panelRef} className="tn-drawer-panel text-gray-900" role="dialog" aria-modal="true" data-top-bar-layer aria-label="قائمة التنقل">
                 <div className="flex items-center gap-2 border-b border-gray-200/70 p-3">
-                    <img src="/images/logo-af.webp" alt={appName} className="h-9 w-auto" />
+                    <BrandLogo alt={appName} className="h-9 w-auto" />
                     <span className="min-w-0 flex-1">
                         <b dir="auto" className="block text-[16px]">{shortAppName(appName)}</b>
                         <small dir="auto" className="block text-[12.5px] text-gray-500">{user?.branchName ?? 'نظام التحصيل الكهربائي'}</small>

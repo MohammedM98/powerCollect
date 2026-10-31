@@ -15,6 +15,7 @@ import CompanyFormPaper from './CompanyFormPaper';
 import useCompanySource from './useCompanySource';
 import { FORMAL_LETTERHEAD, MAX_FORM_PAGES, letterhead, moveFormItem } from '@/lib/companyForms';
 import { PRINT_FONTS } from '@/lib/printLayout';
+import { useBrand } from '@/hooks/useBrand';
 import PageHeader, { BackLink } from '@/Components/PageHeader';
 
 const TYPES = [{ value: 'heading', label: 'عنوان', icon: 'document' }, { value: 'paragraph', label: 'نص', icon: 'note' }, { value: 'fields', label: 'حقول بيانات', icon: 'grid' }, { value: 'signatures', label: 'توقيعات', icon: 'pencil' }, { value: 'spacer', label: 'مسافة', icon: 'expand' }];
@@ -50,7 +51,8 @@ export default function Editor({ template, defaultLayout, fields }) {
 
     function setLayout(next) { setData('layout', typeof next === 'function' ? next(layout) : next); }
     function sectionValue(section, key, value) { setLayout({ ...layout, [section]: { ...layout[section], [key]: value } }); }
-    const head = letterhead(layout.header);
+    const brand = useBrand();
+    const head = letterhead(layout.header, brand.printColor);
     const headValue = (key) => (value) => sectionValue('header', key, value);
     const numberInput = (id, key, min, max, step = 1) => <input id={id} type="number" min={min} max={max} step={step} value={head[key]} onChange={(event) => sectionValue('header', key, Math.min(max, Math.max(min, Number(event.target.value))))} className="w-full" />;
     const colorInput = (id, key) => <input id={id} type="color" value={head[key]} onChange={(event) => sectionValue('header', key, event.target.value)} className="h-10 w-full" />;
@@ -130,7 +132,7 @@ export default function Editor({ template, defaultLayout, fields }) {
                             <Switch label="إظهار ترويسة الشركة" checked={layout.header.enabled} onChange={(value) => sectionValue('header', 'enabled', value)} />
                             <Switch label="إظهار شعار الشركة" checked={layout.header.logo} onChange={(value) => sectionValue('header', 'logo', value)} />
                             <ChoiceChips label="شكل الترويسة" options={[{ value: 'simple', label: 'بسيطة' }, { value: 'letterhead', label: 'رسمية: نص على جانبي الشعار' }]} value={head.style} onChange={headValue('style')} />
-                            <SecondaryButton onClick={() => setLayout({ ...layout, header: { ...layout.header, ...FORMAL_LETTERHEAD, enabled: true } })}><Icon name="sparkles" className="h-4 w-4" />تطبيق ترويسة رسمية جاهزة</SecondaryButton>
+                            <SecondaryButton onClick={() => setLayout({ ...layout, header: { ...layout.header, ...FORMAL_LETTERHEAD, ruleColor2: brand.printColor, enabled: true } })}><Icon name="sparkles" className="h-4 w-4" />تطبيق ترويسة رسمية جاهزة</SecondaryButton>
                             {head.style === 'letterhead' && <ChoiceChips label="موضع الشعار" options={SIDES} value={head.logoPosition} onChange={headValue('logoPosition')} />}
                             <div className="grid grid-cols-2 gap-3">
                                 <FormField id="company-logo-width" label="عرض الشعار (مم)">{numberInput('company-logo-width', 'logoWidth', 10, 60)}</FormField>

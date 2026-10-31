@@ -1,0 +1,19 @@
+{
+    "version": 1,
+    "company": {
+        "name": "شركة أبناء فارس أبو زايد للتجارة والاستيراد",
+        "nameEnglish": "Sons of Fares AbuZayed Trading & Import Company",
+        "shortName": "أبناء فارس أبو زايد",
+        "tagline": "نظام التحصيل الكهربائي"
+    },
+    "logos": {
+        "main": "/images/logo-af.webp",
+        "light": null,
+        "icon": "/favicon.svg",
+        "print": null
+    },
+    "colors": {
+        "primary": "#A51D26",
+        "print": "#A51D26"
+    }
+}

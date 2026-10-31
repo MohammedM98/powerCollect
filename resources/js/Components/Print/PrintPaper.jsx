@@ -70,7 +70,7 @@ export default function PrintPaper({ layout, table, summary, context, zoom }) {
             }}
         >
             {watermark.enabled && (watermark.text || watermark.logo) && <div className="pd-watermark" aria-hidden="true" style={{ opacity: Math.min(Math.max(Number(watermark.opacity) || 0.08, 0.02), 0.3) }}>
-                {watermark.logo && <img src="/images/logo-af.webp" alt="" />}
+                {watermark.logo && <img src={context.logo} alt="" />}
                 {watermark.text && <b>{watermark.text}</b>}
             </div>}
 

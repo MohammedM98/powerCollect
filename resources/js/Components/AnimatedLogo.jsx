@@ -1,4 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import BrandLogo from '@/Components/BrandLogo';
+import { useBrand } from '@/hooks/useBrand';
 
 const IMAGE = '/images/logo-af-metal.webp';
 
@@ -79,13 +81,29 @@ const DOTS = [
 ];
 
 /**
- * The company's AF mark, drawn in when it appears: its outlines trace
+ * The company's logo on the sign-in screen. The default AF mark is drawn in
+ * (see DrawnMark); another company's logo (brand:import) rises into place.
+ */
+export default function AnimatedLogo({ className = '' }) {
+    const brand = useBrand();
+
+    if (!brand.animatedLogo) {
+        return <div className={`af-logo af-logo--custom ${className}`}>
+            <BrandLogo />
+        </div>;
+    }
+
+    return <DrawnMark className={className} label={`شعار ${brand.name}`} />;
+}
+
+/**
+ * The AF mark, drawn in when it appears: its outlines trace
  * themselves, the red dots pop in one after another and the metal finish
  * wipes across; then it floats, a shine passes over it now and then, and it
  * tilts toward the pointer. Shown finished at once to those who ask their
  * device for less motion.
  */
-export default function AnimatedLogo({ className = '', label = 'شعار شركة أبو زايد' }) {
+function DrawnMark({ className, label }) {
     const [stage, setStage] = useState('play');
     const svgRef = useRef(null);
     const wipeId = `af-wipe-${useId().replace(/[^\w-]/g, '')}`;

@@ -5,8 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
+        @php($brand = app(\App\Support\Brand::class))
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
-        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}?v=1">
+        <link rel="icon" href="{{ $brand->logoUrl('icon') }}">
 
         <!-- The faces every page shows at once (body text, bold labels and titles, and the figures' Alexandria) load before
              the first paint, so text doesn't change width and move the page when a face arrives. -->
@@ -31,6 +32,11 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.jsx'])
+
+        <!-- The company's own colour, when it isn't theme.css's burgundy: after the stylesheet, so its shades win. -->
+        @if ($brandStyles = $brand->stylesheet())
+            <style>{!! $brandStyles !!}</style>
+        @endif
         @inertiaHead
     </head>
     <body class="font-sans antialiased bg-gray-50 text-gray-900">

@@ -4,7 +4,7 @@ export default function PrintHeader({ header, context, meta, accent }) {
     const letterhead = header.layout === 'letterhead';
     const logo = header.logo && <img
         key="logo"
-        src="/images/logo-af.webp"
+        src={context.logo}
         alt={header.company || context.appName}
         style={{ width: `${header.logoWidth ?? 36}mm`, height: `${header.logoHeight ?? 24}mm`, objectFit: 'contain', maxWidth: '100%', justifySelf: 'center' }}
     />;

@@ -2,9 +2,7 @@ import AnimatedLogo from '@/Components/AnimatedLogo';
 import Icon from '@/Components/Icon';
 import ThemeToggle from '@/Components/ThemeToggle';
 import AppFooter from '@/Components/AppFooter';
-
-export const COMPANY_NAME = 'شركة أبناء فارس أبو زايد للتجارة والاستيراد';
-const COMPANY_NAME_EN = 'Sons of Fares AbuZayed Trading & Import Company';
+import { useBrand } from '@/hooks/useBrand';
 
 const FEATURES = [
     { icon: 'users', label: 'إدارة المشتركين' },
@@ -18,6 +16,8 @@ const FEATURES = [
  * form shows, with the logo above it.
  */
 export default function GuestLayout({ children }) {
+    const brand = useBrand();
+
     return (
         <div className="grid min-h-screen bg-gray-50 text-gray-900 lg:grid-cols-2">
             <div className="login-form-panel relative flex flex-col px-6 py-8 sm:px-12">
@@ -40,12 +40,12 @@ export default function GuestLayout({ children }) {
                     <AnimatedLogo className="af-logo--brand" />
                 </div>
 
-                <p className="mt-8 text-xl font-bold text-gray-900">{COMPANY_NAME}</p>
-                <p className="mt-1.5 text-xs font-semibold tracking-[0.08em] text-gray-500" dir="ltr">
-                    {COMPANY_NAME_EN}
-                </p>
+                <p className="mt-8 text-xl font-bold text-gray-900">{brand.name}</p>
+                {brand.nameEnglish && <p className="mt-1.5 text-xs font-semibold tracking-[0.08em] text-gray-500" dir="ltr">
+                    {brand.nameEnglish}
+                </p>}
 
-                <h1 className="mt-10 text-5xl font-bold leading-tight text-gray-900 xl:text-[56px]">نظام التحصيل الكهربائي</h1>
+                <h1 className="mt-10 text-5xl font-bold leading-tight text-gray-900 xl:text-[56px]">{brand.tagline ?? 'نظام التحصيل الكهربائي'}</h1>
                 <div className="brand-spectrum mx-auto mt-6 w-28" />
                 <p className="mx-auto mt-6 max-w-sm text-base leading-8 text-gray-500">
                     إدارة المشتركين والفروع والتحصيل من مكان واحد — بدقة، وسرعة، وثقة.

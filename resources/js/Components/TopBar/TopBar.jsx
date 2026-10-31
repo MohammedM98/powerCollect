@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
+import BrandLogo from '@/Components/BrandLogo';
 import ActivityBell from '@/Components/ActivityBell';
 import { shouldPrefetchPage, HOME_LINK, currentGroup, groupLandingLink, isActiveLink, topBarItems } from '@/lib/navigation';
 import MegaMenu, { megaWidth } from './MegaMenu';
@@ -453,7 +454,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                 >
                     <div className="flex min-w-0 items-center">
                         <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-brand" data-tour="brand" aria-label={`${appName}، ${branchLabel ?? 'نظام التحصيل الكهربائي'}، الصفحة الرئيسية`}>
-                            <img src="/images/logo-af.webp" alt={appName} />
+                            <BrandLogo alt={appName} />
                             <span className="tn-brand-divider" aria-hidden="true" />
                             <span className="tn-brand-text">
                                 <span className="tn-brand-name" dir="auto">{shortAppName(appName)}</span>

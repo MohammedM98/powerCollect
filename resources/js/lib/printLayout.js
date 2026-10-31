@@ -57,9 +57,10 @@ const LAYOUT_PREFIX = 'print-layout:';
 /**
  * A fresh layout for a page whose table has the given columns (`{ key,
  * label, extra? }`, in the table's order). The table's own columns start
- * shown, its extra print fields hidden.
+ * shown, its extra print fields hidden. `company` and `ruleColor` come from
+ * the company's identity (its name and print colour).
  */
-export function defaultLayout({ columns, title = '', company = '' }) {
+export function defaultLayout({ columns, title = '', company = '', ruleColor = '#A51D26' }) {
     return {
         paper: 'A4',
         orientation: columns.length > 6 ? 'landscape' : 'portrait',
@@ -102,7 +103,7 @@ export function defaultLayout({ columns, title = '', company = '' }) {
             titleBold: true,
             ruleStyle: 'single',
             ruleWidth: 2,
-            ruleColor: '#A51D26',
+            ruleColor,
         },
         columns: columns.map((column) => ({ key: column.key, label: column.label, extra: Boolean(column.extra), visible: !column.extra, align: 'auto', total: false })),
         // Up to three levels, `{ key, direction }`; empty keeps the table's own order.

@@ -1470,6 +1470,40 @@ html[data-modal-open] {
     }
 }
 
+/* Another company's logo (brand:import): shown as it is, rising into place. */
+.af-logo--custom {
+    aspect-ratio: auto;
+    perspective: none;
+}
+
+.af-logo--custom img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 240px;
+    object-fit: contain;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .af-logo--custom img {
+        animation: brand-logo-in 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+}
+
+@keyframes brand-logo-in {
+    from {
+        opacity: 0;
+        filter: blur(6px);
+        transform: translateY(10px) scale(0.94);
+    }
+}
+
+/* A company with a logo for dark backgrounds: each theme hides the logo that isn't its own (Components/BrandLogo.jsx). */
+.dark .brand-logo-on-light,
+html:not(.dark) .brand-logo-on-dark {
+    display: none !important;
+}
+
 .af-logo svg {
     position: absolute;
     inset: 0;

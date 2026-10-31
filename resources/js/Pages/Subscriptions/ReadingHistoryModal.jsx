@@ -4,6 +4,7 @@ import ConfirmDialog from '@/Components/ConfirmDialog';
 import LastReadingConfirmDialog from '@/Components/LastReadingConfirmDialog';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
+import { useBrand } from '@/hooks/useBrand';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
 import { readingHistoryExcelParts } from '@/lib/detailExcelParts';
 import { formatMoney, formatNumber, formatDate } from '@/lib/format';
@@ -288,6 +289,7 @@ function LiveRow({ subscription, week, reading, maximum, average, editableLastRe
 /** The selected subscription's recorded history, presented using the supplied design. */
 export default function ReadingHistoryModal({ subscription, onClose, readingWeekOptions = [] }) {
     const titleId = useId();
+    const brand = useBrand();
     const [period, setPeriod] = useState('12');
     const [status, setStatus] = useState('all');
     const allReadings = readingsInPeriod(subscription?.meterReadings ?? [], 'all');
@@ -321,7 +323,7 @@ export default function ReadingHistoryModal({ subscription, onClose, readingWeek
         <Modal show={Boolean(subscription)} onClose={onClose} maxWidth="full" panelClassName="!my-0">
             {subscription && <div data-excel-source="custom" className="reading-history" role="dialog" aria-modal="true" aria-labelledby={titleId} dir="rtl">
                 <header className="rh-header">
-                    <img className="rh-print-logo" src="/images/logo-af.webp" alt="AF PowerCollect" />
+                    <img className="rh-print-logo" src={brand.logos.print} alt={`شعار ${brand.name}`} />
                     <span className="rh-gauge"><Icon name="gauge" className="h-[23px] w-[23px]" /></span>
                     <div className="rh-identity">
                         <h2 id={titleId}>سجل قراءات {subscription.display_name}</h2>

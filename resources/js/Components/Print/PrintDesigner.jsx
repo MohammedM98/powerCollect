@@ -13,6 +13,7 @@ import { reportDetails, reportFilters } from '@/lib/cashBoxReport';
 import { statementPrintDetails } from '@/lib/statementPrint';
 import { STATEMENT_VIEWS } from '@/lib/accountStatement';
 import { formatDate } from '@/lib/format';
+import { useBrand } from '@/hooks/useBrand';
 
 /** Pixels in a millimetre on screen (96 dpi). */
 const PX_PER_MM = 96 / 25.4;
@@ -39,6 +40,7 @@ const ZOOMS = [
  */
 export default function PrintDesigner({ settings, children, beforePrint }) {
     const { props } = usePage();
+    const brand = useBrand();
     const sourceRef = useRef(null);
     const stageRef = useRef(null);
     const toolbarRef = useRef(null);
@@ -98,7 +100,7 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
         { key: 'sheet', label: 'رقم الكشف', value: readingContext.sheetNumber },
     ].filter((field) => field.value) : [];
     const details = readingContext ? readingDetails : statementPrint ? statementPrintDetails(props) : report?.counts ? reportDetails(report) : [];
-    const context = { appName: props.appName, branchName: readingContext?.branchName ?? (statementPrint ? props.subscription?.branchName : report?.branch ?? props.auth?.user?.branchName), userName: props.auth?.user?.name, details };
+    const context = { appName: props.appName, logo: brand.logos.print, branchName: readingContext?.branchName ?? (statementPrint ? props.subscription?.branchName : report?.branch ?? props.auth?.user?.branchName), userName: props.auth?.user?.name, details };
     const visibleColumns = layout?.columns.filter((column) => column.visible) ?? [];
     const widths = visibleColumns.reduce((sum, column) => sum + Math.max(0, Number(column.width) || 0), layout?.table.rowNumbers ? 8 : 0);
     const widthWarning = layout && widths > paperSize(layout).width - layout.margin * 2 ? 'عروض الأعمدة تتجاوز مساحة الورقة. قلّل العرض أو الهوامش أو اختر الاتجاه العرضي.' : '';
@@ -114,7 +116,7 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
     }, []);
 
     function freshLayout(columns) {
-        const fresh = defaultLayout({ columns, title: settings.title || document.title, company: props.appName ?? '' });
+        const fresh = defaultLayout({ columns, title: settings.title || document.title, company: brand.name, ruleColor: brand.printColor });
         Object.entries(provided?.defaults ?? {}).forEach(([key, value]) => {
             fresh[key] = value && typeof value === 'object' && !Array.isArray(value) ? { ...fresh[key], ...value } : value;
         });

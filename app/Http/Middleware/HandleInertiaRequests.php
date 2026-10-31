@@ -30,6 +30,7 @@ use App\Support\BranchClosingAccess;
 use App\Support\BranchDomainContext;
 use App\Support\BranchDomainScope;
 use App\Support\BranchViewContext;
+use App\Support\Brand;
 use App\Support\FinancialReportAccess;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
@@ -71,6 +72,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'appName' => config('app.name'),
+            'brand' => fn (): array => app(Brand::class)->forPage(),
             'branchView' => Inertia::always(fn (): ?array => BranchViewContext::available($request) ? [
                 'current' => BranchViewContext::branch()?->only(['id', 'name']),
                 'options' => Branch::withoutGlobalScope(BranchDomainScope::class)->orderBy('name')->get(['id', 'name'])->toArray(),

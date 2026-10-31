@@ -1,6 +1,5 @@
 import BankReceivedDate from '@/Components/BankReceivedDate';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
-import { usePage } from '@inertiajs/react';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import StatusPill from '@/Components/DataTable/StatusPill';
 import Balance from '@/Components/Balance';
@@ -9,7 +8,7 @@ import Icon from '@/Components/Icon';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
 import { statementExcelParts } from '@/lib/detailExcelParts';
 import StatementViewTabs from './StatementViewTabs';
-import { COMPANY_NAME } from '@/Layouts/GuestLayout';
+import { useBrand } from '@/hooks/useBrand';
 import {
     chainColor,
     compactStatementEntries,
@@ -350,15 +349,15 @@ function filtersCaption(filters, transactionTypes, paymentMethods) {
 
 /** The statement's heading on paper: the company, the subscription, and when it was printed. */
 function PrintHeading({ subscription, caption }) {
-    const { appName } = usePage().props;
+    const brand = useBrand();
 
     return (
         <header className="statement-print-only mb-3 border-b-2 border-brand-600 pb-2">
             <div className="flex items-start justify-between gap-6">
                 <div className="flex items-center gap-3">
-                    <img src="/images/logo-af.webp" alt={appName} className="h-12 w-auto" />
+                    <img src={brand.logos.print} alt={`شعار ${brand.name}`} className="h-12 w-auto" />
                     <div>
-                        <div className="text-base font-bold">{COMPANY_NAME}</div>
+                        <div className="text-base font-bold">{brand.name}</div>
                         <div className="text-sm text-gray-600">{subscription.branchName}</div>
                     </div>
                 </div>
