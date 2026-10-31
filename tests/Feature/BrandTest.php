@@ -179,4 +179,22 @@ class BrandTest extends TestCase
         $this->assertSame([], Storage::disk('public')->files('brand'));
         $this->get(route('login'))->assertInertia(fn ($page) => $page->where('brand.name', 'شركة أبناء فارس أبو زايد للتجارة والاستيراد'));
     }
+
+    public function test_every_ready_company_identity_imports_with_its_logos(): void
+    {
+        $files = glob(resource_path('brand/companies/*/*.json'));
+        $this->assertNotEmpty($files);
+
+        foreach ($files as $file) {
+            Storage::fake('public');
+            $this->app->forgetScopedInstances();
+
+            $this->artisan('brand:import', ['file' => $file])->assertSuccessful();
+
+            $profile = app(Brand::class)->profile();
+            foreach (array_filter($profile['logos']) as $logo) {
+                Storage::disk('public')->assertExists($logo);
+            }
+        }
+    }
 }
