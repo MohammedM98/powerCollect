@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "company": {
+        "name": "شركة توزيع كهرباء محافظات غزة",
+        "nameEnglish": "Gaza Electricity Distribution Corporation",
+        "shortName": "كهرباء غزة",
+        "tagline": "نظام التحصيل الكهربائي"
+    },
+    "logos": {
+        "main": "gedco-logo.png",
+        "light": "gedco-logo-light.png",
+        "icon": "gedco-icon.png",
+        "print": "gedco-logo-print.png"
+    },
+    "colors": {
+        "primary": "#CE0D03",
+        "print": "#CE0D03"
+    },
+    "design": {
+        "preset": "classic"
+    }
+}
