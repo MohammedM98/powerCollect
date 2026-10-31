@@ -105,6 +105,74 @@ class BrandPalette
     }
 
     /**
+     * The neutral tones a company may draw its pages, lines and text in, as a
+     * hue and how strongly it tints the greys (1 = theme.css's own graphite).
+     *
+     * @var array<string, array{hue: float, tint: float}>
+     */
+    public const NEUTRALS = [
+        'slate' => ['hue' => 257, 'tint' => 2.0],
+        'zinc' => ['hue' => 286, 'tint' => 0.45],
+        'neutral' => ['hue' => 0, 'tint' => 0.0],
+        'stone' => ['hue' => 70, 'tint' => 0.7],
+        'sage' => ['hue' => 150, 'tint' => 0.9],
+    ];
+
+    /**
+     * theme.css's graphite greys as OKLCH lightness and chroma, step by step,
+     * for each theme: the spacing every other neutral keeps.
+     *
+     * @var array{light: array<int, array{float, float}>, dark: array<int, array{float, float}>}
+     */
+    private const GREYS = [
+        'light' => [50 => [0.957, 0.0046], 100 => [0.942, 0.0052], 200 => [0.912, 0.0063], 300 => [0.864, 0.0117], 400 => [0.51, 0.022], 500 => [0.443, 0.0222], 600 => [0.421, 0.0211], 700 => [0.354, 0.0198], 800 => [0.282, 0.0194], 900 => [0.206, 0.0192], 950 => [0.158, 0.0072]],
+        'dark' => [50 => [0.158, 0.0072], 100 => [0.238, 0.013], 200 => [0.283, 0.0164], 300 => [0.346, 0.0177], 400 => [0.627, 0.0209], 500 => [0.722, 0.0184], 600 => [0.8, 0.0143], 700 => [0.859, 0.0111], 800 => [0.921, 0.0063], 900 => [0.97, 0.0029], 950 => [0.985, 0.0013]],
+    ];
+
+    /** The dark theme's card colour, as lightness and chroma. */
+    private const DARK_SURFACE = [0.204, 0.011];
+
+    /**
+     * The greys of a named neutral tone for both themes, at theme.css's
+     * spacing, and the dark theme's card colour.
+     *
+     * @return array{light: array<int, string>, dark: array<int, string>, darkSurface: string}
+     */
+    public static function neutral(string $name): array
+    {
+        if (! isset(self::NEUTRALS[$name])) {
+            throw new InvalidArgumentException("[{$name}] is not a neutral tone.");
+        }
+
+        ['hue' => $hue, 'tint' => $tint] = self::NEUTRALS[$name];
+        $grey = fn (array $step): string => self::triple(self::oklchToRgb($step[0], $step[1] * $tint, $hue));
+
+        return [
+            'light' => array_map($grey, self::GREYS['light']),
+            'dark' => array_map($grey, self::GREYS['dark']),
+            'darkSurface' => $grey(self::DARK_SURFACE),
+        ];
+    }
+
+    /**
+     * A status colour's shades, 50 to 950, the colour itself as 500 (a
+     * status colour sits on tints and beside text, so it is kept as given).
+     *
+     * @return array<int, string>
+     */
+    public static function statusScale(string $hex): array
+    {
+        [$lightness, $chroma, $hue] = self::hexToOklch($hex);
+        $steps = self::LIGHT + [950 => ['scale' => 0.33, 'chroma' => 0.45]];
+
+        return array_map(fn (array $step): string => self::triple(self::oklchToRgb(
+            isset($step['lift']) ? $lightness + ($step['lift'] * (self::LIGHTEST - $lightness)) : $lightness * $step['scale'],
+            $chroma * $step['chroma'],
+            $hue,
+        )), $steps);
+    }
+
+    /**
      * Whether the colour is a six-digit hex colour, e.g. `#A51D26`.
      */
     public static function isHex(mixed $value): bool

@@ -12,13 +12,14 @@ return [
     |--------------------------------------------------------------------------
     |
     | Whether the Super Admin may change the company's name, logos, colours
-    | and look from Settings (see app/Support/Brand.php). Turned off, the
-    | identity is changed only on the server, with `php artisan brand:import`,
-    | for a copy whose look its maker keeps.
+    | and look from Settings (see app/Support/Brand.php). Off by default: the
+    | maker designs each company's identity file and the server takes it with
+    | `php artisan brand:import`. Turn it on for a copy whose company may
+    | change its own look.
     |
     */
 
-    'brand_editor_enabled' => (bool) env('BRAND_EDITOR_ENABLED', true),
+    'brand_editor_enabled' => (bool) env('BRAND_EDITOR_ENABLED', false),
 
     /*
     |--------------------------------------------------------------------------

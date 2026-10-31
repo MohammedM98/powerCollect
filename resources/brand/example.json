@@ -1,0 +1,44 @@
+{
+    "version": 1,
+    "company": {
+        "name": "شركة النور للكهرباء",
+        "nameEnglish": "Al-Noor Power Co.",
+        "shortName": "النور",
+        "tagline": "نظام التحصيل الكهربائي"
+    },
+    "logos": {
+        "main": "/images/logo-af.webp",
+        "light": null,
+        "icon": "/favicon.svg",
+        "print": null
+    },
+    "colors": {
+        "primary": "#0F766E",
+        "print": "#0F766E",
+        "success": "#16A34A",
+        "warning": "#D97706",
+        "danger": "#DC2626",
+        "info": "#0284C7"
+    },
+    "design": {
+        "preset": "executive",
+        "navigation": "sidebar",
+        "navStyle": "dark",
+        "width": "wide",
+        "background": "glow",
+        "neutral": "stone",
+        "radius": "rounded",
+        "buttons": "raised",
+        "cards": "accent",
+        "tables": "cards",
+        "tableHeader": "brand",
+        "density": "comfortable",
+        "inputs": "outlined",
+        "badges": "solid",
+        "pageTitle": "underline",
+        "textSize": "normal",
+        "bodyFont": "plex",
+        "headingFont": "messiri",
+        "motion": "full"
+    }
+}

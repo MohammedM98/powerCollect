@@ -3,9 +3,11 @@
 namespace Tests\Feature;
 
 use App\Support\Brand;
+use App\Support\BrandDesign;
 use App\Support\CompanyForms;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -195,6 +197,40 @@ class BrandTest extends TestCase
             foreach (array_filter($profile['logos']) as $logo) {
                 Storage::disk('public')->assertExists($logo);
             }
+        }
+    }
+
+    public function test_a_neutral_tone_and_status_colours_of_the_companys_own_reach_every_page(): void
+    {
+        $file = $this->identityFile(['colors' => ['primary' => null, 'success' => '#16A34A'], 'design' => ['neutral' => 'slate', 'navStyle' => 'dark']]);
+        $this->artisan('brand:import', ['file' => $file])->assertSuccessful();
+
+        $response = $this->get(route('login'));
+
+        $response->assertSee(':root{--success-50:', false);
+        $response->assertSee('--gray-50:237 241 247;', false);
+        $response->assertSee('.dark{--gray-50:', false);
+        $response->assertSee(":root:is([data-ui-nav-style='dark'],[data-ui-nav-style='brand']) :is(.tn-glass,.sn-panel){--gray-50:", false);
+        $response->assertSee('data-ui-nav-style="dark"', false);
+        $response->assertInertia(fn ($page) => $page->where('brand.stylesheet', app(Brand::class)->stylesheet()));
+    }
+
+    public function test_the_full_example_identity_imports(): void
+    {
+        $this->artisan('brand:import', ['file' => resource_path('brand/example.json')])->assertSuccessful();
+
+        $profile = app(Brand::class)->profile();
+        $this->assertSame('executive', $profile['design']['preset']);
+        $this->assertSame('#16A34A', $profile['colors']['success']);
+    }
+
+    public function test_the_options_command_lists_every_preset_and_choice(): void
+    {
+        $this->assertSame(0, Artisan::call('brand:options'));
+        $output = Artisan::output();
+
+        foreach ([...array_keys(BrandDesign::PRESETS), ...array_keys(BrandDesign::OPTIONS)] as $name) {
+            $this->assertStringContainsString($name, $output);
         }
     }
 }

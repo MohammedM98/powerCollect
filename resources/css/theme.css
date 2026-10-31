@@ -340,3 +340,30 @@
     --ui-pop: 0 30px 60px -20px #000;
     --ui-hero: linear-gradient(135deg, #1c2127, #161a1f 55%, #0b0d10);
 }
+
+/*
+ * ── 7. Dark navigation ───────────────────────────────────────────────────
+ *
+ * A company whose navigation is dark or in its own colour (BrandDesign
+ * `navStyle`) draws the top bar and the side menu in the dark theme's
+ * greys, whatever the page's theme, so everything inside them (text, icons,
+ * lines, the open section) reads on the dark panel. A neutral tone of the
+ * company's own redraws these greys too (Brand::stylesheet()).
+ */
+:root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) :is(.tn-glass, .sn-panel) {
+    color-scheme: dark;
+
+    --gray-50: 11 13 16;
+    --gray-100: 27 31 37;
+    --gray-200: 37 42 50;
+    --gray-300: 52 58 67;
+    --gray-400: 128 137 149;
+    --gray-500: 158 166 177;
+    --gray-600: 184 190 199;
+    --gray-700: 204 209 216;
+    --gray-800: 226 229 233;
+    --gray-900: 244 245 247;
+    --gray-950: 250 250 251;
+    --surface: 20 23 28;
+}
+

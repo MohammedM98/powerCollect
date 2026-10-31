@@ -34,6 +34,7 @@ class UpdateBrandRequest extends FormRequest
             'colors' => ['nullable', 'array'],
             'colors.primary' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'colors.print' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            ...array_fill_keys(array_map(fn (string $status): string => "colors.{$status}", Brand::STATUSES), ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/']),
             ...BrandDesign::rules('design'),
             'logos' => ['nullable', 'array'],
             ...array_fill_keys(array_map(fn (string $logo): string => "logos.{$logo}", Brand::LOGOS), ['nullable', 'file', 'mimes:png,jpg,jpeg,webp', 'max:2048']),
