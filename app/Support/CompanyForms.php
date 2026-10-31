@@ -17,10 +17,12 @@ class CompanyForms
             'bold' => $type === 'heading', 'fontSize' => null, 'height' => 8, 'fields' => $fields,
         ];
 
+        $brand = app(Brand::class)->forPage();
+
         return [
             'paper' => 'A4', 'orientation' => 'portrait', 'margin' => 16, 'fontSize' => 15,
-            'header' => ['company' => 'شركة أبناء فارس أبو زايد للتجارة والاستيراد', 'subtitle' => 'نظام التحصيل الكهربائي', 'logo' => true, 'enabled' => true],
-            'watermark' => ['enabled' => true, 'text' => 'أبناء فارس أبو زايد', 'logo' => true, 'opacity' => 0.06],
+            'header' => ['company' => $brand['name'], 'subtitle' => $brand['tagline'] ?? '', 'logo' => true, 'enabled' => true],
+            'watermark' => ['enabled' => true, 'text' => $brand['shortName'], 'logo' => true, 'opacity' => 0.06],
             'footer' => 'يُعبّأ هذا الطلب وتُراجع بياناته قبل اعتماده.',
             'pages' => [['id' => 'page_1', 'blocks' => [
                 $block('title_1', 'heading', 'طلب اشتراك جديد'),

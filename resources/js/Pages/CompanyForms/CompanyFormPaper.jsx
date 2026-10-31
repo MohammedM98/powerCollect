@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { formDimensions, formText, letterhead, letterheadSlots } from '@/lib/companyForms';
 import { printFont } from '@/lib/printLayout';
+import { useBrand } from '@/hooks/useBrand';
 import './CompanyForms.css';
 
 /**
@@ -9,9 +10,10 @@ import './CompanyForms.css';
  * English on the left), over no line, one line or two, each in its colour.
  */
 function FormLetterhead({ header: saved }) {
-    const header = letterhead(saved);
+    const brand = useBrand();
+    const header = letterhead(saved, brand.printColor);
     const parts = {
-        logo: header.logo && <img key="logo" src="/images/logo-af.webp" alt="شعار الشركة" style={{ width: `${header.logoWidth}mm`, height: `${header.logoHeight}mm` }} />,
+        logo: header.logo && <img key="logo" src={brand.logos.print} alt={`شعار ${brand.name}`} style={{ width: `${header.logoWidth}mm`, height: `${header.logoHeight}mm` }} />,
         arabic: <div key="arabic" dir="rtl" className="cf-letterhead-text" style={{ textAlign: header.arabicAlign, fontFamily: printFont(header.companyFont), color: header.textColor }}>
             {header.company && <b style={{ fontSize: `${header.companySize}px` }}>{header.company}</b>}
             {header.subtitle && <p style={{ fontSize: `${header.subtitleSize}px` }}>{header.subtitle}</p>}
@@ -32,6 +34,7 @@ function FormLetterhead({ header: saved }) {
 }
 
 export default function CompanyFormPaper({ layout, page, pageIndex = 0, sourcePage = null, values = {}, blank = false, onPlace, selectedOverlay, onSelectOverlay, onOverflow }) {
+    const brand = useBrand();
     const wrapper = useRef(null);
     const body = useRef(null);
     const paper = useRef(null);
@@ -63,7 +66,7 @@ export default function CompanyFormPaper({ layout, page, pageIndex = 0, sourcePa
         <div className="cf-page-shell" style={{ height: `${height * 96 / 25.4 * scale}px`, page: `cf_page_${pageIndex}` }}>
             <article ref={paper} className={`cf-paper ${onPlace ? 'cf-placing' : ''}`} data-form-paper data-page-width={width} data-page-height={height} style={{ width: `${width}mm`, height: `${height}mm`, transform: `scale(${scale})`, fontSize: `${layout.fontSize}px`, padding: `${sourcePage ? 0 : layout.margin}mm` }} onClick={place} dir="rtl">
                 {sourcePage && <img className="cf-source" src={sourcePage.image} alt="النموذج الأصلي" />}
-                {layout.watermark.enabled && <div className="cf-watermark" style={{ opacity: layout.watermark.opacity }} aria-hidden="true">{layout.watermark.logo && <img src="/images/logo-af.webp" alt="" />}<b>{layout.watermark.text}</b></div>}
+                {layout.watermark.enabled && <div className="cf-watermark" style={{ opacity: layout.watermark.opacity }} aria-hidden="true">{layout.watermark.logo && <img src={brand.logos.print} alt="" />}<b>{layout.watermark.text}</b></div>}
                 <div className="cf-content" style={sourcePage ? { padding: `${layout.margin}mm` } : undefined}>
                     {layout.header.enabled && <FormLetterhead header={layout.header} />}
                     <div ref={body} className="cf-blocks">

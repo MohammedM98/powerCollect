@@ -54,8 +54,9 @@ export const FORMAL_LETTERHEAD = {
     ruleStyle: 'double', ruleWidth: 2, ruleColor: '#111827', ruleColor2: '#a51d26', ruleGap: 1,
 };
 
-export function letterhead(header = {}) {
-    return { ...LETTERHEAD_DEFAULTS, ...Object.fromEntries(Object.entries(header ?? {}).filter(([, value]) => value !== null && value !== undefined)) };
+/** The letterhead's settings over the defaults; `accent`, the company's print colour, is the second line's until one is chosen. */
+export function letterhead(header = {}, accent = LETTERHEAD_DEFAULTS.ruleColor2) {
+    return { ...LETTERHEAD_DEFAULTS, ruleColor2: accent, ...Object.fromEntries(Object.entries(header ?? {}).filter(([, value]) => value !== null && value !== undefined)) };
 }
 
 /** The letterhead's three parts from right to left, the logo where it's placed. */

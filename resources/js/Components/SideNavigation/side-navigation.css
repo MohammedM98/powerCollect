@@ -1,0 +1,151 @@
+/*
+ * The side navigation (SideNavigation.jsx), for a company whose look puts the
+ * sections at the side: a floating panel at the page's start (the right, in
+ * Arabic) on wide screens, narrowing to a rail of icons. Narrow screens keep
+ * the top bar, so the panel and the page's room for it apply from 1024px.
+ */
+:root {
+    --sn-width: 292px;
+    --sn-collapsed-width: 84px;
+    --sn-gap: 12px;
+}
+
+.sn-panel {
+    display: none;
+}
+
+/* The top bar's wrapper adds no box, so the bar stays sticky to the page. */
+.sn-mobile-only {
+    display: contents;
+}
+
+@media (min-width: 1024px) {
+    .sn-mobile-only {
+        display: none;
+    }
+
+    .sn-panel {
+        position: fixed;
+        z-index: 40;
+        inset-block: var(--sn-gap);
+        inset-inline-start: var(--sn-gap);
+        display: flex;
+        flex-direction: column;
+        width: var(--sn-width);
+        border: 1px solid rgb(var(--gray-200) / 0.8);
+        border-radius: calc(26px * var(--radius-scale, 1));
+        background: rgb(var(--surface) / 0.88);
+        backdrop-filter: blur(22px) saturate(1.5);
+        box-shadow: var(--shadow-card);
+        font-size: 16px;
+        line-height: 1.5;
+        transition: width 0.3s var(--tn-ease);
+    }
+
+    .sn-panel[data-collapsed] {
+        width: var(--sn-collapsed-width);
+    }
+
+    :root[data-side-navigation='open'] .sn-content {
+        margin-inline-start: calc(var(--sn-width) + var(--sn-gap));
+    }
+
+    :root[data-side-navigation='collapsed'] .sn-content {
+        margin-inline-start: calc(var(--sn-collapsed-width) + var(--sn-gap));
+    }
+
+    .sn-content {
+        transition: margin 0.3s var(--tn-ease);
+    }
+}
+
+.sn-panel :focus-visible:not(input) {
+    outline: 2px solid rgb(var(--gray-900));
+    outline-offset: 2px;
+}
+
+.sn-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 72px;
+    padding: 14px 16px 8px;
+}
+
+.sn-logo {
+    flex: none;
+    width: auto;
+    max-width: 112px;
+    height: 42px;
+    object-fit: contain;
+}
+
+.sn-title {
+    min-width: 0;
+}
+
+.sn-title b {
+    display: block;
+    overflow: hidden;
+    font-size: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sn-title small {
+    display: block;
+    overflow: hidden;
+    color: rgb(var(--gray-500));
+    font-size: 12.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sn-tools {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 0 12px 10px;
+}
+
+.sn-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 12px 12px;
+}
+
+.sn-foot {
+    padding: 12px;
+    border-top: 1px solid rgb(var(--gray-200) / 0.7);
+}
+
+/* The notifications open beside the panel, not over it. */
+.sn-panel .tn-popover {
+    top: 64px;
+    inset-inline-start: calc(100% + 12px);
+}
+
+/* Narrowed to icons. */
+.sn-panel[data-collapsed] :is(.tn-nav-label, .tn-chevron, .tn-nav-badge) {
+    display: none;
+}
+
+.sn-panel[data-collapsed] .sn-head {
+    justify-content: center;
+    padding-inline: 10px;
+}
+
+.sn-panel[data-collapsed] .sn-logo {
+    max-width: 56px;
+    height: 34px;
+}
+
+.sn-panel[data-collapsed] .sn-tools {
+    flex-direction: column;
+    align-items: center;
+}
+
+.sn-panel[data-collapsed] :is(.tn-drawer-group, .tn-nav-search) {
+    justify-content: center;
+    padding-inline: 0;
+}

@@ -8,6 +8,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Identity and Appearance Screen
+    |--------------------------------------------------------------------------
+    |
+    | Whether the Super Admin may change the company's name, logos, colours
+    | and look from Settings (see app/Support/Brand.php). Turned off, the
+    | identity is changed only on the server, with `php artisan brand:import`,
+    | for a copy whose look its maker keeps.
+    |
+    */
+
+    'brand_editor_enabled' => (bool) env('BRAND_EDITOR_ENABLED', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Seeded Super Admin
     |--------------------------------------------------------------------------
     |

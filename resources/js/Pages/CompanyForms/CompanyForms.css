@@ -1,6 +1,6 @@
 .cf-paper-container { min-width: 0; width: 100%; }
 .cf-page-shell { position: relative; width: 100%; margin: 0 auto 24px; }
-.cf-paper { box-sizing: border-box; position: absolute; top: 0; right: 0; transform-origin: top right; display: block; overflow: hidden; background: white; color: rgb(var(--graphite-800)); box-shadow: 0 4px 22px rgb(var(--shadow-ink) / 0.102); font-family: 'IBM Plex Sans Arabic', Tahoma, sans-serif; line-height: 1.8; isolation: isolate; }
+.cf-paper { box-sizing: border-box; position: absolute; top: 0; right: 0; transform-origin: top right; display: block; overflow: hidden; background: white; color: rgb(var(--graphite-800)); box-shadow: 0 4px 22px rgb(var(--shadow-ink) / 0.102); font-family: var(--font-body, 'IBM Plex Sans Arabic'), Tahoma, sans-serif; line-height: 1.8; isolation: isolate; }
 .cf-paper * { box-sizing: border-box; }
 .cf-content { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; }
 .cf-letterhead-block { flex-shrink: 0; margin-bottom: 5mm; }

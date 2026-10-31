@@ -83,6 +83,8 @@ export const ACTION_MESSAGES = {
     'subscription-phone-updated': 'تم تحديث رقم الجوال.',
     'subscription-personal-details-updated': 'تم تحديث البيانات الشخصية.',
     'sms-settings-updated': 'تم حفظ إعدادات الرسائل، والبوابة مفعّلة.',
+    'brand-updated': 'تم حفظ هوية الشركة ومظهر الواجهة.',
+    'brand-reset': 'عادت الهوية والمظهر إلى الأصل.',
     'sms-settings-updated-off': 'تم حفظ إعدادات الرسائل، والبوابة متوقفة.',
     'sms-test-sent': 'قبلت بوابة الرسائل رسالة التجربة.',
     'reading-schedule-updated': 'تم حفظ مواعيد القراءات بنجاح.',

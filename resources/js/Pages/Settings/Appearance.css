@@ -1,0 +1,247 @@
+/*
+ * The identity and appearance screen (Settings/Appearance.jsx): the presets
+ * drawn as small layouts, the logo slots, the colour fields and the bar that
+ * saves. Colours are the theme's tokens, so the screen follows the look it edits.
+ */
+.ap-presets {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 12px;
+}
+
+.ap-preset {
+    display: grid;
+    gap: 6px;
+    padding: 10px 10px 12px;
+    border: 1px solid rgb(var(--gray-200));
+    border-radius: calc(18px * var(--radius-scale, 1));
+    background: rgb(var(--surface));
+    text-align: start;
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.ap-preset:hover {
+    border-color: rgb(var(--gray-300));
+    transform: translateY(-1px);
+}
+
+.ap-preset[aria-pressed='true'] {
+    border-color: rgb(var(--brand-500));
+    box-shadow: 0 0 0 3px rgb(var(--brand-500) / 0.18);
+}
+
+.ap-preset b {
+    font-size: 15px;
+    color: rgb(var(--gray-900));
+}
+
+.ap-preset small {
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: rgb(var(--gray-500));
+}
+
+/* The small drawing of a preset's layout. */
+.ap-sketch {
+    --sketch-radius: 6px;
+    display: flex;
+    gap: 5px;
+    height: 84px;
+    padding: 6px;
+    border-radius: calc(12px * var(--radius-scale, 1));
+    background: rgb(var(--gray-50));
+}
+
+.ap-sketch.radius-sharp {
+    --sketch-radius: 1px;
+}
+
+.ap-sketch.radius-soft {
+    --sketch-radius: 3px;
+}
+
+.ap-sketch.radius-round {
+    --sketch-radius: 10px;
+}
+
+.ap-sketch.nav-topbar {
+    flex-direction: column;
+}
+
+.ap-sketch-nav {
+    flex: none;
+    border-radius: var(--sketch-radius);
+    background: rgb(var(--graphite-700));
+}
+
+.nav-topbar .ap-sketch-nav {
+    height: 12px;
+}
+
+.nav-sidebar .ap-sketch-nav {
+    width: 34%;
+}
+
+.nav-rail .ap-sketch-nav {
+    width: 12%;
+}
+
+.ap-sketch-page {
+    display: grid;
+    flex: 1;
+    align-content: start;
+    gap: 5px;
+}
+
+.ap-sketch-button {
+    justify-self: end;
+    width: 34%;
+    height: 10px;
+    border-radius: var(--sketch-radius);
+    background: linear-gradient(180deg, rgb(var(--brand-hi)), rgb(var(--brand-lo)));
+}
+
+.buttons-solid .ap-sketch-button {
+    background: rgb(var(--brand-500));
+}
+
+.buttons-soft .ap-sketch-button {
+    background: rgb(var(--brand-500) / 0.25);
+}
+
+.buttons-outline .ap-sketch-button {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px rgb(var(--brand-500));
+}
+
+.ap-sketch-rows {
+    display: grid;
+    gap: 3px;
+}
+
+.ap-sketch-rows i {
+    height: 9px;
+    border-radius: var(--sketch-radius);
+    background: rgb(var(--surface));
+    box-shadow: 0 0 0 1px rgb(var(--gray-200));
+}
+
+.tables-striped .ap-sketch-rows i:nth-child(even),
+.tables-bordered .ap-sketch-rows i {
+    border-radius: 0;
+}
+
+.tables-striped .ap-sketch-rows i:nth-child(even) {
+    background: rgb(var(--gray-200));
+}
+
+.tables-minimal .ap-sketch-rows i {
+    border-radius: 0;
+    background: transparent;
+    box-shadow: inset 0 -1px 0 rgb(var(--gray-300));
+}
+
+/* A logo slot. */
+.ap-logo {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.ap-logo-frame {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 112px;
+    height: 84px;
+    padding: 8px;
+    border: 1px dashed rgb(var(--gray-300));
+    border-radius: calc(14px * var(--radius-scale, 1));
+    background: rgb(var(--gray-50));
+}
+
+.ap-logo-frame.is-dark {
+    background: rgb(var(--graphite-800));
+}
+
+.ap-logo-frame img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.ap-logo-empty {
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    font-size: 11.5px;
+    line-height: 1.4;
+    text-align: center;
+    color: rgb(var(--gray-400));
+}
+
+/* Colours. */
+.ap-color {
+    width: 44px;
+    height: 40px;
+    padding: 3px;
+    border: 1px solid rgb(var(--gray-200));
+    border-radius: calc(12px * var(--radius-scale, 1));
+    background: rgb(var(--surface));
+    cursor: pointer;
+}
+
+.ap-suggestion {
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px rgb(var(--shadow-ink) / 0.16);
+    transition: transform 140ms ease;
+}
+
+.ap-suggestion:hover {
+    transform: scale(1.12);
+}
+
+.ap-suggestion[aria-pressed='true'] {
+    box-shadow: 0 0 0 2px rgb(var(--surface)), 0 0 0 4px rgb(var(--gray-900));
+}
+
+.ap-swatches {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    height: 22px;
+    overflow: hidden;
+    border-radius: calc(8px * var(--radius-scale, 1));
+}
+
+/* A printout's heading, on light paper in both themes (the silver and graphite that keep their shade). */
+.ap-paper {
+    padding: 16px 18px;
+    border-radius: calc(10px * var(--radius-scale, 1));
+    background: rgb(var(--silver-50));
+    color: rgb(var(--graphite-900));
+    box-shadow: var(--shadow-card), 0 0 0 1px rgb(var(--gray-200));
+}
+
+.ap-paper .text-gray-500 {
+    color: rgb(var(--silver-800));
+}
+
+/* The bar that saves, kept in view at the bottom. */
+.ap-savebar {
+    position: sticky;
+    bottom: 12px;
+    z-index: 20;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid rgb(var(--gray-200));
+    border-radius: calc(20px * var(--radius-scale, 1));
+    background: rgb(var(--surface) / 0.92);
+    backdrop-filter: blur(16px);
+    box-shadow: var(--shadow-lift);
+}

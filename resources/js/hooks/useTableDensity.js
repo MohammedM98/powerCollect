@@ -3,13 +3,17 @@ import { useEffect, useState } from 'react';
 const STORAGE_KEY = 'table-density';
 const CHANGE_EVENT = 'table-density-change';
 
-/** The density picked last time in this browser: 'comfortable' unless 'compact' was chosen. */
+/** The density picked last time in this browser, else the company's (`data-ui-density` on <html>): 'comfortable' unless 'compact'. */
 function readDensity() {
+    let saved = null;
+
     try {
-        return localStorage.getItem(STORAGE_KEY) === 'compact' ? 'compact' : 'comfortable';
+        saved = localStorage.getItem(STORAGE_KEY);
     } catch {
-        return 'comfortable';
+        // Storage may be blocked (private mode); the company's density applies.
     }
+
+    return (saved ?? document.documentElement.dataset.uiDensity) === 'compact' ? 'compact' : 'comfortable';
 }
 
 /**

@@ -22,7 +22,7 @@
     gap: 10px 16px;
     padding: 14px;
     border: 1px solid rgb(var(--gray-100));
-    border-radius: 18px;
+    border-radius: calc(18px * var(--radius-scale, 1));
     background: rgb(var(--surface));
     cursor: pointer;
 }
@@ -47,7 +47,7 @@
 .financial-surface .data-table-toolbar > div,
 .financial-surface .data-table-toolbar [role='group'] { max-width: 100%; flex-wrap: wrap; }
 .financial-surface .data-table-toolbar [role='group'] button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.financial-surface .data-table-totals { align-items: baseline; padding: 14px 24px; border-radius: 0 0 28px 28px; }
+.financial-surface .data-table-totals { align-items: baseline; padding: 14px 24px; border-radius: 0 0 calc(28px * var(--radius-scale, 1)) calc(28px * var(--radius-scale, 1)); }
 .financial-surface .data-table-totals:has(+ .data-table-pagination) { border-radius: 0; }
 
 /* Ledger cells stay in columns at every size; horizontal scroll belongs to the table. */
@@ -59,7 +59,7 @@
 .financial-ledger-table tbody tr:hover td { background: rgb(var(--gray-50) / .45); }
 .financial-ledger-table [data-actions] { text-align: end; }
 .financial-ledger-table .font-display { font-variant-numeric: tabular-nums; }
-.financial-ledger-section .data-table-container { border-radius: 28px 28px 0 0; }
+.financial-ledger-section .data-table-container { border-radius: calc(28px * var(--radius-scale, 1)) calc(28px * var(--radius-scale, 1)) 0 0; }
 .financial-ledger-section .data-table-container:has(+ .data-table-pagination) { border-end-start-radius: 0; border-end-end-radius: 0; }
 
 /* A wide window that keeps the page in sight around it: a click outside or Escape closes it. */

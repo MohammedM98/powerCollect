@@ -1,4 +1,5 @@
 import { excelLook, excelOrientation } from './excelSheet.js';
+import maker from '../../brand/maker.json' with { type: 'json' };
 
 /**
  * Writes the sheets lib/excelSheet.js builds as a real .xlsx workbook with
@@ -51,7 +52,7 @@ function excelValue(cell) {
 export async function workbookBlob(sheets, settings) {
     const { default: ExcelJS } = await import('exceljs');
     const workbook = new ExcelJS.Workbook();
-    workbook.creator = 'AF PowerCollect';
+    workbook.creator = maker.product;
     workbook.created = new Date();
     // Excel works the totals out afresh on opening, rather than showing the values written beside them.
     workbook.calcProperties.fullCalcOnLoad = true;
@@ -143,7 +144,7 @@ export async function workbookBlob(sheets, settings) {
                 margins: { left: 0.4, right: 0.4, top: 0.5, bottom: 0.6, header: 0.3, footer: 0.3 },
                 printTitlesRow: `${sheet.head}:${sheet.head}`,
             };
-            worksheet.headerFooter = { oddFooter: `&L&8${sheet.name}&C&8صفحة &P من &N&R&8AF PowerCollect` };
+            worksheet.headerFooter = { oddFooter: `&L&8${sheet.name}&C&8صفحة &P من &N&R&8${maker.product}` };
         }
     }
 

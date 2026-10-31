@@ -43,7 +43,7 @@ html.tn-locked {
 :where(.tn-header, .tn-mega, .tn-popover, .tn-drawer, .tn-scrim, .tn-trail, .tn-subnav, .tn-tour-card) :focus-visible:not(input) {
     outline: 2px solid rgb(var(--gray-900));
     outline-offset: 2px;
-    border-radius: 12px;
+    border-radius: calc(12px * var(--radius-scale, 1));
 }
 
 /* The design's lifted shadow for the search, the keys window, the tour card and the skip link. */
@@ -63,7 +63,7 @@ html.tn-locked {
 }
 
 .tn-num {
-    font-family: Alexandria, 'IBM Plex Sans Arabic', sans-serif;
+    font-family: Alexandria, var(--font-body, 'IBM Plex Sans Arabic'), sans-serif;
     font-variant-numeric: tabular-nums;
 }
 
@@ -77,7 +77,7 @@ html.tn-locked {
     width: 0;
     background: linear-gradient(90deg, rgb(var(--danger-400)), rgb(var(--brand-500)));
     box-shadow: 0 0 10px rgb(var(--brand-500) / 0.6);
-    border-radius: 0 3px 3px 0;
+    border-radius: 0 calc(3px * var(--radius-scale, 1)) calc(3px * var(--radius-scale, 1)) 0;
     pointer-events: none;
 }
 
@@ -126,10 +126,10 @@ html.tn-locked {
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: 14px;
-    max-width: 1720px;
+    max-width: var(--ui-content-width, 1720px);
     margin-inline: auto;
     padding-inline: 12px 10px;
-    border-radius: 22px;
+    border-radius: calc(22px * var(--radius-scale, 1));
     background: rgb(var(--surface) / 0.72);
     backdrop-filter: blur(22px) saturate(1.6);
     border: 1px solid rgb(255 255 255 / 0.7);
@@ -162,7 +162,7 @@ html.tn-locked {
     inset-inline: 22px;
     top: -1px;
     height: 2px;
-    border-radius: 2px;
+    border-radius: calc(2px * var(--radius-scale, 1));
     background: linear-gradient(90deg, rgb(var(--brand-deep)), rgb(var(--brand-solid)) 40%, rgb(var(--silver-500)) 75%, transparent);
     opacity: 0.9;
 }
@@ -173,7 +173,7 @@ html.tn-locked {
     align-items: center;
     gap: 12px;
     padding: 5px 8px;
-    border-radius: 14px;
+    border-radius: calc(14px * var(--radius-scale, 1));
     transition: background 0.2s;
 }
 
@@ -200,7 +200,7 @@ html.tn-locked {
 
 .tn-brand-name {
     display: block;
-    font: 700 1.25rem/1.2 'IBM Plex Sans Arabic', sans-serif;
+    font: 700 1.25rem/1.2 var(--font-body, 'IBM Plex Sans Arabic'), sans-serif;
     color: rgb(var(--gray-900));
     white-space: nowrap;
 }
@@ -272,7 +272,7 @@ html.tn-locked {
     height: 42px;
     width: 0;
     margin-top: -21px;
-    border-radius: 13px;
+    border-radius: calc(13px * var(--radius-scale, 1));
     background: var(--tn-graphite);
     opacity: 0;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 12px 24px -12px rgb(var(--shadow-ink) / 0.7);
@@ -293,7 +293,7 @@ html.tn-locked {
     gap: 7px;
     height: 42px;
     padding-inline: 13px;
-    border-radius: 13px;
+    border-radius: calc(13px * var(--radius-scale, 1));
     color: rgb(var(--gray-600));
     font-weight: 600;
     font-size: 14.5px;
@@ -340,7 +340,7 @@ html.tn-locked {
     inset-inline: 16px;
     bottom: calc((var(--tn-bar-height) - 42px) / -2);
     height: 3px;
-    border-radius: 3px 3px 0 0;
+    border-radius: calc(3px * var(--radius-scale, 1)) calc(3px * var(--radius-scale, 1)) 0 0;
     background: rgb(var(--brand-500));
     box-shadow: 0 -2px 14px 1px rgb(var(--brand-500) / 0.75);
     transition: bottom 0.3s var(--tn-ease);
@@ -350,7 +350,7 @@ html.tn-locked {
     min-width: 19px;
     height: 19px;
     padding: 0 5px;
-    border-radius: 99px;
+    border-radius: calc(99px * var(--radius-scale, 1));
     background: rgb(var(--brand-500));
     color: #fff;
     font: 700 11px/19px Alexandria, sans-serif;
@@ -393,7 +393,7 @@ html.tn-locked {
     place-items: center;
     width: 42px;
     height: 42px;
-    border-radius: 13px;
+    border-radius: calc(13px * var(--radius-scale, 1));
     color: rgb(var(--gray-600));
     transition: background 0.2s, color 0.2s, transform 0.12s;
 }
@@ -432,7 +432,7 @@ html.tn-locked {
     min-width: 17px;
     height: 17px;
     padding: 0 4px;
-    border-radius: 99px;
+    border-radius: calc(99px * var(--radius-scale, 1));
     background: rgb(var(--brand-500));
     color: #fff;
     font: 700 10.5px/17px Alexandria, sans-serif;
@@ -459,7 +459,7 @@ html.tn-locked {
     width: 236px;
     height: 42px;
     padding: 0 10px 0 8px;
-    border-radius: 13px;
+    border-radius: calc(13px * var(--radius-scale, 1));
     border: 1px solid rgb(var(--gray-200));
     background: rgb(var(--gray-50) / 0.7);
     color: rgb(var(--gray-500));
@@ -495,7 +495,7 @@ html.tn-locked {
     display: inline-flex;
     align-items: center;
     padding: 1px 6px;
-    border-radius: 6px;
+    border-radius: calc(6px * var(--radius-scale, 1));
     border: 1px solid rgb(var(--gray-200));
     background: rgb(var(--surface));
     font: 600 11.5px Alexandria, sans-serif;
@@ -509,7 +509,7 @@ html.tn-locked {
     gap: 9px;
     height: 46px;
     padding: 3px 3px 3px 10px;
-    border-radius: 15px;
+    border-radius: calc(15px * var(--radius-scale, 1));
     transition: background 0.2s;
 }
 
@@ -533,10 +533,10 @@ html.tn-locked {
     place-items: center;
     width: 38px;
     height: 38px;
-    border-radius: 12px;
+    border-radius: calc(12px * var(--radius-scale, 1));
     background: var(--tn-graphite);
     color: #fff;
-    font: 700 15px Alexandria, 'IBM Plex Sans Arabic', sans-serif;
+    font: 700 15px Alexandria, var(--font-body, 'IBM Plex Sans Arabic'), sans-serif;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.15), 0 0 0 1px rgb(255 255 255 / 0.06);
     flex: none;
     position: relative;
@@ -623,7 +623,7 @@ html.tn-locked {
 
     .tn-glass {
         grid-template-columns: minmax(0, 1fr) auto;
-        border-radius: 18px;
+        border-radius: calc(18px * var(--radius-scale, 1));
         padding-inline: 8px 6px;
     }
 
@@ -641,7 +641,7 @@ html.tn-locked {
     width: var(--tn-mega-width, 560px);
     height: var(--tn-mega-height, 300px);
     transform: translateX(var(--tn-mega-x, 0));
-    border-radius: 24px;
+    border-radius: calc(24px * var(--radius-scale, 1));
     overflow: hidden;
     background: rgb(var(--surface) / 0.97);
     backdrop-filter: blur(24px) saturate(1.5);
@@ -720,7 +720,7 @@ html.tn-locked {
     align-items: start;
     gap: 12px;
     padding: 9px 10px;
-    border-radius: 15px;
+    border-radius: calc(15px * var(--radius-scale, 1));
     transition: background 0.18s;
 }
 
@@ -733,7 +733,7 @@ html.tn-locked {
     place-items: center;
     width: 42px;
     height: 42px;
-    border-radius: 13px;
+    border-radius: calc(13px * var(--radius-scale, 1));
     border: 1px solid rgb(var(--gray-200) / 0.8);
     background: rgb(var(--gray-50));
     color: rgb(var(--gray-500));
@@ -835,7 +835,7 @@ html.tn-locked {
     min-width: 22px;
     height: 22px;
     padding: 0 7px;
-    border-radius: 99px;
+    border-radius: calc(99px * var(--radius-scale, 1));
     background: rgb(var(--brand-500));
     color: #fff;
     font: 700 12px/22px Alexandria, sans-serif;
@@ -849,7 +849,7 @@ html.tn-locked {
     flex-direction: column;
     gap: 10px;
     padding: 14px;
-    border-radius: 18px;
+    border-radius: calc(18px * var(--radius-scale, 1));
     background: var(--tn-graphite);
     color: #fff;
     transition: transform 0.2s var(--tn-ease), box-shadow 0.2s;
@@ -887,7 +887,7 @@ html.tn-locked {
     place-items: center;
     width: 38px;
     height: 38px;
-    border-radius: 12px;
+    border-radius: calc(12px * var(--radius-scale, 1));
     background: rgb(255 255 255 / 0.1);
     box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
 }
@@ -915,7 +915,7 @@ html.tn-locked {
 .tn-popover {
     position: fixed;
     z-index: 60;
-    border-radius: 22px;
+    border-radius: calc(22px * var(--radius-scale, 1));
     background: rgb(var(--surface) / 0.97);
     backdrop-filter: blur(24px);
     border: 1px solid rgb(var(--gray-200) / 0.8);
@@ -943,7 +943,7 @@ html.tn-locked {
     width: 100%;
     min-height: 44px;
     padding: 8px 10px;
-    border-radius: 12px;
+    border-radius: calc(12px * var(--radius-scale, 1));
     text-align: start;
     font-size: 15px;
     color: rgb(var(--gray-700));
@@ -975,7 +975,7 @@ html.tn-locked {
     justify-content: center;
     gap: 5px;
     height: 34px;
-    border-radius: 9px;
+    border-radius: calc(9px * var(--radius-scale, 1));
     font-size: 13px;
     font-weight: 600;
     color: rgb(var(--gray-500));
@@ -998,7 +998,7 @@ html.tn-locked {
     gap: 12px;
     width: 100%;
     padding: 11px 12px;
-    border-radius: 14px;
+    border-radius: calc(14px * var(--radius-scale, 1));
     text-align: start;
     transition: background 0.15s;
 }
@@ -1012,7 +1012,7 @@ html.tn-locked {
     place-items: center;
     width: 38px;
     height: 38px;
-    border-radius: 12px;
+    border-radius: calc(12px * var(--radius-scale, 1));
     background: rgb(var(--gray-100));
     color: rgb(var(--gray-600));
     flex: none;
@@ -1068,7 +1068,7 @@ html.tn-locked {
     gap: 12px;
     width: 100%;
     padding: 9px 10px;
-    border-radius: 13px;
+    border-radius: calc(13px * var(--radius-scale, 1));
     text-align: start;
     font-size: 15px;
 }
@@ -1078,7 +1078,7 @@ html.tn-locked {
     place-items: center;
     width: 36px;
     height: 36px;
-    border-radius: 11px;
+    border-radius: calc(11px * var(--radius-scale, 1));
     background: rgb(var(--gray-100));
     color: rgb(var(--gray-500));
     flex: none;
@@ -1102,7 +1102,7 @@ html.tn-locked {
 .tn-palette-item mark {
     background: rgb(var(--brand-500) / 0.15);
     color: inherit;
-    border-radius: 4px;
+    border-radius: calc(4px * var(--radius-scale, 1));
     padding: 0 1px;
 }
 
@@ -1168,7 +1168,7 @@ html.tn-locked {
     width: 100%;
     min-height: 48px;
     padding: 0 12px;
-    border-radius: 14px;
+    border-radius: calc(14px * var(--radius-scale, 1));
     font-size: 15px;
     font-weight: 700;
     color: rgb(var(--gray-800));
@@ -1230,7 +1230,7 @@ html.tn-locked {
     gap: 10px;
     min-height: 44px;
     padding: 0 12px;
-    border-radius: 12px;
+    border-radius: calc(12px * var(--radius-scale, 1));
     font-size: 14.5px;
     color: rgb(var(--gray-700));
 }
@@ -1272,7 +1272,7 @@ html.tn-locked {
     gap: 8px;
     height: 44px;
     padding: 0 17px;
-    border-radius: 12px;
+    border-radius: calc(12px * var(--radius-scale, 1));
     font-size: 16px;
     font-weight: 700;
     color: rgb(var(--gray-900));
@@ -1314,7 +1314,7 @@ html.tn-locked {
     min-width: 19px;
     height: 19px;
     padding: 0 5px;
-    border-radius: 99px;
+    border-radius: calc(99px * var(--radius-scale, 1));
     background: rgb(var(--brand-500));
     color: #fff;
     font: 700 11px/19px Alexandria, sans-serif;
@@ -1336,7 +1336,7 @@ html.tn-locked {
 .tn-spot {
     position: fixed;
     z-index: 90;
-    border-radius: 16px;
+    border-radius: calc(16px * var(--radius-scale, 1));
     box-shadow: 0 0 0 9999px rgb(var(--graphite-950) / 0.6), 0 0 0 3px rgb(var(--brand-500));
     transition: all 0.4s var(--tn-ease);
     pointer-events: none;

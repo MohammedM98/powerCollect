@@ -1,15 +1,16 @@
+import BrandLogo from '@/Components/BrandLogo';
 import DevelopmentCredits from '@/Components/DevelopmentCredits';
+import { useBrand } from '@/hooks/useBrand';
+import maker from '../../brand/maker.json' with { type: 'json' };
 import './AppFooter.css';
-
-const COMPANY = 'شركة أبناء فارس أبو زايد للتجارة والاستيراد';
-const COMPANY_EN = 'Sons of Fares AbuZayed Trading & Import Company';
 
 export default function AppFooter({ compact = false }) {
     const year = new Date().getFullYear();
+    const brand = useBrand();
 
     if (compact) {
         return <footer className="af-login-footer" dir="rtl">
-            <p>© <span dir="ltr">{year}</span> {COMPANY}</p>
+            <p>© <span dir="ltr">{year}</span> {brand.name}</p>
             <DevelopmentCredits />
         </footer>;
     }
@@ -17,14 +18,14 @@ export default function AppFooter({ compact = false }) {
     return <footer className="af-footer" dir="rtl">
         <div className="af-footer__inner">
             <div className="af-footer__company">
-                <img className="af-footer__logo" src="/images/logo-af.webp" alt="شعار الشركة" width="89" height="52" />
+                <BrandLogo className="af-footer__logo" />
                 <div className="af-footer__rights">
-                    <p>© <span dir="ltr">{year}</span> جميع الحقوق محفوظة لدى <b>{COMPANY}</b></p>
-                    <p className="af-footer__english" dir="ltr">© {year} {COMPANY_EN}. All rights reserved.</p>
+                    <p>© <span dir="ltr">{year}</span> جميع الحقوق محفوظة لدى <b>{brand.name}</b></p>
+                    {brand.nameEnglish && <p className="af-footer__english" dir="ltr">© {year} {brand.nameEnglish}. All rights reserved.</p>}
                 </div>
             </div>
             <DevelopmentCredits />
         </div>
-        <p className="af-footer__wordmark" dir="ltr" aria-hidden="true">POWERCOLLECT</p>
+        <p className="af-footer__wordmark" dir="ltr" aria-hidden="true">{maker.product.toUpperCase()}</p>
     </footer>;
 }

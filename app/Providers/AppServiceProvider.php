@@ -4,12 +4,15 @@ namespace App\Providers;
 
 use App\Models\SmsSetting;
 use App\Models\SubscriptionTransaction;
+use App\Models\User;
 use App\Support\BranchClosingWorkflow;
 use App\Support\BranchDomainScope;
 use App\Support\BranchSettings;
+use App\Support\Brand;
 use App\Support\Messaging\HttpSmsGateway;
 use App\Support\Messaging\LogSmsGateway;
 use App\Support\Messaging\SmsGateway;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -22,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // The reading and closing schedules are read by every week and period calculation, so loaded once per request or job.
         $this->app->scoped(BranchSettings::class);
+
+        // The company's identity is read once per request: every page, its head and its printouts show it.
+        $this->app->scoped(Brand::class);
 
         // SMS go out through the provider set up in the dashboard while it is on, else the gateway named in
         // services.sms.driver; until one is set up they're only logged.
@@ -57,5 +63,8 @@ class AppServiceProvider extends ServiceProvider
             app(BranchClosingWorkflow::class)->releaseEditablePayment($payment);
         });
         Password::defaults(fn (): Password => Password::min(8));
+
+        // The company's identity and look: the Super Admin's, unless the server keeps it (powercollect.brand_editor_enabled).
+        Gate::define('manage-brand', fn (User $user): bool => $user->isSuperAdmin() && config('powercollect.brand_editor_enabled'));
     }
 }

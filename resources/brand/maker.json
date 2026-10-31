@@ -1,0 +1,17 @@
+{
+    "product": "PowerCollect",
+    "company": {
+        "name": null,
+        "nameEnglish": null,
+        "website": null,
+        "phone": null,
+        "email": null
+    },
+    "team": [
+        { "name": "محمد وديع حمدان", "phone": "+970595252308", "phoneLabel": "+970 59 525 2308" },
+        { "name": "يوسف مروان حمدان", "phone": "+972592737615", "phoneLabel": "+972 59 273 7615" },
+        { "name": "مصطفى سامح فرحات", "phone": "+972599245796", "phoneLabel": "+972 59 924 5796" },
+        { "name": "فرح هاني الناعوق" },
+        { "name": "انسام باسم ابو مسلم" }
+    ]
+}

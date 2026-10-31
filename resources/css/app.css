@@ -223,7 +223,7 @@
     padding: 20px 24px;
     border: 1px solid rgb(var(--gray-100));
     border-bottom: 0;
-    border-radius: 28px 28px 0 0;
+    border-radius: calc(28px * var(--radius-scale, 1)) calc(28px * var(--radius-scale, 1)) 0 0;
     background: rgb(var(--surface));
 }
 
@@ -233,7 +233,7 @@
     top: -1px;
     inset-inline: 28px;
     height: 2px;
-    border-radius: 2px;
+    border-radius: calc(2px * var(--radius-scale, 1));
     background: linear-gradient(90deg, transparent, rgb(var(--brand-500) / 0.55));
 }
 
@@ -280,7 +280,7 @@
     overflow-x: auto;
     padding: 4px 16px 12px;
     border: 1px solid rgb(var(--gray-100));
-    border-radius: 28px;
+    border-radius: calc(28px * var(--radius-scale, 1));
     background: rgb(var(--gray-50));
 }
 
@@ -355,7 +355,7 @@
 }
 
 .data-table-totals:not(:has(+ .data-table-pagination)) {
-    border-radius: 0 0 28px 28px;
+    border-radius: 0 0 calc(28px * var(--radius-scale, 1)) calc(28px * var(--radius-scale, 1));
 }
 
 .data-table-totals + .data-table-pagination {
@@ -366,7 +366,7 @@
     padding: 16px 24px 20px;
     border: 1px solid rgb(var(--gray-100));
     border-top: 0;
-    border-radius: 0 0 28px 28px;
+    border-radius: 0 0 calc(28px * var(--radius-scale, 1)) calc(28px * var(--radius-scale, 1));
     background: rgb(var(--surface));
 }
 
@@ -422,14 +422,14 @@
    keep the corners right even when a cell's own text runs left-to-right. */
 .data-table td:first-child {
     border-right: 1px solid rgb(var(--gray-100));
-    border-top-right-radius: 18px;
-    border-bottom-right-radius: 18px;
+    border-top-right-radius: calc(18px * var(--radius-scale, 1));
+    border-bottom-right-radius: calc(18px * var(--radius-scale, 1));
 }
 
 .data-table td:last-child {
     border-left: 1px solid rgb(var(--gray-100));
-    border-top-left-radius: 18px;
-    border-bottom-left-radius: 18px;
+    border-top-left-radius: calc(18px * var(--radius-scale, 1));
+    border-bottom-left-radius: calc(18px * var(--radius-scale, 1));
 }
 
 .data-table tbody tr:hover td,
@@ -502,7 +502,7 @@
         margin-top: 10px;
         padding: 14px;
         border: 1px solid rgb(var(--gray-100));
-        border-radius: 18px;
+        border-radius: calc(18px * var(--radius-scale, 1));
         background: rgb(var(--surface));
     }
 
@@ -921,19 +921,19 @@
     }
 
     :root[data-table-density='compact'] .data-table td:first-child {
-        border-top-right-radius: 12px;
-        border-bottom-right-radius: 12px;
+        border-top-right-radius: calc(12px * var(--radius-scale, 1));
+        border-bottom-right-radius: calc(12px * var(--radius-scale, 1));
     }
 
     :root[data-table-density='compact'] .data-table td:last-child {
-        border-top-left-radius: 12px;
-        border-bottom-left-radius: 12px;
+        border-top-left-radius: calc(12px * var(--radius-scale, 1));
+        border-bottom-left-radius: calc(12px * var(--radius-scale, 1));
     }
 
     :root[data-table-density='compact'] .row-identity-avatar {
         width: 30px;
         height: 30px;
-        border-radius: 10px;
+        border-radius: calc(10px * var(--radius-scale, 1));
         font-size: 11.5px;
     }
 
@@ -946,12 +946,12 @@
     :root[data-table-density='compact'] .row-action {
         width: 32px;
         height: 32px;
-        border-radius: 10px;
+        border-radius: calc(10px * var(--radius-scale, 1));
     }
 
     :root[data-table-density='compact'] .row-action-view {
         height: 32px;
-        border-radius: 10px;
+        border-radius: calc(10px * var(--radius-scale, 1));
     }
 }
 
@@ -978,7 +978,7 @@
     width: 38px;
     height: 38px;
     border: 1px solid rgb(var(--gray-200));
-    border-radius: 12px;
+    border-radius: calc(12px * var(--radius-scale, 1));
     background: rgb(var(--surface));
     color: rgb(var(--gray-700));
     box-shadow: 0 1px 2px rgb(var(--shadow-ink) / 0.05);
@@ -1106,7 +1106,7 @@
     align-items: stretch;
     height: 38px;
     overflow: hidden;
-    border-radius: 12px;
+    border-radius: calc(12px * var(--radius-scale, 1));
     background: linear-gradient(180deg, rgb(var(--graphite-700)), rgb(var(--graphite-900)));
     color: #fff;
     box-shadow:
@@ -1470,6 +1470,40 @@ html[data-modal-open] {
     }
 }
 
+/* Another company's logo (brand:import): shown as it is, rising into place. */
+.af-logo--custom {
+    aspect-ratio: auto;
+    perspective: none;
+}
+
+.af-logo--custom img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 240px;
+    object-fit: contain;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .af-logo--custom img {
+        animation: brand-logo-in 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+}
+
+@keyframes brand-logo-in {
+    from {
+        opacity: 0;
+        filter: blur(6px);
+        transform: translateY(10px) scale(0.94);
+    }
+}
+
+/* A company with a logo for dark backgrounds: each theme hides the logo that isn't its own (Components/BrandLogo.jsx). */
+.dark .brand-logo-on-light,
+html:not(.dark) .brand-logo-on-dark {
+    display: none !important;
+}
+
 .af-logo svg {
     position: absolute;
     inset: 0;
@@ -1764,7 +1798,7 @@ input[type='radio'] {
 .dashboard-row-link {
     margin-inline: -10px;
     padding-inline: 10px;
-    border-radius: 14px;
+    border-radius: calc(14px * var(--radius-scale, 1));
     transition:
         background-color 140ms ease,
         transform 140ms ease;
@@ -2041,4 +2075,229 @@ input[type='radio'] {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
+}
+
+/*
+ * ── The company's look ───────────────────────────────────────────────────
+ *
+ * Set on <html> as `data-ui-*` attributes from the company's identity (see
+ * app/Support/BrandDesign.php): the corners, faces, page width, buttons,
+ * cards and tables. The first option of each is the look these styles
+ * otherwise draw, so it needs no rule here. Kept last, with :root in front,
+ * so a choice wins over the default styles above it.
+ */
+:root {
+    --radius-scale: 1;
+    --font-body: 'IBM Plex Sans Arabic';
+    --font-heading: 'El Messiri';
+    --ui-content-width: 1720px;
+    --shadow-card: 0 1px 2px rgb(var(--shadow-ink) / 0.04), 0 14px 34px -18px rgb(var(--shadow-ink) / 0.18);
+    --shadow-lift: 0 2px 6px rgb(var(--shadow-ink) / 0.06), 0 24px 44px -20px rgb(var(--shadow-ink) / 0.32);
+    --shadow-glow: 0 10px 24px -12px rgb(var(--brand-solid) / 0.9);
+    --brand-fill: linear-gradient(180deg, rgb(var(--brand-hi)), rgb(var(--brand-lo)));
+}
+
+/* Corners: every rounded-* class and the tables' corners scale by this. */
+:root[data-ui-radius='soft'] {
+    --radius-scale: 0.5;
+}
+
+:root[data-ui-radius='sharp'] {
+    --radius-scale: 0.17;
+}
+
+:root[data-ui-radius='round'] {
+    --radius-scale: 1.4;
+}
+
+/* Faces (resources/css/fonts.css): each loads only once a page uses it. */
+:root[data-ui-body-font='alexandria'] {
+    --font-body: 'Alexandria';
+}
+
+:root[data-ui-body-font='cairo'] {
+    --font-body: 'Cairo';
+}
+
+:root[data-ui-body-font='tajawal'] {
+    --font-body: 'Tajawal';
+}
+
+:root[data-ui-body-font='kufi'] {
+    --font-body: 'Noto Kufi Arabic';
+}
+
+:root[data-ui-heading-font='alexandria'] {
+    --font-heading: 'Alexandria';
+}
+
+:root[data-ui-heading-font='plex'] {
+    --font-heading: 'IBM Plex Sans Arabic';
+}
+
+:root[data-ui-heading-font='cairo'] {
+    --font-heading: 'Cairo';
+}
+
+:root[data-ui-heading-font='tajawal'] {
+    --font-heading: 'Tajawal';
+}
+
+:root[data-ui-heading-font='kufi'] {
+    --font-heading: 'Noto Kufi Arabic';
+}
+
+/* How wide a page's content grows. */
+:root[data-ui-width='contained'] {
+    --ui-content-width: 1280px;
+}
+
+:root[data-ui-width='full'] {
+    --ui-content-width: 100%;
+}
+
+/*
+ * Buttons. The main action (PrimaryButton and anything filled with
+ * bg-brand-gradient) is solid, a soft tint or an outline instead of the
+ * glossy gradient; print and Excel buttons keep their own colours.
+ */
+:root:is([data-ui-buttons='solid'], [data-ui-buttons='soft'], [data-ui-buttons='outline']) {
+    --brand-fill: linear-gradient(rgb(var(--brand-500)), rgb(var(--brand-500)));
+    --shadow-glow: 0 1px 2px rgb(var(--shadow-ink) / 0.14);
+}
+
+:root[data-ui-buttons='solid'] .ui-btn-primary:not(.tone-print, .tone-excel):hover:not(:disabled) {
+    background: rgb(var(--brand-600));
+    filter: none;
+}
+
+:root[data-ui-buttons='soft'] .ui-btn-primary:not(.tone-print, .tone-excel) {
+    background: rgb(var(--brand-500) / 0.12);
+    color: rgb(var(--brand-700));
+    box-shadow: none;
+}
+
+:root[data-ui-buttons='soft'] .ui-btn-primary:not(.tone-print, .tone-excel):hover:not(:disabled) {
+    background: rgb(var(--brand-500) / 0.2);
+    filter: none;
+}
+
+:root[data-ui-buttons='outline'] .ui-btn-primary:not(.tone-print, .tone-excel) {
+    background: transparent;
+    color: rgb(var(--brand-600));
+    box-shadow: inset 0 0 0 1.5px rgb(var(--brand-500));
+}
+
+:root[data-ui-buttons='outline'] .ui-btn-primary:not(.tone-print, .tone-excel):hover:not(:disabled) {
+    background: rgb(var(--brand-500));
+    color: #fff;
+    filter: none;
+}
+
+:root:is([data-ui-buttons='solid'], [data-ui-buttons='soft']) .ui-btn-secondary:not(.tone-print, .tone-excel) {
+    border-color: transparent;
+    background: rgb(var(--gray-100));
+}
+
+:root:is([data-ui-buttons='solid'], [data-ui-buttons='soft']) .ui-btn-secondary:not(.tone-print, .tone-excel):hover:not(:disabled) {
+    background: rgb(var(--gray-200));
+}
+
+:root[data-ui-buttons='solid'] .ui-btn-danger {
+    border-color: transparent;
+    background: rgb(var(--danger-600));
+    color: #fff;
+}
+
+:root[data-ui-buttons='outline'] .ui-btn-danger {
+    background: transparent;
+}
+
+/* Cards and raised panels: their shadow, or a line in its place. */
+:root[data-ui-cards='outlined'] {
+    --shadow-card: 0 0 0 1px rgb(var(--gray-200));
+    --shadow-lift: 0 0 0 1px rgb(var(--gray-300)), 0 16px 32px -20px rgb(var(--shadow-ink) / 0.28);
+    --ui-shadow: var(--shadow-card);
+    --ui-pop: var(--shadow-lift);
+}
+
+:root[data-ui-cards='flat'] {
+    --shadow-card: none;
+    --shadow-lift: 0 0 0 1px rgb(var(--gray-200));
+    --ui-shadow: none;
+    --ui-pop: var(--shadow-lift);
+}
+
+:root[data-ui-cards='floating'] {
+    --shadow-card: 0 2px 6px rgb(var(--shadow-ink) / 0.05), 0 28px 56px -24px rgb(var(--shadow-ink) / 0.32);
+    --shadow-lift: 0 4px 10px rgb(var(--shadow-ink) / 0.08), 0 36px 64px -24px rgb(var(--shadow-ink) / 0.42);
+    --ui-shadow: var(--shadow-card);
+    --ui-pop: var(--shadow-lift);
+}
+
+/*
+ * Tables, wider than a phone (phones keep each row as a card): rows as
+ * cards is the look above; the others draw one flat sheet on the surface,
+ * striped, ruled as a grid, or with lines between rows only.
+ */
+@container (min-width: 641px) {
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table {
+        border-spacing: 0;
+    }
+
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table th {
+        padding-block: 12px;
+        border-bottom: 1px solid rgb(var(--gray-200));
+    }
+
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table td,
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table td:first-child,
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table td:last-child {
+        border-width: 0;
+        border-radius: 0;
+    }
+
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:hover,
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:focus-within {
+        filter: none;
+    }
+
+    :root[data-ui-tables='striped'] .data-table th,
+    :root[data-ui-tables='bordered'] .data-table th {
+        background: rgb(var(--gray-50));
+    }
+
+    :root[data-ui-tables='striped'] .data-table tbody tr:nth-child(even):not(.bg-brand-50) td {
+        background: rgb(var(--gray-50));
+    }
+
+    :root[data-ui-tables='bordered'] .data-table th,
+    :root[data-ui-tables='bordered'] .data-table td,
+    :root[data-ui-tables='bordered'] .data-table td:first-child,
+    :root[data-ui-tables='bordered'] .data-table td:last-child {
+        border: 1px solid rgb(var(--gray-200));
+    }
+
+    :root[data-ui-tables='bordered'] .data-table {
+        border-collapse: collapse;
+    }
+
+    :root[data-ui-tables='minimal'] .data-table th {
+        border-bottom-width: 2px;
+    }
+
+    :root[data-ui-tables='minimal'] .data-table td,
+    :root[data-ui-tables='minimal'] .data-table td:first-child,
+    :root[data-ui-tables='minimal'] .data-table td:last-child {
+        border-bottom: 1px solid rgb(var(--gray-100));
+        background: transparent;
+    }
+
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:not(.bg-brand-50):hover td {
+        background: rgb(var(--brand-50) / 0.6);
+    }
+}
+
+:root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table-container {
+    background: rgb(var(--surface));
 }

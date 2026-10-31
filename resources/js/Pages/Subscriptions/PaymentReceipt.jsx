@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { Head, usePage } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
-import { COMPANY_NAME } from '@/Layouts/GuestLayout';
+import { useBrand } from '@/hooks/useBrand';
 import { formatMoney, formatDate } from '@/lib/format';
 import { balanceOnPaper } from '@/lib/balance';
 
@@ -32,7 +32,7 @@ function ReceiptLine({ label, children, ltr = false }) {
  * cancelled.
  */
 export default function PaymentReceipt({ subscription, receipt, printedBy }) {
-    const { appName } = usePage().props;
+    const brand = useBrand();
     const [logoReady, setLogoReady] = useState(false);
     const printed = useRef(false);
     const transferredFrom = [receipt.senderName, receipt.senderBankName].filter(Boolean).join(' · ');
@@ -97,14 +97,14 @@ export default function PaymentReceipt({ subscription, receipt, printedBy }) {
                 <header className="flex items-start justify-between gap-4 border-b-2 border-brand-600 pb-3">
                     <div className="flex items-center gap-3">
                         <img
-                            src="/images/logo-af.webp"
-                            alt={appName}
+                            src={brand.logos.print}
+                            alt={`شعار ${brand.name}`}
                             className="h-12 w-auto"
                             onLoad={() => setLogoReady(true)}
                             onError={() => setLogoReady(true)}
                         />
                         <div>
-                            <div className="text-[15px] font-bold leading-snug">{COMPANY_NAME}</div>
+                            <div className="text-[15px] font-bold leading-snug">{brand.name}</div>
                             <div className="text-gray-600">{subscription.branchName}</div>
                         </div>
                     </div>
