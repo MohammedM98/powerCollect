@@ -62,11 +62,17 @@ class BrandDesign
         'bodyFont' => ['label' => 'خط النصوص', 'options' => [
             'plex' => 'IBM Plex Sans Arabic',
             'alexandria' => 'Alexandria',
+            'cairo' => 'Cairo',
+            'tajawal' => 'Tajawal',
+            'kufi' => 'Noto Kufi Arabic',
         ]],
         'headingFont' => ['label' => 'خط العناوين', 'options' => [
             'messiri' => 'El Messiri',
             'alexandria' => 'Alexandria',
             'plex' => 'IBM Plex Sans Arabic',
+            'cairo' => 'Cairo',
+            'tajawal' => 'Tajawal',
+            'kufi' => 'Noto Kufi Arabic',
         ]],
     ];
 

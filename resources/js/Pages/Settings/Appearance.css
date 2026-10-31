@@ -48,7 +48,7 @@
     gap: 5px;
     height: 84px;
     padding: 6px;
-    border-radius: 12px;
+    border-radius: calc(12px * var(--radius-scale, 1));
     background: rgb(var(--gray-50));
 }
 

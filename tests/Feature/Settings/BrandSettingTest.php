@@ -74,7 +74,7 @@ class BrandSettingTest extends TestCase
     public function test_saving_reaches_every_page_with_the_new_logo_colour_and_look(): void
     {
         $this->actingAs($this->superAdmin)
-            ->post(route('settings.appearance.update'), $this->form(['logos' => ['main' => UploadedFile::fake()->image('khalil.png', 120, 60)]]))
+            ->post(route('settings.appearance.update'), $this->form(['design' => ['bodyFont' => 'cairo', 'headingFont' => 'kufi'], 'logos' => ['main' => UploadedFile::fake()->image('khalil.png', 120, 60)]]))
             ->assertRedirect(route('settings.appearance.edit'))
             ->assertSessionHas('status', 'brand-updated');
 
@@ -93,6 +93,8 @@ class BrandSettingTest extends TestCase
         $response->assertSee('data-ui-navigation="sidebar"', false);
         $response->assertSee('data-ui-buttons="solid"', false);
         $response->assertSee('data-ui-density="compact"', false);
+        $response->assertSee('data-ui-body-font="cairo"', false);
+        $response->assertSee('data-ui-heading-font="kufi"', false);
         $response->assertSee('<style id="brand-colors">:root{--brand-50:', false);
     }
 

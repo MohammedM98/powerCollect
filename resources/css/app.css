@@ -2110,9 +2110,21 @@ input[type='radio'] {
     --radius-scale: 1.4;
 }
 
-/* Faces. */
+/* Faces (resources/css/fonts.css): each loads only once a page uses it. */
 :root[data-ui-body-font='alexandria'] {
     --font-body: 'Alexandria';
+}
+
+:root[data-ui-body-font='cairo'] {
+    --font-body: 'Cairo';
+}
+
+:root[data-ui-body-font='tajawal'] {
+    --font-body: 'Tajawal';
+}
+
+:root[data-ui-body-font='kufi'] {
+    --font-body: 'Noto Kufi Arabic';
 }
 
 :root[data-ui-heading-font='alexandria'] {
@@ -2121,6 +2133,18 @@ input[type='radio'] {
 
 :root[data-ui-heading-font='plex'] {
     --font-heading: 'IBM Plex Sans Arabic';
+}
+
+:root[data-ui-heading-font='cairo'] {
+    --font-heading: 'Cairo';
+}
+
+:root[data-ui-heading-font='tajawal'] {
+    --font-heading: 'Tajawal';
+}
+
+:root[data-ui-heading-font='kufi'] {
+    --font-heading: 'Noto Kufi Arabic';
 }
 
 /* How wide a page's content grows. */
