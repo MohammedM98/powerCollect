@@ -182,7 +182,7 @@
 /* The pinned bar: what the sheet is filtered to, kept in sight while the filters scroll away (ReadingContextBar). */
 .re-context { position: fixed; inset-inline: 0; z-index: 30; padding-inline: var(--tn-gutter, 16px); pointer-events: none; opacity: 0; transform: translateY(-8px); transition: opacity .18s ease, transform .18s ease; }
 .re-context.is-shown { opacity: 1; transform: none; }
-.re-context-bar { pointer-events: auto; max-width: calc(1720px - 2 * var(--tn-gutter, 16px)); margin-inline: auto; display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 14px; background: var(--re-surface); border: 1px solid var(--re-line); border-radius: 18px; box-shadow: 0 14px 34px -16px rgb(var(--shadow-ink) / 0.333); }
+.re-context-bar { pointer-events: auto; max-width: calc(var(--ui-content-width, 1720px) - 2 * var(--tn-gutter, 16px)); margin-inline: auto; display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 14px; background: var(--re-surface); border: 1px solid var(--re-line); border-radius: 18px; box-shadow: 0 14px 34px -16px rgb(var(--shadow-ink) / 0.333); }
 .re-context-week { display: inline-flex; align-items: center; gap: 6px; flex: none; padding: 5px 10px; border-radius: 12px; background: var(--re-sunken); font: 600 13px Alexandria, sans-serif; color: var(--re-ink2); }
 .re-context-filters { display: flex; align-items: center; gap: 8px; flex: none; }
 .re-context-field { display: flex; align-items: center; gap: 6px; width: 190px; }

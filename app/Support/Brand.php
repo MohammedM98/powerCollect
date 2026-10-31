@@ -18,6 +18,10 @@ use JsonException;
  * exported with `brand:export` and put back to the default with
  * `brand:reset`. Until one is imported the default is used.
  *
+ * The company's identity is not the maker's: who made the application (its
+ * product name, company and team, resources/brand/maker.json) is part of the
+ * code, the same on every copy, and nothing here changes it.
+ *
  * The imported file is kept on the local disk and its logos on the public
  * disk under brand/, both of which the nightly backup copies. A logo is
  * named after its content, so a new logo never shows from an old cache.
@@ -51,7 +55,7 @@ class Brand
     /**
      * The company's identity: the imported one, or the default until one is.
      *
-     * @return array{version: int, company: array{name: string, nameEnglish: ?string, shortName: ?string, tagline: ?string}, logos: array<string, ?string>, colors: array{primary: ?string, print: ?string}}
+     * @return array{version: int, company: array{name: string, nameEnglish: ?string, shortName: ?string, tagline: ?string}, logos: array<string, ?string>, colors: array{primary: ?string, print: ?string}, design: array<string, string>}
      */
     public function profile(): array
     {
@@ -81,7 +85,7 @@ class Brand
     /**
      * What every page gets: the names, each logo's address and the colour printouts are drawn in.
      *
-     * @return array{name: string, nameEnglish: ?string, shortName: string, tagline: ?string, logos: array<string, string>, animatedLogo: bool, printColor: string}
+     * @return array{name: string, nameEnglish: ?string, shortName: string, tagline: ?string, logos: array<string, string>, animatedLogo: bool, printColor: string, primaryColor: ?string, design: array<string, string>}
      */
     public function forPage(): array
     {
@@ -96,6 +100,8 @@ class Brand
             // The sign-in screen draws the default logo in with its own animation; another company's logo fades in.
             'animatedLogo' => $profile['logos']['main'] === self::defaults()['logos']['main'],
             'printColor' => $this->printColor(),
+            'primaryColor' => $profile['colors']['primary'],
+            'design' => $profile['design'],
         ];
     }
 
@@ -147,6 +153,16 @@ class Brand
     }
 
     /**
+     * The company's look as attributes for <html> (see BrandDesign), escaped.
+     */
+    public function htmlAttributes(): string
+    {
+        return collect(BrandDesign::htmlAttributes($this->profile()['design']))
+            ->map(fn (string $value, string $name): string => $name.'="'.e($value).'"')
+            ->implode(' ');
+    }
+
+    /**
      * Make the file the company's identity. A logo is given as a `data:` URL,
      * as a path relative to `$directory` (where the file was read from), or as
      * an address under public/ starting with "/". Returns notes worth telling
@@ -172,6 +188,7 @@ class Brand
             'colors' => ['nullable', 'array'],
             'colors.primary' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'colors.print' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            ...BrandDesign::rules('design'),
         ])->validate();
 
         $profile = $this->normalize($validated);
@@ -258,6 +275,7 @@ class Brand
                 'primary' => BrandPalette::isHex($profile['colors']['primary'] ?? null) ? strtoupper($profile['colors']['primary']) : null,
                 'print' => BrandPalette::isHex($profile['colors']['print'] ?? null) ? strtoupper($profile['colors']['print']) : null,
             ],
+            'design' => BrandDesign::normalize(is_array($profile['design'] ?? null) ? $profile['design'] : []),
         ];
     }
 
@@ -270,6 +288,11 @@ class Brand
     private function storeLogo(string $variant, string $source, ?string $directory): string
     {
         $fail = fn (string $message) => throw ValidationException::withMessages(["logos.{$variant}" => $message]);
+
+        // A logo kept from before (the settings screen sends back the ones it didn't change).
+        if ($source === ($this->profile()['logos'][$variant] ?? null) && ! str_starts_with($source, 'data:')) {
+            return $source;
+        }
 
         if (str_starts_with($source, '/')) {
             $file = public_path(ltrim($source, '/'));

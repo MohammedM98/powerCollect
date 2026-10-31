@@ -3,6 +3,8 @@ import { router, usePage } from '@inertiajs/react';
 import TopBar from '@/Components/TopBar/TopBar';
 import BranchViewSwitcher from '@/Components/BranchViewSwitcher';
 import NavigationDrawer from '@/Components/TopBar/NavigationDrawer';
+import SideNavigation from '@/Components/SideNavigation/SideNavigation';
+import { useBrandDocument } from '@/hooks/useBrand';
 import { Breadcrumb, SectionPages } from '@/Components/TopBar/PageTrail';
 import { handlePaletteShortcut, pageWindowOpen } from '@/Components/TopBar/shortcuts';
 import { useTheme } from '@/hooks/useTheme';
@@ -55,6 +57,9 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
         }
     }, [branchKey]);
     const { dark, changePreference } = useTheme();
+    // The company's look puts the sections in the floating top bar, or at the side on wide screens (`sidebar`, `rail`).
+    const navigation = useBrandDocument().design?.navigation ?? 'topbar';
+    const sideNavigation = navigation === 'sidebar' || navigation === 'rail';
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [paletteOpen, setPaletteOpen] = useState(false);
     const [shortcutsOpen, setShortcutsOpen] = useState(false);
@@ -208,7 +213,9 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
                 تخطي إلى المحتوى
             </a>
 
-            <TopBar
+            {sideNavigation && <SideNavigation key={navigation} groups={groups} badges={badges} startsCollapsed={navigation === 'rail'} onOpenPalette={() => onPaletteOpenChange(true)} />}
+
+            <div className={sideNavigation ? 'sn-mobile-only' : 'contents'}><TopBar
                 groups={groups}
                 badges={badges}
                 where={pastTitle && trail ? { section: trail.group?.shortLabel, page: trail.link.label, scope } : null}
@@ -221,9 +228,11 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
                 }}
                 onShowShortcuts={() => setShortcutsOpen(true)}
                 onStartTour={() => setTourOpen(true)}
-            />
+            /></div>
 
-            <main id="main-content" tabIndex={-1} className="mx-auto max-w-[1720px] px-[var(--tn-gutter)] pb-16 pt-8 outline-none">
+            <div className="sn-content">
+
+            <main id="main-content" tabIndex={-1} className="mx-auto max-w-[var(--ui-content-width)] px-[var(--tn-gutter)] pb-16 pt-8 outline-none">
                 <BranchViewSwitcher />
                 <Breadcrumb trail={trail} />
                 <SectionPages trail={trail} url={url} badges={badges} />
@@ -232,6 +241,7 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
                 {children}
             </main>
             <AppFooter />
+            </div>
 
             <NavigationDrawer
                 open={drawerOpen}

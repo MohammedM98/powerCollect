@@ -128,6 +128,7 @@ class HandleInertiaRequests extends Middleware
                 'customizePrintouts' => $user->hasAnyPermission(PermissionKey::CustomizePrintouts, PermissionKey::ManagePrintTemplates),
                 'viewCompanyForms' => $user->can('viewAny', CompanyFormTemplate::class),
                 'manageSmsSettings' => $user->can('manage', SmsSetting::class),
+                'manageBrand' => $user->can('manage-brand'),
                 'managePaymentSettings' => $user->can('manage', CurrencyRate::class) || $user->can('manageAny', ClosingSetting::class),
             ] : null,
             // A list opened for printing gets the company's print templates for it.

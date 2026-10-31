@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Link, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import BrandLogo from '@/Components/BrandLogo';
-import { shouldPrefetchPage, HOME_LINK, currentGroup, isActiveLink, lockedLinkProps, sectionLinks } from '@/lib/navigation';
-import { Avatar, LogoutForm } from './AccountMenu';
-import { LockMark } from './MegaMenu';
-import ThemeSegments from './ThemeSegments';
+import { currentGroup } from '@/lib/navigation';
+import NavigationMenu, { NavigationAccount } from './NavigationMenu';
 import { shortAppName } from './TopBar';
 
 /**
@@ -102,8 +100,6 @@ export default function NavigationDrawer({ open, groups, badges, onClose, onOpen
         return null;
     }
 
-    const onHome = isActiveLink(HOME_LINK, url);
-
     return createPortal(
         <div className={`tn-drawer ${closing ? 'is-closing' : ''}`} dir="rtl">
             <div className="tn-scrim" onClick={onClose} />
@@ -118,66 +114,11 @@ export default function NavigationDrawer({ open, groups, badges, onClose, onOpen
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-3">
-                    <button type="button" onClick={onOpenPalette} className="mb-3 flex h-12 w-full items-center gap-2.5 rounded-2xl border border-gray-200 bg-gray-50 px-3.5 text-[15px] text-gray-500">
-                        <Icon name="search" className="h-5 w-5" />
-                        {props.can?.recordPayments && props.can?.viewSubscriptions ? 'ابحث عن صفحة أو مشترك…' : 'ابحث عن صفحة أو أمر…'}
-                    </button>
-                    <div className="grid gap-1">
-                        <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-drawer-group" data-current={onHome || undefined} aria-current={onHome ? 'page' : undefined}>
-                            <Icon name={HOME_LINK.icon} className="tn-section-icon" />
-                            {HOME_LINK.label}
-                        </Link>
-                        {groups.map((group) => {
-                            const isOpen = expanded === group.id;
-                            const badge = group.links.reduce((sum, link) => sum + (badges[link.href] > 0 ? badges[link.href] : 0), 0);
-
-                            return (
-                                <div key={group.id}>
-                                    <button
-                                        type="button"
-                                        className="tn-drawer-group"
-                                        aria-expanded={isOpen}
-                                        onClick={() => setExpanded(isOpen ? null : group.id)}
-                                    >
-                                        <Icon name={group.icon} className="tn-section-icon" />
-                                        {group.label}
-                                        {badge > 0 && <span className="rounded-full bg-brand-500 px-1.5 text-[11px] font-bold leading-[18px] text-white">{badge}</span>}
-                                        <Icon name="chevron-down" className="tn-chevron" />
-                                    </button>
-                                    <div className={`tn-drawer-pages ${isOpen ? 'is-open' : ''}`} inert={!isOpen}>
-                                        <div>
-                                            <div className="grid gap-0.5 py-1 ps-3">
-                                                {sectionLinks(group).map((link) => (
-                                                    <Link key={link.href} href={link.href} prefetch={!link.locked && shouldPrefetchPage(link.href)} className="tn-drawer-link" aria-current={isActiveLink(link, url) ? 'page' : undefined} {...lockedLinkProps(link)}>
-                                                        <Icon name={link.icon} />
-                                                        <span className="flex-1">{link.label}</span>
-                                                        {link.locked && <LockMark />}
-                                                        {badges[link.href] > 0 && <span className="rounded-full bg-brand-500 px-1.5 text-[11px] font-bold leading-[18px] text-white">{badges[link.href]}</span>}
-                                                    </Link>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                    <NavigationMenu groups={groups} badges={badges} expanded={expanded} onExpandedChange={setExpanded} onOpenPalette={onOpenPalette} />
                 </div>
 
                 <div className="border-t border-gray-200/70 p-3">
-                    <div className="mb-2 flex items-center gap-3 rounded-2xl bg-gray-50 p-2.5">
-                        <Link href="/profile" prefetch className="flex min-w-0 flex-1 items-center gap-3" aria-label={`${user?.name ?? ''}، الملف الشخصي`}>
-                            <Avatar name={user?.name} />
-                            <span className="min-w-0 flex-1">
-                                <b dir="auto" className="block truncate text-[14.5px]">{user?.name}</b>
-                                <small dir="auto" className="block text-[12.5px] text-gray-500">{user?.roleLabel}</small>
-                            </span>
-                        </Link>
-                        <LogoutForm>
-                            <button type="submit" className="tn-tool" aria-label="تسجيل الخروج"><Icon name="logout" /></button>
-                        </LogoutForm>
-                    </div>
-                    <ThemeSegments />
+                    <NavigationAccount />
                 </div>
             </aside>
         </div>,

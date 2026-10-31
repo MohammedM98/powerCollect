@@ -2,7 +2,7 @@ import AnimatedLogo from '@/Components/AnimatedLogo';
 import Icon from '@/Components/Icon';
 import ThemeToggle from '@/Components/ThemeToggle';
 import AppFooter from '@/Components/AppFooter';
-import { useBrand } from '@/hooks/useBrand';
+import { useBrandDocument } from '@/hooks/useBrand';
 
 const FEATURES = [
     { icon: 'users', label: 'إدارة المشتركين' },
@@ -16,7 +16,7 @@ const FEATURES = [
  * form shows, with the logo above it.
  */
 export default function GuestLayout({ children }) {
-    const brand = useBrand();
+    const brand = useBrandDocument();
 
     return (
         <div className="grid min-h-screen bg-gray-50 text-gray-900 lg:grid-cols-2">

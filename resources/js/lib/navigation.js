@@ -42,6 +42,7 @@ export const SETTINGS_LINKS = [
     { href: '/settings/reading-schedule', label: 'مواعيد القراءات', description: 'أيام فتح وإغلاق دورة القراءة', icon: 'calendar', can: 'manageReadingSchedule' },
     { href: '/settings/print-templates', label: 'قوالب الطباعة', description: 'شكل الوصل والكشوفات المطبوعة', icon: 'printer', can: 'managePrintTemplates' },
     { href: '/settings/sms', label: 'إعدادات الرسائل', description: 'ربط مزوّد الرسائل القصيرة SMS', icon: 'send', can: 'manageSmsSettings' },
+    { href: '/settings/appearance', label: 'الهوية والمظهر', description: 'شعار الشركة واسمها وألوانها وشكل الواجهة', icon: 'sparkles', can: 'manageBrand' },
 ];
 
 const linksByHref = new Map([...MAIN_LINKS, ...SETTINGS_LINKS].map((link) => [link.href, link]));
@@ -65,7 +66,7 @@ export const NAVIGATION_GROUPS = [
     { id: 'finance', label: 'المالية والتحصيل', shortLabel: 'المالية', icon: 'wallet', description: 'الدفعات والصناديق والإغلاق', hrefs: ['/payments', '/payments/summary', '/payments/cash-boxes', '/ledger', '/receivables'] },
     { id: 'reports', label: 'التقارير والرقابة', shortLabel: 'التقارير', icon: 'trend', description: 'التقارير والأداء والتدقيق', hrefs: ['/reports', '/company-forms', '/branch-performance', '/transaction-audit'] },
     { id: 'infrastructure', label: 'الفروع والشبكة', shortLabel: 'الشبكة', icon: 'bolt', description: 'الفروع والبنية الكهربائية', hrefs: ['/branches', '/governorates', '/circuit-breakers'] },
-    { id: 'administration', label: 'الإدارة والإعدادات', shortLabel: 'الإدارة', icon: 'cog', description: 'المستخدمون والصلاحيات والإعدادات', hrefs: ['/users', '/settings/permissions', '/tariffs', '/settings/payments', '/settings/reading-schedule', '/settings/print-templates', '/settings/sms', '/settings/mobile-app'], featured: ['/users', '/settings/permissions'] },
+    { id: 'administration', label: 'الإدارة والإعدادات', shortLabel: 'الإدارة', icon: 'cog', description: 'المستخدمون والصلاحيات والإعدادات', hrefs: ['/users', '/settings/permissions', '/tariffs', '/settings/payments', '/settings/reading-schedule', '/settings/print-templates', '/settings/sms', '/settings/appearance', '/settings/mobile-app'], featured: ['/users', '/settings/permissions'] },
 ];
 
 /**

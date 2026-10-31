@@ -95,6 +95,18 @@ class BrandTest extends TestCase
         $response->assertSee('--ui-danger:rgb(var(--danger-600))', false);
     }
 
+    public function test_a_file_naming_only_a_preset_gets_its_whole_look_with_any_choice_it_changes(): void
+    {
+        $this->artisan('brand:import', ['file' => $this->identityFile(['design' => ['preset' => 'soft', 'tables' => 'bordered']])])->assertSuccessful();
+
+        $this->get(route('login'))->assertInertia(fn ($page) => $page
+            ->where('brand.design.navigation', 'rail')
+            ->where('brand.design.radius', 'round')
+            ->where('brand.design.buttons', 'soft')
+            ->where('brand.design.tables', 'bordered'))
+            ->assertSee('data-ui-navigation="rail"', false);
+    }
+
     public function test_company_forms_start_with_the_imported_company_on_their_letterhead(): void
     {
         $this->artisan('brand:import', ['file' => $this->identityFile()])->assertSuccessful();

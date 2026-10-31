@@ -15,5 +15,17 @@
     "colors": {
         "primary": "#A51D26",
         "print": "#A51D26"
+    },
+    "design": {
+        "preset": "classic",
+        "navigation": "topbar",
+        "width": "wide",
+        "radius": "rounded",
+        "buttons": "gradient",
+        "cards": "elevated",
+        "tables": "cards",
+        "density": "comfortable",
+        "bodyFont": "plex",
+        "headingFont": "messiri"
     }
 }

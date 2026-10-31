@@ -12,6 +12,12 @@ const scale = (name, steps) => Object.fromEntries(steps.map((step) => [step, var
 
 const fullScale = (name) => scale(name, [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]);
 
+/**
+ * A corner that follows the company's corner style (`--radius-scale`, set by
+ * `data-ui-radius` on <html>, see the design section of app.css).
+ */
+const corner = (size) => `calc(${size} * var(--radius-scale, 1))`;
+
 /** @type {import('tailwindcss').Config} */
 export default {
     darkMode: 'class',
@@ -26,8 +32,9 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['"IBM Plex Sans Arabic"', ...defaultTheme.fontFamily.sans],
-                luxe: ['"El Messiri"', '"IBM Plex Sans Arabic"', ...defaultTheme.fontFamily.serif],
+                // The company's text and heading faces (`data-ui-body-font`, `data-ui-heading-font`).
+                sans: ['var(--font-body, "IBM Plex Sans Arabic")', '"IBM Plex Sans Arabic"', ...defaultTheme.fontFamily.sans],
+                luxe: ['var(--font-heading, "El Messiri")', '"IBM Plex Sans Arabic"', ...defaultTheme.fontFamily.serif],
                 display: ['Alexandria', '"IBM Plex Sans Arabic"', ...defaultTheme.fontFamily.sans],
             },
             /*
@@ -78,20 +85,28 @@ export default {
                 orange: fullScale('orange'),
             },
             borderRadius: {
-                control: '12px',
-                row: '18px',
-                card: '24px',
-                panel: '28px',
-                hero: '32px',
+                sm: corner('0.125rem'),
+                DEFAULT: corner('0.25rem'),
+                md: corner('0.375rem'),
+                lg: corner('0.5rem'),
+                xl: corner('0.75rem'),
+                '2xl': corner('1rem'),
+                '3xl': corner('1.5rem'),
+                control: corner('12px'),
+                row: corner('18px'),
+                card: corner('24px'),
+                panel: corner('28px'),
+                hero: corner('32px'),
             },
+            // Cards, raised panels and the main action's glow follow the company's card and button styles.
             boxShadow: {
-                card: '0 1px 2px rgb(var(--shadow-ink) / 0.04), 0 14px 34px -18px rgb(var(--shadow-ink) / 0.18)',
-                lift: '0 2px 6px rgb(var(--shadow-ink) / 0.06), 0 24px 44px -20px rgb(var(--shadow-ink) / 0.32)',
-                glow: '0 10px 24px -12px rgb(var(--brand-solid) / 0.9)',
+                card: 'var(--shadow-card)',
+                lift: 'var(--shadow-lift)',
+                glow: 'var(--shadow-glow)',
             },
             backgroundImage: {
                 spectrum: 'var(--spectrum)',
-                'brand-gradient': 'linear-gradient(180deg, rgb(var(--brand-hi)), rgb(var(--brand-lo)))',
+                'brand-gradient': 'var(--brand-fill)',
                 'graphite-gradient': 'linear-gradient(135deg, rgb(var(--graphite-700)), rgb(var(--graphite-800)) 60%, rgb(var(--graphite-900)))',
             },
         },

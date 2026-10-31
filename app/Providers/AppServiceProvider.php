@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\SmsSetting;
 use App\Models\SubscriptionTransaction;
+use App\Models\User;
 use App\Support\BranchClosingWorkflow;
 use App\Support\BranchDomainScope;
 use App\Support\BranchSettings;
@@ -11,6 +12,7 @@ use App\Support\Brand;
 use App\Support\Messaging\HttpSmsGateway;
 use App\Support\Messaging\LogSmsGateway;
 use App\Support\Messaging\SmsGateway;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -61,5 +63,8 @@ class AppServiceProvider extends ServiceProvider
             app(BranchClosingWorkflow::class)->releaseEditablePayment($payment);
         });
         Password::defaults(fn (): Password => Password::min(8));
+
+        // The company's identity and look: the Super Admin's, unless the server keeps it (powercollect.brand_editor_enabled).
+        Gate::define('manage-brand', fn (User $user): bool => $user->isSuperAdmin() && config('powercollect.brand_editor_enabled'));
     }
 }

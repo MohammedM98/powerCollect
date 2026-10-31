@@ -1,6 +1,7 @@
 import BrandLogo from '@/Components/BrandLogo';
 import DevelopmentCredits from '@/Components/DevelopmentCredits';
 import { useBrand } from '@/hooks/useBrand';
+import maker from '../../brand/maker.json' with { type: 'json' };
 import './AppFooter.css';
 
 export default function AppFooter({ compact = false }) {
@@ -25,6 +26,6 @@ export default function AppFooter({ compact = false }) {
             </div>
             <DevelopmentCredits />
         </div>
-        <p className="af-footer__wordmark" dir="ltr" aria-hidden="true">POWERCOLLECT</p>
+        <p className="af-footer__wordmark" dir="ltr" aria-hidden="true">{maker.product.toUpperCase()}</p>
     </footer>;
 }
