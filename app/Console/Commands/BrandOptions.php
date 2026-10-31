@@ -36,6 +36,18 @@ class BrandOptions extends Command
         $this->components->twoColumnDetail('design.neutral', 'the tone of the greys: '.implode(' · ', ['graphite', ...array_keys(BrandPalette::NEUTRALS)]));
 
         $this->newLine();
+        $this->components->info('Exact values ("tokens": {"name": number}), each within its range; they win over the choices above:');
+        foreach (BrandDesign::TOKENS as $key => $token) {
+            $this->components->twoColumnDetail("<fg=green>{$key}</> {$token['label']}", "{$token['min']} – {$token['max']} {$token['unit']}");
+        }
+
+        $this->newLine();
+        $this->components->info('Your own CSS ("customCss": "…"), last of all: anything the choices do not cover.');
+        $this->line('  It may use .ui-btn-primary, .ui-btn-secondary, .ui-btn-danger, .ui-switch, .ui-badge, .ui-page-title, .shadow-card,');
+        $this->line('  .data-table, .data-table-toolbar, .tn-glass, .sn-panel and every [data-ui-*] attribute on <html>. Links to other sites,');
+        $this->line('  @import and escapes are removed; url() may hold data: images only.');
+
+        $this->newLine();
         $this->line('  A complete example: resources/brand/example.json. Import with: php artisan brand:import <file>');
 
         return self::SUCCESS;

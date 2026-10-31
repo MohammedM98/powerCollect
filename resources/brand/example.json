@@ -33,12 +33,37 @@
         "tables": "cards",
         "tableHeader": "brand",
         "density": "comfortable",
+        "tableToolbar": "card",
+        "searchStyle": "default",
         "inputs": "outlined",
+        "inputFocus": "glow",
+        "checkboxes": "square",
+        "switches": "brand",
         "badges": "solid",
         "pageTitle": "underline",
         "textSize": "normal",
         "bodyFont": "plex",
         "headingFont": "messiri",
-        "motion": "full"
-    }
+        "motion": "full",
+        "buttonHover": "lift",
+        "buttonPress": "sink",
+        "buttonSize": "regular",
+        "cardHover": "lift",
+        "rowHover": "lift",
+        "focusRing": "dark",
+        "navHighlight": "brand"
+    },
+    "tokens": {
+        "radiusScale": null,
+        "fontScale": null,
+        "contentWidth": 1600,
+        "buttonRadius": 10,
+        "buttonHeight": 42,
+        "buttonPaddingX": 18,
+        "buttonFontWeight": 700,
+        "hoverLift": 3,
+        "shadowStrength": 1.2,
+        "transitionMs": 200
+    },
+    "customCss": ".ui-page-title { letter-spacing: 0.01em; }\n.ui-btn-primary { text-transform: none; }"
 }

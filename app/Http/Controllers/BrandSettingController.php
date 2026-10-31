@@ -69,6 +69,9 @@ class BrandSettingController extends Controller
             'company' => $request->validated('company'),
             'colors' => $request->validated('colors', []),
             'design' => $request->validated('design', []),
+            // The screen sets the choices; the exact values and the company's own CSS come only from the file, and stay.
+            'tokens' => $brand->profile()['tokens'],
+            'customCss' => $brand->profile()['customCss'],
             'logos' => $logos,
         ]);
 

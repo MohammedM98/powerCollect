@@ -33,12 +33,37 @@
         "tables": "cards",
         "tableHeader": "plain",
         "density": "comfortable",
+        "tableToolbar": "card",
+        "searchStyle": "default",
         "inputs": "outlined",
+        "inputFocus": "ring",
+        "checkboxes": "square",
+        "switches": "pill",
         "badges": "soft",
         "pageTitle": "plain",
         "textSize": "normal",
         "bodyFont": "plex",
         "headingFont": "messiri",
-        "motion": "full"
-    }
+        "motion": "full",
+        "buttonHover": "brighten",
+        "buttonPress": "sink",
+        "buttonSize": "regular",
+        "cardHover": "none",
+        "rowHover": "lift",
+        "focusRing": "dark",
+        "navHighlight": "pill"
+    },
+    "tokens": {
+        "radiusScale": null,
+        "fontScale": null,
+        "contentWidth": null,
+        "buttonRadius": null,
+        "buttonHeight": null,
+        "buttonPaddingX": null,
+        "buttonFontWeight": null,
+        "hoverLift": null,
+        "shadowStrength": null,
+        "transitionMs": null
+    },
+    "customCss": null
 }

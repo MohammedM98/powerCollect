@@ -156,4 +156,23 @@ class BrandSettingTest extends TestCase
 
         $this->assertFalse(app(Brand::class)->isImported());
     }
+
+    public function test_saving_from_the_screen_keeps_the_exact_values_and_css_only_the_file_sets(): void
+    {
+        $this->actingAs($this->superAdmin)->post(route('settings.appearance.import'), ['file' => UploadedFile::fake()->createWithContent('brand.json', json_encode([
+            'version' => 1,
+            'company' => ['name' => 'شركة خليل'],
+            'logos' => ['main' => '/images/logo-af.webp'],
+            'tokens' => ['buttonRadius' => 18],
+            'customCss' => '.ui-page-title{color:red}',
+        ]))])->assertSessionHasNoErrors();
+        $this->app->forgetScopedInstances();
+
+        $this->actingAs($this->superAdmin)->post(route('settings.appearance.update'), $this->form())->assertSessionHasNoErrors();
+
+        $profile = app(Brand::class)->profile();
+        $this->assertSame(18, $profile['tokens']['buttonRadius']);
+        $this->assertSame('.ui-page-title{color:red}', $profile['customCss']);
+        $this->assertSame('شركة خليل للكهرباء', $profile['company']['name']);
+    }
 }
