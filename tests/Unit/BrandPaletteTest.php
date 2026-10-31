@@ -58,4 +58,23 @@ class BrandPaletteTest extends TestCase
 
         return $values;
     }
+
+    public function test_a_neutral_tone_keeps_the_greys_spacing_in_both_themes(): void
+    {
+        $slate = BrandPalette::neutral('slate');
+        $plain = BrandPalette::neutral('neutral');
+
+        $this->assertSame([50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950], array_keys($slate['light']));
+        $this->assertSame($this->sorted(array_map(fn (string $rgb): float => BrandPalette::contrastWithWhite($this->hex($rgb)), $slate['light']), ascending: true), array_map(fn (string $rgb): float => BrandPalette::contrastWithWhite($this->hex($rgb)), $slate['light']));
+        foreach ($plain['dark'] as $rgb) {
+            [$red, $green, $blue] = explode(' ', $rgb);
+            $this->assertTrue($red === $green && $green === $blue, "A neutral grey has no tint: {$rgb}");
+        }
+    }
+
+    public function test_a_status_colour_is_kept_as_its_500(): void
+    {
+        $this->assertSame('5 150 105', BrandPalette::statusScale('#059669')[500]);
+        $this->assertCount(11, BrandPalette::statusScale('#059669'));
+    }
 }

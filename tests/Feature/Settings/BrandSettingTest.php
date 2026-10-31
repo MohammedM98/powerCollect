@@ -27,6 +27,7 @@ class BrandSettingTest extends TestCase
 
         Storage::fake('local');
         Storage::fake('public');
+        config(['powercollect.brand_editor_enabled' => true]);
         $this->superAdmin = User::factory()->superAdmin()->create();
     }
 

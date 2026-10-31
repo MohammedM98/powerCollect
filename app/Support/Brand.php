@@ -34,6 +34,12 @@ class Brand
     /** The logos a company has: the main one, one for dark backgrounds, the browser's icon and one for printing. */
     public const LOGOS = ['main', 'light', 'icon', 'print'];
 
+    /** The status colours a company may set: each replaces theme.css's scale of that name. */
+    public const STATUSES = ['success', 'warning', 'danger', 'info'];
+
+    /** The navigation drawn dark in both themes (theme.css, section 7), whose greys follow the neutral tone's dark ones. */
+    private const DARK_PANELS = ":root:is([data-ui-nav-style='dark'],[data-ui-nav-style='brand']) :is(.tn-glass,.sn-panel)";
+
     /** The colour theme.css is drawn in; a company in it needs no shades of its own. */
     public const THEME_PRIMARY = '#A51D26';
 
@@ -55,7 +61,7 @@ class Brand
     /**
      * The company's identity: the imported one, or the default until one is.
      *
-     * @return array{version: int, company: array{name: string, nameEnglish: ?string, shortName: ?string, tagline: ?string}, logos: array<string, ?string>, colors: array{primary: ?string, print: ?string}, design: array<string, string>}
+     * @return array{version: int, company: array{name: string, nameEnglish: ?string, shortName: ?string, tagline: ?string}, logos: array<string, ?string>, colors: array{primary: ?string, print: ?string, success: ?string, warning: ?string, danger: ?string, info: ?string}, design: array<string, string>}
      */
     public function profile(): array
     {
@@ -85,7 +91,7 @@ class Brand
     /**
      * What every page gets: the names, each logo's address and the colour printouts are drawn in.
      *
-     * @return array{name: string, nameEnglish: ?string, shortName: string, tagline: ?string, logos: array<string, string>, animatedLogo: bool, printColor: string, primaryColor: ?string, design: array<string, string>}
+     * @return array{name: string, nameEnglish: ?string, shortName: string, tagline: ?string, logos: array<string, string>, animatedLogo: bool, printColor: string, primaryColor: ?string, design: array<string, string>, stylesheet: ?string}
      */
     public function forPage(): array
     {
@@ -102,6 +108,8 @@ class Brand
             'printColor' => $this->printColor(),
             'primaryColor' => $profile['colors']['primary'],
             'design' => $profile['design'],
+            // What the page's <style id="brand-colors"> holds, so pages visited without reloading keep it in step.
+            'stylesheet' => $this->stylesheet(),
         ];
     }
 
@@ -128,28 +136,44 @@ class Brand
     }
 
     /**
-     * The stylesheet that redraws the interface in the company's colour, or
-     * null while it is theme.css's own. Errors keep their red, which theme.css
-     * draws in the brand's burgundy.
+     * The stylesheet that redraws the interface in the company's colours, or
+     * null while they are theme.css's own: the brand's shades from its main
+     * colour (errors keep their red, which theme.css draws in the brand's
+     * burgundy), any status colour of its own, and its neutral tone's greys,
+     * also inside the dark navigation (see theme.css, section 7).
      */
     public function stylesheet(): ?string
     {
-        $primary = $this->profile()['colors']['primary'];
-
-        if ($primary === null || strcasecmp($primary, self::THEME_PRIMARY) === 0) {
-            return null;
-        }
-
-        $palette = BrandPalette::fromHex($primary);
+        ['colors' => $colors, 'design' => $design] = $this->profile();
         $declare = fn (array $shades, string $prefix): string => implode('', array_map(
             fn (string|int $step, string $rgb): string => "--{$prefix}-{$step}:{$rgb};",
             array_keys($shades),
             $shades,
         ));
+        $root = $dark = $panels = '';
 
-        return ':root{'.$declare($palette['light'], 'brand').$declare($palette['fixed'], 'brand')
-            .'--ui-danger:rgb(var(--danger-600));--ui-danger-t:rgb(var(--danger-600) / 0.08);}'
-            .'.dark{'.$declare($palette['dark'], 'brand').'--ui-danger:rgb(var(--danger-400));--ui-danger-t:rgb(var(--danger-400) / 0.12);}';
+        if ($colors['primary'] !== null && strcasecmp($colors['primary'], self::THEME_PRIMARY) !== 0) {
+            $palette = BrandPalette::fromHex($colors['primary']);
+            $root .= $declare($palette['light'], 'brand').$declare($palette['fixed'], 'brand').'--ui-danger:rgb(var(--danger-600));--ui-danger-t:rgb(var(--danger-600) / 0.08);';
+            $dark .= $declare($palette['dark'], 'brand').'--ui-danger:rgb(var(--danger-400));--ui-danger-t:rgb(var(--danger-400) / 0.12);';
+        }
+
+        foreach (self::STATUSES as $status) {
+            if ($colors[$status] !== null) {
+                $root .= $declare(BrandPalette::statusScale($colors[$status]), $status);
+            }
+        }
+
+        if ($design['neutral'] !== 'graphite') {
+            $neutral = BrandPalette::neutral($design['neutral']);
+            $root .= $declare($neutral['light'], 'gray');
+            $dark .= $declare($neutral['dark'], 'gray').'--surface:'.$neutral['darkSurface'].';';
+            $panels .= $declare($neutral['dark'], 'gray').'--surface:'.$neutral['darkSurface'].';';
+        }
+
+        $css = ($root !== '' ? ':root{'.$root.'}' : '').($dark !== '' ? '.dark{'.$dark.'}' : '').($panels !== '' ? self::DARK_PANELS.'{'.$panels.'}' : '');
+
+        return $css !== '' ? $css : null;
     }
 
     /**
@@ -188,6 +212,7 @@ class Brand
             'colors' => ['nullable', 'array'],
             'colors.primary' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'colors.print' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            ...array_fill_keys(array_map(fn (string $status): string => "colors.{$status}", self::STATUSES), ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/']),
             ...BrandDesign::rules('design'),
         ])->validate();
 
@@ -274,6 +299,7 @@ class Brand
             'colors' => [
                 'primary' => BrandPalette::isHex($profile['colors']['primary'] ?? null) ? strtoupper($profile['colors']['primary']) : null,
                 'print' => BrandPalette::isHex($profile['colors']['print'] ?? null) ? strtoupper($profile['colors']['print']) : null,
+                ...array_combine(self::STATUSES, array_map(fn (string $status): ?string => BrandPalette::isHex($profile['colors'][$status] ?? null) ? strtoupper($profile['colors'][$status]) : null, self::STATUSES)),
             ],
             'design' => BrandDesign::normalize(is_array($profile['design'] ?? null) ? $profile['design'] : []),
         ];

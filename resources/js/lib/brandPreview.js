@@ -66,8 +66,12 @@ export function applyBrandToDocument(brand, { themePrimary, previewing = false }
     // The density being tried shows over the one chosen in this browser; otherwise the browser's choice wins.
     root.dataset.tableDensity = (previewing ? brand.design?.density : saved ?? brand.design?.density) === 'compact' ? 'compact' : 'comfortable';
 
+    // The saved identity's colours come drawn by the server (Brand::stylesheet: the brand, status colours and greys);
+    // an identity being tried shows its main colour's shades.
     let style = document.getElementById('brand-colors');
-    const css = isHex(brand.primaryColor) && brand.primaryColor.toUpperCase() !== themePrimary?.toUpperCase() ? brandStylesheet(brand.primaryColor) : '';
+    const css = previewing
+        ? (isHex(brand.primaryColor) && brand.primaryColor.toUpperCase() !== themePrimary?.toUpperCase() ? brandStylesheet(brand.primaryColor) : '')
+        : brand.stylesheet ?? '';
 
     if (!style && css) {
         style = Object.assign(document.createElement('style'), { id: 'brand-colors' });
