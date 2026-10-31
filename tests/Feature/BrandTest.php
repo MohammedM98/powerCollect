@@ -229,8 +229,43 @@ class BrandTest extends TestCase
         $this->assertSame(0, Artisan::call('brand:options'));
         $output = Artisan::output();
 
-        foreach ([...array_keys(BrandDesign::PRESETS), ...array_keys(BrandDesign::OPTIONS)] as $name) {
+        foreach ([...array_keys(BrandDesign::PRESETS), ...array_keys(BrandDesign::OPTIONS), ...array_keys(BrandDesign::TOKENS)] as $name) {
             $this->assertStringContainsString($name, $output);
         }
+    }
+
+    public function test_exact_values_reach_every_page_and_win_over_the_choices(): void
+    {
+        $file = $this->identityFile(['design' => ['radius' => 'soft'], 'tokens' => ['radiusScale' => 1.6, 'buttonRadius' => 20, 'transitionMs' => 240]]);
+        $this->artisan('brand:import', ['file' => $file])->assertSuccessful();
+
+        $response = $this->get(route('login'));
+
+        $response->assertSee('data-ui-radius="soft"', false);
+        $response->assertSee(':root[data-ui-navigation]{--radius-scale:1.6;--ui-transition:240ms;}', false);
+        $response->assertSee(':root[data-ui-navigation] :is(.ui-btn-primary,.ui-btn-secondary,.ui-btn-danger){border-radius:20px;}', false);
+    }
+
+    public function test_import_rejects_an_exact_value_outside_its_range(): void
+    {
+        $this->artisan('brand:import', ['file' => $this->identityFile(['tokens' => ['buttonHeight' => 200]])])
+            ->expectsOutputToContain('tokens.buttonHeight')
+            ->assertFailed();
+
+        $this->assertFalse(app(Brand::class)->isImported());
+    }
+
+    public function test_the_companys_own_css_reaches_pages_without_escaping_its_style_or_loading_other_sites(): void
+    {
+        $css = '.ui-page-title{letter-spacing:.02em} .x{background:url(https://evil.test/a.png)} .y{background:u\\72l(https://evil.test)} </style><script>alert(1)</script>';
+        $this->artisan('brand:import', ['file' => $this->identityFile(['customCss' => $css])])->assertSuccessful();
+
+        $response = $this->get(route('login'));
+
+        $response->assertSee('.ui-page-title{letter-spacing:.02em}', false);
+        $response->assertDontSee('url(https://evil.test', false);
+        $response->assertDontSee('u\\72l', false);
+        $response->assertDontSee('</style><script', false);
+        $response->assertDontSee('<script>alert', false);
     }
 }

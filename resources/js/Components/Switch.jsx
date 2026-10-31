@@ -20,13 +20,13 @@ export default function Switch({ checked, onChange, label, ariaLabel, hint = nul
                 aria-label={ariaLabel}
                 disabled={disabled}
                 onClick={() => onChange(!checked)}
-                className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 transition-colors duration-200 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed ${
+                className={`ui-switch relative inline-flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 transition-colors duration-200 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed ${
                     checked ? 'bg-emerald-600' : 'bg-gray-300'
                 }`}
             >
                 <span
                     aria-hidden="true"
-                    className={`h-5 w-5 rounded-full bg-white shadow-sm ring-1 ring-black/5 transition-transform duration-200 ${
+                    className={`ui-switch-knob h-5 w-5 rounded-full bg-white shadow-sm ring-1 ring-black/5 transition-transform duration-200 ${
                         checked ? 'translate-x-5 rtl:-translate-x-5' : 'translate-x-0'
                     }`}
                 />

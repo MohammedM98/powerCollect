@@ -61,7 +61,7 @@ class Brand
     /**
      * The company's identity: the imported one, or the default until one is.
      *
-     * @return array{version: int, company: array{name: string, nameEnglish: ?string, shortName: ?string, tagline: ?string}, logos: array<string, ?string>, colors: array{primary: ?string, print: ?string, success: ?string, warning: ?string, danger: ?string, info: ?string}, design: array<string, string>}
+     * @return array{version: int, company: array{name: string, nameEnglish: ?string, shortName: ?string, tagline: ?string}, logos: array<string, ?string>, colors: array{primary: ?string, print: ?string, success: ?string, warning: ?string, danger: ?string, info: ?string}, design: array<string, string>, tokens: array<string, int|float|null>, customCss: ?string}
      */
     public function profile(): array
     {
@@ -139,8 +139,9 @@ class Brand
      * The stylesheet that redraws the interface in the company's colours, or
      * null while they are theme.css's own: the brand's shades from its main
      * colour (errors keep their red, which theme.css draws in the brand's
-     * burgundy), any status colour of its own, and its neutral tone's greys,
-     * also inside the dark navigation (see theme.css, section 7).
+     * burgundy), any status colour of its own, its neutral tone's greys (also
+     * inside the dark navigation, see theme.css, section 7), its exact values
+     * (`tokens`) and, last, its own CSS (`customCss`).
      */
     public function stylesheet(): ?string
     {
@@ -171,7 +172,9 @@ class Brand
             $panels .= $declare($neutral['dark'], 'gray').'--surface:'.$neutral['darkSurface'].';';
         }
 
-        $css = ($root !== '' ? ':root{'.$root.'}' : '').($dark !== '' ? '.dark{'.$dark.'}' : '').($panels !== '' ? self::DARK_PANELS.'{'.$panels.'}' : '');
+        $css = ($root !== '' ? ':root{'.$root.'}' : '').($dark !== '' ? '.dark{'.$dark.'}' : '').($panels !== '' ? self::DARK_PANELS.'{'.$panels.'}' : '')
+            .BrandDesign::tokenStylesheet($this->profile()['tokens'])
+            .($this->profile()['customCss'] ?? '');
 
         return $css !== '' ? $css : null;
     }
@@ -214,6 +217,8 @@ class Brand
             'colors.print' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
             ...array_fill_keys(array_map(fn (string $status): string => "colors.{$status}", self::STATUSES), ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/']),
             ...BrandDesign::rules('design'),
+            ...BrandDesign::tokenRules('tokens'),
+            'customCss' => ['nullable', 'string', 'max:20000'],
         ])->validate();
 
         $profile = $this->normalize($validated);
@@ -302,6 +307,8 @@ class Brand
                 ...array_combine(self::STATUSES, array_map(fn (string $status): ?string => BrandPalette::isHex($profile['colors'][$status] ?? null) ? strtoupper($profile['colors'][$status]) : null, self::STATUSES)),
             ],
             'design' => BrandDesign::normalize(is_array($profile['design'] ?? null) ? $profile['design'] : []),
+            'tokens' => BrandDesign::normalizeTokens(is_array($profile['tokens'] ?? null) ? $profile['tokens'] : []),
+            'customCss' => BrandDesign::safeCss(is_string($profile['customCss'] ?? null) ? $profile['customCss'] : null),
         ];
     }
 
