@@ -1,171 +1,11 @@
 @import './fonts.css';
+@import './theme.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/*
- * Design tokens (AF PowerCollect design system). Colors are RGB triples so
- * Tailwind's opacity modifiers work: `bg-brand-500` or `bg-brand-500/10`.
- * The same class works in both themes: `.dark` on <html> swaps the values.
- * Change a color here and every class that uses it follows.
- */
 @layer base {
-    :root {
-        color-scheme: light;
-
-        /* Burgundy, from the logo's arrow. 500 is the primary color. */
-        --brand-50: 251 241 241;
-        --brand-100: 244 214 216;
-        --brand-200: 236 188 191;
-        --brand-300: 216 134 140;
-        --brand-400: 196 81 90;
-        --brand-500: 165 29 38;
-        --brand-600: 143 24 32;
-        --brand-700: 118 18 26;
-        --brand-800: 92 13 20;
-        --brand-900: 63 0 8;
-
-        /*
-         * Graphite and silver neutrals, from the logo's AF letters. Quiet
-         * text (400) reads at 5.1:1 on the page's soft gray (50) and muted
-         * text (500) higher still, above the WCAG AA minimum of 4.5.
-         */
-        --gray-50: 239 241 244;
-        --gray-100: 233 236 239;
-        --gray-200: 223 226 230;
-        --gray-300: 205 211 218;
-        --gray-400: 94 103 115;
-        --gray-500: 76 84 96;
-        --gray-600: 70 78 89;
-        --gray-700: 53 60 70;
-        --gray-800: 35 42 51;
-        --gray-900: 17 24 32;
-        --gray-950: 11 13 16;
-
-        /* Blue, for editing: calm enough to sit beside the burgundy and graphite. */
-        --blue-500: 47 102 214;
-        --blue-600: 32 84 190;
-        --blue-700: 24 64 150;
-
-        /*
-         * Violet, for printing, and Excel's own green, for exporting to Excel:
-         * each action wears its colour on every page so it is found at a glance.
-         * 300 is the soft ink on a dark header, 600 the ink on a light tint.
-         */
-        --print-300: 196 181 253;
-        --print-500: 124 58 237;
-        --print-600: 109 40 217;
-        --print-700: 91 33 182;
-        --excel-300: 134 220 165;
-        --excel-500: 31 135 80;
-        --excel-600: 33 115 70;
-        --excel-700: 22 84 51;
-
-        /* Cards, tables, dialogs and fields. */
-        --surface: 255 255 255;
-
-        /* Dark graphite that stays dark in both themes: the active nav item, avatars, the dashboard's main card. */
-        --graphite-700: 38 44 51;
-        --graphite-800: 27 32 38;
-        --graphite-900: 17 21 25;
-
-        /* The signature line: burgundy fading into silver, like the logo's arrow. */
-        --spectrum: linear-gradient(90deg, #5c0d14, #a51d26 40%, #9aa3ae 75%, #dfe3e8);
-    }
-
-    .dark {
-        color-scheme: dark;
-
-        --brand-50: 42 16 19;
-        --brand-100: 58 20 24;
-        --brand-200: 92 28 34;
-        --brand-300: 140 40 48;
-        --brand-400: 196 70 78;
-        --brand-500: 184 35 44;
-        --brand-600: 222 92 100;
-        --brand-700: 236 128 135;
-        --brand-800: 243 164 169;
-        --brand-900: 249 204 207;
-
-        --gray-50: 11 13 16;
-        --gray-100: 27 31 37;
-        --gray-200: 37 42 50;
-        --gray-300: 52 58 67;
-        --gray-400: 128 137 149;
-        --gray-500: 158 166 177;
-        --gray-600: 184 190 199;
-        --gray-700: 204 209 216;
-        --gray-800: 226 229 233;
-        --gray-900: 244 245 247;
-        --gray-950: 250 250 251;
-
-        --blue-500: 96 143 240;
-        --blue-600: 133 169 245;
-        --blue-700: 62 104 196;
-
-        --print-600: 196 181 253;
-        --excel-500: 26 128 72;
-        --excel-600: 110 220 150;
-        --excel-700: 20 96 54;
-
-        --surface: 20 23 28;
-
-        --spectrum: linear-gradient(90deg, #5c0d14, #b8232c 40%, #6b7480 75%, #252a32);
-    }
-
-    /*
-     * The same tokens as named colours, for the pages that keep a stylesheet
-     * of their own (reports, the ledger, reading entry, the profile, reading
-     * schedule, SMS settings). Each page names its colours (--ledger-ink…)
-     * and points them here, so they follow the tokens above in both themes.
-     * Errors and danger share the brand's red, as everywhere else.
-     */
-    :root {
-        --ui-page: rgb(var(--gray-50));
-        --ui-surface: rgb(var(--surface));
-        --ui-raised: color-mix(in srgb, rgb(var(--gray-50)) 45%, rgb(var(--surface)));
-        --ui-sunken: rgb(var(--gray-50));
-        --ui-line: rgb(var(--gray-200));
-        --ui-line2: rgb(var(--gray-100));
-        --ui-ink: rgb(var(--gray-900));
-        --ui-ink2: rgb(var(--gray-700));
-        --ui-muted: rgb(var(--gray-500));
-        --ui-faint: rgb(var(--gray-400));
-        --ui-brand: rgb(var(--brand-500));
-        --ui-brand-ink: rgb(var(--brand-600));
-        --ui-brand-hi: #b8232c;
-        --ui-brand-lo: #7d121b;
-        --ui-success: #047857;
-        --ui-success-t: rgb(4 120 87 / 0.1);
-        --ui-info: rgb(var(--blue-600));
-        --ui-info-t: rgb(var(--blue-600) / 0.08);
-        --ui-warn: #b45309;
-        --ui-warn-t: rgb(180 83 9 / 0.1);
-        --ui-danger: rgb(var(--brand-600));
-        --ui-danger-t: rgb(var(--brand-500) / 0.08);
-        --ui-focus: rgb(var(--gray-900));
-        --ui-shadow: 0 1px 2px rgb(16 24 40 / 0.04), 0 14px 34px -18px rgb(16 24 40 / 0.18);
-        --ui-pop: 0 2px 6px rgb(16 24 40 / 0.06), 0 24px 44px -20px rgb(16 24 40 / 0.32);
-        --ui-hero: linear-gradient(135deg, #262c33, #1b2026 60%, #111519);
-    }
-
-    .dark {
-        --ui-raised: rgb(var(--gray-100));
-        --ui-line: rgb(var(--gray-300));
-        --ui-line2: rgb(var(--gray-200));
-        --ui-ink2: rgb(var(--gray-800));
-        --ui-success: #34d399;
-        --ui-success-t: rgb(52 211 153 / 0.1);
-        --ui-warn: #fbbf24;
-        --ui-warn-t: rgb(251 191 36 / 0.1);
-        --ui-danger-t: rgb(var(--brand-600) / 0.12);
-        --ui-focus: rgb(var(--gray-700));
-        --ui-shadow: 0 20px 40px -24px #000;
-        --ui-pop: 0 30px 60px -20px #000;
-        --ui-hero: linear-gradient(135deg, #1c2127, #161a1f 55%, #0b0d10);
-    }
-
     /* Text with no size of its own takes the base size, with looser lines than the browser's 1.5. */
     body {
         font-size: 1.0625rem;
@@ -466,9 +306,9 @@
 .row-action.row-action-menu:hover,
 .row-action.row-action-menu[aria-expanded='true'] {
     border-color: transparent;
-    background: linear-gradient(135deg, #b8232c, #7d121b);
+    background: linear-gradient(135deg, rgb(var(--brand-hi)), rgb(var(--brand-lo)));
     color: #fff;
-    box-shadow: 0 8px 16px -10px #7d121b;
+    box-shadow: 0 8px 16px -10px rgb(var(--brand-lo));
 }
 
 /* A منطقة 2 in a table: a soft chip in the area's own hue (lib/areaColors.js). */
@@ -601,7 +441,7 @@
    row, not under each cell (which left light seams between the cells). */
 .data-table tbody tr:hover,
 .data-table tbody tr:focus-within {
-    filter: drop-shadow(0 6px 6px rgb(16 24 40 / 0.1));
+    filter: drop-shadow(0 6px 6px rgb(var(--shadow-ink) / 0.1));
 }
 
 .data-table tbody tr:hover td:first-child,
@@ -761,7 +601,7 @@
 }
 
 .data-table tbody tr.ledger-history td:first-child {
-    border-right: 3px solid rgb(245 158 11 / 0.5);
+    border-right: 3px solid rgb(var(--warning-500) / 0.5);
 }
 
 /*
@@ -931,7 +771,7 @@
 
     .account-statement {
         page: statement;
-        color: #111827;
+        color: rgb(var(--shadow-ink));
     }
 
     .account-statement .statement-print-only {
@@ -985,15 +825,15 @@
     .account-statement .data-table-ledger td:first-child,
     .account-statement .data-table-ledger td:last-child {
         padding: 3px 5px;
-        border: 1px solid #d1d5db;
+        border: 1px solid rgb(var(--silver-200));
         border-radius: 0;
         box-shadow: none !important;
         white-space: normal;
-        color: #111827;
+        color: rgb(var(--shadow-ink));
     }
 
     .account-statement .data-table-ledger th {
-        background: #f3f4f6;
+        background: rgb(var(--silver-50));
         font-size: 9.5px;
         font-weight: 700;
     }
@@ -1141,7 +981,7 @@
     border-radius: 12px;
     background: rgb(var(--surface));
     color: rgb(var(--gray-700));
-    box-shadow: 0 1px 2px rgb(16 24 40 / 0.05);
+    box-shadow: 0 1px 2px rgb(var(--shadow-ink) / 0.05);
     transition:
         background-color 120ms ease,
         border-color 120ms ease,
@@ -1175,9 +1015,9 @@
 
 .row-action-delete:hover {
     border-color: transparent;
-    background: linear-gradient(180deg, #b8232c, #7d121b);
+    background: linear-gradient(180deg, rgb(var(--brand-hi)), rgb(var(--brand-lo)));
     color: #fff;
-    box-shadow: 0 8px 16px -8px rgb(165 29 38 / 0.8);
+    box-shadow: 0 8px 16px -8px rgb(var(--brand-solid) / 0.8);
 }
 
 .row-action-print {
@@ -1267,10 +1107,10 @@
     height: 38px;
     overflow: hidden;
     border-radius: 12px;
-    background: linear-gradient(180deg, #262c33, #111519);
+    background: linear-gradient(180deg, rgb(var(--graphite-700)), rgb(var(--graphite-900)));
     color: #fff;
     box-shadow:
-        0 8px 16px -8px rgb(17 24 32 / 0.7),
+        0 8px 16px -8px rgb(var(--graphite-900) / 0.7),
         inset 0 1px 0 rgb(255 255 255 / 0.13);
     transition:
         background 160ms ease,
@@ -1279,9 +1119,9 @@
 
 .row-action-view:hover,
 .row-action-view:focus-within {
-    background: linear-gradient(180deg, #b8232c, #7d121b);
+    background: linear-gradient(180deg, rgb(var(--brand-hi)), rgb(var(--brand-lo)));
     box-shadow:
-        0 10px 20px -8px rgb(165 29 38 / 0.8),
+        0 10px 20px -8px rgb(var(--brand-solid) / 0.8),
         inset 0 1px 0 rgb(255 255 255 / 0.2);
 }
 
@@ -1317,16 +1157,16 @@
 
 /* In the dark theme the main button is polished silver, so it stays the brightest thing in the row. */
 .dark .row-action-view {
-    background: linear-gradient(180deg, #f4f5f7, #c9ced5);
-    color: #111820;
+    background: linear-gradient(180deg, rgb(var(--silver-50)), rgb(var(--silver-300)));
+    color: rgb(var(--graphite-900));
 }
 
 .dark .row-action-view > button + button {
-    border-inline-start-color: rgb(17 24 32 / 0.15);
+    border-inline-start-color: rgb(var(--graphite-900) / 0.15);
 }
 
 .dark .row-action-view > button:focus-visible {
-    outline-color: #111820;
+    outline-color: rgb(var(--graphite-900));
 }
 
 /* Phones: the buttons span the card, with 44px targets. */
@@ -1480,8 +1320,8 @@ html[data-modal-open] {
     background: rgb(var(--surface) / 0.9);
     box-shadow:
         inset 0 1px 0 rgb(255 255 255 / 0.55),
-        0 2px 6px rgb(16 24 40 / 0.08),
-        0 36px 80px -24px rgb(16 24 40 / 0.55);
+        0 2px 6px rgb(var(--shadow-ink) / 0.08),
+        0 36px 80px -24px rgb(var(--shadow-ink) / 0.55);
     -webkit-backdrop-filter: blur(22px) saturate(160%);
     backdrop-filter: blur(22px) saturate(160%);
 }
@@ -1621,7 +1461,7 @@ html[data-modal-open] {
 .af-logo--brand {
     width: 390px;
     margin: 0;
-    filter: drop-shadow(0 18px 30px rgba(16, 24, 40, 0.35));
+    filter: drop-shadow(0 18px 30px rgb(var(--shadow-ink) / 0.35));
 }
 
 @media (min-width: 1024px) {
@@ -1652,17 +1492,12 @@ html[data-modal-open] {
 
 .af-logo .st-af,
 .af-logo .st-sw {
-    stroke: #3b4049;
-}
-
-.dark .af-logo .st-af,
-.dark .af-logo .st-sw {
-    stroke: #c9ced6;
+    stroke: rgb(var(--logo-letters));
 }
 
 .af-logo .st-red,
 .af-logo .st-hole {
-    stroke: #9b262c;
+    stroke: rgb(var(--logo-arrow));
 }
 
 .af-logo .st-hole {
@@ -1674,15 +1509,15 @@ html[data-modal-open] {
 }
 
 .af-logo .tint-silver {
-    fill: #dfdfe1;
+    fill: rgb(var(--logo-tint-silver));
 }
 
 .af-logo .tint-af {
-    fill: #bdbfc2;
+    fill: rgb(var(--logo-tint-letters));
 }
 
 .af-logo .tint-red {
-    fill: #681e21;
+    fill: rgb(var(--logo-tint-arrow));
 }
 
 .af-logo .wipe {
@@ -1692,7 +1527,7 @@ html[data-modal-open] {
 }
 
 .af-logo .dot {
-    fill: #6b2125;
+    fill: rgb(var(--logo-dot));
     transform: scale(0);
     transform-box: fill-box;
     transform-origin: center;
@@ -2004,9 +1839,9 @@ input[type='radio'] {
     isolation: isolate;
     margin: 0 auto;
     background: #fff;
-    color: #111827;
+    color: rgb(var(--shadow-ink));
     line-height: 1.5;
-    box-shadow: 0 18px 40px -18px rgb(16 24 40 / 0.45);
+    box-shadow: 0 18px 40px -18px rgb(var(--shadow-ink) / 0.45);
 }
 
 .pd-table {
@@ -2032,12 +1867,12 @@ input[type='radio'] {
 
 .pd-borders-grid th,
 .pd-borders-grid td {
-    border: 1px solid #9ca3af;
+    border: 1px solid rgb(var(--silver-500));
 }
 
 .pd-borders-rows th,
 .pd-borders-rows td {
-    border-bottom: 1px solid #d1d5db;
+    border-bottom: 1px solid rgb(var(--silver-200));
 }
 
 .pd-borders-rows thead th,
@@ -2053,7 +1888,7 @@ input[type='radio'] {
 }
 
 .pd-zebra tbody tr.pd-row:nth-child(even) td {
-    background: #f3f4f6;
+    background: rgb(var(--silver-50));
 }
 
 .pd-table tfoot td {
@@ -2063,14 +1898,14 @@ input[type='radio'] {
 
 .pd-table .pd-number {
     width: 1%;
-    color: #6b7280;
+    color: rgb(var(--silver-700));
     text-align: center;
     white-space: nowrap;
 }
 
 .pd-table tr.pd-group td {
     padding-top: calc(var(--pd-pad) + 6px);
-    background: #f9fafb;
+    background: rgb(var(--silver-50));
     font-weight: 700;
 }
 
@@ -2115,7 +1950,7 @@ input[type='radio'] {
     justify-content: center;
     gap: 6mm;
     pointer-events: none;
-    color: #111827;
+    color: rgb(var(--shadow-ink));
     font-size: 42px;
     font-weight: 700;
     transform: rotate(-24deg);
@@ -2145,7 +1980,7 @@ input[type='radio'] {
 
 /* A group set to start on its own page: a dashed line on screen, a page break in print. */
 .pd-table tbody.pd-new-page tr:first-child td {
-    border-top: 2px dashed #9ca3af;
+    border-top: 2px dashed rgb(var(--silver-500));
 }
 
 @media print {

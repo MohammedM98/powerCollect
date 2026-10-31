@@ -11,22 +11,22 @@ import { createNotificationQueue } from '@/lib/notificationQueue';
 const APPEARANCE = {
     success: {
         icon: 'check',
-        card: 'bg-gradient-to-br from-emerald-600 to-emerald-700 shadow-[0_18px_40px_-14px_rgba(4,120,87,0.7)]',
+        card: 'bg-gradient-to-br from-emerald-600 to-emerald-700 shadow-[0_18px_40px_-14px_rgb(var(--success-700)/0.7)]',
     },
     error: {
         title: 'تعذّر الحفظ',
         icon: 'alert',
-        card: 'bg-gradient-to-br from-red-600 to-red-700 shadow-[0_18px_40px_-14px_rgba(185,28,28,0.7)]',
+        card: 'bg-gradient-to-br from-red-600 to-red-700 shadow-[0_18px_40px_-14px_rgb(var(--danger-700)/0.7)]',
     },
     warning: {
         title: 'تنبيه',
         icon: 'alert',
-        card: 'bg-gradient-to-br from-amber-500 to-amber-600 shadow-[0_18px_40px_-14px_rgba(180,83,9,0.7)]',
+        card: 'bg-gradient-to-br from-amber-500 to-amber-600 shadow-[0_18px_40px_-14px_rgb(var(--warning-700)/0.7)]',
     },
     deleteError: {
         title: 'تعذّر الحذف',
         icon: 'alert',
-        card: 'bg-gradient-to-br from-red-600 to-red-700 shadow-[0_18px_40px_-14px_rgba(185,28,28,0.7)]',
+        card: 'bg-gradient-to-br from-red-600 to-red-700 shadow-[0_18px_40px_-14px_rgb(var(--danger-700)/0.7)]',
     },
 };
 

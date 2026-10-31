@@ -24,19 +24,19 @@
     color: var(--pp-ink);
     font: 16px/1.6 'IBM Plex Sans Arabic', system-ui, sans-serif;
 }
-.profile-page .pp-hero{margin-top:18px;position:relative;overflow:hidden;border-radius:28px;background:var(--pp-hero);color:#fff;padding:22px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;box-shadow:0 24px 50px -28px #10182899}
+.profile-page .pp-hero{margin-top:18px;position:relative;overflow:hidden;border-radius:28px;background:var(--pp-hero);color:#fff;padding:22px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;box-shadow:0 24px 50px -28px rgb(var(--shadow-ink) / 0.6)}
 .profile-page .pp-hero::before{content:"";position:absolute;inset-inline:0;top:0;height:3px;background:var(--spectrum)}
-.profile-page .pp-hero::after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:#a51d26;opacity:.22;filter:blur(80px);inset-inline-end:-60px;bottom:-180px;pointer-events:none}
+.profile-page .pp-hero::after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:rgb(var(--brand-solid));opacity:.22;filter:blur(80px);inset-inline-end:-60px;bottom:-180px;pointer-events:none}
 .profile-page .pp-hero>*{position:relative;z-index:1}
-.profile-page .pp-avatar{width:76px;height:76px;border-radius:24px;display:grid;place-items:center;font:800 26px Alexandria;background:linear-gradient(135deg,#d8414b,#7d121b);box-shadow:0 14px 30px -12px #a51d26,inset 0 1px 0 #ffffff40;flex:none}
+.profile-page .pp-avatar{width:76px;height:76px;border-radius:24px;display:grid;place-items:center;font:800 26px Alexandria;background:linear-gradient(135deg,rgb(var(--brand-bright)),rgb(var(--brand-lo)));box-shadow:0 14px 30px -12px rgb(var(--brand-solid)),inset 0 1px 0 #ffffff40;flex:none}
 .profile-page .pp-hero h2{margin:0;font:700 26px 'El Messiri',serif}
-.profile-page .pp-hero .pp-username{font:600 14px Alexandria;color:#aeb6c1;direction:ltr;display:inline-block}
+.profile-page .pp-hero .pp-username{font:600 14px Alexandria;color:rgb(var(--silver-400));direction:ltr;display:inline-block}
 .profile-page .pp-hero .pp-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.profile-page .pp-hero .pp-tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;border-radius:99px;padding:3px 11px;background:#ffffff12;border:1px solid #ffffff1f;color:#e6e9ed}
+.profile-page .pp-hero .pp-tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;border-radius:99px;padding:3px 11px;background:#ffffff12;border:1px solid #ffffff1f;color:rgb(var(--silver-100))}
 .profile-page .pp-hero .pp-tag svg{width:14px;height:14px}
-.profile-page .pp-hero .pp-tag.role{background:#a51d2640;border-color:#a51d2680;color:#fff}
+.profile-page .pp-hero .pp-tag.role{background:rgb(var(--brand-solid) / 0.251);border-color:rgb(var(--brand-solid) / 0.502);color:#fff}
 .profile-page .pp-hero .pp-facts{margin-inline-start:auto;display:grid;grid-template-columns:repeat(3,auto);gap:22px}
-.profile-page .pp-hero .pp-facts small{display:block;font-size:12.5px;color:#8b94a0}
+.profile-page .pp-hero .pp-facts small{display:block;font-size:12.5px;color:rgb(var(--silver-600))}
 .profile-page .pp-hero .pp-facts b{display:block;font:700 15px Alexandria;margin-top:2px}
 .profile-page .pp-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;margin-top:16px;align-items:start}
 .profile-page .pp-grid>div{min-width:0;display:grid;gap:16px}
@@ -125,22 +125,22 @@
 .profile-page button, .profile-page input { font: inherit; }
 .profile-page :focus-visible { outline: 2px solid var(--pp-focus); outline-offset: 3px; }
 .profile-page .pp-button { height: 44px; border-radius: 12px; padding: 0 16px; font-weight: 600; font-size: 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--pp-line); background: var(--pp-surface); color: var(--pp-ink2); transition: .18s; }
-.profile-page .pp-button.primary { border: 0; color: #fff; background: linear-gradient(180deg,#b8232c,#7d121b); box-shadow: 0 10px 24px -12px rgb(165 29 38 / .9); }
+.profile-page .pp-button.primary { border: 0; color: #fff; background: linear-gradient(180deg,rgb(var(--brand-hi)),rgb(var(--brand-lo))); box-shadow: 0 10px 24px -12px rgb(var(--brand-solid) / 0.9); }
 .profile-page .pp-button.danger { background: var(--pp-danger-t); border-color: color-mix(in srgb, var(--pp-danger) 40%, transparent); color: var(--pp-danger); margin-inline-start: auto; }
 .profile-page .pp-button.danger:hover:not(:disabled) { background: var(--pp-brand); border-color: var(--pp-brand); color: #fff; }
 .profile-page .pp-button:disabled { opacity: .45; cursor: not-allowed; filter: none; box-shadow: none; }
 .profile-page .pp-input button { position: absolute; inset-inline-end: 6px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; padding: 0; border-radius: 12px; display: grid; place-items: center; color: var(--pp-faint); }
 .profile-page .pp-input button:hover { background: color-mix(in srgb, var(--pp-brand) 8%, transparent); color: var(--pp-brand); }
 .profile-page .pp-input input[type=password], .profile-page .pp-input input[autocomplete=new-password], .profile-page .pp-input input[autocomplete=current-password] { padding-left: 48px; padding-right: 14px; direction: ltr; text-align: left; font-family: Alexandria, sans-serif; }
-.profile-page .pp-tag i { width: 7px; height: 7px; border-radius: 50%; background: #8b94a0; }
-.profile-page .pp-tag i.active { background: #34d399; }
+.profile-page .pp-tag i { width: 7px; height: 7px; border-radius: 50%; background: rgb(var(--silver-600)); }
+.profile-page .pp-tag i.active { background: rgb(var(--success-400)); }
 .profile-page .pp-readonly { margin-top: 14px; }
 .profile-page .pp-field > p { color: var(--pp-danger); font-size: 13px; font-weight: 600; margin-top: 6px; }
 .profile-page .pp-field > p.pp-match { color: var(--pp-success); }
 .profile-page .pp-strength { --strength-color: var(--pp-sunken); }
 .profile-page .pp-strength.level-1 { --strength-color: var(--pp-danger); }
 .profile-page .pp-strength.level-2 { --strength-color: var(--pp-warn); }
-.profile-page .pp-strength.level-3 { --strength-color: #65a30d; }
+.profile-page .pp-strength.level-3 { --strength-color: rgb(var(--success-600)); }
 .profile-page .pp-strength.level-4 { --strength-color: var(--pp-success); }
 .profile-page .pp-strength .bars i.filled { background: var(--strength-color); }
 .profile-page .pp-strength .lbl b { color: var(--strength-color); }

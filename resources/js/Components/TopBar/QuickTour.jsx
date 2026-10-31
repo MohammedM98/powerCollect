@@ -143,17 +143,17 @@ export default function QuickTour({ open, onClose, searchesSubscribers }) {
             <div key={`spot-${index}`} className="tn-spot" style={{ left: box.left - pad, top: box.top - pad, width: box.width + pad * 2, height: box.height + pad * 2 }} />
             <div className="fixed inset-0 z-[89]" onClick={onClose} />
             <div key={`card-${index}`} ref={cardRef} className="tn-tour-card tn-lift rounded-[22px] bg-graphite-gradient p-5 text-white ring-1 ring-white/10" role="dialog" aria-label="جولة سريعة">
-                <div className="mb-1 text-[12px] font-bold text-[#ff9aa0]">{index + 1} من {steps.length}</div>
+                <div className="mb-1 text-[12px] font-bold text-[rgb(var(--brand-tint))]">{index + 1} من {steps.length}</div>
                 <b className="block text-[17px]">{title}</b>
-                <p className="mt-1 text-[14px] leading-7 text-[#d4d9df]">{text}</p>
-                {hint && <p className="mt-2 text-[12.5px] text-[#b9a8ff]">{hint}</p>}
+                <p className="mt-1 text-[14px] leading-7 text-[rgb(var(--silver-200))]">{text}</p>
+                {hint && <p className="mt-2 text-[12.5px] text-[rgb(var(--violet-300))]">{hint}</p>}
                 <div className="mt-4 flex items-center gap-2">
                     <div className="flex gap-1">
                         {steps.map(([name], dot) => <i key={name} className={`h-1.5 rounded-full ${dot === index ? 'w-5 bg-white' : 'w-1.5 bg-white/30'}`} />)}
                     </div>
-                    <button type="button" onClick={onClose} className="ms-auto h-9 rounded-xl px-3 text-[13.5px] font-semibold text-[#cfd5dc] hover:bg-white/10">إنهاء</button>
+                    <button type="button" onClick={onClose} className="ms-auto h-9 rounded-xl px-3 text-[13.5px] font-semibold text-[rgb(var(--silver-200))] hover:bg-white/10">إنهاء</button>
                     {index > 0 && <button type="button" onClick={() => move(-1)} className="h-9 rounded-xl px-3 text-[13.5px] font-semibold hover:bg-white/10">السابق</button>}
-                    <button type="button" data-next onClick={() => move(1)} className="h-9 rounded-xl bg-white px-4 text-[13.5px] font-bold text-gray-900 dark:text-[#111820]">
+                    <button type="button" data-next onClick={() => move(1)} className="h-9 rounded-xl bg-white px-4 text-[13.5px] font-bold text-gray-900 dark:text-[rgb(var(--graphite-900))]">
                         {index === steps.length - 1 ? 'تم' : 'التالي'}
                     </button>
                 </div>

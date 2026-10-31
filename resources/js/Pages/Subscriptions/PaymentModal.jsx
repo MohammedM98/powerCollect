@@ -560,7 +560,7 @@ export default function PaymentModal({
                                     (overpayment === 'confirm' && !data.confirm_overpayment)
                                 }
                                 className={`ms-auto h-12 min-w-0 flex-1 rounded-[14px] px-5 text-[15.5px] font-bold sm:min-w-[230px] sm:flex-none ${
-                                    correcting ? '!bg-none !bg-amber-600 !shadow-[0_12px_26px_-12px_rgb(180_83_9)]' : ''
+                                    correcting ? '!bg-none !bg-amber-600 !shadow-[0_12px_26px_-12px_rgb(var(--warning-700))]' : ''
                                 }`}
                             >
                                 <Icon name="check" className="h-[18px] w-[18px]" strokeWidth={2.2} />

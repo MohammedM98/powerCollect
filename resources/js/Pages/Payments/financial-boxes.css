@@ -1,5 +1,5 @@
 .financial-box-card { transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease; }
-.financial-box-card:hover { transform: translateY(-2px); border-color: rgb(var(--gray-200)); box-shadow: 0 2px 6px rgb(16 24 40 / 0.06), 0 24px 44px -20px rgb(16 24 40 / 0.32); }
+.financial-box-card:hover { transform: translateY(-2px); border-color: rgb(var(--gray-200)); box-shadow: 0 2px 6px rgb(var(--shadow-ink) / 0.06), 0 24px 44px -20px rgb(var(--shadow-ink) / 0.32); }
 .financial-boxes .data-table-toolbar [role='group'] { max-width: 100%; flex-wrap: wrap; }
 .financial-boxes .data-table-toolbar [role='group'] button { display: inline-flex; align-items: center; gap: 6px; }
 .financial-boxes .data-table td { white-space: normal; }
@@ -27,7 +27,7 @@
     cursor: pointer;
 }
 .financial-box-list-row:hover,
-.financial-box-list-row:focus-within { border-color: rgb(var(--gray-300)); box-shadow: 0 1px 2px rgb(16 24 40 / .04), 0 14px 34px -18px rgb(16 24 40 / .18); }
+.financial-box-list-row:focus-within { border-color: rgb(var(--gray-300)); box-shadow: 0 1px 2px rgb(var(--shadow-ink) / 0.04), 0 14px 34px -18px rgb(var(--shadow-ink) / 0.18); }
 .financial-box-list-row > td { min-width: 0; padding: 0; border: 0; text-align: start; overflow-wrap: anywhere; }
 .financial-box-list-number { grid-area: number; }
 .financial-box-list-type { grid-area: type; display: flex; align-items: center; gap: 10px; }

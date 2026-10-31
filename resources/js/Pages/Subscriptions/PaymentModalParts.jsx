@@ -59,7 +59,7 @@ export function PaymentSummary({ amount, currency, inShekels, balance, methodTex
         >
             <span className="absolute inset-x-0 top-0 h-[3px] bg-spectrum" aria-hidden="true" />
             <span className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-                <span className="absolute -bottom-32 -end-20 h-80 w-80 rounded-full bg-[radial-gradient(closest-side,rgb(165_29_38/0.25),transparent)]" />
+                <span className="absolute -bottom-32 -end-20 h-80 w-80 rounded-full bg-[radial-gradient(closest-side,rgb(var(--brand-solid)/0.25),transparent)]" />
             </span>
 
             <h4 className="relative flex items-center gap-2 font-luxe text-lg font-bold">

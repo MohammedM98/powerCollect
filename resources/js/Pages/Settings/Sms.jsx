@@ -290,7 +290,7 @@ export default function Sms({ setting, delivery, week }) {
                                 </ul>
                             </div>
                             <div className="sm-request-legend">
-                                <span><i style={{ background: '#86efac' }} />يتغير مع كل رسالة</span><span><i style={{ background: '#fbbf24' }} />مخفي للأمان</span>
+                                <span><i style={{ background: 'rgb(var(--success-300))' }} />يتغير مع كل رسالة</span><span><i style={{ background: 'rgb(var(--warning-400))' }} />مخفي للأمان</span>
                             </div>
                         </section>
 

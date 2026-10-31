@@ -27,12 +27,12 @@ const TONES = {
         dot: 'border-brand-500 bg-brand-500',
     },
     green: {
-        tile: 'border-emerald-600 shadow-[0_0_0_4px_rgb(5_150_105/0.12)]',
+        tile: 'border-emerald-600 shadow-[0_0_0_4px_rgb(var(--success-600)/0.12)]',
         icon: 'bg-gradient-to-br from-emerald-600 to-emerald-800 text-white',
         dot: 'border-emerald-600 bg-emerald-600',
     },
     amber: {
-        tile: 'border-amber-600 shadow-[0_0_0_4px_rgb(217_119_6/0.12)]',
+        tile: 'border-amber-600 shadow-[0_0_0_4px_rgb(var(--warning-600)/0.12)]',
         icon: 'bg-gradient-to-br from-amber-500 to-amber-700 text-white',
         dot: 'border-amber-600 bg-amber-600',
     },
@@ -226,7 +226,7 @@ export function SummaryPanel({ title, tag, children }) {
         >
             <span className="absolute inset-x-0 top-0 h-[3px] bg-spectrum" aria-hidden="true" />
             <span
-                className="pointer-events-none absolute -bottom-32 -end-20 h-80 w-80 rounded-full bg-[radial-gradient(closest-side,rgb(165_29_38/0.25),transparent)]"
+                className="pointer-events-none absolute -bottom-32 -end-20 h-80 w-80 rounded-full bg-[radial-gradient(closest-side,rgb(var(--brand-solid)/0.25),transparent)]"
                 aria-hidden="true"
             />
 
@@ -409,10 +409,10 @@ export function FormFooter({ onCancel, submitLabel, disabled, processing, tone =
                 disabled={disabled || processing}
                 className={`ms-auto inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-[14px] px-5 text-[15.5px] font-bold text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-55 disabled:shadow-none disabled:grayscale-[0.6] sm:min-w-[230px] sm:flex-none ${
                     tone === 'green'
-                        ? 'bg-gradient-to-b from-emerald-600 to-emerald-800 shadow-[0_12px_26px_-12px_rgb(4_120_87)]'
+                        ? 'bg-gradient-to-b from-emerald-600 to-emerald-800 shadow-[0_12px_26px_-12px_rgb(var(--success-700))]'
                         : tone === 'amber'
-                          ? 'bg-gradient-to-b from-amber-500 to-amber-700 shadow-[0_12px_26px_-12px_rgb(180_83_9)]'
-                        : 'bg-brand-gradient shadow-[0_12px_26px_-12px_rgb(165_29_38)]'
+                          ? 'bg-gradient-to-b from-amber-500 to-amber-700 shadow-[0_12px_26px_-12px_rgb(var(--warning-700))]'
+                        : 'bg-brand-gradient shadow-[0_12px_26px_-12px_rgb(var(--brand-solid))]'
                 }`}
             >
                 <Icon name="check" className="h-[18px] w-[18px]" strokeWidth={2.2} />

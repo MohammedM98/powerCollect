@@ -8,7 +8,7 @@
     border: 1px solid rgb(var(--gray-100));
     border-radius: 24px;
     background: rgb(var(--surface) / 0.88);
-    box-shadow: 0 8px 24px -18px rgb(16 24 40 / 0.18);
+    box-shadow: 0 8px 24px -18px rgb(var(--shadow-ink) / 0.18);
     color: rgb(var(--gray-500));
     font-size: 12px;
     line-height: 1.7;

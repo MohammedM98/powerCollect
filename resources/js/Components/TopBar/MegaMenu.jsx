@@ -41,7 +41,7 @@ export default function MegaMenu({ group, url, badges, width, shift, leaving, on
             <div className="flex">
                 <div className="min-w-0 flex-1 p-3 pt-4">
                     <div className="mb-2 flex items-center gap-3 px-2">
-                        <span className="grid h-10 w-10 place-items-center rounded-xl bg-graphite-gradient text-white shadow-[0_10px_20px_-12px_rgb(16_24_40/.7)]">
+                        <span className="grid h-10 w-10 place-items-center rounded-xl bg-graphite-gradient text-white shadow-[0_10px_20px_-12px_rgb(var(--shadow-ink)/0.7)]">
                             <Icon name={group.icon} className="h-5 w-5" />
                         </span>
                         <div>

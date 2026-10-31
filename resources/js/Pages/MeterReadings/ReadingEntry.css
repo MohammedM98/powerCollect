@@ -61,7 +61,7 @@
 .re-table td:last-child { border-inline-end: 1px solid rgb(var(--gray-100)); border-start-end-radius: 18px; border-end-end-radius: 18px; }
 .re-row:hover td, .re-row:focus-within td { border-color: rgb(var(--gray-200)); }
 /* One shadow around the whole row, not one under each cell (which left seams between them). */
-.re-row:hover, .re-row:focus-within { filter: drop-shadow(0 6px 6px rgb(16 24 40 / 0.1)); }
+.re-row:hover, .re-row:focus-within { filter: drop-shadow(0 6px 6px rgb(var(--shadow-ink) / 0.1)); }
 .re-row:hover td:first-child, .re-row:focus-within td:first-child { box-shadow: inset -3px 0 0 rgb(var(--brand-500)); }
 .re-row.is-selected td { background: color-mix(in srgb, var(--re-brand) 4%, var(--re-surface)); border-color: color-mix(in srgb, var(--re-brand) 45%, var(--re-line)); }
 .re-row.is-selected td:first-child { box-shadow: inset -3px 0 0 var(--re-brand); }
@@ -125,7 +125,7 @@
 .re-card > nav, .re-card > div:last-child { padding-inline: 16px; padding-bottom: 12px; }
 .re-approval { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; background: var(--re-surface); border: 1px solid var(--re-line2); border-radius: 18px; padding: 16px; margin-bottom: 14px; }
 .re-approval button, .re-bulk button:last-child { background: var(--re-success); border-color: var(--re-success); color: #fff; }
-.re-bulk { position: sticky; bottom: 16px; z-index: 20; margin: 16px auto 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; background: #111820; border: 1px solid #353c46; color: #fff; border-radius: 18px; box-shadow: 0 16px 40px -16px #11182088; }
+.re-bulk { position: sticky; bottom: 16px; z-index: 20; margin: 16px auto 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; background: rgb(var(--graphite-900)); border: 1px solid rgb(var(--graphite-500)); color: #fff; border-radius: 18px; box-shadow: 0 16px 40px -16px rgb(var(--graphite-900) / 0.533); }
 .reading-entry .re-bulk p, .reading-entry .re-bulk b { color: #fff; }
 .re-bulk button:first-child { color: #fff; border-color: #ffffff33; background: #ffffff14; }
 :root[data-density=compact] .re-table td { padding-block: 6px; height: 64px; }
@@ -182,7 +182,7 @@
 /* The pinned bar: what the sheet is filtered to, kept in sight while the filters scroll away (ReadingContextBar). */
 .re-context { position: fixed; inset-inline: 0; z-index: 30; padding-inline: var(--tn-gutter, 16px); pointer-events: none; opacity: 0; transform: translateY(-8px); transition: opacity .18s ease, transform .18s ease; }
 .re-context.is-shown { opacity: 1; transform: none; }
-.re-context-bar { pointer-events: auto; max-width: calc(1720px - 2 * var(--tn-gutter, 16px)); margin-inline: auto; display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 14px; background: var(--re-surface); border: 1px solid var(--re-line); border-radius: 18px; box-shadow: 0 14px 34px -16px #10182855; }
+.re-context-bar { pointer-events: auto; max-width: calc(1720px - 2 * var(--tn-gutter, 16px)); margin-inline: auto; display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 14px; background: var(--re-surface); border: 1px solid var(--re-line); border-radius: 18px; box-shadow: 0 14px 34px -16px rgb(var(--shadow-ink) / 0.333); }
 .re-context-week { display: inline-flex; align-items: center; gap: 6px; flex: none; padding: 5px 10px; border-radius: 12px; background: var(--re-sunken); font: 600 13px Alexandria, sans-serif; color: var(--re-ink2); }
 .re-context-filters { display: flex; align-items: center; gap: 8px; flex: none; }
 .re-context-field { display: flex; align-items: center; gap: 6px; width: 190px; }

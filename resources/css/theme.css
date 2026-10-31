@@ -1,0 +1,342 @@
+/*
+ * The visual identity: every colour the application uses lives in this file.
+ *
+ * Change a value here and every page, button, badge and chart that uses it
+ * follows. Nothing else in the code names a colour of its own.
+ *
+ * Colours are RGB triples (`165 29 38`, not `#a51d26`) so Tailwind's opacity
+ * modifiers keep working: `bg-brand-500`, `bg-brand-500/10`, `text-success-700`.
+ * Stylesheets use them the same way: `rgb(var(--brand-500))` or
+ * `rgb(var(--brand-500) / 0.4)`.
+ *
+ * Sections, in the order to change them when rebranding:
+ *   1. Brand            the main colour (buttons, links, focus, the logo's colour)
+ *   2. Neutrals         page, cards, lines and text; graphite for the dark panels
+ *   3. Status           success, warning, danger and info
+ *   4. Actions          editing (blue), printing (violet), exporting to Excel (green)
+ *   5. Accents          extra colours for charts, tags and roles
+ *   6. Named colours    what the pages with a stylesheet of their own read
+ *
+ * Colours that change with the theme are set twice: in `:root` for the light
+ * theme and in `.dark` for the dark one. Those set once look the same in both.
+ */
+
+:root {
+    color-scheme: light;
+
+    /* ── 1. Brand ─────────────────────────────────────────────────────────── */
+
+    /* Burgundy, from the logo's arrow. 500 is the primary color. */
+    --brand-50: 251 241 241;
+    --brand-100: 244 214 216;
+    --brand-200: 236 188 191;
+    --brand-300: 216 134 140;
+    --brand-400: 196 81 90;
+    --brand-500: 165 29 38;
+    --brand-600: 143 24 32;
+    --brand-700: 118 18 26;
+    --brand-800: 92 13 20;
+    --brand-900: 63 0 8;
+
+    /*
+     * The brand colour where it must look the same in both themes: on the
+     * dark graphite panels, in gradients, glows and the signature line.
+     */
+    --brand-tint: 255 154 160;
+    --brand-soft: 224 112 122;
+    --brand-bright: 216 65 75;
+    --brand-glow: 196 48 58;
+    --brand-hi: 184 35 44;
+    --brand-solid: 165 29 38;
+    --brand-lo: 125 18 27;
+    --brand-deep: 92 13 20;
+
+    /* The logo's own colours (resources/js/Components/AnimatedLogo.jsx): its letters, its arrow and their tints. */
+    --logo-letters: 59 64 73;
+    --logo-arrow: 155 38 44;
+    --logo-dot: 107 33 37;
+    --logo-tint-silver: 223 223 225;
+    --logo-tint-letters: 189 191 194;
+    --logo-tint-arrow: 104 30 33;
+
+    /* The signature line: burgundy fading into silver, like the logo's arrow. */
+    --spectrum: linear-gradient(90deg, rgb(var(--brand-deep)), rgb(var(--brand-solid)) 40%, rgb(var(--silver-500)) 75%, rgb(var(--silver-100)));
+
+    /* ── 2. Neutrals ──────────────────────────────────────────────────────── */
+
+    /*
+     * Graphite and silver neutrals, from the logo's AF letters. Quiet
+     * text (400) reads at 5.1:1 on the page's soft gray (50) and muted
+     * text (500) higher still, above the WCAG AA minimum of 4.5.
+     */
+    --gray-50: 239 241 244;
+    --gray-100: 233 236 239;
+    --gray-200: 223 226 230;
+    --gray-300: 205 211 218;
+    --gray-400: 94 103 115;
+    --gray-500: 76 84 96;
+    --gray-600: 70 78 89;
+    --gray-700: 53 60 70;
+    --gray-800: 35 42 51;
+    --gray-900: 17 24 32;
+    --gray-950: 11 13 16;
+
+    /* Cards, tables, dialogs and fields. */
+    --surface: 255 255 255;
+
+    /* Dark graphite that stays dark in both themes: the active nav item, avatars, the dashboard's main card. */
+    --graphite-400: 58 67 78;
+    --graphite-500: 53 60 70;
+    --graphite-600: 43 49 56;
+    --graphite-700: 38 44 51;
+    --graphite-800: 27 32 38;
+    --graphite-900: 17 21 25;
+    --graphite-950: 11 13 16;
+
+    /* Silver that stays light in both themes: text and lines on the graphite panels. */
+    --silver-50: 242 243 245;
+    --silver-100: 223 227 232;
+    --silver-200: 209 213 219;
+    --silver-300: 199 203 210;
+    --silver-400: 174 182 193;
+    --silver-500: 154 163 174;
+    --silver-600: 139 148 160;
+    --silver-700: 107 116 128;
+    --silver-800: 94 103 115;
+    --silver-900: 76 84 96;
+
+    /* The tint of every shadow. */
+    --shadow-ink: 16 24 40;
+
+    /* ── 3. Status ────────────────────────────────────────────────────────── */
+
+    /* Success: saved, paid, active. Tailwind's `emerald-*` and `green-*` classes read these. */
+    --success-50: 236 253 245;
+    --success-100: 209 250 229;
+    --success-200: 167 243 208;
+    --success-300: 110 231 183;
+    --success-400: 52 211 153;
+    --success-500: 16 185 129;
+    --success-600: 5 150 105;
+    --success-700: 4 120 87;
+    --success-800: 6 95 70;
+    --success-900: 6 78 59;
+    --success-950: 2 44 34;
+
+    /* Warning: due soon, needs a look. Tailwind's `amber-*` and `yellow-*` classes read these. */
+    --warning-50: 255 251 235;
+    --warning-100: 254 243 199;
+    --warning-200: 253 230 138;
+    --warning-300: 252 211 77;
+    --warning-400: 251 191 36;
+    --warning-500: 245 158 11;
+    --warning-600: 217 119 6;
+    --warning-700: 180 83 9;
+    --warning-800: 146 64 14;
+    --warning-900: 120 53 15;
+    --warning-950: 69 26 3;
+
+    /* Danger: errors, overdue, deleting. Tailwind's `red-*` and `rose-*` classes read these. */
+    --danger-50: 254 242 242;
+    --danger-100: 254 226 226;
+    --danger-200: 254 202 202;
+    --danger-300: 252 165 165;
+    --danger-400: 248 113 113;
+    --danger-500: 239 68 68;
+    --danger-600: 220 38 38;
+    --danger-700: 185 28 28;
+    --danger-800: 153 27 27;
+    --danger-900: 127 29 29;
+    --danger-950: 69 10 10;
+
+    /* Info: hints and neutral notices. Tailwind's `sky-*` and `cyan-*` classes read these. */
+    --info-50: 240 249 255;
+    --info-100: 224 242 254;
+    --info-200: 186 230 253;
+    --info-300: 125 211 252;
+    --info-400: 56 189 248;
+    --info-500: 14 165 233;
+    --info-600: 2 132 199;
+    --info-700: 3 105 161;
+    --info-800: 7 89 133;
+    --info-900: 12 74 110;
+    --info-950: 8 47 73;
+
+    /* ── 4. Actions ───────────────────────────────────────────────────────── */
+
+    /* Blue, for editing: calm enough to sit beside the burgundy and graphite. */
+    --blue-50: 239 246 255;
+    --blue-100: 219 234 254;
+    --blue-200: 191 219 254;
+    --blue-300: 147 197 253;
+    --blue-400: 96 165 250;
+    --blue-500: 47 102 214;
+    --blue-600: 32 84 190;
+    --blue-700: 24 64 150;
+    --blue-800: 30 64 175;
+    --blue-900: 30 58 138;
+    --blue-950: 23 37 84;
+    --blue-hi: 59 116 230;
+    --blue-lo: 31 79 184;
+
+    /*
+     * Violet, for printing, and Excel's own green, for exporting to Excel:
+     * each action wears its colour on every page so it is found at a glance.
+     * 300 is the soft ink on a dark header, 600 the ink on a light tint.
+     */
+    --print-300: 196 181 253;
+    --print-500: 124 58 237;
+    --print-600: 109 40 217;
+    --print-700: 91 33 182;
+    --excel-300: 134 220 165;
+    --excel-500: 31 135 80;
+    --excel-600: 33 115 70;
+    --excel-700: 22 84 51;
+
+    /* ── 5. Accents ───────────────────────────────────────────────────────── */
+
+    /* For charts, tags and the colour of each role. */
+    --violet-50: 245 243 255;
+    --violet-100: 237 233 254;
+    --violet-200: 221 214 254;
+    --violet-300: 196 181 253;
+    --violet-400: 167 139 250;
+    --violet-500: 139 92 246;
+    --violet-600: 124 58 237;
+    --violet-700: 109 40 217;
+    --violet-800: 91 33 182;
+    --violet-900: 76 29 149;
+    --violet-950: 46 16 101;
+
+    --teal-50: 240 253 250;
+    --teal-100: 204 251 241;
+    --teal-200: 153 246 228;
+    --teal-300: 94 234 212;
+    --teal-400: 45 212 191;
+    --teal-500: 20 184 166;
+    --teal-600: 13 148 136;
+    --teal-700: 15 118 110;
+    --teal-800: 17 94 89;
+    --teal-900: 19 78 74;
+    --teal-950: 4 47 46;
+
+    --indigo-50: 238 242 255;
+    --indigo-100: 224 231 255;
+    --indigo-200: 199 210 254;
+    --indigo-300: 165 180 252;
+    --indigo-400: 129 140 248;
+    --indigo-500: 99 102 241;
+    --indigo-600: 79 70 229;
+    --indigo-700: 67 56 202;
+    --indigo-800: 55 48 163;
+    --indigo-900: 49 46 129;
+    --indigo-950: 30 27 75;
+
+    --orange-50: 255 247 237;
+    --orange-100: 255 237 213;
+    --orange-200: 254 215 170;
+    --orange-300: 253 186 116;
+    --orange-400: 251 146 60;
+    --orange-500: 249 115 22;
+    --orange-600: 234 88 12;
+    --orange-700: 194 65 12;
+    --orange-800: 154 52 18;
+    --orange-900: 124 45 18;
+    --orange-950: 67 20 7;
+}
+
+.dark {
+    color-scheme: dark;
+
+    --brand-50: 42 16 19;
+    --brand-100: 58 20 24;
+    --brand-200: 92 28 34;
+    --brand-300: 140 40 48;
+    --brand-400: 196 70 78;
+    --brand-500: 184 35 44;
+    --brand-600: 222 92 100;
+    --brand-700: 236 128 135;
+    --brand-800: 243 164 169;
+    --brand-900: 249 204 207;
+
+    --gray-50: 11 13 16;
+    --gray-100: 27 31 37;
+    --gray-200: 37 42 50;
+    --gray-300: 52 58 67;
+    --gray-400: 128 137 149;
+    --gray-500: 158 166 177;
+    --gray-600: 184 190 199;
+    --gray-700: 204 209 216;
+    --gray-800: 226 229 233;
+    --gray-900: 244 245 247;
+    --gray-950: 250 250 251;
+
+    --blue-500: 96 143 240;
+    --blue-600: 133 169 245;
+    --blue-700: 62 104 196;
+
+    --print-600: 196 181 253;
+    --excel-500: 26 128 72;
+    --excel-600: 110 220 150;
+    --excel-700: 20 96 54;
+
+    --surface: 20 23 28;
+
+    --logo-letters: 201 206 214;
+
+    --spectrum: linear-gradient(90deg, rgb(var(--brand-deep)), rgb(var(--brand-hi)) 40%, rgb(var(--silver-700)) 75%, rgb(var(--gray-200)));
+}
+
+/*
+ * ── 6. Named colours ─────────────────────────────────────────────────────
+ *
+ * The same tokens by purpose, for the pages that keep a stylesheet of their
+ * own (reports, the ledger, reading entry, the profile, reading schedule,
+ * SMS settings). Each page names its colours (--ledger-ink…) and points them
+ * here, so they follow the tokens above in both themes. Errors and danger
+ * share the brand's red, as everywhere else.
+ */
+:root {
+    --ui-page: rgb(var(--gray-50));
+    --ui-surface: rgb(var(--surface));
+    --ui-raised: color-mix(in srgb, rgb(var(--gray-50)) 45%, rgb(var(--surface)));
+    --ui-sunken: rgb(var(--gray-50));
+    --ui-line: rgb(var(--gray-200));
+    --ui-line2: rgb(var(--gray-100));
+    --ui-ink: rgb(var(--gray-900));
+    --ui-ink2: rgb(var(--gray-700));
+    --ui-muted: rgb(var(--gray-500));
+    --ui-faint: rgb(var(--gray-400));
+    --ui-brand: rgb(var(--brand-500));
+    --ui-brand-ink: rgb(var(--brand-600));
+    --ui-brand-hi: rgb(var(--brand-hi));
+    --ui-brand-lo: rgb(var(--brand-lo));
+    --ui-success: rgb(var(--success-700));
+    --ui-success-t: rgb(var(--success-700) / 0.1);
+    --ui-info: rgb(var(--blue-600));
+    --ui-info-t: rgb(var(--blue-600) / 0.08);
+    --ui-warn: rgb(var(--warning-700));
+    --ui-warn-t: rgb(var(--warning-700) / 0.1);
+    --ui-danger: rgb(var(--brand-600));
+    --ui-danger-t: rgb(var(--brand-500) / 0.08);
+    --ui-focus: rgb(var(--gray-900));
+    --ui-shadow: 0 1px 2px rgb(var(--shadow-ink) / 0.04), 0 14px 34px -18px rgb(var(--shadow-ink) / 0.18);
+    --ui-pop: 0 2px 6px rgb(var(--shadow-ink) / 0.06), 0 24px 44px -20px rgb(var(--shadow-ink) / 0.32);
+    --ui-hero: linear-gradient(135deg, rgb(var(--graphite-700)), rgb(var(--graphite-800)) 60%, rgb(var(--graphite-900)));
+}
+
+.dark {
+    --ui-raised: rgb(var(--gray-100));
+    --ui-line: rgb(var(--gray-300));
+    --ui-line2: rgb(var(--gray-200));
+    --ui-ink2: rgb(var(--gray-800));
+    --ui-success: rgb(var(--success-400));
+    --ui-success-t: rgb(var(--success-400) / 0.1);
+    --ui-warn: rgb(var(--warning-400));
+    --ui-warn-t: rgb(var(--warning-400) / 0.1);
+    --ui-danger-t: rgb(var(--brand-600) / 0.12);
+    --ui-focus: rgb(var(--gray-700));
+    --ui-shadow: 0 20px 40px -24px #000;
+    --ui-pop: 0 30px 60px -20px #000;
+    --ui-hero: linear-gradient(135deg, #1c2127, #161a1f 55%, #0b0d10);
+}

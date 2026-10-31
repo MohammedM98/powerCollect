@@ -45,21 +45,21 @@
     padding: 20px 22px;
     background: var(--rs-hero);
     color: #fff;
-    box-shadow: 0 24px 50px -28px #10182899;
+    box-shadow: 0 24px 50px -28px rgb(var(--shadow-ink) / 0.6);
 }
 .rs-status::before { content: ''; position: absolute; inset-inline: 0; top: 0; height: 3px; background: var(--spectrum); }
 .rs-status-dot { width: 54px; height: 54px; border-radius: 18px; display: grid; place-items: center; flex: none; background: #ffffff14; }
-.rs-status-dot i { width: 14px; height: 14px; border-radius: 50%; background: #8b94a0; }
-.rs-status.is-open .rs-status-dot i { background: #34d399; box-shadow: 0 0 0 6px #34d39933; animation: rs-pulse 1.8s ease-in-out infinite; }
-@keyframes rs-pulse { 50% { box-shadow: 0 0 0 11px #34d39911; } }
+.rs-status-dot i { width: 14px; height: 14px; border-radius: 50%; background: rgb(var(--silver-600)); }
+.rs-status.is-open .rs-status-dot i { background: rgb(var(--success-400)); box-shadow: 0 0 0 6px rgb(var(--success-400) / 0.2); animation: rs-pulse 1.8s ease-in-out infinite; }
+@keyframes rs-pulse { 50% { box-shadow: 0 0 0 11px rgb(var(--success-400) / 0.067); } }
 .rs-status-copy { flex: 1; min-width: 240px; }
 .rs-status-copy > b { display: block; font: 700 22px 'El Messiri', serif; }
-.rs-status-copy p { margin: 0; color: #aeb6c1; font-size: 14px; }
-.rs-preview-note { color: #fbbf24; }
+.rs-status-copy p { margin: 0; color: rgb(var(--silver-400)); font-size: 14px; }
+.rs-preview-note { color: rgb(var(--warning-400)); }
 .rs-modes { margin-inline-start: auto; display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: #ffffff12; border: 1px solid #ffffff1a; }
-.rs-modes button { border: 0; background: transparent; color: #c9ced5; height: 36px; padding: 0 14px; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+.rs-modes button { border: 0; background: transparent; color: rgb(var(--silver-300)); height: 36px; padding: 0 14px; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
 .rs-modes button:hover { color: #fff; background: #ffffff14; }
-.rs-modes button[aria-pressed=true] { background: #fff; color: #111820; }
+.rs-modes button[aria-pressed=true] { background: #fff; color: rgb(var(--graphite-900)); }
 .rs-modes button svg { width: 15px; height: 15px; }
 .rs-modes :focus-visible { outline-color: #fff; }
 .rs-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 16px; margin-top: 18px; align-items: start; }
@@ -143,15 +143,15 @@
 .rs-panel > .rs-empty-history { margin-top: 12px; }
 .rs-who { margin-top: 14px; font-size: 13px; color: var(--rs-faint); display: flex; align-items: center; gap: 8px; }
 .rs-avatar { width: 28px; height: 28px; border-radius: 8px; font-size: 11px; display: grid; place-items: center; background: var(--rs-sunken); color: var(--rs-ink2); flex: none; }
-.rs-savebar { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 30; display: flex; align-items: center; gap: 12px; background: #111820; color: #fff; border-radius: 18px; padding: 8px 8px 8px 16px; box-shadow: 0 24px 50px -18px #000c; white-space: nowrap; }
+.rs-savebar { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 30; display: flex; align-items: center; gap: 12px; background: rgb(var(--graphite-900)); color: #fff; border-radius: 18px; padding: 8px 8px 8px 16px; box-shadow: 0 24px 50px -18px #000c; white-space: nowrap; }
 .rs-savebar span { font-size: 14.5px; font-weight: 600; padding-inline-start: 6px; }
 .rs-savebar button { height: 44px; border-radius: 12px; border: 0; padding: 0 16px; font-weight: 600; cursor: pointer; font-size: 16px; }
-.rs-savebar .rs-revert { background: #ffffff14; color: #e6e9ed; }
+.rs-savebar .rs-revert { background: #ffffff14; color: rgb(var(--silver-100)); }
 .rs-savebar .rs-revert:hover { background: #ffffff26; }
-.rs-savebar .rs-save { background: linear-gradient(180deg, #b8232c, #7d121b); color: #fff; }
+.rs-savebar .rs-save { background: linear-gradient(180deg, rgb(var(--brand-hi)), rgb(var(--brand-lo))); color: #fff; }
 .rs-savebar :focus-visible { outline-color: #fff; }
 .dark .rs-day:hover b, .dark .rs-day.is-selected b, .dark .rs-quick button:hover { color: var(--ui-brand-ink); }
-.dark .rs-day.is-selected { border-color: #e0707a; }
+.dark .rs-day.is-selected { border-color: rgb(var(--brand-soft)); }
 .dark .rs-open-days .rs-day.is-selected b { color: var(--rs-success); }
 .dark .rs-open-days .rs-day.is-selected { border-color: var(--rs-success); }
 .dark .rs-time-fields input { color-scheme: dark; }

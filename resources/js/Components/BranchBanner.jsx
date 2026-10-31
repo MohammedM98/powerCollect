@@ -49,7 +49,7 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
     return (
         <section
             aria-label="الفرع المعروض"
-            className={`relative overflow-hidden rounded-card bg-graphite-gradient p-4 text-white shadow-card sm:p-6 print:mb-4 print:overflow-visible print:rounded-none print:border-b-2 print:border-[#a51d26] print:bg-none print:p-0 print:pb-3 print:text-[#111820] print:shadow-none ${className}`}
+            className={`relative overflow-hidden rounded-card bg-graphite-gradient p-4 text-white shadow-card sm:p-6 print:mb-4 print:overflow-visible print:rounded-none print:border-b-2 print:border-[rgb(var(--brand-solid))] print:bg-none print:p-0 print:pb-3 print:text-[rgb(var(--graphite-900))] print:shadow-none ${className}`}
         >
             <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-spectrum print:hidden" />
             <div className="flex flex-wrap items-center gap-x-5 gap-y-3 sm:gap-y-4">
@@ -57,7 +57,7 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
                     <Icon name={scope.level === 'governorate' ? 'map' : scope.all ? 'layers' : 'building'} className="h-7 w-7" />
                 </span>
                 <div className="min-w-0 flex-1">
-                    <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm font-semibold text-white/70 print:text-[#4c5460]">
+                    <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm font-semibold text-white/70 print:text-[rgb(var(--silver-900))]">
                         <span className="hidden sm:inline print:inline">{eyebrow}</span>
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-xs text-white print:hidden">
                             <span aria-hidden="true" className={`h-2 w-2 rounded-full ${scope.level === 'governorate' ? 'bg-sky-400' : scope.all ? 'bg-amber-400' : scope.isActive ? 'bg-emerald-400' : 'bg-gray-400'}`} />
@@ -67,7 +67,7 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
                     <h2 className="mt-1 text-balance font-display text-2xl font-bold leading-tight sm:text-4xl" dir="auto">
                         {scope.name}
                     </h2>
-                    <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-white/70 print:text-[#4c5460]">
+                    <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-white/70 print:text-[rgb(var(--silver-900))]">
                         {facts.map((fact) => (
                             <li key={fact.icon} className="inline-flex items-center gap-1.5">
                                 <Icon name={fact.icon} className="h-4 w-4 shrink-0 print:hidden" />

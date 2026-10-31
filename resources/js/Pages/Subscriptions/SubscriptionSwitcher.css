@@ -2,7 +2,7 @@
 .subscription-switcher svg { width: 20px; height: 20px; flex: none; }
 .ssw-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .ssw-identity { display: flex; align-items: center; gap: 13px; }
-.ssw-icon { display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: 14px; background: linear-gradient(135deg, #262c33, #1b2026 60%, #111519); color: white; }
+.ssw-icon { display: grid; place-items: center; width: 44px; height: 44px; flex: none; border-radius: 14px; background: linear-gradient(135deg, rgb(var(--graphite-700)), rgb(var(--graphite-800)) 60%, rgb(var(--graphite-900))); color: white; }
 .ssw-identity h4 { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 20px; font-weight: 700; }
 .ssw-identity p { margin-top: 3px; color: rgb(var(--gray-500)); font-size: 14px; }
 .ssw-account-number { font-family: Alexandria, sans-serif; font-variant-numeric: tabular-nums; }
@@ -16,7 +16,7 @@
 .subscription-switcher .ssw-hint svg { width: 16px; height: 16px; }
 .ssw-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; }
 .ssw-card { position: relative; display: flex; min-width: 0; flex-direction: column; overflow: hidden; padding: 21px 20px 0; border: 1px solid rgb(var(--gray-200)); border-radius: 20px; background: rgb(var(--surface)); color: rgb(var(--gray-900)); text-align: start; cursor: pointer; transition: border-color 150ms ease, box-shadow 150ms ease; }
-.ssw-card:hover:not(:disabled) { border-color: rgb(var(--gray-400)); box-shadow: 0 12px 26px -22px rgb(16 24 40 / .4); }
+.ssw-card:hover:not(:disabled) { border-color: rgb(var(--gray-400)); box-shadow: 0 12px 26px -22px rgb(var(--shadow-ink) / 0.4); }
 .ssw-card:focus-visible { outline: 2px solid rgb(var(--gray-900)); outline-offset: 4px; }
 .ssw-card:disabled { cursor: default; }
 .ssw-card[aria-current=true] { border-color: rgb(var(--brand-500)); background: linear-gradient(180deg, rgb(var(--brand-500) / .035), rgb(var(--surface)) 57%); box-shadow: 0 0 0 1px rgb(var(--brand-500) / .08); }

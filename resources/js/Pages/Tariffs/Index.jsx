@@ -190,7 +190,7 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
                 <>
                     <span className="absolute inset-x-0 top-0 h-[3px] bg-spectrum" aria-hidden="true" />
                     <span
-                        className="pointer-events-none absolute -bottom-36 -start-16 h-[340px] w-[340px] rounded-full bg-[radial-gradient(closest-side,rgb(165_29_38/0.22),transparent)]"
+                        className="pointer-events-none absolute -bottom-36 -start-16 h-[340px] w-[340px] rounded-full bg-[radial-gradient(closest-side,rgb(var(--brand-solid)/0.22),transparent)]"
                         aria-hidden="true"
                     />
                 </>
