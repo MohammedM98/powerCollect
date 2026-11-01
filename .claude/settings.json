@@ -10,5 +10,13 @@
         "Stop": [{
             "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/automation/hook.mjs\"", "timeout": 180 }]
         }]
+    },
+    "extraKnownMarketplaces": {
+        "thedotmack": {
+            "source": { "source": "github", "repo": "thedotmack/claude-mem" }
+        }
+    },
+    "enabledPlugins": {
+        "claude-mem@thedotmack": true
     }
 }
