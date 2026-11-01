@@ -1,6 +1,17 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { brandPalette, brandStylesheet, contrastWithWhite, dominantColors, MIN_CONTRAST } from '../../resources/js/lib/brandPalette.js';
+import { brandPalette, brandStylesheet, brandRoleStylesheet, contrastWithWhite, dominantColors, MIN_CONTRAST } from '../../resources/js/lib/brandPalette.js';
+
+test('semantic palette roles preview in light and dark without accepting CSS input', () => {
+    const css = brandRoleStylesheet({ secondary: '#0F766E', accent: '#B45309', background: '#F3F6FB', surface: '#FFFFFF' });
+    assert.match(css, /--brand-secondary-500:/);
+    assert.match(css, /--brand-accent-on-solid:255 255 255/);
+    assert.match(css, /--gray-50:243 246 251/);
+    assert.match(css, /--surface:255 255 255/);
+    assert.match(css, /\.dark\{/);
+    assert.equal(brandRoleStylesheet({ accent: 'red;display:none', background: 'url(https://example.test)' }), '');
+    assert.equal(brandRoleStylesheet({}), '');
+});
 
 // What app/Support/BrandPalette.php draws for the same colours: the preview must show what saving will.
 const PHP_BLUE = {

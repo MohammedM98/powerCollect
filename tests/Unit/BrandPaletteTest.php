@@ -77,4 +77,16 @@ class BrandPaletteTest extends TestCase
         $this->assertSame('5 150 105', BrandPalette::statusScale('#059669')[500]);
         $this->assertCount(11, BrandPalette::statusScale('#059669'));
     }
+
+    public function test_surface_colours_keep_the_exact_light_value_and_become_subdued_in_the_dark_theme(): void
+    {
+        $background = BrandPalette::surface('#F8FAFC', 0.158);
+        $surface = BrandPalette::surface('#FFFFFF', 0.204);
+
+        $this->assertSame('248 250 252', $background['light']);
+        $this->assertSame('255 255 255', $surface['light']);
+        $this->assertGreaterThan(15, BrandPalette::contrastWithWhite($this->hex($background['dark'])));
+        $this->assertGreaterThan(15, BrandPalette::contrastWithWhite($this->hex($surface['dark'])));
+        $this->assertNotSame($background['dark'], $surface['dark']);
+    }
 }

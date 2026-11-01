@@ -37,6 +37,9 @@ class Brand
     /** The status colours a company may set: each replaces theme.css's scale of that name. */
     public const STATUSES = ['success', 'warning', 'danger', 'info'];
 
+    /** The five interface palette roles; status colours remain independent. */
+    public const PALETTE = ['primary', 'secondary', 'accent', 'background', 'surface'];
+
     /** The navigation drawn dark in both themes (theme.css, section 7), whose greys follow the neutral tone's dark ones. */
     private const DARK_PANELS = ":root:is([data-ui-nav-style='dark'],[data-ui-nav-style='brand']) :is(.tn-glass,.sn-panel)";
 
@@ -61,7 +64,7 @@ class Brand
     /**
      * The company's identity: the imported one, or the default until one is.
      *
-     * @return array{version: int, company: array{name: string, nameEnglish: ?string, shortName: ?string, tagline: ?string}, logos: array<string, ?string>, colors: array{primary: ?string, print: ?string, success: ?string, warning: ?string, danger: ?string, info: ?string}, design: array<string, string>, tokens: array<string, int|float|null>, customCss: ?string}
+     * @return array{version: int, company: array{name: string, nameEnglish: ?string, shortName: ?string, tagline: ?string}, logos: array<string, ?string>, colors: array{primary: ?string, secondary: ?string, accent: ?string, background: ?string, surface: ?string, print: ?string, success: ?string, warning: ?string, danger: ?string, info: ?string}, design: array<string, string>, tokens: array<string, int|float|null>, customCss: ?string}
      */
     public function profile(): array
     {
@@ -91,7 +94,7 @@ class Brand
     /**
      * What every page gets: the names, each logo's address and the colour printouts are drawn in.
      *
-     * @return array{name: string, nameEnglish: ?string, shortName: string, tagline: ?string, logos: array<string, string>, animatedLogo: bool, printColor: string, primaryColor: ?string, design: array<string, string>, stylesheet: ?string}
+     * @return array{name: string, nameEnglish: ?string, shortName: string, tagline: ?string, logos: array<string, string>, animatedLogo: bool, printColor: string, primaryColor: ?string, colors: array<string, ?string>, design: array<string, string>, stylesheet: ?string}
      */
     public function forPage(): array
     {
@@ -107,6 +110,7 @@ class Brand
             'animatedLogo' => $profile['logos']['main'] === self::defaults()['logos']['main'],
             'printColor' => $this->printColor(),
             'primaryColor' => $profile['colors']['primary'],
+            'colors' => $profile['colors'],
             'design' => $profile['design'],
             // What the page's <style id="brand-colors"> holds, so pages visited without reloading keep it in step.
             'stylesheet' => $this->stylesheet(),
@@ -172,6 +176,26 @@ class Brand
             $panels .= $declare($neutral['dark'], 'gray').'--surface:'.$neutral['darkSurface'].';';
         }
 
+        foreach (['secondary', 'accent'] as $role) {
+            if ($colors[$role] !== null) {
+                $palette = BrandPalette::fromHex($colors[$role]);
+                $prefix = 'brand-'.$role;
+                $root .= $declare($palette['light'], $prefix).$declare($palette['fixed'], $prefix)
+                    ."--{$prefix}-hover:{$palette['fixed']['lo']};--{$prefix}-on-solid:255 255 255;--{$prefix}-on-soft:{$palette['light'][900]};"
+                    ."--ui-{$role}:rgb(var(--{$prefix}-600));--ui-{$role}-t:rgb(var(--{$prefix}-500) / 0.08);";
+                $dark .= $declare($palette['dark'], $prefix)
+                    ."--{$prefix}-on-soft:{$palette['dark'][900]};--ui-{$role}:rgb(var(--{$prefix}-700));--ui-{$role}-t:rgb(var(--{$prefix}-500) / 0.12);";
+            }
+        }
+
+        foreach (['background' => ['gray-50', 'page', 0.158], 'surface' => ['surface', 'surface', 0.204]] as $role => [$variable, $semantic, $lightness]) {
+            if ($colors[$role] !== null) {
+                $surface = BrandPalette::surface($colors[$role], $lightness);
+                $root .= "--{$variable}:{$surface['light']};--ui-{$semantic}:rgb(var(--{$variable}));";
+                $dark .= "--{$variable}:{$surface['dark']};--ui-{$semantic}:rgb(var(--{$variable}));";
+            }
+        }
+
         $css = ($root !== '' ? ':root{'.$root.'}' : '').($dark !== '' ? '.dark{'.$dark.'}' : '').($panels !== '' ? self::DARK_PANELS.'{'.$panels.'}' : '')
             .BrandDesign::tokenStylesheet($this->profile()['tokens'])
             .($this->profile()['customCss'] ?? '');
@@ -213,7 +237,7 @@ class Brand
             'logos.main' => ['required', 'string'],
             ...array_fill_keys(array_map(fn (string $logo): string => "logos.{$logo}", array_diff(self::LOGOS, ['main'])), ['nullable', 'string']),
             'colors' => ['nullable', 'array'],
-            'colors.primary' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            ...array_fill_keys(array_map(fn (string $role): string => "colors.{$role}", self::PALETTE), ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/']),
             'colors.print' => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
             ...array_fill_keys(array_map(fn (string $status): string => "colors.{$status}", self::STATUSES), ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/']),
             ...BrandDesign::rules('design'),
@@ -302,7 +326,7 @@ class Brand
                 'main' => $text($profile['logos']['main'] ?? null) ?? self::defaults()['logos']['main'],
             ],
             'colors' => [
-                'primary' => BrandPalette::isHex($profile['colors']['primary'] ?? null) ? strtoupper($profile['colors']['primary']) : null,
+                ...array_combine(self::PALETTE, array_map(fn (string $role): ?string => BrandPalette::isHex($profile['colors'][$role] ?? null) ? strtoupper($profile['colors'][$role]) : null, self::PALETTE)),
                 'print' => BrandPalette::isHex($profile['colors']['print'] ?? null) ? strtoupper($profile['colors']['print']) : null,
                 ...array_combine(self::STATUSES, array_map(fn (string $status): ?string => BrandPalette::isHex($profile['colors'][$status] ?? null) ? strtoupper($profile['colors'][$status]) : null, self::STATUSES)),
             ],

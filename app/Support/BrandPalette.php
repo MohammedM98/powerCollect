@@ -173,6 +173,21 @@ class BrandPalette
     }
 
     /**
+     * A page or surface keeps its exact light colour and a subdued dark tint.
+     *
+     * @return array{light: string, dark: string}
+     */
+    public static function surface(string $hex, float $darkLightness): array
+    {
+        [, $chroma, $hue] = self::hexToOklch($hex);
+
+        return [
+            'light' => self::triple(self::hexToRgb($hex)),
+            'dark' => self::triple(self::oklchToRgb($darkLightness, min($chroma, 0.025), $hue)),
+        ];
+    }
+
+    /**
      * Whether the colour is a six-digit hex colour, e.g. `#A51D26`.
      */
     public static function isHex(mixed $value): bool

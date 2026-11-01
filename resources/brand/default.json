@@ -14,6 +14,10 @@
     },
     "colors": {
         "primary": "#A51D26",
+        "secondary": null,
+        "accent": null,
+        "background": null,
+        "surface": null,
         "print": "#A51D26",
         "success": null,
         "warning": null,
@@ -22,6 +26,10 @@
     },
     "design": {
         "preset": "classic",
+        "tableVariant": "default",
+        "motionStyle": "standard",
+        "details": "modal",
+        "footerStyle": "full",
         "navigation": "topbar",
         "navStyle": "glass",
         "width": "wide",

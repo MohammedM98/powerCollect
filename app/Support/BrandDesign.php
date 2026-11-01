@@ -23,6 +23,26 @@ class BrandDesign
      * @var array<string, array{label: string, options: array<string, string>}>
      */
     public const OPTIONS = [
+        'tableVariant' => ['label' => 'نمط مكوّن الجدول', 'options' => [
+            'default' => 'النمط الحالي',
+            'ledger' => 'سجل محاسبي',
+            'striped' => 'صفوف متناوبة',
+            'bordered' => 'شبكة بحدود',
+        ]],
+        'motionStyle' => ['label' => 'حركة ظهور المحتوى', 'options' => [
+            'standard' => 'الحركة الحالية',
+            'fade' => 'ظهور تدريجي',
+            'slide' => 'انزلاق خفيف',
+            'none' => 'بدون حركة',
+        ]],
+        'details' => ['label' => 'عرض التفاصيل', 'options' => [
+            'modal' => 'نافذة وسط الشاشة',
+            'drawer' => 'لوحة جانبية',
+        ]],
+        'footerStyle' => ['label' => 'تذييل الصفحة', 'options' => [
+            'full' => 'كامل',
+            'compact' => 'مختصر',
+        ]],
         'navigation' => ['label' => 'التنقل', 'options' => [
             'topbar' => 'شريط علوي عائم',
             'sidebar' => 'قائمة جانبية',
@@ -206,6 +226,8 @@ class BrandDesign
             'pill' => 'كبسولة داكنة',
             'brand' => 'كبسولة بلون الشركة',
             'underline' => 'خط سفلي',
+            'secondary' => 'كبسولة باللون الثانوي',
+            'accent' => 'كبسولة بلون الإبراز',
         ]],
     ];
 

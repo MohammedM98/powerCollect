@@ -28,6 +28,7 @@ export default function DevelopmentCredits() {
             <ul className="af-team-dialog__names">
                 {maker.team.map((member) => <li key={member.name} className="af-team-dialog__member">
                     <span className="af-team-dialog__name">{member.name}</span>
+                    {member.role && <span className="text-sm text-gray-500">{member.role}</span>}
                     {member.phone && <a className="af-team__contact" href={`tel:${member.phone}`} aria-label={`اتصال بـ${member.name}: ${member.phoneLabel}`}>
                         <Icon name="phone" className="h-4 w-4" />
                         <span dir="ltr">{member.phoneLabel}</span>

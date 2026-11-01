@@ -1,4 +1,4 @@
-import { brandStylesheet, isHex } from '@/lib/brandPalette';
+import { brandRoleStylesheet, brandStylesheet, isHex } from '@/lib/brandPalette';
 
 /**
  * The identity being tried on the appearance screen before it is saved:
@@ -70,7 +70,7 @@ export function applyBrandToDocument(brand, { themePrimary, previewing = false }
     // an identity being tried shows its main colour's shades.
     let style = document.getElementById('brand-colors');
     const css = previewing
-        ? (isHex(brand.primaryColor) && brand.primaryColor.toUpperCase() !== themePrimary?.toUpperCase() ? brandStylesheet(brand.primaryColor) : '')
+        ? (isHex(brand.primaryColor) && brand.primaryColor.toUpperCase() !== themePrimary?.toUpperCase() ? brandStylesheet(brand.primaryColor) : '') + brandRoleStylesheet(brand.colors)
         : brand.stylesheet ?? '';
 
     if (!style && css) {

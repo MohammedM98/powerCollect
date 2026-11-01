@@ -13,6 +13,7 @@ import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
 import { brandPalette, contrastWithWhite, dominantColors, isHex, MIN_CONTRAST } from '@/lib/brandPalette';
 import { setBrandPreview } from '@/lib/brandPreview';
+import { BRAND_PALETTES } from '@/lib/brandPresets';
 import './Appearance.css';
 
 const LOGOS = [
@@ -33,7 +34,7 @@ const SAMPLE_ROWS = [
 function formFields(profile, themePrimary) {
     return {
         company: { name: profile.company.name ?? '', nameEnglish: profile.company.nameEnglish ?? '', shortName: profile.company.shortName ?? '', tagline: profile.company.tagline ?? '' },
-        colors: { primary: profile.colors.primary ?? themePrimary, print: profile.colors.print },
+        colors: { ...profile.colors, primary: profile.colors.primary ?? themePrimary, print: profile.colors.print },
         design: profile.design,
         logos: { main: null, light: null, icon: null, print: null },
         remove_logos: [],
@@ -252,6 +253,7 @@ export default function Appearance({ profile, isImported, options, presets, them
         shortName: data.company.shortName || data.company.name || shared.name,
         tagline: data.company.tagline || null,
         primaryColor: isHex(data.colors.primary) ? data.colors.primary : shared.primaryColor,
+        colors: data.colors,
         printColor: isHex(data.colors.print) ? data.colors.print : isHex(data.colors.primary) ? data.colors.primary : shared.printColor,
         design: data.design,
         animatedLogo: !fileUrls.main && shared.animatedLogo,
@@ -350,8 +352,15 @@ export default function Appearance({ profile, isImported, options, presets, them
                     </FormSection>
 
                     <FormSection icon="swatch" title="الألوان" columns={2} info="من اللون الرئيسي تتولد كل درجات الواجهة في الوضعين الفاتح والغامق. ألوان الأخطاء تبقى حمراء.">
+                        <div className="col-span-full flex flex-wrap gap-3" role="group" aria-label="لوحات ألوان الشركة">
+                            {BRAND_PALETTES.map((palette) => <button key={palette.id} type="button" className="rounded-xl border border-gray-200 bg-surface px-4 py-3 text-start text-sm font-semibold text-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" onClick={() => form.setData('colors', { ...data.colors, ...palette.colors })}>
+                                <span className="mb-2 flex gap-1" aria-hidden="true">{Object.values(palette.colors).map((color, index) => <span key={index} className="h-5 w-5 rounded-full border border-gray-200" style={{ backgroundColor: color }} />)}</span>
+                                {palette.name}
+                            </button>)}
+                        </div>
                         <ColorField id="brand-primary" label="اللون الرئيسي" value={data.colors.primary} suggestions={suggestions} error={form.errors['colors.primary']}
                             onChange={(value) => form.setData('colors', { ...data.colors, primary: value })} />
+                        {Object.entries({ secondary: 'اللون الثانوي', accent: 'لون الإبراز', background: 'خلفية الصفحة', surface: 'سطح البطاقات والنوافذ' }).map(([key, label]) => <ColorField key={key} id={`brand-${key}`} label={label} value={data.colors[key]} suggestions={suggestions} allowEmpty emptyLabel="تلقائي" error={form.errors[`colors.${key}`]} onChange={(value) => form.setData('colors', { ...data.colors, [key]: value })} />)}
                         <ColorField id="brand-print" label="لون الطباعة" value={data.colors.print} suggestions={suggestions} allowEmpty emptyLabel="مثل الرئيسي" error={form.errors['colors.print']}
                             onChange={(value) => form.setData('colors', { ...data.colors, print: value })} />
                     </FormSection>

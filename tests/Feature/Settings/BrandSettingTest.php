@@ -116,6 +116,23 @@ class BrandSettingTest extends TestCase
         $this->assertSame([$saved['main']], Storage::disk('public')->files('brand'));
     }
 
+    public function test_saving_palette_roles_reaches_the_page_and_export(): void
+    {
+        $colors = ['secondary' => '#334155', 'accent' => '#B45309', 'background' => '#F8FAFC', 'surface' => '#FFFFFF'];
+
+        $this->actingAs($this->superAdmin)
+            ->post(route('settings.appearance.update'), $this->form(['colors' => $colors, 'design' => ['details' => 'drawer', 'tableVariant' => 'ledger']]))
+            ->assertSessionHasNoErrors();
+
+        foreach ($colors as $role => $hex) {
+            $this->assertSame($hex, app(Brand::class)->export()['colors'][$role]);
+        }
+        $this->get(route('dashboard'))->assertInertia(fn ($page) => $page
+            ->where('brand.colors.secondary', '#334155')
+            ->where('brand.design.tableVariant', 'ledger')
+            ->where('brand.design.details', 'drawer'));
+    }
+
     public function test_rejects_a_look_the_interface_cannot_draw_and_a_logo_that_is_not_an_image(): void
     {
         $this->actingAs($this->superAdmin)->post(route('settings.appearance.update'), $this->form([

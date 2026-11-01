@@ -26,7 +26,7 @@ let titleCount = 0;
  * past the edge keeps the window open. A panel whose content doesn't name
  * its own role is announced as a dialog, titled by its first heading.
  */
-export default function Modal({ show, onClose, children, maxWidth = 'md', centered = false, panelClassName = '' }) {
+export default function Modal({ show, onClose, children, maxWidth = 'md', centered = false, panelClassName = '', presentation = 'details' }) {
     const onCloseRef = useRef(onClose);
     const panelRef = useRef(null);
     const pressStartedOutside = useRef(false);
@@ -143,6 +143,7 @@ export default function Modal({ show, onClose, children, maxWidth = 'md', center
 
     return createPortal(
         <div
+            data-modal-presentation={presentation}
             className={`modal-scroll fixed inset-0 z-50 overflow-y-auto overscroll-contain px-4 py-6 sm:px-6 ${centered ? 'flex items-center' : ''}`}
             onPointerDown={(e) => {
                 pressStartedOutside.current = e.target === e.currentTarget;

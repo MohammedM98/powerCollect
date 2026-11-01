@@ -289,3 +289,17 @@
 .af-team-dialog__maker a {
     color: rgb(var(--brand-600));
 }
+
+/* Compact keeps the company and the developer credit together, without the large wordmark. */
+:root[data-ui-footer-style='compact'] .af-footer__inner {
+    align-items: center;
+    padding-block: 12px;
+}
+
+:root[data-ui-footer-style='compact'] .af-footer__logo {
+    height: 30px;
+}
+
+:root[data-ui-footer-style='compact'] :is(.af-footer__wordmark, .af-footer__english) {
+    display: none;
+}

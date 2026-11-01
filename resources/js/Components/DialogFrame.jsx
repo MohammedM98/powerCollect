@@ -34,7 +34,7 @@ export function DialogHeader({ titleId, title, description = null, descriptionId
 export default function DialogFrame({ show, onClose, title, description, icon = 'check', tone = 'primary', maxWidth = '2xl', role = 'dialog', children, footer, busy = false }) {
     const id = useId();
 
-    return <Modal show={show} onClose={busy ? undefined : onClose} maxWidth={maxWidth} centered>
+    return <Modal show={show} onClose={busy ? undefined : onClose} maxWidth={maxWidth} centered presentation="dialog">
         <div role={role} aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={description ? `${id}-description` : role === 'alertdialog' ? `${id}-body` : undefined} aria-busy={busy || undefined} dir="rtl" className="flex max-h-[90dvh] min-h-0 flex-col">
             <DialogHeader titleId={`${id}-title`} title={title} description={description} descriptionId={`${id}-description`} icon={icon} tone={tone} onClose={onClose} closeDisabled={busy} />
             <div id={`${id}-body`} className="min-h-0 flex-1 space-y-5 overflow-y-auto break-words px-5 py-6 text-[18px] leading-8 text-gray-700 sm:px-7">{children}</div>

@@ -153,6 +153,32 @@ export function brandStylesheet(hex) {
         + `.dark{${declare(palette.dark)}--ui-danger:rgb(var(--danger-400));--ui-danger-t:rgb(var(--danger-400) / 0.12);}`;
 }
 
+/** Semantic company colours, matching Brand::stylesheet in both themes. */
+export function brandRoleStylesheet(colors = {}) {
+    let root = '';
+    let dark = '';
+    const declare = (shades, prefix) => Object.entries(shades).map(([step, rgb]) => `--${prefix}-${step}:${rgb};`).join('');
+    for (const role of ['secondary', 'accent']) {
+        if (!isHex(colors[role])) continue;
+        const palette = brandPalette(colors[role]);
+        const prefix = `brand-${role}`;
+        root += declare(palette.light, prefix) + declare(palette.fixed, prefix)
+            + `--${prefix}-hover:${palette.fixed.lo};--${prefix}-on-solid:255 255 255;--${prefix}-on-soft:${palette.light[900]};`
+            + `--ui-${role}:rgb(var(--${prefix}-600));--ui-${role}-t:rgb(var(--${prefix}-500) / 0.08);`;
+        dark += declare(palette.dark, prefix) + `--${prefix}-on-soft:${palette.dark[900]};`
+            + `--ui-${role}:rgb(var(--${prefix}-700));--ui-${role}-t:rgb(var(--${prefix}-500) / 0.12);`;
+    }
+    for (const [role, variable, token, lightness] of [['background', 'gray-50', 'ui-page', 0.158], ['surface', 'surface', 'ui-surface', 0.204]]) {
+        if (!isHex(colors[role])) continue;
+        const rgb = hexToRgb(colors[role]);
+        const [, chroma, hue] = hexToOklch(colors[role]);
+        const night = oklchToRgb(lightness, Math.min(chroma, 0.025), hue);
+        root += `--${variable}:${rgb.join(' ')};--${token}:rgb(var(--${variable}));`;
+        dark += `--${variable}:${night.join(' ')};--${token}:rgb(var(--${variable}));`;
+    }
+    return (root ? `:root{${root}}` : '') + (dark ? `.dark{${dark}}` : '');
+}
+
 /**
  * The colours a logo is drawn in, most used first: `pixels` is the image's
  * RGBA data (canvas getImageData). Transparent, near-white, near-black and

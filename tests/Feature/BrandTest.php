@@ -234,6 +234,48 @@ class BrandTest extends TestCase
         }
     }
 
+    public function test_an_identity_round_trips_all_palette_roles_and_component_choices(): void
+    {
+        $colors = ['secondary' => '#334155', 'accent' => '#b45309', 'background' => '#f8fafc', 'surface' => '#ffffff'];
+        $design = ['tableVariant' => 'ledger', 'motionStyle' => 'slide', 'details' => 'drawer', 'footerStyle' => 'compact', 'navHighlight' => 'accent'];
+
+        $this->artisan('brand:import', ['file' => $this->identityFile(['colors' => $colors, 'design' => $design])])->assertSuccessful();
+
+        $profile = app(Brand::class)->export();
+        foreach ($colors as $role => $hex) {
+            $this->assertSame(strtoupper($hex), $profile['colors'][$role]);
+        }
+        foreach ($design as $key => $value) {
+            $this->assertSame($value, $profile['design'][$key]);
+        }
+        $this->get(route('login'))->assertInertia(fn ($page) => $page
+            ->where('brand.colors.accent', '#B45309')
+            ->where('brand.design.details', 'drawer'))
+            ->assertSee('--brand-secondary-500:51 65 85;', false)
+            ->assertSee('--brand-accent-500:180 83 9;', false)
+            ->assertSee('--gray-50:248 250 252;', false)
+            ->assertSee('--surface:255 255 255;', false)
+            ->assertSee('data-ui-table-variant="ledger"', false);
+    }
+
+    public function test_import_rejects_invalid_palette_roles_and_component_choices_without_saving(): void
+    {
+        $file = $this->identityFile(['colors' => ['secondary' => 'red', 'accent' => '#123', 'background' => 'url(x)', 'surface' => '#xyzxyz'], 'design' => ['tableVariant' => 'unknown', 'motionStyle' => 'spin', 'details' => 'page', 'footerStyle' => 'missing']]);
+
+        $this->artisan('brand:import', ['file' => $file])
+            ->expectsOutputToContain('colors.secondary')
+            ->expectsOutputToContain('colors.accent')
+            ->expectsOutputToContain('colors.background')
+            ->expectsOutputToContain('colors.surface')
+            ->expectsOutputToContain('design.tableVariant')
+            ->expectsOutputToContain('design.motionStyle')
+            ->expectsOutputToContain('design.details')
+            ->expectsOutputToContain('design.footerStyle')
+            ->assertFailed();
+
+        $this->assertFalse(app(Brand::class)->isImported());
+    }
+
     public function test_exact_values_reach_every_page_and_win_over_the_choices(): void
     {
         $file = $this->identityFile(['design' => ['radius' => 'soft'], 'tokens' => ['radiusScale' => 1.6, 'buttonRadius' => 20, 'transitionMs' => 240]]);
