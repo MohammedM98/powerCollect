@@ -65,7 +65,7 @@ class SubscriptionTransactionTest extends TestCase
 
         $subscription = Subscription::where('national_id', $payload['national_id'])->sole();
         $this->assertSame('50.25', $subscription->subscription_fee);
-        $this->assertSame(0.0, $subscription->balance());
+        $this->assertSame('0.00', $subscription->balance());
         $this->assertDatabaseCount('subscription_transactions', 0);
         $this->actingAs($actor)->get(route('subscriptions.statement', $subscription))
             ->assertInertia(fn (Assert $page) => $page->has('entries', 0)->where('summary.balance', '0.00'));

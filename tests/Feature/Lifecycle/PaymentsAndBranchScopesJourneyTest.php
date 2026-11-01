@@ -11,10 +11,11 @@ use App\Models\Permission;
 use App\Models\SplitPayment;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
-use App\Models\TransactionDeletion;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /**
@@ -54,7 +55,7 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
         // A cash payment and a transfer; a second transfer on the same reference is refused.
         $cash = $this->pay($collector, $khaled, ['amount' => '40', 'payment_method' => 'cash']);
         $this->pay($collector, $khaled, ['amount' => '60', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'خالد', 'reference_number' => 'TRF-1']);
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $mona), [
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $mona), ['payment_token' => (string) Str::uuid(),
             'amount' => '10', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'منى', 'reference_number' => 'TRF-1',
         ])->assertSessionHasErrors('reference_number');
         $this->assertBalances([200.0, 50.0, 100.0], $salem, $khaled, $mona);
@@ -84,15 +85,15 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
         $this->assertBalances([210.0, 50.0, 100.0], $salem, $khaled, $mona);
 
         $monaRefund = $mona->transactions()->where('type', SubscriptionTransaction::TYPE_REFUND)->sole();
-        $this->act($manager, $monaRefund, ['delete_reversal'], ['action' => 'delete_reversal', 'correction_notes' => 'الحوالة وصلت فعلًا']);
-        $this->assertSame([SubscriptionTransaction::STATUS_ACTIVE, SubscriptionTransaction::STATUS_ACTIVE], [$salemShare->fresh()->status, $monaShare->fresh()->status]);
-        $this->assertSame(0, SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_REFUND)->count());
-        $this->assertBalances([140.0, 50.0, 50.0], $salem, $khaled, $mona);
+        $this->act($manager, $monaRefund, [], ['action' => 'delete_reversal', 'correction_notes' => 'الحوالة وصلت فعلًا']);
+        $this->assertSame([SubscriptionTransaction::STATUS_LINKED_CANCELLATION, SubscriptionTransaction::STATUS_LINKED_CANCELLATION], [$salemShare->fresh()->status, $monaShare->fresh()->status]);
+        $this->assertSame(2, SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_REFUND)->count());
+        $this->assertBalances([210.0, 50.0, 100.0], $salem, $khaled, $mona);
 
-        $this->act($manager, $salemShare, ['edit_metadata', 'refund'], ['action' => 'refund']);
-        $this->act($manager, $salemShare, ['delete_tree'], ['action' => 'delete_tree', 'correction_notes' => 'الحوالة سُجّلت مرتين']);
-        $this->assertModelMissing($salemShare);
-        $this->assertModelMissing($monaShare);
+        $this->act($manager, $salemShare, [], ['action' => 'refund']);
+        $this->act($manager, $salemShare, [], ['action' => 'delete_tree', 'correction_notes' => 'الحوالة سُجّلت مرتين']);
+        $this->assertModelExists($salemShare);
+        $this->assertModelExists($monaShare);
         $this->assertBalances([210.0, 50.0, 100.0], $salem, $khaled, $mona);
 
         // A second split, the last line of both statements, is deleted outright with both its shares.
@@ -100,27 +101,27 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
         $secondShare = SubscriptionTransaction::query()->where('reference_number', 'SPLIT-2')->orderBy('id')->firstOrFail();
         $this->assertBalances([190.0, 50.0, 70.0], $salem, $khaled, $mona);
         $this->act($manager, $secondShare, ['edit_metadata', 'delete', 'refund'], ['action' => 'delete', 'correction_notes' => 'رقم المرجع خاطئ']);
-        $this->assertSame(0, SubscriptionTransaction::query()->where('reference_number', 'SPLIT-2')->count());
+        $this->assertSame(2, SubscriptionTransaction::query()->where('reference_number', 'SPLIT-2')->count());
         $this->assertBalances([210.0, 50.0, 100.0], $salem, $khaled, $mona);
 
         // A cash payment refunded, its refund deleted, and then the payment itself deleted.
         $this->actingAs($manager)->post(route('subscriptions.charges.store', $khaled), ['type' => 'disconnection_fee', 'amount' => '15'])->assertSessionHasNoErrors();
         $this->act($manager, $cash, ['edit_metadata', 'refund'], ['action' => 'refund']);
         $this->assertBalances([210.0, 105.0, 100.0], $salem, $khaled, $mona);
-        $this->act($manager, $khaled->transactions()->where('type', SubscriptionTransaction::TYPE_REFUND)->sole(), ['delete_reversal'], ['action' => 'delete_reversal', 'correction_notes' => 'الإرجاع لم يتم']);
-        $this->assertBalances([210.0, 65.0, 100.0], $salem, $khaled, $mona);
+        $this->act($manager, $khaled->transactions()->where('type', SubscriptionTransaction::TYPE_REFUND)->sole(), [], ['action' => 'delete_reversal', 'correction_notes' => 'الإرجاع لم يتم']);
+        $this->assertBalances([210.0, 105.0, 100.0], $salem, $khaled, $mona);
         $this->actingAs($manager)->post(route('subscriptions.transactions.actions.store', [$khaled, $cash]), ['action' => 'delete', 'correction_notes' => 'ليست آخر حركة'])->assertSessionHasErrors('action');
-        $this->assertBalances([210.0, 65.0, 100.0], $salem, $khaled, $mona);
+        $this->assertBalances([210.0, 105.0, 100.0], $salem, $khaled, $mona);
 
         // One record per subscriber for each share of a split; deleting a split removes each share as a tree.
-        $this->assertSame(['delete_reversal', 'delete_reversal', 'delete_tree', 'delete_tree', 'delete_tree', 'delete_tree', 'delete_reversal'], TransactionDeletion::query()->orderBy('id')->pluck('action')->all());
+        $this->assertDatabaseCount('transaction_deletions', 0);
         $owed = $salem->balance() + $khaled->balance() + $mona->balance();
         $this->actingAs($manager)->get(route('ledger.index', ['period' => 'all']))->assertInertia(fn ($page) => $page
             ->where('ledgerTotals.net', fn ($net): bool => round((float) $net, 2) === round($owed, 2))
-            ->where('summary.collected', 100));
+            ->where('summary.collected', '60.00'));
         $this->actingAs($manager)->get(route('reports.index'))->assertInertia(fn ($page) => $page
             ->where('flow.closing', number_format($owed, 2, '.', ''))
-            ->where('collections.total', '100.00'));
+            ->where('collections.total', '60.00'));
     }
 
     public function test_a_branch_manager_sees_their_branch_and_the_super_admin_every_branch_with_their_own_name_on_what_they_do(): void
@@ -141,14 +142,14 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
         // The branch manager: their own branch on every page, and nothing of the other.
         $this->actingAs($manager)->get(route('ledger.index', ['period' => 'all']))->assertInertia(fn ($page) => $page
             ->where('entries.total', 2)
-            ->where('ledgerTotals.net', 70));
+            ->where('ledgerTotals.net', '70.00'));
         $this->actingAs($manager)->get(route('reports.index', ['branch' => $deir->id]))->assertInertia(fn ($page) => $page
             ->where('filters.branch', $nuseirat->id)
             ->where('branches', [['value' => $nuseirat->id, 'label' => $nuseirat->name]])
             ->where('flow.closing', '70.00'));
         $this->actingAs($manager)->get(route('receivables.index'))->assertInertia(fn ($page) => $page->where('summary.total', 70)->where('summary.count', 1));
         $this->actingAs($manager)->get(route('subscriptions.statement', $yousef))->assertForbidden();
-        $this->actingAs($manager)->post(route('subscriptions.payments.store', $yousef), ['amount' => '5', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertForbidden();
+        $this->actingAs($manager)->post(route('subscriptions.payments.store', $yousef), ['payment_token' => (string) Str::uuid(), 'amount' => '5', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertForbidden();
         $this->actingAs($manager)->post(route('subscriptions.transactions.actions.store', [$yousef, $yousefCash]), ['action' => 'refund'])->assertForbidden();
         $this->actingAs($manager)->post(route('payments.split.store'), [
             'total_amount' => '20', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'مرسل', 'reference_number' => 'X-BRANCH',
@@ -161,7 +162,7 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
         $owner = $this->superAdmin;
         $this->actingAs($owner)->get(route('ledger.index', ['period' => 'all']))->assertInertia(fn ($page) => $page
             ->where('entries.total', 5)
-            ->where('ledgerTotals.net', 135));
+            ->where('ledgerTotals.net', '135.00'));
         $this->actingAs($owner)->get(route('reports.index', ['branch' => 'all']))->assertInertia(fn ($page) => $page
             ->where('filters.branch', 'all')
             ->where('flow.closing', '135.00')
@@ -180,7 +181,7 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
         $this->actingAs($owner)->put(route('branch-view.update'), ['branch_id' => $deir->id])->assertRedirect(route('dashboard'));
         $this->get(route('ledger.index', ['period' => 'all']))->assertInertia(fn ($page) => $page
             ->where('entries.total', 3)
-            ->where('ledgerTotals.net', 65));
+            ->where('ledgerTotals.net', '65.00'));
         $this->get(route('reports.index'))->assertInertia(fn ($page) => $page->where('filters.branch', $deir->id)->where('flow.closing', '65.00'));
         $this->get(route('receivables.index'))->assertInertia(fn ($page) => $page->where('summary.total', 65)->where('summary.count', 1));
         $this->get(route('subscriptions.statement', $salem))->assertNotFound();
@@ -199,7 +200,7 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
         $events = $this->actingAs($deirManager)->get(route('transaction-audit.index', ['period' => 'all']))->inertiaProps('events');
         $this->assertSame([$owner->name], array_values(array_unique(array_column($events['data'], 'userName'))));
         $this->actingAs($owner)->put(route('branch-view.update'), ['branch_id' => null])->assertRedirect();
-        $this->get(route('ledger.index', ['period' => 'all']))->assertInertia(fn ($page) => $page->where('ledgerTotals.net', 172));
+        $this->get(route('ledger.index', ['period' => 'all']))->assertInertia(fn ($page) => $page->where('ledgerTotals.net', '172.00'));
     }
 
     /**
@@ -261,7 +262,12 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
         $entries = collect($this->actingAs($actor)->get(route('subscriptions.statement', $line->subscription_id))->inertiaProps('entries'));
         $this->assertSame($offered, $entries->firstWhere('id', $line->id)['available_actions'], "the actions offered on {$line->type} {$line->id}");
 
-        $this->post(route('subscriptions.transactions.actions.store', [$line->subscription_id, $line]), $payload)->assertSessionHasNoErrors();
+        if ($offered === []) {
+            $this->post(route('subscriptions.transactions.actions.store', [$line->subscription_id, $line]), $payload)->assertSessionHasErrors('action');
+            $this->assertModelExists($line);
+        } else {
+            $this->post(route('subscriptions.transactions.actions.store', [$line->subscription_id, $line]), $payload)->assertSessionHasNoErrors();
+        }
     }
 
     /**
@@ -271,7 +277,7 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
      */
     private function pay(User $collector, Subscription $subscription, array $details): SubscriptionTransaction
     {
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['currency' => 'ILS', ...$details])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'currency' => 'ILS', ...$details])->assertSessionHasNoErrors();
 
         return $subscription->transactions()->where('type', SubscriptionTransaction::TYPE_PAYMENT)->latest('id')->firstOrFail();
     }
@@ -281,6 +287,6 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
      */
     private function assertBalances(array $expected, Subscription ...$subscriptions): void
     {
-        $this->assertSame($expected, array_map(fn (Subscription $subscription): float => $subscription->balance(), $subscriptions));
+        $this->assertSame(array_map(fn (int|float|string $amount): string => Money::amount($amount), $expected), array_map(fn (Subscription $subscription): string => $subscription->balance(), $subscriptions));
     }
 }

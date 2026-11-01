@@ -12,7 +12,9 @@ use App\Models\CurrencyRate;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
@@ -23,7 +25,7 @@ class FinancialLifecycleTest extends TestCase
 
     private function pay(User $collector, Subscription $subscription, string $amount, string $method = 'cash', string $reference = 'BANK-LIFECYCLE', string $currency = 'ILS'): SubscriptionTransaction
     {
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), [
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(),
             'amount' => $amount, 'currency' => $currency, 'payment_method' => $method,
             'bank_name' => 'بنك فلسطين', 'sender_name' => 'صاحب الحساب', 'reference_number' => $reference,
         ])->assertSessionHasNoErrors();
@@ -63,8 +65,8 @@ class FinancialLifecycleTest extends TestCase
         $this->actingAs($collector)->post(route('subscriptions.clearings.store', $subscription), ['amount' => '50', 'notes' => 'خدمة صيانة'])->assertSessionHasNoErrors();
         $clearing = $subscription->transactions()->where('type', SubscriptionTransaction::TYPE_CLEARING)->sole();
         $otherBank = $this->pay($secondCollector, $other, '100', 'bank_transfer', 'BANK-OTHER');
-        $this->assertSame(350.0, $subscription->balance());
-        $this->assertSame(100.0, $other->balance());
+        $this->assertSame('350.00', $subscription->balance());
+        $this->assertSame('100.00', $other->balance());
         $originals = [$cash, $bank, $clearing, $otherBank];
         $boxes = [];
         $originalAttributes = [];
@@ -91,10 +93,10 @@ class FinancialLifecycleTest extends TestCase
         $newBank = $this->pay($collector, $subscription, '25', 'bank_transfer', 'BANK-NEXT-BOX');
         $this->assertNotSame($cash->boxEntry->cash_box_id, $newCash->boxEntry->cash_box_id);
         $this->assertNotSame($bank->boxEntry->cash_box_id, $newBank->boxEntry->cash_box_id);
-        $this->assertSame(300.0, $subscription->balance());
+        $this->assertSame('300.00', $subscription->balance());
         $this->actingAs($auditor)->post(route('payments.bank-audits.store', $newBank->boxEntry), ['bank_amount' => '0', 'reason' => 'صندوق مفتوح'])->assertSessionHasErrors('action');
         $this->post(route('payments.bank-audits.store', $bank->boxEntry), ['bank_amount' => $verified, 'reason' => 'مطابقة الكشف الخارجي'])->assertSessionHasNoErrors();
-        $this->assertSame(300.0, $subscription->balance());
+        $this->assertSame('300.00', $subscription->balance());
         $this->assertSame(0, SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT)->count());
         $preview = $this->get(route('payments.cash-boxes', ['branch_id' => $branch->id, 'place' => 'closed', 'week' => '2026-10-17']))->inertiaProps('periodAudit');
         $this->assertSame(4, $preview['boxes']);
@@ -108,8 +110,8 @@ class FinancialLifecycleTest extends TestCase
         $audit = $bank->boxEntry->audit()->sole();
         $this->assertSame($outcome, $audit->outcome);
         $this->assertNotNull($audit->posted_at);
-        $this->assertSame((float) $finalBalance, $subscription->balance());
-        $this->assertSame(100.0, $other->balance());
+        $this->assertSame(Money::amount($finalBalance), $subscription->balance());
+        $this->assertSame('100.00', $other->balance());
         $this->assertSame($outcome === 'matched' ? 0 : 1, SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT)->count());
         $this->assertDatabaseCount('cash_box_audits', 4);
         $this->assertDatabaseCount('bank_transfer_audits', 2);
@@ -126,7 +128,7 @@ class FinancialLifecycleTest extends TestCase
             $this->assertNull($openPayment->boxEntry->box->audit()->first());
         }
         $this->post(route('payments.bank-audits.store', $bank->boxEntry), ['bank_amount' => $verified === '0' ? '1' : '0', 'reason' => 'محاولة تغيير قرار نهائي'])->assertSessionHasErrors('action');
-        $this->post(route('subscriptions.payments.store', $subscription), ['amount' => '1', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertForbidden();
+        $this->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '1', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertForbidden();
         $this->actingAs($head)->get(route('subscriptions.statement', $subscription))->assertInertia(fn (AssertableInertia $page) => $page
             ->where('summary.balance', $finalBalance)->where('summary.charged', '1100.00')
             ->where('summary.discounted', '50.00')->where('summary.cleared', '50.00')
@@ -175,7 +177,7 @@ class FinancialLifecycleTest extends TestCase
 
         $this->closeBox($actor, $payment->boxEntry->box);
 
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
         $this->assertDatabaseHas('cash_boxes', ['id' => $payment->boxEntry->cash_box_id, 'received_by' => $actor->id]);
         $this->assertSame([], $payment->fresh()->availableActions($actor));
     }
@@ -210,7 +212,7 @@ class FinancialLifecycleTest extends TestCase
         }
 
         $this->assertSame($before, $payment->boxEntry->box->fresh()->getAttributes());
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
     }
 
     #[TestWith(['USD', '3.7000', '100', '50', '185.00', 815.0])]
@@ -239,7 +241,7 @@ class FinancialLifecycleTest extends TestCase
         $this->assertSame($difference, $audit->difference);
         $this->assertSame($rate, $audit->exchange_rate);
         $this->assertSame($before, $payment->fresh()->getAttributes());
-        $this->assertSame($balance, $subscription->balance());
+        $this->assertSame(Money::amount($balance), $subscription->balance());
         $this->assertSame($currency, $audit->adjustment->currency->value);
         $this->assertSame($rate, $audit->adjustment->exchange_rate);
     }

@@ -103,6 +103,30 @@ test('bank arrival is optional and resets to blank after a successful payment', 
     assert.equal('late_reason' in form.data, false);
 });
 
+test('a payment keeps its operation key for retries and rotates it only after success', () => {
+    renderToStaticMarkup(createElement(PaymentModal, {
+        show: true, onClose() {}, subscription: { id: 1, fullName: 'أحمد' }, balance: '100',
+        paymentMethods: [{ value: 'cash', label: 'نقدًا' }], transferBanks: [], senderBanks: [],
+    }));
+    const form = state.forms[0];
+    const token = form.data.payment_token;
+    assert.match(token, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+    form.setData('amount', '25');
+    const confirm = state.confirmations.find((dialog) => dialog.title === 'تأكيد تسجيل الدفعة؟');
+    confirm.onConfirm();
+    assert.equal(form.data.payment_token, token);
+    form.errors = { amount: 'Try again' };
+    confirm.onConfirm();
+    assert.equal(form.data.payment_token, token);
+
+    state.requests[1].options.onSuccess({ flash: {} });
+
+    const nextToken = form.data.payment_token;
+    assert.notEqual(nextToken, token);
+    form.resetAndClearErrors();
+    assert.equal(form.data.payment_token, nextToken);
+});
+
 test('saving a currency rate makes the saved rate the reset value without a success callback error', () => {
     renderToStaticMarkup(createElement(CurrencyRatesSection, {
         currencies: [{ code: 'USD', label: 'دولار', rate: '3', updateUrl: '/settings/currencies/USD' }],

@@ -3,8 +3,10 @@
 namespace App\Http\Requests;
 
 use App\Models\Bank;
+use App\Models\Closing;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
+use Brick\Math\BigDecimal;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Collection;
@@ -91,12 +93,12 @@ class StoreSplitPaymentRequest extends FormRequest
                     return;
                 }
 
-                $partsInCents = array_sum(array_map(fn (array $part): int => (int) round((float) $part['amount'] * 100), $parts));
+                $partsInCents = array_sum(array_map(fn (array $part): int => Closing::cents($part['amount']), $parts));
 
-                if ($partsInCents !== (int) round((float) $this->input('total_amount') * 100)) {
+                if ($partsInCents !== Closing::cents($this->input('total_amount'))) {
                     $validator->errors()->add('parts', sprintf(
                         'مجموع المبالغ الموزَّعة (%s ₪) لا يساوي المبلغ المحوَّل (%s ₪).',
-                        SubscriptionTransaction::formatAmount($partsInCents / 100),
+                        SubscriptionTransaction::formatAmount(Closing::money($partsInCents)),
                         SubscriptionTransaction::formatAmount($this->input('total_amount')),
                     ));
 
@@ -108,9 +110,9 @@ class StoreSplitPaymentRequest extends FormRequest
                 }
 
                 foreach ($parts as $part) {
-                    $owed = max($part['subscription']->balance(), 0.0);
+                    $owed = (string) BigDecimal::max($part['subscription']->balance(), '0');
 
-                    if (Subscription::overpaymentNeedsConfirmation((float) $part['amount'], $owed)) {
+                    if (Subscription::overpaymentNeedsConfirmation($part['amount'], $owed)) {
                         $validator->errors()->add('confirm_overpayment', sprintf(
                             'المبلغ %s ₪ أكبر بكثير من المستحق على %s (%s ₪)، وسيبقى له رصيد دائن؛ تأكد من التوزيع ثم أكّد أنه صحيح.',
                             SubscriptionTransaction::formatAmount($part['amount']),

@@ -36,12 +36,12 @@ class ReadingPricingTest extends TestCase
         $reading->refresh();
         $this->assertSame(['2.00', '20.00', MeterReadingStatus::Pending], [$reading->unit_price, $reading->amount_due, $reading->status]);
         $this->assertSame('0.50', $subscription->fresh()->kilowatt_price);
-        $this->assertSame(0.0, $subscription->fresh()->balance());
+        $this->assertSame('0.00', $subscription->fresh()->balance());
         $this->assertSame('0.50', $reading->adjustment_history[0]['before']['unit_price']);
         $this->assertSame('2.00', $reading->adjustment_history[0]['after']['unit_price']);
         $this->assertSame($actor->id, $reading->adjustment_history[0]['userId']);
         $this->assertTrue($reading->approve($actor));
-        $this->assertSame(20.0, $subscription->fresh()->balance());
+        $this->assertSame('20.00', $subscription->fresh()->balance());
     }
 
     public function test_minimum_permission_changes_only_the_minimum_and_cannot_change_reading_or_price(): void

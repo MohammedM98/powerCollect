@@ -13,6 +13,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia;
@@ -49,29 +50,29 @@ class CompanyFinancialJourneyTest extends TestCase
             'subscription_fee' => '100', 'charge_subscription_fee' => true,
         ])->assertSessionHasNoErrors();
         $subscription = Subscription::sole();
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
 
         $this->post(route('meter-readings.store'), [
             'subscription_id' => $subscription->id, 'week_start' => '2026-10-16', 'current_reading' => 200,
         ])->assertSessionHasNoErrors();
         $reading = MeterReading::sole();
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
         $this->post(route('meter-readings.approve'), ['reading_ids' => [$reading->id]])->assertSessionHasNoErrors();
         $this->post(route('meter-readings.approve'), ['reading_ids' => [$reading->id]])->assertSessionHasErrors('reading_ids');
         $this->assertSame(MeterReadingStatus::Approved, $reading->fresh()->status);
         $this->assertSame('50.00', $reading->fresh()->amount_due);
-        $this->assertSame(150.0, $subscription->balance());
+        $this->assertSame('150.00', $subscription->balance());
 
         $this->post(route('subscriptions.charges.store', $subscription), ['type' => 'penalty', 'amount' => '40', 'notes' => 'تحميل اختبار'])->assertSessionHasNoErrors();
         $this->post(route('subscriptions.discounts.store', $subscription), ['method' => 'shekel', 'value' => '10', 'notes' => 'خصم اختبار'])->assertSessionHasNoErrors();
         $this->actingAs($collector)->post(route('subscriptions.clearings.store', $subscription), ['amount' => '20', 'notes' => 'مقاصة خدمة'])->assertSessionHasNoErrors();
-        $this->post(route('subscriptions.payments.store', $subscription), ['amount' => '30', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
+        $this->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '30', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
         $late = ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash',
             'late_payment' => true, 'paid_on' => '2026-10-21', 'late_reason' => 'نسيان تسجيل السند',
             'late_payment_token' => Str::uuid()->toString()];
         $this->post(route('subscriptions.payments.store', $subscription), $late)->assertSessionHasErrors('late_payment');
-        $this->post(route('subscriptions.payments.store', $subscription), ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
-        $this->assertSame(120.0, $subscription->balance());
+        $this->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
+        $this->assertSame('120.00', $subscription->balance());
         $other = Subscription::factory()->for($branch)->create();
         SubscriptionTransaction::factory()->for($other)->create(['amount' => '100.00']);
         $this->post(route('payments.split.store'), [
@@ -81,12 +82,12 @@ class CompanyFinancialJourneyTest extends TestCase
                 ['subscription_id' => $other->id, 'amount' => '60'],
             ],
         ])->assertSessionHasNoErrors();
-        $this->post(route('subscriptions.payments.store', $subscription), [
+        $this->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(),
             'amount' => '20', 'currency' => 'ILS', 'payment_method' => 'bank_transfer',
             'bank_name' => 'بنك فلسطين', 'sender_name' => 'مرسل آخر', 'reference_number' => 'JOURNEY-NORMAL',
         ])->assertSessionHasNoErrors();
-        $this->assertSame(60.0, $subscription->balance());
-        $this->assertSame(40.0, $other->balance());
+        $this->assertSame('60.00', $subscription->balance());
+        $this->assertSame('40.00', $other->balance());
         $splitParts = SplitPayment::sole()->payments;
         $originals = SubscriptionTransaction::query()->get()->mapWithKeys(fn (SubscriptionTransaction $line): array => [$line->id => $line->getAttributes()]);
         $boxes = CashBox::query()->get();
@@ -120,16 +121,16 @@ class CompanyFinancialJourneyTest extends TestCase
                 ['transaction_id' => $splitParts[1]->id, 'bank_amount' => $secondReceived],
             ],
         ])->assertSessionHasNoErrors();
-        $this->assertSame(60.0, $subscription->balance());
-        $this->assertSame(40.0, $other->balance());
+        $this->assertSame('60.00', $subscription->balance());
+        $this->assertSame('40.00', $other->balance());
         $preview = $this->get(route('payments.cash-boxes', ['branch_id' => $branch->id, 'place' => 'closed', 'week' => '2026-10-17']))->inertiaProps('periodAudit');
         $this->assertSame(3, $preview['boxes']);
         $this->assertSame(3, $preview['transfers']);
         $approval = [...array_intersect_key($preview, array_flip(['branch_id', 'week', 'box_ids', 'snapshot'])), 'confirmed' => true];
         $this->post(route('payments.period-audits.store'), $approval)->assertSessionHasNoErrors();
         $this->post(route('payments.period-audits.store'), $approval)->assertSessionHasNoErrors();
-        $this->assertSame((float) $firstBalance, $subscription->balance());
-        $this->assertSame((float) $secondBalance, $other->balance());
+        $this->assertSame(Money::amount($firstBalance), $subscription->balance());
+        $this->assertSame(Money::amount($secondBalance), $other->balance());
         $this->assertDatabaseCount('cash_box_audits', 3);
         $this->assertDatabaseCount('bank_transfer_audits', 3);
         $this->assertSame($firstReceived === '40' ? 0 : 2, SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT)->count());
@@ -141,9 +142,9 @@ class CompanyFinancialJourneyTest extends TestCase
         }
         $this->actingAs($head)->get(route('subscriptions.statement', $subscription))->assertInertia(fn (AssertableInertia $page) => $page->where('summary.balance', $firstBalance));
 
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['amount' => '5', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '5', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
         $this->assertSame(1, CashBox::query()->where('status', 'open')->count());
-        $this->assertSame((float) $firstBalance - 5, $subscription->balance());
+        $this->assertSame(Money::subtract($firstBalance, '5.00'), $subscription->balance());
         $this->assertDatabaseCount('cash_box_audits', 3);
     }
 }

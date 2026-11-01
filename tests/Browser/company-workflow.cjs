@@ -168,7 +168,7 @@ step('the branch and its three tablons', async () => {
     await addThroughWindow(page, '/branches', 'فرع جديد', {
         'الاسم': 'فرع النصيرات', 'الهاتف': '0599000000', 'المحافظة': { select: 'المحافظة الوسطى' }, 'المنطقة': { select: 'مخيم النصيرات' },
     });
-    await page.getByText('فرع النصيرات').first().waitFor();
+    await page.getByRole('cell', { name: 'فرع النصيرات' }).first().waitFor();
     for (const [name, suffix, number, block] of [['المدارس', '1', 'T-101', 'البلوك أ'], ['المدارس', '2', 'T-102', 'البلوك ب'], ['السوق', '', 'T-103', 'البلوك أ']]) {
         await addThroughWindow(page, '/meter-boxes', 'طبلون جديد', {
             'اسم الطبلون': name, 'لاحقة (اختياري)': suffix, 'رقم الطبلون': number,
@@ -370,7 +370,7 @@ step('the auditor checks the transfer against the bank and approves the period',
     await page.getByRole('button', { name: 'اعتماد الفترة كاملة' }).click();
     const approval = page.getByRole('alertdialog', { name: 'اعتماد تدقيق الفترة كاملة؟' });
     await approval.getByText('تحميل على المشتركين').waitFor();
-    assert.match((await approval.innerText()).replace(/\s+/g, ' '), /حوالات فيها فروق 1 .*تحميل على المشتركين 20 شيكل/);
+    assert.match((await approval.innerText()).replace(/\s+/g, ' '), /حوالات فيها فروق 1 .*تحميل على المشتركين 20 (?:شيكل|₪)/);
     await approval.getByRole('checkbox').check();
     const hold = approval.getByRole('button', { name: /اعتماد التدقيق/ });
     await hold.hover();

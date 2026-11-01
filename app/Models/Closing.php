@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ClosingDifferenceReason;
 use App\Enums\ClosingStatus;
 use App\Enums\ClosingType;
+use App\Support\Money;
 use Database\Factories\ClosingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -53,12 +54,12 @@ class Closing extends Model
 
     public static function cents(string|float|int|null $amount): int
     {
-        return (int) round((float) $amount * 100);
+        return Money::decimal(Money::amount($amount))->multipliedBy('100')->toInt();
     }
 
     public static function money(int $cents): string
     {
-        return number_format($cents / 100, 2, '.', '');
+        return (string) Money::decimal($cents)->dividedBy('100', 2);
     }
 
     public function branch(): BelongsTo

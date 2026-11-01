@@ -13,6 +13,8 @@ use App\Enums\TransactionAction;
 use App\Support\BranchClosingWorkflow;
 use App\Support\BranchDomainContext;
 use App\Support\BranchDomainScope;
+use App\Support\Money;
+use Brick\Math\RoundingMode;
 use Closure;
 use Database\Factories\SubscriptionTransactionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -25,7 +27,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -38,8 +39,8 @@ use Illuminate\Validation\ValidationException;
  * A line is normally never edited or removed. Deleting it cancels it —
  * marked with who, when and why — and adds a later reversal line that
  * takes its amount back off the balance; correcting it does the same, then
- * records the right line in its place (`corrects_id`). A separate sensitive
- * permission may permanently erase only the final line of the statement.
+ * records the right line in its place (`corrects_id`). Legacy deletion actions
+ * also preserve the original and record a linked cancellation or refund.
  */
 #[Fillable([
     'subscription_id',
@@ -198,11 +199,11 @@ class SubscriptionTransaction extends Model
             $transaction->branch_id ??= $transaction->subscription()->value('branch_id');
 
             if ($transaction->balance_after === null && $transaction->subscription_id !== null) {
-                $currentBalance = (float) self::query()
+                $currentBalance = Money::sum(self::query()
                     ->where('subscription_id', $transaction->subscription_id)
-                    ->sum('amount');
+                    ->pluck('amount'));
 
-                $transaction->balance_after = number_format($currentBalance + (float) $transaction->amount, 2, '.', '');
+                $transaction->balance_after = Money::add($currentBalance, $transaction->amount);
             }
         });
     }
@@ -228,15 +229,7 @@ class SubscriptionTransaction extends Model
 
     public function delete(): ?bool
     {
-        if (! $this->exists) {
-            return parent::delete();
-        }
-
-        return $this->withMutationLock(function (): ?bool {
-            $this->ensureMutable();
-
-            return parent::delete();
-        });
+        throw ValidationException::withMessages(['action' => 'يجب حفظ السجل المالي؛ ألغِ الحركة أو أرجع الدفعة بدلًا من حذفها.']);
     }
 
     private function withMutationLock(Closure $operation): mixed
@@ -271,15 +264,15 @@ class SubscriptionTransaction extends Model
     {
         $currency = Currency::from($payment['currency']);
         $method = PaymentMethod::from($payment['payment_method']);
-        $exchangeRate = $currency === Currency::Shekel ? 1.0 : (float) $payment['exchange_rate'];
-        $inShekels = round((float) $payment['amount'] * $exchangeRate, 2);
+        $exchangeRate = $currency === Currency::Shekel ? '1.0000' : $payment['exchange_rate'];
+        $inShekels = Money::multiply($payment['amount'], $exchangeRate);
         $referenceNumber = $method === PaymentMethod::Cash ? null : trim((string) ($payment['reference_number'] ?? ''));
         $activeReference = self::normalizeReference($referenceNumber);
 
         return app(BranchClosingWorkflow::class)->locked($subscription->branch_id, function () use ($subscription, $collector, $payment, $currency, $method, $exchangeRate, $inShekels, $referenceNumber, $activeReference): self {
             $lateToken = $payment['late_payment_token'] ?? null;
             $lateFingerprint = $lateToken ? hash('sha256', json_encode([
-                'amount' => number_format((float) $payment['amount'], 2, '.', ''),
+                'amount' => Money::amount($payment['amount']),
                 'currency' => $currency->value, 'method' => $method->value,
                 'paid_on' => $payment['paid_on'], 'late_reason' => $payment['late_reason'],
                 'bank' => $payment['bank_name'] ?? null, 'sender_bank' => $payment['sender_bank_name'] ?? null,
@@ -306,7 +299,7 @@ class SubscriptionTransaction extends Model
                 'type' => self::TYPE_PAYMENT,
                 'source_key' => 'payment:'.($voucherNumber ?? Str::ulid()),
                 'mobile_operation_id' => $payment['mobile_operation_id'] ?? null,
-                'amount' => number_format(-$inShekels, 2, '.', ''),
+                'amount' => Money::negate($inShekels),
                 'currency' => $currency,
                 'currency_amount' => $payment['amount'],
                 'exchange_rate' => $exchangeRate,
@@ -353,7 +346,7 @@ class SubscriptionTransaction extends Model
             'recorded_by' => $recorder->id,
             'type' => $type->value,
             'source_key' => 'charge:'.Str::ulid(),
-            'amount' => number_format((float) $amount, 2, '.', ''),
+            'amount' => Money::amount($amount),
             'notes' => $notes,
         ]);
     }
@@ -369,7 +362,7 @@ class SubscriptionTransaction extends Model
             'recorded_by' => $recorder->id,
             'type' => self::TYPE_CLEARING,
             'source_key' => 'clearing:'.Str::ulid(),
-            'amount' => number_format(-(float) $amount, 2, '.', ''),
+            'amount' => Money::negate($amount),
             'notes' => $service,
             // A clearing is vouched for like a cash payment: a number from the same sequence, and the paper voucher's if there is one.
             'voucher_number' => self::claimNextVoucherNumber(),
@@ -385,7 +378,7 @@ class SubscriptionTransaction extends Model
     {
         $base = match ($method) {
             DiscountMethod::Percentage => $subscription->balance(),
-            DiscountMethod::Kilowatt => (float) $subscription->kilowattPrice(),
+            DiscountMethod::Kilowatt => $subscription->kilowattPrice(),
             DiscountMethod::Shekel => null,
         };
 
@@ -393,7 +386,7 @@ class SubscriptionTransaction extends Model
             'recorded_by' => $recorder->id,
             'type' => self::TYPE_DISCOUNT,
             'source_key' => 'discount:'.Str::ulid(),
-            'amount' => number_format(-self::discountFor($method, $value, $base), 2, '.', ''),
+            'amount' => Money::negate(self::discountFor($method, $value, $base)),
             'discount_method' => $method,
             'discount_value' => $value,
             'discount_base' => $base,
@@ -535,7 +528,7 @@ class SubscriptionTransaction extends Model
                 'reverses_id' => $line->id,
                 'type' => self::TYPE_REVERSAL,
                 'source_key' => 'reversal:'.$line->id,
-                'amount' => number_format(-(float) $line->amount, 2, '.', ''),
+                'amount' => Money::negate($line->amount),
                 'currency' => $line->currency,
                 'currency_amount' => $line->currency_amount,
                 'exchange_rate' => $line->exchange_rate,
@@ -676,9 +669,18 @@ class SubscriptionTransaction extends Model
         }
     }
 
+    public function mayDiscloseReferenceTo(?User $actor): bool
+    {
+        if (BranchDomainContext::id() !== null && $this->subscription->branch_id !== BranchDomainContext::id()) {
+            return false;
+        }
+
+        return $actor !== null && ($actor->can('view', $this->subscription) || $actor->can('recordPayment', $this->subscription));
+    }
+
     private static function referenceConflictException(self $conflict): ValidationException
     {
-        if (BranchDomainContext::id() !== null && $conflict->subscription->branch_id !== BranchDomainContext::id()) {
+        if (! $conflict->mayDiscloseReferenceTo(request()->user())) {
             return ValidationException::withMessages(['reference_number' => 'هذا الرقم المرجعي مسجّل مسبقًا على دفعة أخرى.']);
         }
 
@@ -695,13 +697,13 @@ class SubscriptionTransaction extends Model
      * What a discount takes off, in shekels: a percentage of the balance
      * owed, kilowatts at the kilo price, or the shekels given.
      */
-    public static function discountFor(DiscountMethod $method, float|string $value, float|string|null $base): float
+    public static function discountFor(DiscountMethod $method, float|string $value, float|string|null $base): string
     {
-        return round(match ($method) {
-            DiscountMethod::Percentage => (float) $base * (float) $value / 100,
-            DiscountMethod::Kilowatt => (float) $value * (float) $base,
-            DiscountMethod::Shekel => (float) $value,
-        }, 2);
+        return Money::amount(match ($method) {
+            DiscountMethod::Percentage => Money::decimal($base)->multipliedBy((string) $value)->dividedBy('100', 2, RoundingMode::HalfUp),
+            DiscountMethod::Kilowatt => Money::decimal($value)->multipliedBy((string) $base),
+            DiscountMethod::Shekel => Money::decimal($value),
+        });
     }
 
     /**
@@ -710,7 +712,7 @@ class SubscriptionTransaction extends Model
      */
     public static function formatAmount(float|string $amount): string
     {
-        return Str::replaceEnd('.00', '', number_format((float) $amount, 2, '.', ''));
+        return Str::replaceEnd('.00', '', Money::amount($amount));
     }
 
     /**
@@ -864,7 +866,9 @@ class SubscriptionTransaction extends Model
             }
         }
         foreach ($parts as $part) {
-            $part->refresh()->applyTreeDelete($actor, $data);
+            if (! $part->isCancelled()) {
+                $part->refresh()->applyHardDelete($actor, $data);
+            }
         }
     }
 
@@ -981,7 +985,7 @@ class SubscriptionTransaction extends Model
         $metadataActions = $this->isPayment() ? [TransactionAction::EditMetadata] : [];
 
         if ($this->currentStatus() !== self::STATUS_ACTIVE) {
-            return ! $this->isBilledByReading() && $this->isFullyReversed($lockForUpdate) ? [TransactionAction::DeleteTree] : [];
+            return [];
         }
 
         if (in_array($this->type, self::INVOICE_LIKE_TYPES, true)) {
@@ -1020,8 +1024,7 @@ class SubscriptionTransaction extends Model
         }
 
         if (in_array($this->type, self::REVERSAL_TYPES, true)) {
-            return $isLast && $this->reverses?->type !== self::TYPE_READING_DISCOUNT && ! ($this->reverses?->isStaleReadingBill() ?? false)
-                ? [TransactionAction::DeleteReversal] : [];
+            return [];
         }
 
         return $metadataActions;
@@ -1147,16 +1150,16 @@ class SubscriptionTransaction extends Model
     private function applyAmountEdit(User $actor, array $data): self
     {
         $oldAmount = $this->amount;
-        $amount = number_format((float) $data['amount'], 2, '.', '');
-        $balanceBefore = (float) self::query()
+        $amount = Money::amount($data['amount']);
+        $balanceBefore = Money::sum(self::query()
             ->where('subscription_id', $this->subscription_id)
             ->whereKeyNot($this->id)
-            ->sum('amount');
+            ->pluck('amount'));
 
         $this->update([
             'amount' => $amount,
             'currency_amount' => $this->currency_amount === null ? null : $amount,
-            'balance_after' => number_format($balanceBefore + (float) $amount, 2, '.', ''),
+            'balance_after' => Money::add($balanceBefore, $amount),
         ]);
         $this->amendments()->create([
             'user_id' => $actor->id,
@@ -1179,32 +1182,13 @@ class SubscriptionTransaction extends Model
     /** @param array<string, mixed> $data */
     private function applyHardDelete(User $actor, array $data): ?self
     {
-        // The line a reversal or refund took back, or that a correction replaced, stands again.
-        $originalId = $this->reference_transaction_id ?? $this->reverses_id ?? $this->corrects_id;
-        $original = $originalId === null ? null : self::query()->lockForUpdate()->find($originalId);
-        $correctionReversals = $this->correctionReversals()->all();
+        if ($this->isReversal() || $this->isCancelled()) {
+            throw ValidationException::withMessages(['action' => 'لا يمكن حذف السجل المالي أو حركات الإلغاء.']);
+        }
 
-        $action = $this->isReversal() ? TransactionAction::DeleteReversal->value : TransactionAction::Delete->value;
-        // A weekly reading's standing discount is deleted with it: the two are one bill.
-        $readingDiscount = $this->readingDiscountStanding();
-        $deleted = array_values(array_filter([$this, $readingDiscount, ...$correctionReversals]));
-
-        self::releaseEditableClosingLines(array_map(fn (self $line): int => $line->id, $deleted));
-        array_walk($deleted, fn (self $line): ?bool => $line->delete());
-        $original?->reinstate('action');
-        self::recalculateBalances($this->subscription_id);
-        TransactionDeletion::record($actor, $action, $data['correction_notes'] ?? null, array_map(fn (self $line): array => $line->getAttributes(), $deleted));
-
-        Log::warning('Transaction hard deleted under ledger golden rule', [
-            'action' => $action,
-            'transaction' => $this->getAttributes(),
-            'with_reading_discount' => $readingDiscount?->getAttributes(),
-            'with_correction_reversals' => array_map(fn (self $line): array => $line->getAttributes(), $correctionReversals),
-            'deleted_by' => $actor->only(['id', 'name', 'username']),
-            'reason' => $data['correction_notes'] ?? null,
-        ]);
-
-        return null;
+        return $this->isPayment()
+            ? $this->applyRefund($actor, $data)
+            : $this->cancel($actor, CorrectionReason::tryFrom((string) ($data['correction_reason'] ?? '')) ?? CorrectionReason::Other, $data['correction_notes'] ?? null, (bool) ($data['reopen_reading'] ?? false));
     }
 
     /**
@@ -1287,34 +1271,7 @@ class SubscriptionTransaction extends Model
     /** @param array<string, mixed> $data */
     private function applyTreeDelete(User $actor, array $data): ?self
     {
-        $reversals = self::query()
-            ->where('subscription_id', $this->subscription_id)
-            ->where(fn (Builder $query): Builder => $query
-                ->where('reference_transaction_id', $this->id)
-                ->orWhere('reverses_id', $this->id))
-            ->whereIn('type', self::REVERSAL_TYPES)
-            ->lockForUpdate()
-            ->get();
-        $deletedTransactions = collect([$this])
-            ->concat($reversals)
-            ->map(fn (self $transaction): array => $transaction->getAttributes())
-            ->all();
-
-        self::query()->where('corrects_id', $this->id)->lockForUpdate()->get()->each->update(['corrects_id' => null]);
-        self::releaseEditableClosingLines([$this->id, ...$reversals->modelKeys()]);
-        $reversals->each->delete();
-        $this->delete();
-        self::recalculateBalances($this->subscription_id);
-        TransactionDeletion::record($actor, TransactionAction::DeleteTree->value, $data['correction_notes'] ?? null, $deletedTransactions);
-
-        Log::warning('Transaction tree hard deleted under ledger golden rule', [
-            'action' => TransactionAction::DeleteTree->value,
-            'transactions' => $deletedTransactions,
-            'deleted_by' => $actor->only(['id', 'name', 'username']),
-            'reason' => $data['correction_notes'] ?? null,
-        ]);
-
-        return null;
+        throw ValidationException::withMessages(['action' => 'لا يمكن حذف السجل المالي أو حركات الإلغاء.']);
     }
 
     /**
@@ -1375,7 +1332,7 @@ class SubscriptionTransaction extends Model
             'type' => self::TYPE_CANCELLATION,
             'status' => self::STATUS_ACTIVE,
             'source_key' => 'cancellation:'.$this->id.':'.Str::ulid(),
-            'amount' => number_format(-(float) $this->amount, 2, '.', ''),
+            'amount' => Money::negate($this->amount),
             'currency' => $this->currency,
             'currency_amount' => $this->currency_amount,
             'exchange_rate' => $this->exchange_rate,
@@ -1402,17 +1359,27 @@ class SubscriptionTransaction extends Model
      */
     private function applyRefund(User $actor, array $data): self
     {
-        $refunded = self::query()
+        $exchangeRate = Money::decimal($this->exchange_rate);
+        if (! $exchangeRate->isPositive()) {
+            throw ValidationException::withMessages(['action' => 'سعر الصرف المسجّل لهذه الدفعة غير صالح؛ صحّح السجل قبل إرجاعها.']);
+        }
+
+        $earlierRefunds = self::query()
             ->where('reference_transaction_id', $this->id)
             ->where('type', self::TYPE_REFUND)
             ->lockForUpdate()
-            ->get()
-            ->sum(fn (self $refund): float => abs((float) $refund->amount));
-        $amount = round(abs((float) $this->amount) - $refunded, 2);
+            ->get();
+        $refunded = Money::sum($earlierRefunds->map(fn (self $refund): string => Money::amount(Money::decimal($refund->amount)->abs())));
+        $amount = Money::subtract(Money::amount(Money::decimal($this->amount)->abs()), $refunded);
 
         if ($amount <= 0) {
             throw ValidationException::withMessages(['action' => 'أُرجعت هذه الدفعة بالكامل من قبل.']);
         }
+
+        $currencyAmount = $this->currency_amount === null
+            ? Money::amount(Money::decimal($amount)->dividedBy($exchangeRate, 2, RoundingMode::HalfUp))
+            : Money::subtract($this->currency_amount, Money::sum($earlierRefunds->map(fn (self $refund): string => $refund->currency_amount
+                ?? Money::amount(Money::decimal($refund->amount)->abs()->dividedBy($exchangeRate, 2, RoundingMode::HalfUp)))));
 
         $refund = $this->subscription->transactions()->create([
             'recorded_by' => $actor->id,
@@ -1421,12 +1388,9 @@ class SubscriptionTransaction extends Model
             'type' => self::TYPE_REFUND,
             'status' => self::STATUS_ACTIVE,
             'source_key' => 'refund:'.$this->id.':'.Str::ulid(),
-            'amount' => number_format($amount, 2, '.', ''),
+            'amount' => Money::amount($amount),
             'currency' => $this->currency,
-            // Untouched, it gives back exactly what was paid, in the currency it was paid in.
-            'currency_amount' => $refunded <= 0 && $this->currency_amount !== null
-                ? $this->currency_amount
-                : number_format($amount / max((float) $this->exchange_rate, 1), 2, '.', ''),
+            'currency_amount' => $currencyAmount,
             'exchange_rate' => $this->exchange_rate,
             'payment_method' => $this->payment_method,
         ]);
@@ -1557,47 +1521,37 @@ class SubscriptionTransaction extends Model
     }
 
     /**
-     * Whether a line may be erased for good: only the last line of the
-     * statement, and not one a closing has counted. When that is a
-     * reversal, the cancelled line it reverses goes with it. Never a
-     * weekly reading's discount, which goes only with its reading. A part
-     * of a split transfer goes with all its parts, so only when each of
-     * them may (unless `$withSplitParts` is false, as when checking them).
+     * Whether the legacy deletion endpoint may cancel the final original line.
+     * Reversals and cancelled originals always remain in financial history.
      */
     public function isErasable(bool $lockForUpdate = false, bool $withSplitParts = true): bool
     {
-        if ($this->type === self::TYPE_BANK_AUDIT_ADJUSTMENT) {
+        if ($this->isReversal() || $this->isCancelled() || $this->type === self::TYPE_BANK_AUDIT_ADJUSTMENT || $this->type === self::TYPE_READING_DISCOUNT) {
             return false;
         }
 
-        $erased = $this->isReversal() ? $this->reverses : $this;
-
-        if ($erased?->type === self::TYPE_READING_DISCOUNT || $erased?->replacesReadingBill()) {
-            return false;
+        if ($withSplitParts && $this->isPayment() && $this->split_payment_id !== null) {
+            return $this->splitPartsAreErasable($lockForUpdate);
         }
 
-        if ($withSplitParts && $erased?->isPayment() && $erased->split_payment_id !== null) {
-            return $erased->splitPartsAreErasable($lockForUpdate);
-        }
+        $lastOriginalId = self::query()
+            ->where('subscription_id', $this->subscription_id)
+            ->whereNull('reverses_id')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->when($lockForUpdate, fn (Builder $query): Builder => $query->lockForUpdate())
+            ->value('id');
 
-        return $this->isLastOnStatement($lockForUpdate)
-            && ! $this->isPermanentDeletionLocked($lockForUpdate)
-            && ! ($erased?->isInClosedDay($lockForUpdate) ?? false)
-            && ! ClosingPayment::query()
-                ->where('subscription_transaction_id', $erased?->id)
-                ->when($lockForUpdate, fn (Builder $query): Builder => $query->lockForUpdate())
-                ->exists();
+        return $this->isCancellable()
+            && ($this->isLastOnStatement($lockForUpdate) || $this->isPayment() && $lastOriginalId === $this->id)
+            && ! $this->isPermanentDeletionLocked($lockForUpdate);
     }
 
     /**
-     * Erase the last line of the statement for good, leaving no trace on
-     * the account. If it is a reversal, the line it reverses goes with it,
-     * and if it was cancelled, so does its reversal, so the balance stays
-     * consistent. If it replaced a line by correction, that line stands
-     * again and the reversal that cancelled it goes too. The only record is
-     * the audit log's (TransactionDeletion) and a log entry.
+     * Preserve the original line and record a linked cancellation or refund.
+     * A split transfer is cancelled atomically across all eligible parts.
      *
-     * @throws ValidationException when it may not be erased (any more)
+     * @throws ValidationException when cancellation is unavailable
      */
     public function erase(User $actor, string $reason): void
     {
@@ -1607,6 +1561,7 @@ class SubscriptionTransaction extends Model
 
             return;
         }
+
         $split->withPaymentsLocked($actor, function (Collection $parts) use ($actor, $reason): void {
             $this->deleteSplitParts($actor, $parts, ['correction_notes' => $reason], legacy: true);
         });
@@ -1616,36 +1571,12 @@ class SubscriptionTransaction extends Model
     {
         $this->withMutationLock(function () use ($actor, $reason): void {
             $line = self::query()->lockForUpdate()->findOrFail($this->id);
-
-            if (! $line->isErasable(lockForUpdate: true)) {
-                throw ValidationException::withMessages(['reason' => 'لا يمكن حذف هذه الحركة نهائيًا.']);
+            if (! $line->isErasable(lockForUpdate: true, withSplitParts: false)) {
+                throw ValidationException::withMessages(['reason' => 'لا يمكن إلغاء هذه الحركة.']);
             }
 
-            $target = $line->isReversal() ? $line->reverses : $line;
-            $reversals = self::query()->where('reverses_id', $target->id)->get();
-            // Erasing the line a correction recorded takes the correction back: the line it replaced stands again, or its amount would be lost.
-            $original = $target->corrects_id === null ? null : self::query()->lockForUpdate()->find($target->corrects_id);
-            $correctionReversals = $target->correctionReversals();
-            $erasedTransactions = collect([$target])
-                ->concat($reversals)
-                ->concat($correctionReversals)
-                ->map(fn (self $transaction): array => $transaction->getAttributes())
-                ->all();
-
-            self::query()->where('corrects_id', $target->id)->lockForUpdate()->get()->each->update(['corrects_id' => null]);
-            $reversals->each->delete();
-            $correctionReversals->each->delete();
-            $target->delete();
-            $original?->reinstate('reason');
-            // A reversal of an older line may have been recorded after the erased one, so its running balance moves too.
-            self::recalculateBalances($target->subscription_id);
-            TransactionDeletion::record($actor, TransactionDeletion::ACTION_ERASE, $reason, $erasedTransactions);
-
-            Log::warning('Transaction erased for good', [
-                'transactions' => $erasedTransactions,
-                'erased_by' => $actor->only(['id', 'name', 'username']),
-                'reason' => $reason,
-            ]);
+            $line->applyHardDelete($actor, ['correction_notes' => $reason]);
+            $this->setRawAttributes($line->getAttributes(), true);
         });
     }
 
@@ -1701,7 +1632,7 @@ class SubscriptionTransaction extends Model
     public static function isCreditLine(string $type, int|float|string $amount): bool
     {
         return in_array($type, [...self::REVERSAL_TYPES, self::TYPE_BANK_AUDIT_ADJUSTMENT], true)
-            ? (float) $amount < 0
+            ? Money::decimal($amount)->isNegative()
             : in_array($type, self::CREDIT_TYPES, true);
     }
 
@@ -1791,12 +1722,12 @@ class SubscriptionTransaction extends Model
             return 'حركة تصحيح';
         }
 
-        $difference = self::formatAmount(abs((float) $audit->difference));
+        $difference = self::formatAmount(Money::amount(Money::decimal($audit->difference)->abs()));
         if ($audit->outcome === 'missing') {
             return sprintf('حوالة لم تصل للبنك؛ تحميل %s شيكل على المشترك.', $difference);
         }
 
-        $effect = (float) $audit->difference > 0
+        $effect = Money::decimal($audit->difference)->isPositive()
             ? sprintf('تحميل فرق %s شيكل.', $difference)
             : sprintf('إضافة فرق %s شيكل لصالح المشترك.', $difference);
 

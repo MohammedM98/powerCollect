@@ -10,8 +10,8 @@ use App\Models\SplitPayment;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Notifications\ActionCompleted;
-use App\Support\BranchDomainContext;
 use App\Support\DailySeries;
+use App\Support\Money;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -45,7 +45,7 @@ class SplitPaymentController extends Controller
 
         $validated = $request->validate(['reference_number' => ['required', 'string', 'max:100']]);
         $conflict = SubscriptionTransaction::activeReferenceConflict($validated['reference_number']);
-        $outsideDomain = $conflict && BranchDomainContext::id() !== null && $conflict->subscription->branch_id !== BranchDomainContext::id();
+        $outsideDomain = $conflict && ! $conflict->mayDiscloseReferenceTo($request->user());
 
         return response()->json([
             'available' => $conflict === null,
@@ -85,7 +85,7 @@ class SplitPaymentController extends Controller
                 'subscriptionName' => $payment->subscription->displayName(),
                 'accountNumber' => $payment->subscription->account_number,
                 'amount' => SubscriptionTransaction::formatAmount(ltrim($payment->amount, '-')),
-                'balance' => number_format($payment->subscription->balance(), 2, '.', ''),
+                'balance' => $payment->subscription->balance(),
                 'receiptUrl' => route('subscriptions.payments.receipt', [$payment->subscription, $payment]),
             ])->values()->all(),
         ]);
@@ -119,7 +119,7 @@ class SplitPaymentController extends Controller
             'total' => SubscriptionTransaction::formatAmount($splitPayment->total_amount),
             'standingTotal' => SubscriptionTransaction::formatAmount($standingTotal),
             // Every part still stands and together they are what was transferred.
-            'isComplete' => (int) round((float) $standingTotal * 100) === (int) round((float) $splitPayment->total_amount * 100),
+            'isComplete' => Money::decimal($standingTotal)->isEqualTo($splitPayment->total_amount),
             'bankName' => $splitPayment->bank_name,
             'bankReceivedOn' => $splitPayment->bank_received_on?->toDateString(),
             'senderName' => $splitPayment->sender_name,
@@ -140,7 +140,7 @@ class SplitPaymentController extends Controller
                     : null,
             ])->values()->all(),
             'hiddenPartsCount' => $hidden->count(),
-            'hiddenPartsAmount' => SubscriptionTransaction::formatAmount($hidden->reject(fn (SubscriptionTransaction $payment): bool => $payment->isCancelled())->sum(fn (SubscriptionTransaction $payment): float => -(float) $payment->amount)),
+            'hiddenPartsAmount' => SubscriptionTransaction::formatAmount(Money::negate(Money::sum($hidden->reject(fn (SubscriptionTransaction $payment): bool => $payment->isCancelled())->pluck('amount')))),
         ]);
     }
 }

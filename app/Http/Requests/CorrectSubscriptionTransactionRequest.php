@@ -6,6 +6,8 @@ use App\Enums\CorrectionReason;
 use App\Models\CurrencyRate;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
+use App\Support\Money;
+use Brick\Math\BigDecimal;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -73,7 +75,7 @@ class CorrectSubscriptionTransactionRequest extends FormRequest
                 if ($this->line()->isPayment()) {
                     /** @var Subscription $subscription */
                     $subscription = $this->route('subscription');
-                    $owed = max(round($subscription->balance() - (float) $this->line()->amount, 2), 0.0);
+                    $owed = (string) BigDecimal::max(Money::subtract($subscription->balance(), $this->line()->amount), '0');
 
                     StoreSubscriptionPaymentRequest::checkOverpayment($validator, StoreSubscriptionPaymentRequest::amountInShekels($this->input('amount'), $this->input('currency'), $this->input('exchange_rate')), $owed, $this->boolean('confirm_overpayment'));
 
@@ -86,7 +88,7 @@ class CorrectSubscriptionTransactionRequest extends FormRequest
 
                 /** @var Subscription $subscription */
                 $subscription = $this->route('subscription');
-                $owed = round($subscription->balance() - (float) $this->line()->amount, 2);
+                $owed = Money::subtract($subscription->balance(), $this->line()->amount);
 
                 if ($this->line()->isDiscount()) {
                     StoreSubscriptionDiscountRequest::checkAgainstBalance($validator, $subscription, $owed, $this->input('method'), $this->input('value'));

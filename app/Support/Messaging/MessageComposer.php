@@ -6,6 +6,7 @@ use App\Enums\MessageKind;
 use App\Enums\MeterReadingStatus;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -98,7 +99,7 @@ class MessageComposer
             'رقم_الاشتراك' => (string) $subscription->account_number,
             'الطبلون' => $subscription->meterBox?->displayName() ?? '',
             'الفرع' => $subscription->branch?->name ?? '',
-            'الرصيد' => self::money((float) ($subscription->balance ?? $subscription->balance())),
+            'الرصيد' => self::money($subscription->balance ?? $subscription->balance()),
         ];
 
         if ($kind === MessageKind::WeeklyReading) {
@@ -107,11 +108,11 @@ class MessageComposer
             $variables += [
                 'تاريخ_القراءة' => ($reading?->week_end ?? $reading?->week_start)?->format('d/m/Y') ?? '',
                 'يوم_القراءة' => ($reading?->week_end ?? $reading?->week_start)?->copy()->locale('ar')->dayName ?? '',
-                'سعر_الكيلو' => $reading ? self::number((float) $reading->unit_price) : '',
+                'سعر_الكيلو' => $reading ? rtrim(rtrim(Money::amount($reading->unit_price), '0'), '.') : '',
                 'القراءة_السابقة' => $reading ? self::number($reading->previous_reading) : '',
                 'القراءة_الحالية' => $reading ? self::number($reading->current_reading) : '',
                 'الاستهلاك' => $reading ? self::number($reading->consumption) : '',
-                'قيمة_القراءة' => $reading ? self::money((float) $reading->amount_due) : '',
+                'قيمة_القراءة' => $reading ? self::money($reading->amount_due) : '',
             ];
         }
 
@@ -187,11 +188,14 @@ class MessageComposer
     }
 
     /** An amount with two decimals only when it has any: 120 → "120", 58.5 → "58.50". */
-    private static function money(float $amount): string
+    private static function money(int|float|string $amount): string
     {
-        $rounded = round($amount, 2);
+        $formatted = Money::amount($amount);
+        $formatted = str_ends_with($formatted, '.00') ? substr($formatted, 0, -3) : $formatted;
+        [$whole, $fraction] = array_pad(explode('.', $formatted, 2), 2, null);
+        $whole = preg_replace('/\B(?=(\d{3})+(?!\d))/', ',', $whole);
 
-        return number_format($rounded, floor($rounded) === $rounded ? 0 : 2);
+        return $fraction === null ? $whole : $whole.'.'.$fraction;
     }
 
     /** A meter reading or consumption without trailing zeros: 1250.50 → "1250.5". */

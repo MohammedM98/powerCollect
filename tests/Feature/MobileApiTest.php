@@ -17,6 +17,7 @@ use App\Models\SubArea;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -430,7 +431,7 @@ class MobileApiTest extends TestCase
             ...$payload,
             'collector_confirmed' => false,
         ])->assertUnprocessable()->assertJsonValidationErrors('collector_confirmed');
-        $this->assertSame($startingBalance, $subscription->fresh()->balance());
+        $this->assertSame(Money::amount($startingBalance), $subscription->fresh()->balance());
 
         $payload['collector_confirmed'] = true;
         $created = $this->postJson(route('mobile.collections.store'), $payload)
@@ -450,7 +451,7 @@ class MobileApiTest extends TestCase
             'amount' => '-100.00',
         ]);
         $this->assertSame(1, SubscriptionTransaction::query()->where('mobile_operation_id', $payload['mobile_operation_id'])->count());
-        $this->assertSame($startingBalance - 100, $subscription->fresh()->balance());
+        $this->assertSame(Money::subtract($startingBalance, '100.00'), $subscription->fresh()->balance());
         $this->getJson(route('mobile.collections.index'))
             ->assertOk()->assertJsonPath('data.0.id', $created)
             ->assertJsonPath('data.0.status', 'recorded');
@@ -478,11 +479,11 @@ class MobileApiTest extends TestCase
         };
 
         // 23:45 on the 5th in Gaza: the day holds the two taken before midnight.
-        $today('2026-10-05 20:45:00')->assertJsonCount(2, 'data')->assertJsonPath('total', 20);
+        $today('2026-10-05 20:45:00')->assertJsonCount(2, 'data')->assertJsonPath('total', '20.00');
         // 01:45 on the 6th in Gaza (the 5th in UTC): the new day holds only what was taken since midnight.
-        $today('2026-10-05 22:45:00')->assertJsonCount(1, 'data')->assertJsonPath('data.0.id', $afterMidnight)->assertJsonPath('total', 10);
+        $today('2026-10-05 22:45:00')->assertJsonCount(1, 'data')->assertJsonPath('data.0.id', $afterMidnight)->assertJsonPath('total', '10.00');
         // Midday on the 7th: nothing yet.
-        $today('2026-10-07 09:00:00')->assertJsonCount(0, 'data')->assertJsonPath('total', 0);
+        $today('2026-10-07 09:00:00')->assertJsonCount(0, 'data')->assertJsonPath('total', '0.00');
     }
 
     #[TestWith(['suspended', 'Suspended'])]
@@ -510,7 +511,7 @@ class MobileApiTest extends TestCase
         ]);
 
         $response->assertCreated()->assertJsonPath('balance_after', '50.00');
-        $this->assertSame(50.0, $subscription->fresh()->balance());
+        $this->assertSame('50.00', $subscription->fresh()->balance());
     }
 
     public function test_collection_search_ignores_arabic_spelling_and_word_order(): void
@@ -792,10 +793,10 @@ class MobileApiTest extends TestCase
             'collector_confirmed' => true,
         ])->assertCreated()->assertJsonPath('bank_name', 'البنك الإسلامي العربي');
 
-        $this->assertSame($startingBalance - 50, $subscription->fresh()->balance());
+        $this->assertSame(Money::subtract($startingBalance, '50.00'), $subscription->fresh()->balance());
         $this->getJson(route('mobile.collections.index'))
-            ->assertJsonPath('total', 50)
-            ->assertJsonPath('cash_total', 20);
+            ->assertJsonPath('total', '50.00')
+            ->assertJsonPath('cash_total', '20.00');
     }
 
     public function test_receipts_are_no_longer_read_or_stored_on_the_server(): void
@@ -917,7 +918,7 @@ class MobileApiTest extends TestCase
 
         $this->withHeader('Authorization', 'Bearer '.MobileAccessToken::issue($collector))
             ->getJson(route('mobile.collections.index'))->assertOk()->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.id', $active->id)->assertJsonPath('total', 20)->assertJsonPath('cash_total', 20);
+            ->assertJsonPath('data.0.id', $active->id)->assertJsonPath('total', '20.00')->assertJsonPath('cash_total', '20.00');
     }
 
     public function test_view_only_staff_can_open_their_branch_statements_without_payment_permissions(): void

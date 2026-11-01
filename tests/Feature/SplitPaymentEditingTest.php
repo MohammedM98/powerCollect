@@ -42,7 +42,7 @@ class SplitPaymentEditingTest extends TestCase
         $this->getJson(route('split-payments.edit', $this->split))->assertOk()->assertJsonPath('total_amount', '400.00')->assertJsonCount(2, 'parts');
         $this->patch(route('split-payments.update', $this->split), $this->payload())->assertSessionHasNoErrors();
         $this->assertSame($before, $parts->map(fn (SubscriptionTransaction $part): array => array_intersect_key($part->fresh()->getAttributes(), array_flip(['id', 'amount', 'currency_amount', 'balance_after', 'voucher_number', 'created_at', 'status'])))->all());
-        $this->assertSame([-150.0, -250.0], $parts->map(fn (SubscriptionTransaction $part): float => $part->subscription->balance())->all());
+        $this->assertSame(['-150.00', '-250.00'], $parts->map(fn (SubscriptionTransaction $part): string => $part->subscription->balance())->all());
         $this->assertSame('400.00', $this->split->standingTotal());
         $this->assertSame('400.00', $parts[0]->boxEntry->box->fresh()->totals()['ILS']);
         $this->assertDatabaseCount('subscription_transactions', 2);

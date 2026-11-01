@@ -57,7 +57,7 @@ class ActionPermissionIsolationTest extends TestCase
         $this->assertDatabaseCount('subscription_transactions', 2);
         $this->assertDatabaseCount('transaction_deletions', 0);
         $this->assertDatabaseCount('transaction_amendments', 0);
-        $this->assertSame(30.0, $subscription->balance());
+        $this->assertSame('30.00', $subscription->balance());
     }
 
     public function test_cancellation_and_permanent_deletion_do_not_grant_each_other(): void

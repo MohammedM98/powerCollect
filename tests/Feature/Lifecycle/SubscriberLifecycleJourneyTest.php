@@ -12,6 +12,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
@@ -40,7 +41,7 @@ class SubscriberLifecycleJourneyTest extends TestCase
         $subscription = Subscription::sole();
         $this->assertSame('202600001', $subscription->account_number);
         $this->assertNull($subscription->activated_at);
-        $this->assertSame(0.0, $subscription->balance());
+        $this->assertSame('0.00', $subscription->balance());
         $this->actingAs($dataEntry)->post(route('meter-readings.store'), [
             'subscription_id' => $subscription->id, 'week_start' => '2026-10-16', 'current_reading' => 50,
         ])->assertSessionHasErrors('subscription_id');
@@ -49,7 +50,7 @@ class SubscriberLifecycleJourneyTest extends TestCase
         $subscription->refresh();
         $this->assertNotNull($subscription->activated_at);
         $this->assertSame('2026-10-22', $subscription->subscription_date->toDateString());
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
         $this->updateSubscription($head, $subscription, ['status' => 'suspended'])->assertSessionHasErrors('status');
         $this->updateSubscription($head, $subscription, ['charge_subscription_fee' => true])->assertSessionHasNoErrors();
         $this->assertSame(1, $subscription->transactions()->where('type', SubscriptionTransaction::TYPE_SUBSCRIPTION_FEE)->count());
@@ -57,18 +58,18 @@ class SubscriberLifecycleJourneyTest extends TestCase
         $this->actingAs($dataEntry)->post(route('meter-readings.store'), [
             'subscription_id' => $subscription->id, 'week_start' => '2026-10-16', 'current_reading' => 1080,
         ])->assertSessionHasNoErrors();
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
         $this->actingAs($head)->post(route('meter-readings.approve'), ['reading_ids' => [MeterReading::sole()->id]])->assertSessionHasNoErrors();
-        $this->assertSame(140.0, $subscription->balance());
+        $this->assertSame('140.00', $subscription->balance());
 
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), [
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(),
             'amount' => '90', 'currency' => 'ILS', 'payment_method' => 'cash',
         ])->assertSessionHasNoErrors();
-        $this->assertSame(50.0, $subscription->balance());
+        $this->assertSame('50.00', $subscription->balance());
 
         $this->updateSubscription($head, $subscription, ['status' => 'disconnected'])->assertSessionHasNoErrors();
         $this->actingAs($head)->post(route('subscriptions.charges.store', $subscription), ['type' => 'disconnection_fee', 'amount' => '20'])->assertSessionHasNoErrors();
-        $this->assertSame(70.0, $subscription->balance());
+        $this->assertSame('70.00', $subscription->balance());
 
         $this->travelTo('2026-10-29 08:00:00');
         $this->actingAs($dataEntry)->post(route('meter-readings.store'), [
@@ -86,13 +87,13 @@ class SubscriberLifecycleJourneyTest extends TestCase
         $this->assertSame(1080.0, $secondWeek->previous_reading);
         $this->actingAs($head)->post(route('meter-readings.approve'), ['reading_ids' => [$secondWeek->id]])->assertSessionHasNoErrors();
         $this->assertSame('10.00', $secondWeek->fresh()->amount_due);
-        $this->assertSame(80.0, $subscription->balance());
+        $this->assertSame('80.00', $subscription->balance());
 
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), [
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(),
             'amount' => '80', 'currency' => 'ILS', 'payment_method' => 'bank_transfer',
             'bank_name' => 'بنك فلسطين', 'sender_name' => 'سالم عبد الله', 'reference_number' => 'TRF-LIFE-1',
         ])->assertSessionHasNoErrors();
-        $this->assertSame(0.0, $subscription->balance());
+        $this->assertSame('0.00', $subscription->balance());
 
         $this->actingAs($head)->post(route('subscriptions.archive.store', $subscription), [
             'service_ended_on' => '2026-10-29', 'reason' => 'إنهاء الخدمة', 'confirmed' => true,
@@ -132,7 +133,7 @@ class SubscriberLifecycleJourneyTest extends TestCase
             }));
     }
 
-    public function test_a_subscription_added_by_mistake_is_deleted_with_its_fee_but_not_once_it_has_history(): void
+    public function test_subscriptions_with_registration_fees_are_retained_even_when_added_by_mistake(): void
     {
         $this->travelTo('2026-10-22 08:00:00');
         [, $head, $collector, , $tariff] = $this->arrangeBranch();
@@ -143,15 +144,16 @@ class SubscriberLifecycleJourneyTest extends TestCase
             ])->assertSessionHasNoErrors();
         }
         [$mistake, $kept] = Subscription::query()->orderBy('id')->get()->all();
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $kept), ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $kept), ['payment_token' => (string) Str::uuid(), 'amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
 
-        $this->actingAs($head)->delete(route('subscriptions.destroy', $mistake))->assertSessionHasNoErrors();
+        $this->actingAs($head)->delete(route('subscriptions.destroy', $mistake))->assertSessionHasErrors('delete');
         $this->actingAs($head)->delete(route('subscriptions.destroy', $kept))->assertSessionHasErrors('delete');
 
-        $this->assertModelMissing($mistake);
-        $this->assertSame(0, SubscriptionTransaction::query()->where('subscription_id', $mistake->id)->count());
+        $this->assertModelExists($mistake);
+        $this->assertSame(1, SubscriptionTransaction::query()->where('subscription_id', $mistake->id)->count());
+        $this->assertSame('50.00', $mistake->balance());
         $this->assertModelExists($kept);
-        $this->assertSame(40.0, $kept->balance());
+        $this->assertSame('40.00', $kept->balance());
     }
 
     public function test_a_second_subscription_of_the_same_person_shares_their_profile_and_keeps_its_own_account(): void
@@ -169,12 +171,12 @@ class SubscriberLifecycleJourneyTest extends TestCase
             'status' => 'active', 'initial_reading' => 0, 'minimum_charge' => 0, 'subscription_fee' => '40', 'charge_subscription_fee' => true,
         ])->assertSessionHasNoErrors();
         $second = Subscription::query()->whereKeyNot($first->id)->sole();
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $second), ['amount' => '15', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $second), ['payment_token' => (string) Str::uuid(), 'amount' => '15', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
 
         $this->assertSame($first->subscriber_profile_id, $second->subscriber_profile_id);
         $this->assertSame('202600002', $second->account_number);
-        $this->assertSame(60.0, $first->balance());
-        $this->assertSame(25.0, $second->balance());
+        $this->assertSame('60.00', $first->balance());
+        $this->assertSame('25.00', $second->balance());
         $this->actingAs($head)->get(route('subscriptions.statement', $second))->assertInertia(fn ($page) => $page
             ->where('subscription.fullName', 'محل ليلى')
             ->where('subscriptions', fn ($siblings): bool => $siblings->pluck('balance', 'accountNumber')->all() === ['202600001' => '60.00', '202600002' => '25.00']));

@@ -9,6 +9,9 @@ use App\Models\CurrencyRate;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Money;
+use App\Support\WebPaymentOperation;
+use Brick\Math\BigDecimal;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -43,6 +46,7 @@ class StoreSubscriptionPaymentRequest extends FormRequest
     public function rules(): array
     {
         $rules = self::paymentRules($this->input('payment_method'));
+        $rules['payment_token'] = ['required', 'uuid'];
         $rules['payment_method'][] = self::allowedMethodRule($this->user());
         foreach (['late_payment', 'paid_on', 'late_reason', 'late_payment_token'] as $field) {
             $rules[$field] = ['prohibited'];
@@ -81,7 +85,11 @@ class StoreSubscriptionPaymentRequest extends FormRequest
                 /** @var Subscription $subscription */
                 $subscription = $this->route('subscription');
 
-                self::checkOverpayment($validator, self::amountInShekels($this->input('amount'), $this->input('currency'), $this->input('exchange_rate')), max($subscription->balance(), 0.0), $this->boolean('confirm_overpayment'));
+                if ($validator->errors()->isEmpty() && app(WebPaymentOperation::class)->replay($subscription, $this->user(), $validator->validated())) {
+                    return;
+                }
+
+                self::checkOverpayment($validator, self::amountInShekels($this->input('amount'), $this->input('currency'), $this->input('exchange_rate')), (string) BigDecimal::max($subscription->balance(), '0'), $this->boolean('confirm_overpayment'));
             },
         ];
     }
@@ -90,12 +98,12 @@ class StoreSubscriptionPaymentRequest extends FormRequest
      * Refuse `$amount`, which is far above what is `$owed`, unless `$confirmed`.
      * Shared with correcting a payment and with the app's.
      */
-    public static function checkOverpayment(Validator $validator, mixed $amount, float $owed, bool $confirmed): void
+    public static function checkOverpayment(Validator $validator, mixed $amount, int|float|string $owed, bool $confirmed): void
     {
-        if ($validator->errors()->isEmpty() && is_numeric($amount) && ((float) $amount < 0.01 || (float) $amount > 1000000)) {
+        if ($validator->errors()->isEmpty() && is_numeric($amount) && (Money::decimal($amount)->isLessThan('0.01') || Money::decimal($amount)->isGreaterThan('1000000'))) {
             $validator->errors()->add('amount', 'يجب أن تعادل الدفعة ما بين 0.01 و1,000,000 شيكل بعد التحويل.');
         }
-        if ($validator->errors()->isNotEmpty() || $confirmed || ! is_numeric($amount) || ! Subscription::overpaymentNeedsConfirmation((float) $amount, $owed)) {
+        if ($validator->errors()->isNotEmpty() || $confirmed || ! is_numeric($amount) || ! Subscription::overpaymentNeedsConfirmation($amount, $owed)) {
             return;
         }
 
@@ -103,15 +111,15 @@ class StoreSubscriptionPaymentRequest extends FormRequest
             'المبلغ %s ₪ أكبر بكثير من المستحق على المشترك (%s ₪)، وسيبقى له رصيد دائن قدره %s ₪؛ تأكد من المبلغ ثم أكّد أنه صحيح.',
             SubscriptionTransaction::formatAmount($amount),
             SubscriptionTransaction::formatAmount($owed),
-            SubscriptionTransaction::formatAmount((float) $amount - $owed),
+            SubscriptionTransaction::formatAmount(Money::subtract($amount, $owed)),
         ));
     }
 
-    public static function amountInShekels(mixed $amount, mixed $currency, mixed $exchangeRate): ?float
+    public static function amountInShekels(mixed $amount, mixed $currency, mixed $exchangeRate): ?string
     {
         $rate = $currency === Currency::Shekel->value ? 1 : $exchangeRate;
 
-        return is_numeric($amount) && is_numeric($rate) ? round((float) $amount * (float) $rate, 2) : null;
+        return is_numeric($amount) && is_numeric($rate) ? Money::multiply($amount, $rate) : null;
     }
 
     /**
@@ -148,6 +156,8 @@ class StoreSubscriptionPaymentRequest extends FormRequest
     public function messages(): array
     {
         return [...self::paymentMessages(),
+            'payment_token.required' => 'تعذّر تحديد طلب تسجيل الدفعة. أعد فتح النموذج ثم حاول مجددًا.',
+            'payment_token.uuid' => 'طلب تسجيل الدفعة غير صالح. أعد فتح النموذج ثم حاول مجددًا.',
             'late_payment.prohibited' => 'أُلغي التسجيل المتأخر. سجّل دفعة عادية وحدد تاريخ وصول الحوالة إلى البنك عند الحاجة.',
         ];
     }

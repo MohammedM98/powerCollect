@@ -8,9 +8,9 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Notifications\ActionCompleted;
 use App\Support\BranchClosingAccess;
-use App\Support\BranchDomainContext;
 use App\Support\ClosingPeriods;
 use App\Support\DailySeries;
+use App\Support\WebPaymentOperation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -69,9 +69,9 @@ class SubscriptionPaymentController extends Controller
      * straight away. The payment form's receipt gets the voucher number
      * it was given and the balance it left.
      */
-    public function store(StoreSubscriptionPaymentRequest $request, Subscription $subscription): RedirectResponse
+    public function store(StoreSubscriptionPaymentRequest $request, Subscription $subscription, WebPaymentOperation $operation): RedirectResponse
     {
-        $payment = SubscriptionTransaction::recordPayment($subscription, $request->user(), $request->validated());
+        $payment = $operation->record($subscription, $request->user(), $request->validated());
 
         if ($payment->wasRecentlyCreated) {
             $request->user()->notify(new ActionCompleted(
@@ -85,7 +85,7 @@ class SubscriptionPaymentController extends Controller
             'currency' => $payment->currency->value,
             'inShekels' => ltrim($payment->amount, '-'),
             'voucherNumber' => $payment->printedVoucherNumber(),
-            'balance' => number_format($subscription->balance(), 2, '.', ''),
+            'balance' => $subscription->balance(),
             'receiptUrl' => route('subscriptions.payments.receipt', [$subscription, $payment]),
         ]);
 
@@ -156,12 +156,12 @@ class SubscriptionPaymentController extends Controller
         ]);
     }
 
-    /** @return array{id: int, voucherNumber: ?string, subscriptionName: string, url: string} */
+    /** @return array{id: ?int, voucherNumber: ?string, subscriptionName: string, url: ?string} */
     private function referenceTransactionData(SubscriptionTransaction $transaction): array
     {
         $transaction->loadMissing('subscription');
 
-        if (BranchDomainContext::id() !== null && $transaction->subscription->branch_id !== BranchDomainContext::id()) {
+        if (! $transaction->mayDiscloseReferenceTo(request()->user())) {
             return ['id' => null, 'voucherNumber' => null, 'subscriptionName' => 'دفعة أخرى مسجّلة مسبقًا', 'url' => null];
         }
 

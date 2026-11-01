@@ -73,6 +73,7 @@ export default function PaymentModal({
                   ...EMPTY_CORRECTION,
               }
             : {
+                  payment_token: crypto.randomUUID(),
                   amount: '',
                   currency: 'ILS',
                   // A bank transfer when the user may take one, else the way they may.
@@ -241,6 +242,11 @@ export default function PaymentModal({
                     balanceAfter: flashed.balance ?? Number(balance) - (inShekels ?? 0),
                 });
                 form.resetAndClearErrors();
+                if (!correcting) {
+                    const paymentToken = crypto.randomUUID();
+                    form.setDefaults('payment_token', paymentToken);
+                    form.setData('payment_token', paymentToken);
+                }
                 setSenderIsSubscriber(true);
                 setDetailsOpen(false);
             },
@@ -376,6 +382,7 @@ export default function PaymentModal({
                                         </div>
                                     </div>
                                     <InputError message={errors.currency} className="mt-2" />
+                                    <InputError message={errors.payment_token} className="mt-2" />
                                     <InputError message={errors.exchange_rate} className="mt-2" />
                                     {errors.amount && (
                                         <p

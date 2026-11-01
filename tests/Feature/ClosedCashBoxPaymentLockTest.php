@@ -8,6 +8,7 @@ use App\Enums\PermissionKey;
 use App\Enums\TransactionAction;
 use App\Models\Branch;
 use App\Models\CashBox;
+use App\Models\CashBoxPayment;
 use App\Models\ClosingSetting;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
@@ -195,8 +196,10 @@ class ClosedCashBoxPaymentLockTest extends TestCase
             'action' => 'delete', 'correction_notes' => 'دفعة مكررة',
         ])->assertSessionHasNoErrors();
 
-        $this->assertModelMissing($payment);
-        $this->assertDatabaseCount('cash_box_payments', 0);
+        $this->assertModelExists($payment);
+        $this->assertTrue($payment->fresh()->isCancelled());
+        $this->assertDatabaseCount('cash_box_payments', 1);
+        $this->assertSame(0, CashBoxPayment::visibleInBox()->count());
     }
 
     #[TestWith(['open'])]
@@ -224,9 +227,9 @@ class ClosedCashBoxPaymentLockTest extends TestCase
         app(BranchClosingWorkflow::class)->receive($payment->boxEntry->box, $head);
         $before = $payment->fresh()->getAttributes();
 
-        $charge->applyAction($head, TransactionAction::DeleteTree, ['correction_notes' => 'تصحيح']);
+        $this->actingAs($head)->post(route('subscriptions.transactions.actions.store', [$subscription, $charge]), ['action' => 'delete_tree', 'correction_notes' => 'تصحيح'])->assertSessionHasErrors('action');
 
-        $this->assertModelMissing($charge);
+        $this->assertModelExists($charge);
         $this->assertSame($before, $payment->fresh()->getAttributes());
         $this->assertSame(-200.0, (float) $subscription->transactions()->sum('amount'));
     }

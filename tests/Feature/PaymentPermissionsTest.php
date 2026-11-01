@@ -9,6 +9,7 @@ use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class PaymentPermissionsTest extends TestCase
@@ -37,7 +38,7 @@ class PaymentPermissionsTest extends TestCase
                 ->where('payableMethods', [['value' => 'bank_transfer', 'label' => __('Bank Transfer')]])
                 ->has('paymentMethods', 2));
 
-        $this->post(route('subscriptions.payments.store', $this->subscription), ['amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash'])
+        $this->post(route('subscriptions.payments.store', $this->subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash'])
             ->assertSessionHasErrors(['payment_method' => 'لا تملك صلاحية الدفع نقدًا؛ اطلبها من مدير الفرع.']);
 
         $this->assertDatabaseCount('subscription_transactions', 0);
@@ -48,7 +49,7 @@ class PaymentPermissionsTest extends TestCase
         $collector = $this->staffAllowedTo(PermissionKey::RecordCollections, PermissionKey::RecordCashPayments);
 
         $this->actingAs($collector)
-            ->post(route('subscriptions.payments.store', $this->subscription), ['amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash'])
+            ->post(route('subscriptions.payments.store', $this->subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash'])
             ->assertSessionHasNoErrors();
         $this->assertDatabaseHas('subscription_transactions', ['subscription_id' => $this->subscription->id, 'payment_method' => 'cash']);
 
@@ -63,7 +64,7 @@ class PaymentPermissionsTest extends TestCase
         $collector = $this->staffAllowedTo(PermissionKey::RecordCollections);
 
         $this->actingAs($collector)->get(route('payments.index'))->assertForbidden();
-        $this->post(route('subscriptions.payments.store', $this->subscription), ['amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash'])
+        $this->post(route('subscriptions.payments.store', $this->subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash'])
             ->assertForbidden();
     }
 

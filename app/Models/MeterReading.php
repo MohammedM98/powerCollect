@@ -8,6 +8,9 @@ use App\Enums\MeterReadingStatus;
 use App\Enums\PermissionKey;
 use App\Enums\UserRole;
 use App\Models\Concerns\BelongsToBranch;
+use App\Support\Money;
+use Brick\Math\BigDecimal;
+use Brick\Math\RoundingMode;
 use Carbon\CarbonInterface;
 use Database\Factories\MeterReadingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -246,17 +249,16 @@ class MeterReading extends Model
      * a percentage of the fee, kilowatts of the consumption at the kilo
      * price, or shekels off the price of each kilo — never more than the fee.
      */
-    public static function discountFor(DiscountMethod $method, float|string $value, float $consumption, float|string $unitPrice): float
+    public static function discountFor(DiscountMethod $method, float|string $value, float $consumption, float|string $unitPrice): string
     {
-        $readingFee = round($consumption * (float) $unitPrice, 2);
-
+        $readingFee = Money::multiply($consumption, $unitPrice);
         $discount = match ($method) {
-            DiscountMethod::Percentage => $readingFee * (float) $value / 100,
-            DiscountMethod::Kilowatt => min((float) $value, $consumption) * (float) $unitPrice,
-            DiscountMethod::Shekel => $consumption * min((float) $value, (float) $unitPrice),
+            DiscountMethod::Percentage => Money::decimal($readingFee)->multipliedBy((string) $value)->dividedBy('100', 2, RoundingMode::HalfUp),
+            DiscountMethod::Kilowatt => BigDecimal::min((string) $value, (string) $consumption)->multipliedBy((string) $unitPrice),
+            DiscountMethod::Shekel => Money::decimal($consumption)->multipliedBy(BigDecimal::min((string) $value, (string) $unitPrice)),
         };
 
-        return min(round($discount, 2), $readingFee);
+        return Money::amount(BigDecimal::min(Money::amount($discount), $readingFee));
     }
 
     /**
@@ -275,15 +277,15 @@ class MeterReading extends Model
         ?DiscountMethod $discountMethod = null,
         float|string|null $discountValue = null,
     ): array {
-        $readingFee = round($consumption * (float) $unitPrice, 2);
+        $readingFee = Money::multiply($consumption, $unitPrice);
         $hasDiscount = $discountMethod !== null && $discountValue !== null;
-        $discount = $hasDiscount ? self::discountFor($discountMethod, $discountValue, $consumption, $unitPrice) : 0.0;
-        $amountDue = $hasDiscount ? round($readingFee - $discount, 2) : max($readingFee, (float) $minimumPayment);
+        $discount = $hasDiscount ? self::discountFor($discountMethod, $discountValue, $consumption, $unitPrice) : '0.00';
+        $amountDue = $hasDiscount ? Money::subtract($readingFee, $discount) : Money::amount(BigDecimal::max($readingFee, (string) $minimumPayment));
 
         return [
-            'reading_fee' => number_format($readingFee, 2, '.', ''),
-            'discount_amount' => number_format($discount, 2, '.', ''),
-            'amount_due' => number_format($amountDue, 2, '.', ''),
+            'reading_fee' => Money::amount($readingFee),
+            'discount_amount' => Money::amount($discount),
+            'amount_due' => Money::amount($amountDue),
         ];
     }
 
@@ -426,7 +428,7 @@ class MeterReading extends Model
      */
     private function recordDiscountLine(User $recorder): void
     {
-        if ((float) $this->discount_amount <= 0
+        if (! Money::decimal($this->discount_amount)->isPositive()
             || $this->sourceWasBilled($this->discountSourceKey())
             || $this->currentLine(SubscriptionTransaction::TYPE_METER_READING, lockForUpdate: true) === null) {
             return;
@@ -438,7 +440,7 @@ class MeterReading extends Model
             'corrects_id' => $this->lastCancelledLineId(SubscriptionTransaction::TYPE_READING_DISCOUNT),
             'type' => SubscriptionTransaction::TYPE_READING_DISCOUNT,
             'source_key' => $this->discountSourceKey(),
-            'amount' => number_format(-(float) $this->discount_amount, 2, '.', ''),
+            'amount' => Money::negate($this->discount_amount),
             'currency_amount' => $this->discount_amount,
             'discount_method' => $this->discount_method,
             'discount_value' => $this->discount_value,
@@ -657,7 +659,7 @@ class MeterReading extends Model
      */
     public function amountBeforeDiscount(): string
     {
-        return number_format((float) $this->amount_due + (float) $this->discount_amount, 2, '.', '');
+        return Money::add($this->amount_due, $this->discount_amount);
     }
 
     /** Batch the successor count for lists; mutations still query their freshly loaded reading. */

@@ -87,7 +87,7 @@ class BranchPerformanceTest extends TestCase
                 ->where('summary', [
                     'branches' => 2,
                     'activeBranches' => 1,
-                    'chargesTotal' => 700,
+                    'chargesTotal' => '700.00',
                     'subscriptions' => 4,
                     'activeSubscriptions' => 3,
                     'weekEntries' => 3,
@@ -145,8 +145,8 @@ class BranchPerformanceTest extends TestCase
                     ['value' => 'suspended', 'label' => 'قيد الانتظار', 'count' => 1],
                     ['value' => 'disconnected', 'label' => 'مفصول', 'count' => 0],
                 ])
-                ->where('branch.chargesTotal', 200)
-                ->where('branch.monthChargesTotal', 170)
+                ->where('branch.chargesTotal', '200.00')
+                ->where('branch.monthChargesTotal', '170.00')
                 ->where('branch.todayEntries', 2)
                 ->where('branch.weekEntries', 3)
                 ->where('branch.monthEntries', 4)
@@ -154,8 +154,8 @@ class BranchPerformanceTest extends TestCase
                 ->where('dailyRegistrations.29', ['date' => '2026-09-20', 'value' => 1])
                 ->where('dailyRegistrations.26', ['date' => '2026-09-17', 'value' => 1])
                 ->has('dailyCharges', 30)
-                ->where('dailyCharges.29', ['date' => '2026-09-20', 'value' => 50, 'count' => 1])
-                ->where('dailyCharges.19', ['date' => '2026-09-10', 'value' => 120, 'count' => 1]));
+                ->where('dailyCharges.29', ['date' => '2026-09-20', 'value' => '50.00', 'count' => 1])
+                ->where('dailyCharges.19', ['date' => '2026-09-10', 'value' => '120.00', 'count' => 1]));
     }
 
     public function test_the_team_lists_the_branchs_staff_busiest_first_with_what_each_recorded(): void
@@ -169,9 +169,9 @@ class BranchPerformanceTest extends TestCase
                     $member['name'], $member['entries'], $member['weekEntries'],
                     $member['recordedCount'], $member['recordedCharged'], $member['recordedCredited'], $member['lastActivityAt'],
                 ])->all() === [
-                    ['Karrada Clerk', 3, 2, 2, 80, 0, '2026-09-20T09:30:00+00:00'],
-                    ['Karrada Admin', 2, 1, 2, 120, 10, '2026-09-20T10:00:00+00:00'],
-                    ['Former Collector', 0, 0, 1, 0, 100, '2026-09-20T11:00:00+00:00'],
+                    ['Karrada Clerk', 3, 2, 2, '80.00', '0.00', '2026-09-20T09:30:00+00:00'],
+                    ['Karrada Admin', 2, 1, 2, '120.00', '10.00', '2026-09-20T10:00:00+00:00'],
+                    ['Former Collector', 0, 0, 1, '0.00', '100.00', '2026-09-20T11:00:00+00:00'],
                 ]));
     }
 
@@ -184,13 +184,13 @@ class BranchPerformanceTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->has('workLog', 14)
                 ->where('workLog.0', [
-                    'date' => '2026-09-20', 'newSubscriptions' => 1, 'entries' => 2, 'chargesCount' => 1, 'chargesTotal' => 50, 'topEntrant' => 'Karrada Clerk',
+                    'date' => '2026-09-20', 'newSubscriptions' => 1, 'entries' => 2, 'chargesCount' => 1, 'chargesTotal' => '50.00', 'topEntrant' => 'Karrada Clerk',
                 ])
                 ->where('workLog.3', [
-                    'date' => '2026-09-17', 'newSubscriptions' => 1, 'entries' => 1, 'chargesCount' => 0, 'chargesTotal' => 0, 'topEntrant' => 'Karrada Admin',
+                    'date' => '2026-09-17', 'newSubscriptions' => 1, 'entries' => 1, 'chargesCount' => 0, 'chargesTotal' => '0.00', 'topEntrant' => 'Karrada Admin',
                 ])
                 ->where('workLog.10', [
-                    'date' => '2026-09-10', 'newSubscriptions' => 0, 'entries' => 1, 'chargesCount' => 1, 'chargesTotal' => 120, 'topEntrant' => 'Karrada Admin',
+                    'date' => '2026-09-10', 'newSubscriptions' => 0, 'entries' => 1, 'chargesCount' => 1, 'chargesTotal' => '120.00', 'topEntrant' => 'Karrada Admin',
                 ])
                 ->where('workLog.13.date', '2026-09-07')
                 ->where('workLog.13.topEntrant', null)

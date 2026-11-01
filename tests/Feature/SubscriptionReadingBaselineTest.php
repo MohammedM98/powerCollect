@@ -60,13 +60,13 @@ class SubscriptionReadingBaselineTest extends TestCase
 
         $this->actingAs($actor)->postJson(route('subscriptions.reading-baseline.preview', $subscription), $payload)
             ->assertJsonPath('clearsCurrentReading', true)->assertJsonPath('removedCurrentAmount', '13.50');
-        $this->assertSame(13.5, $subscription->fresh()->balance());
+        $this->assertSame('13.50', $subscription->fresh()->balance());
         $this->put(route('subscriptions.reading-baseline.update', $subscription), $payload)->assertSessionHasNoErrors();
 
         $this->assertSame(130.0, $subscription->fresh()->initial_reading);
         $this->assertSame(130.0, $current->fresh()->previous_reading);
         $this->assertTrue($current->fresh()->requires_reentry);
-        $this->assertSame(0.0, $subscription->fresh()->balance());
+        $this->assertSame('0.00', $subscription->fresh()->balance());
         $this->assertSame(1, $subscription->meterReadings()->count());
         $this->assertSame('initial_reading_adjustment', $current->fresh()->adjustment_history[0]['kind']);
         $this->get(route('subscriptions.index'))->assertInertia(fn ($page) => $page

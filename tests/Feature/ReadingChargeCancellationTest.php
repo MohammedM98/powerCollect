@@ -51,7 +51,7 @@ class ReadingChargeCancellationTest extends TestCase
         $this->assertNull($reading->approved_at);
         $this->assertTrue($charge->refresh()->isCancelled());
         // Only the penalty is owed: the cancelled reading is no longer billed.
-        $this->assertSame(10.0, $this->subscription->balance());
+        $this->assertSame('10.00', $this->subscription->balance());
     }
 
     public function test_the_reading_is_then_approved_again_and_billed_afresh_under_the_cancelled_line(): void
@@ -67,7 +67,7 @@ class ReadingChargeCancellationTest extends TestCase
         $this->assertSame('210.00', $rebilled->amount);
         $this->assertSame($charge->id, $rebilled->corrects_id);
         $this->assertSame($reading->chargeSourceKey(), $rebilled->source_key);
-        $this->assertSame(220.0, $this->subscription->balance());
+        $this->assertSame('220.00', $this->subscription->balance());
     }
 
     public function test_the_weeks_reading_can_be_corrected_after_its_charge_was_cancelled(): void
@@ -107,31 +107,31 @@ class ReadingChargeCancellationTest extends TestCase
         $this->actingAs($this->admin)->post(route('subscriptions.transactions.actions.store', [$this->subscription, $charge]), [
             'action' => 'cancel', 'correction_reason' => 'wrong_reading', 'correction_notes' => 'خطأ', 'reopen_reading' => true,
         ])->assertSessionHasNoErrors();
-        $this->assertSame(10.0, $this->subscription->balance());
+        $this->assertSame('10.00', $this->subscription->balance());
         $this->assertSame(MeterReadingStatus::Pending, $reading->fresh()->status);
 
         $this->post(route('meter-readings.approve'), ['reading_ids' => [$reading->id]])->assertSessionHasNoErrors();
 
         $this->assertSame(['83.40', '-30.00'], SubscriptionTransaction::where('meter_reading_id', $reading->id)->whereNull('cancelled_at')->whereNull('reverses_id')->orderBy('id')->pluck('amount')->all());
-        $this->assertSame(63.4, round($this->subscription->balance(), 2));
+        $this->assertSame('63.40', $this->subscription->balance());
         $this->assertNotNull($discount->fresh()->cancelled_at);
     }
 
-    public function test_deleting_the_cancellation_puts_the_charge_and_the_approved_reading_back_as_they_were(): void
+    public function test_deleting_the_cancellation_is_refused_and_keeps_the_reading_pending(): void
     {
         [$reading, $charge] = $this->approvedReading('210.00');
         $charge->cancel($this->admin, CorrectionReason::WrongReading, 'خطأ', reopenReading: true);
         $reversal = SubscriptionTransaction::where('reverses_id', $charge->id)->sole();
 
         $this->actingAs($this->admin)->post(route('subscriptions.transactions.actions.store', [$this->subscription, $reversal]), ['action' => 'delete_reversal', 'correction_notes' => 'الإلغاء كان خطأ'])
-            ->assertSessionHasNoErrors();
+            ->assertSessionHasErrors('action');
 
         $charge->refresh();
-        $this->assertFalse($charge->isCancelled());
-        $this->assertSame($reading->chargeSourceKey(), $charge->source_key);
-        $this->assertSame(MeterReadingStatus::Approved, $reading->fresh()->status);
-        $this->assertSame($this->admin->id, $reading->fresh()->approved_by);
-        $this->assertSame(210.0, $this->subscription->balance());
+        $this->assertTrue($charge->isCancelled());
+        $this->assertNotSame($reading->chargeSourceKey(), $charge->source_key);
+        $this->assertSame(MeterReadingStatus::Pending, $reading->fresh()->status);
+        $this->assertNull($reading->fresh()->approved_by);
+        $this->assertSame('0.00', $this->subscription->balance());
     }
 
     public function test_without_asking_for_a_review_cancelling_a_readings_charge_waives_it_and_the_reading_stays_approved(): void
@@ -145,7 +145,7 @@ class ReadingChargeCancellationTest extends TestCase
 
         $this->assertSame(MeterReadingStatus::Approved, $reading->fresh()->status);
         $this->assertSame($reading->chargeSourceKey(), $charge->fresh()->source_key);
-        $this->assertSame(10.0, $this->subscription->balance());
+        $this->assertSame('10.00', $this->subscription->balance());
     }
 
     public function test_the_sheet_says_when_an_approved_readings_bill_was_cancelled_and_not_otherwise(): void
@@ -184,7 +184,7 @@ class ReadingChargeCancellationTest extends TestCase
 
         $this->assertSame(MeterReadingStatus::Approved, $reading->fresh()->status);
         // 20 kWh at 3 shekels.
-        $this->assertSame(60.0, $this->subscription->balance());
+        $this->assertSame('60.00', $this->subscription->balance());
     }
 
     /** An approved, billed reading of another subscription of the branch, for the same week. */

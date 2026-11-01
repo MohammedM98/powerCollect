@@ -160,7 +160,7 @@ class CompanySetupToAuditJourneyTest extends TestCase
         [$salem, $shop, $waiting] = Subscription::query()->orderBy('id')->get()->all();
         $this->assertSame(['202600001', '202600002', '202600003'], [$salem->account_number, $shop->account_number, $waiting->account_number]);
         $this->assertSame([$company['branch']->id, $company['branch']->id], [$salem->branch_id, $shop->branch_id]);
-        $this->assertSame([100.0, 0.0, 0.0], [$salem->balance(), $shop->balance(), $waiting->balance()]);
+        $this->assertSame(['100.00', '0.00', '0.00'], [$salem->balance(), $shop->balance(), $waiting->balance()]);
 
         // The week of 16 October is read on Thursday the 22nd: one tablon on the reader's phone, one on paper.
         $this->actingAs($manager)->post(route('reading-cycles.store'), ['week_start' => '2026-10-16', 'reading_date' => '2026-10-22'])->assertSessionHasNoErrors();
@@ -185,13 +185,13 @@ class CompanySetupToAuditJourneyTest extends TestCase
         ]]])->assertOk()->assertJsonPath('results.0.status', 'accepted');
         $this->actingAs($reader)->post(route('meter-readings.store'), ['subscription_id' => $shop->id, 'week_start' => '2026-10-16', 'current_reading' => 620])->assertSessionHasNoErrors();
         $this->actingAs($reader)->post(route('meter-readings.store'), ['subscription_id' => $waiting->id, 'week_start' => '2026-10-16', 'current_reading' => 10])->assertSessionHasErrors('subscription_id');
-        $this->assertSame([100.0, 0.0], [$salem->balance(), $shop->balance()]);
+        $this->assertSame(['100.00', '0.00'], [$salem->balance(), $shop->balance()]);
         $this->actingAs($reader)->post(route('meter-readings.approve'), ['reading_ids' => MeterReading::query()->pluck('id')->all()])->assertForbidden();
 
         $this->actingAs($manager)->post(route('meter-readings.approve'), ['reading_ids' => MeterReading::query()->pluck('id')->all()])->assertSessionHasNoErrors();
-        $this->assertSame([140.0, 96.0], [$salem->balance(), $shop->balance()]);
+        $this->assertSame(['140.00', '96.00'], [$salem->balance(), $shop->balance()]);
         $this->actingAs($manager)->post(route('meter-readings.approve'), ['reading_ids' => MeterReading::query()->pluck('id')->all()])->assertSessionHasErrors('reading_ids');
-        $this->assertSame([140.0, 96.0], [$salem->balance(), $shop->balance()]);
+        $this->assertSame(['140.00', '96.00'], [$salem->balance(), $shop->balance()]);
 
         // The next week a reading is typed wrong and approved, then corrected: the wrong bill is replaced, not added to.
         $this->travelTo(Carbon::parse('2026-10-29 11:00', 'Asia/Gaza'));
@@ -199,9 +199,9 @@ class CompanySetupToAuditJourneyTest extends TestCase
         $mistake = MeterReading::query()->whereDate('week_start', '2026-10-23')->sole();
         $this->assertSame(1080.0, $mistake->previous_reading);
         $this->actingAs($manager)->post(route('meter-readings.approve'), ['reading_ids' => [$mistake->id]])->assertSessionHasNoErrors();
-        $this->assertSame(200.0, $salem->balance());
+        $this->assertSame('200.00', $salem->balance());
         $this->actingAs($manager)->put(route('meter-readings.update', $mistake), ['current_reading' => 1120, 'notes' => 'خطأ في الكتابة', 'approve' => true])->assertSessionHasNoErrors();
-        $this->assertSame(160.0, $salem->balance());
+        $this->assertSame('160.00', $salem->balance());
         $this->assertSame(['40.00', '60.00', '20.00'], $salem->transactions()->where('type', SubscriptionTransaction::TYPE_METER_READING)->orderBy('id')->pluck('amount')->all());
 
         // The meter is replaced: once that week has ended, the new one starts at 0 without touching what was billed.
@@ -215,12 +215,12 @@ class CompanySetupToAuditJourneyTest extends TestCase
         $this->actingAs($manager)->put(route('meter-readings.adjust-last', $mistake), [
             'adjustment_type' => 'meter_change', 'current_reading' => 0, 'expected_reading' => 1120, 'reason' => 'استبدال العداد التالف',
         ])->assertSessionHasNoErrors();
-        $this->assertSame(160.0, $salem->balance());
+        $this->assertSame('160.00', $salem->balance());
         $this->actingAs($reader)->post(route('meter-readings.store'), ['subscription_id' => $salem->id, 'week_start' => '2026-10-30', 'current_reading' => 30])->assertSessionHasNoErrors();
         $afterChange = MeterReading::query()->whereDate('week_start', '2026-10-30')->sole();
         $this->assertSame([0.0, 30.0], [$afterChange->previous_reading, $afterChange->consumption]);
         $this->actingAs($manager)->post(route('meter-readings.approve'), ['reading_ids' => [$afterChange->id]])->assertSessionHasNoErrors();
-        $this->assertSame(175.0, $salem->balance());
+        $this->assertSame('175.00', $salem->balance());
 
         $this->actingAs($manager)->get(route('subscriptions.statement', $salem))->assertInertia(fn ($page) => $page
             ->where('summary.balance', '175.00')
@@ -244,19 +244,19 @@ class CompanySetupToAuditJourneyTest extends TestCase
         [$salem, $khaled] = Subscription::query()->orderBy('id')->get()->all();
 
         // Payments: who may take them, how, and with what checks.
-        $this->actingAs($reader)->post(route('subscriptions.payments.store', $salem), ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertForbidden();
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $salem), ['amount' => '0', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasErrors('amount');
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $salem), [
+        $this->actingAs($reader)->post(route('subscriptions.payments.store', $salem), ['payment_token' => (string) Str::uuid(), 'amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertForbidden();
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $salem), ['payment_token' => (string) Str::uuid(), 'amount' => '0', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasErrors('amount');
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $salem), ['payment_token' => (string) Str::uuid(),
             'amount' => '40', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك غير معروف', 'sender_name' => 'سالم', 'reference_number' => 'TRF-1',
         ])->assertSessionHasErrors('bank_name');
         $cash = $this->pay($collector, $salem, ['amount' => '60', 'payment_method' => 'cash']);
         $transfer = $this->pay($collector, $salem, ['amount' => '40', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'سالم عبد الله', 'reference_number' => 'TRF-1']);
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $khaled), [
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $khaled), ['payment_token' => (string) Str::uuid(),
             'amount' => '100', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'خالد', 'reference_number' => 'TRF-1',
         ])->assertSessionHasErrors('reference_number');
         $missingTransfer = $this->pay($collector, $khaled, ['amount' => '100', 'payment_method' => 'bank_transfer', 'bank_name' => 'جوال باي', 'sender_name' => 'خالد يوسف', 'reference_number' => 'TRF-2']);
         $dollars = $this->pay($collector, $khaled, ['amount' => '50', 'currency' => 'USD', 'exchange_rate' => '3.7', 'payment_method' => 'cash']);
-        $this->assertSame([200.0, 115.0], [$salem->balance(), $khaled->balance()]);
+        $this->assertSame(['200.00', '115.00'], [$salem->balance(), $khaled->balance()]);
         $this->assertSame([1, null, null, 2], [$cash->voucher_number, $transfer->voucher_number, $missingTransfer->voucher_number, $dollars->voucher_number]);
         $this->actingAs($collector)->get(route('subscriptions.payments.receipt', [$salem, $cash]))->assertOk();
         $this->actingAs($collector)->get(route('subscriptions.payments.receipt', [$khaled, $cash]))->assertNotFound();
@@ -292,13 +292,13 @@ class CompanySetupToAuditJourneyTest extends TestCase
         $this->actingAs($auditor)->post(route('payments.period-audits.store'), $approval)->assertSessionHasNoErrors();
 
         $this->assertDatabaseCount('cash_box_audits', 3);
-        $this->assertSame([180.0, 215.0], [$salem->balance(), $khaled->balance()]);
+        $this->assertSame(['180.00', '215.00'], [$salem->balance(), $khaled->balance()]);
         $this->actingAs($auditor)->post(route('payments.bank-audits.store', $missingTransfer->boxEntry), ['bank_amount' => '100', 'reason' => 'تغيير القرار'])->assertSessionHasErrors('action');
         $this->actingAs($collector)->post(route('subscriptions.transactions.actions.store', [$salem, $cash]), ['action' => 'cancel', 'correction_reason' => 'other', 'correction_notes' => 'بعد التدقيق'])->assertForbidden();
-        $this->assertSame([180.0, 215.0], [$salem->balance(), $khaled->balance()]);
+        $this->assertSame(['180.00', '215.00'], [$salem->balance(), $khaled->balance()]);
         $this->actingAs($manager)->get(route('ledger.index', ['period' => 'all']))->assertInertia(fn ($page) => $page
-            ->where('summary.collected', 305)
-            ->where('ledgerTotals.net', 395));
+            ->where('summary.collected', '305.00')
+            ->where('ledgerTotals.net', '395.00'));
     }
 
     public function test_a_second_branchs_staff_cannot_see_bill_collect_from_or_close_the_first_branchs_work(): void
@@ -318,14 +318,14 @@ class CompanySetupToAuditJourneyTest extends TestCase
         $this->actingAs($this->superAdmin)->put(route('settings.permissions.update'), ['permissions' => [$outsider->id => Permission::idsFor(UserRole::BranchAdmin->starterPermissions())]])->assertSessionHasNoErrors();
 
         $this->actingAs($outsider)->get(route('subscriptions.statement', $salem))->assertForbidden();
-        $this->actingAs($outsider)->post(route('subscriptions.payments.store', $salem), ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertForbidden();
+        $this->actingAs($outsider)->post(route('subscriptions.payments.store', $salem), ['payment_token' => (string) Str::uuid(), 'amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertForbidden();
         $this->actingAs($outsider)->post(route('subscriptions.charges.store', $salem), ['type' => 'penalty', 'amount' => '5', 'notes' => 'تجربة'])->assertForbidden();
         $this->actingAs($outsider)->post(route('meter-readings.store'), ['subscription_id' => $salem->id, 'week_start' => '2026-10-16', 'current_reading' => 1100])->assertSessionHasErrors('subscription_id');
         $this->actingAs($outsider)->post(route('payments.cash-boxes.actions', ['action' => 'receive', 'record' => $cash->boxEntry->cash_box_id]), ['branch_id' => $company['branch']->id])->assertNotFound();
         $this->actingAs($outsider)->post(route('payments.cash-boxes.actions', ['action' => 'receive', 'record' => $cash->boxEntry->cash_box_id]), ['branch_id' => $otherBranch->id])->assertNotFound();
         $this->actingAs($outsider)->get(route('subscriptions.index'))->assertInertia(fn ($page) => $page->where('subscriptions.total', 0));
 
-        $this->assertSame(70.0, $salem->balance());
+        $this->assertSame('70.00', $salem->balance());
         $this->assertSame('open', $cash->boxEntry->box->fresh()->status);
         $this->assertSame(0, MeterReading::query()->count());
     }
@@ -337,7 +337,7 @@ class CompanySetupToAuditJourneyTest extends TestCase
      */
     private function pay(User $collector, Subscription $subscription, array $details): SubscriptionTransaction
     {
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['currency' => 'ILS', ...$details])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'currency' => 'ILS', ...$details])->assertSessionHasNoErrors();
 
         return $subscription->transactions()->where('type', SubscriptionTransaction::TYPE_PAYMENT)->latest('id')->firstOrFail();
     }

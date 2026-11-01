@@ -78,12 +78,12 @@ class MobileCollectorDayJourneyTest extends TestCase
             'mobile_operation_id' => (string) Str::uuid(), 'action' => 'charge', 'type' => 'penalty', 'amount' => '15', 'notes' => 'غرامة',
         ])->assertForbidden();
 
-        $this->assertSame([150.0, 100.0], [$salem->balance(), $khaled->balance()]);
+        $this->assertSame(['150.00', '100.00'], [$salem->balance(), $khaled->balance()]);
         $this->assertSame(5, SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_PAYMENT)->where('recorded_by', $collector->id)->count());
         $this->withToken($token)->getJson(route('mobile.collections.index'))->assertOk()
-            ->assertJsonPath('total', 435)
-            ->assertJsonPath('cash_total', 245)
-            ->assertJsonPath('bank_transfer_total', 190)
+            ->assertJsonPath('total', '435.00')
+            ->assertJsonPath('cash_total', '245.00')
+            ->assertJsonPath('bank_transfer_total', '190.00')
             ->assertJsonCount(5, 'data');
 
         $boxes = $this->withToken($token)->getJson(route('mobile.cash-boxes.index'))->assertOk()->assertJsonPath('started', true)->json('boxes');
@@ -145,7 +145,7 @@ class MobileCollectorDayJourneyTest extends TestCase
         $this->withToken($secondPhone)->getJson(route('mobile.me'))->assertUnauthorized();
         $this->withoutToken()->postJson(route('mobile.login'), ['username' => 'collector-1', 'password' => self::PASSWORD])->assertUnprocessable();
 
-        $this->assertSame(300.0, $salem->balance());
+        $this->assertSame('300.00', $salem->balance());
         $this->assertSame(0, SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_PAYMENT)->count());
         $this->assertSame(0, $reader->fresh()->permissions()->where('key', PermissionKey::RecordCollections->value)->count());
     }
@@ -163,7 +163,7 @@ class MobileCollectorDayJourneyTest extends TestCase
         $this->collect($token, $salem, ['amount' => '10', 'currency' => 'JOD', 'exchange_rate' => '5.2', 'payment_method' => 'cash'])->assertUnprocessable()->assertJsonValidationErrors('exchange_rate');
 
         $this->assertSame('3.7000', SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_PAYMENT)->sole()->exchange_rate);
-        $this->assertSame(263.0, $salem->balance());
+        $this->assertSame('263.00', $salem->balance());
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /**
@@ -57,12 +58,12 @@ class SubscriptionFlowTest extends TestCase
             'subscription_id' => $subscription->id, 'week_start' => '2026-09-18', 'current_reading' => 1205,
         ])->assertSessionHasNoErrors();
         $this->post(route('meter-readings.approve'), ['reading_ids' => [$subscription->meterReadings()->sole()->id]])->assertSessionHasNoErrors();
-        $this->assertSame(150.0, $subscription->balance());
+        $this->assertSame('150.00', $subscription->balance());
 
         // A payment of 100 leaves 50 owing.
-        $this->post(route('subscriptions.payments.store', $subscription), ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash'])
+        $this->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash'])
             ->assertSessionHasNoErrors();
-        $this->assertSame(50.0, $subscription->balance());
+        $this->assertSame('50.00', $subscription->balance());
 
         // The statement shows both lines and the balance.
         $this->get(route('subscriptions.statement', $subscription))->assertInertia(fn ($page) => $page
@@ -85,15 +86,15 @@ class SubscriptionFlowTest extends TestCase
 
         $subscription->refresh();
         $this->assertSame($otherBranch->id, $subscription->branch_id);
-        $this->assertSame(50.0, $subscription->balance());
+        $this->assertSame('50.00', $subscription->balance());
         $this->assertSame(2, $subscription->transactions()->count());
         // Lines keep the branch they were recorded in; reports for that branch do not change.
         $this->assertSame([$branch->id], $subscription->transactions()->pluck('branch_id')->unique()->values()->all());
 
         $newAdmin = User::factory()->branchAdmin()->create(['branch_id' => $otherBranch->id]);
-        $this->actingAs($newAdmin)->post(route('subscriptions.payments.store', $subscription), ['amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash'])
+        $this->actingAs($newAdmin)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash'])
             ->assertSessionHasNoErrors();
-        $this->assertSame(0.0, $subscription->balance());
+        $this->assertSame('0.00', $subscription->balance());
         $this->assertSame($otherBranch->id, $subscription->transactions()->latest('id')->first()->branch_id);
 
         // The old branch no longer sees it; the new one does.
@@ -113,15 +114,15 @@ class SubscriptionFlowTest extends TestCase
         $this->artisan('subscriptions:import', ['file' => $file, '--user' => $manager->username])->assertSuccessful();
 
         $subscription = Subscription::query()->where('legacy_number', '129600')->sole();
-        $this->assertSame(123.05, $subscription->balance());
+        $this->assertSame('123.05', $subscription->balance());
 
         // Found by the old number, then paid.
         $this->actingAs($manager)->get(route('subscriptions.index', ['search' => '129600']))
             ->assertInertia(fn ($page) => $page->has('subscriptions.data', 1)->where('subscriptions.data.0.id', $subscription->id));
-        $this->post(route('subscriptions.payments.store', $subscription), ['amount' => '23.05', 'currency' => 'ILS', 'payment_method' => 'cash'])
+        $this->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '23.05', 'currency' => 'ILS', 'payment_method' => 'cash'])
             ->assertSessionHasNoErrors();
 
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
         $this->get(route('subscriptions.statement', $subscription))->assertInertia(fn ($page) => $page
             ->has('entries', 2)
             ->where('summary.balance', '100.00'));

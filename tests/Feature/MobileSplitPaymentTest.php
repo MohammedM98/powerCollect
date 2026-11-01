@@ -80,7 +80,7 @@ class MobileSplitPaymentTest extends TestCase
         $this->postJson(route('mobile.split-payments.store'), $this->payload($first, $foreign))->assertJsonValidationErrors('parts.1.subscription_id');
 
         $this->assertDatabaseCount('split_payments', 0);
-        $this->assertSame(100.0, $first->balance());
+        $this->assertSame('100.00', $first->balance());
     }
 
     public function test_mismatched_allocation_and_missing_confirmation_do_not_record_payments(): void

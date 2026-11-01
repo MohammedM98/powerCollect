@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\CorrectionReason;
 use App\Enums\TransactionAction;
 use App\Models\Branch;
 use App\Models\CashBox;
@@ -258,17 +259,19 @@ class BranchClosingWorkflowTest extends TestCase
         $this->assertTrue(app(BranchClosingWorkflow::class)->current($branch->id)->coverage_from->equalTo($closing->coverage_until));
     }
 
-    public function test_an_empty_open_box_is_removed_at_the_end_of_its_week(): void
+    public function test_a_box_with_cancelled_payment_history_is_retained_at_the_end_of_its_week(): void
     {
-        [$branch, , $collector] = $this->start();
+        [$branch, $head, $collector] = $this->start();
         $payment = $this->payment($branch, $collector);
         $box = CashBox::query()->sole();
-        $payment->delete();
+        $payment->cancel($head, CorrectionReason::PaymentRefunded, 'Refund');
 
         $this->travelTo($box->closing->coverage_until);
         $this->artisan('closings:process')->assertSuccessful();
 
-        $this->assertDatabaseMissing('cash_boxes', ['id' => $box->id]);
+        $this->assertModelExists($box);
+        $this->assertModelExists($payment);
+        $this->assertSame('0.00', $box->fresh()->totals()['ILS']);
     }
 
     public function test_each_branch_closes_at_its_own_week_start_in_business_time(): void
@@ -425,7 +428,7 @@ class BranchClosingWorkflowTest extends TestCase
         $this->withToken($token)->postJson(route('mobile.cash-boxes.actions', ['action' => 'head-count', 'record' => $box->id]), ['branch_id' => $branch->id, 'counts' => $this->counts()])->assertForbidden();
     }
 
-    public function test_open_box_tracks_existing_payment_edits_and_releases_deleted_payments(): void
+    public function test_open_box_tracks_payment_edits_and_excludes_refunds_without_losing_history(): void
     {
         [$branch, $head, $collector] = $this->start();
         $payment = $this->payment($branch, $collector);
@@ -435,8 +438,10 @@ class BranchClosingWorkflowTest extends TestCase
 
         $this->assertSame('75.00', $entry->fresh()->amount);
         $this->assertSame('75.00', app(BranchClosingWorkflow::class)->expected($entry->box)['ILS']);
-        $payment->delete();
-        $this->assertDatabaseMissing('cash_box_payments', ['id' => $entry->id]);
+        $payment->cancel($head, CorrectionReason::PaymentRefunded, 'Refund');
+        $this->assertModelExists($entry);
+        $this->assertModelExists($payment);
+        $this->assertSame(0, CashBoxPayment::visibleInBox()->count());
         $this->assertSame('0.00', app(BranchClosingWorkflow::class)->expected($entry->box)['ILS']);
     }
 

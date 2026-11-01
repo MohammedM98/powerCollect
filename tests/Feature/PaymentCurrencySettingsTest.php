@@ -49,7 +49,7 @@ class PaymentCurrencySettingsTest extends TestCase
         $subscription = Subscription::factory()->for($collector->branch)->create();
         CurrencyRate::query()->where('currency', $currency)->update(['rate' => $rate]);
 
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['amount' => '20', 'currency' => $currency, 'exchange_rate' => $rate, 'payment_method' => 'cash'])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '20', 'currency' => $currency, 'exchange_rate' => $rate, 'payment_method' => 'cash'])->assertSessionHasNoErrors();
 
         $payment = $subscription->transactions()->where('type', 'payment')->sole();
         $this->assertSame([$expected, $currency, '20.00'], [$payment->amount, $payment->currency->value, $payment->currency_amount]);
@@ -62,7 +62,7 @@ class PaymentCurrencySettingsTest extends TestCase
         $subscription = Subscription::factory()->for($collector->branch)->create();
         CurrencyRate::query()->where('currency', 'EUR')->update(['rate' => '4.2500']);
 
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['amount' => '20', 'currency' => 'EUR', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '20', 'currency' => 'EUR', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
 
         $this->assertDatabaseHas('subscription_transactions', ['subscription_id' => $subscription->id, 'currency' => 'EUR', 'currency_amount' => '20.00', 'exchange_rate' => '4.2500', 'amount' => '-85.00']);
     }
@@ -94,7 +94,7 @@ class PaymentCurrencySettingsTest extends TestCase
         $subscription = Subscription::factory()->for($collector->branch)->create();
         CurrencyRate::query()->where('currency', 'EUR')->update(['rate' => $rate]);
 
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['amount' => $amount, 'currency' => 'EUR', 'exchange_rate' => $rate, 'payment_method' => 'cash', 'confirm_overpayment' => true])->assertSessionHasErrors('amount');
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => $amount, 'currency' => 'EUR', 'exchange_rate' => $rate, 'payment_method' => 'cash', 'confirm_overpayment' => true])->assertSessionHasErrors('amount');
 
         $this->assertDatabaseCount('subscription_transactions', 0);
     }
@@ -110,7 +110,7 @@ class PaymentCurrencySettingsTest extends TestCase
         $subscription = Subscription::factory()->for($collector->branch)->create();
         CurrencyRate::query()->where('currency', 'EUR')->update(['rate' => '4.2500']);
 
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['amount' => '20', 'currency' => 'EUR', 'exchange_rate' => $rate, 'payment_method' => 'cash'])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '20', 'currency' => 'EUR', 'exchange_rate' => $rate, 'payment_method' => 'cash'])->assertSessionHasNoErrors();
 
         $this->assertDatabaseHas('subscription_transactions', ['subscription_id' => $subscription->id, 'currency' => 'EUR', 'exchange_rate' => '4.2500', 'amount' => '-85.00']);
     }
@@ -120,7 +120,7 @@ class PaymentCurrencySettingsTest extends TestCase
         $collector = User::factory()->branchAdmin()->create();
         $subscription = Subscription::factory()->for($collector->branch)->create();
 
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['amount' => '20', 'currency' => 'EUR', 'exchange_rate' => '4.25', 'payment_method' => 'cash'])->assertSessionHasErrors('exchange_rate');
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '20', 'currency' => 'EUR', 'exchange_rate' => '4.25', 'payment_method' => 'cash'])->assertSessionHasErrors('exchange_rate');
 
         $this->assertDatabaseCount('subscription_transactions', 0);
         $this->assertDatabaseCount('cash_box_payments', 0);
@@ -131,14 +131,14 @@ class PaymentCurrencySettingsTest extends TestCase
         $collector = User::factory()->branchAdmin()->create();
         $subscription = Subscription::factory()->for($collector->branch)->create();
         SubscriptionTransaction::factory()->for($subscription)->create(['amount' => '100']);
-        $data = ['amount' => '200', 'currency' => 'EUR', 'exchange_rate' => '4', 'payment_method' => 'cash'];
+        $data = ['payment_token' => (string) Str::uuid(), 'amount' => '200', 'currency' => 'EUR', 'exchange_rate' => '4', 'payment_method' => 'cash'];
         CurrencyRate::query()->where('currency', 'EUR')->update(['rate' => '4.0000']);
 
         $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), $data)->assertSessionHasErrors('confirm_overpayment');
 
         $this->assertDatabaseCount('subscription_transactions', 1);
-        $this->post(route('subscriptions.payments.store', $subscription), [...$data, 'confirm_overpayment' => true])->assertSessionHasNoErrors();
-        $this->assertSame(-700.0, $subscription->fresh()->balance());
+        $this->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), ...$data, 'confirm_overpayment' => true])->assertSessionHasNoErrors();
+        $this->assertSame('-700.00', $subscription->fresh()->balance());
     }
 
     public function test_bank_names_icons_and_sender_receiver_roles_are_managed_and_offered_to_collectors(): void
@@ -181,7 +181,7 @@ class PaymentCurrencySettingsTest extends TestCase
         $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), $data)->assertSessionHasErrors(['bank_name', 'sender_bank_name']);
 
         $this->assertDatabaseCount('subscription_transactions', 0);
-        $this->post(route('subscriptions.payments.store', $subscription), [...$data, 'bank_name' => $receiver->name, 'sender_bank_name' => $sender->name])->assertSessionHasNoErrors();
+        $this->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), ...$data, 'bank_name' => $receiver->name, 'sender_bank_name' => $sender->name])->assertSessionHasNoErrors();
         $this->assertDatabaseHas('subscription_transactions', ['bank_name' => $receiver->name, 'sender_bank_name' => $sender->name]);
     }
 

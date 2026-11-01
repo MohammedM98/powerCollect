@@ -15,6 +15,7 @@ use App\Models\StandingDiscount;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Money;
 use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -330,12 +331,6 @@ trait BuildsSubscriptionStatement
         $refundedInCents = $linkedReversals
             ->where('type', SubscriptionTransaction::TYPE_REFUND)
             ->sum(fn (SubscriptionTransaction $refund): int => abs($this->cents($refund->amount)));
-        // Deleting what a correction recorded takes the correction back: the reversal that cancelled the corrected line goes too.
-        $correctionReversalInCents = $transaction->corrects_id !== null && ! $transaction->isReversal()
-            ? $transaction->corrects?->linkedReversals
-                ->where('type', SubscriptionTransaction::TYPE_REVERSAL)
-                ->sum(fn (SubscriptionTransaction $reversal): int => $this->cents($reversal->amount)) ?? 0
-            : 0;
 
         return [
             'id' => $transaction->id,
@@ -361,7 +356,9 @@ trait BuildsSubscriptionStatement
             'balance_after' => $transaction->balance_after ?? $this->money($balanceInCents),
             'available_actions' => $availableActions,
             'actionEffects' => [
-                'delete' => $this->money($this->cents($transaction->amount) + $correctionReversalInCents),
+                'delete' => $transaction->isPayment()
+                    ? $this->money(-max(0, abs($this->cents($transaction->amount)) - $refundedInCents))
+                    : $transaction->amount,
                 'delete_reversal' => $transaction->amount,
                 'delete_tree' => $this->money($treeEffectInCents),
             ],
@@ -595,11 +592,11 @@ trait BuildsSubscriptionStatement
 
     private function cents(string $amount): int
     {
-        return (int) round((float) $amount * 100);
+        return Money::decimal(Money::amount($amount))->multipliedBy('100')->toInt();
     }
 
     private function money(int $cents): string
     {
-        return number_format($cents / 100, 2, '.', '');
+        return Money::amount(Money::decimal($cents)->dividedBy('100', 2));
     }
 }

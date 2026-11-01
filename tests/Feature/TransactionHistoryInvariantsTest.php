@@ -85,7 +85,7 @@ class TransactionHistoryInvariantsTest extends TestCase
         }
     }
 
-    public function test_erasing_the_last_line_keeps_the_running_balance_of_a_reversal_recorded_after_it(): void
+    public function test_cancelling_the_last_line_preserves_historical_running_balances(): void
     {
         Carbon::setTestNow(Carbon::parse('2026-10-01 08:00:00'));
         $penalty = SubscriptionTransaction::recordCharge($this->subscription, $this->actor, ChargeType::Penalty, '50', 'غرامة');
@@ -100,8 +100,8 @@ class TransactionHistoryInvariantsTest extends TestCase
             ->delete(route('subscriptions.transactions.force-destroy', [$this->subscription, $payment]), ['correction_notes' => 'اختبار'])
             ->assertSessionHasNoErrors();
 
-        $this->assertSame(0.0, $this->subscription->balance());
-        $this->assertSame(['50.00', '0.00'], $this->subscription->transactions()->orderBy('id')->pluck('balance_after')->all());
+        $this->assertSame('0.00', $this->subscription->balance());
+        $this->assertSame(['50.00', '-176.00', '-226.00', '0.00'], $this->subscription->transactions()->orderBy('id')->pluck('balance_after')->all());
     }
 
     private function performRandomStep(int $step): void
@@ -237,7 +237,7 @@ class TransactionHistoryInvariantsTest extends TestCase
             );
         }
 
-        $this->assertSame(round($running / 100, 2), $this->subscription->balance(), $this->failure('balance() differs from the lines'));
+        $this->assertSame(number_format($running / 100, 2, '.', ''), $this->subscription->balance(), $this->failure('balance() differs from the lines'));
 
         $byId = $lines->keyBy('id');
 

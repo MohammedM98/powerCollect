@@ -9,6 +9,7 @@ use App\Enums\DisconnectionReason;
 use App\Enums\SubscriptionStatus;
 use App\Models\Concerns\BelongsToBranch;
 use App\Support\DailySeries;
+use App\Support\Money;
 use Database\Factories\DisconnectionListItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -199,7 +200,7 @@ class DisconnectionListItem extends Model
      */
     public static function usualFee(): string
     {
-        return number_format((float) config('powercollect.disconnection.fee'), 2, '.', '');
+        return Money::amount(config('powercollect.disconnection.fee'));
     }
 
     /**
@@ -214,7 +215,7 @@ class DisconnectionListItem extends Model
      */
     public function confirmDisconnection(User $actor, string $fee): string
     {
-        $fee = number_format((float) $fee, 2, '.', '');
+        $fee = Money::amount($fee);
 
         return DB::transaction(function () use ($actor, $fee): string {
             $item = self::query()->with('list')->lockForUpdate()->findOrFail($this->id);
@@ -237,7 +238,7 @@ class DisconnectionListItem extends Model
                 return 'service_not_active';
             }
 
-            $feeLine = (float) $fee > 0
+            $feeLine = Money::decimal($fee)->isPositive()
                 ? $subscription->transactions()->create([
                     'recorded_by' => $actor->id,
                     'type' => ChargeType::DisconnectionFee->value,

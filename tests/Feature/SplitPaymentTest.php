@@ -52,7 +52,7 @@ class SplitPaymentTest extends TestCase
         $this->assertSame(['BOP-558201'], $payments->pluck('reference_number')->unique()->values()->all());
         $this->assertSame(['محمد حمدان'], $payments->pluck('sender_name')->unique()->values()->all());
         $this->assertSame(['bank_transfer'], $payments->map(fn (SubscriptionTransaction $payment): string => $payment->payment_method->value)->unique()->values()->all());
-        $this->assertSame([340.0, 30.0, -80.0], array_map(fn (Subscription $subscription): float => $subscription->balance(), $this->subscriptions));
+        $this->assertSame(['340.00', '30.00', '-80.00'], array_map(fn (Subscription $subscription): string => $subscription->balance(), $this->subscriptions));
         $this->assertSame('1000.00', $split->standingTotal());
     }
 
@@ -201,7 +201,7 @@ class SplitPaymentTest extends TestCase
             $this->assertNotNull($part->fresh()->cancelled_at);
             $this->assertSame('bounced', $part->fresh()->cancellation_notes);
         }
-        $this->assertSame([640.0, 380.0, 270.0], array_map(fn (Subscription $subscription): float => $subscription->balance(), $this->subscriptions));
+        $this->assertSame(['640.00', '380.00', '270.00'], array_map(fn (Subscription $subscription): string => $subscription->balance(), $this->subscriptions));
 
         $this->actingAs($this->cashier)->get(route('split-payments.show', $split))
             ->assertOk()

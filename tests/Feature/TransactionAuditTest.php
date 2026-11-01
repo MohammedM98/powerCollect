@@ -62,15 +62,16 @@ class TransactionAuditTest extends TestCase
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->component('TransactionAudit/Index')
-                ->where('counts', ['amendment' => 1, 'cancellation' => 1, 'correction' => 1, 'refund' => 1, 'deletion' => 1])
+                ->where('counts', ['amendment' => 1, 'cancellation' => 2, 'correction' => 1, 'refund' => 1, 'deletion' => 0])
                 ->has('events.data', 5)
-                ->where('events.data.0.kind', 'deletion')
+                ->where('events.data.0.kind', 'cancellation')
                 ->where('events.data.0.day', '2026-09-08')
                 ->where('events.data.0.time', '15:00')
                 ->where('events.data.0.userName', 'Mohammed')
                 ->where('events.data.0.subscription.name', 'Ahmad Nasser')
                 ->where('events.data.0.lines', [['label' => __(ChargeType::Penalty->label()), 'amount' => '5', 'voucherNumber' => null]])
-                ->where('events.data.0.reason', 'سُجّلت بالخطأ')
+                ->where('events.data.0.reason', __(CorrectionReason::Other->label()))
+                ->where('events.data.0.notes', 'سُجّلت بالخطأ')
                 ->where('events.data.1.kind', 'refund')
                 ->where('events.data.1.kindNote', 'كامل')
                 ->where('events.data.1.lines.0', ['label' => 'دفعة', 'amount' => '100', 'voucherNumber' => '000001'])
@@ -96,10 +97,10 @@ class TransactionAuditTest extends TestCase
         $this->recordTheChanges($sara);
 
         $this->actingAs($this->branchAdmin)
-            ->get(route('transaction-audit.index', ['filter' => ['kind' => 'deletion']]))
+            ->get(route('transaction-audit.index', ['filter' => ['kind' => 'cancellation']]))
             ->assertInertia(fn ($page) => $page
-                ->has('events.data', 1)
-                ->where('events.data.0.kind', 'deletion')
+                ->has('events.data', 2)
+                ->where('events.data.0.kind', 'cancellation')
                 // The figures cover every kind.
                 ->where('counts.amendment', 1));
 

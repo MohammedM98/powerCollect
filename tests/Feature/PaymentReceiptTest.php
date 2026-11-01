@@ -9,6 +9,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class PaymentReceiptTest extends TestCase
@@ -107,7 +108,7 @@ class PaymentReceiptTest extends TestCase
         $this->followingRedirects()
             ->actingAs($this->branchAdmin)
             ->from(route('subscriptions.statement', $this->subscription))
-            ->post(route('subscriptions.payments.store', $this->subscription), ['amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash'])
+            ->post(route('subscriptions.payments.store', $this->subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash'])
             ->assertOk()
             ->assertInertia(fn ($page) => $page->hasFlash(
                 'recordedPayment.receiptUrl',

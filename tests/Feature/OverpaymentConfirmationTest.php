@@ -61,7 +61,7 @@ class OverpaymentConfirmationTest extends TestCase
         if ($needsConfirmation) {
             $response->assertSessionHasErrors('confirm_overpayment');
             $this->assertSame(0, SubscriptionTransaction::where('type', 'payment')->count());
-            $this->post(route('subscriptions.payments.store', $this->subscription), [...$this->payment($amount), 'confirm_overpayment' => true])->assertSessionHasNoErrors();
+            $this->post(route('subscriptions.payments.store', $this->subscription), ['payment_token' => (string) Str::uuid(), ...$this->payment($amount), 'confirm_overpayment' => true])->assertSessionHasNoErrors();
         } else {
             $response->assertSessionHasNoErrors();
         }
@@ -149,6 +149,6 @@ class OverpaymentConfirmationTest extends TestCase
      */
     private function payment(string $amount): array
     {
-        return ['amount' => $amount, 'currency' => 'ILS', 'payment_method' => 'cash'];
+        return ['payment_token' => (string) Str::uuid(), 'amount' => $amount, 'currency' => 'ILS', 'payment_method' => 'cash'];
     }
 }

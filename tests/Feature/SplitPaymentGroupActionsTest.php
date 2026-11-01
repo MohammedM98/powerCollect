@@ -12,7 +12,6 @@ use App\Models\Permission;
 use App\Models\SplitPayment;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
-use App\Models\TransactionDeletion;
 use App\Models\User;
 use App\Support\BranchClosingWorkflow;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -72,19 +71,21 @@ class SplitPaymentGroupActionsTest extends TestCase
 
     #[TestWith(['delete'])]
     #[TestWith(['legacy-delete'])]
-    public function test_permanent_deletion_removes_all_shares_and_retains_an_audit_record_for_each_subscriber(string $action): void
+    public function test_legacy_deletion_preserves_all_shares_with_attributed_linked_refunds(string $action): void
     {
         $parts = $this->split->payments;
 
         $this->actOn($parts[1], $action)->assertSessionHasNoErrors();
 
         foreach ($parts as $part) {
-            $this->assertModelMissing($part);
-            $this->assertSame(500.0, $part->subscription->balance());
+            $this->assertModelExists($part);
+            $this->assertTrue($part->fresh()->isCancelled());
+            $this->assertSame('500.00', $part->subscription->balance());
         }
         $this->assertSame(0, CashBoxPayment::visibleInBox()->count());
-        $this->assertSame($parts->pluck('subscription_id')->sort()->values()->all(), TransactionDeletion::pluck('subscription_id')->sort()->values()->all());
-        $this->assertSame(['الحوالة لم تصل'], TransactionDeletion::pluck('reason')->unique()->values()->all());
+        $this->assertSame($parts->pluck('id')->sort()->values()->all(), SubscriptionTransaction::where('type', 'refund')->pluck('reverses_id')->sort()->values()->all());
+        $this->assertSame(['الحوالة لم تصل'], $parts->map(fn (SubscriptionTransaction $part): string => $part->fresh()->cancellation_notes)->unique()->values()->all());
+        $this->assertDatabaseCount('transaction_deletions', 0);
     }
 
     public function test_legacy_cancellation_returns_all_shares_with_a_linked_reversal_and_reason(): void
@@ -96,40 +97,40 @@ class SplitPaymentGroupActionsTest extends TestCase
         foreach ($parts as $part) {
             $this->assertNotNull($part->fresh()->cancelled_at);
             $this->assertSame('الحوالة لم تصل', $part->fresh()->cancellation_notes);
-            $this->assertSame(500.0, $part->subscription->balance());
+            $this->assertSame('500.00', $part->subscription->balance());
         }
         $this->assertSame(3, SubscriptionTransaction::where('type', SubscriptionTransaction::TYPE_REVERSAL)->count());
         $this->assertSame(0, CashBoxPayment::visibleInBox()->count());
     }
 
-    public function test_deleting_a_refund_restores_every_share_and_its_shared_reference(): void
+    public function test_deleting_a_refund_is_refused_and_keeps_every_share_cancelled(): void
     {
         $parts = $this->split->payments;
         $this->actOn($parts[1], 'refund')->assertSessionHasNoErrors();
         $refund = SubscriptionTransaction::where('reverses_id', $parts[1]->id)->sole();
 
-        $this->actOn($refund, 'delete_reversal')->assertSessionHasNoErrors();
+        $this->actOn($refund, 'delete_reversal')->assertSessionHasErrors('action');
 
-        $this->assertSame('600.00', $this->split->standingTotal());
-        $this->assertSame([400.0, 300.0, 200.0], $parts->map(fn (SubscriptionTransaction $part): float => $part->subscription->balance())->all());
-        $this->assertSame(0, SubscriptionTransaction::where('type', 'refund')->count());
+        $this->assertSame('0.00', $this->split->standingTotal());
+        $this->assertSame([500.0, 500.0, 500.0], $parts->map(fn (SubscriptionTransaction $part): float => $part->subscription->balance())->all());
+        $this->assertSame(3, SubscriptionTransaction::where('type', 'refund')->count());
         $this->assertDatabaseCount('cash_box_payments', 3);
         foreach ($parts as $part) {
-            $this->assertSame('SPLIT123', $part->fresh()->active_reference);
-            $this->assertFalse($part->fresh()->isCancelled());
+            $this->assertNull($part->fresh()->active_reference);
+            $this->assertTrue($part->fresh()->isCancelled());
         }
     }
 
-    public function test_deleting_the_refunded_tree_removes_all_originals_and_refunds_without_changing_balances(): void
+    public function test_deleting_the_refunded_tree_is_refused_and_preserves_balances(): void
     {
         $part = $this->split->payments[0];
         $this->actOn($part, 'refund')->assertSessionHasNoErrors();
 
-        $this->actOn($part, 'delete_tree')->assertSessionHasNoErrors();
+        $this->actOn($part, 'delete_tree')->assertSessionHasErrors('action');
 
-        $this->assertDatabaseCount('subscription_transactions', 3);
+        $this->assertDatabaseCount('subscription_transactions', 9);
         $this->assertSame('0.00', $this->split->standingTotal());
-        $this->assertSame(500.0, $part->subscription->balance());
+        $this->assertSame('500.00', $part->subscription->balance());
     }
 
     #[TestWith(['refund'])]
@@ -229,6 +230,7 @@ class SplitPaymentGroupActionsTest extends TestCase
 
     #[TestWith(['refund'])]
     #[TestWith(['delete'])]
+    #[TestWith(['legacy-delete'])]
     public function test_corrected_shares_are_processed_without_double_refunding_or_reinstating_old_payments(string $action): void
     {
         $original = $this->split->payments[1];
@@ -240,17 +242,17 @@ class SplitPaymentGroupActionsTest extends TestCase
         $this->actOn($replacement, $action)->assertSessionHasNoErrors();
 
         $this->assertSame('0.00', $this->split->standingTotal());
-        $this->assertSame(500.0, $original->subscription->balance());
+        $this->assertSame('500.00', $original->subscription->balance());
         $this->assertSame(0, CashBoxPayment::visibleInBox()->count());
         if ($action === 'refund') {
             $this->assertSame(3, SubscriptionTransaction::where('type', 'refund')->count());
             $this->assertDatabaseHas('subscription_transactions', ['type' => 'refund', 'reverses_id' => $replacement->id, 'amount' => '150.00']);
             $refund = SubscriptionTransaction::where('reverses_id', $replacement->id)->sole();
-            $this->actOn($refund, 'delete_reversal')->assertSessionHasNoErrors();
-            $this->assertSame('550.00', $this->split->standingTotal());
+            $this->actOn($refund, 'delete_reversal')->assertSessionHasErrors('action');
+            $this->assertSame('0.00', $this->split->standingTotal());
             $this->assertTrue($original->fresh()->isCancelled());
         } else {
-            $this->assertDatabaseCount('subscription_transactions', 3);
+            $this->assertDatabaseCount('subscription_transactions', 11);
         }
     }
 
@@ -321,13 +323,13 @@ class SplitPaymentGroupActionsTest extends TestCase
         $this->actOn($part, $action)->assertSessionHasNoErrors();
 
         $this->assertSame('0.00', $this->split->standingTotal());
-        $this->assertSame(500.0, $part->subscription->balance());
+        $this->assertSame('500.00', $part->subscription->balance());
         $this->assertDatabaseHas('subscription_transactions', ['type' => 'refund', 'reverses_id' => $part->id, 'amount' => '50.00']);
         $this->assertSame('الحوالة لم تصل', $part->fresh()->cancellation_notes);
         $refund = SubscriptionTransaction::where('reverses_id', $part->id)->sole();
         $this->actOn($refund, 'delete_reversal')->assertSessionHasErrors('action');
         $this->assertSame('0.00', $this->split->standingTotal());
-        $this->assertSame(500.0, $part->subscription->balance());
+        $this->assertSame('500.00', $part->subscription->balance());
     }
 
     /** Move the share into a box of its own and close that box. */

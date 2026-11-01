@@ -111,7 +111,7 @@ class MobileAdjustmentTest extends TestCase
             ->assertUnprocessable()->assertJsonValidationErrors($field);
 
         $this->assertDatabaseCount('subscription_transactions', 1);
-        $this->assertSame(100.0, $subscription->fresh()->balance());
+        $this->assertSame('100.00', $subscription->fresh()->balance());
     }
 
     public function test_confirmed_clearing_can_leave_credit_and_has_a_voucher(): void

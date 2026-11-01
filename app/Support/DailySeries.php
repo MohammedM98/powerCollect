@@ -66,7 +66,7 @@ class DailySeries
      * how many rows fell on that day. `$dateColumn` is the rows' UTC
      * timestamp; the query must not be ordered.
      *
-     * @return array<int, array{date: string, value: float, count: int}>
+     * @return array<int, array{date: string, value: string, count: int}>
      */
     public static function sums(Builder $query, string $dateColumn, ?string $valueColumn, int $days): array
     {
@@ -75,7 +75,7 @@ class DailySeries
 
         return array_map(fn (string $day): array => [
             'date' => $day,
-            'value' => round((float) ($rows[$day] ?? collect())->sum(fn (object $row): float => abs((float) ($row->value ?? 0))), 2),
+            'value' => Money::sum(($rows[$day] ?? collect())->map(fn (object $row): string => Money::amount(Money::decimal($row->value ?? '0')->abs()))),
             'count' => ($rows[$day] ?? collect())->count(),
         ], self::lastDays($days));
     }

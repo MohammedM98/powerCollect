@@ -6,9 +6,9 @@ use App\Enums\PermissionKey;
 use App\Models\Branch;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
-use App\Models\TransactionDeletion;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /**
@@ -38,10 +38,10 @@ class LedgerTransactionActionsJourneyTest extends TestCase
         $this->assertLog($head, $subscription, charged: 145, credited: 0, cancelledCount: 0, rows: 2);
 
         $this->travel(1)->minute();
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['amount' => '30', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '30', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
         $cash = $subscription->transactions()->where('payment_method', 'cash')->sole();
         $this->travel(1)->minute();
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), [
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(),
             'amount' => '50', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'المرسل', 'reference_number' => 'LEDGER-1',
         ])->assertSessionHasNoErrors();
         $transfer = $subscription->transactions()->where('payment_method', 'bank_transfer')->sole();
@@ -60,23 +60,23 @@ class LedgerTransactionActionsJourneyTest extends TestCase
         $this->assertLog($head, $subscription, charged: 100, credited: 50, cancelledCount: 2, rows: 6, cancelledRows: 4);
 
         $cancellation = $subscription->transactions()->where('type', SubscriptionTransaction::TYPE_CANCELLATION)->sole();
-        $this->act($head, $cancellation, ['delete_reversal'], ['action' => 'delete_reversal', 'correction_notes' => 'الإعفاء سُجّل خطأ']);
-        $this->assertSame(SubscriptionTransaction::STATUS_ACTIVE, $penalty->fresh()->status);
-        $this->assertLog($head, $subscription, charged: 145, credited: 50, cancelledCount: 1, rows: 5, cancelledRows: 2);
+        $this->actingAs($head)->post(route('subscriptions.transactions.actions.store', [$subscription, $cancellation]), ['action' => 'delete_reversal', 'correction_notes' => 'الإعفاء سُجّل خطأ'])->assertSessionHasErrors('action');
+        $this->assertSame(SubscriptionTransaction::STATUS_CANCELLED, $penalty->fresh()->status);
+        $this->assertLog($head, $subscription, charged: 100, credited: 50, cancelledCount: 2, rows: 6, cancelledRows: 4);
 
-        $this->act($head, $cash, ['delete_tree'], ['action' => 'delete_tree', 'correction_notes' => 'دفعة أُدخلت على الحساب الخطأ']);
-        $this->assertModelMissing($cash);
-        $this->assertLog($head, $subscription, charged: 145, credited: 50, cancelledCount: 0, rows: 3);
+        $this->actingAs($head)->post(route('subscriptions.transactions.actions.store', [$subscription, $cash]), ['action' => 'delete_tree', 'correction_notes' => 'دفعة أُدخلت على الحساب الخطأ'])->assertSessionHasErrors('action');
+        $this->assertModelExists($cash);
+        $this->assertLog($head, $subscription, charged: 100, credited: 50, cancelledCount: 2, rows: 6, cancelledRows: 4);
 
         $this->travel(1)->minute();
         $this->actingAs($head)->post(route('subscriptions.discounts.store', $subscription), ['method' => 'shekel', 'value' => '10'])->assertSessionHasNoErrors();
         $discount = $subscription->transactions()->where('type', SubscriptionTransaction::TYPE_DISCOUNT)->sole();
-        $this->assertLog($head, $subscription, charged: 145, credited: 60, cancelledCount: 0, rows: 4);
+        $this->assertLog($head, $subscription, charged: 100, credited: 60, cancelledCount: 2, rows: 7, cancelledRows: 4);
         $this->act($head, $discount, ['delete'], ['action' => 'delete', 'correction_notes' => 'خصم مكرر']);
 
-        $this->assertLog($head, $subscription, charged: 145, credited: 50, cancelledCount: 0, rows: 3);
-        $this->assertSame(['delete_reversal', 'delete_tree', 'delete'], TransactionDeletion::query()->orderBy('id')->pluck('action')->all());
-        $this->assertSame(['100.00', '145.00', '95.00'], $subscription->transactions()->orderBy('created_at')->orderBy('id')->pluck('balance_after')->all());
+        $this->assertLog($head, $subscription, charged: 100, credited: 50, cancelledCount: 3, rows: 8, cancelledRows: 6);
+        $this->assertDatabaseCount('transaction_deletions', 0);
+        $this->assertSame(['100.00', '145.00', '115.00', '65.00', '95.00', '50.00', '40.00', '50.00'], $subscription->transactions()->orderBy('created_at')->orderBy('id')->pluck('balance_after')->all());
     }
 
     /**
@@ -96,7 +96,7 @@ class LedgerTransactionActionsJourneyTest extends TestCase
 
     private function assertLog(User $actor, Subscription $subscription, float $charged, float $credited, int $cancelledCount, int $rows, int $cancelledRows = 0): void
     {
-        $this->assertSame(round($charged - $credited, 2), $subscription->balance());
+        $this->assertSame(number_format($charged - $credited, 2, '.', ''), $subscription->balance());
         $this->actingAs($actor)->get(route('ledger.index', ['period' => 'all']))->assertInertia(fn ($page) => $page
             ->where('ledgerTotals.charged', fn ($total): bool => (float) $total === $charged)
             ->where('ledgerTotals.credited', fn ($total): bool => (float) $total === $credited)

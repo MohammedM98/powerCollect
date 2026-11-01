@@ -91,7 +91,7 @@ class SubscriptionStandingDiscountTest extends TestCase
             ->post(route('meter-readings.approve'), ['reading_ids' => [$reading->id]])
             ->assertSessionHasNoErrors();
 
-        $this->assertSame(30.0, $this->subscription->balance());
+        $this->assertSame('30.00', $this->subscription->balance());
     }
 
     public function test_the_discount_form_suggests_the_segments_already_given_a_discount_and_the_tariffs_segments(): void
@@ -227,7 +227,7 @@ class SubscriptionStandingDiscountTest extends TestCase
             ->post(route('meter-readings.approve'), ['reading_ids' => [MeterReading::sole()->id]])
             ->assertSessionHasNoErrors();
 
-        $this->assertSame(60.0, $this->subscription->balance());
+        $this->assertSame('60.00', $this->subscription->balance());
         $this->actingAs($this->branchAdmin)
             ->get(route('subscriptions.statement', $this->subscription))
             ->assertInertia(fn ($page) => $page
@@ -262,7 +262,7 @@ class SubscriptionStandingDiscountTest extends TestCase
 
         // Its charge and discount stay on the statement, cancelled, and no longer count.
         $this->assertSame(2, SubscriptionTransaction::whereNotNull('cancelled_at')->count());
-        $this->assertSame(0.0, $this->subscription->balance());
+        $this->assertSame('0.00', $this->subscription->balance());
         $reading->refresh();
         $this->assertSame(MeterReadingStatus::Pending, $reading->status);
         // 6 kilos, 3 of them still free: 90 of 180 shekels.
@@ -290,7 +290,7 @@ class SubscriptionStandingDiscountTest extends TestCase
         $this->giveDiscount(['method' => 'kilowatt', 'value' => '3'])->assertSessionHasNoErrors();
 
         $this->assertSame(0, SubscriptionTransaction::where('type', SubscriptionTransaction::TYPE_READING_DISCOUNT)->count());
-        $this->assertSame(150.0, $this->subscription->balance());
+        $this->assertSame('150.00', $this->subscription->balance());
         $this->assertSame([null, '150.00'], [$latestWeek->fresh()->discount_method, $latestWeek->fresh()->amount_due]);
     }
 
@@ -303,7 +303,7 @@ class SubscriptionStandingDiscountTest extends TestCase
         $this->giveDiscount(['method' => 'percentage', 'value' => '10'])->assertSessionHasNoErrors();
 
         $this->assertSame(['-90.00'], SubscriptionTransaction::where('type', SubscriptionTransaction::TYPE_READING_DISCOUNT)->whereNull('cancelled_at')->pluck('amount')->all());
-        $this->assertSame(60.0, $this->subscription->balance());
+        $this->assertSame('60.00', $this->subscription->balance());
     }
 
     public function test_stopping_the_discount_keeps_the_discount_the_approved_reading_was_recorded_with(): void
@@ -318,7 +318,7 @@ class SubscriptionStandingDiscountTest extends TestCase
 
         $this->assertDatabaseMissing('standing_discounts', ['subscription_id' => $this->subscription->id]);
         $this->assertSame(1, SubscriptionTransaction::where('type', SubscriptionTransaction::TYPE_READING_DISCOUNT)->whereNull('cancelled_at')->count());
-        $this->assertSame(60.0, $this->subscription->balance());
+        $this->assertSame('60.00', $this->subscription->balance());
         $this->assertSame(MeterReadingStatus::Approved, MeterReading::sole()->status);
     }
 

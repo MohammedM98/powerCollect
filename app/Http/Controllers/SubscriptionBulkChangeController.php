@@ -12,6 +12,7 @@ use App\Models\SubscriptionBulkChange;
 use App\Models\SubscriptionBulkChangeItem;
 use App\Models\User;
 use App\Notifications\ActionCompleted;
+use App\Support\Money;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -412,7 +413,7 @@ class SubscriptionBulkChangeController extends Controller
             return null;
         }
 
-        return $field === 'minimum_charge' ? number_format((float) $value, 2, '.', '') : (string) $value;
+        return $field === 'minimum_charge' ? Money::amount($value) : (string) $value;
     }
 
     /** A kept value as people read it. */

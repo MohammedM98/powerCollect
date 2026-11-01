@@ -6,7 +6,9 @@ use App\Models\Branch;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
@@ -25,7 +27,7 @@ class BankAuditReportingTest extends TestCase
         $auditor = User::factory()->financialAuditor()->for($branch)->create();
         $subscription = Subscription::factory()->for($branch)->create();
         SubscriptionTransaction::factory()->for($subscription)->create(['amount' => '200.00']);
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), [
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(),
             'amount' => '100', 'currency' => 'ILS', 'payment_method' => 'bank_transfer',
             'bank_name' => 'بنك فلسطين', 'sender_name' => 'صاحب الحساب', 'reference_number' => 'BANK-REPORT',
         ])->assertSessionHasNoErrors();
@@ -48,7 +50,7 @@ class BankAuditReportingTest extends TestCase
     public function test_report_debit_and_credit_totals_follow_the_side_of_a_final_bank_adjustment(string $verified, string $charges, string $credits, string $balance): void
     {
         [$head, $subscription] = $this->auditPayment($verified);
-        $this->assertSame((float) $balance, $subscription->balance());
+        $this->assertSame(Money::amount($balance), $subscription->balance());
         $report = $this->actingAs($head)->get(route('reports.index', ['branch' => $head->branch_id, 'from' => '2026-10-18', 'to' => '2026-10-18']));
         $report->assertInertia(fn (AssertableInertia $page) => $page->where('flow.closing', $balance));
 
@@ -61,7 +63,7 @@ class BankAuditReportingTest extends TestCase
         [$head, $subscription, $payment] = $this->auditPayment('150');
         $adjustment = $payment->boxEntry->audit->adjustment;
         $this->assertTrue($adjustment->isCredit());
-        $this->assertSame(50.0, $subscription->balance());
+        $this->assertSame('50.00', $subscription->balance());
 
         $this->actingAs($head)->get(route('reports.index', ['branch' => $head->branch_id, 'from' => '2026-10-18', 'to' => '2026-10-18', 'kind' => 'charges']))
             ->assertInertia(fn (AssertableInertia $page) => $page->where('transactions.data', function ($entries) use ($adjustment): bool {
@@ -74,11 +76,11 @@ class BankAuditReportingTest extends TestCase
     public function test_daily_ledger_breakdown_agrees_with_the_overall_credit_and_debit_totals_after_an_excess_bank_receipt(): void
     {
         [$head, $subscription] = $this->auditPayment('150');
-        $this->assertSame(50.0, $subscription->balance());
+        $this->assertSame('50.00', $subscription->balance());
         $ledger = $this->actingAs($head)->get(route('ledger.index', ['period' => 'today']));
-        $ledger->assertInertia(fn (AssertableInertia $page) => $page->where('ledgerTotals.charged', 200)->where('ledgerTotals.credited', 150)->where('ledgerTotals.net', 50));
+        $ledger->assertInertia(fn (AssertableInertia $page) => $page->where('ledgerTotals.charged', '200.00')->where('ledgerTotals.credited', '150.00')->where('ledgerTotals.net', '50.00'));
 
-        $ledger->assertInertia(fn (AssertableInertia $page) => $page->where('dayTotals.2026-10-18.charged', 200)->where('dayTotals.2026-10-18.credited', 150));
+        $ledger->assertInertia(fn (AssertableInertia $page) => $page->where('dayTotals.2026-10-18.charged', '200.00')->where('dayTotals.2026-10-18.credited', '150.00'));
     }
 
     #[TestWith(['0', 100, 0])]
@@ -92,8 +94,8 @@ class BankAuditReportingTest extends TestCase
             ->where('team', function ($team) use ($auditor, $charged, $credited): bool {
                 $figures = $team->firstWhere('id', $auditor->id);
                 $this->assertSame(1, $figures['recordedCount']);
-                $this->assertSame($charged, $figures['recordedCharged']);
-                $this->assertSame($credited, $figures['recordedCredited']);
+                $this->assertSame(Money::amount($charged), $figures['recordedCharged']);
+                $this->assertSame(Money::amount($credited), $figures['recordedCredited']);
 
                 return true;
             }));
@@ -109,6 +111,6 @@ class BankAuditReportingTest extends TestCase
         $this->get(route('reports.index', ['from' => '2026-10-19', 'to' => '2026-10-19']))
             ->assertInertia(fn (AssertableInertia $page) => $page->where('flow.opening', '100.00')->where('flow.chargesTotal', '0.00')->where('flow.creditsTotal', '50.00')->where('flow.closing', '50.00'));
         $this->assertSame($original, $payment->fresh()->getAttributes());
-        $this->assertSame(50.0, $subscription->balance());
+        $this->assertSame('50.00', $subscription->balance());
     }
 }

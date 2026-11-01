@@ -39,7 +39,7 @@ class SplitTransferAuditing
         $active = $parts->reject(fn (SubscriptionTransaction $part): bool => $part->isCancelled())->values();
         $this->workflow->require($active->isNotEmpty(), 'لا توجد حصص فعالة لهذه الحوالة.');
         $this->workflow->require(! $active->contains(fn (SubscriptionTransaction $part): bool => $part->currency !== Currency::Shekel
-            || $part->payment_method?->value !== 'bank_transfer' || (float) $part->exchange_rate !== 1.0 || $part->boxEntry?->box?->status !== 'received'
+            || $part->payment_method?->value !== 'bank_transfer' || ! Money::decimal($part->exchange_rate)->isEqualTo('1') || $part->boxEntry?->box?->status !== 'received'
             || $part->boxEntry->box->type !== CashBoxType::BankTransfer), 'يجب إغلاق جميع صناديق حصص الحوالة المقسّمة قبل تدقيقها أو اعتمادها.');
 
         return $active;
@@ -73,7 +73,7 @@ class SplitTransferAuditing
             return [
                 'revision' => $this->revision($parts),
                 'total' => Closing::money($parts->sum(fn (SubscriptionTransaction $part): int => abs(Closing::cents($part->amount)))),
-                'bank_amount' => Closing::money($parts->sum(fn (SubscriptionTransaction $part): int => Closing::cents($part->boxEntry->audit?->bank_amount ?? abs((float) $part->amount)))),
+                'bank_amount' => Closing::money($parts->sum(fn (SubscriptionTransaction $part): int => Closing::cents($part->boxEntry->audit?->bank_amount ?? Money::amount(Money::decimal($part->amount)->abs())))),
                 'reason' => $parts->first(fn (SubscriptionTransaction $part): bool => filled($part->boxEntry->audit?->reason))?->boxEntry->audit->reason ?? '',
                 'parts' => $parts->map(fn (SubscriptionTransaction $part): array => [
                     'transaction_id' => $part->id, 'subscriptionName' => $part->subscription->displayName(),
@@ -137,8 +137,8 @@ class SplitTransferAuditing
         foreach ($parts as $part) {
             $audit = $part->boxEntry->audit ?? BankTransferAudit::query()->create([
                 'cash_box_payment_id' => $part->boxEntry->id, 'audited_by' => $actor->id,
-                'currency' => $part->currency->value, 'recorded_amount' => abs((float) $part->amount),
-                'bank_amount' => abs((float) $part->amount), 'exchange_rate' => 1,
+                'currency' => $part->currency->value, 'recorded_amount' => Money::amount(Money::decimal($part->amount)->abs()),
+                'bank_amount' => Money::amount(Money::decimal($part->amount)->abs()), 'exchange_rate' => 1,
                 'difference' => '0.00', 'outcome' => 'matched', 'audited_at' => now(),
             ]);
             $post($part->boxEntry, $audit, $actor);

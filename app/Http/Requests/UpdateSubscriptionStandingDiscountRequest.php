@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\DiscountMethod;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
+use App\Support\Money;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -55,9 +56,9 @@ class UpdateSubscriptionStandingDiscountRequest extends FormRequest
 
                 /** @var Subscription $subscription */
                 $subscription = $this->route('subscription');
-                $kiloPrice = (float) $subscription->kilowattPrice();
+                $kiloPrice = $subscription->kilowattPrice();
 
-                if ((float) $this->input('value') > $kiloPrice) {
+                if (Money::decimal($this->input('value'))->isGreaterThan($kiloPrice)) {
                     $validator->errors()->add('value', sprintf(
                         'لا يمكن أن يزيد الخصم على سعر الكيلو (%s شيكل).',
                         SubscriptionTransaction::formatAmount($kiloPrice),

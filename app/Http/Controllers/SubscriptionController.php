@@ -26,6 +26,7 @@ use App\Models\User;
 use App\Notifications\ActionCompleted;
 use App\Support\BranchScope;
 use App\Support\DailySeries;
+use App\Support\Money;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -156,7 +157,7 @@ class SubscriptionController extends Controller
      */
     private function chargeSubscriptionFee(Subscription $subscription, User $actor): void
     {
-        if ($subscription->subscription_fee === null || (float) $subscription->subscription_fee <= 0) {
+        if ($subscription->subscription_fee === null || Money::decimal($subscription->subscription_fee)->isLessThanOrEqualTo(0)) {
             return;
         }
 
@@ -394,9 +395,9 @@ class SubscriptionController extends Controller
     private function enforceKilowattPricePermission(User $actor, array $data, ?Subscription $existing = null): array
     {
         if ($actor->hasPermission(PermissionKey::UpdateSubscriptionKilowattPrice) && array_key_exists('kilowatt_price', $data)) {
-            $tariffRate = (float) Tariff::findOrFail($data['tariff_id'])->rate;
+            $tariffRate = Tariff::findOrFail($data['tariff_id'])->rate;
 
-            $data['kilowatt_price'] = filled($data['kilowatt_price']) && (float) $data['kilowatt_price'] !== $tariffRate
+            $data['kilowatt_price'] = filled($data['kilowatt_price']) && ! Money::decimal($data['kilowatt_price'])->isEqualTo($tariffRate)
                 ? $data['kilowatt_price']
                 : null;
 

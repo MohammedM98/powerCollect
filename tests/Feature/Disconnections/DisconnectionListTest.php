@@ -291,7 +291,7 @@ class DisconnectionListTest extends TestCase
         $this->assertSame(['disconnection_fee', '20.00', 'disconnection:'.$item->id], [$fee->type, $fee->amount, $fee->source_key]);
         $this->assertSame([DisconnectionItemStatus::Disconnected, '20.00', $fee->id], [$item->status, $item->fee_amount, $item->fee_transaction_id]);
         $this->assertSame(SubscriptionStatus::Disconnected, $subscription->fresh()->status);
-        $this->assertSame(20.0, $subscription->fresh()->balance());
+        $this->assertSame('20.00', $subscription->fresh()->balance());
     }
 
     public function test_nothing_is_charged_for_listing_warning_or_extending_until_the_disconnection_is_confirmed(): void

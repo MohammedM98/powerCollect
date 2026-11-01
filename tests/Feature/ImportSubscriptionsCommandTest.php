@@ -70,11 +70,11 @@ class ImportSubscriptionsCommandTest extends TestCase
         $this->assertSame($this->user->id, $first->registered_by);
         $this->assertSame('0599013094', $first->phone);
         $this->assertEquals(20, $first->minimum_charge);
-        $this->assertSame(123.05, $first->balance());
+        $this->assertSame('123.05', $first->balance());
         $this->assertSame(AccountingType::Weekly, $first->accounting_type);
 
         $credit = Subscription::query()->where('legacy_number', '129608')->sole();
-        $this->assertSame(-0.10, $credit->balance());
+        $this->assertSame('-0.10', $credit->balance());
 
         $this->assertSame(0, Subscription::query()->where('legacy_number', '129620')->sole()->transactions()->count());
     }
@@ -174,7 +174,7 @@ class ImportSubscriptionsCommandTest extends TestCase
         $this->import($rows)->expectsOutputToContain('already imported 1')->assertSuccessful();
 
         $this->assertSame(1, Subscription::query()->count());
-        $this->assertSame(123.05, Subscription::sole()->balance());
+        $this->assertSame('123.05', Subscription::sole()->balance());
     }
 
     public function test_a_bad_row_is_reported_and_the_others_are_still_imported(): void

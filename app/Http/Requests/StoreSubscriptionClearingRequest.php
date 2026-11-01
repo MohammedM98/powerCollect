@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
+use App\Support\Money;
+use Brick\Math\BigDecimal;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
@@ -72,11 +74,11 @@ class StoreSubscriptionClearingRequest extends FormRequest
      * than `$owed`, saying the credit it leaves; shared with correcting a
      * clearing, where `$owed` leaves out the clearing being corrected.
      */
-    public static function checkAgainstBalance(Validator $validator, float $owed, float|string $amount, bool $confirmed): void
+    public static function checkAgainstBalance(Validator $validator, int|float|string $owed, float|string $amount, bool $confirmed): void
     {
-        $owing = max($owed, 0.0);
+        $owing = (string) BigDecimal::max((string) $owed, '0');
 
-        if ($confirmed || (float) $amount <= $owing) {
+        if ($confirmed || Money::decimal($amount)->isLessThanOrEqualTo($owing)) {
             return;
         }
 
@@ -84,7 +86,7 @@ class StoreSubscriptionClearingRequest extends FormRequest
             'قيمة المقاصة (%s شيكل) أكبر من الرصيد المستحق (%s شيكل)، فيصبح للمشترك رصيد لصالحه قدره %s شيكل. أكّد إذا كنت تريد فعلًا إضافة المقاصة لهذا المشترك.',
             SubscriptionTransaction::formatAmount($amount),
             SubscriptionTransaction::formatAmount($owing),
-            SubscriptionTransaction::formatAmount(round((float) $amount - $owed, 2)),
+            SubscriptionTransaction::formatAmount(Money::subtract($amount, $owed)),
         ));
     }
 

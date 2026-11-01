@@ -16,6 +16,7 @@ use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use Brick\Math\RoundingMode;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -90,45 +91,45 @@ class DashboardOverview
         $previousDays = array_column($previous->days(), 'payments');
 
         return [
-            'total' => (float) $now['total'],
+            'total' => Money::amount($now['total']),
             'count' => $now['count'],
-            'cash' => (float) $now['cash'],
-            'transfers' => (float) $now['nonCash'],
-            'previousTotal' => (float) $before['total'],
-            'change' => $this->change((float) $now['total'], (float) $before['total']),
-            'today' => ['total' => (float) $today['total'], 'count' => $today['count']],
+            'cash' => Money::amount($now['cash']),
+            'transfers' => Money::amount($now['nonCash']),
+            'previousTotal' => Money::amount($before['total']),
+            'change' => $this->change($now['total'], $before['total']),
+            'today' => ['total' => Money::amount($today['total']), 'count' => $today['count']],
             'series' => array_map(fn (array $day, int $index): array => [
                 'date' => $day['day'],
-                'value' => (float) $day['payments'],
-                'previous' => (float) ($previousDays[$index] ?? 0),
+                'value' => Money::amount($day['payments']),
+                'previous' => Money::amount($previousDays[$index] ?? '0'),
             ], $current->days(), array_keys($current->days())),
-            'byBranch' => $this->branches->count() > 1 ? $this->collectionsByBranch((float) $now['total']) : null,
+            'byBranch' => $this->branches->count() > 1 ? $this->collectionsByBranch($now['total']) : null,
             'byCollector' => $this->branches->count() === 1
                 ? collect($now['collectors'])->take(8)->map(fn (array $collector): array => [
                     'name' => $collector['name'],
-                    'total' => (float) $collector['total'],
+                    'total' => Money::amount($collector['total']),
                     'count' => $collector['count'],
-                    'share' => (float) $now['total'] > 0 ? (int) round((float) $collector['total'] / (float) $now['total'] * 100) : 0,
+                    'share' => $this->share($collector['total'], $now['total']),
                 ])->all()
                 : null,
         ];
     }
 
     /**
-     * @return array<int, array{id: int, name: string, governorate: ?string, total: float, share: int}>
+     * @return array<int, array{id: int, name: string, governorate: ?string, total: string, share: int}>
      */
-    private function collectionsByBranch(float $total): array
+    private function collectionsByBranch(string $total): array
     {
         return $this->branches
             ->map(function (Branch $branch) use ($total): array {
-                $collected = (float) (new BranchReport(collect([$branch]), $this->from, $this->today))->collections()['total'];
+                $collected = Money::amount((new BranchReport(collect([$branch]), $this->from, $this->today))->collections()['total']);
 
                 return [
                     'id' => $branch->id,
                     'name' => $branch->name,
                     'governorate' => $branch->governorate?->name,
                     'total' => $collected,
-                    'share' => $total > 0 ? (int) round($collected / $total * 100) : 0,
+                    'share' => $this->share($collected, $total),
                 ];
             })
             ->sortByDesc('total')
@@ -249,7 +250,7 @@ class DashboardOverview
      * the total, the debtors, the part older than 90 days, and the five
      * who owe the most.
      *
-     * @return array{total: float, count: int, older: float, olderShare: int, top: array<int, array{subscriptionId: int, name: string, accountNumber: ?string, balance: float, oldestDays: int, lastPaymentDays: ?int}>}|null
+     * @return array{total: string, count: int, older: string, olderShare: int, top: array<int, array{subscriptionId: int, name: string, accountNumber: ?string, balance: string, oldestDays: int, lastPaymentDays: ?int}>}|null
      */
     public function debts(): ?array
     {
@@ -258,19 +259,19 @@ class DashboardOverview
         }
 
         $debtors = (new DebtAging(DailySeries::today()))->debtors(Subscription::query()->whereIn('subscriptions.branch_id', $this->branchIds()));
-        $total = (int) $debtors->sum('balance');
-        $older = (int) $debtors->sum(fn (array $debtor): int => $debtor['buckets']['older']);
+        $total = Money::sum($debtors->pluck('balance'));
+        $older = Money::sum($debtors->map(fn (array $debtor): int => $debtor['buckets']['older']));
 
         return [
-            'total' => $total / 100,
+            'total' => Money::amount(Money::decimal($total)->dividedBy('100', 2)),
             'count' => $debtors->count(),
-            'older' => $older / 100,
-            'olderShare' => $total > 0 ? (int) round($older / $total * 100) : 0,
+            'older' => Money::amount(Money::decimal($older)->dividedBy('100', 2)),
+            'olderShare' => $this->share($older, $total),
             'top' => $debtors->sortByDesc('balance')->take(5)->map(fn (array $debtor): array => [
                 'subscriptionId' => $debtor['subscription']->id,
                 'name' => $debtor['subscription']->displayName(),
                 'accountNumber' => $debtor['subscription']->account_number,
-                'balance' => $debtor['balance'] / 100,
+                'balance' => Money::amount(Money::decimal($debtor['balance'])->dividedBy('100', 2)),
                 'oldestDays' => $debtor['oldestDays'],
                 'lastPaymentDays' => $debtor['lastPaymentDays'],
             ])->values()->all(),
@@ -325,7 +326,7 @@ class DashboardOverview
      * or transfers and searched by subscription, with the sum of those not
      * cancelled.
      *
-     * @return array{rows: LengthAwarePaginator<int, array<string, mixed>>, sum: float}|null
+     * @return array{rows: LengthAwarePaginator<int, array<string, mixed>>, sum: string}|null
      */
     public function latestPayments(?string $method, string $search, int $page): ?array
     {
@@ -345,7 +346,8 @@ class DashboardOverview
             ->with(['subscription.branch', 'recordedBy'])
             ->latest()
             ->latest('id');
-        $sum = (float) (clone $payments)->reorder()->whereNull('cancelled_at')->toBase()->selectRaw('coalesce(sum(abs(amount)), 0) as total')->value('total');
+        $sum = Money::sum((clone $payments)->reorder()->whereNull('cancelled_at')->toBase()->select('amount')->cursor()
+            ->map(fn (object $payment): string => Money::amount(Money::decimal($payment->amount)->abs())));
         $rows = $payments->paginate(self::PAYMENTS_PER_PAGE, ['*'], 'page', $page)
             ->withPath(route('dashboard'))
             ->withQueryString()
@@ -359,20 +361,29 @@ class DashboardOverview
                 'recordedBy' => $payment->recordedBy?->name,
                 'isCash' => $payment->payment_method === PaymentMethod::Cash,
                 'bankName' => $payment->bank_name,
-                'amount' => abs((float) $payment->amount),
+                'amount' => Money::amount(Money::decimal($payment->amount)->abs()),
                 'recordedAt' => $payment->created_at->toIso8601String(),
                 'cancelled' => $payment->cancelled_at !== null,
             ]);
 
-        return ['rows' => $rows, 'sum' => round($sum, 2)];
+        return ['rows' => $rows, 'sum' => $sum];
     }
 
     /**
      * The percentage change from `$before` to `$now`, or null when there
      * was nothing before to compare with.
      */
-    private function change(float $now, float $before): ?float
+    private function change(string $now, string $before): ?float
     {
-        return $before > 0 ? round(($now - $before) / $before * 100, 1) : null;
+        return Money::decimal($before)->isPositive()
+            ? Money::decimal($now)->minus($before)->multipliedBy('100')->dividedBy($before, 1, RoundingMode::HalfUp)->toFloat()
+            : null;
+    }
+
+    private function share(string $amount, string $total): int
+    {
+        return Money::decimal($total)->isPositive()
+            ? Money::decimal($amount)->multipliedBy('100')->dividedBy($total, 0, RoundingMode::HalfUp)->toInt()
+            : 0;
     }
 }

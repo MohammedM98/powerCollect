@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\DiscountMethod;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
+use App\Support\Money;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -73,9 +74,9 @@ class StoreSubscriptionDiscountRequest extends FormRequest
      * nothing is owed; shared with correcting a discount, where `$owed`
      * leaves out the discount being corrected.
      */
-    public static function checkAgainstBalance(Validator $validator, Subscription $subscription, float $owed, string $method, float|string $value): void
+    public static function checkAgainstBalance(Validator $validator, Subscription $subscription, int|float|string $owed, string $method, float|string $value): void
     {
-        if ($owed <= 0) {
+        if (Money::decimal($owed)->isLessThanOrEqualTo(0)) {
             $validator->errors()->add('value', 'لا يوجد رصيد مستحق على المشترك ليُخصم منه.');
 
             return;
@@ -88,9 +89,9 @@ class StoreSubscriptionDiscountRequest extends FormRequest
             DiscountMethod::Shekel => null,
         });
 
-        if ($discount < 0.01) {
+        if (Money::decimal($discount)->isLessThan('0.01')) {
             $validator->errors()->add('value', 'قيمة الخصم أقل من أن تُسجَّل.');
-        } elseif ($discount > $owed) {
+        } elseif (Money::decimal($discount)->isGreaterThan((string) $owed)) {
             $validator->errors()->add('value', sprintf(
                 'لا يمكن أن يزيد الخصم (%s شيكل) عن الرصيد المستحق (%s شيكل).',
                 SubscriptionTransaction::formatAmount($discount),

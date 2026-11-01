@@ -12,6 +12,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
 
@@ -240,7 +241,7 @@ class BranchDomainsTest extends TestCase
         $foreign = Subscription::factory()->create(['branch_id' => $this->south->id]);
         $foreignPayment = SubscriptionTransaction::recordPayment($foreign, $employee, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
-        $this->actingAs($employee)->post('https://north.company.test/subscriptions/'.$own->id.'/payments', ['amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
+        $this->actingAs($employee)->post('https://north.company.test/subscriptions/'.$own->id.'/payments', ['payment_token' => (string) Str::uuid(), 'amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
         $this->assertDatabaseHas('subscription_transactions', ['subscription_id' => $own->id, 'recorded_by' => $employee->id, 'amount' => '-25.00']);
         $this->get('https://north.company.test/subscriptions/'.$foreign->id.'/payments/'.$foreignPayment->id.'/receipt')->assertNotFound();
     }
@@ -253,7 +254,7 @@ class BranchDomainsTest extends TestCase
 
         $this->actingAs($this->admin)->getJson('https://north.company.test/subscriptions/'.$own->id.'/payments/reference-status?reference_number=GLOBAL-123')
             ->assertOk()->assertJsonPath('available', false)->assertJsonPath('conflict.id', null)->assertJsonPath('conflict.url', null)->assertDontSee('Private Foreign Subscriber');
-        $this->post('https://north.company.test/subscriptions/'.$own->id.'/payments', ['amount' => '25', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Sender', 'reference_number' => 'GLOBAL-123'])
+        $this->post('https://north.company.test/subscriptions/'.$own->id.'/payments', ['payment_token' => (string) Str::uuid(), 'amount' => '25', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Sender', 'reference_number' => 'GLOBAL-123'])
             ->assertSessionHasErrors('reference_number');
         $this->assertDatabaseCount('subscription_transactions', 1);
     }

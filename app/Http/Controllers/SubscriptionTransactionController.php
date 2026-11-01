@@ -99,7 +99,7 @@ class SubscriptionTransactionController extends Controller
                 'currency' => $replacement->currency->value,
                 'inShekels' => ltrim($replacement->amount, '-'),
                 'voucherNumber' => $replacement->printedVoucherNumber(),
-                'balance' => number_format($subscription->balance(), 2, '.', ''),
+                'balance' => $subscription->balance(),
                 'receiptUrl' => route('subscriptions.payments.receipt', [$subscription, $replacement]),
             ]);
         }

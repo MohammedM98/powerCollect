@@ -10,7 +10,6 @@ use App\Models\MeterReading;
 use App\Models\StandingDiscount;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
-use App\Models\TransactionDeletion;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -23,7 +22,7 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
     #[TestWith([0, 180.0, 1])]
     #[TestWith([2, 120.0, 2])]
     #[TestWith([6, 0.0, 2])]
-    public function test_an_erased_reading_bill_can_be_corrected_and_billed_again_without_a_duplicate_week(
+    public function test_a_cancelled_reading_bill_remains_waived_after_correction_without_a_duplicate_week(
         int $freeKilowatts,
         float $correctedBalance,
         int $lineCount,
@@ -32,26 +31,28 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $charge]), [
             'action' => 'delete', 'correction_notes' => 'Remove the mistaken bill',
         ])->assertSessionHasNoErrors();
-        $this->assertSame(0.0, $subscription->balance());
+        $this->assertSame('0.00', $subscription->balance());
         $this->assertSame(MeterReadingStatus::Approved, $reading->fresh()->status);
-        $this->assertCount($lineCount, TransactionDeletion::sole()->transactions);
+        $this->assertDatabaseCount('transaction_deletions', 0);
+        $this->assertModelExists($charge);
+        $this->assertTrue($charge->fresh()->isCancelled());
 
         $this->post(route('meter-readings.store'), [
             'subscription_id' => $subscription->id, 'week_start' => '2026-09-18', 'current_reading' => 1206,
         ])->assertSessionHasErrors(['week_start' => 'تم تسجيل قراءة لهذا المشترك في هذا الأسبوع مسبقًا.']);
         $this->assertDatabaseCount('meter_readings', 1);
-        $this->assertDatabaseCount('subscription_transactions', 0);
+        $this->assertDatabaseCount('subscription_transactions', $lineCount * 2);
 
         $this->put(route('meter-readings.update', $reading), ['current_reading' => 1206, 'approve' => true])
             ->assertSessionHasNoErrors()->assertSessionHas('status', 'meter-reading-corrected-approved');
         $this->post(route('meter-readings.approve'), ['reading_ids' => [$reading->id]])
             ->assertSessionHasErrors(['reading_ids' => 'لا توجد قراءات بانتظار الاعتماد ضمن اختيارك.']);
 
-        $this->assertSame($correctedBalance, $subscription->balance());
-        $this->assertDatabaseCount('subscription_transactions', $lineCount);
+        $this->assertSame('0.00', $subscription->balance());
+        $this->assertDatabaseCount('subscription_transactions', $lineCount * 2);
         $this->get(route('subscriptions.statement', $subscription))->assertInertia(fn ($page) => $page
-            ->has('entries', $lineCount)
-            ->where('summary.balance', number_format($correctedBalance, 2, '.', '')));
+            ->has('entries', $lineCount * 2)
+            ->where('summary.balance', '0.00'));
     }
 
     #[TestWith([0])]
@@ -63,14 +64,14 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $charge]), [
             'action' => 'cancel', 'correction_notes' => 'Waive the bill',
         ])->assertSessionHasNoErrors();
-        $this->assertSame(10.0, $subscription->balance());
+        $this->assertSame('10.00', $subscription->balance());
 
         $this->put(route('meter-readings.update', $reading), ['current_reading' => 1206, 'approve' => true])
             ->assertSessionHasNoErrors();
         $this->post(route('meter-readings.approve'), ['reading_ids' => [$reading->id]])
             ->assertSessionHasErrors(['reading_ids' => 'لا توجد قراءات بانتظار الاعتماد ضمن اختيارك.']);
 
-        $this->assertSame(10.0, $subscription->balance());
+        $this->assertSame('10.00', $subscription->balance());
         $this->assertSame(0, $subscription->transactions()->where('meter_reading_id', $reading->id)
             ->whereIn('type', [SubscriptionTransaction::TYPE_METER_READING, SubscriptionTransaction::TYPE_READING_DISCOUNT])
             ->whereNull('cancelled_at')->count());
@@ -89,8 +90,9 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
         $this->put(route('subscriptions.standing-discount.update', $subscription), ['method' => 'percentage', 'value' => '10'])
             ->assertSessionHasNoErrors();
 
-        $this->assertSame(0.0, $subscription->balance());
-        $this->assertSame(0, $subscription->transactions()->where('meter_reading_id', $reading->id)->count());
+        $this->assertSame('0.00', $subscription->balance());
+        $this->assertSame(0, $subscription->transactions()->where('meter_reading_id', $reading->id)->whereNull('cancelled_at')->count());
+        $this->assertModelExists($charge);
         $this->assertDatabaseHas('standing_discounts', ['subscription_id' => $subscription->id, 'value' => '10.00']);
     }
 
@@ -105,7 +107,7 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
         $this->put(route('subscriptions.standing-discount.update', $subscription), ['method' => 'percentage', 'value' => '10'])
             ->assertSessionHasNoErrors();
 
-        $this->assertSame(10.0, $subscription->balance());
+        $this->assertSame('10.00', $subscription->balance());
         $this->assertSame(0, $subscription->transactions()->where('meter_reading_id', $reading->id)
             ->where('type', SubscriptionTransaction::TYPE_READING_DISCOUNT)->whereNull('cancelled_at')->count());
     }
@@ -121,11 +123,11 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
             ->assertSessionHasNoErrors()->assertSessionHas('status', 'meter-reading-reopened');
         $this->put(route('subscriptions.standing-discount.update', $subscription), ['method' => 'percentage', 'value' => '10'])
             ->assertSessionHasNoErrors();
-        $this->assertSame(10.0, $subscription->balance());
+        $this->assertSame('10.00', $subscription->balance());
 
         $this->post(route('meter-readings.approve'), ['reading_ids' => [$reading->id]])->assertSessionHasNoErrors();
 
-        $this->assertSame(10.0, $subscription->balance());
+        $this->assertSame('10.00', $subscription->balance());
         $this->assertSame(0, $subscription->transactions()->where('meter_reading_id', $reading->id)
             ->where('type', SubscriptionTransaction::TYPE_READING_DISCOUNT)->whereNull('cancelled_at')->count());
     }
@@ -145,8 +147,9 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
         $this->post(route('meter-readings.approve'), ['reading_ids' => [$nextReading->id]])->assertSessionHasNoErrors();
 
         $this->assertSame([1205.0, 3.0, '30.00'], [$nextReading->previous_reading, $nextReading->consumption, $nextReading->amount_due]);
-        $this->assertSame(30.0, $subscription->balance());
-        $this->assertSame(0, $subscription->transactions()->where('meter_reading_id', $reading->id)->count());
+        $this->assertSame('30.00', $subscription->balance());
+        $this->assertSame(0, $subscription->transactions()->where('meter_reading_id', $reading->id)->whereNull('cancelled_at')->count());
+        $this->assertModelExists($charge);
     }
 
     public function test_repeated_reading_corrections_preserve_the_payment_and_link_each_replacement(): void
@@ -160,7 +163,7 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
         $firstReplacement = $subscription->transactions()->where('type', SubscriptionTransaction::TYPE_METER_READING)
             ->whereNull('cancelled_at')->sole();
         $this->assertSame($charge->id, $firstReplacement->corrects_id);
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
 
         $this->put(route('meter-readings.update', $reading), ['current_reading' => 1207, 'approve' => true])
             ->assertSessionHasNoErrors();
@@ -169,7 +172,7 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
             ->whereNull('cancelled_at')->sole();
         $this->assertSame($firstReplacement->id, $replacement->corrects_id);
         $this->assertSame(['-20.00', SubscriptionTransaction::STATUS_ACTIVE], [$payment->fresh()->amount, $payment->fresh()->status]);
-        $this->assertSame(130.0, $subscription->balance());
+        $this->assertSame('130.00', $subscription->balance());
         $this->assertSame(2, $subscription->transactions()->where('meter_reading_id', $reading->id)
             ->whereIn('type', [SubscriptionTransaction::TYPE_METER_READING, SubscriptionTransaction::TYPE_READING_DISCOUNT])
             ->whereNull('cancelled_at')->count());
@@ -177,7 +180,7 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
             ->where('summary.balance', '130.00')->where('summary.paid', '20.00')->where('summary.discounted', '60.00'));
     }
 
-    public function test_a_bill_that_replaced_a_corrected_bill_can_be_cancelled_but_never_deleted_or_erased(): void
+    public function test_cancelling_a_corrected_bill_preserves_both_versions_and_the_reading(): void
     {
         [$actor, $subscription, $reading, $charge] = $this->approvedWeek();
         $this->actingAs($actor)->put(route('meter-readings.update', $reading), ['current_reading' => 1206, 'approve' => true])->assertSessionHasNoErrors();
@@ -185,14 +188,16 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
         $this->get(route('subscriptions.statement', $subscription))->assertInertia(fn ($page) => $page
             ->where('entries.2.id', $replacement->id)
             ->where('entries.2.available_actions', ['cancel'])
-            ->where('entries.2.canForceDelete', false));
+            ->where('entries.2.canForceDelete', true));
 
         $this->post(route('subscriptions.transactions.actions.store', [$subscription, $replacement]), ['action' => 'delete', 'correction_notes' => 'محاولة حذف'])->assertSessionHasErrors('action');
-        $this->delete(route('subscriptions.transactions.force-destroy', [$subscription, $replacement]), ['correction_notes' => 'محاولة حذف نهائي'])->assertForbidden();
+        $this->delete(route('subscriptions.transactions.force-destroy', [$subscription, $replacement]), ['correction_notes' => 'محاولة حذف نهائي'])->assertSessionHasNoErrors();
 
         $this->assertModelExists($replacement);
         $this->assertSame('180.00', $reading->fresh()->amount_due);
-        $this->assertSame(180.0, $subscription->balance());
+        $this->assertSame('0.00', $subscription->balance());
+        $this->assertTrue($replacement->fresh()->isCancelled());
+        $this->assertTrue($charge->fresh()->isCancelled());
         $this->assertDatabaseCount('transaction_deletions', 0);
     }
 
@@ -213,7 +218,7 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
         $this->assertModelExists($cancellation);
         $this->assertTrue($charge->fresh()->isCancelled());
         $this->assertSame(MeterReadingStatus::Pending, $reading->fresh()->status);
-        $this->assertSame(0.0, $subscription->balance());
+        $this->assertSame('0.00', $subscription->balance());
     }
 
     public function test_a_stale_delete_request_is_rejected_after_a_newer_payment_is_added(): void
@@ -228,7 +233,7 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
         ])->assertSessionHasErrors(['action' => 'هذا الإجراء غير مسموح لهذه الحركة.']);
 
         $this->assertModelExists($charge);
-        $this->assertSame(70.0, $subscription->balance());
+        $this->assertSame('70.00', $subscription->balance());
         $this->assertDatabaseCount('transaction_deletions', 0);
     }
 
@@ -240,11 +245,11 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
         $this->actingAs($actor)->post($url, $payload)->assertSessionHasNoErrors();
         $this->put(route('meter-readings.update', $reading), ['current_reading' => 1206, 'approve' => true])->assertSessionHasNoErrors();
 
-        $this->post($url, $payload)->assertNotFound();
+        $this->post($url, $payload)->assertSessionHasErrors('action');
 
-        $this->assertSame(120.0, $subscription->balance());
-        $this->assertDatabaseCount('subscription_transactions', 2);
-        $this->assertDatabaseCount('transaction_deletions', 1);
+        $this->assertSame('0.00', $subscription->balance());
+        $this->assertDatabaseCount('subscription_transactions', 4);
+        $this->assertDatabaseCount('transaction_deletions', 0);
     }
 
     /** @return array{User, Subscription, MeterReading, SubscriptionTransaction} */

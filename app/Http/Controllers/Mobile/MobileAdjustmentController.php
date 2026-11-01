@@ -54,7 +54,7 @@ class MobileAdjustmentController extends Controller
             'type' => $transaction->type,
             'amount' => $transaction->amount,
             'voucher_number' => $transaction->displayVoucherNumber(),
-            'balance_after' => number_format($subscription->balance(), 2, '.', ''),
+            'balance_after' => $subscription->balance(),
         ], 201);
     }
 }

@@ -16,6 +16,7 @@ use App\Support\ArabicSearch;
 use App\Support\BranchClosingWorkflow;
 use App\Support\ClosingPeriods;
 use App\Support\Messaging\SmsGateway;
+use App\Support\Money;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
@@ -237,12 +238,10 @@ class MobileCollectionController extends Controller
         $methods = $request->user()->allowedPaymentMethods();
 
         return response()->json([
-            'total' => $collections->sum(fn (SubscriptionTransaction $transaction): float => -(float) $transaction->amount),
+            'total' => Money::negate(Money::sum($collections->pluck('amount'))),
             'payment_methods' => array_map(fn (PaymentMethod $method): string => $method->value, $methods),
-            ...(in_array(PaymentMethod::Cash, $methods, true) ? ['cash_total' => $collections->filter(fn (SubscriptionTransaction $transaction): bool => $transaction->payment_method === PaymentMethod::Cash)
-                ->sum(fn (SubscriptionTransaction $transaction): float => -(float) $transaction->amount)] : []),
-            ...(in_array(PaymentMethod::BankTransfer, $methods, true) ? ['bank_transfer_total' => $collections->filter(fn (SubscriptionTransaction $transaction): bool => $transaction->payment_method === PaymentMethod::BankTransfer)
-                ->sum(fn (SubscriptionTransaction $transaction): float => -(float) $transaction->amount)] : []),
+            ...(in_array(PaymentMethod::Cash, $methods, true) ? ['cash_total' => Money::negate(Money::sum($collections->filter(fn (SubscriptionTransaction $transaction): bool => $transaction->payment_method === PaymentMethod::Cash)->pluck('amount')))] : []),
+            ...(in_array(PaymentMethod::BankTransfer, $methods, true) ? ['bank_transfer_total' => Money::negate(Money::sum($collections->filter(fn (SubscriptionTransaction $transaction): bool => $transaction->payment_method === PaymentMethod::BankTransfer)->pluck('amount')))] : []),
             'data' => $collections->map(fn (SubscriptionTransaction $transaction): array => $this->collectionData($transaction))->all(),
         ]);
     }
@@ -258,13 +257,14 @@ class MobileCollectionController extends Controller
 
         $validated = $request->validate(['reference_number' => ['required', 'string', 'max:100']]);
         $conflict = SubscriptionTransaction::activeReferenceConflict($validated['reference_number']);
+        $mayDiscloseConflict = $conflict?->mayDiscloseReferenceTo($request->user()) ?? false;
 
         return response()->json([
             'available' => $conflict === null,
             'message' => $conflict === null ? 'الرقم المرجعي متاح.' : 'الرقم المرجعي مكرر: مسجَّل مسبقًا على دفعة أخرى.',
             'conflict' => $conflict ? [
-                'voucher_number' => $conflict->displayVoucherNumber(),
-                'subscription_name' => $conflict->subscription->displayName(),
+                'voucher_number' => $mayDiscloseConflict ? $conflict->displayVoucherNumber() : null,
+                'subscription_name' => $mayDiscloseConflict ? $conflict->subscription->displayName() : null,
             ] : null,
         ]);
     }
@@ -328,7 +328,7 @@ class MobileCollectionController extends Controller
 
         return [
             ...$this->collectionData($transaction),
-            'balance_after' => number_format($transaction->subscription->balance(), 2, '.', ''),
+            'balance_after' => $transaction->subscription->balance(),
         ];
     }
 

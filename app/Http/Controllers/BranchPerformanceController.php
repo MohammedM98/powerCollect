@@ -9,6 +9,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\DailySeries;
+use App\Support\Money;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -72,7 +73,7 @@ class BranchPerformanceController extends Controller
             'summary' => [
                 'branches' => $branches->count(),
                 'activeBranches' => $branches->where('is_active', true)->count(),
-                'chargesTotal' => round($summaries->sum('chargesTotal'), 2),
+                'chargesTotal' => Money::sum($summaries->pluck('chargesTotal')),
                 'subscriptions' => $summaries->sum('subscriptions'),
                 'activeSubscriptions' => $summaries->sum('activeSubscriptions'),
                 'weekEntries' => $summaries->sum('weekEntries'),
@@ -100,11 +101,11 @@ class BranchPerformanceController extends Controller
                     ...$status,
                     'count' => (int) ($statusCounts[$status['value']] ?? 0),
                 ], SubscriptionStatus::options()),
-                'monthChargesTotal' => round((float) $charges()
+                'monthChargesTotal' => Money::amount($charges()
                     ->where('subscription_transactions.created_at', '>=', DailySeries::startOfDay(self::CHART_DAYS - 1))
                     ->toBase()
                     ->selectRaw('coalesce(sum(abs(amount)), 0) as total')
-                    ->value('total'), 2),
+                    ->value('total')),
                 'monthEntries' => array_sum($entries),
             ],
             'canCompareBranches' => $request->user()->isSuperAdmin(),
@@ -164,7 +165,7 @@ class BranchPerformanceController extends Controller
             'isActive' => $branch->is_active,
             'governorateName' => $branch->governorate?->name,
             'areaName' => $branch->area?->name,
-            'chargesTotal' => round((float) $branch->charges_total, 2),
+            'chargesTotal' => Money::amount($branch->charges_total),
             'subscriptions' => $branch->subscriptions_count,
             'activeSubscriptions' => $branch->active_subscriptions_count,
             'staff' => $branch->staff_count,
@@ -244,8 +245,8 @@ class BranchPerformanceController extends Controller
                     'entries' => (int) ($registered?->entries ?? 0) + (int) ($read?->entries ?? 0),
                     'weekEntries' => (int) ($registered?->week_entries ?? 0) + (int) ($read?->week_entries ?? 0),
                     'recordedCount' => (int) ($lines?->entries ?? 0),
-                    'recordedCharged' => round((float) ($lines?->charged ?? 0), 2),
-                    'recordedCredited' => round((float) ($lines?->credited ?? 0), 2),
+                    'recordedCharged' => Money::amount($lines?->charged ?? '0'),
+                    'recordedCredited' => Money::amount($lines?->credited ?? '0'),
                     'lastActivityAt' => $lastActivityAt ? CarbonImmutable::parse($lastActivityAt, 'UTC')->toIso8601String() : null,
                 ];
             })
@@ -279,7 +280,7 @@ class BranchPerformanceController extends Controller
                 'newSubscriptions' => $dayEntries->where('kind', 'registration')->count(),
                 'entries' => $dayEntries->count(),
                 'chargesCount' => ($charged[$day] ?? collect())->count(),
-                'chargesTotal' => round(($charged[$day] ?? collect())->sum(fn (object $line): float => abs((float) $line->amount)), 2),
+                'chargesTotal' => Money::sum(($charged[$day] ?? collect())->map(fn (object $line): string => Money::amount(Money::decimal($line->amount)->abs()))),
                 'topEntrant' => $topEntrant ? ($names[$topEntrant] ?? null) : null,
             ];
         }, array_reverse(DailySeries::lastDays(self::WORK_LOG_DAYS)));

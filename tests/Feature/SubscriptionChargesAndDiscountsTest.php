@@ -133,7 +133,7 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
             'subscription_id' => $this->subscription->id, 'type' => 'minimum_charge', 'amount' => '18.50',
         ]);
         $this->assertDatabaseHas('subscriptions', ['id' => $this->subscription->id, 'minimum_charge' => 25]);
-        $this->assertSame(18.5, $this->subscription->balance());
+        $this->assertSame('18.50', $this->subscription->balance());
         $this->assertSame('charge-recorded', $this->branchAdmin->notifications()->sole()->data['action']);
     }
 
@@ -187,7 +187,7 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
             'action' => 'cancel', 'correction_reason' => 'other', 'correction_notes' => 'تحميل مكرر',
         ])->assertSessionHasNoErrors();
         $this->assertSame('cancelled', $charge->fresh()->status);
-        $this->assertSame(10.0, $this->subscription->balance());
+        $this->assertSame('10.00', $this->subscription->balance());
     }
 
     public function test_a_clearing_takes_the_value_of_the_subscriptions_service_off_what_they_owe(): void
@@ -249,7 +249,7 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
 
         $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['amount' => '50', 'notes' => 'تأجير السطح', 'confirm_over_balance' => true])
             ->assertSessionHasNoErrors();
-        $this->assertSame(-20.0, $this->subscription->balance());
+        $this->assertSame('-20.00', $this->subscription->balance());
     }
 
     public function test_a_large_clearing_for_a_subscription_who_owes_nothing_is_allowed_once_confirmed(): void
@@ -258,13 +258,13 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
 
         $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['amount' => '30', 'notes' => 'تأجير السطح'])
             ->assertSessionHasNoErrors();
-        $this->assertSame(0.0, $this->subscription->balance());
+        $this->assertSame('0.00', $this->subscription->balance());
 
         $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['amount' => '2000', 'notes' => 'تأجير السطح لسنة'])
             ->assertSessionHasErrors('confirm_over_balance');
         $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['amount' => '2000', 'notes' => 'تأجير السطح لسنة', 'confirm_over_balance' => true])
             ->assertSessionHasNoErrors();
-        $this->assertSame(-2000.0, $this->subscription->balance());
+        $this->assertSame('-2000.00', $this->subscription->balance());
     }
 
     public function test_a_clearing_must_name_the_service_and_its_value(): void

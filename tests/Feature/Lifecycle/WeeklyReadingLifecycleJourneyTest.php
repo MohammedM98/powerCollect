@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Notifications\ReadingNeedsReapproval;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
@@ -43,18 +44,18 @@ class WeeklyReadingLifecycleJourneyTest extends TestCase
         $first = MeterReading::sole();
         $this->correct($dataEntry, $first, 1120)->assertSessionHas('status', 'meter-reading-updated');
         $this->assertSame('60.00', $first->fresh()->amount_due);
-        $this->assertSame(0.0, $subscription->balance());
+        $this->assertSame('0.00', $subscription->balance());
         $this->approve($head, $first)->assertSessionHasNoErrors();
-        $this->assertSame(60.0, $subscription->balance());
+        $this->assertSame('60.00', $subscription->balance());
 
         $this->correct($dataEntry, $first, 1110)->assertSessionHas('status', 'meter-reading-reopened');
         $this->assertSame(MeterReadingStatus::Pending, $first->fresh()->status);
-        $this->assertSame(0.0, $subscription->balance());
+        $this->assertSame('0.00', $subscription->balance());
         Notification::assertSentTo($head, ReadingNeedsReapproval::class);
         $this->approve($head, $first)->assertSessionHasNoErrors();
-        $this->assertSame(55.0, $subscription->balance());
+        $this->assertSame('55.00', $subscription->balance());
         $this->correct($head, $first, 1130, ['approve' => true])->assertSessionHas('status', 'meter-reading-corrected-approved');
-        $this->assertSame(65.0, $subscription->balance());
+        $this->assertSame('65.00', $subscription->balance());
         $bills = $subscription->transactions()->where('type', SubscriptionTransaction::TYPE_METER_READING)->orderBy('id')->get();
         $this->assertSame(['60.00', '55.00', '65.00'], $bills->pluck('amount')->all());
         $this->assertSame([null, $bills[0]->id, $bills[1]->id], $bills->pluck('corrects_id')->all());
@@ -69,7 +70,7 @@ class WeeklyReadingLifecycleJourneyTest extends TestCase
         $this->approve($head, $second)->assertSessionHasNoErrors();
         $this->assertSame(1130.0, $second->previous_reading);
         $this->assertSame(['10.00', '-2.00'], $subscription->transactions()->where('meter_reading_id', $second->id)->orderBy('id')->pluck('amount')->all());
-        $this->assertSame(73.0, $subscription->balance());
+        $this->assertSame('73.00', $subscription->balance());
         $this->assertFalse($dataEntry->can('update', $first->fresh()));
 
         $this->travelTo('2026-10-15 08:00:00');
@@ -78,30 +79,30 @@ class WeeklyReadingLifecycleJourneyTest extends TestCase
         $this->approve($head, $third)->assertSessionHasErrors('reading_ids');
         $this->assertSame(MeterReadingStatus::Pending, $third->fresh()->status);
         $this->approve($head, $third, confirmUnusual: true)->assertSessionHasNoErrors();
-        $this->assertSame(1323.0, $subscription->balance());
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
+        $this->assertSame('1323.00', $subscription->balance());
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
         $thirdBill = $third->chargeLine()->sole();
         $this->actingAs($head)->post(route('subscriptions.transactions.actions.store', [$subscription, $thirdBill]), [
             'action' => 'cancel', 'correction_reason' => 'wrong_reading', 'correction_notes' => 'خطأ في كتابة القراءة', 'reopen_reading' => true,
         ])->assertSessionHasNoErrors();
         $this->assertSame(MeterReadingStatus::Pending, $third->fresh()->status);
-        $this->assertSame(23.0, $subscription->balance());
+        $this->assertSame('23.00', $subscription->balance());
         $this->correct($dataEntry, $third, 1170)->assertSessionHasNoErrors();
         $this->approve($head, $third)->assertSessionHasNoErrors();
-        $this->assertSame(33.0, $subscription->balance());
+        $this->assertSame('33.00', $subscription->balance());
 
         $this->travelTo('2026-10-22 08:00:00');
         $this->record($dataEntry, $subscription, '2026-10-16', 1180)->assertSessionHasNoErrors();
         $fourth = MeterReading::query()->whereDate('week_start', '2026-10-16')->sole();
         $this->approve($head, $fourth)->assertSessionHasNoErrors();
-        $this->assertSame(43.0, $subscription->balance());
+        $this->assertSame('43.00', $subscription->balance());
         $this->actingAs($head)->delete(route('subscriptions.transactions.destroy', [$subscription, $fourth->chargeLine()->sole()]), [
             'correction_reason' => 'wrong_reading', 'correction_notes' => 'إعفاء الأسبوع',
         ])->assertSessionHasNoErrors();
         $this->approve($head, $fourth)->assertSessionHasErrors('reading_ids');
 
         $this->assertSame(MeterReadingStatus::Approved, $fourth->fresh()->status);
-        $this->assertSame(33.0, $subscription->balance());
+        $this->assertSame('33.00', $subscription->balance());
         $this->assertSame(1180.0, $subscription->previousReadingBefore(now()->addWeek()));
         $this->actingAs($head)->get(route('subscriptions.statement', $subscription))->assertInertia(fn ($page) => $page
             ->where('summary.balance', '33.00')

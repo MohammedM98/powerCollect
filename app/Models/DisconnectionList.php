@@ -126,7 +126,7 @@ class DisconnectionList extends Model
                     'note' => filled($note) ? trim($note) : null,
                     'scheduled_for' => $scheduledFor->toDateString(),
                     'status' => DisconnectionItemStatus::Scheduled,
-                    'balance_when_added' => number_format($current->balance(), 2, '.', ''),
+                    'balance_when_added' => $current->balance(),
                     'added_by' => $actor->id,
                 ]);
 

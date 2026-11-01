@@ -10,6 +10,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
@@ -227,7 +228,7 @@ class SubscriptionStatementTest extends TestCase
         ];
 
         $this->recordPayment($duplicate)->assertSessionHasErrors([
-            'reference_number' => 'هذا الرقم المرجعي مسجَّل مسبقًا على دفعة أخرى للمشترك Mona.',
+            'reference_number' => 'هذا الرقم المرجعي مسجّل مسبقًا على دفعة أخرى.',
         ]);
         $this->assertDatabaseCount('subscription_transactions', 1);
 
@@ -476,7 +477,7 @@ class SubscriptionStatementTest extends TestCase
 
         $this->actingAs($this->branchAdmin)
             ->from($listWithStatement)
-            ->post(route('subscriptions.payments.store', $this->subscription), ['amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash'])
+            ->post(route('subscriptions.payments.store', $this->subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash'])
             ->assertSessionHasNoErrors()
             ->assertRedirect($listWithStatement);
     }
@@ -499,7 +500,7 @@ class SubscriptionStatementTest extends TestCase
     {
         return $this->actingAs($actor ?? $this->branchAdmin)
             ->from(route('subscriptions.statement', $this->subscription))
-            ->post(route('subscriptions.payments.store', $this->subscription), [
+            ->post(route('subscriptions.payments.store', $this->subscription), ['payment_token' => (string) Str::uuid(),
                 'amount' => '25',
                 'currency' => 'ILS',
                 'payment_method' => 'cash',

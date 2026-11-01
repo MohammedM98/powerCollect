@@ -9,11 +9,12 @@ use App\Models\MeterReading;
 use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
-use App\Models\TransactionDeletion;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /**
@@ -89,7 +90,7 @@ class FinancialCycleReportsJourneyTest extends TestCase
         $clearing = $khaled->transactions()->where('type', SubscriptionTransaction::TYPE_CLEARING)->sole();
         $this->assertBalances([45.0, 30.0, 28.0], $salem, $khaled, $mona);
         $this->act($manager, $clearing, ['delete'], ['action' => 'delete', 'correction_notes' => 'المقاصة سُجّلت على الحساب الخطأ']);
-        $this->act($manager, $khaledTransfer, ['edit_metadata', 'delete'], ['action' => 'edit_metadata', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'خالد يوسف', 'amendment_reason' => 'اسم المرسل كاملًا']);
+        $this->act($manager, $khaledTransfer, ['edit_metadata', 'refund'], ['action' => 'edit_metadata', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'خالد يوسف', 'amendment_reason' => 'اسم المرسل كاملًا']);
         $this->assertSame('خالد يوسف', $khaledTransfer->fresh()->sender_name);
 
         $monaCash = $this->pay($collector, $mona, ['amount' => '30', 'payment_method' => 'cash']);
@@ -98,24 +99,24 @@ class FinancialCycleReportsJourneyTest extends TestCase
         $this->act($manager, $penalty, ['edit', 'delete'], ['action' => 'edit', 'amount' => '25', 'amendment_reason' => 'قيمة الغرامة المعتمدة']);
         $this->act($manager, $monaCash, ['edit_metadata', 'refund'], ['action' => 'refund']);
         $this->assertBalances([45.0, 36.4, 53.0], $salem, $khaled, $mona);
-        $this->act($manager, $monaCash, ['delete_tree'], ['action' => 'delete_tree', 'correction_notes' => 'دفعة لم تُستلم']);
-        $this->assertModelMissing($monaCash);
+        $this->act($manager, $monaCash, [], ['action' => 'delete_tree', 'correction_notes' => 'دفعة لم تُستلم']);
+        $this->assertModelExists($monaCash);
         $this->assertBalances([45.0, 36.4, 53.0], $salem, $khaled, $mona);
 
         $this->act($manager, $salemCash, ['edit_metadata', 'refund'], ['action' => 'refund']);
         $this->act($manager, $salemDiscount, ['cancel'], ['action' => 'cancel', 'correction_reason' => 'other', 'correction_notes' => 'خصم بلا موافقة']);
         $this->assertBalances([140.0, 36.4, 53.0], $salem, $khaled, $mona);
         $cancellation = $salem->transactions()->where('type', SubscriptionTransaction::TYPE_CANCELLATION)->sole();
-        $this->act($manager, $cancellation, ['delete_reversal'], ['action' => 'delete_reversal', 'correction_notes' => 'الخصم كان بموافقة المدير']);
-        $this->assertSame(SubscriptionTransaction::STATUS_ACTIVE, $salemDiscount->fresh()->status);
-        $this->assertBalances([135.0, 36.4, 53.0], $salem, $khaled, $mona);
+        $this->act($manager, $cancellation, [], ['action' => 'delete_reversal', 'correction_notes' => 'الخصم كان بموافقة المدير']);
+        $this->assertSame(SubscriptionTransaction::STATUS_CANCELLED, $salemDiscount->fresh()->status);
+        $this->assertBalances([140.0, 36.4, 53.0], $salem, $khaled, $mona);
 
         $salemReading = MeterReading::query()->where('subscription_id', $salem->id)->sole();
         $this->actingAs($manager)->put(route('meter-readings.update', $salemReading), ['current_reading' => 1070, 'notes' => 'خطأ في قراءة العداد', 'approve' => true])->assertSessionHasNoErrors();
-        $this->assertBalances([130.0, 36.4, 53.0], $salem, $khaled, $mona);
-        $this->assertSame(['delete', 'delete_tree', 'delete_reversal'], TransactionDeletion::query()->orderBy('id')->pluck('action')->all());
+        $this->assertBalances([135.0, 36.4, 53.0], $salem, $khaled, $mona);
+        $this->assertDatabaseCount('transaction_deletions', 0);
         $this->actingAs($reader)->post(route('subscriptions.transactions.actions.store', [$mona, $penalty]), ['action' => 'cancel', 'correction_reason' => 'other', 'correction_notes' => 'ليس من عمله'])->assertSessionHasErrors('action');
-        $this->assertBalances([130.0, 36.4, 53.0], $salem, $khaled, $mona);
+        $this->assertBalances([135.0, 36.4, 53.0], $salem, $khaled, $mona);
 
         // A past day's money reads the same: day 3's refund, cancellation and reading correction count on day 3.
         $this->assertSame(Arr::except($dayTwo, 'readings'), Arr::except($this->report($manager, '2026-10-22', '2026-10-22'), 'readings'));
@@ -126,7 +127,7 @@ class FinancialCycleReportsJourneyTest extends TestCase
         $this->assertSame([['meter_reading', 4, '186.00'], ['subscription_fee', 2, '150.00'], ['penalty', 1, '25.00']], $lines($report['flow']['charges']));
         $this->assertSame([['payment', 3, '177.00'], ['discount', 1, '5.00'], ['reading_discount', 1, '9.60']], $lines($report['flow']['credits']));
         $this->assertSame(
-            ['opening' => '0.00', 'chargesTotal' => '361.00', 'creditsTotal' => '191.60', 'corrections' => ['count' => 2, 'total' => '50.00'], 'closing' => '219.40', 'change' => '219.40'],
+            ['opening' => '0.00', 'chargesTotal' => '361.00', 'creditsTotal' => '191.60', 'corrections' => ['count' => 5, 'total' => '55.00'], 'closing' => '224.40', 'change' => '224.40'],
             Arr::except($report['flow'], ['charges', 'credits']),
         );
         $this->assertSame(['count' => 3, 'total' => '177.00', 'cash' => '127.00', 'nonCash' => '50.00'], array_intersect_key($report['collections'], array_flip(['count', 'total', 'cash', 'nonCash'])));
@@ -137,30 +138,30 @@ class FinancialCycleReportsJourneyTest extends TestCase
             ['2026-10-20', '150.00', '0.00', '0.00', '0.00', '150.00'],
             ['2026-10-21', '0.00', '0.00', '0.00', '0.00', '150.00'],
             ['2026-10-22', '151.00', '177.00', '14.60', '0.00', '109.40'],
-            ['2026-10-23', '60.00', '0.00', '0.00', '50.00', '219.40'],
+            ['2026-10-23', '60.00', '0.00', '0.00', '55.00', '224.40'],
         ], array_map(fn (array $day): array => [$day['day'], $day['charges'], $day['payments'], $day['discounts'], $day['corrections'], $day['balance']], $report['days']));
         $this->assertSame(['entered' => 3, 'consumption' => 220, 'approved' => 3, 'billed' => '136.40', 'pending' => 0], $report['readings']);
-        $this->assertSame(14, $report['transactions']['total']);
-        foreach (['payments' => 3, 'charges' => 7, 'discounts' => 2, 'corrections' => 4] as $kind => $lines) {
+        $this->assertSame(19, $report['transactions']['total']);
+        foreach (['payments' => 4, 'charges' => 7, 'discounts' => 3, 'corrections' => 10] as $kind => $lines) {
             $this->assertSame($lines, $this->report($manager, '2026-10-20', '2026-10-23', ['kind' => $kind])['transactions']['total'], "kind {$kind}");
         }
         $csv = $this->actingAs($manager)->get(route('reports.export', ['from' => '2026-10-20', 'to' => '2026-10-23']))->assertOk()->streamedContent();
-        $this->assertCount(3 + 14, array_filter(explode("\n", trim($csv))));
+        $this->assertCount(3 + 19, array_filter(explode("\n", trim($csv))));
 
         $this->actingAs($manager)->get(route('ledger.index', ['period' => 'all']))->assertInertia(fn ($page) => $page
-            ->where('ledgerTotals', ['charged' => 321, 'debitCount' => 6, 'credited' => 101.6, 'creditCount' => 4, 'net' => 219.4, 'cancelled' => 130, 'cancelledCount' => 2])
-            ->where('summary.collected', 87)
-            ->where('entries.total', 14));
+            ->where('ledgerTotals', ['charged' => '321.00', 'debitCount' => 6, 'credited' => '96.60', 'creditCount' => 3, 'net' => '224.40', 'cancelled' => '171.40', 'cancelledCount' => 5])
+            ->where('summary.collected', '87.00')
+            ->where('entries.total', 19));
         $this->actingAs($manager)->get(route('receivables.index'))->assertInertia(fn ($page) => $page
-            ->where('summary.total', 219.4)
+            ->where('summary.total', 224.4)
             ->where('summary.count', 3));
         $debts = $this->actingAs($manager)->get(route('reports.index', ['section' => 'debts', 'from' => '2026-10-23', 'to' => '2026-10-23']))->assertOk()->inertiaProps('debts');
-        $this->assertSame(['219.40', '0.00', 3], [$debts['total'], $debts['credit'], $debts['count']]);
+        $this->assertSame(['224.40', '0.00', 3], [$debts['total'], $debts['credit'], $debts['count']]);
         $this->actingAs($manager)->get(route('subscriptions.statement', $salem))->assertInertia(fn ($page) => $page
-            ->where('summary.balance', '130.00')
+            ->where('summary.balance', '135.00')
             ->where('entries', function ($entries): bool {
-                $this->assertSame(['subscription_fee', 'meter_reading', 'payment', 'discount', 'refund', 'reversal', 'meter_reading'], $entries->pluck('type')->all());
-                $this->assertSame(['100.00', '140.00', '50.00', '45.00', '135.00', '95.00', '130.00'], $entries->pluck('balance')->all());
+                $this->assertSame(['subscription_fee', 'meter_reading', 'payment', 'discount', 'refund', 'cancellation', 'reversal', 'meter_reading'], $entries->pluck('type')->all());
+                $this->assertSame(['100.00', '140.00', '50.00', '45.00', '135.00', '140.00', '100.00', '135.00'], $entries->pluck('balance')->all());
 
                 return true;
             }));
@@ -171,18 +172,18 @@ class FinancialCycleReportsJourneyTest extends TestCase
         $this->assertSame(0, CashBox::query()->where('branch_id', $branch->id)->whereIn('status', ['open', 'pending'])->whereHas('payments')->count());
         $this->assertSame([[], []], [$khaledTransfer->fresh()->availableActions($manager), $monaDollars->fresh()->availableActions($manager)]);
         // A discount is in no box, so the week's closing leaves it open to cancelling, on the day that is done.
-        $this->assertSame(['cancel'], $salemDiscount->fresh()->availableActions($manager));
+        $this->assertSame([], $salemDiscount->fresh()->availableActions($manager));
         $this->travelTo(Carbon::parse('2026-10-24 10:00', 'Asia/Gaza'));
         $this->actingAs($auditor)->post(route('payments.bank-audits.store', $khaledTransfer->fresh()->boxEntry), ['bank_amount' => '45', 'reason' => 'وصل أقل من المسجل'])->assertSessionHasNoErrors();
         $preview = $this->actingAs($auditor)->get(route('payments.cash-boxes', ['branch_id' => $branch->id, 'place' => 'closed', 'week' => '2026-10-17']))->inertiaProps('periodAudit');
         $this->actingAs($auditor)->post(route('payments.period-audits.store'), [...array_intersect_key($preview, array_flip(['branch_id', 'week', 'box_ids', 'snapshot'])), 'confirmed' => true])->assertSessionHasNoErrors();
-        $this->assertBalances([130.0, 41.4, 53.0], $salem, $khaled, $mona);
+        $this->assertBalances([135.0, 41.4, 53.0], $salem, $khaled, $mona);
 
         $audited = $this->report($manager, '2026-10-24', '2026-10-24');
-        $this->assertSame(['219.40', '5.00', '0.00', '224.40'], [$audited['flow']['opening'], $audited['flow']['chargesTotal'], $audited['flow']['creditsTotal'], $audited['flow']['closing']]);
+        $this->assertSame(['224.40', '5.00', '0.00', '229.40'], [$audited['flow']['opening'], $audited['flow']['chargesTotal'], $audited['flow']['creditsTotal'], $audited['flow']['closing']]);
         $this->assertSame(['bank_audit_adjustment'], array_column($audited['flow']['charges'], 'type'));
-        $this->assertSame('224.40', $this->report($manager, '2026-10-20', '2026-10-24')['flow']['closing']);
-        $this->actingAs($manager)->get(route('receivables.index'))->assertInertia(fn ($page) => $page->where('summary.total', 224.4));
+        $this->assertSame('229.40', $this->report($manager, '2026-10-20', '2026-10-24')['flow']['closing']);
+        $this->actingAs($manager)->get(route('receivables.index'))->assertInertia(fn ($page) => $page->where('summary.total', 229.4));
     }
 
     /**
@@ -210,7 +211,12 @@ class FinancialCycleReportsJourneyTest extends TestCase
         $entries = collect($this->actingAs($actor)->get(route('subscriptions.statement', $line->subscription_id))->inertiaProps('entries'));
         $this->assertSame($offered, $entries->firstWhere('id', $line->id)['available_actions'], "the actions offered on {$line->type} {$line->id}");
 
-        $this->post(route('subscriptions.transactions.actions.store', [$line->subscription_id, $line]), $payload)->assertSessionHasNoErrors();
+        if ($offered === []) {
+            $this->post(route('subscriptions.transactions.actions.store', [$line->subscription_id, $line]), $payload)->assertSessionHasErrors('action');
+            $this->assertModelExists($line);
+        } else {
+            $this->post(route('subscriptions.transactions.actions.store', [$line->subscription_id, $line]), $payload)->assertSessionHasNoErrors();
+        }
     }
 
     /**
@@ -220,7 +226,7 @@ class FinancialCycleReportsJourneyTest extends TestCase
      */
     private function pay(User $collector, Subscription $subscription, array $details): SubscriptionTransaction
     {
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['currency' => 'ILS', ...$details])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'currency' => 'ILS', ...$details])->assertSessionHasNoErrors();
 
         return $subscription->transactions()->where('type', SubscriptionTransaction::TYPE_PAYMENT)->latest('id')->firstOrFail();
     }
@@ -230,6 +236,6 @@ class FinancialCycleReportsJourneyTest extends TestCase
      */
     private function assertBalances(array $expected, Subscription ...$subscriptions): void
     {
-        $this->assertSame($expected, array_map(fn (Subscription $subscription): float => $subscription->balance(), $subscriptions));
+        $this->assertSame(array_map(fn (int|float|string $amount): string => Money::amount($amount), $expected), array_map(fn (Subscription $subscription): string => $subscription->balance(), $subscriptions));
     }
 }

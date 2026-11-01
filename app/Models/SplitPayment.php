@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Support\BranchDomainContext;
 use App\Support\BranchDomainScope;
+use App\Support\Money;
 use Closure;
 use Database\Factories\SplitPaymentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -231,11 +232,6 @@ class SplitPayment extends Model
      */
     public function standingTotal(): string
     {
-        return number_format(
-            $this->payments()->whereNull('cancelled_at')->get()->sum(fn (SubscriptionTransaction $payment): float => -(float) $payment->amount),
-            2,
-            '.',
-            '',
-        );
+        return Money::negate(Money::sum($this->payments()->whereNull('cancelled_at')->pluck('amount')));
     }
 }

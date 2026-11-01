@@ -35,19 +35,20 @@ class RecordDeletionTest extends TestCase
         $this->superAdmin = User::factory()->superAdmin()->create(['name' => 'Sami']);
     }
 
-    public function test_a_subscription_added_by_mistake_is_deleted_with_their_subscription_fee(): void
+    public function test_a_subscription_added_by_mistake_keeps_its_subscription_fee_and_financial_history(): void
     {
         $subscription = Subscription::factory()->create(['branch_id' => $this->branch->id, 'full_name' => 'Ahmad']);
-        SubscriptionTransaction::factory()->for($subscription)->create();
+        $fee = SubscriptionTransaction::factory()->for($subscription)->create();
+        $originalFee = $fee->refresh()->getAttributes();
 
         $this->deleteAs($this->superAdmin, route('subscriptions.destroy', $subscription))
-            ->assertSessionHasNoErrors()
-            ->assertSessionHas('status', 'subscription-deleted')
+            ->assertSessionHasErrors(['delete' => 'لا يمكن حذف المشترك لوجود سجلات مرتبطة به — الحركات المالية: 1. يمكنك تغيير حالته إلى «مفصول» بدلًا من حذفه.'])
             ->assertRedirect(route('subscriptions.index'));
 
-        $this->assertModelMissing($subscription);
-        $this->assertDatabaseCount('subscription_transactions', 0);
-        $this->assertSame(['action' => 'subscription-deleted', 'subject' => 'Ahmad'], $this->superAdmin->notifications()->sole()->data);
+        $this->assertModelExists($subscription);
+        $this->assertDatabaseCount('subscription_transactions', 1);
+        $this->assertSame($originalFee, $fee->refresh()->getAttributes());
+        $this->assertSame(0, $this->superAdmin->notifications()->count());
     }
 
     public function test_a_subscription_with_payments_is_kept_and_the_user_is_told_why(): void
@@ -57,7 +58,7 @@ class RecordDeletionTest extends TestCase
         SubscriptionTransaction::recordPayment($subscription, $this->superAdmin, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $this->deleteAs($this->superAdmin, route('subscriptions.destroy', $subscription))
-            ->assertSessionHasErrors(['delete' => 'لا يمكن حذف المشترك لوجود سجلات مرتبطة به — الحركات المالية: 1. يمكنك تغيير حالته إلى «مفصول» بدلًا من حذفه.']);
+            ->assertSessionHasErrors(['delete' => 'لا يمكن حذف المشترك لوجود سجلات مرتبطة به — الحركات المالية: 2. يمكنك تغيير حالته إلى «مفصول» بدلًا من حذفه.']);
 
         $this->assertModelExists($subscription);
         $this->assertDatabaseCount('subscription_transactions', 2);

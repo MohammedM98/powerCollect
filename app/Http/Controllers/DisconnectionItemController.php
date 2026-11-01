@@ -22,6 +22,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionMessage;
 use App\Notifications\ActionCompleted;
 use App\Support\Messaging\MessageComposer;
+use App\Support\Money;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -253,14 +254,14 @@ class DisconnectionItemController extends Controller
         $actor = $request->user();
         $succeeded = 0;
         $failed = [];
-        $feesTotal = 0.0;
+        $feesTotal = '0.00';
 
         foreach ($request->items() as $item) {
             $outcome = $item->confirmDisconnection($actor, $request->feeFor($item->id));
 
             if ($outcome === 'disconnected') {
                 $succeeded++;
-                $feesTotal += (float) $item->fee_amount;
+                $feesTotal = Money::add($feesTotal, $item->fee_amount);
             } else {
                 $failed[] = $this->failure($item, DisconnectionListItem::OUTCOMES[$outcome]);
             }

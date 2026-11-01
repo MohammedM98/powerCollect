@@ -9,6 +9,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Notifications\ReadingNeedsReapproval;
+use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -76,7 +77,7 @@ class StatementReadingCorrectionTest extends TestCase
             ->assertSessionHas('status', 'meter-reading-reopened');
 
         $this->assertNotNull($line->refresh()->cancelled_at);
-        $this->assertSame(0.0, $this->subscription->balance());
+        $this->assertSame('0.00', $this->subscription->balance());
         $this->assertSame(MeterReadingStatus::Pending, $this->reading->refresh()->status);
 
         $this->reading->approve($this->branchAdmin);
@@ -84,7 +85,7 @@ class StatementReadingCorrectionTest extends TestCase
         $replacement = SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_METER_READING)->whereNull('cancelled_at')->sole();
         $this->assertSame($line->id, $replacement->corrects_id);
         $this->assertSame((float) $this->reading->refresh()->amountBeforeDiscount(), (float) $replacement->amount);
-        $this->assertSame(round((float) $replacement->amount, 2), $this->subscription->balance());
+        $this->assertSame(Money::amount($replacement->amount), $this->subscription->balance());
     }
 
     public function test_a_reading_followed_by_a_later_week_cannot_be_corrected(): void
@@ -130,7 +131,7 @@ class StatementReadingCorrectionTest extends TestCase
         $replacement = SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_METER_READING)->whereNull('cancelled_at')->sole();
         $this->assertSame($line->id, $replacement->corrects_id);
         $this->assertSame((float) $this->reading->amountBeforeDiscount(), (float) $replacement->amount);
-        $this->assertSame(round((float) $replacement->amount, 2), $this->subscription->balance());
+        $this->assertSame(Money::amount($replacement->amount), $this->subscription->balance());
         Notification::assertNotSentTo($this->reading->approvers(), ReadingNeedsReapproval::class);
     }
 

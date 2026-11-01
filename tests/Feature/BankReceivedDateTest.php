@@ -51,14 +51,14 @@ class BankReceivedDateTest extends TestCase
     {
         [$collector, $subscription] = $this->account();
         $oldLine = $subscription->transactions()->sole()->getAttributes();
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), [...$this->payment(), 'bank_received_on' => $date, 'created_at' => '2026-10-01'])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), ...$this->payment(), 'bank_received_on' => $date, 'created_at' => '2026-10-01'])->assertSessionHasNoErrors();
         $payment = $subscription->transactions()->where('type', 'payment')->sole();
 
         $this->assertSame($date, $payment->bank_received_on?->toDateString());
         $this->assertNull($payment->paid_on);
         $this->assertTrue($payment->created_at->equalTo(now()));
         $this->assertTrue($payment->boxEntry->occurred_at->equalTo(now()));
-        $this->assertSame(900.0, $subscription->fresh()->balance());
+        $this->assertSame('900.00', $subscription->fresh()->balance());
         $this->assertSame($oldLine, SubscriptionTransaction::findOrFail($oldLine['id'])->getAttributes());
         $this->assertSame($date, $payment->ledgerDetails()['bankReceivedOn']);
         $this->get(route('subscriptions.statement', $subscription))->assertInertia(fn (AssertableInertia $page) => $page
@@ -73,19 +73,19 @@ class BankReceivedDateTest extends TestCase
     public function test_future_or_invalid_bank_dates_cannot_record_a_payment(string $date): void
     {
         [$collector, $subscription] = $this->account();
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), [...$this->payment(), 'bank_received_on' => $date])->assertSessionHasErrors('bank_received_on');
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), ...$this->payment(), 'bank_received_on' => $date])->assertSessionHasErrors('bank_received_on');
         $this->assertDatabaseCount('subscription_transactions', 1);
-        $this->assertSame(1000.0, $subscription->fresh()->balance());
+        $this->assertSame('1000.00', $subscription->fresh()->balance());
     }
 
     public function test_cash_never_stores_a_bank_date_and_payment_permissions_still_apply(): void
     {
         [$collector, $subscription] = $this->account();
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), [...$this->payment(), 'payment_method' => 'cash', 'bank_received_on' => '2026-10-23'])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), ...$this->payment(), 'payment_method' => 'cash', 'bank_received_on' => '2026-10-23'])->assertSessionHasNoErrors();
         $this->assertNull($subscription->transactions()->where('type', 'payment')->sole()->bank_received_on);
         $collector->permissions()->sync(Permission::idsFor([PermissionKey::RecordCollections, PermissionKey::RecordCashPayments]));
-        $this->actingAs($collector->fresh())->post(route('subscriptions.payments.store', $subscription), [...$this->payment(), 'bank_received_on' => '2026-10-23'])->assertSessionHasErrors('payment_method');
-        $this->assertSame(900.0, $subscription->fresh()->balance());
+        $this->actingAs($collector->fresh())->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), ...$this->payment(), 'bank_received_on' => '2026-10-23'])->assertSessionHasErrors('payment_method');
+        $this->assertSame('900.00', $subscription->fresh()->balance());
     }
 
     public function test_mobile_saves_and_returns_the_bank_date_and_retries_the_same_operation_once(): void
@@ -114,7 +114,7 @@ class BankReceivedDateTest extends TestCase
         $this->assertNull($payment->fresh()->bank_received_on);
         $this->assertSame($originalTime, $payment->created_at->toDateTimeString());
         $this->assertSame($boxEntry, $payment->boxEntry->fresh()->getAttributes());
-        $this->assertSame(900.0, $subscription->fresh()->balance());
+        $this->assertSame('900.00', $subscription->fresh()->balance());
     }
 
     public function test_a_split_transfer_and_all_its_parts_share_the_bank_date_and_audited_date_corrections(): void
@@ -138,7 +138,7 @@ class BankReceivedDateTest extends TestCase
         $this->assertSame(0, $split->payments()->whereNotNull('bank_received_on')->count());
         $this->assertDatabaseCount('transaction_amendments', 2);
         $this->patch(route('split-payments.update', $split), [...$edit, 'bank_received_on' => '2026-10-22'])->assertSessionHasErrors('action');
-        $this->assertSame(940.0, $subscription->fresh()->balance());
+        $this->assertSame('940.00', $subscription->fresh()->balance());
     }
 
     public function test_amount_correction_keeps_the_bank_date_when_omitted_and_allows_explicit_clearing(): void
@@ -153,6 +153,6 @@ class BankReceivedDateTest extends TestCase
         $this->assertSame('2026-10-23', $payment->bank_received_on->toDateString());
         $this->put(route('subscriptions.transactions.update', [$subscription, $replacement]), [...$correction, 'amount' => '120', 'bank_received_on' => null])->assertSessionHasNoErrors();
         $this->assertNull($replacement->fresh()->correction->bank_received_on);
-        $this->assertSame(880.0, $subscription->fresh()->balance());
+        $this->assertSame('880.00', $subscription->fresh()->balance());
     }
 }

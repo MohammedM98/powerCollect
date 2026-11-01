@@ -10,6 +10,8 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\BranchScope;
 use App\Support\DailySeries;
+use App\Support\Money;
+use Brick\Math\RoundingMode;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -183,29 +185,31 @@ class LedgerController extends Controller
      * @param  Builder<SubscriptionTransaction>  $headline  the period's lines on the headline side
      * @param  Builder<SubscriptionTransaction>|null  $ledger  every line on that side, for the period before
      * @param  Builder<SubscriptionTransaction>  $inPeriod  every line of the period, both sides
-     * @return array{total: float, count: int, average: float, largest: float, previousTotal: float|null, changePct: int|null, collected: float}
+     * @return array{total: string, count: int, average: string, largest: string, previousTotal: string|null, changePct: int|null, collected: string}
      */
     private function summary(Builder $headline, ?Builder $ledger, ?CarbonImmutable $from, ?int $days, Builder $inPeriod, string $dateBasis = 'recorded'): array
     {
         $totals = $headline->toBase()->selectRaw('count(*) as entries, coalesce(sum(abs(amount)), 0) as total, coalesce(max(abs(amount)), 0) as largest')->first();
-        $total = round((float) $totals->total, 2);
+        $total = Money::amount($totals->total);
         $count = (int) $totals->entries;
 
         $previousTotal = $ledger && $from && $days
-            ? round((float) $this->dateFiltered($ledger, $from->subDays($days), $from, $dateBasis)
+            ? Money::amount($this->dateFiltered($ledger, $from->subDays($days), $from, $dateBasis)
                 ->toBase()
                 ->selectRaw('coalesce(sum(abs(amount)), 0) as total')
-                ->value('total'), 2)
+                ->value('total'))
             : null;
 
         return [
             'total' => $total,
             'count' => $count,
-            'average' => $count > 0 ? round($total / $count, 2) : 0.0,
-            'largest' => round((float) $totals->largest, 2),
+            'average' => $count > 0 ? Money::amount(Money::decimal($total)->dividedBy($count, 2, RoundingMode::HalfUp)) : '0.00',
+            'largest' => Money::amount($totals->largest),
             'previousTotal' => $previousTotal,
-            'changePct' => $previousTotal ? (int) round(($total - $previousTotal) / $previousTotal * 100) : null,
-            'collected' => round(-(float) $inPeriod->counted()->whereIn('type', [SubscriptionTransaction::TYPE_PAYMENT, SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT])->sum('amount'), 2),
+            'changePct' => $previousTotal !== null && ! Money::decimal($previousTotal)->isZero()
+                ? Money::decimal($total)->minus($previousTotal)->multipliedBy('100')->dividedBy($previousTotal, 0, RoundingMode::HalfUp)->toInt()
+                : null,
+            'collected' => Money::negate($inPeriod->counted()->whereIn('type', [SubscriptionTransaction::TYPE_PAYMENT, SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT])->sum('amount')),
         ];
     }
 
@@ -216,7 +220,7 @@ class LedgerController extends Controller
      *
      * @param  Builder<SubscriptionTransaction>  $inPeriod
      * @param  array<int, string>  $days
-     * @return array<string, array{count: int, charged: float, credited: float}>
+     * @return array<string, array{count: int, charged: string, credited: string}>
      */
     private function dayTotals(Builder $inPeriod, array $days): array
     {
@@ -237,8 +241,8 @@ class LedgerController extends Controller
             ->only($days)
             ->map(fn ($lines): array => [
                 'count' => $lines->count(),
-                'charged' => round($lines->reject(fn (object $line): bool => SubscriptionTransaction::isCreditLine($line->type, $line->amount))->sum('amount'), 2),
-                'credited' => round(-$lines->filter(fn (object $line): bool => SubscriptionTransaction::isCreditLine($line->type, $line->amount))->sum('amount'), 2),
+                'charged' => Money::sum($lines->reject(fn (object $line): bool => SubscriptionTransaction::isCreditLine($line->type, $line->amount))->pluck('amount')),
+                'credited' => Money::negate(Money::sum($lines->filter(fn (object $line): bool => SubscriptionTransaction::isCreditLine($line->type, $line->amount))->pluck('amount'))),
             ])
             ->all();
     }
@@ -247,7 +251,7 @@ class LedgerController extends Controller
      * The period's headline total and line count per branch, largest first.
      *
      * @param  Builder<SubscriptionTransaction>  $headline
-     * @return array<int, array{id: int, name: string, total: float, count: int}>
+     * @return array<int, array{id: int, name: string, total: string, count: int}>
      */
     private function branchTotals(Builder $headline): array
     {
@@ -264,7 +268,7 @@ class LedgerController extends Controller
             ->map(fn (object $branch): array => [
                 'id' => (int) $branch->branch_id,
                 'name' => $names[$branch->branch_id] ?? '—',
-                'total' => round((float) $branch->total, 2),
+                'total' => Money::amount($branch->total),
                 'count' => (int) $branch->entries,
             ])
             ->sortByDesc('total')
@@ -434,7 +438,7 @@ class LedgerController extends Controller
 
     /**
      * @param  Builder<SubscriptionTransaction>  $query
-     * @return array{charged: float, debitCount: int, credited: float, creditCount: int, net: float, cancelled: float, cancelledCount: int}
+     * @return array{charged: string, debitCount: int, credited: string, creditCount: int, net: string, cancelled: string, cancelledCount: int}
      */
     private function ledgerTotals(Builder $query): array
     {
@@ -442,14 +446,14 @@ class LedgerController extends Controller
         $debits = $aggregate((clone $query)->charges());
         $credits = $aggregate((clone $query)->credits());
         $cancelled = $aggregate((clone $query)->whereNotNull('cancelled_at')->whereNull('reverses_id'));
-        $charged = round((float) $debits->total, 2);
-        $credited = round((float) $credits->total, 2);
+        $charged = Money::amount($debits->total);
+        $credited = Money::amount($credits->total);
 
         return [
             'charged' => $charged, 'debitCount' => (int) $debits->entries,
             'credited' => $credited, 'creditCount' => (int) $credits->entries,
-            'net' => round($charged - $credited, 2),
-            'cancelled' => round((float) $cancelled->total, 2), 'cancelledCount' => (int) $cancelled->entries,
+            'net' => Money::subtract($charged, $credited),
+            'cancelled' => Money::amount($cancelled->total), 'cancelledCount' => (int) $cancelled->entries,
         ];
     }
 
@@ -465,11 +469,11 @@ class LedgerController extends Controller
 
             foreach ($lines->lazy(500) as $transaction) {
                 $row = $this->row($transaction);
-                $cells = [$row['day'], $row['time'], $row['subscriptionName'], $row['subscriptionAccountNumber'], $row['branchName'], $row['typeLabel'], $row['voucherNumber'], $row['paymentMethodLabel'], $row['bankName'], $row['referenceNumber'], $row['recordedByName'], $row['isCredit'] ? '' : (float) $row['amount'], $row['isCredit'] ? (float) $row['amount'] : '', $row['balanceAfter'] === null ? '' : (float) $row['balanceAfter'], $this->balanceWord($row['balanceAfter']), $row['isCancelled'] ? 'نعم' : 'لا'];
+                $cells = [$row['day'], $row['time'], $row['subscriptionName'], $row['subscriptionAccountNumber'], $row['branchName'], $row['typeLabel'], $row['voucherNumber'], $row['paymentMethodLabel'], $row['bankName'], $row['referenceNumber'], $row['recordedByName'], $row['isCredit'] ? '' : Money::amount($row['amount']), $row['isCredit'] ? Money::amount($row['amount']) : '', $row['balanceAfter'] === null ? '' : Money::amount($row['balanceAfter']), $this->balanceWord($row['balanceAfter']), $row['isCancelled'] ? 'نعم' : 'لا'];
                 $cells[] = $row['paidOn'];
                 $cells[] = $row['lateReason'];
                 $cells[] = $row['bankReceivedOn'];
-                fputcsv($file, array_map(fn ($cell) => is_string($cell) && preg_match('/^[=+@\-\t\r]/u', $cell) ? "'".$cell : $cell, $cells));
+                fputcsv($file, array_map(fn ($cell) => is_string($cell) && ! is_numeric($cell) && preg_match('/^[=+@\-\t\r]/u', $cell) ? "'".$cell : $cell, $cells));
             }
 
             fclose($file);
@@ -486,7 +490,7 @@ class LedgerController extends Controller
             return '';
         }
 
-        $cents = (int) round((float) $balance * 100);
+        $cents = Money::decimal($balance)->multipliedBy('100')->toInt();
 
         return $cents > 0 ? 'عليه' : ($cents < 0 ? 'له' : 'مسدّد');
     }

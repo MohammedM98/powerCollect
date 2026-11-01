@@ -10,6 +10,7 @@ use App\Support\ArabicSearch;
 use App\Support\BranchDomainScope;
 use App\Support\DailySeries;
 use App\Support\DeletionBlocker;
+use App\Support\Money;
 use Database\Factories\SubscriptionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 #[Fillable([
     'full_name', 'national_id', 'phone', 'address', 'meter_box_id', 'tariff_id', 'tariff_segment_id', 'branch_id',
@@ -69,6 +71,12 @@ class Subscription extends Model
         static::saved(function (Subscription $subscription): void {
             if ($subscription->subscriber_profile_id !== null && $subscription->wasChanged(SubscriberProfile::PERSONAL_FIELDS)) {
                 $subscription->profile->update($subscription->only(SubscriberProfile::PERSONAL_FIELDS));
+            }
+        });
+
+        static::deleting(function (Subscription $subscription): void {
+            if ($subscription->transactions()->exists()) {
+                throw ValidationException::withMessages(['deletion' => 'لا يمكن حذف اشتراك له سجل مالي؛ يمكنك أرشفته بعد فصل الخدمة.']);
             }
         });
 
@@ -288,9 +296,9 @@ class Subscription extends Model
      * What the subscription owes, in shekels: the sum of their account's
      * lines (negative when they are in credit).
      */
-    public function balance(): float
+    public function balance(): string
     {
-        return round((float) $this->transactions()->sum('amount'), 2);
+        return Money::sum($this->transactions()->pluck('amount'));
     }
 
     /**
@@ -298,16 +306,15 @@ class Subscription extends Model
      * owes, never below zero) is so far above it that it is probably a slip,
      * and so is saved only once the collector confirms it.
      */
-    public static function overpaymentNeedsConfirmation(float $amount, float $owed): bool
+    public static function overpaymentNeedsConfirmation(int|float|string $amount, int|float|string $owed): bool
     {
-        return $amount > $owed * (float) config('powercollect.payments.overpayment_multiplier')
-            && $amount - $owed >= (float) config('powercollect.payments.overpayment_confirmation_minimum');
+        return Money::decimal($amount)->isGreaterThan(Money::decimal($owed)->multipliedBy((string) config('powercollect.payments.overpayment_multiplier')))
+            && Money::decimal($amount)->minus((string) $owed)->isGreaterThanOrEqualTo((string) config('powercollect.payments.overpayment_confirmation_minimum'));
     }
 
     /**
-     * Why the subscription can't be deleted yet — readings or account lines
-     * beyond the subscription fee charged when they were added — or null
-     * when they can: a subscription added by mistake.
+     * Why a subscription cannot be deleted, including any financial history,
+     * or null when an unused subscription may be removed.
      */
     public function deletionBlocker(): ?string
     {
@@ -319,10 +326,7 @@ class Subscription extends Model
             'القراءات' => $this->meterReadings()->count(),
             'قوائم القطع' => $this->disconnectionItems()->count(),
             'القراءات الميدانية' => ReadingSubmission::query()->where('subscription_id', $this->id)->count(),
-            'الحركات المالية' => $this->transactions()->where(function (Builder $query): void {
-                $query->where('type', '!=', SubscriptionTransaction::TYPE_SUBSCRIPTION_FEE)
-                    ->orWhere('source_key', 'like', 'charge:%');
-            })->count(),
+            'الحركات المالية' => $this->transactions()->count(),
         ], 'يمكنك تغيير حالته إلى «مفصول» بدلًا من حذفه.');
     }
 
@@ -376,14 +380,16 @@ class Subscription extends Model
     }
 
     /**
-     * Delete the subscription with their subscription fee (and standing
-     * discount); deletionBlocker() must allow it first.
+     * Remove an unused subscription only; all financial history is retained.
      */
     public function deleteWithSubscriptionFee(): void
     {
         DB::transaction(function (): void {
-            $this->transactions()->delete();
-            $this->delete();
+            $subscription = self::query()->lockForUpdate()->findOrFail($this->id);
+            if ($subscription->transactions()->exists()) {
+                throw ValidationException::withMessages(['deletion' => 'لا يمكن حذف اشتراك له سجل مالي؛ يمكنك أرشفته بعد فصل الخدمة.']);
+            }
+            $subscription->delete();
         });
     }
 }

@@ -155,7 +155,7 @@ class PageLoadingPerformanceTest extends TestCase
             'X-Inertia' => 'true', 'X-Inertia-Version' => (string) $version,
             'X-Inertia-Partial-Component' => 'Dashboard',
             'X-Inertia-Partial-Data' => 'latestPayments,filters',
-        ])->assertJsonPath('props.latestPayments.sum', 0)
+        ])->assertJsonPath('props.latestPayments.sum', '0.00')
             ->assertJsonMissingPath('props.sections');
 
         $summaryQueries = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains($query['query'], 'from "meter_readings"'));

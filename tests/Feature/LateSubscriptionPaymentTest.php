@@ -34,7 +34,7 @@ class LateSubscriptionPaymentTest extends TestCase
         ])->assertSessionHasNoErrors();
 
         $replacement = $payment->fresh()->correction;
-        $this->assertSame(230.0, $subscription->balance());
+        $this->assertSame('230.00', $subscription->balance());
         $this->assertSame('2026-10-10', $replacement->paid_on->toDateString());
         $this->assertSame('نسيان إدخال الوصل', $replacement->late_reason);
         $this->assertTrue($replacement->created_at->equalTo(now()));
@@ -125,12 +125,12 @@ class LateSubscriptionPaymentTest extends TestCase
         $this->archivedPayment($collector, $subscription, $this->payload());
         $period = ['period' => 'custom', 'from' => '2026-10-10', 'to' => '2026-10-10'];
         $this->get(route('ledger.index', $period))->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('dateBasis', 'recorded')->where('entries.total', 0)->where('summary.collected', 0));
+            ->where('dateBasis', 'recorded')->where('entries.total', 0)->where('summary.collected', '0.00'));
         $this->get(route('ledger.index', [...$period, 'date_basis' => 'paid']))->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('entries.total', 1)->where('summary.collected', 100)
+            ->where('entries.total', 1)->where('summary.collected', '100.00')
             ->where('entries.data.0.paidOn', '2026-10-10')->where('entries.data.0.day', '2026-10-21'));
         $this->get(route('ledger.index', ['period' => 'today']))->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('entries.total', 1)->where('summary.collected', 100));
+            ->where('entries.total', 1)->where('summary.collected', '100.00'));
     }
 
     public function test_retired_late_permission_cannot_enable_registration_and_branch_and_method_boundaries_still_apply(): void
@@ -140,7 +140,7 @@ class LateSubscriptionPaymentTest extends TestCase
         $collector->permissions()->attach(Permission::idsFor([PermissionKey::RecordLatePayments]));
         $this->actingAs($collector->fresh());
         $this->post(route('subscriptions.payments.store', Subscription::factory()->create()), $this->payload())->assertForbidden();
-        $this->post(route('subscriptions.payments.store', $subscription), [...$this->payload(), 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'أحمد'])->assertSessionHasErrors('payment_method');
+        $this->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), ...$this->payload(), 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'أحمد'])->assertSessionHasErrors('payment_method');
         $this->assertDatabaseCount('subscription_transactions', 1);
     }
 
@@ -151,7 +151,7 @@ class LateSubscriptionPaymentTest extends TestCase
     public function test_old_date_inputs_cannot_reenable_late_registration(string $date): void
     {
         [, $collector, $subscription] = $this->account();
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), [...$this->payload(), 'paid_on' => $date])->assertSessionHasErrors('late_payment');
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), ...$this->payload(), 'paid_on' => $date])->assertSessionHasErrors('late_payment');
         $this->assertDatabaseCount('subscription_transactions', 1);
         $this->assertEquals(350, $subscription->fresh()->balance());
     }

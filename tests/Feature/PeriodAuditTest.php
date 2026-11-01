@@ -70,14 +70,14 @@ class PeriodAuditTest extends TestCase
         $this->assertSame(1, $preview['exceptions']);
         $this->assertSame(1, $preview['automaticMatches']);
         $this->assertSame('50.00', $preview['debit']);
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
         $payload = $this->approval($preview);
 
         $this->post(route('payments.period-audits.store'), $payload)->assertSessionHasNoErrors();
         $this->post(route('payments.period-audits.store'), $payload)->assertSessionHasNoErrors();
 
-        $this->assertSame(150.0, $subscription->balance());
-        $this->assertSame(100.0, $secondSubscription->balance());
+        $this->assertSame('150.00', $subscription->balance());
+        $this->assertSame('100.00', $secondSubscription->balance());
         $this->assertSame($original, $payment->fresh()->getAttributes());
         $this->assertDatabaseCount('cash_box_audits', 3);
         $this->assertSame(2, BankTransferAudit::query()->whereNotNull('posted_at')->count());
@@ -112,7 +112,7 @@ class PeriodAuditTest extends TestCase
 
         $this->assertSame($stampsBefore, CashBoxAudit::query()->count());
         $this->assertSame($transactionsBefore, SubscriptionTransaction::query()->count());
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
     }
 
     public function test_a_failure_in_one_box_rolls_back_every_box_and_financial_posting_in_the_period(): void
@@ -138,7 +138,7 @@ class PeriodAuditTest extends TestCase
         $this->assertDatabaseCount('cash_box_audits', 0);
         $this->assertSame(0, BankTransferAudit::query()->whereNotNull('posted_at')->count());
         $this->assertDatabaseCount('subscription_transactions', 4);
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
     }
 
     #[TestWith(['confirmed', false, 'confirmed'])]
@@ -153,7 +153,7 @@ class PeriodAuditTest extends TestCase
         $this->post(route('payments.period-audits.store'), $payload)->assertSessionHasErrors($error);
         $this->assertDatabaseCount('cash_box_audits', 0);
         $this->assertDatabaseCount('bank_transfer_audits', 0);
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
     }
 
     public function test_cross_branch_box_ids_are_rejected_even_for_an_auditor_with_access_to_all_branches(): void

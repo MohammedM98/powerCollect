@@ -15,6 +15,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\BankTransferAuditing;
 use App\Support\BranchClosingWorkflow;
+use App\Support\Money;
 use Closure;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
@@ -66,7 +67,7 @@ class BankTransferAuditTest extends TestCase
         $this->assertNull($draft->posted_at);
         $this->assertNull($draft->adjustment_transaction_id);
         $this->assertDatabaseCount('subscription_transactions', 2);
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
         $this->post(route('payments.box-audits.store', $box), ['confirmed' => true])->assertSessionHasNoErrors();
 
         $audit = BankTransferAudit::query()->sole();
@@ -74,7 +75,7 @@ class BankTransferAuditTest extends TestCase
         $this->assertSame($auditor->id, $audit->audited_by);
         $this->assertSame($outcome, $audit->outcome);
         $this->assertSame($difference, $audit->difference);
-        $this->assertSame($balance, $subscription->balance());
+        $this->assertSame(Money::amount($balance), $subscription->balance());
         $this->assertSame($before, $payment->fresh()->getAttributes());
         $this->assertSame($boxBefore, $box->fresh()->getAttributes());
         $this->assertSame($entryBefore, $payment->boxEntry()->firstOrFail()->getAttributes());
@@ -114,7 +115,7 @@ class BankTransferAuditTest extends TestCase
         $this->assertSame('50.00', $audit->adjustment->currency_amount);
         $this->assertSame(Currency::Dollar, $audit->adjustment->currency);
         $this->assertSame('3.7000', $audit->adjustment->exchange_rate);
-        $this->assertSame(15.0, $subscription->balance());
+        $this->assertSame('15.00', $subscription->balance());
         $this->assertSame('370.00', $box->fresh()->totals()['ILS']);
     }
 
@@ -155,7 +156,7 @@ class BankTransferAuditTest extends TestCase
         $this->post($url, ['bank_amount' => '50', 'reason' => 'نقص'])->assertSessionHasNoErrors();
         $this->assertSame($before, BankTransferAudit::query()->sole()->getAttributes());
         $this->actingAs($otherAuditor)->post($url, ['bank_amount' => '0', 'reason' => 'لم تصل'])->assertSessionHasNoErrors();
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
         $this->assertDatabaseCount('subscription_transactions', 2);
         $this->post(route('payments.box-audits.store', $box), ['confirmed' => true])->assertSessionHasNoErrors();
         $before = BankTransferAudit::query()->sole()->getAttributes();
@@ -166,7 +167,7 @@ class BankTransferAuditTest extends TestCase
         $this->assertDatabaseCount('bank_transfer_audits', 1);
         $this->assertDatabaseCount('subscription_transactions', 3);
         $this->assertSame($before, BankTransferAudit::query()->sole()->getAttributes());
-        $this->assertSame(200.0, $subscription->balance());
+        $this->assertSame('200.00', $subscription->balance());
         $this->assertSame($otherAuditor->id, BankTransferAudit::query()->sole()->audited_by);
     }
 
@@ -208,7 +209,7 @@ class BankTransferAuditTest extends TestCase
     {
         [, $auditor, $subscription, $payment] = $this->payment();
         $this->actingAs($auditor)->post(route('payments.bank-audits.store', $payment->boxEntry), ['bank_amount' => '0'])->assertSessionHasErrors('action');
-        $this->assertSame(100.0, $subscription->balance());
+        $this->assertSame('100.00', $subscription->balance());
         $this->assertDatabaseCount('bank_transfer_audits', 0);
         $this->assertDatabaseCount('subscription_transactions', 2);
     }
@@ -278,13 +279,13 @@ class BankTransferAuditTest extends TestCase
         foreach (['0', '50', '150'] as $index => $amount) {
             $this->post(route('payments.bank-audits.store', $payments[$index]->boxEntry), ['bank_amount' => $amount, 'reason' => 'استثناء في كشف البنك'])->assertSessionHasNoErrors();
         }
-        $this->assertSame(-9800.0, $subscription->balance());
+        $this->assertSame('-9800.00', $subscription->balance());
         $this->assertDatabaseCount('subscription_transactions', 101);
 
         $this->actingAs($approver)->post(route('payments.box-audits.store', $box), ['confirmed' => true])->assertSessionHasNoErrors();
         $this->post(route('payments.box-audits.store', $box), ['confirmed' => true])->assertSessionHasNoErrors();
 
-        $this->assertSame(-9700.0, $subscription->balance());
+        $this->assertSame('-9700.00', $subscription->balance());
         $this->assertDatabaseCount('bank_transfer_audits', 100);
         $this->assertDatabaseCount('subscription_transactions', 104);
         $this->assertDatabaseCount('cash_box_audits', 1);
@@ -322,7 +323,7 @@ class BankTransferAuditTest extends TestCase
             $this->assertSame('Posting unavailable.', $exception->getMessage());
         }
 
-        $this->assertSame(0.0, $subscription->balance());
+        $this->assertSame('0.00', $subscription->balance());
         $this->assertDatabaseCount('subscription_transactions', 3);
         $this->assertDatabaseCount('cash_box_audits', 0);
         $this->assertDatabaseCount('bank_transfer_audits', 2);
@@ -362,7 +363,7 @@ class BankTransferAuditTest extends TestCase
         $this->post(route('payments.box-audits.store', $box), ['confirmed' => true])->assertSessionHasNoErrors();
 
         $this->assertSame($before, $audit->fresh()->getAttributes());
-        $this->assertSame(150.0, $subscription->balance());
+        $this->assertSame('150.00', $subscription->balance());
         $this->assertDatabaseCount('subscription_transactions', 3);
         $this->assertDatabaseCount('cash_box_audits', 1);
     }
@@ -378,7 +379,7 @@ class BankTransferAuditTest extends TestCase
         $this->assertSame('100.00', $audit->bank_amount);
         $this->assertSame('0.00', $audit->difference);
         $this->assertNull($audit->adjustment_transaction_id);
-        $this->assertSame(-170.0, $subscription->balance());
+        $this->assertSame('-170.00', $subscription->balance());
         $this->assertDatabaseCount('subscription_transactions', 2);
     }
 

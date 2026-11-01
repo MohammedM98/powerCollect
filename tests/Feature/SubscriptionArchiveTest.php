@@ -14,6 +14,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Messaging\MessageComposer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
 
@@ -54,7 +55,7 @@ class SubscriptionArchiveTest extends TestCase
 
         $this->actingAs($user)->post(route('subscriptions.archive.store', $subscription), $this->archiveData())->assertSessionHasNoErrors()->assertSessionHas('status', 'subscription-archived');
 
-        $this->assertSame(70.0, $subscription->fresh()->balance());
+        $this->assertSame('70.00', $subscription->fresh()->balance());
         $this->assertSame($chargeBefore, $charge->fresh()->getRawOriginal());
         $this->assertSame($paymentBefore, $payment->fresh()->getRawOriginal());
         $this->assertModelExists($reading);
@@ -193,8 +194,8 @@ class SubscriptionArchiveTest extends TestCase
         $reading = MeterReading::factory()->approved()->create(['subscription_id' => $subscription->id]);
         SubscriptionTransaction::factory()->create(['subscription_id' => $subscription->id, 'amount' => '100.00']);
         $this->actingAs($user)->post(route('subscriptions.archive.store', $subscription), $this->archiveData())->assertSessionHasNoErrors();
-        $this->post(route('subscriptions.payments.store', $subscription), ['amount' => '25.00', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
-        $this->assertSame(75.0, $subscription->fresh()->balance());
+        $this->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '25.00', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
+        $this->assertSame('75.00', $subscription->fresh()->balance());
         $this->assertFalse($user->can('addCharge', $subscription->fresh()));
         $this->assertFalse($user->can('update', $reading->fresh()));
         $this->assertFalse($user->can('updateAsLastReading', $reading->fresh()));

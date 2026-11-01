@@ -241,8 +241,8 @@ function actionItem(entry, action) {
             tone: 'blue',
         },
         delete: {
-            label: `حذف ${noun}`,
-            description: 'حذف نهائي لآخر حركة فقط مع تسجيل السبب في سجل التدقيق',
+            label: entry.type === 'payment' ? 'إرجاع الدفعة' : `إلغاء ${noun}`,
+            description: 'عكس الأثر المالي بقيد مرتبط مع حفظ الحركة الأصلية والسبب',
             icon: 'trash',
             tone: 'red',
         },

@@ -39,19 +39,19 @@ class MobileCollectorWorkflowTest extends TestCase
         $this->getJson(route('mobile.collections.subscriptions.show', $subscription))->assertOk()->assertJsonPath('permissions.payment_methods', ['bank_transfer'])->assertJsonPath('permissions.view_history', true)->assertJsonPath('messaging.can_send', true);
         $payment = ['mobile_operation_id' => (string) Str::uuid(), 'subscription_id' => $subscription->id, 'amount' => '25.00', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'صاحب الحوالة', 'reference_number' => 'MOBILE-WORKFLOW-25', 'collector_confirmed' => true];
         $this->postJson(route('mobile.collections.store'), [...$payment, 'payment_method' => 'cash'])->assertUnprocessable()->assertJsonValidationErrors('payment_method');
-        $this->assertSame(100.0, $subscription->fresh()->balance());
+        $this->assertSame('100.00', $subscription->fresh()->balance());
         $id = $this->postJson(route('mobile.collections.store'), $payment)->assertCreated()->assertJsonPath('balance_after', '75.00')->json('id');
         $this->postJson(route('mobile.collections.store'), $payment)->assertCreated()->assertJsonPath('id', $id);
         $this->assertDatabaseCount('subscription_transactions', 2);
-        $this->assertSame(75.0, $subscription->fresh()->balance());
-        $this->getJson(route('mobile.collections.index'))->assertOk()->assertJsonPath('total', 25)->assertJsonPath('bank_transfer_total', 25)->assertJsonMissingPath('cash_total')->assertJsonCount(1, 'data');
+        $this->assertSame('75.00', $subscription->fresh()->balance());
+        $this->getJson(route('mobile.collections.index'))->assertOk()->assertJsonPath('total', '25.00')->assertJsonPath('bank_transfer_total', '25.00')->assertJsonMissingPath('cash_total')->assertJsonCount(1, 'data');
         $this->getJson(route('mobile.collections.subscriptions.transactions', $subscription))->assertOk()->assertJsonPath('balance', '75.00')->assertJsonPath('data.0.reference_number', 'MOBILE-WORKFLOW-25')->assertJsonPath('data.0.amount', '25.00');
         $message = ['mobile_operation_id' => (string) Str::uuid(), 'body' => 'تم تسجيل دفعتك، شكرًا لك.'];
         $url = route('mobile.collections.subscriptions.messages.store', $subscription);
         $messageId = $this->postJson($url, $message)->assertCreated()->assertJsonPath('status', 'pending')->json('id');
         $this->postJson($url, $message)->assertCreated()->assertJsonPath('id', $messageId);
         $this->getJson(route('mobile.collections.subscriptions.messages.index', $subscription))->assertOk()->assertJsonCount(1, 'messages.data')->assertJsonPath('messages.data.0.kind', 'custom');
-        $this->assertSame(75.0, $subscription->fresh()->balance());
+        $this->assertSame('75.00', $subscription->fresh()->balance());
         Queue::assertPushedOnce(SendSubscriptionMessage::class);
         Http::assertNothingSent();
     }
@@ -76,10 +76,10 @@ class MobileCollectorWorkflowTest extends TestCase
             $keys[] = PermissionKey::RecordTransferPayments;
         }
         $collector->permissions()->sync(Permission::idsFor($keys));
-        $response = $this->withHeader('Authorization', 'Bearer '.MobileAccessToken::issue($collector))->getJson(route('mobile.collections.index'))->assertOk()->assertJsonPath('total', 50)->assertJsonCount(2, 'data');
-        in_array($allowed, ['cash', 'both'], true) ? $response->assertJsonPath('cash_total', 20) : $response->assertJsonMissingPath('cash_total');
-        in_array($allowed, ['bank_transfer', 'both'], true) ? $response->assertJsonPath('bank_transfer_total', 30) : $response->assertJsonMissingPath('bank_transfer_total');
-        $this->assertSame(-50.0, $subscription->fresh()->balance());
+        $response = $this->withHeader('Authorization', 'Bearer '.MobileAccessToken::issue($collector))->getJson(route('mobile.collections.index'))->assertOk()->assertJsonPath('total', '50.00')->assertJsonCount(2, 'data');
+        in_array($allowed, ['cash', 'both'], true) ? $response->assertJsonPath('cash_total', '20.00') : $response->assertJsonMissingPath('cash_total');
+        in_array($allowed, ['bank_transfer', 'both'], true) ? $response->assertJsonPath('bank_transfer_total', '30.00') : $response->assertJsonMissingPath('bank_transfer_total');
+        $this->assertSame('-50.00', $subscription->fresh()->balance());
     }
 
     public function test_revoking_collection_blocks_new_payments_without_breaking_receipt_recovery(): void
@@ -95,6 +95,6 @@ class MobileCollectorWorkflowTest extends TestCase
         $this->postJson(route('mobile.collections.store'), [...$payment, 'mobile_operation_id' => (string) Str::uuid()])->assertForbidden();
         $this->postJson(route('mobile.collections.store'), $payment)->assertCreated()->assertJsonPath('id', $id);
         $this->assertDatabaseCount('subscription_transactions', 1);
-        $this->assertSame(-25.0, $subscription->fresh()->balance());
+        $this->assertSame('-25.00', $subscription->fresh()->balance());
     }
 }

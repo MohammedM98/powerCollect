@@ -10,6 +10,7 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -66,7 +67,7 @@ class LastReadingTest extends TestCase
         $thisWeek = $this->reading('2026-09-18', 1250, 1300);
         $lastWeek->approve($this->accountant);
         $thisWeek->approve($this->accountant);
-        $this->assertSame(50.0, $this->subscription->balance());
+        $this->assertSame('50.00', $this->subscription->balance());
 
         $this->actingAs($this->dataEntry)
             ->put(route('meter-readings.update', $lastWeek), ['current_reading' => 1260])
@@ -75,7 +76,7 @@ class LastReadingTest extends TestCase
 
         $this->assertSame(MeterReadingStatus::Pending, $lastWeek->refresh()->status);
         $this->assertSame(MeterReadingStatus::Pending, $thisWeek->refresh()->status);
-        $this->assertSame(0.0, $this->subscription->balance());
+        $this->assertSame('0.00', $this->subscription->balance());
         $this->assertSame(2, SubscriptionTransaction::where('type', SubscriptionTransaction::TYPE_METER_READING)->whereNotNull('cancelled_at')->count());
         $this->assertSame(
             ['action' => 'meter-reading-needs-reapproval', 'subject' => 'Ahmad — عدّلها Elenora'],
@@ -86,7 +87,7 @@ class LastReadingTest extends TestCase
         $lastWeek->approve($this->accountant);
         $thisWeek->approve($this->accountant);
         $this->assertSame(['30.00', '20.00'], [$lastWeek->amount_due, $thisWeek->amount_due]);
-        $this->assertSame(50.0, $this->subscription->balance());
+        $this->assertSame('50.00', $this->subscription->balance());
     }
 
     public function test_confirming_an_edited_last_reading_approves_both_weeks_again_at_once_in_week_order(): void
@@ -105,7 +106,7 @@ class LastReadingTest extends TestCase
             $this->assertSame([MeterReadingStatus::Approved, $this->dataEntry->id], [$reading->status, $reading->approved_by]);
         }
         $this->assertSame(['20.00', '30.00'], [$lastWeek->amount_due, $thisWeek->amount_due]);
-        $this->assertSame(50.0, $this->subscription->balance());
+        $this->assertSame('50.00', $this->subscription->balance());
         $this->assertSame(0, $this->accountant->notifications()->count());
 
         // Recorded in order: both originals cancelled where they were, then their reversals, then last week's new charge before this week's.
@@ -132,14 +133,14 @@ class LastReadingTest extends TestCase
 
         $this->assertSame([1250.0, MeterReadingStatus::Approved], [$lastWeek->fresh()->current_reading, $lastWeek->fresh()->status]);
         $this->assertSame([1250.0, MeterReadingStatus::Approved], [$thisWeek->fresh()->previous_reading, $thisWeek->fresh()->status]);
-        $this->assertSame($balance, $this->subscription->balance());
+        $this->assertSame(Money::amount($balance), $this->subscription->balance());
 
         $this->put(route('meter-readings.update', $lastWeek), ['current_reading' => 3300, 'next_current_reading' => 3400, 'as_last_reading' => true, 'confirm_unusual' => true])
             ->assertSessionHasNoErrors()
             ->assertSessionHas('status', 'meter-reading-last-corrected-approved');
 
         $this->assertSame([MeterReadingStatus::Approved, MeterReadingStatus::Approved], [$lastWeek->fresh()->status, $thisWeek->fresh()->status]);
-        $this->assertSame(1050.0 + 50.0, $this->subscription->balance());
+        $this->assertSame('1100.00', $this->subscription->balance());
     }
 
     public function test_a_week_still_waiting_for_approval_keeps_waiting_after_the_edit(): void
@@ -153,7 +154,7 @@ class LastReadingTest extends TestCase
             ->assertSessionHas('status', 'meter-reading-last-corrected-approved');
 
         $this->assertSame([MeterReadingStatus::Approved, MeterReadingStatus::Pending], [$lastWeek->fresh()->status, $thisWeek->fresh()->status]);
-        $this->assertSame(20.0, $this->subscription->balance());
+        $this->assertSame('20.00', $this->subscription->balance());
     }
 
     public function test_this_weeks_reading_must_be_typed_again_and_is_recalculated_from_what_was_typed(): void
@@ -178,7 +179,7 @@ class LastReadingTest extends TestCase
 
         $thisWeek->refresh();
         $this->assertSame([1240.0, 1310.0, 70.0, '35.00', MeterReadingStatus::Approved], [$thisWeek->previous_reading, $thisWeek->current_reading, $thisWeek->consumption, $thisWeek->amount_due, $thisWeek->status]);
-        $this->assertSame(20.0 + 35.0, $this->subscription->balance());
+        $this->assertSame('55.00', $this->subscription->balance());
     }
 
     public function test_the_preview_shows_what_the_edit_does_to_both_weeks_without_saving_it(): void

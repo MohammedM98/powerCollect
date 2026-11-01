@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Notifications\BranchClosingNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
@@ -63,7 +64,7 @@ class CashBoxClosingAuditJourneyTest extends TestCase
         $this->actingAs($head)->post(route('subscriptions.transactions.actions.store', [$second, $clearing]), [
             'action' => 'cancel', 'correction_reason' => 'other', 'correction_notes' => 'المقاصة لم تتم',
         ])->assertSessionHasNoErrors();
-        $this->assertSame(100.0, $second->balance());
+        $this->assertSame('100.00', $second->balance());
 
         $this->closingAction($accountant, 'receive-type', null, ['type' => 'cash', 'box_ids' => [$firstCash->boxEntry->cash_box_id, $secondCash->boxEntry->cash_box_id]])->assertSessionHasNoErrors();
         $this->closingAction($firstCollector, 'confirm', $firstCash->boxEntry->cash_box_id)->assertSessionHasErrors('action');
@@ -75,7 +76,7 @@ class CashBoxClosingAuditJourneyTest extends TestCase
         $this->assertSame([], $firstTransfer->fresh()->availableActions($head));
         $lateCash = $this->pay($firstCollector, $first, '10');
         $this->assertNotSame($firstCash->boxEntry->cash_box_id, $lateCash->boxEntry->cash_box_id);
-        $this->assertSame(190.0, $first->balance());
+        $this->assertSame('190.00', $first->balance());
 
         $this->travelTo('2026-10-16 20:59:59');
         $this->artisan('closings:process')->assertSuccessful();
@@ -90,7 +91,7 @@ class CashBoxClosingAuditJourneyTest extends TestCase
         $this->actingAs($auditor)->post(route('payments.bank-audits.store', $firstTransfer->boxEntry), ['bank_amount' => '180', 'reason' => 'وصل أقل من المسجل'])->assertSessionHasNoErrors();
         $this->post(route('payments.bank-audits.store', $secondTransfer->boxEntry), ['bank_amount' => '0', 'reason' => 'لم تصل الحوالة'])->assertSessionHasNoErrors();
         $this->post(route('payments.bank-audits.store', $secondTransfer->boxEntry), ['bank_amount' => '5'])->assertSessionHasErrors('action');
-        $this->assertSame([190.0, 100.0], [$first->balance(), $second->balance()]);
+        $this->assertSame(['190.00', '100.00'], [$first->balance(), $second->balance()]);
         $preview = $this->get(route('payments.cash-boxes', ['branch_id' => $branch->id, 'place' => 'closed', 'week' => '2026-10-10']))->inertiaProps('periodAudit');
         $this->assertSame([6, 2, 2, 0, '170.00', '0.00'], [$preview['boxes'], $preview['transfers'], $preview['exceptions'], $preview['automaticMatches'], $preview['debit'], $preview['credit']]);
         $boxesBeforeApproval = CashBox::query()->orderBy('id')->get()->map->getAttributes()->all();
@@ -101,9 +102,9 @@ class CashBoxClosingAuditJourneyTest extends TestCase
 
         $this->assertDatabaseCount('cash_box_audits', 6);
         $this->assertSame($boxesBeforeApproval, CashBox::query()->orderBy('id')->get()->map->getAttributes()->all());
-        $this->assertSame([210.0, 250.0], [$first->balance(), $second->balance()]);
+        $this->assertSame(['210.00', '250.00'], [$first->balance(), $second->balance()]);
         $this->post(route('payments.bank-audits.store', $firstTransfer->boxEntry), ['bank_amount' => '200', 'reason' => 'تغيير القرار'])->assertSessionHasErrors('action');
-        $this->assertSame(210.0, $first->balance());
+        $this->assertSame('210.00', $first->balance());
         $this->actingAs($head)->get(route('subscriptions.statement', $first))->assertInertia(fn ($page) => $page
             ->where('summary.balance', '210.00')
             ->where('summary.paid', '290.00')
@@ -117,14 +118,14 @@ class CashBoxClosingAuditJourneyTest extends TestCase
         $this->get(route('subscriptions.statement', $second))->assertInertia(fn ($page) => $page
             ->where('entries', fn ($entries): bool => $entries->last()['description'] === 'حوالة لم تصل للبنك؛ تحميل 150 شيكل على المشترك.'));
         $this->get(route('ledger.index', ['period' => 'all']))->assertInertia(fn ($page) => $page
-            ->where('summary.collected', 340)
-            ->where('ledgerTotals.net', 460)
+            ->where('summary.collected', '340.00')
+            ->where('ledgerTotals.net', '460.00')
             ->where('ledgerTotals.cancelledCount', 1));
     }
 
     private function pay(User $collector, Subscription $subscription, string $amount, ?string $reference = null): SubscriptionTransaction
     {
-        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), [
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(),
             'amount' => $amount, 'currency' => 'ILS', 'payment_method' => $reference === null ? 'cash' : 'bank_transfer',
             'bank_name' => 'بنك فلسطين', 'sender_name' => 'صاحب الحساب', 'reference_number' => $reference,
         ])->assertSessionHasNoErrors();

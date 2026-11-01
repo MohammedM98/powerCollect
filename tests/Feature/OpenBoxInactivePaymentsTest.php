@@ -8,7 +8,6 @@ use App\Enums\PermissionKey;
 use App\Models\MobileAccessToken;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
-use App\Models\TransactionDeletion;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
@@ -95,15 +94,17 @@ class OpenBoxInactivePaymentsTest extends TestCase
             'action' => 'delete', 'correction_notes' => 'دفعة مكررة',
         ])->assertSessionHasNoErrors();
 
-        $this->assertModelMissing($removed);
-        $this->assertDatabaseMissing('cash_box_payments', ['subscription_transaction_id' => $removed->id]);
-        $this->assertSame($removed->id, TransactionDeletion::query()->sole()->transactions[0]['id']);
+        $this->assertModelExists($removed);
+        $this->assertTrue($removed->fresh()->isCancelled());
+        $this->assertDatabaseHas('cash_box_payments', ['subscription_transaction_id' => $removed->id]);
+        $this->assertDatabaseHas('subscription_transactions', ['reverses_id' => $removed->id, 'type' => 'refund', 'amount' => '100.00', 'recorded_by' => $head->id]);
+        $this->assertDatabaseCount('transaction_deletions', 0);
         $this->actingAs($collector)->get(route('payments.cash-boxes.show', $box))->assertInertia(fn ($page) => $page
             ->where('box.paymentCount', 1)->where('box.totals.ILS', '25.00')
             ->where('entries.total', 1)->where('entries.data.0.id', $active->boxEntry->id));
     }
 
-    public function test_undoing_a_refund_restores_the_payment_to_its_original_open_box(): void
+    public function test_deleting_a_refund_is_refused_and_does_not_restore_the_payment_to_its_open_box(): void
     {
         [$head, $collector, $subscription] = $this->staffAndSubscription();
         $payment = $this->recordEntry($collector, $subscription, CashBoxType::BankTransfer, '100');
@@ -119,15 +120,16 @@ class OpenBoxInactivePaymentsTest extends TestCase
         $refund = SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_REFUND)->sole();
         $this->post(route('subscriptions.transactions.actions.store', [$subscription, $refund]), [
             'action' => 'delete_reversal', 'correction_notes' => 'الإرجاع سُجّل بالخطأ',
-        ])->assertSessionHasNoErrors();
+        ])->assertSessionHasErrors('action');
 
-        $this->assertSame(SubscriptionTransaction::STATUS_ACTIVE, $payment->refresh()->status);
+        $this->assertSame(SubscriptionTransaction::STATUS_LINKED_CANCELLATION, $payment->refresh()->status);
         $this->assertDatabaseHas('cash_box_payments', ['id' => $entry->id, 'subscription_transaction_id' => $payment->id]);
-        $this->assertSame('100.00', $entry->box->fresh()->totals()['ILS']);
+        $this->assertSame('0.00', $entry->box->fresh()->totals()['ILS']);
+        $this->assertModelExists($refund);
         $this->get(route('payments.cash-boxes', ['place' => 'open']))->assertInertia(fn ($page) => $page
-            ->has('boxes', 1)->where('boxes.0.id', $entry->cash_box_id)->has('boxes.0.payments', 1));
+            ->has('boxes', 0));
         $this->actingAs($collector)->get(route('payments.cash-boxes.show', $entry->box))->assertInertia(fn ($page) => $page
-            ->where('entries.total', 1)->where('box.paymentCount', 1)->where('box.totals.ILS', '100.00'));
+            ->where('entries.total', 0)->where('box.paymentCount', 0)->where('box.totals.ILS', '0.00'));
     }
 
     public function test_closed_entries_from_another_branch_never_leak_into_the_open_entry_list(): void

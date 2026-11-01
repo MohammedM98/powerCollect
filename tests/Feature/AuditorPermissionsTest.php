@@ -95,7 +95,7 @@ class AuditorPermissionsTest extends TestCase
 
         $this->assertNull(BankTransferAudit::sole()->posted_at);
         $this->assertDatabaseCount('cash_box_audits', 0);
-        $this->assertSame(-100.0, $subscription->balance());
+        $this->assertSame('-100.00', $subscription->balance());
     }
 
     public function test_an_approver_can_finalize_a_box_without_permission_to_edit_transfer_reviews(): void
@@ -109,7 +109,7 @@ class AuditorPermissionsTest extends TestCase
 
         $this->assertDatabaseHas('cash_box_audits', ['cash_box_id' => $box->id, 'audited_by' => $auditor->id]);
         $this->assertSame('matched', BankTransferAudit::sole()->outcome);
-        $this->assertSame(-100.0, $subscription->balance());
+        $this->assertSame('-100.00', $subscription->balance());
     }
 
     public function test_revoking_the_master_permission_removes_access_even_with_the_auditor_role(): void

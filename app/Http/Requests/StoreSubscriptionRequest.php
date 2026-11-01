@@ -8,6 +8,7 @@ use App\Enums\SubscriptionStatus;
 use App\Models\SubscriberProfile;
 use App\Models\Subscription;
 use App\Support\DailySeries;
+use App\Support\Money;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -136,8 +137,8 @@ class StoreSubscriptionRequest extends FormRequest
             return;
         }
 
-        $stored = $subscription->subscription_fee === null ? null : (float) $subscription->subscription_fee;
-        $sent = $this->filled('subscription_fee') ? (float) $this->input('subscription_fee') : null;
+        $stored = $subscription->subscription_fee === null ? null : Money::amount($subscription->subscription_fee);
+        $sent = $this->filled('subscription_fee') ? Money::amount($this->input('subscription_fee')) : null;
 
         if ($sent !== $stored) {
             $validator->errors()->add('subscription_fee', 'رسوم الاشتراك حُمّلت على الحساب ولا يمكن تغيير مبلغها من هنا.');

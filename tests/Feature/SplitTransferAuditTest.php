@@ -11,6 +11,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\BranchDomainScope;
+use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\TestWith;
 use RuntimeException;
@@ -100,8 +101,8 @@ class SplitTransferAuditTest extends TestCase
 
         $this->assertDatabaseCount('cash_box_audits', 1);
         $this->assertSame(2, BankTransferAudit::query()->whereNotNull('posted_at')->count());
-        $this->assertSame(70.0, $original->subscription->balance());
-        $this->assertSame(40.0, $split->payments[1]->subscription->balance());
+        $this->assertSame('70.00', $original->subscription->balance());
+        $this->assertSame('40.00', $split->payments[1]->subscription->balance());
     }
 
     #[TestWith(['0', '0', 100.0, 100.0])]
@@ -118,14 +119,14 @@ class SplitTransferAuditTest extends TestCase
         $this->post(route('payments.bank-audits.store', $split->payments[1]->boxEntry), $payload)->assertSessionHasNoErrors();
         $this->post(route('payments.bank-audits.store', $split->payments[0]->boxEntry), $payload)->assertSessionHasNoErrors();
         $this->assertDatabaseCount('bank_transfer_audits', 2);
-        $this->assertSame(60.0, $split->payments[0]->subscription->balance());
-        $this->assertSame(40.0, $split->payments[1]->subscription->balance());
+        $this->assertSame('60.00', $split->payments[0]->subscription->balance());
+        $this->assertSame('40.00', $split->payments[1]->subscription->balance());
         $this->post(route('payments.box-audits.store', $box), ['confirmed' => true])->assertSessionHasNoErrors();
         $this->post(route('payments.box-audits.store', $box), ['confirmed' => true])->assertSessionHasNoErrors();
         $this->post(route('payments.bank-audits.store', $split->payments[1]->boxEntry), $payload)->assertSessionHasNoErrors();
 
-        $this->assertSame($firstBalance, $split->payments[0]->subscription->balance());
-        $this->assertSame($secondBalance, $split->payments[1]->subscription->balance());
+        $this->assertSame(Money::amount($firstBalance), $split->payments[0]->subscription->balance());
+        $this->assertSame(Money::amount($secondBalance), $split->payments[1]->subscription->balance());
         $this->assertSame(2, BankTransferAudit::query()->whereNotNull('posted_at')->count());
         $this->assertSame($before, $split->fresh('payments')->payments->map(fn (SubscriptionTransaction $part): array => $part->getAttributes())->all());
         $this->assertDatabaseCount('cash_box_audits', 1);
@@ -173,8 +174,8 @@ class SplitTransferAuditTest extends TestCase
         $this->post(route('payments.period-audits.store'), $approval)->assertSessionHasErrors('action');
 
         $this->assertDatabaseCount('cash_box_audits', 0);
-        $this->assertSame(60.0, $split->payments[0]->subscription->balance());
-        $this->assertSame(40.0, $split->payments[1]->subscription->balance());
+        $this->assertSame('60.00', $split->payments[0]->subscription->balance());
+        $this->assertSame('40.00', $split->payments[1]->subscription->balance());
         $this->assertSame(0, BankTransferAudit::query()->whereNotNull('posted_at')->count());
     }
 
@@ -201,8 +202,8 @@ class SplitTransferAuditTest extends TestCase
         $this->post(route('payments.bank-audits.store', $split->payments[1]->boxEntry), $changed)->assertSessionHasErrors('action');
         $this->post(route('payments.box-audits.store', $split->payments[1]->boxEntry->box), ['confirmed' => true])->assertSessionHasNoErrors();
 
-        $this->assertSame(100.0, $split->payments[0]->subscription->balance());
-        $this->assertSame(100.0, $split->payments[1]->subscription->balance());
+        $this->assertSame('100.00', $split->payments[0]->subscription->balance());
+        $this->assertSame('100.00', $split->payments[1]->subscription->balance());
         $this->assertSame(2, SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT)->count());
         $this->assertDatabaseCount('cash_box_audits', 2);
     }
@@ -250,8 +251,8 @@ class SplitTransferAuditTest extends TestCase
         $this->assertDatabaseCount('cash_box_audits', 0);
         $this->assertSame(0, BankTransferAudit::query()->whereNotNull('posted_at')->count());
         $this->assertDatabaseCount('subscription_transactions', 4);
-        $this->assertSame(60.0, $split->payments[0]->subscription->balance());
-        $this->assertSame(40.0, $split->payments[1]->subscription->balance());
+        $this->assertSame('60.00', $split->payments[0]->subscription->balance());
+        $this->assertSame('40.00', $split->payments[1]->subscription->balance());
     }
 
     public function test_a_branch_domain_cannot_hide_a_foreign_share_from_an_auditor(): void

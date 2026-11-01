@@ -64,9 +64,9 @@ class BankTransferAuditing
             }
             $this->workflow->require(! $box->audit()->exists(), 'اكتمل تدقيق هذا الصندوق.');
             $recorded = abs(Closing::cents($payment->currency_amount ?? $payment->amount));
-            $rate = (float) ($payment->exchange_rate ?? 1);
-            $this->workflow->require($rate > 0, 'سعر صرف الدفعة غير صالح للتدقيق.');
-            $difference = abs(Closing::cents($payment->amount)) - (int) round($amountInCents * $rate);
+            $rate = $payment->exchange_rate ?? '1.0000';
+            $this->workflow->require(Money::decimal($rate)->isPositive(), 'سعر صرف الدفعة غير صالح للتدقيق.');
+            $difference = abs(Closing::cents($payment->amount)) - Closing::cents(Money::multiply(Closing::money($amountInCents), $rate));
             $this->workflow->require($difference === 0 || filled($reason), 'اكتب سبب فرق التدقيق.');
             $values = [
                 'cash_box_payment_id' => $current->id, 'audited_by' => $actor->id,

@@ -13,6 +13,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
 
@@ -73,8 +74,8 @@ class SharedProfileSubscriptionsTest extends TestCase
         $this->assertSame($box->id, $additional->meter_box_id);
         $this->assertSame(0.0, $additional->initial_reading);
         $this->assertSame(12.0, (float) $additional->minimum_charge);
-        $this->assertSame(100.0, $source->balance());
-        $this->assertSame(25.0, $additional->balance());
+        $this->assertSame('100.00', $source->balance());
+        $this->assertSame('25.00', $additional->balance());
         $this->assertSame(0, $additional->meterReadings()->count());
         $this->assertDatabaseCount('subscriber_profiles', 1);
         $this->assertDatabaseHas('subscription_transactions', [
@@ -192,7 +193,7 @@ class SharedProfileSubscriptionsTest extends TestCase
         $actor = User::factory()->branchAdmin()->create();
         $subscription = Subscription::factory()->create(['branch_id' => $actor->branch_id]);
 
-        $this->actingAs($actor)->post(route('subscriptions.payments.store', $subscription), [
+        $this->actingAs($actor)->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(),
             'amount' => '15',
             'currency' => 'ILS',
             'payment_method' => 'cash',
@@ -350,7 +351,7 @@ class SharedProfileSubscriptionsTest extends TestCase
             'full_name' => 'Mohammed Hamdan',
             'subscription_name' => 'Mohammed Hamdan house',
         ]);
-        $this->actingAs($actor)->post(route('subscriptions.payments.store', $house), [
+        $this->actingAs($actor)->post(route('subscriptions.payments.store', $house), ['payment_token' => (string) Str::uuid(),
             'amount' => 15,
             'currency' => 'ILS',
             'payment_method' => 'cash',

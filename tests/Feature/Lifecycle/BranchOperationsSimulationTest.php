@@ -350,7 +350,7 @@ class BranchOperationsSimulationTest extends TestCase
         }
         $count = SubscriptionTransaction::query()->count();
 
-        $this->submit('retired late payment flag cannot create another payment', fn () => $this->actingAs($this->collector)->post(route('subscriptions.payments.store', $payment['subscription']), [...$payment['payload'], 'late_payment' => true]), mustSucceed: false);
+        $this->submit('retired late payment flag cannot create another payment', fn () => $this->actingAs($this->collector)->post(route('subscriptions.payments.store', $payment['subscription']), ['payment_token' => (string) Str::uuid(), ...$payment['payload'], 'late_payment' => true]), mustSucceed: false);
 
         $this->assertSame($count, SubscriptionTransaction::query()->count(), $this->failure('replaying a late payment recorded it twice'));
     }
@@ -366,6 +366,7 @@ class BranchOperationsSimulationTest extends TestCase
             return null;
         }
         $payload = [
+            'payment_token' => (string) Str::uuid(),
             'amount' => $this->amountAround($subscription->balance()), 'bank_name' => self::TRANSFER_BANK, 'sender_name' => 'مرسل المحاكاة',
             'confirm_overpayment' => $this->chance(60), ...$details,
         ];
@@ -446,23 +447,23 @@ class BranchOperationsSimulationTest extends TestCase
             return;
         }
         $line = SubscriptionTransaction::query()->findOrFail($entry['id']);
-        $before = $subscription->balance();
+        $before = $this->cents($subscription->balance());
         $payload = $this->actionPayload($action, $line);
 
         $this->submit("{$action} on line {$line->id} ({$line->type} {$line->amount}, {$line->status})", fn () => $this->actingAs($this->head)->post(route('subscriptions.transactions.actions.store', [$subscription, $line]), $payload), mustSucceed: true);
 
         $expected = match (TransactionAction::from($action)) {
-            TransactionAction::Edit => $before - (float) $line->amount + (float) $payload['amount'],
+            TransactionAction::Edit => $before - $this->cents($line->amount) + $this->cents((string) $payload['amount']),
             TransactionAction::EditMetadata => $before,
-            TransactionAction::Refund => $line->split_payment_id === null ? $before + (float) $entry['refundableAmount'] : null,
+            TransactionAction::Refund => $line->split_payment_id === null ? $before + $this->cents((string) $entry['refundableAmount']) : null,
             // Cancelling takes back the line, and a weekly reading's standing discount with it; it never brings back a line it corrected.
-            TransactionAction::Cancel => $before - (float) $line->amount + (float) ($entry['readingDiscount'] ?? 0),
-            TransactionAction::Delete => $before - (float) $entry['actionEffects']['delete'],
-            TransactionAction::DeleteReversal => $before - (float) $entry['actionEffects']['delete_reversal'],
-            TransactionAction::DeleteTree => $before - (float) $entry['actionEffects']['delete_tree'],
+            TransactionAction::Cancel => $before - $this->cents($line->amount) + $this->cents((string) ($entry['readingDiscount'] ?? '0')),
+            TransactionAction::Delete => $before - $this->cents((string) $entry['actionEffects']['delete']),
+            TransactionAction::DeleteReversal => $before - $this->cents((string) $entry['actionEffects']['delete_reversal']),
+            TransactionAction::DeleteTree => $before - $this->cents((string) $entry['actionEffects']['delete_tree']),
         };
         if ($expected !== null) {
-            $this->assertSame(round($expected, 2), $subscription->balance(), $this->failure("{$action} on line {$line->id} did not leave the balance the statement previewed"));
+            $this->assertSame($this->money($expected), $subscription->balance(), $this->failure("{$action} on line {$line->id} did not leave the balance the statement previewed"));
         }
     }
 
@@ -775,7 +776,7 @@ class BranchOperationsSimulationTest extends TestCase
             $statement = $this->statement($subscription);
             $summary = $statement['summary'];
             $this->assertSame($this->money($runningInCents), $summary['balance'], $this->failure("the statement of {$subscription->id} shows another balance than its lines"));
-            $this->assertSame(round($runningInCents / 100, 2), $subscription->balance(), $this->failure("the balance of {$subscription->id} differs from its lines"));
+            $this->assertSame($this->money($runningInCents), $subscription->balance(), $this->failure("the balance of {$subscription->id} differs from its lines"));
             $this->assertSame($summary['balance'], $this->money($this->cents($summary['charged']) - $this->cents($summary['paid']) - $this->cents($summary['discounted']) - $this->cents($summary['cleared'])), $this->failure("the statement summary of {$subscription->id} does not add up to its balance"));
             $this->assertSame($lines->modelKeys(), collect($statement['entries'])->pluck('id')->all(), $this->failure("the statement of {$subscription->id} does not list every line once, in order"));
             foreach ($statement['entries'] as $entry) {
@@ -1053,12 +1054,16 @@ class BranchOperationsSimulationTest extends TestCase
 
     private function cents(string $amount): int
     {
-        return (int) round((float) $amount * 100);
+        $negative = str_starts_with($amount, '-');
+        [$whole, $fraction] = array_pad(explode('.', ltrim($amount, '-'), 2), 2, '');
+        $cents = ((int) $whole * 100) + (int) str_pad($fraction, 2, '0');
+
+        return $negative ? -$cents : $cents;
     }
 
     private function money(int $cents): string
     {
-        return number_format($cents / 100, 2, '.', '');
+        return ($cents < 0 ? '-' : '').intdiv(abs($cents), 100).'.'.str_pad((string) (abs($cents) % 100), 2, '0', STR_PAD_LEFT);
     }
 
     private function failure(string $message): string

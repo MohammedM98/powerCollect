@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\Closing;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use Carbon\CarbonImmutable;
@@ -214,6 +215,6 @@ class DebtAging
 
     private static function cents(string $amount): int
     {
-        return (int) round((float) $amount * 100);
+        return Closing::cents($amount);
     }
 }

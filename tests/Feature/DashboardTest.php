@@ -30,11 +30,11 @@ class DashboardTest extends TestCase
             ->where('branchScope.level', 'all')
             ->where('branchScope.name', 'جميع الفروع')
             ->where('branchScope.branches', Branch::count())
-            ->where('sections.collections.total', 140)
+            ->where('sections.collections.total', '140.00')
             ->where('sections.collections.byBranch.0.name', $north->name)
             ->where('sections.collections.byBranch.0.share', 71)
             ->where('branchOptions', fn ($options): bool => collect($options)->pluck('value')->contains($south->id))
-            ->where('latestPayments.sum', 140));
+            ->where('latestPayments.sum', '140.00'));
     }
 
     public function test_the_super_admin_can_narrow_the_figures_to_one_branch(): void
@@ -49,7 +49,7 @@ class DashboardTest extends TestCase
             ->where('branchScope.level', 'branch')
             ->where('branchScope.name', $south->name)
             ->where('filters.days', 7)
-            ->where('sections.collections.total', 40)
+            ->where('sections.collections.total', '40.00')
             ->where('sections.collections.byBranch', null)
             ->has('latestPayments.rows.data', 1));
     }
@@ -88,7 +88,7 @@ class DashboardTest extends TestCase
             ->where('scope.label', $own->name)
             ->where('branchScope', null)
             ->where('branchOptions', null)
-            ->where('sections.collections.total', 75)
+            ->where('sections.collections.total', '75.00')
             ->where('sections.subscriptions.active', 1)
             ->has('latestPayments.rows.data', 1));
     }
@@ -120,6 +120,26 @@ class DashboardTest extends TestCase
         $this->get(route('dashboard', ['method' => 'transfer']))->assertInertia(fn ($page) => $page->has('latestPayments.rows.data', 0));
     }
 
+    public function test_fractional_collections_and_payment_rows_keep_exact_decimal_strings(): void
+    {
+        $branch = Branch::factory()->create();
+        $manager = User::factory()->branchAdmin()->create(['branch_id' => $branch->id]);
+        $this->pay($branch, 0.10);
+        $this->pay($branch, 0.20);
+
+        $this->actingAs($manager)->get(route('dashboard'))->assertInertia(fn ($page) => $page
+            ->where('sections.collections.total', '0.30')
+            ->where('sections.collections.cash', '0.30')
+            ->where('sections.collections.transfers', '0.00')
+            ->where('sections.collections.previousTotal', '0.00')
+            ->where('sections.collections.change', null)
+            ->where('sections.collections.today.total', '0.30')
+            ->where('sections.collections.byCollector.0.total', '0.20')
+            ->where('sections.collections.byCollector.0.share', 67)
+            ->where('latestPayments.sum', '0.30')
+            ->where('latestPayments.rows.data.0.amount', '0.20'));
+    }
+
     public function test_the_reading_week_counts_approved_waiting_and_missing_readings_and_debts_follow_the_page(): void
     {
         $branch = Branch::factory()->create();
@@ -147,7 +167,7 @@ class DashboardTest extends TestCase
 
         $this->actingAs($manager)->get(route('dashboard'))->assertInertia(fn ($page) => $page
             ->has('sections.collections.byCollector', 2)
-            ->where('sections.collections.byCollector.0.total', 90)
+            ->where('sections.collections.byCollector.0.total', '90.00')
             ->where('sections.collections.byCollector.0.share', 75)
             ->where('sections.collections.byBranch', null));
     }
@@ -158,7 +178,7 @@ class DashboardTest extends TestCase
         $manager = User::factory()->branchAdmin()->create(['branch_id' => $branch->id]);
         $small = Subscription::factory()->create(['branch_id' => $branch->id, 'full_name' => 'Small debtor']);
         $large = Subscription::factory()->create(['branch_id' => $branch->id, 'full_name' => 'Large debtor']);
-        foreach ([[$small, '20.00'], [$large, '80.00']] as [$subscription, $amount]) {
+        foreach ([[$small, '20.01'], [$large, '80.02']] as [$subscription, $amount]) {
             SubscriptionTransaction::factory()->for($subscription)->create([
                 'type' => 'charge', 'source_key' => 'charge:'.$subscription->id, 'amount' => $amount, 'currency_amount' => $amount, 'recorded_by' => $manager->id,
             ]);
@@ -166,9 +186,10 @@ class DashboardTest extends TestCase
 
         $this->actingAs($manager)->get(route('dashboard'))->assertInertia(fn ($page) => $page
             ->loadDeferredProps(fn ($reload) => $reload
-                ->where('debts.total', 100)
+                ->where('debts.total', '100.03')
+                ->where('debts.older', '0.00')
                 ->where('debts.top.0.subscriptionId', $large->id)
-                ->where('debts.top.0.balance', 80)
+                ->where('debts.top.0.balance', '80.02')
                 ->where('debts.top.1.subscriptionId', $small->id)));
     }
 

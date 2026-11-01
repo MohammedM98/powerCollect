@@ -44,7 +44,7 @@ class ReadingAdjustmentTest extends TestCase
         $this->assertSame(230, $current->fresh()->adjustment_history[0]['before']['currentReading']);
         $this->assertSame(SubscriptionTransaction::STATUS_CANCELLED, $oldCurrentCharge->fresh()->status);
         $this->assertFalse($current->fresh()->approve($actor, true));
-        $this->assertSame(2.5, $subscription->fresh()->balance());
+        $this->assertSame('2.50', $subscription->fresh()->balance());
         $this->get(route('subscriptions.index'))->assertInertia(fn ($page) => $page
             ->where('subscriptions.data.0.meterReadings.0.requiresReentry', true)
             ->where('subscriptions.data.0.meterReadings.0.canUpdateUnitPrice', false));
@@ -54,7 +54,7 @@ class ReadingAdjustmentTest extends TestCase
         $this->put(route('meter-readings.update', $current), ['current_reading' => 225])->assertSessionHasNoErrors();
         $this->assertSame([false, 20.0, '10.00'], [$current->fresh()->requires_reentry, $current->fresh()->consumption, $current->fresh()->amount_due]);
         $this->assertTrue($current->fresh()->approve($actor));
-        $this->assertSame(12.5, $subscription->fresh()->balance());
+        $this->assertSame('12.50', $subscription->fresh()->balance());
     }
 
     public function test_a_reset_preserves_the_old_bill_and_starts_the_next_week_from_zero(): void
@@ -100,7 +100,7 @@ class ReadingAdjustmentTest extends TestCase
         ])->assertSessionHasNoErrors();
 
         $this->assertSame($oldCharge, $last->fresh()->chargeLine->getAttributes());
-        $this->assertSame(5.0, $subscription->fresh()->balance());
+        $this->assertSame('5.00', $subscription->fresh()->balance());
         $this->assertTrue($current->fresh()->requires_reentry);
         $this->assertSame(0.0, $current->fresh()->previous_reading);
 
@@ -123,7 +123,7 @@ class ReadingAdjustmentTest extends TestCase
 
         $this->assertNull($last->fresh()->next_previous_reading);
         $this->assertNull($last->fresh()->adjustment_history);
-        $this->assertSame(5.0, $subscription->balance());
+        $this->assertSame('5.00', $subscription->balance());
     }
 
     #[TestWith([205, false])]
@@ -137,7 +137,7 @@ class ReadingAdjustmentTest extends TestCase
         ])->assertOk()->assertJsonPath('reset', $reset);
 
         $this->assertSame(210.0, $last->fresh()->current_reading);
-        $this->assertSame(5.0, $subscription->balance());
+        $this->assertSame('5.00', $subscription->balance());
     }
 
     #[TestWith([199])]
@@ -152,7 +152,7 @@ class ReadingAdjustmentTest extends TestCase
             'adjustment_type' => 'correction', 'current_reading' => $value, 'expected_reading' => 210,
         ])->assertSessionHasErrors(['current_reading' => 'تصحيح القراءة لا يمكن أن يقل عن بداية الفترة (200). عند تغيير العداد اختر «عداد جديد / مستبدل».']);
         $this->assertNull($last->fresh()->next_previous_reading);
-        $this->assertSame(5.0, $subscription->balance());
+        $this->assertSame('5.00', $subscription->balance());
     }
 
     #[TestWith([205])]
@@ -169,7 +169,7 @@ class ReadingAdjustmentTest extends TestCase
         $this->assertSame($value, $last->fresh()->nextPreviousReading());
         $this->assertSame(210.0, $last->fresh()->current_reading);
         $this->assertSame('تركيب عداد بديل', $last->fresh()->adjustment_history[0]['reason']);
-        $this->assertSame(5.0, $subscription->balance());
+        $this->assertSame('5.00', $subscription->balance());
     }
 
     public function test_the_adjustment_purpose_must_be_selected_and_meter_changes_require_a_reason_before_previewing(): void
@@ -185,7 +185,7 @@ class ReadingAdjustmentTest extends TestCase
             'adjustment_type' => 'meter_change', 'current_reading' => 205, 'expected_reading' => 210,
         ])->assertUnprocessable()->assertJsonValidationErrors('reason');
         $this->assertNull($last->fresh()->adjustment_history);
-        $this->assertSame(5.0, $subscription->balance());
+        $this->assertSame('5.00', $subscription->balance());
     }
 
     public function test_an_old_current_charge_cannot_be_reinstated_while_its_reading_is_awaiting_reentry(): void
@@ -197,12 +197,14 @@ class ReadingAdjustmentTest extends TestCase
             'adjustment_type' => 'correction', 'current_reading' => 205, 'expected_reading' => 210,
         ])->assertSessionHasNoErrors();
         $reversal = $subscription->transactions()->where('reverses_id', $charge->id)->sole();
+        $transactionsBefore = $subscription->transactions()->orderBy('id')->get()->map->getAttributes()->all();
 
         $this->actingAs(User::factory()->superAdmin()->create())->post(route('subscriptions.transactions.actions.store', [$subscription, $reversal]), [
             'action' => 'delete_reversal', 'correction_notes' => 'محاولة إعادة المبلغ السابق',
-        ])->assertSessionHasErrors(['action' => 'أدخل القراءة الحالية من جديد قبل إعادة مبلغ القراءة السابق.']);
+        ])->assertSessionHasErrors(['action' => 'هذا الإجراء غير مسموح لهذه الحركة.']);
 
         $this->assertModelExists($reversal);
+        $this->assertSame($transactionsBefore, $subscription->transactions()->orderBy('id')->get()->map->getAttributes()->all());
         $this->assertTrue($current->fresh()->requires_reentry);
         $this->assertSame(SubscriptionTransaction::STATUS_CANCELLED, $charge->fresh()->status);
     }
@@ -235,7 +237,7 @@ class ReadingAdjustmentTest extends TestCase
         ])->assertSessionHasErrors('current_reading');
 
         $this->assertSame(210.0, $last->fresh()->current_reading);
-        $this->assertSame(5.0, $subscription->balance());
+        $this->assertSame('5.00', $subscription->balance());
     }
 
     public function test_adjusting_requires_the_previous_reading_permission_and_branch_and_latest_row(): void
@@ -271,7 +273,7 @@ class ReadingAdjustmentTest extends TestCase
 
         $this->assertSame(210.0, $last->fresh()->current_reading);
         $this->assertNull($last->fresh()->adjustment_history);
-        $this->assertSame(5.0, $subscription->balance());
+        $this->assertSame('5.00', $subscription->balance());
     }
 
     public function test_unauthenticated_and_auditor_requests_cannot_adjust_readings(): void
@@ -301,7 +303,7 @@ class ReadingAdjustmentTest extends TestCase
 
         $this->assertSame($readingBefore, $old->fresh()->getAttributes());
         $this->assertSame($transactionsBefore, $subscription->transactions()->get()->map->getAttributes()->all());
-        $this->assertSame(5.0, $subscription->fresh()->balance());
+        $this->assertSame('5.00', $subscription->fresh()->balance());
     }
 
     #[TestWith(['2026-09-04', false, false])]
@@ -349,7 +351,7 @@ class ReadingAdjustmentTest extends TestCase
         $this->assertSame($lastBefore, $last->fresh()->getAttributes());
         $this->assertSame(0.0, $current->fresh()->nextPreviousReading());
         $this->assertSame($transactionsBefore, $subscription->transactions()->get()->map->getAttributes()->all());
-        $this->assertSame(15.0, $subscription->fresh()->balance());
+        $this->assertSame('15.00', $subscription->fresh()->balance());
     }
 
     public function test_an_older_reading_is_viewable_but_not_offered_for_editing_to_the_super_admin(): void

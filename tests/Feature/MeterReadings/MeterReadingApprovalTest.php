@@ -220,13 +220,13 @@ class MeterReadingApprovalTest extends TestCase
         $charge = SubscriptionTransaction::where('type', SubscriptionTransaction::TYPE_METER_READING)->sole();
         $this->assertSame(['reading_corrected', $dataEntry->id], [$charge->cancellation_reason->value, $charge->cancelled_by]);
         $this->assertSame('-42.50', SubscriptionTransaction::where('reverses_id', $charge->id)->sole()->amount);
-        $this->assertSame(0.0, $reading->subscription->balance());
+        $this->assertSame('0.00', $reading->subscription->balance());
 
         // Approving it again charges the corrected amount, as the correction of the cancelled line.
         $reading->approve($this->accountant);
         $corrected = SubscriptionTransaction::where('type', SubscriptionTransaction::TYPE_METER_READING)->whereNull('cancelled_at')->sole();
         $this->assertSame(['40.00', $charge->id], [$corrected->amount, $corrected->corrects_id]);
-        $this->assertSame(40.0, $reading->subscription->balance());
+        $this->assertSame('40.00', $reading->subscription->balance());
     }
 
     public function test_the_people_who_approve_are_told_when_an_approved_reading_is_corrected(): void

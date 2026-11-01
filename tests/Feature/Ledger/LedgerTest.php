@@ -8,6 +8,7 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -59,7 +60,7 @@ class LedgerTest extends TestCase
                 ->component('Ledger/Index')
                 ->where('scopeLabel', 'فرع الكرادة')
                 ->where('entries.data', fn ($entries): bool => collect($entries)->pluck('subscriptionName')->all() === ['Ahmad Nasser'])
-                ->where('summary.total', 50)
+                ->where('summary.total', '50.00')
                 ->where('filterOptions', fn ($groups): bool => ! collect($groups)->contains('key', 'branch_id')));
     }
 
@@ -74,15 +75,15 @@ class LedgerTest extends TestCase
             ->get(route('ledger.index'))
             ->assertInertia(fn ($page) => $page
                 ->where('scopeLabel', 'كل الفروع')
-                ->where('summary.total', 125)
+                ->where('summary.total', '125.00')
                 ->where('branchTotals', [
-                    ['id' => $otherBranch->id, 'name' => 'فرع المنصور', 'total' => 75, 'count' => 1],
-                    ['id' => $this->branch->id, 'name' => 'فرع الكرادة', 'total' => 50, 'count' => 1],
+                    ['id' => $otherBranch->id, 'name' => 'فرع المنصور', 'total' => '75.00', 'count' => 1],
+                    ['id' => $this->branch->id, 'name' => 'فرع الكرادة', 'total' => '50.00', 'count' => 1],
                 ]));
 
         $this->actingAs($superAdmin)
             ->get(route('ledger.index', ['filter' => ['branch_id' => $otherBranch->id]]))
-            ->assertInertia(fn ($page) => $page->where('scopeLabel', 'فرع المنصور')->where('summary.total', 75));
+            ->assertInertia(fn ($page) => $page->where('scopeLabel', 'فرع المنصور')->where('summary.total', '75.00'));
     }
 
     public function test_the_headline_sums_the_charges_and_reports_what_was_collected_beside_them(): void
@@ -97,11 +98,11 @@ class LedgerTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->where('side', 'debit')
                 ->where('entries.total', 4)
-                ->where('summary.total', 150)
+                ->where('summary.total', '150.00')
                 ->where('summary.count', 2)
-                ->where('summary.average', 75)
-                ->where('summary.largest', 120)
-                ->where('summary.collected', 100));
+                ->where('summary.average', '75.00')
+                ->where('summary.largest', '120.00')
+                ->where('summary.collected', '100.00'));
     }
 
     /**
@@ -124,7 +125,7 @@ class LedgerTest extends TestCase
             ->get(route('ledger.index', ['filter' => ['type' => $type]]))
             ->assertInertia(fn ($page) => $page
                 ->where('side', $side)
-                ->where('summary.total', $expected[0])
+                ->where('summary.total', Money::amount($expected[0]))
                 ->where('summary.count', $expected[1]));
     }
 
@@ -139,8 +140,8 @@ class LedgerTest extends TestCase
             ->get(route('ledger.index', ['period' => 'today']))
             ->assertInertia(fn ($page) => $page
                 ->where('period', 'today')
-                ->where('summary.total', 50)
-                ->where('summary.previousTotal', 25)
+                ->where('summary.total', '50.00')
+                ->where('summary.previousTotal', '25.00')
                 ->where('summary.changePct', 100)
                 ->where('entries.data', fn ($entries): bool => collect($entries)->map(fn ($entry) => $entry['day'].' '.$entry['time'])->all()
                     === ['2026-09-20 11:00', '2026-09-20 00:30']));
@@ -153,12 +154,12 @@ class LedgerTest extends TestCase
 
         $this->actingAs($this->branchAdmin)
             ->get(route('ledger.index', ['period' => 'forever']))
-            ->assertInertia(fn ($page) => $page->where('period', '30')->where('summary.total', 10)->has('dailyTotals', 30));
+            ->assertInertia(fn ($page) => $page->where('period', '30')->where('summary.total', '10.00')->has('dailyTotals', 30));
 
         $this->actingAs($this->branchAdmin)
             ->get(route('ledger.index', ['period' => 'all']))
             ->assertInertia(fn ($page) => $page
-                ->where('summary.total', 50)
+                ->where('summary.total', '50.00')
                 ->where('summary.previousTotal', null)
                 ->where('summary.changePct', null));
     }
@@ -173,8 +174,8 @@ class LedgerTest extends TestCase
             ->get(route('ledger.index', ['period' => '7']))
             ->assertInertia(fn ($page) => $page
                 ->has('dailyTotals', 7)
-                ->where('dailyTotals.4', ['date' => '2026-09-18', 'value' => 150, 'count' => 2])
-                ->where('dailyTotals.6', ['date' => '2026-09-20', 'value' => 0, 'count' => 0]));
+                ->where('dailyTotals.4', ['date' => '2026-09-18', 'value' => '150.00', 'count' => 2])
+                ->where('dailyTotals.6', ['date' => '2026-09-20', 'value' => '0.00', 'count' => 0]));
     }
 
     public function test_each_listed_day_carries_its_full_charges_and_credits(): void
@@ -188,8 +189,8 @@ class LedgerTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->where('today', '2026-09-20')
                 ->where('dayTotals', [
-                    '2026-09-20' => ['count' => 2, 'charged' => 120, 'credited' => 100],
-                    '2026-09-19' => ['count' => 1, 'charged' => 30, 'credited' => 0],
+                    '2026-09-20' => ['count' => 2, 'charged' => '120.00', 'credited' => '100.00'],
+                    '2026-09-19' => ['count' => 1, 'charged' => '30.00', 'credited' => '0.00'],
                 ]));
     }
 
@@ -239,7 +240,7 @@ class LedgerTest extends TestCase
         $this->actingAs($this->branchAdmin)
             ->get('/ledger?period[]=7&filter[type][]=payment&filter[recorded_by][]=1&sort=amount;drop&statement[]=1')
             ->assertOk()
-            ->assertInertia(fn ($page) => $page->where('period', '30')->where('summary.total', 50)->where('statement', null));
+            ->assertInertia(fn ($page) => $page->where('period', '30')->where('summary.total', '50.00')->where('statement', null));
     }
 
     public function test_only_the_super_admin_and_the_branchs_own_staff_see_a_branchs_figures(): void
@@ -266,13 +267,13 @@ class LedgerTest extends TestCase
 
         $this->actingAs($this->branchAdmin)->get(route('ledger.index'))
             ->assertInertia(fn ($page) => $page->where('ledgerTotals', [
-                'charged' => 100, 'debitCount' => 1, 'credited' => 40, 'creditCount' => 2,
-                'net' => 60, 'cancelled' => 60, 'cancelledCount' => 1,
+                'charged' => '100.00', 'debitCount' => 1, 'credited' => '40.00', 'creditCount' => 2,
+                'net' => '60.00', 'cancelled' => '60.00', 'cancelledCount' => 1,
             ])->where('entries.total', 5));
 
         $this->get(route('ledger.index', ['filter' => ['show_cancelled' => '0']]))
             ->assertInertia(fn ($page) => $page->where('entries.total', 3)
-                ->where('ledgerTotals.charged', 100)->where('ledgerTotals.credited', 40)
+                ->where('ledgerTotals.charged', '100.00')->where('ledgerTotals.credited', '40.00')
                 ->where('ledgerTotals.cancelledCount', 0));
     }
 
@@ -289,7 +290,7 @@ class LedgerTest extends TestCase
 
         $this->actingAs($this->branchAdmin)->get(route('ledger.index', ['search' => $search]))
             ->assertInertia(fn ($page) => $page->where('entries.total', 1)
-                ->where('entries.data.0.id', $mine->id)->where('ledgerTotals.credited', 20));
+                ->where('entries.data.0.id', $mine->id)->where('ledgerTotals.credited', '20.00'));
     }
 
     public function test_payment_details_and_filters_use_the_stored_transaction_fields(): void
@@ -311,7 +312,7 @@ class LedgerTest extends TestCase
                 ->where('entries.data.0.voucherNumber', 'R-42')->where('entries.data.0.isManualVoucher', true)
                 ->where('entries.data.0.paymentMethod', 'bank_transfer')->where('entries.data.0.bankName', 'بنك فلسطين')
                 ->where('entries.data.0.referenceNumber', 'FT26272')->where('entries.data.0.balanceAfter', '-50.00')
-                ->where('entries.data.0.currency', 'USD')->where('ledgerTotals.credited', 200)
+                ->where('entries.data.0.currency', 'USD')->where('ledgerTotals.credited', '200.00')
                 ->where('filterOptions', fn ($groups): bool => collect($groups)->firstWhere('key', 'bank_name')['options'] === [['value' => 'بنك فلسطين', 'label' => 'بنك فلسطين']]));
     }
 
@@ -329,7 +330,7 @@ class LedgerTest extends TestCase
 
         $this->actingAs($this->branchAdmin)->get(route('ledger.index', array_filter(['period' => $period, 'from' => $from, 'to' => $to])))
             ->assertInertia(fn ($page) => $page->where('period', $period)
-                ->where('ledgerTotals.charged', $total)->where('dateRange', ['from' => $expectedFrom, 'to' => $expectedTo]));
+                ->where('ledgerTotals.charged', Money::amount($total))->where('dateRange', ['from' => $expectedFrom, 'to' => $expectedTo]));
     }
 
     #[TestWith([[], ['from', 'to']])]
@@ -357,9 +358,9 @@ class LedgerTest extends TestCase
         $rows = array_map(fn (string $row): array => str_getcsv($row), explode("\n", trim(substr($csv, 3))));
         $this->assertCount(27, $rows);
         $this->assertSame("'=HYPERLINK(\"unsafe\")", $rows[1][2]);
-        $this->assertSame('20', $rows[1][12]);
+        $this->assertSame('20.00', $rows[1][12]);
         $this->assertSame(['الرصيد بعده', 'حالة الرصيد'], [$rows[0][13], $rows[0][14]]);
-        $this->assertSame(['-520', 'له'], [$rows[1][13], $rows[1][14]]);
+        $this->assertSame(['-520.00', 'له'], [$rows[1][13], $rows[1][14]]);
         $this->assertStringNotContainsString('Other branch', $csv);
     }
 

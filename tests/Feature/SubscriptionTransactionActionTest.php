@@ -13,7 +13,6 @@ use App\Models\ClosingPayment;
 use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
-use App\Models\TransactionDeletion;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -60,7 +59,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $this->assertDatabaseCount('subscription_transactions', 1);
         $this->assertSame('75.00', $invoice->refresh()->amount);
         $this->assertSame('75.00', $invoice->balance_after);
-        $this->assertSame(75.0, $subscription->balance());
+        $this->assertSame('75.00', $subscription->balance());
         $this->assertDatabaseHas('transaction_amendments', [
             'transaction_id' => $invoice->id,
             'user_id' => $actor->id,
@@ -151,7 +150,7 @@ class SubscriptionTransactionActionTest extends TestCase
 
         $this->assertSame(['20.00', '30.00'], SubscriptionTransaction::query()->where('type', 'refund')->orderBy('id')->pluck('amount')->all());
         $this->assertSame(SubscriptionTransaction::STATUS_LINKED_CANCELLATION, $payment->refresh()->status);
-        $this->assertSame(10.0, $subscription->balance());
+        $this->assertSame('10.00', $subscription->balance());
     }
 
     public function test_cancel_appends_a_linked_cancellation_and_marks_the_original_cancelled(): void
@@ -178,7 +177,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $this->assertSame('-20.00', $cancellation->balance_after);
     }
 
-    public function test_delete_hard_deletes_only_the_last_transaction(): void
+    public function test_delete_preserves_the_last_transaction_with_a_linked_refund(): void
     {
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
@@ -195,11 +194,10 @@ class SubscriptionTransactionActionTest extends TestCase
         ]);
 
         $response->assertSessionHasNoErrors();
-        $this->assertModelMissing($payment);
-        $this->assertSame(0.0, $subscription->balance());
-        $deletion = TransactionDeletion::sole();
-        $this->assertSame([$subscription->id, $actor->id, 'delete', 'دفعة مكررة'], [$deletion->subscription_id, $deletion->user_id, $deletion->action, $deletion->reason]);
-        $this->assertSame([$payment->id], array_column($deletion->transactions, 'id'));
+        $this->assertModelExists($payment);
+        $this->assertSame('0.00', $subscription->balance());
+        $this->assertDatabaseHas('subscription_transactions', ['reverses_id' => $payment->id, 'type' => 'refund', 'amount' => '50.00', 'recorded_by' => $actor->id]);
+        $this->assertDatabaseCount('transaction_deletions', 0);
     }
 
     public function test_statement_does_not_offer_edit_metadata_for_a_discount_without_payment_details(): void
@@ -232,7 +230,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $response->assertSessionHasErrors(['action' => 'هذا الإجراء غير مسموح لهذه الحركة.']);
         $this->assertSame('البيان الأصلي', $discount->refresh()->notes);
         $this->assertDatabaseCount('transaction_amendments', 0);
-        $this->assertSame(30.0, $subscription->balance());
+        $this->assertSame('30.00', $subscription->balance());
     }
 
     public function test_editing_details_through_the_actions_route_follows_the_same_bank_rules_as_the_amendment_form(): void
@@ -284,7 +282,7 @@ class SubscriptionTransactionActionTest extends TestCase
 
         $response->assertSessionHasNoErrors();
         $this->assertSame('linked_cancellation', $payment->refresh()->status);
-        $this->assertSame(10.0, $subscription->balance());
+        $this->assertSame('10.00', $subscription->balance());
     }
 
     public function test_non_last_discount_is_cancelled_with_a_type_specific_cancellation_instead_of_a_refund(): void
@@ -314,7 +312,7 @@ class SubscriptionTransactionActionTest extends TestCase
         ]);
     }
 
-    public function test_fully_refunded_payment_offers_delete_refund_only_and_delete_linked_tree_actions(): void
+    public function test_fully_refunded_payment_and_refund_offer_no_deletion_actions(): void
     {
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
@@ -332,12 +330,12 @@ class SubscriptionTransactionActionTest extends TestCase
 
         $this->actingAs($actor)->get(route('subscriptions.statement', $subscription))
             ->assertInertia(fn ($page) => $page
-                ->where('entries.0.available_actions', ['delete_tree'])
+                ->where('entries.0.available_actions', [])
                 ->where('entries.0.linkedReversals.0.id', $refund->id)
-                ->where('entries.2.available_actions', ['delete_reversal']));
+                ->where('entries.2.available_actions', []));
     }
 
-    public function test_deleting_only_the_last_refund_reactivates_the_payment_and_rebalances_the_statement(): void
+    public function test_deleting_the_last_refund_is_refused_and_keeps_the_payment_cancelled(): void
     {
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
@@ -358,15 +356,15 @@ class SubscriptionTransactionActionTest extends TestCase
             'correction_notes' => 'الإرجاع سُجل بالخطأ',
         ]);
 
-        $response->assertSessionHasNoErrors()->assertSessionHas('status', 'transaction-delete_reversal');
-        $this->assertModelMissing($refund);
-        $this->assertSame(SubscriptionTransaction::STATUS_ACTIVE, $payment->refresh()->status);
-        $this->assertNull($payment->cancelled_at);
+        $response->assertSessionHasErrors('action');
+        $this->assertModelExists($refund);
+        $this->assertSame(SubscriptionTransaction::STATUS_LINKED_CANCELLATION, $payment->refresh()->status);
+        $this->assertNotNull($payment->cancelled_at);
         $this->assertSame('-40.00', $charge->refresh()->balance_after);
-        $this->assertSame(-40.0, $subscription->balance());
+        $this->assertSame('10.00', $subscription->balance());
     }
 
-    public function test_deleting_a_fully_refunded_tree_removes_both_sides_and_rebalances_later_transactions(): void
+    public function test_deleting_a_fully_refunded_tree_is_refused_and_keeps_historical_balances(): void
     {
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
@@ -388,15 +386,13 @@ class SubscriptionTransactionActionTest extends TestCase
             'correction_notes' => 'الدفعة والإرجاع مكرران',
         ]);
 
-        $response->assertSessionHasNoErrors()->assertSessionHas('status', 'transaction-delete_tree');
-        $this->assertModelMissing($payment);
-        $this->assertModelMissing($refund);
-        $this->assertSame('10.00', $firstCharge->refresh()->balance_after);
+        $response->assertSessionHasErrors('action');
+        $this->assertModelExists($payment);
+        $this->assertModelExists($refund);
+        $this->assertSame('-40.00', $firstCharge->refresh()->balance_after);
         $this->assertSame('30.00', $lastCharge->refresh()->balance_after);
-        $this->assertSame(30.0, $subscription->balance());
-        $deletion = TransactionDeletion::sole();
-        $this->assertSame(['delete_tree', 'الدفعة والإرجاع مكرران'], [$deletion->action, $deletion->reason]);
-        $this->assertSame([$payment->id, $refund->id], array_column($deletion->transactions, 'id'));
+        $this->assertSame('30.00', $subscription->balance());
+        $this->assertDatabaseCount('transaction_deletions', 0);
     }
 
     public function test_partial_refund_cannot_delete_the_original_and_linked_tree(): void
@@ -451,7 +447,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $this->assertModelExists($payment);
     }
 
-    public function test_deleting_the_last_payment_takes_it_off_a_draft_closing(): void
+    public function test_deleting_the_last_payment_refunds_it_and_preserves_its_draft_closing_link(): void
     {
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
@@ -470,12 +466,12 @@ class SubscriptionTransactionActionTest extends TestCase
         ]);
 
         $response->assertSessionHasNoErrors()->assertSessionHas('status', 'transaction-delete');
-        $this->assertModelMissing($payment);
-        $this->assertModelMissing($closingLine);
+        $this->assertModelExists($payment);
+        $this->assertModelExists($closingLine);
         $this->assertModelExists($closing);
     }
 
-    public function test_deleting_a_refunded_payment_tree_takes_it_off_a_returned_closing(): void
+    public function test_deleting_a_refunded_payment_tree_is_refused_and_keeps_returned_closing_history(): void
     {
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
@@ -498,10 +494,10 @@ class SubscriptionTransactionActionTest extends TestCase
             'correction_notes' => 'الدفعة والإرجاع مكرران',
         ]);
 
-        $response->assertSessionHasNoErrors()->assertSessionHas('status', 'transaction-delete_tree');
-        $this->assertModelMissing($payment);
-        $this->assertModelMissing($refund);
-        $this->assertModelMissing($closingLine);
+        $response->assertSessionHasErrors('action');
+        $this->assertModelExists($payment);
+        $this->assertModelExists($refund);
+        $this->assertModelExists($closingLine);
     }
 
     public function test_cancelling_a_weekly_reading_cancels_its_standing_discount_with_it(): void
@@ -530,7 +526,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $this->assertSame('قراءة مُدخلة بالخطأ', $discount->cancellation_notes);
         $this->assertSame('30.00', SubscriptionTransaction::query()->where('reverses_id', $discount->id)->sole()->amount);
         // Only the penalty is left owing: the reading and its discount are both gone from the balance.
-        $this->assertSame(10.0, $subscription->balance());
+        $this->assertSame('10.00', $subscription->balance());
     }
 
     public function test_deleting_a_weekly_reading_with_a_reason_reverses_its_standing_discount_with_it(): void
@@ -545,7 +541,7 @@ class SubscriptionTransactionActionTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertNotNull($discount->refresh()->cancelled_at);
-        $this->assertSame(0.0, $subscription->balance());
+        $this->assertSame('0.00', $subscription->balance());
     }
 
     public function test_a_weekly_reading_discount_cannot_be_cancelled_or_deleted_on_its_own(): void
@@ -572,10 +568,10 @@ class SubscriptionTransactionActionTest extends TestCase
             ->assertForbidden();
 
         $this->assertNull($discount->refresh()->cancelled_at);
-        $this->assertSame(53.4, $subscription->balance());
+        $this->assertSame('53.40', $subscription->balance());
     }
 
-    public function test_deleting_the_last_weekly_reading_deletes_its_standing_discount_with_it(): void
+    public function test_deleting_the_last_weekly_reading_reverses_its_standing_discount_with_it(): void
     {
         $branch = Branch::factory()->create();
         $actor = User::factory()->superAdmin()->create(['branch_id' => $branch->id]);
@@ -594,10 +590,11 @@ class SubscriptionTransactionActionTest extends TestCase
             'correction_notes' => 'قراءة مُدخلة بالخطأ',
         ])->assertSessionHasNoErrors();
 
-        $this->assertModelMissing($charge);
-        $this->assertModelMissing($discount);
-        $this->assertSame(10.0, $subscription->balance());
-        $this->assertCount(2, TransactionDeletion::sole()->transactions);
+        $this->assertModelExists($charge);
+        $this->assertModelExists($discount);
+        $this->assertSame('10.00', $subscription->balance());
+        $this->assertDatabaseHas('subscription_transactions', ['reverses_id' => $charge->id, 'amount' => '-83.40']);
+        $this->assertDatabaseHas('subscription_transactions', ['reverses_id' => $discount->id, 'amount' => '30.00']);
     }
 
     public function test_the_reversal_of_a_weekly_reading_discount_cannot_be_deleted_to_bring_the_discount_back(): void
@@ -615,7 +612,7 @@ class SubscriptionTransactionActionTest extends TestCase
         ])->assertSessionHasErrors(['action' => 'هذا الإجراء غير مسموح لهذه الحركة.']);
 
         $this->assertNotNull($discount->refresh()->cancelled_at);
-        $this->assertSame(0.0, $subscription->balance());
+        $this->assertSame('0.00', $subscription->balance());
     }
 
     /**

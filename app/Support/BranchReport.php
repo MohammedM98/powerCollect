@@ -174,7 +174,7 @@ class BranchReport
             'accounts' => $payments
                 ->groupBy(fn (object $payment): string => $payment->isCash ? 'cash' : ($payment->bank_name ?: $this->methodLabel($payment->payment_method)))
                 ->map(fn (Collection $rows, string $account): array => ['key' => $account, 'label' => $account === 'cash' ? 'الصندوق النقدي' : $account, ...$group($rows)])
-                ->sortByDesc(fn (array $account): array => [$account['key'] === 'cash', (float) $account['total']])
+                ->sortByDesc(fn (array $account): array => [$account['key'] === 'cash', Closing::cents($account['total'])])
                 ->values()
                 ->all(),
             'currencies' => $payments
@@ -183,9 +183,9 @@ class BranchReport
                     'currency' => $currency,
                     'label' => __(Currency::tryFrom($currency)?->label() ?? $currency),
                     ...$group($rows),
-                    'amount' => Closing::money($rows->sum(fn (object $row): int => Closing::cents($row->currency_amount ?? -$row->amount))),
+                    'amount' => Closing::money($rows->sum(fn (object $row): int => Closing::cents($row->currency_amount ?? Money::negate($row->amount)))),
                 ])
-                ->sortByDesc(fn (array $currency): float => (float) $currency['total'])
+                ->sortByDesc(fn (array $currency): int => Closing::cents($currency['total']))
                 ->values()
                 ->all(),
             'collectors' => $payments
@@ -195,7 +195,7 @@ class BranchReport
                     ...$group($rows),
                     'cash' => Closing::money($rows->where('isCash', true)->sum('cents')),
                 ])
-                ->sortByDesc(fn (array $collector): float => (float) $collector['total'])
+                ->sortByDesc(fn (array $collector): int => Closing::cents($collector['total']))
                 ->values()
                 ->all(),
         ];

@@ -6,6 +6,7 @@ use App\Models\CashBox;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Money;
 use Database\Seeders\FinancialFlowSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -29,8 +30,8 @@ class FinancialFlowSeederTest extends TestCase
         $this->assertSame(6, CashBox::query()->where('status', 'received')->whereDoesntHave('audit')->count());
         $this->assertSame(0, CashBox::query()->whereNotNull('sent_at')->count());
         $subscriptions = Subscription::query()->orderBy('id')->get();
-        $this->assertSame(205.0, $subscriptions->first()->balance());
-        $this->assertSame(-60.0, $subscriptions->last()->balance());
+        $this->assertSame('205.00', $subscriptions->first()->balance());
+        $this->assertSame('-60.00', $subscriptions->last()->balance());
         $this->assertDatabaseHas('subscription_transactions', ['currency' => 'USD', 'currency_amount' => 20, 'amount' => -70]);
         $this->assertDatabaseHas('subscription_transactions', ['currency' => 'JOD', 'currency_amount' => 10, 'amount' => -50]);
     }
@@ -79,7 +80,7 @@ class FinancialFlowSeederTest extends TestCase
         $this->assertSame($decision, $payment->audit()->sole()->getAttributes());
         $this->assertSame($adjustment, $payment->audit->adjustment->fresh()->getAttributes());
         $this->assertSame($original, $payment->transaction->fresh()->getAttributes());
-        $this->assertSame($balance, $payment->transaction->subscription->balance());
+        $this->assertSame(Money::amount($balance), $payment->transaction->subscription->balance());
         $this->assertDatabaseCount('subscription_transactions', 46);
         $this->assertSame(3, CashBox::query()->where('status', 'open')->count());
     }
