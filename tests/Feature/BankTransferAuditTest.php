@@ -132,7 +132,7 @@ class BankTransferAuditTest extends TestCase
         $this->actingAs($head)->get(route('subscriptions.statement', $subscription))->assertInertia(fn ($page) => $page
             ->where('entries.1.description', 'دفعة بتحويل بنكي')
             ->where('entries.2.typeLabel', 'حركة تصحيح')
-            ->where('entries.2.description', $description));
+            ->where('entries.2.description', fn (string $value): bool => str_contains($value, 'تصحيح ناتج عن التدقيق المالي') && str_ends_with($value, $description)));
         $this->assertSame($before, $payment->fresh()->getAttributes());
     }
 
@@ -143,7 +143,11 @@ class BankTransferAuditTest extends TestCase
         $this->post(route('payments.box-audits.store', $box), ['confirmed' => true])->assertSessionHasNoErrors();
 
         $this->actingAs($head)->get(route('subscriptions.statement', $subscription))->assertInertia(fn ($page) => $page
-            ->where('entries.2.description', 'حوالة وصلت 50 بدل 100 دولار؛ تحميل فرق 185 شيكل.'));
+            ->where('entries.2.description', fn (string $value): bool => str_ends_with($value, 'حوالة وصلت 50 بدل 100 دولار؛ تحميل فرق 185 شيكل.')));
+        $this->get(route('reports.index'))->assertInertia(fn ($page) => $page
+            ->where('collections.receipts.bankRecorded', '370.00')
+            ->where('collections.receipts.bankVerified', '185.00')
+            ->where('collections.receipts.shortage', '185.00'));
     }
 
     public function test_drafts_can_be_revised_but_a_final_approval_cannot_be_replaced_or_posted_twice(): void

@@ -35,7 +35,7 @@ export default function ReportPrintSheet({ scopeName, periodName, from, to, flow
                 {[
                     ['الرصيد الافتتاحي', flow.opening],
                     ['التحميلات', flow.chargesTotal],
-                    ['إجمالي المحصّل', collections.total, `نقدي ${reportMoney(collections.cash)} · تحويلات وشيكات ${reportMoney(collections.nonCash)}`],
+                    ['إجمالي المقبوضات المسجّلة', collections.total, `نقدي ${reportMoney(collections.cash)} · تحويلات وشيكات ${reportMoney(collections.nonCash)}`],
                     ['الرصيد الختامي', flow.closing, change > 0 ? `زاد ${reportMoney(change)}` : change < 0 ? `نقص ${reportMoney(-change)}` : 'لم يتغير'],
                     ['عدد الدفعات', null, null, collections.count],
                 ].map(([label, amount, note, count]) => (
@@ -47,6 +47,11 @@ export default function ReportPrintSheet({ scopeName, periodName, from, to, flow
                 ))}
             </section>
 
+            {collections.receipts && <section className="report-print-block mb-4">
+                <h2 className="mb-1.5 text-[13px] font-bold">نتيجة تدقيق مقبوضات الفترة حتى الآن</h2>
+                <p className="mb-2 text-[10px]">{collections.receipts.basis}</p>
+                <table className="w-full border-collapse"><thead><tr><th className={HEAD}>البند</th><th className={HEAD}>المبلغ ₪</th></tr></thead><tbody>{collections.receipts.rows.map((row) => <tr key={row.key}><td className={CELL}>{row.label}</td><td className={MONEY}>{reportMoney(row.amount)}</td></tr>)}</tbody></table>
+            </section>}
             <section className="report-print-block mb-4">
                 <h2 className="mb-1.5 text-[13px] font-bold">حركة الأرصدة</h2>
                 <table className="w-full border-collapse">
@@ -106,7 +111,7 @@ export default function ReportPrintSheet({ scopeName, periodName, from, to, flow
                     <h2 className="mb-1.5 text-[13px] font-bold">مقارنة الفروع</h2>
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr><th className={HEAD}>الفرع</th><th className={`${HEAD} text-end`}>إجمالي المحصّل</th><th className={`${HEAD} text-end`}>نقدي</th><th className={`${HEAD} text-end`}>الدفعات</th><th className={`${HEAD} text-end`}>الرصيد الختامي</th></tr>
+                            <tr><th className={HEAD}>الفرع</th><th className={`${HEAD} text-end`}>إجمالي المقبوضات المسجّلة</th><th className={`${HEAD} text-end`}>نقدي</th><th className={`${HEAD} text-end`}>الدفعات</th><th className={`${HEAD} text-end`}>الرصيد الختامي</th></tr>
                         </thead>
                         <tbody>
                             {[...branchSummary].sort((first, second) => Number(second.collections.total) - Number(first.collections.total)).map((row) => (

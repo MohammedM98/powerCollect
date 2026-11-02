@@ -73,7 +73,7 @@ class CashBoxReportController extends Controller
                 'openedAt' => $box?->opened_at?->toIso8601String(),
                 'closedAt' => $box && ! $box->isEditable() ? ($box->received_at ?? $box->closed_at)?->toIso8601String() : null,
                 'closedBy' => $box?->receivedBy?->name,
-                'auditStatus' => $box?->audit ? 'اكتمل التدقيق' : 'بانتظار اكتمال التدقيق',
+                'auditStatus' => $box?->audit ? 'معتمد تدقيقيًا' : 'قيد التدقيق',
                 'isBank' => $box?->type === CashBoxType::BankTransfer,
                 'filter' => $filter, 'counts' => $counts, 'rows' => $rows, 'totals' => $totals,
             ],

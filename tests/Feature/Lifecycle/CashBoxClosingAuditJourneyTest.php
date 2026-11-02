@@ -116,7 +116,7 @@ class CashBoxClosingAuditJourneyTest extends TestCase
                 return true;
             }));
         $this->get(route('subscriptions.statement', $second))->assertInertia(fn ($page) => $page
-            ->where('entries', fn ($entries): bool => $entries->last()['description'] === 'حوالة لم تصل للبنك؛ تحميل 150 شيكل على المشترك.'));
+            ->where('entries', fn ($entries): bool => str_ends_with($entries->last()['description'], 'حوالة لم تصل للبنك؛ تحميل 150 شيكل على المشترك.')));
         $this->get(route('ledger.index', ['period' => 'all']))->assertInertia(fn ($page) => $page
             ->where('summary.collected', '340.00')
             ->where('ledgerTotals.net', '460.00')

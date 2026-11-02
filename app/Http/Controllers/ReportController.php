@@ -75,7 +75,7 @@ class ReportController extends Controller
         $collections = $summary ? $report->collections() : null;
         $comparison = null;
         if ($collections !== null) {
-            $previous = (new BranchReport($chosen, ClosingPeriods::date($period['comparison']['from']), ClosingPeriods::date($period['comparison']['to'])))->collections();
+            $previous = (new BranchReport($chosen, ClosingPeriods::date($period['comparison']['from']), ClosingPeriods::date($period['comparison']['to'])))->collections(includeReceipts: false);
             $previousCents = Closing::cents($previous['total']);
             $difference = Closing::cents($collections['total']) - $previousCents;
             $comparison = [
@@ -93,7 +93,7 @@ class ReportController extends Controller
                     'id' => $item->id,
                     'name' => $item->name,
                     'flow' => $branchReport->flow(),
-                    'collections' => $branchReport->collections(),
+                    'collections' => $branchReport->collections(includeReceipts: false),
                 ];
             })->values()
             : collect();
@@ -101,7 +101,7 @@ class ReportController extends Controller
         $scopeLabel = $chosen->count() === 1 ? $chosen->first()->name : 'كل الفروع';
         $transactions = $summary
             ? $report->lines($kind)
-                ->with(['subscription.branch', 'subscription.meterBox', 'recordedBy', 'meterReading', 'reverses.meterReading', 'bankTransferAudit'])
+                ->with(['subscription.branch', 'subscription.meterBox', 'recordedBy', 'meterReading', 'reverses.meterReading', 'bankTransferAudit', 'referenceTransaction'])
                 ->orderByDesc('subscription_transactions.created_at')
                 ->orderByDesc('subscription_transactions.id')
                 ->paginate($request->boolean('print') ? $this->dataTablePerPage($request, self::PER_PAGE) : self::PER_PAGE)
@@ -304,7 +304,7 @@ class ReportController extends Controller
         $debit = 0;
         $credit = 0;
         $transactions = $subscription->transactions()->where('created_at', '>=', $start)->where('created_at', '<', $end)
-            ->with(['subscription.branch', 'subscription.meterBox', 'recordedBy', 'meterReading', 'reverses.meterReading', 'bankTransferAudit'])
+            ->with(['subscription.branch', 'subscription.meterBox', 'recordedBy', 'meterReading', 'reverses.meterReading', 'bankTransferAudit', 'referenceTransaction'])
             ->orderBy('created_at')->orderBy('id')->get();
         $netted = $this->nettedWithinPeriod($transactions);
         $lines = $transactions->map(function (SubscriptionTransaction $line) use (&$balance, &$debit, &$credit, $netted): array {
@@ -360,9 +360,11 @@ class ReportController extends Controller
             ['مجموع الدفعات والخصومات (له)', '', $flow['creditsTotal']],
             ['الإلغاءات والقيود العكسية', $flow['corrections']['count'], $flow['corrections']['total']],
             ['الرصيد الختامي لذمم المشتركين', '', $flow['closing']],
-            ['إجمالي المحصّل', $collections['count'], $collections['total']],
+            ['إجمالي المقبوضات المسجّلة', $collections['count'], $collections['total']],
             ['التحصيل النقدي', '', $collections['cash']],
             ['التحويلات والشيكات', '', $collections['nonCash']],
+            [$collections['receipts']['basis'], '', ''],
+            ...array_map(fn (array $row): array => [$row['label'], '', $row['amount']], $collections['receipts']['rows']),
             ...($comparison === null ? [] : [
                 ['المحصّل سابقًا ('.$comparison['from'].' – '.$comparison['to'].')', '', $comparison['total']],
                 ['فرق التحصيل عن الفترة السابقة', '', $comparison['difference']],
@@ -430,7 +432,7 @@ class ReportController extends Controller
         abort_unless(FinancialReportAccess::export($request->user()), 403);
         ['chosen' => $chosen, 'from' => $from, 'to' => $to, 'kind' => $kind] = $this->filters($request, FinancialReportAccess::branches($request->user()));
         $lines = (new BranchReport($chosen, $from, $to))->lines($kind)
-            ->with(['subscription.branch', 'subscription.meterBox', 'recordedBy', 'meterReading', 'reverses.meterReading', 'bankTransferAudit'])
+            ->with(['subscription.branch', 'subscription.meterBox', 'recordedBy', 'meterReading', 'reverses.meterReading', 'bankTransferAudit', 'referenceTransaction'])
             ->orderBy('subscription_transactions.created_at')
             ->orderBy('subscription_transactions.id');
 
