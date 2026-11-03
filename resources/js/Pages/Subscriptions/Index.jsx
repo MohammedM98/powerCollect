@@ -29,7 +29,7 @@ import BalanceFilter from './BalanceFilter';
 import { BALANCE_FILTER_KEYS, balanceFilterLabel, subscriptionFilterKey } from '@/lib/subscriptionBalance';
 import PhoneQuickEdit from './PhoneQuickEdit';
 import Balance from '@/Components/Balance';
-import SegmentedTabs from '@/Components/SegmentedTabs';
+import UnderlineTabs from '@/Components/UnderlineTabs';
 import PageHeader from '@/Components/PageHeader';
 import InfoTip from '@/Components/InfoTip';
 import { formatDate } from '@/lib/format';
@@ -362,7 +362,7 @@ export default function Index({
 
             {branchScope && <BranchFilterBanner scope={branchScope} eyebrow="تعرض الآن مشتركي" group={branchFilter.branch} value={filterValues.branch_id} onChange={(value) => setFilter('branch_id', value)} />}
 
-            {canViewArchived && <div className="mb-5 flex flex-wrap items-center gap-1"><SegmentedTabs label="قائمة الاشتراكات" value={showArchived ? 'archived' : 'current'} options={[{ value: 'current', label: 'الاشتراكات الحالية' }, { value: 'archived', label: 'الاشتراكات المؤرشفة' }]} onChange={(value) => setFilter('archived', value === 'archived' ? '1' : '')} /><InfoTip label="عن الأرشيف">{showArchived ? 'ملفات محفوظة بعد إنهاء الخدمة؛ الأرصدة والحركات السابقة باقية.' : 'أرشفة الاشتراك المنتهي متاحة من قائمة إجراءاته حسب الصلاحية.'}</InfoTip></div>}
+            {canViewArchived && <div className="mb-5 flex flex-wrap items-end gap-2"><UnderlineTabs label="قائمة الاشتراكات" value={showArchived ? 'archived' : 'current'} options={[{ value: 'current', label: 'الاشتراكات الحالية' }, { value: 'archived', label: 'الاشتراكات المؤرشفة' }]} onChange={(value) => setFilter('archived', value === 'archived' ? '1' : '')} /><InfoTip label="عن الأرشيف">{showArchived ? 'ملفات محفوظة بعد إنهاء الخدمة؛ الأرصدة والحركات السابقة باقية.' : 'أرشفة الاشتراك المنتهي متاحة من قائمة إجراءاته حسب الصلاحية.'}</InfoTip></div>}
 
             <DataTableToolbar
                 search={search}
