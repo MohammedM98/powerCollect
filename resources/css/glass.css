@@ -1808,3 +1808,29 @@
     background: var(--gl-warn);
     box-shadow: 0 10px 22px -10px var(--gl-warn);
 }
+
+/* Underlined tabs that are links (the financial boxes' places). */
+.gl-tabs .gl-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: -1px;
+    padding: 8px 0;
+    border-bottom: 2px solid transparent;
+    color: var(--gl-muted);
+    font-weight: 600;
+}
+
+.gl-tabs .gl-tab:hover {
+    color: var(--gl-ink);
+}
+
+.gl-tabs .gl-tab[aria-current='page'] {
+    color: var(--gl-ink);
+    border-color: rgb(var(--gl-brand));
+}
+
+.gl-tabs .gl-tab:focus-visible {
+    outline: 2px solid rgb(var(--gl-brand));
+    outline-offset: 2px;
+}
