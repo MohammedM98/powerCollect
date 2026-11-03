@@ -2437,6 +2437,159 @@ input[type='radio'] {
     }
 }
 
+/*
+ * The navigation in the navy look: the top bar, the side menu, the big menu,
+ * the small menus and the phone menu are glass panels like the cards; the
+ * side menu carries a blue light at its top in the dark theme. The open page
+ * (and the open section in the top bar) is a pill in the company's colour
+ * with a soft glow and white text; a section's own row stays quiet.
+ */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-glass, .sn-panel, .tn-mega, .tn-popover, .tn-drawer-panel) {
+    border: 1px solid rgb(var(--glass-line));
+    background: rgb(var(--glass-panel) / var(--glass-alpha));
+    box-shadow: inset 0 1px 0 rgb(var(--glass-line-hi)), var(--glass-shadow);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
+}
+
+/* Menus that open over the page stay nearly opaque, so the page behind them doesn't read through. */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-mega, .tn-popover, .tn-drawer-panel) {
+    background: rgb(var(--glass-panel) / 0.94);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .sn-panel {
+    border-radius: calc(20px * var(--radius-scale, 1));
+    background: var(--glass-nav), rgb(var(--glass-panel) / var(--glass-alpha));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-header.is-scrolled .tn-glass {
+    background: rgb(var(--glass-panel) / calc(var(--glass-alpha) + 0.2));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-glass, .tn-mega)::before,
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-section[data-current='true']::after {
+    display: none;
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) {
+    /* Opaque from the top, so white text keeps 4.5:1 over light glass too. */
+    --tn-graphite: linear-gradient(180deg, rgb(var(--brand-solid)), color-mix(in srgb, rgb(var(--brand-solid)) 75%, rgb(var(--brand-lo))));
+    --tn-graphite-dark: var(--tn-graphite);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-highlight {
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 10px 22px -10px rgb(var(--brand-solid));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-tool, .tn-search) {
+    border: 1px solid rgb(var(--glass-line));
+    background: rgb(var(--glass-fill));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-tool, .tn-search):hover,
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-tool[aria-expanded='true'] {
+    background: rgb(var(--glass-fill-strong));
+    color: rgb(var(--gray-900));
+    box-shadow: none;
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-segments {
+    border: 1px solid rgb(var(--glass-line));
+    background: rgb(var(--glass-fill));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-segments button[aria-pressed='true'] {
+    background: rgb(var(--glass-panel) / 0.9);
+    color: rgb(var(--gray-900));
+    box-shadow: inset 0 1px 0 rgb(var(--glass-line-hi)), 0 4px 10px -6px rgb(0 0 0 / 0.6);
+}
+
+.dark:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-segments button[aria-pressed='true'] {
+    background: rgb(255 255 255 / 0.14);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-nav-search, .sn-panel .rounded-2xl.bg-gray-50, .tn-drawer-panel .rounded-2xl.bg-gray-50) {
+    border-color: rgb(var(--glass-line));
+    background: rgb(var(--glass-fill));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-drawer-group, .tn-drawer-link):hover {
+    background: rgb(var(--glass-fill));
+    color: rgb(var(--gray-900));
+}
+
+/* A section's row: quiet, whether open or holding the current page. */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) button.tn-drawer-group:is([aria-expanded='true'], [data-current='true']) {
+    background: none;
+    color: rgb(var(--gray-900));
+    box-shadow: none;
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) button.tn-drawer-group:is([aria-expanded='true'], [data-current='true']) svg {
+    color: rgb(var(--gray-500));
+}
+
+/* The open page, the home page among the sections, and a current section's page strip. */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(a.tn-drawer-group[data-current='true'], .tn-drawer-link[aria-current='page'], .tn-subnav a[aria-current='page']) {
+    background: var(--tn-graphite);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 10px 22px -10px rgb(var(--brand-solid));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(a.tn-drawer-group[data-current='true'], .tn-drawer-link[aria-current='page'], .tn-subnav a[aria-current='page']) svg {
+    color: #fff;
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-mega-link .tn-tile {
+    border-color: rgb(var(--glass-line));
+    background: rgb(var(--glass-fill));
+    color: rgb(var(--brand-600));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-mega-link:hover {
+    background: rgb(var(--glass-fill-strong));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-mega-link[aria-current='page'] {
+    background: rgb(var(--brand-500) / 0.14);
+    box-shadow: none;
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .sn-foot {
+    border-top-color: rgb(var(--glass-line));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-subnav {
+    border-color: rgb(var(--glass-line));
+    background: rgb(var(--glass-panel) / var(--glass-alpha));
+    box-shadow: inset 0 1px 0 rgb(var(--glass-line-hi)), var(--glass-shadow);
+}
+
+/* Where the page sits, and its title: quiet small trail, then a bold title over a muted line. */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-trail {
+    font-size: 12.5px;
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .ui-page-title {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-glass, .sn-panel, .tn-subnav) {
+        background: rgb(var(--glass-panel) / 0.92);
+    }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-glass, .sn-panel, .tn-mega, .tn-popover, .tn-drawer-panel, .tn-subnav) {
+        background: rgb(var(--glass-panel) / 0.96);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}
+
 :root[data-ui-cards='accent'] .shadow-card {
     border-top: 3px solid rgb(var(--brand-500));
 }

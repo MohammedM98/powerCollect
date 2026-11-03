@@ -14,16 +14,7 @@
     display: none;
 }
 
-/* The top bar's wrapper adds no box, so the bar stays sticky to the page. */
-.sn-mobile-only {
-    display: contents;
-}
-
 @media (min-width: 1024px) {
-    .sn-mobile-only {
-        display: none;
-    }
-
     .sn-panel {
         position: fixed;
         z-index: 40;
@@ -46,16 +37,48 @@
         width: var(--sn-collapsed-width);
     }
 
-    :root[data-side-navigation='open'] .sn-content {
+    /* The page and the slim top bar (TopBar `slim`) sit beside the panel. */
+    :root[data-side-navigation='open'] :is(.sn-content, .tn-header[data-slim]) {
         margin-inline-start: calc(var(--sn-width) + var(--sn-gap));
     }
 
-    :root[data-side-navigation='collapsed'] .sn-content {
+    :root[data-side-navigation='collapsed'] :is(.sn-content, .tn-header[data-slim]) {
         margin-inline-start: calc(var(--sn-collapsed-width) + var(--sn-gap));
     }
 
-    .sn-content {
+    :is(.sn-content, .tn-header[data-slim]) {
         transition: margin 0.3s var(--tn-ease);
+    }
+
+    /* Beside the panel the bar keeps its tools: no logo or sections; the search, at the start, takes the room. */
+    .tn-header[data-slim] .tn-glass {
+        display: flex;
+    }
+
+    .tn-header[data-slim] .tn-glass > :is(:first-child, .tn-sections) {
+        display: none;
+    }
+
+    .tn-header[data-slim] .tn-glass > :last-child {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .tn-header[data-slim] .tn-search {
+        width: min(100%, 420px);
+        margin-inline-end: auto;
+        padding: 0 10px 0 8px;
+        justify-content: flex-start;
+        border-color: rgb(var(--gray-200));
+        background: rgb(var(--gray-50) / 0.7);
+    }
+
+    .tn-header[data-slim] .tn-search .tn-search-text {
+        display: block;
+    }
+
+    .tn-header[data-slim] .tn-search .tn-kbd {
+        display: inline-flex;
     }
 }
 
@@ -101,11 +124,16 @@
     white-space: nowrap;
 }
 
-.sn-tools {
-    display: flex;
-    justify-content: flex-end;
-    gap: 6px;
-    padding: 0 12px 10px;
+.sn-collapse {
+    flex: none;
+    margin-inline-start: auto;
+    width: 36px;
+    height: 36px;
+}
+
+/* The slim top bar beside the panel holds the search, so the panel doesn't repeat it. */
+.sn-panel .tn-nav-search {
+    display: none;
 }
 
 .sn-body {
@@ -119,20 +147,19 @@
     border-top: 1px solid rgb(var(--gray-200) / 0.7);
 }
 
-/* The notifications open beside the panel, not over it. */
-.sn-panel .tn-popover {
-    top: 64px;
-    inset-inline-start: calc(100% + 12px);
-}
-
 /* Narrowed to icons. */
 .sn-panel[data-collapsed] :is(.tn-nav-label, .tn-chevron, .tn-nav-badge) {
     display: none;
 }
 
 .sn-panel[data-collapsed] .sn-head {
+    flex-direction: column;
     justify-content: center;
     padding-inline: 10px;
+}
+
+.sn-panel[data-collapsed] .sn-collapse {
+    margin-inline-start: 0;
 }
 
 .sn-panel[data-collapsed] .sn-logo {
@@ -140,10 +167,6 @@
     height: 34px;
 }
 
-.sn-panel[data-collapsed] .sn-tools {
-    flex-direction: column;
-    align-items: center;
-}
 
 .sn-panel[data-collapsed] :is(.tn-drawer-group, .tn-nav-search) {
     justify-content: center;

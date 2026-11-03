@@ -5,6 +5,7 @@ import BranchViewSwitcher from '@/Components/BranchViewSwitcher';
 import NavigationDrawer from '@/Components/TopBar/NavigationDrawer';
 import SideNavigation from '@/Components/SideNavigation/SideNavigation';
 import { useBrandDocument } from '@/hooks/useBrand';
+import { useNavigationLayout } from '@/hooks/useNavigationLayout';
 import { Breadcrumb, SectionPages } from '@/Components/TopBar/PageTrail';
 import { handlePaletteShortcut, pageWindowOpen } from '@/Components/TopBar/shortcuts';
 import { useTheme } from '@/hooks/useTheme';
@@ -57,8 +58,9 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
         }
     }, [branchKey]);
     const { dark, changePreference } = useTheme();
-    // The company's look puts the sections in the floating top bar, or at the side on wide screens (`sidebar`, `rail`).
-    const navigation = useBrandDocument().design?.navigation ?? 'topbar';
+    // The company's look puts the sections in the floating top bar, or at the side on wide screens (`sidebar`, `rail`);
+    // each browser may switch between the two (hooks/useNavigationLayout.js).
+    const [navigation, changeNavigation] = useNavigationLayout(useBrandDocument().design?.navigation);
     const sideNavigation = navigation === 'sidebar' || navigation === 'rail';
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [paletteOpen, setPaletteOpen] = useState(false);
@@ -215,8 +217,12 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
 
             {sideNavigation && <SideNavigation key={navigation} groups={groups} badges={badges} startsCollapsed={navigation === 'rail'} onOpenPalette={() => onPaletteOpenChange(true)} />}
 
-            <div className={sideNavigation ? 'sn-mobile-only' : 'contents'}><TopBar
+            {/* Beside the side menu on wide screens the bar keeps only its tools; on phones it is the full bar either way. */}
+            <TopBar
                 groups={groups}
+                slim={sideNavigation}
+                layout={navigation}
+                onLayoutChange={changeNavigation}
                 badges={badges}
                 where={pastTitle && trail ? { section: trail.group?.shortLabel, page: trail.link.label, scope } : null}
                 drawerOpen={drawerOpen}
@@ -228,7 +234,7 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
                 }}
                 onShowShortcuts={() => setShortcutsOpen(true)}
                 onStartTour={() => setTourOpen(true)}
-            /></div>
+            />
 
             <div className="sn-content">
 
