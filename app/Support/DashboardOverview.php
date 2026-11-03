@@ -85,9 +85,9 @@ class DashboardOverview
 
         $current = new BranchReport($this->branches, $this->from, $this->today);
         $previous = new BranchReport($this->branches, $this->from->subDays($this->days), $this->from->subDay());
-        $today = (new BranchReport($this->branches, $this->today, $this->today))->collections();
-        $now = $current->collections();
-        $before = $previous->collections();
+        $today = (new BranchReport($this->branches, $this->today, $this->today))->collections(includeReceipts: false);
+        $now = $current->collections(includeReceipts: false);
+        $before = $previous->collections(includeReceipts: false);
         $previousDays = array_column($previous->days(), 'payments');
 
         return [
@@ -122,7 +122,7 @@ class DashboardOverview
     {
         return $this->branches
             ->map(function (Branch $branch) use ($total): array {
-                $collected = Money::amount((new BranchReport(collect([$branch]), $this->from, $this->today))->collections()['total']);
+                $collected = Money::amount((new BranchReport(collect([$branch]), $this->from, $this->today))->collections(includeReceipts: false)['total']);
 
                 return [
                     'id' => $branch->id,
