@@ -91,7 +91,7 @@ class MobileCollectionController extends Controller
             ->latest('id')
             ->first() : null;
         $recentTransactions = $canViewHistory ? $subscription->transactions()
-            ->with(['meterReading', 'referenceTransaction', 'bankTransferAudit', 'referenceTransaction'])
+            ->with(['meterReading', 'referenceTransaction', 'bankTransferAudit'])
             ->latest()
             ->latest('id')
             ->limit(self::RECENT_TRANSACTIONS)
@@ -170,7 +170,7 @@ class MobileCollectionController extends Controller
         $subscription = Subscription::query()->visibleTo($request->user())->findOrFail($subscription);
         $this->authorize('view', $subscription);
         $transactions = $subscription->transactions()
-            ->with(['meterReading', 'referenceTransaction', 'bankTransferAudit', 'referenceTransaction'])
+            ->with(['meterReading', 'referenceTransaction', 'bankTransferAudit'])
             ->latest()->latest('id')->paginate(25);
         $first = $transactions->first();
         $balanceAfterInCents = $first ? Closing::cents($subscription->transactions()

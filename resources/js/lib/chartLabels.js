@@ -34,3 +34,15 @@ export function labelledDays(count, width) {
 
     return [];
 }
+
+/**
+ * The parts of a split bar with their shares of the whole, in percent.
+ * Amounts arrive from the server as exact decimal strings ("120.50"), so
+ * each value is read as a number first; summing the strings would join them.
+ */
+export function splitShares(parts) {
+    const values = parts.map((part) => Math.max(0, Number(part.value) || 0));
+    const total = values.reduce((sum, value) => sum + value, 0);
+
+    return parts.map((part, index) => ({ ...part, value: values[index], share: total > 0 ? (values[index] / total) * 100 : 0 }));
+}

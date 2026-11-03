@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import InfoTip from '@/Components/InfoTip';
+import { splitShares } from '@/lib/chartLabels';
 import { formatNumber } from '@/lib/format';
 import { shouldPrefetchPage } from '@/lib/navigation';
 
@@ -28,21 +29,18 @@ export function ChangeBadge({ change }) {
 
 /** A bar split into coloured parts (`{ value, className, label }`), each as wide as its share. */
 export function SplitBar({ parts, label, className = 'mt-4' }) {
-    const total = parts.reduce((sum, part) => sum + part.value, 0);
-
     return (
         <div className={`flex h-2 overflow-hidden rounded-full bg-gray-100 ${className}`} role="img" aria-label={label}>
-            {total > 0 &&
-                parts.map((part) =>
-                    part.value > 0 ? (
-                        <span
-                            key={part.label}
-                            title={`${part.label}: ${formatNumber(part.value)}`}
-                            className={part.className}
-                            style={{ width: `${(part.value / total) * 100}%` }}
-                        />
-                    ) : null,
-                )}
+            {splitShares(parts).map((part) =>
+                part.share > 0 ? (
+                    <span
+                        key={part.label}
+                        title={`${part.label}: ${formatNumber(part.value)}`}
+                        className={part.className}
+                        style={{ width: `${part.share}%` }}
+                    />
+                ) : null,
+            )}
         </div>
     );
 }
