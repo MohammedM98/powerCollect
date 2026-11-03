@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { LABEL_WIDTH, labelLeft, labelledDays } from '../../resources/js/lib/chartLabels.js';
+import { LABEL_WIDTH, labelLeft, labelledDays, splitShares } from '../../resources/js/lib/chartLabels.js';
 
 const labelledIndexes = (count, width) => labelledDays(count, width).flatMap((labelled, index) => (labelled ? [index] : []));
 
@@ -36,4 +36,15 @@ test('a label is centred under its column unless that would spill past an edge',
     assert.equal(labelLeft(3, 7, 7 * 100), 350 - LABEL_WIDTH / 2);
     assert.equal(labelLeft(0, 30, 300), 0);
     assert.equal(labelLeft(29, 30, 300), 300 - LABEL_WIDTH);
+});
+
+test('a split bar shares decimal amounts sent as strings by value, not by joining them', () => {
+    const shares = splitShares([{ label: 'recent', value: 300 }, { label: 'older', value: '200.00' }]);
+
+    assert.deepEqual(shares.map((part) => part.share), [60, 40]);
+    assert.deepEqual(shares.map((part) => part.value), [300, 200]);
+});
+
+test('a split bar with nothing to share shows no part', () => {
+    assert.deepEqual(splitShares([{ label: 'a', value: '0.00' }, { label: 'b', value: null }]).map((part) => part.share), [0, 0]);
 });
