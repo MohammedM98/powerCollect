@@ -1198,3 +1198,81 @@
         padding-inline-start: 2px;
     }
 }
+
+/* ── The Super Power mark on the sign-in screen (Components/AnimatedLogo.jsx) ── */
+.gl-mark {
+    position: relative;
+    width: 96px;
+    aspect-ratio: 1;
+    margin: 0 auto 28px;
+}
+
+.gl-mark.af-logo--brand {
+    width: 132px;
+    margin: 0;
+}
+
+@media (min-width: 1024px) {
+    .gl-mark.af-logo--form {
+        display: none;
+    }
+}
+
+.gl-mark::before {
+    content: '';
+    position: absolute;
+    inset: 8%;
+    border-radius: 30%;
+    background: rgb(var(--brand-solid));
+    filter: blur(26px);
+    opacity: 0.55;
+    animation: gl-mark-glow 3.6s ease-in-out 1.4s infinite;
+}
+
+.gl-mark svg {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.gl-mark-tile {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: gl-mark-tile 0.7s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+
+.gl-mark-line {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.4;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: gl-draw 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.35s forwards, gl-fade 0.3s ease 1.3s reverse forwards;
+}
+
+.gl-mark-fill {
+    fill: #fff;
+    animation: gl-fade 0.5s ease 1.05s both;
+}
+
+@keyframes gl-mark-tile {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.8) rotate(-6deg);
+    }
+}
+
+@keyframes gl-mark-glow {
+    50% {
+        opacity: 0.25;
+        transform: scale(0.92);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gl-mark-line {
+        display: none;
+    }
+}

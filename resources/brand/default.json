@@ -1,13 +1,13 @@
 {
     "version": 1,
     "company": {
-        "name": "شركة أبناء فارس أبو زايد للتجارة والاستيراد",
-        "nameEnglish": "Sons of Fares AbuZayed Trading & Import Company",
-        "shortName": "أبناء فارس أبو زايد",
+        "name": "سوبر باور",
+        "nameEnglish": "Super Power",
+        "shortName": "سوبر باور",
         "tagline": "نظام التحصيل الكهربائي"
     },
     "logos": {
-        "main": "/images/logo-af.webp",
+        "main": "/images/logo-superpower.svg",
         "light": null,
         "icon": "/favicon.svg",
         "print": null

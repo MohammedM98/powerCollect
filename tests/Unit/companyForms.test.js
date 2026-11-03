@@ -102,7 +102,7 @@ test('a formal letterhead centres the logo between the Arabic and English text o
     const html = renderToStaticMarkup(createElement(CompanyFormPaper, { layout: formal, page: formal.pages[0], blank: true }));
     assert.match(html, /class="cf-letterhead" style="grid-template-columns:minmax\(0, 1fr\) auto minmax\(0, 1fr\)"/);
     const head = html.slice(html.indexOf('<header class="cf-letterhead"'), html.indexOf('</header>'));
-    assert.ok(head.indexOf('أبناء فارس أبو زايد') < head.indexOf('logo-af.webp') && head.indexOf('logo-af.webp') < head.indexOf('Fares Abu Zayed Sons'));
+    assert.ok(head.indexOf('أبناء فارس أبو زايد') < head.indexOf('logo-superpower.svg') && head.indexOf('logo-superpower.svg') < head.indexOf('Fares Abu Zayed Sons'));
     assert.match(html, /border-top:3px solid #111827/);
     assert.match(html, /border-bottom:3px solid #123456/);
     const plain = renderToStaticMarkup(createElement(CompanyFormPaper, { layout: { ...formal, header: { ...formal.header, ruleStyle: 'none' } }, page: formal.pages[0], blank: true }));

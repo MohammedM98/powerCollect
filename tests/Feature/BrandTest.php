@@ -62,9 +62,9 @@ class BrandTest extends TestCase
         $response = $this->get(route('login'));
 
         $response->assertInertia(fn ($page) => $page
-            ->where('brand.name', 'شركة أبناء فارس أبو زايد للتجارة والاستيراد')
-            ->where('brand.logos.main', '/images/logo-af.webp')
-            ->where('brand.logos.print', '/images/logo-af.webp')
+            ->where('brand.name', 'سوبر باور')
+            ->where('brand.logos.main', '/images/logo-superpower.svg')
+            ->where('brand.logos.print', '/images/logo-superpower.svg')
             ->where('brand.animatedLogo', true)
             ->where('brand.printColor', '#A51D26'));
         $response->assertSee('<link rel="icon" href="/favicon.svg">', false);
@@ -194,7 +194,7 @@ class BrandTest extends TestCase
 
         $this->assertFalse(app(Brand::class)->isImported());
         $this->assertSame([], Storage::disk('public')->files('brand'));
-        $this->get(route('login'))->assertInertia(fn ($page) => $page->where('brand.name', 'شركة أبناء فارس أبو زايد للتجارة والاستيراد'));
+        $this->get(route('login'))->assertInertia(fn ($page) => $page->where('brand.name', 'سوبر باور'));
     }
 
     public function test_every_ready_company_identity_imports_with_its_logos(): void

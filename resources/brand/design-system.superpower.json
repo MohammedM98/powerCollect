@@ -999,6 +999,13 @@
   "layoutPrinciple": "التخطيط والبطاقات والحركة مأخوذة من نموذج لوحة الفيديو المعتمد (شريط إحصاءات، استوديو مخطط، حلقة هدف، أعمدة حيّة، لوحة سحب)، وليست من تخطيط صفحات powerCollect الحالي. الصفحات تُعاد ترتيبها على القوالب أدناه مع بقاء البيانات والسلوك كما هي.",
   "stylesheet": {
     "file": "resources/css/glass.css",
-    "note": "أصناف النموذج الأولي نفسها بالبادئة gl- (gl-glass، gl-panel، gl-kpi، gl-stat، gl-chart، gl-seg، gl-pill، gl-field، gl-table، gl-drawer، gl-board…)، وألوانها من theme.css."
+    "note": "أصناف النموذج الأولي نفسها بالبادئة gl-، وألوانها من theme.css."
+  },
+  "identity": {
+    "name": "سوبر باور",
+    "nameEnglish": "Super Power",
+    "logo": "public/images/logo-superpower.svg",
+    "favicon": "public/favicon.svg",
+    "signIn": "Components/AnimatedLogo.jsx (SuperPowerMark)"
   }
 }
