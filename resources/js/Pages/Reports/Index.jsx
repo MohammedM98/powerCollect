@@ -148,8 +148,8 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                     </BranchBanner>
                 )}
 
-                <nav aria-label="أقسام التقارير" className="flex flex-wrap gap-1 rounded-panel border border-gray-100 bg-surface p-2 shadow-card">
-                    {sections.map((item) => <button key={item.key} type="button" aria-current={section === item.key ? 'page' : undefined} onClick={() => { setPrintView(item.key === 'movements' ? 'lines' : 'summary'); visit({ section: item.key, page: undefined }); }} className={`inline-flex items-center gap-2 rounded-control px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 ${section === item.key ? 'bg-graphite-800 text-white' : 'text-gray-600 hover:bg-gray-50'}`}><Icon name={item.icon} className="h-4 w-4" />{item.title}</button>)}
+                <nav aria-label="أقسام التقارير" className="gl-tabs">
+                    {sections.map((item) => <button key={item.key} type="button" aria-current={section === item.key ? 'page' : undefined} onClick={() => { setPrintView(item.key === 'movements' ? 'lines' : 'summary'); visit({ section: item.key, page: undefined }); }} className="gl-tab"><Icon name={item.icon} className="h-4 w-4" />{item.title}</button>)}
                 </nav>
                 <PeriodCard branches={branches} branchScope={branchScope} scopeLabel={scopeLabel} filters={filters} presets={presets} today={today} period={period} periodText={periodText} visit={visit} />
                 {hasFigures && ['overview', 'collections', 'movements'].includes(section) && (

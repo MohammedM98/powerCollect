@@ -3614,3 +3614,28 @@ html:not(.dark):is([data-ui-background='navy'], [data-ui-background='midnight'],
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .financial-ledger-table tbody tr:hover td {
     background: var(--gl-fill);
 }
+
+
+/*
+ * The old graphite cards and the grey inner boxes, in the navy look: a card
+ * that was graphite (white text on it) is the deep blue in the company's
+ * colour, and a grey box inside a panel is the glass tint with a thin line,
+ * as the prototype's inner boxes.
+ */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .bg-graphite-gradient {
+    background-image: var(--ui-hero);
+    border-color: rgb(255 255 255 / 0.1);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .bg-gray-50:not(body) {
+    border-color: var(--gl-line);
+    background-color: var(--gl-fill);
+}
+
+
+/* A chosen chip drawn dark by hand (bg-gray-900 or graphite with light text) takes the company's colour in the navy look. */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .bg-gray-900:is(.text-surface, .text-white),
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .bg-graphite-800.text-white {
+    background-color: rgb(var(--brand-solid));
+    color: #fff;
+}
