@@ -196,7 +196,7 @@
   "components": [
     {
       "name": "Panel",
-      "status": "new",
+      "status": "existing",
       "file": "resources/js/Components/Panel.jsx",
       "prototype": "Panel",
       "props": [
@@ -206,8 +206,7 @@
         "children",
         "className"
       ],
-      "spec": "لوحة زجاجية: padding 18px، عنوان 16px/700 وسطر فرعي muted 12.5px وأزرار على الطرف الآخر",
-      "audit": "غير موجود. اللوحات اليوم مبنية يدويًا في الصفحات بأصناف rounded-card/rounded-panel + bg-surface + shadow-card (أكثر من 45 ملفًا تحت Pages)."
+      "spec": "لوحة زجاجية: padding 18px، عنوان 16px/700 وسطر فرعي muted 12.5px وأزرار على الطرف الآخر"
     },
     {
       "name": "KpiTile",
@@ -220,14 +219,14 @@
         "compact"
       ],
       "spec": "hero بتدرج لون الهوية وخط سفلي signature، الرقم عبر CountUp",
-      "audit": "موجود. hero اليوم بخلفية bg-graphite-gradient ونص أبيض وليس بتدرج لون الهوية، والرقم لا يمر عبر CountUp."
+      "audit": "أُعيد رسمه بأصناف gl-kpi (المرحلة الحالية)؛ الرقم العددي يمر عبر CountUp."
     },
     {
       "name": "CountUp",
       "status": "existing",
       "file": "resources/js/Components/CountUp.jsx",
       "prototype": "CountUp",
-      "audit": "موجود لكنه غير مستخدم في أي صفحة أو مكوّن."
+      "audit": "يدعم decimals وformat ويحترم إعداد الحركة للشركة."
     },
     {
       "name": "PageHeader",
@@ -433,14 +432,14 @@
     },
     {
       "name": "StatStrip",
-      "status": "new",
+      "status": "existing",
       "file": "resources/js/Components/StatStrip.jsx",
       "prototype": "Stat",
       "spec": "شريط داخل لوحة واحدة: 3 إحصاءات، كل واحدة عنوان + رقم CountUp + وحدة + شارة نسبة + سطر مقارنة، وإحداها مع Spark مصغّر. فواصل عمودية line."
     },
     {
       "name": "ChartStudio",
-      "status": "new",
+      "status": "existing",
       "file": "resources/js/Components/ChartStudio.jsx",
       "prototype": "استوديو التحصيل",
       "spec": "عنوان + إجمالي الفترة ونسبة التغير + زر تبديل 'الفترة السابقة' + SegmentedTabs للفترة، ثم مخطط مساحي بمحاور وتسميات وخط منقّط للفترة السابقة. Sparkline الحالي لا يكفي (بلا محاور ولا فترة سابقة)، فالمخطط يُبنى داخل ChartStudio. البيانات موجودة: collections.series[].value/previous وcollections.change من DashboardOverview."
@@ -450,43 +449,39 @@
       "status": "existing",
       "file": "resources/js/Components/StatRing.jsx",
       "prototype": "GoalRing",
-      "spec": "حلقة 104px بسمك 10، تمتلئ بحركة ring-draw، الرقم في الوسط وتحته 'من الهدف'، ثم 3 أسطر kv.",
+      "spec": "حلقة 104px بسمك 10، تمتلئ بحركة ring-draw، الرقم في الوسط وتحته 'من الهدف'، ثم 3 أسطر kv. التصدير GoalRing في StatRing.jsx.",
       "audit": "لا توجد بيانات هدف شهري في الخادم. يلزم قرار: إما استبدال الهدف بمؤشر موجود (مثل اكتمال قراءات الدورة approved/total)، أو إضافة هدف (تغيير خارج النطاق البصري).",
       "decision": "معتمد: الحلقة تعرض اكتمال قراءات الدورة (approved من total في readings من DashboardOverview) بدل هدف شهري."
     },
     {
       "name": "LiveBars",
-      "status": "new",
+      "status": "existing",
       "file": "resources/js/Components/LiveBars.jsx",
       "prototype": "المحصّلون الآن",
       "spec": "رقم كبير + 26 عمودًا تتغير ارتفاعاتها كل 1.6s بانتقال 0.6s، ثم أسطر kv. تتوقف مع reduced-motion.",
-      "audit": "لا توجد بيانات حيّة عن المحصّلين في الميدان. الموجود: collections.byCollector (اسم، مجموع، عدد، نسبة) والصناديق المفتوحة. يلزم قرار قبل التنفيذ بدل أعمدة عشوائية.",
       "decision": "معتمد: أعمدة ثابتة من collections.byCollector (مجموع كل محصّل في الفترة) مع عدد الصناديق المفتوحة، بلا أعمدة عشوائية."
     },
     {
       "name": "SplitBar",
-      "status": "new",
+      "status": "existing",
       "file": "resources/js/Components/SplitBar.jsx",
       "prototype": "طرق الدفع",
       "spec": "شريط مقسّم 8px بألوان: لون الزر، تحذير، رمادي. ينمو من بداية السطر بتتابع 120ms، تحته أسطر kv.",
-      "audit": "البيانات الموجودة: collections.cash وcollections.transfers (قسمان، لا ثلاثة كما في النموذج).",
       "decision": "معتمد: قسمان (نقدًا وتحويلات) من collections.cash وcollections.transfers."
     },
     {
       "name": "UnderlineTabs",
-      "status": "new",
+      "status": "existing",
       "file": "resources/js/Components/UnderlineTabs.jsx",
       "prototype": "tabs",
-      "spec": "تبويبات بخط سفلي بلون الهوية وعدّاد صغير.",
-      "audit": "كان مسجلًا كموجود في PeriodTabs، لكن PeriodTabs غلاف لـ SegmentedTabs ولا يرسم خطًا سفليًا. لا يوجد مكوّن تبويبات بخط سفلي في المشروع."
+      "spec": "تبويبات بخط سفلي بلون الهوية وعدّاد صغير."
     },
     {
       "name": "WordReveal",
-      "status": "new",
+      "status": "existing",
       "file": "resources/js/Components/WordReveal.jsx",
       "prototype": "Words",
-      "spec": "ظهور عنوان الصفحة كلمة كلمة (وليس حرفًا حرفًا، لأن تقسيم الحروف العربية يكسر اتصالها). تأخير 70ms لكل كلمة.",
-      "audit": "غير موجود."
+      "spec": "ظهور عنوان الصفحة كلمة كلمة (وليس حرفًا حرفًا، لأن تقسيم الحروف العربية يكسر اتصالها). تأخير 70ms لكل كلمة."
     },
     {
       "name": "FormPage",
@@ -576,7 +571,7 @@
         "Panel",
         "StatusPill"
       ],
-      "audit": "اليوم: KpiTile + SegmentedTabs + QuickPaymentSearch + جداول data-table في Dashboard/DashboardPanels. GoalRing وLiveBars بلا بيانات مقابلة (انظر المكوّنين)."
+      "audit": "مبنية على قالب النموذج: StatStrip + ChartStudio، ثم بانتظارك/أكبر المدينين/طرق الدفع، ثم KpiTile، وفي الجانب GoalRing (القراءات) وLiveBars (الفروع أو المحصّلون) والإجراءات والقواطع، ثم أحدث الدفعات في Panel."
     },
     {
       "page": "Subscriptions/Index.jsx",
@@ -1001,5 +996,9 @@
     "لا اعتماد جديد بدون موافقة. الحركة بـ CSS وWeb Animations وrAF.",
     "أي مكوّن مشترك جديد يُسجَّل في هذا الملف، وأي صفحة تُضاف أو تُنقل تُحدَّث هنا."
   ],
-  "layoutPrinciple": "التخطيط والبطاقات والحركة مأخوذة من نموذج لوحة الفيديو المعتمد (شريط إحصاءات، استوديو مخطط، حلقة هدف، أعمدة حيّة، لوحة سحب)، وليست من تخطيط صفحات powerCollect الحالي. الصفحات تُعاد ترتيبها على القوالب أدناه مع بقاء البيانات والسلوك كما هي."
+  "layoutPrinciple": "التخطيط والبطاقات والحركة مأخوذة من نموذج لوحة الفيديو المعتمد (شريط إحصاءات، استوديو مخطط، حلقة هدف، أعمدة حيّة، لوحة سحب)، وليست من تخطيط صفحات powerCollect الحالي. الصفحات تُعاد ترتيبها على القوالب أدناه مع بقاء البيانات والسلوك كما هي.",
+  "stylesheet": {
+    "file": "resources/css/glass.css",
+    "note": "أصناف النموذج الأولي نفسها بالبادئة gl- (gl-glass، gl-panel، gl-kpi، gl-stat، gl-chart، gl-seg، gl-pill، gl-field، gl-table، gl-drawer، gl-board…)، وألوانها من theme.css."
+  }
 }

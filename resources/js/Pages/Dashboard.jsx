@@ -1,28 +1,23 @@
 import { lazy, Suspense, useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import AddButton from '@/Components/AddButton';
-import BranchBanner from '@/Components/BranchBanner';
 import { useBranchView } from '@/hooks/useBranchView';
 import Icon from '@/Components/Icon';
+import ChartStudio from '@/Components/ChartStudio';
 import KpiTile from '@/Components/KpiTile';
-import PageHeader from '@/Components/PageHeader';
+import LiveBars from '@/Components/LiveBars';
+import Panel from '@/Components/Panel';
 import SearchableSelect from '@/Components/SearchableSelect';
-import SegmentedTabs from '@/Components/SegmentedTabs';
+import SplitBar from '@/Components/SplitBar';
+import StatStrip, { ChangePill, Spark, Stat } from '@/Components/StatStrip';
+import { GoalRing } from '@/Components/StatRing';
+import WordReveal from '@/Components/WordReveal';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
-import { formatMoney, formatNumber, percentOf } from '@/lib/format';
+import { formatMoney, formatNumber, formatShortDay, percentOf } from '@/lib/format';
+import { shouldPrefetchPage } from '@/lib/navigation';
 import { formatWeekDay } from '@/lib/weekDays';
-import { AttentionItem, PendingPanel, PendingTile, READING_PARTS, SplitBar, TileLink } from './Dashboard/DashboardParts';
-import {
-    BreakersPanel,
-    CollectionRankPanel,
-    CollectionsTile,
-    CollectionTrendPanel,
-    LatestPayments,
-    QuickActions,
-    TopDebtorsPanel,
-    WeekReadingsPanel,
-} from './Dashboard/DashboardPanels';
+import { TileLink } from './Dashboard/DashboardParts';
+import { LatestPayments } from './Dashboard/DashboardPanels';
 
 const BranchModal = lazy(() => import('@/Pages/Branches/BranchModal'));
 const UserModal = lazy(() => import('@/Pages/Users/UserModal'));
@@ -78,7 +73,6 @@ export default function Dashboard({
     const statementWindow = useStatementWindow(statement);
     // A save from one of the dashboard's windows comes back here (with any open statement), not to the record's list page.
     const returnHere = { preserveState: true, headers: { 'X-Return-To': urlWithoutEdit() } };
-    const [chartView, setChartView] = useState('chart');
     const [search, setSearch] = useState(filters.search ?? '');
     const { collections, subscriptions, meterBoxes, readings, disconnections, boxes } = sections;
     const hasAnyData = Object.keys(sections).length > 0 || Boolean(latestPayments);
@@ -206,9 +200,6 @@ export default function Dashboard({
         },
     ].filter(Boolean);
 
-    // An odd tile left alone on the last row takes the whole row.
-    const lastActionSpans = quickActions.filter((action) => !action.main).length % 2 === 1;
-
     const rankList = collections?.byBranch ?? collections?.byCollector ?? null;
     const rankMax = Math.max(0, ...(rankList ?? []).map((item) => item.total));
     const topBreaker = subscriptions?.byBreaker?.[0] ?? null;
@@ -217,256 +208,228 @@ export default function Dashboard({
     const payments = latestPayments?.rows;
     const tiles = [subscriptions, meterBoxes, subscriptions, debts !== null].filter(Boolean).length;
 
+    const greet = `${greeting}،`;
+    const periodOptions = periods.map((days) => ({ value: days, label: periodLabel(days) }));
+    const readShare = readings ? percentOf(readings.approved, readings.total) : 0;
+    const methodParts = collections ? [
+        { label: 'نقدي', value: collections.cash, color: 'rgb(var(--gl-btn))' },
+        { label: 'حوالات', value: collections.transfers, color: 'var(--gl-warn)' },
+    ] : [];
+
     return (
-        <AuthenticatedLayout
-            scope={branchScope?.name ?? null}
-            header={
-                <PageHeader
-                    title={
-                        <>
-                            {greeting}، <span className="text-brand-600">{auth.user.name}</span>
-                        </>
-                    }
-                    meta={[scopeLine, formatWeekDay(scope.today)].filter(Boolean).join(' · ')}
-                    actions={
-                        <>
-                            {canCreateBranch ? (
-                                <AddButton onClick={() => openCreateForm('branch')}>فرع جديد</AddButton>
-                            ) : canCreateUser ? (
-                                <AddButton onClick={() => openCreateForm('user')}>مستخدم جديد</AddButton>
-                            ) : null}
-                        </>
-                    }
-                />
-            }
-        >
+        <AuthenticatedLayout scope={branchScope?.name ?? null}>
             <Head title="لوحة التحكم" />
 
-            {!hasAnyData ? (
-                <div className="rounded-card border border-dashed border-gray-200 bg-surface px-6 py-16 text-center">
-                    {fieldApp ? (
-                        <>
-                            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-500/10 text-brand-600">
-                                <Icon name="phone" className="h-7 w-7" />
-                            </span>
-                            <h3 className="mt-4 text-lg font-bold text-gray-900">حسابك للعمل الميداني</h3>
-                            <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-gray-600">
-                                تُسجَّل الدفعات والقراءات من تطبيق التحصيل على الهاتف، وتدخل إليه بنفس اسم المستخدم وكلمة المرور. لا تظهر لك بيانات في
-                                الموقع.
-                            </p>
-                            {fieldApp.url && (
-                                <a
-                                    href={fieldApp.url}
-                                    className="mt-6 inline-flex items-center justify-center gap-2 rounded-control bg-brand-gradient px-4 py-2.5 text-sm font-semibold text-white shadow-glow transition hover:brightness-110"
-                                >
-                                    <Icon name="arrow-down-tray" className="h-4 w-4" />
-                                    تحميل تطبيق التحصيل
-                                </a>
-                            )}
-                        </>
-                    ) : (
-                        <p className="text-sm text-gray-500">لا توجد بيانات لعرضها حاليًا — لم يتم منحك صلاحية عرض أي جدول بعد.</p>
-                    )}
-                </div>
-            ) : (
-                <div className="space-y-5">
-                    {branchScope && (
-                        <BranchBanner
-                            scope={branchScope}
-                            meta={`آخر ${period}`}
-                            className=""
-                            controls={
-                                <>
-                                    {governorateOptions.length > 0 && (
-                                        <label className="flex w-full flex-col gap-1.5 text-xs font-semibold text-white/70 sm:w-56">
-                                            المحافظة
-                                            <SearchableSelect
-                                                value={filters.governorate ?? ''}
-                                                onChange={(value) => visit({ governorate: value || null, branch: null })}
-                                                options={governorateOptions}
-                                                placeholder="كل المحافظات"
-                                                searchable={governorateOptions.length > 6}
-                                                active={Boolean(filters.governorate)}
-                                                portal
-                                                onDark
-                                            />
-                                        </label>
-                                    )}
-                                    <label className="flex w-full flex-col gap-1.5 text-xs font-semibold text-white/70 sm:w-56">
-                                        الفرع
-                                        <SearchableSelect
-                                            value={branchView.available ? String(branchView.value) : filters.branch ?? ''}
-                                            onChange={branchView.available ? branchView.changeBranch : (value) => visit({ branch: value || null })}
-                                            options={branchView.available ? branchView.options : branchOptions.filter((branch) => !filters.governorate || String(branch.governorate) === String(filters.governorate))}
-                                            disabled={branchView.switching}
-                                            placeholder="كل الفروع"
-                                            searchPlaceholder="ابحث عن فرع..."
-                                            active={Boolean(filters.branch)}
-                                            portal
-                                            onDark
-                                        />
-                                    </label>
-                                </>
-                            }
-                        />
-                    )}
-                    <div className="flex flex-wrap items-center gap-3">
-                        <SegmentedTabs
-                            label="الفترة"
-                            value={filters.days}
-                            onChange={(days) => visit({ days })}
-                            options={periods.map((days) => ({ value: days, label: periodLabel(days) }))}
-                        />
-                        {/* The head of the company picks the governorate and branch in the banner above; everyone else sees their own branch here. */}
-                        {!scope.company && (
-                            scope.label && (
-                                <span className="inline-flex items-center gap-2 rounded-control border border-gray-100 bg-surface px-3.5 py-2 text-sm font-semibold text-gray-700 shadow-sm">
-                                    <Icon name="lock" className="h-4 w-4 text-gray-400" />
-                                    فرعك: {scope.label}
-                                </span>
-                            )
-                        )}
+            <div className="gl-page">
+                <div className="gl-phead gl-rise">
+                    <div className="min-w-0">
+                        <h1>
+                            <WordReveal text={greet}>
+                                <span style={{ color: 'rgb(var(--gl-brand))' }}>{auth.user.name}</span>
+                            </WordReveal>
+                        </h1>
+                        <p>{[scopeLine, formatWeekDay(scope.today)].filter(Boolean).join(' · ')}</p>
                     </div>
+                    <div className="gl-phead-actions">
+                        {branchScope && governorateOptions.length > 0 && (
+                            <div className="w-full sm:w-52">
+                                <SearchableSelect
+                                    value={filters.governorate ?? ''}
+                                    onChange={(value) => visit({ governorate: value || null, branch: null })}
+                                    options={governorateOptions}
+                                    placeholder="كل المحافظات"
+                                    searchable={governorateOptions.length > 6}
+                                    active={Boolean(filters.governorate)}
+                                    portal
+                                />
+                            </div>
+                        )}
+                        {branchScope && (
+                            <div className="w-full sm:w-52">
+                                <SearchableSelect
+                                    value={branchView.available ? String(branchView.value) : filters.branch ?? ''}
+                                    onChange={branchView.available ? branchView.changeBranch : (value) => visit({ branch: value || null })}
+                                    options={branchView.available ? branchView.options : branchOptions.filter((branch) => !filters.governorate || String(branch.governorate) === String(filters.governorate))}
+                                    disabled={branchView.switching}
+                                    placeholder="كل الفروع"
+                                    searchPlaceholder="ابحث عن فرع..."
+                                    active={Boolean(filters.branch)}
+                                    portal
+                                />
+                            </div>
+                        )}
+                        {!scope.company && scope.label && <span className="gl-pill gl-info self-center"><Icon name="lock" className="h-3.5 w-3.5" />فرعك: {scope.label}</span>}
+                        {canCreateBranch ? (
+                            <button type="button" className="gl-btn gl-sec" onClick={() => openCreateForm('branch')}><Icon name="plus" className="h-4 w-4" />فرع جديد</button>
+                        ) : canCreateUser ? (
+                            <button type="button" className="gl-btn gl-sec" onClick={() => openCreateForm('user')}><Icon name="plus" className="h-4 w-4" />مستخدم جديد</button>
+                        ) : null}
+                        {can?.recordPayments && (can?.viewSubscriptions
+                            ? <button type="button" className="gl-btn" onClick={() => setFindingPayer(true)} aria-haspopup="dialog"><Icon name="plus" className="h-4 w-4" />تسجيل دفعة</button>
+                            : <Link href="/payments" className="gl-btn"><Icon name="plus" className="h-4 w-4" />تسجيل دفعة</Link>)}
+                    </div>
+                </div>
 
-                    {(collections || tiles > 0) && (
-                        <div className={`grid grid-cols-1 gap-5 ${collections && tiles > 0 ? 'xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]' : ''}`}>
-                            {collections && (
-                                <CollectionsTile collections={collections} period={period} />
-                            )}
-
-                            {tiles > 0 && (
-                                <div className={`grid grid-cols-1 gap-5 sm:grid-cols-2 ${collections ? '' : 'xl:grid-cols-4'}`}>
-                                    {subscriptions && (
-                                        <TileLink href="/subscriptions">
-                                            <KpiTile
-                                                icon="users"
-                                                label="المشتركون النشطون"
-                                                value={formatNumber(subscriptions.active)}
-                                                hint={`من ${formatNumber(subscriptions.total)} · ${formatNumber(subscriptions.newInPeriod)} جديد في آخر ${period}`}
-                                            >
-                                                <SplitBar
-                                                    label="حالات المشتركين"
-                                                    parts={[
-                                                        { label: 'نشط', value: subscriptions.active, className: 'bg-emerald-500' },
-                                                        { label: 'موقوف', value: subscriptions.suspended, className: 'bg-amber-500' },
-                                                        { label: 'مفصول', value: subscriptions.disconnected, className: 'bg-gray-400' },
-                                                    ]}
-                                                />
-                                            </KpiTile>
-                                        </TileLink>
-                                    )}
-                                    {meterBoxes && (
-                                        <TileLink href="/meter-boxes">
-                                            <KpiTile
-                                                icon="table"
-                                                label="الطبلونات"
-                                                value={formatNumber(meterBoxes.total)}
-                                                hint={
-                                                    readings
-                                                        ? `قُرئ ${percentOf(readings.approved + readings.pending, readings.total)}% من العدادات هذا الأسبوع`
-                                                        : `${formatNumber(meterBoxes.empty)} بلا مشتركين نشطين`
-                                                }
-                                            >
-                                                {readings && <SplitBar label="قراءات الأسبوع" parts={READING_PARTS(readings)} />}
-                                            </KpiTile>
-                                        </TileLink>
-                                    )}
-                                    {subscriptions && (
-                                        <KpiTile
-                                            icon="bolt"
-                                            label="الأمبير المتعاقد عليه"
-                                            value={formatNumber(subscriptions.contractedAmperes)}
-                                            unit="أمبير"
-                                            hint={
-                                                topBreaker
-                                                    ? `الأكثر: قاطع ${topBreaker.ampere} أمبير (${topBreaker.share}%)`
-                                                    : 'لا قواطع للمشتركين النشطين'
-                                            }
+                {!hasAnyData ? (
+                    <Panel index={1} className="py-14 text-center">
+                        {fieldApp ? (
+                            <>
+                                <span className="gl-ico mx-auto" style={{ width: 56, height: 56, color: 'rgb(var(--gl-brand))' }}><Icon name="phone" className="h-7 w-7" /></span>
+                                <h2 className="mt-4">حسابك للعمل الميداني</h2>
+                                <p className="gl-sub mx-auto mt-2 max-w-md leading-7">
+                                    تُسجَّل الدفعات والقراءات من تطبيق التحصيل على الهاتف، وتدخل إليه بنفس اسم المستخدم وكلمة المرور. لا تظهر لك بيانات في الموقع.
+                                </p>
+                                {fieldApp.url && <a href={fieldApp.url} className="gl-btn mt-6"><Icon name="arrow-down-tray" className="h-4 w-4" />تحميل تطبيق التحصيل</a>}
+                            </>
+                        ) : (
+                            <p className="gl-sub">لا توجد بيانات لعرضها حاليًا — لم يتم منحك صلاحية عرض أي جدول بعد.</p>
+                        )}
+                    </Panel>
+                ) : (
+                    <>
+                        <div className="gl-dash">
+                            <div className="gl-col">
+                                {collections && (
+                                    <section className="gl-glass gl-panel gl-rise" style={{ '--i': 1 }} aria-label="التحصيل">
+                                        <StatStrip>
+                                            <Stat label="المحصّل اليوم" value={collections.today.total} unit="₪" format={formatMoney} hint={`${formatNumber(collections.today.count)} دفعة حتى الآن`} />
+                                            <Stat label={`آخر ${period}`} value={collections.total} unit="₪" format={formatMoney} badge={<ChangePill change={collections.change} />} hint={`الفترة السابقة ${formatMoney(collections.previousTotal)} ₪`} />
+                                            <Stat label="دفعات الفترة" value={collections.count} hint={`نقدي ${formatMoney(collections.cash)} · حوالات ${formatMoney(collections.transfers)} ₪`}>
+                                                <Spark values={collections.series.map((day) => Number(day.value) || 0)} />
+                                            </Stat>
+                                        </StatStrip>
+                                        <ChartStudio
+                                            title="استوديو التحصيل"
+                                            total={collections.total}
+                                            change={collections.change}
+                                            formatTotal={formatMoney}
+                                            series={collections.series}
+                                            dayLabel={formatShortDay}
+                                            periods={periodOptions}
+                                            period={filters.days}
+                                            onPeriodChange={(days) => visit({ days })}
                                         />
-                                    )}
-                                    {debts === undefined ? (
-                                        <PendingTile />
-                                    ) : (
-                                        debts && (
-                                            <TileLink href="/receivables">
-                                                <KpiTile
-                                                    icon="clock"
-                                                    label="الديون المستحقة"
-                                                    value={formatMoney(debts.total)}
-                                                    unit="₪"
-                                                    hint={`${formatNumber(debts.count)} مدين · أكثر من 90 يومًا ${debts.olderShare}% · لا يُطرح منها رصيد من له رصيد دائن`}
-                                                >
-                                                    <SplitBar
-                                                        label="أعمار الديون"
-                                                        parts={[
-                                                            { label: 'حتى 90 يومًا', value: debts.total - debts.older, className: 'bg-amber-500' },
-                                                            { label: 'أكثر من 90 يومًا', value: debts.older, className: 'bg-brand-500' },
-                                                        ]}
-                                                    />
+                                    </section>
+                                )}
+                                {!collections && (
+                                    <div className="gl-seg self-start" role="group" aria-label="الفترة">
+                                        {periodOptions.map((option) => <button key={option.value} type="button" aria-pressed={filters.days === option.value} onClick={() => visit({ days: option.value })}>{option.label}</button>)}
+                                    </div>
+                                )}
+
+                                {(attention.length > 0 || debts !== null || collections) && (
+                                    <div className="gl-grid gl-g3">
+                                        {attention.length > 0 && (
+                                            <Panel index={2} title="بانتظارك" sub="ما يحتاج متابعة اليوم">
+                                                {attention.map(({ key, icon, title, subtitle, count, href, tone }) => (
+                                                    <Link key={key} href={href} prefetch={false} className="gl-attn">
+                                                        <span className="gl-dot" style={{ '--gl-c': tone === 'red' ? 'var(--gl-bad)' : 'var(--gl-warn)' }} />
+                                                        <span className="min-w-0 flex-1"><b className="block truncate font-semibold">{title}</b><small className="gl-sub">{subtitle}</small></span>
+                                                        <b className="gl-num">{formatNumber(count)}</b>
+                                                        <span style={{ color: 'var(--gl-faint)' }}><Icon name={icon} className="h-4 w-4" /></span>
+                                                    </Link>
+                                                ))}
+                                            </Panel>
+                                        )}
+                                        {debts === undefined ? (
+                                            <Panel index={3} title="أكبر المدينين"><div className="space-y-3 py-2"><div className="gl-skel" /><div className="gl-skel w-2/3" /><div className="gl-skel w-1/2" /></div></Panel>
+                                        ) : debts && (
+                                            <Panel index={3} title="أكبر المدينين" sub={`${formatNumber(debts.count)} مدين · ₪ ${formatMoney(debts.total)}`} right={<Link href="/receivables" className="gl-btn gl-sec gl-sm">الكل</Link>}>
+                                                {debts.top.length === 0 ? <p className="gl-empty-line">لا ديون مستحقة.</p> : debts.top.map((debtor) => (
+                                                    <div key={debtor.subscriptionId} className="gl-row">
+                                                        <div className="gl-av" style={{ color: 'var(--gl-bad)' }}>{(debtor.name ?? '').slice(0, 1)}</div>
+                                                        <div className="gl-t"><b>{debtor.name}</b><small className="gl-num">₪ {formatMoney(debtor.balance)} · منذ {formatNumber(debtor.oldestDays)} يومًا</small></div>
+                                                        {can?.viewSubscriptions && <button type="button" className="gl-btn gl-sec gl-sm" onClick={() => openStatement(debtor)} aria-haspopup="dialog" aria-label={`كشف حساب ${debtor.name}`}>كشف</button>}
+                                                    </div>
+                                                ))}
+                                            </Panel>
+                                        )}
+                                        {collections && (
+                                            <Panel index={4} title="طرق الدفع" sub={`آخر ${period} · ₪ ${formatMoney(collections.total)}`}>
+                                                <SplitBar parts={methodParts} label="النقد والحوالات" formatValue={(value) => `₪ ${formatMoney(value)}`} />
+                                            </Panel>
+                                        )}
+                                    </div>
+                                )}
+
+                                {tiles > 0 && (
+                                    <div className="gl-grid gl-g4">
+                                        {subscriptions && (
+                                            <TileLink href="/subscriptions">
+                                                <KpiTile hero index={5} icon="users" label="المشتركون النشطون" value={subscriptions.active} hint={`من ${formatNumber(subscriptions.total)} · ${formatNumber(subscriptions.newInPeriod)} جديد في آخر ${period}`}>
+                                                    <div className="gl-split" role="img" aria-label="حالات المشتركين">
+                                                        {[[subscriptions.active, 'var(--gl-ok)'], [subscriptions.suspended, 'var(--gl-warn)'], [subscriptions.disconnected, 'var(--gl-faint)']].map(([count, color], index) => subscriptions.total > 0 && count > 0 && (
+                                                            <i key={color} style={{ '--i': index, width: `${(count / subscriptions.total) * 100}%`, background: color }} />
+                                                        ))}
+                                                    </div>
                                                 </KpiTile>
                                             </TileLink>
-                                        )
-                                    )}
-                                </div>
-                            )}
+                                        )}
+                                        {meterBoxes && (
+                                            <TileLink href="/meter-boxes">
+                                                <KpiTile index={6} icon="table" label="الطبلونات" value={meterBoxes.total} hint={readings ? `قُرئ ${percentOf(readings.approved + readings.pending, readings.total)}% من العدادات هذا الأسبوع` : `${formatNumber(meterBoxes.empty)} بلا مشتركين نشطين`} />
+                                            </TileLink>
+                                        )}
+                                        {subscriptions && (
+                                            <KpiTile index={7} icon="bolt" label="الأمبير المتعاقد عليه" value={subscriptions.contractedAmperes} unit="أمبير" hint={topBreaker ? `الأكثر: قاطع ${topBreaker.ampere} أمبير (${topBreaker.share}%)` : 'لا قواطع للمشتركين النشطين'} />
+                                        )}
+                                        {debts === undefined ? <div className="gl-glass gl-kpi"><div className="gl-skel w-1/2" /><div className="gl-skel mt-6 h-8 w-2/3" /></div> : debts && (
+                                            <TileLink href="/receivables">
+                                                <KpiTile index={8} icon="clock" label="الديون المستحقة" value={formatMoney(debts.total)} unit="₪" hint={`${formatNumber(debts.count)} مدين · أكثر من 90 يومًا ${debts.olderShare}%`} />
+                                            </TileLink>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="gl-col">
+                                {readings && (
+                                    <Panel index={2} title="قراءات الأسبوع" sub={readings.week ? `بدأ ${formatWeekDay(readings.week)}` : 'آخر أسبوع قراءة'} right={can?.viewMeterReadings && <Link href="/meter-readings" className="gl-pill gl-info">فتح</Link>}>
+                                        <GoalRing percent={readShare} caption="معتمدة" />
+                                        <div className="gl-kv"><span>معتمدة</span><b className="gl-num">{formatNumber(readings.approved)}</b></div>
+                                        <div className="gl-kv"><span>بانتظار الاعتماد</span><b className="gl-num">{formatNumber(readings.pending)}</b></div>
+                                        <div className="gl-kv"><span>لم تُقرأ</span><b className="gl-num" style={{ color: readings.missing > 0 ? 'var(--gl-bad)' : undefined }}>{formatNumber(readings.missing)}</b></div>
+                                    </Panel>
+                                )}
+                                {rankList && (
+                                    <Panel index={3} title={collections.byBranch ? 'التحصيل حسب الفرع' : 'المحصّلون'} sub={`آخر ${period}`}>
+                                        <LiveBars value={formatNumber(rankList.length)} bars={rankList.map((item) => Number(item.total) || 0)} label={collections.byBranch ? 'تحصيل كل فرع' : 'تحصيل كل موظف'}>
+                                            {boxes && <div className="gl-kv"><span>صناديق مفتوحة</span><b className="gl-num">{formatNumber(boxes.open)}</b></div>}
+                                            <div className="gl-kv"><span>دفعات اليوم</span><b className="gl-num">{formatNumber(collections.today.count)}</b></div>
+                                            {rankList[0] && <div className="gl-kv"><span>الأعلى</span><b className="truncate">{rankList[0].name}</b></div>}
+                                        </LiveBars>
+                                    </Panel>
+                                )}
+                                {quickActions.length > 0 && (
+                                    <Panel index={4} title="إجراءات سريعة">
+                                        <div className="gl-qa">
+                                            {quickActions.map((action) => action.onClick ? (
+                                                <button key={action.href} type="button" className="gl-qbtn" onClick={action.onClick} aria-haspopup="dialog"><Icon name={action.icon} className="h-[18px] w-[18px]" />{action.title}</button>
+                                            ) : (
+                                                <Link key={action.href} href={action.href} prefetch={shouldPrefetchPage(action.href)} className="gl-qbtn"><Icon name={action.icon} className="h-[18px] w-[18px]" />{action.title}</Link>
+                                            ))}
+                                        </div>
+                                    </Panel>
+                                )}
+                                {hasBreakers && (
+                                    <Panel index={5} title="المشتركون حسب القاطع">
+                                        {subscriptions.byBreaker.map((breaker, index) => (
+                                            <div key={breaker.ampere} className="py-2">
+                                                <div className="gl-kv"><b>{breaker.ampere} أمبير</b><span className="gl-num">{formatNumber(breaker.count)} · {breaker.share}%</span></div>
+                                                <div className="gl-bar mt-2"><i style={{ width: `${breakerMax > 0 ? (breaker.count / breakerMax) * 100 : 0}%`, '--i': index }} /></div>
+                                            </div>
+                                        ))}
+                                    </Panel>
+                                )}
+                            </div>
                         </div>
-                    )}
 
-                    {attention.length > 0 && (
-                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(14rem,1fr))]">
-                            {attention.map(({ key, ...item }) => (
-                                <AttentionItem key={key} {...item} />
-                            ))}
-                        </div>
-                    )}
-
-                    {(quickActions.length > 0 || collections) && (
-                        <div
-                            className={`grid grid-cols-1 gap-5 ${quickActions.length > 0 && collections ? 'xl:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]' : ''}`}
-                        >
-                            {quickActions.length > 0 && (
-                                <QuickActions quickActions={quickActions} lastActionSpans={lastActionSpans} />
-                            )}
-
-                            {collections && (
-                                <CollectionTrendPanel collections={collections} period={period} chartView={chartView} onChartViewChange={setChartView} />
-                            )}
-                        </div>
-                    )}
-
-                    {(debts !== null || hasBreakers) && (
-                        <div className={`grid grid-cols-1 gap-5 ${debts !== null && hasBreakers ? 'lg:grid-cols-2' : ''}`}>
-                            {debts === undefined ? (
-                                <PendingPanel />
-                            ) : (
-                                debts && (
-                                    <TopDebtorsPanel debts={debts} can={can} onOpenStatement={openStatement} />
-                                )
-                            )}
-
-                            {hasBreakers && (
-                                <BreakersPanel subscriptions={subscriptions} breakerMax={breakerMax} />
-                            )}
-                        </div>
-                    )}
-
-                    {(rankList || readings) && (
-                        <div className={`grid grid-cols-1 gap-5 ${rankList && readings ? 'lg:grid-cols-2' : ''}`}>
-                            {rankList && (
-                                <CollectionRankPanel collections={collections} rankList={rankList} rankMax={rankMax} period={period} />
-                            )}
-
-                            {readings && (
-                                <WeekReadingsPanel readings={readings} can={can} />
-                            )}
-                        </div>
-                    )}
-
-                    {payments && (
-                        <LatestPayments payments={payments} latestPayments={latestPayments} period={period} search={search} onSearchChange={setSearch} onVisit={visit} filters={filters} scope={scope} can={can} canOpenReceipts={canOpenReceipts} onOpenStatement={openStatement} />
-                    )}
-                </div>
-            )}
+                        {payments && (
+                            <LatestPayments payments={payments} latestPayments={latestPayments} period={period} search={search} onSearchChange={setSearch} onVisit={visit} filters={filters} scope={scope} can={can} canOpenReceipts={canOpenReceipts} onOpenStatement={openStatement} />
+                        )}
+                    </>
+                )}
+            </div>
 
             <Suspense fallback={<p role="status" className="fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 rounded-control border border-gray-200 bg-surface px-4 py-3 text-sm text-gray-600 shadow-card">جارٍ تحميل النافذة…</p>}>
                 {branchForm && creating === 'branch' && (
