@@ -387,44 +387,7 @@
     font-size: 13px;
 }
 
-/* ── Buttons ──────────────────────────────────────────────────────────── */
-.gl-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 9px 16px;
-    border-radius: 12px;
-    font-weight: 700;
-    color: #fff;
-    white-space: nowrap;
-    background: linear-gradient(180deg, rgb(var(--gl-btn)), color-mix(in srgb, rgb(var(--gl-btn)) 75%, rgb(var(--brand-lo))));
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 10px 22px -10px rgb(var(--gl-btn));
-    transition: filter 0.15s;
-}
-
-.gl-btn:hover {
-    filter: brightness(1.08);
-}
-
-.gl-btn:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-    filter: none;
-}
-
-.gl-btn.gl-sec {
-    background: var(--gl-fill-2);
-    color: var(--gl-ink);
-    box-shadow: inset 0 0 0 1px var(--gl-line);
-}
-
-.gl-btn.gl-sm {
-    padding: 5px 11px;
-    font-size: 12.5px;
-    border-radius: 10px;
-}
-
+/* ── Buttons: see "The button system" below ───────────────────────── */
 .gl-ib {
     width: 38px;
     height: 38px;
@@ -1389,11 +1352,6 @@
     font-size: 12px;
 }
 
-.gl-btn.gl-lg {
-    padding: 12px 20px;
-    font-size: 15px;
-    border-radius: 14px;
-}
 
 .gl-spin {
     width: 16px;
@@ -1417,50 +1375,6 @@
 }
 
 /* ── Shared controls drawn in the glass look (PrimaryButton, DangerButton, InputLabel, InputError, Switch…) ── */
-.gl-btn.gl-danger {
-    background: color-mix(in srgb, var(--gl-bad) 14%, transparent);
-    color: var(--gl-bad);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gl-bad) 40%, transparent);
-}
-
-.gl-btn.gl-danger:hover:not(:disabled) {
-    background: var(--gl-bad);
-    color: #fff;
-    filter: none;
-}
-
-/* The main button's look split into parts (a button and its menu). */
-.gl-btn-surface {
-    display: inline-flex;
-    overflow: hidden;
-    border-radius: 12px;
-    color: #fff;
-    font-weight: 700;
-    background: linear-gradient(180deg, rgb(var(--gl-btn)), color-mix(in srgb, rgb(var(--gl-btn)) 75%, rgb(var(--brand-lo))));
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 10px 22px -10px rgb(var(--gl-btn));
-}
-
-.gl-btn-part {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 16px;
-    transition: background 0.15s;
-}
-
-.gl-btn-part:hover:not(:disabled) {
-    background: rgb(255 255 255 / 0.1);
-}
-
-.gl-btn-part:disabled {
-    opacity: 0.5;
-}
-
-.gl-btn-part:focus-visible {
-    outline: 2px solid #fff;
-    outline-offset: -3px;
-}
-
 .gl-label {
     font-size: 12.5px;
     font-weight: 600;
@@ -1489,7 +1403,6 @@
 
 .gl-switch[data-on] {
     background: rgb(var(--gl-btn));
-    box-shadow: 0 6px 14px -8px rgb(var(--gl-btn));
 }
 
 .gl-switch:disabled {
@@ -1804,10 +1717,7 @@
     font-size: 14px;
 }
 
-.gl-btn.gl-correcting {
-    background: var(--gl-warn);
-    box-shadow: 0 10px 22px -10px var(--gl-warn);
-}
+
 
 /* Underlined tabs that are links (the financial boxes' places). */
 .gl-tabs .gl-tab {
@@ -1833,4 +1743,158 @@
 .gl-tabs .gl-tab:focus-visible {
     outline: 2px solid rgb(var(--gl-brand));
     outline-offset: 2px;
+}
+
+
+/*
+ * ── The button system ───────────────────────────────────────────────────
+ * Flat, crisp buttons that sit on the glass instead of floating over it:
+ * one solid fill per role, a thin light along the top edge like the glass
+ * panels' rim, no gradient, glow or drop shadow. Hover deepens the fill a
+ * step (white text keeps 4.5:1 on the company's colour), a press deepens it
+ * further and nudges it down, focus shows a ring in the company's colour.
+ *   gl-btn          main action: the company's colour
+ *   gl-btn gl-sec   side action: the glass tint with a thin line
+ *   gl-btn gl-ghost quiet action: text only until hovered
+ *   gl-btn gl-danger destructive: a red tint that fills on hover
+ *   gl-sm / gl-lg   32px and 44px (38px by default); a page's own sizes win
+ */
+.gl-btn {
+    --gl-btn-fill: rgb(var(--gl-btn));
+    --gl-btn-hover: color-mix(in srgb, rgb(var(--gl-btn)) 84%, rgb(var(--brand-lo)));
+    --gl-btn-press: color-mix(in srgb, rgb(var(--gl-btn)) 68%, rgb(var(--brand-lo)));
+    --gl-btn-ink: #fff;
+    --gl-btn-line: transparent;
+    --gl-btn-rim: rgb(255 255 255 / 0.18);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 0 16px;
+    border: 1px solid var(--gl-btn-line);
+    border-radius: 10px;
+    background: var(--gl-btn-fill);
+    color: var(--gl-btn-ink);
+    box-shadow: inset 0 1px 0 var(--gl-btn-rim);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+}
+
+.gl-btn svg {
+    flex: none;
+}
+
+.gl-btn:hover:not(:disabled) {
+    background: var(--gl-btn-hover);
+}
+
+.gl-btn:active:not(:disabled) {
+    background: var(--gl-btn-press);
+    transform: translateY(1px);
+}
+
+.gl-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.gl-btn.gl-sec {
+    --gl-btn-fill: var(--gl-fill-2);
+    --gl-btn-hover: color-mix(in srgb, var(--gl-fill-2) 70%, var(--gl-line-hi));
+    --gl-btn-press: var(--gl-fill);
+    --gl-btn-ink: var(--gl-ink);
+    --gl-btn-line: var(--gl-line);
+    --gl-btn-rim: var(--gl-line-hi);
+}
+
+.gl-btn.gl-sec:hover:not(:disabled) {
+    border-color: var(--gl-line-hi);
+}
+
+.gl-btn.gl-ghost {
+    --gl-btn-fill: transparent;
+    --gl-btn-hover: var(--gl-fill-2);
+    --gl-btn-press: var(--gl-fill);
+    --gl-btn-ink: var(--gl-muted);
+    --gl-btn-rim: transparent;
+}
+
+.gl-btn.gl-ghost:hover:not(:disabled) {
+    color: var(--gl-ink);
+}
+
+.gl-btn.gl-danger {
+    --gl-btn-fill: color-mix(in srgb, var(--gl-bad) 12%, transparent);
+    --gl-btn-hover: var(--gl-bad);
+    --gl-btn-press: color-mix(in srgb, var(--gl-bad) 85%, #000);
+    --gl-btn-ink: var(--gl-bad);
+    --gl-btn-line: color-mix(in srgb, var(--gl-bad) 35%, transparent);
+    --gl-btn-rim: transparent;
+}
+
+.gl-btn.gl-danger:hover:not(:disabled) {
+    border-color: transparent;
+    color: #fff;
+}
+
+.gl-btn.gl-correcting {
+    --gl-btn-fill: var(--gl-warn);
+    --gl-btn-hover: color-mix(in srgb, var(--gl-warn) 85%, #000);
+    --gl-btn-press: color-mix(in srgb, var(--gl-warn) 72%, #000);
+}
+
+.gl-btn.gl-sm {
+    min-height: 32px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.gl-btn.gl-lg {
+    min-height: 44px;
+    padding: 0 20px;
+    border-radius: 12px;
+    font-size: 15px;
+}
+
+/* The main button's look split into parts (a button and its menu). */
+.gl-btn-surface {
+    display: inline-flex;
+    overflow: hidden;
+    border-radius: 10px;
+    background: rgb(var(--gl-btn));
+    color: #fff;
+    font-weight: 600;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+}
+
+.gl-btn-part {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 0 14px;
+    transition: background-color 0.15s;
+}
+
+.gl-btn-part + .gl-btn-part {
+    border-inline-start: 1px solid rgb(255 255 255 / 0.2);
+}
+
+.gl-btn-part:hover:not(:disabled) {
+    background: color-mix(in srgb, rgb(var(--gl-btn)) 84%, rgb(var(--brand-lo)));
+}
+
+.gl-btn-part:disabled {
+    opacity: 0.5;
+}
+
+.gl-btn-part:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: -3px;
 }

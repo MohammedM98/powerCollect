@@ -2487,13 +2487,13 @@ input[type='radio'] {
 }
 
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) {
-    /* Opaque from the top, so white text keeps 4.5:1 over light glass too. */
-    --tn-graphite: linear-gradient(180deg, rgb(var(--brand-solid)), color-mix(in srgb, rgb(var(--brand-solid)) 75%, rgb(var(--brand-lo))));
+    /* A flat fill in the company's colour (white text keeps 4.5:1), as the buttons. */
+    --tn-graphite: rgb(var(--brand-solid));
     --tn-graphite-dark: var(--tn-graphite);
 }
 
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-highlight {
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 10px 22px -10px rgb(var(--brand-solid));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
 }
 
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-tool, .tn-search) {
@@ -2588,7 +2588,7 @@ input[type='radio'] {
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(a.tn-drawer-group[data-current='true'], .tn-drawer-link[aria-current='page'], .tn-subnav a[aria-current='page']) {
     background: var(--tn-graphite);
     color: #fff;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 10px 22px -10px rgb(var(--brand-solid));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
 }
 
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(a.tn-drawer-group[data-current='true'], .tn-drawer-link[aria-current='page'], .tn-subnav a[aria-current='page']) svg {
@@ -3544,9 +3544,9 @@ input[type='radio'] {
 
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-action-view:hover,
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-action-view:focus-within {
-    background: linear-gradient(180deg, rgb(var(--gl-btn)), color-mix(in srgb, rgb(var(--gl-btn)) 75%, rgb(var(--brand-lo))));
+    background: rgb(var(--gl-btn));
     color: #fff;
-    box-shadow: 0 10px 22px -10px rgb(var(--gl-btn));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
 }
 
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-action-view > button {

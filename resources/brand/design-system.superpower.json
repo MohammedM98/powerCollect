@@ -264,10 +264,11 @@
         "AddButton",
         "BlueActionButton",
         "ExcelButton",
-        "PrintButton"
+        "PrintButton",
+        "BlueActionButton (gl-btn-surface / gl-btn-part)"
       ],
       "prototype": "btn / btn.sec / btn.sm",
-      "spec": "الأساسي: تدرج لون الهوية مع ظل ولمعة داخلية. الثانوي: fillStrong مع حد. الحالة disabled: شفافية .45"
+      "spec": "مسطّحة على الزجاج بلا تدرج ولا توهج ولا ظل طائف: تعبئة واحدة لكل دور مع خط ضوء رفيع أعلاها كحافة الزجاج. gl-btn رئيسي بلون الهوية، gl-sec ثانوي زجاجي بخط رفيع، gl-ghost هادئ نص فقط، gl-danger أحمر خفيف يمتلئ عند المرور. الأحجام gl-sm 32px والافتراضي 38px وgl-lg 44px. المرور يعمّق اللون درجة (النص الأبيض يبقى 4.5:1)، والضغط أعمق مع نزول 1px، والتركيز حلقة بلون الهوية، والمعطّل شفافية .45."
     },
     {
       "name": "Fields",
