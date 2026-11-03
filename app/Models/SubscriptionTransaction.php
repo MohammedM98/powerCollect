@@ -13,8 +13,10 @@ use App\Enums\TransactionAction;
 use App\Support\BranchClosingWorkflow;
 use App\Support\BranchDomainContext;
 use App\Support\BranchDomainScope;
+use App\Support\DailySeries;
 use App\Support\Money;
 use Brick\Math\RoundingMode;
+use Carbon\CarbonImmutable;
 use Closure;
 use Database\Factories\SubscriptionTransactionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -1719,19 +1721,28 @@ class SubscriptionTransaction extends Model
     {
         $audit = $this->bankTransferAudit;
         if ($audit === null) {
-            return 'حركة تصحيح';
+            return 'تصحيح ناتج عن التدقيق المالي';
         }
+
+        $original = $this->referenceTransaction;
+        $context = implode(' · ', array_filter([
+            'تصحيح ناتج عن التدقيق المالي لحوالة سابقة',
+            $original?->reference_number ? 'مرجع الحوالة '.$original->reference_number : null,
+            $original?->printedVoucherNumber() ? 'سند '.$original->printedVoucherNumber() : null,
+            $original?->created_at ? 'تاريخ تسجيل الحوالة '.CarbonImmutable::parse(DailySeries::localDate($original->created_at))->format('d/m/Y') : null,
+            'تاريخ اعتماد التصحيح '.CarbonImmutable::parse(DailySeries::localDate($audit->posted_at ?? $this->created_at))->format('d/m/Y'),
+        ]));
 
         $difference = self::formatAmount(Money::amount(Money::decimal($audit->difference)->abs()));
         if ($audit->outcome === 'missing') {
-            return sprintf('حوالة لم تصل للبنك؛ تحميل %s شيكل على المشترك.', $difference);
+            return $context.' · '.sprintf('حوالة لم تصل للبنك؛ تحميل %s شيكل على المشترك.', $difference);
         }
 
         $effect = Money::decimal($audit->difference)->isPositive()
             ? sprintf('تحميل فرق %s شيكل.', $difference)
             : sprintf('إضافة فرق %s شيكل لصالح المشترك.', $difference);
 
-        return sprintf('حوالة وصلت %s بدل %s %s؛ %s',
+        return $context.' · '.sprintf('حوالة وصلت %s بدل %s %s؛ %s',
             self::formatAmount($audit->bank_amount),
             self::formatAmount($audit->recorded_amount),
             __($this->currency->label()),

@@ -74,7 +74,7 @@ trait BuildsSubscriptionStatement
                 'amendments.user',
                 'closingLine.closing',
                 'splitPayment',
-                'bankTransferAudit',
+                'bankTransferAudit', 'referenceTransaction',
             ])
             ->oldest()
             ->orderBy('id')

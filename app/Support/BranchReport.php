@@ -158,7 +158,7 @@ class BranchReport
      *
      * @return array<string, mixed>
      */
-    public function collections(): array
+    public function collections(bool $includeReceipts = true): array
     {
         $payments = $this->rows()
             ->filter(fn (object $row): bool => $row->type === SubscriptionTransaction::TYPE_PAYMENT && ! $this->isCorrection($row))
@@ -168,6 +168,7 @@ class BranchReport
 
         return [
             'count' => $payments->count(),
+            ...($includeReceipts ? ['receipts' => $this->receipts()] : []),
             'total' => Closing::money($payments->sum('cents')),
             'cash' => Closing::money($payments->where('isCash', true)->sum('cents')),
             'nonCash' => Closing::money($payments->where('isCash', false)->sum('cents')),
@@ -201,13 +202,58 @@ class BranchReport
         ];
     }
 
-    /**
-     * The weekly readings: how many were entered in the period and the
-     * kilowatts they recorded, how many were approved (and billed) in it,
-     * and how many still wait for approval now.
-     *
-     * @return array{entered: int, consumption: float, approved: int, billed: string, pending: int}
-     */
+    /** Latest settlement of the period's surviving payments, independent of the historical ledger. @return array<string, mixed> */
+    private function receipts(): array
+    {
+        $totals = array_fill_keys(['cashConfirmed', 'cashPending', 'bankRecorded', 'bankPending', 'bankVerified', 'shortage', 'excess', 'confirmed', 'adjusted'], 0);
+        $lines = $this->lines('payments')->where('status', SubscriptionTransaction::STATUS_ACTIVE)
+            ->with(['boxEntry.box', 'boxEntry.audit', 'linkedReversals'])->lazyById(500);
+        foreach ($lines as $payment) {
+            $amount = max(0, -Closing::cents($payment->amount) - $payment->linkedReversals
+                ->where('status', SubscriptionTransaction::STATUS_ACTIVE)->where('type', SubscriptionTransaction::TYPE_REFUND)
+                ->sum(fn (SubscriptionTransaction $line): int => Closing::cents($line->amount)));
+            $entry = $payment->boxEntry;
+            if ($payment->payment_method === PaymentMethod::Cash) {
+                $key = $entry?->box?->status === 'received' ? 'cashConfirmed' : 'cashPending';
+                $totals[$key] += $amount;
+
+                continue;
+            }
+            $totals['bankRecorded'] += $amount;
+            $audit = $entry?->audit;
+            if ($audit === null || ! $audit->isPosted()) {
+                $totals['bankPending'] += $amount;
+
+                continue;
+            }
+            $difference = Closing::cents($audit->difference);
+            $totals['bankVerified'] += $amount - $difference;
+            $totals['shortage'] += max(0, $difference);
+            $totals['excess'] += max(0, -$difference);
+        }
+        $totals['confirmed'] = $totals['cashConfirmed'] + $totals['bankVerified'];
+        $totals['adjusted'] = $totals['confirmed'] + $totals['cashPending'] + $totals['bankPending'];
+        $labels = [
+            'cashConfirmed' => 'المقبوضات النقدية المؤكدة',
+            'cashPending' => 'نقد في صناديق لم يُؤكد إغلاقها',
+            'bankRecorded' => 'الحوالات البنكية المسجّلة',
+            'bankPending' => 'مبالغ بنكية قيد التدقيق',
+            'shortage' => 'فروق نقص بنكي معتمدة',
+            'excess' => 'فروق زيادة بنكية معتمدة',
+            'bankVerified' => 'المبالغ البنكية المثبتة',
+            'confirmed' => 'صافي المقبوضات المؤكدة',
+            'adjusted' => 'صافي المسجّل بعد التصحيحات — يشمل غير المؤكد',
+        ];
+
+        return [
+            ...array_map(fn (int $amount): string => Closing::money($amount), $totals),
+            'rows' => collect($labels)->map(fn (string $label, string $key): array => ['key' => $key, 'label' => $label, 'amount' => Closing::money($totals[$key])])->values()->all(),
+            'asOf' => now()->toIso8601String(),
+            'basis' => 'دفعات الفترة السارية وفق آخر نتائج التدقيق حتى وقت إعداد التقرير؛ تشمل التصحيحات اللاحقة ولا تشمل المقاصات. حركة الذمم التاريخية تبقى بتاريخ تسجيل كل حركة.',
+        ];
+    }
+
+    /** @return array{entered: int, consumption: float, approved: int, billed: string, pending: int} */
     public function readings(): array
     {
         $inBranches = fn (Builder $query, array $branchIds): Builder => $query->whereIn('branch_id', $branchIds);

@@ -18,7 +18,7 @@ class BankAuditReportingTest extends TestCase
     use RefreshDatabase;
 
     /** @return array{User, Subscription, SubscriptionTransaction, User} */
-    private function auditPayment(string $verified, ?string $auditAt = null): array
+    private function auditPayment(string $verified, ?string $auditAt = null, bool $approve = true): array
     {
         $this->travelTo('2026-10-18 10:00:00');
         $branch = Branch::factory()->create();
@@ -38,7 +38,9 @@ class BankAuditReportingTest extends TestCase
             $this->travelTo($auditAt);
         }
         $this->actingAs($auditor)->post(route('payments.bank-audits.store', $payment->boxEntry), ['bank_amount' => $verified, 'reason' => 'مطابقة كشف البنك'])->assertSessionHasNoErrors();
-        $this->post(route('payments.box-audits.store', $box), ['confirmed' => true])->assertSessionHasNoErrors();
+        if ($approve) {
+            $this->post(route('payments.box-audits.store', $box), ['confirmed' => true])->assertSessionHasNoErrors();
+        }
 
         return [$head, $subscription, $payment, $auditor];
     }
@@ -112,5 +114,75 @@ class BankAuditReportingTest extends TestCase
             ->assertInertia(fn (AssertableInertia $page) => $page->where('flow.opening', '100.00')->where('flow.chargesTotal', '0.00')->where('flow.creditsTotal', '50.00')->where('flow.closing', '50.00'));
         $this->assertSame($original, $payment->fresh()->getAttributes());
         $this->assertSame('50.00', $subscription->balance());
+    }
+
+    #[TestWith(['0', '0.00', '100.00', '0.00'])]
+    #[TestWith(['50', '50.00', '50.00', '0.00'])]
+    #[TestWith(['100', '100.00', '0.00', '0.00'])]
+    #[TestWith(['150', '150.00', '0.00', '50.00'])]
+    public function test_receipts_attach_later_bank_results_to_original_payment_period(string $verified, string $net, string $shortage, string $excess): void
+    {
+        [$head] = $this->auditPayment($verified, '2026-11-18 10:00:00');
+
+        $this->actingAs($head)->get(route('reports.index', ['from' => '2026-10-18', 'to' => '2026-10-18']))
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->where('collections.total', '100.00')
+                ->where('collections.receipts.bankRecorded', '100.00')
+                ->where('collections.receipts.bankPending', '0.00')
+                ->where('collections.receipts.bankVerified', $net)
+                ->where('collections.receipts.shortage', $shortage)
+                ->where('collections.receipts.excess', $excess)
+                ->where('collections.receipts.confirmed', $net)
+                ->where('flow.closing', '100.00'));
+        $this->get(route('reports.index', ['from' => '2026-11-18', 'to' => '2026-11-18']))
+            ->assertInertia(fn (AssertableInertia $page) => $page->where('collections.receipts.bankRecorded', '0.00')->where('collections.receipts.confirmed', '0.00'));
+    }
+
+    public function test_draft_bank_review_does_not_confirm_receipts(): void
+    {
+        [$head] = $this->auditPayment('50', null, false);
+
+        $this->actingAs($head)->get(route('reports.index', ['from' => '2026-10-18', 'to' => '2026-10-18']))
+            ->assertInertia(fn (AssertableInertia $page) => $page
+                ->where('collections.receipts.bankPending', '100.00')
+                ->where('collections.receipts.bankVerified', '0.00')
+                ->where('collections.receipts.shortage', '0.00')
+                ->where('collections.receipts.confirmed', '0.00'));
+    }
+
+    public function test_statement_explains_late_bank_correction_and_identifies_original_transfer(): void
+    {
+        [$head, $subscription] = $this->auditPayment('50', '2026-11-18 10:00:00');
+
+        $this->actingAs($head)->get(route('subscriptions.statement', $subscription))
+            ->assertInertia(fn (AssertableInertia $page) => $page->where('entries.2.description', function (string $description): bool {
+                $this->assertStringContainsString('تصحيح ناتج عن التدقيق المالي', $description);
+                $this->assertStringContainsString('BANK-REPORT', $description);
+                $this->assertStringContainsString('18/10/2026', $description);
+                $this->assertStringContainsString('18/11/2026', $description);
+                $this->assertStringContainsString('تحميل فرق 50 شيكل', $description);
+
+                return true;
+            }));
+    }
+
+    public function test_receipts_separate_open_cash_closed_cash_clearings_and_other_branches(): void
+    {
+        [$head, $subscription, $bankPayment] = $this->auditPayment('100');
+        $collector = $bankPayment->recordedBy;
+        $this->actingAs($collector)->post(route('subscriptions.payments.store', $subscription), [
+            'payment_token' => (string) Str::uuid(), 'amount' => '40', 'currency' => 'ILS', 'payment_method' => 'cash',
+        ])->assertSessionHasNoErrors();
+        $cash = $subscription->transactions()->where('payment_method', 'cash')->sole();
+        SubscriptionTransaction::factory()->for($subscription)->create(['source_key' => (string) Str::uuid(), 'type' => SubscriptionTransaction::TYPE_CLEARING, 'amount' => '-20']);
+        SubscriptionTransaction::factory()->create(['type' => SubscriptionTransaction::TYPE_PAYMENT, 'amount' => '-999']);
+
+        $this->actingAs($head)->get(route('reports.index'))->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('collections.receipts.cashPending', '40.00')->where('collections.receipts.cashConfirmed', '0.00')
+            ->where('collections.receipts.confirmed', '100.00')->where('collections.receipts.adjusted', '140.00'));
+        $this->post(route('payments.cash-boxes.actions', ['action' => 'receive', 'record' => $cash->boxEntry->cash_box_id]), ['branch_id' => $head->branch_id])->assertSessionHasNoErrors();
+        $this->get(route('reports.index'))->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('collections.receipts.cashPending', '0.00')->where('collections.receipts.cashConfirmed', '40.00')
+            ->where('collections.receipts.confirmed', '140.00'));
     }
 }

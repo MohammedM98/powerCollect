@@ -90,7 +90,7 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
     }
 
     const sections = [
-        { key: 'overview', icon: 'ledger', title: 'نظرة عامة', heading: 'الوضع المالي للشركة', hint: 'التحميلات والتحصيل وحركة ذمم المشتركين' },
+        { key: 'overview', icon: 'ledger', title: 'نظرة عامة', heading: 'ملخص التحصيل والذمم', hint: 'التحميلات والتحصيل وحركة ذمم المشتركين' },
         { key: 'collections', icon: 'wallet', title: 'التحصيل', heading: 'تقرير التحصيل', hint: 'حسب الحساب والعملة والمحصّل' },
         { key: 'boxes', icon: 'layers', title: 'الصناديق والأموال', heading: 'الصناديق والأموال', hint: 'الصناديق المفتوحة خلال الفترة والدفعات المسجلة فيها حسب العملة' },
         { key: 'debts', icon: 'calendar', title: 'الديون', heading: 'ديون المشتركين', hint: 'الأرصدة وأعمار التحميلات كما في نهاية الفترة' },
@@ -179,6 +179,11 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                 )}
 
                 <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold text-gray-900">{current.heading}</h2><InfoTip label={`معلومة عن ${current.heading}`}>{current.hint}</InfoTip></div>
+                {hasFigures && ['overview', 'collections'].includes(section) && collections.receipts && <section className="rounded-card border border-gray-200 bg-surface p-5" aria-label="نتيجة تدقيق المقبوضات">
+                    <h3 className="text-lg font-bold text-gray-900">نتيجة تدقيق مقبوضات الفترة حتى الآن</h3>
+                    <p className="mt-2 text-sm leading-7 text-gray-600">{collections.receipts.basis}</p>
+                    <dl className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{collections.receipts.rows.map((row) => <div key={row.key} className={`rounded-control border p-4 ${row.key === 'confirmed' ? 'border-gray-900 bg-gray-50' : 'border-gray-100'}`}><dt className="text-sm text-gray-600">{row.label}</dt><dd className="mt-2 font-display text-xl font-bold text-gray-900"><bdi dir="ltr">{reportMoney(row.amount)}</bdi> ₪</dd></div>)}</dl>
+                </section>}
                 {hasFigures && section === 'overview' && <>
                     <Figures flow={flow} collections={collections} />
                     {comparison && <Comparison comparison={comparison} />}
@@ -322,7 +327,7 @@ function Figures({ flow, collections }) {
 
     return (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)]">
-            <KpiTile hero label="إجمالي المحصّل" value={reportMoney(collections.total)} unit="₪" hint={`${collections.count} دفعة في الفترة`} className="md:col-span-2 xl:col-span-1 xl:row-span-2">
+            <KpiTile hero label="إجمالي المقبوضات المسجّلة" value={reportMoney(collections.total)} unit="₪" hint={`${collections.count} دفعة في الفترة`} className="md:col-span-2 xl:col-span-1 xl:row-span-2">
                 <div className="mt-5 flex h-2 overflow-hidden rounded-full bg-white/10" role="img" aria-label="النقدي والتحويلات والشيكات">
                     {total > 0 && (
                         <>
@@ -643,7 +648,7 @@ function BranchComparison({ rows, filters }) {
                     <thead>
                         <tr>
                             <th className={TH}>الفرع</th>
-                            <th className={NUM_TH}>إجمالي المحصّل</th>
+                            <th className={NUM_TH}>إجمالي المقبوضات المسجّلة</th>
                             <th className={`${TH} w-32`}><span className="sr-only">الحصة</span></th>
                             <th className={NUM_TH}>نقدي</th>
                             <th className={NUM_TH}>الدفعات</th>

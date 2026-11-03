@@ -24,9 +24,10 @@ function summaryPart(flow, collections, comparison) {
         rows: [
             { label: 'الرصيد الافتتاحي', value: flow.opening, note: 'على المشتركين' },
             { label: 'التحميلات', value: flow.chargesTotal, note: 'قراءات ورسوم وغرامات' },
-            { label: 'إجمالي المحصّل', value: collections.total, count: collections.count },
+            { label: 'إجمالي المقبوضات المسجّلة', value: collections.total, count: collections.count },
             { label: 'نقدي', value: collections.cash },
             { label: 'تحويلات وشيكات', value: collections.nonCash },
+            ...(collections.receipts?.rows ?? []).map((row) => ({ label: row.label, value: row.amount, note: collections.receipts.basis })),
             { label: 'الرصيد الختامي', value: flow.closing, note: change > 0 ? 'زاد' : change < 0 ? 'نقص' : 'لم يتغير' },
             { label: 'التغيّر خلال الفترة', value: flow.change },
             ...(comparison ? [
@@ -137,7 +138,7 @@ export function branchesPart(branchSummary) {
             money('opening', 'الرصيد الافتتاحي', { sum: true, width: 20, default: false }),
             money('charges', 'التحميلات', { sum: true, default: false }),
             money('closing', 'الرصيد الختامي', { sum: true, width: 20 }),
-            money('total', 'إجمالي المحصّل', { sum: true }),
+            money('total', 'إجمالي المقبوضات المسجّلة', { sum: true }),
             money('cash', 'نقدي', { sum: true }),
             money('nonCash', 'تحويلات وشيكات', { sum: true }),
             count('count', 'الدفعات', { sum: true }),

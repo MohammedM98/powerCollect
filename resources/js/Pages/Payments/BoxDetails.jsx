@@ -127,7 +127,7 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
             <div className="flex items-center gap-3">
                 {box.canPrint !== false && <TableExportActions title="تقرير تفاصيل الصندوق" base={`/payments/cash-boxes/report?box=${box.id}`} />}
                 <StatusPill tone={statusTone} label={statusLabel} />
-                {!editable && <StatusPill tone={box.audit ? 'green' : 'amber'} label={box.audit ? 'اكتمل التدقيق' : 'بانتظار اكتمال التدقيق'} />}
+                {!editable && <StatusPill tone={box.audit ? 'green' : 'amber'} label={box.audit ? 'معتمد تدقيقيًا' : 'قيد التدقيق'} />}
                 <button type="button" onClick={onClose} aria-label="إغلاق النافذة" className="rounded-control p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"><Icon name="close" className="h-5 w-5" /></button>
             </div>
         </header>

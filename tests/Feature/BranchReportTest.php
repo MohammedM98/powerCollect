@@ -319,7 +319,7 @@ class BranchReportTest extends TestCase
         $this->get(route('reports.index', ['print' => 1, 'print_view' => 'summary']))->assertInertia(fn ($page) => $page
             ->where('printData.columns.0.label', 'البند')
             ->where('printData.context.branchName', 'North')
-            ->where('printData.rows', fn ($rows): bool => collect($rows)->contains(fn ($row): bool => $row['cells']['البند'] === 'إجمالي المحصّل' && $row['cells']['المبلغ ₪'] === '40.00'))
+            ->where('printData.rows', fn ($rows): bool => collect($rows)->contains(fn ($row): bool => $row['cells']['البند'] === 'إجمالي المقبوضات المسجّلة' && $row['cells']['المبلغ ₪'] === '40.00'))
             ->has('printTemplates'));
         $this->get(route('reports.index', ['print' => 1, 'print_all' => 1, 'print_view' => 'lines', 'kind' => 'payments']))->assertInertia(fn ($page) => $page
             ->where('printData.total', 1)
