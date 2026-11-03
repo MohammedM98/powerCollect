@@ -1659,3 +1659,152 @@
 .gl-pager button {
     height: 30px;
 }
+
+/* ── Recording a payment (Pages/Subscriptions/PaymentModal.jsx) ───────── */
+.gl-amount {
+    padding: 14px 18px 12px;
+    border-radius: 18px;
+    border: 1px solid var(--gl-line);
+    background: var(--gl-fill);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.gl-amount:focus-within {
+    border-color: rgb(var(--gl-brand) / 0.6);
+    box-shadow: 0 0 0 3px rgb(var(--gl-brand) / 0.16);
+}
+
+.gl-amount[data-invalid] {
+    border-color: var(--gl-bad);
+}
+
+.gl-amount-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    color: var(--gl-ink);
+    font: 800 40px/1.25 var(--gl-head);
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+}
+
+.gl-amount-input::placeholder {
+    color: var(--gl-faint);
+}
+
+.gl-amount-quick {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--gl-line-hi);
+}
+
+.gl-method {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--gl-line);
+    background: var(--gl-fill);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.gl-method:hover {
+    border-color: var(--gl-line-hi);
+}
+
+.gl-method:focus-within {
+    outline: 2px solid rgb(var(--gl-brand));
+    outline-offset: 2px;
+}
+
+.gl-method[data-checked] {
+    border-color: rgb(var(--gl-brand) / 0.5);
+    background: rgb(var(--gl-brand) / 0.16);
+}
+
+.gl-method-icon {
+    width: 40px;
+    height: 40px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--gl-fill-2);
+    color: var(--gl-muted);
+}
+
+.gl-method[data-checked] .gl-method-icon {
+    background: rgb(var(--gl-btn));
+    color: #fff;
+}
+
+.gl-method-dot {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    margin-inline-start: auto;
+    border-radius: 50%;
+    border: 1.5px solid var(--gl-line-hi);
+}
+
+.gl-method[data-checked] .gl-method-dot {
+    border-color: rgb(var(--gl-btn));
+    background: radial-gradient(circle, #fff 0 3.5px, rgb(var(--gl-btn)) 4px);
+}
+
+.gl-pay-side {
+    border-inline-start: 1px solid var(--gl-line);
+    background: var(--gl-fill);
+}
+
+.gl-receipt-cut {
+    position: relative;
+}
+
+.gl-receipt-cut::before,
+.gl-receipt-cut::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgb(var(--glass-panel));
+    transform: translateY(-50%);
+}
+
+.gl-receipt-cut::before {
+    right: -10px;
+}
+
+.gl-receipt-cut::after {
+    left: -10px;
+}
+
+.gl-receipt-line {
+    border-top: 1px dashed var(--gl-line-hi);
+}
+
+.gl-notice {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--gl-c) 40%, transparent);
+    background: color-mix(in srgb, var(--gl-c) 10%, transparent);
+    color: var(--gl-ink);
+    font-size: 14px;
+}
+
+.gl-btn.gl-correcting {
+    background: var(--gl-warn);
+    box-shadow: 0 10px 22px -10px var(--gl-warn);
+}

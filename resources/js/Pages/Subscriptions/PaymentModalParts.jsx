@@ -1,4 +1,6 @@
 import Icon from '@/Components/Icon';
+import BrandLogo from '@/Components/BrandLogo';
+import { useBrand } from '@/hooks/useBrand';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { describeBalance } from '@/lib/accountStatement';
@@ -9,124 +11,84 @@ import { BankReceivedDateField } from '@/Components/BankReceivedDate';
 import { BankDropdown, BankRow } from '@/Components/Banks';
 import { balanceText, FieldLabel } from './AccountFormParts';
 
-export const inputClass =
-    'block h-[50px] w-full rounded-[14px] border-[1.5px] border-gray-200 bg-surface px-4 text-base text-gray-900 transition placeholder:text-gray-400 hover:border-brand-500/45 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15 read-only:bg-gray-50 read-only:text-gray-500';
+export const inputClass = 'block h-[46px] w-full px-4 text-base';
 
-/** One way of paying, as a big radio tile. */
+/** One way of paying, as the prototype's choice tile (a radio). */
 export function MethodTile({ value, checked, onChange, icon, title, hint }) {
     return (
-        <label
-            className={`relative flex cursor-pointer items-center gap-3 rounded-[18px] border-[1.5px] bg-surface px-4 py-3.5 transition focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-gray-900 ${
-                checked ? 'border-brand-500 bg-brand-500/[0.06] shadow-[0_0_0_4px_rgb(var(--brand-500)/0.12)]' : 'border-gray-200 hover:border-gray-300'
-            }`}
-        >
+        <label className="gl-method" data-checked={checked || undefined}>
             <input type="radio" name="payment_method" value={value} checked={checked} onChange={() => onChange(value)} className="sr-only" />
-            <span
-                className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[13px] transition ${
-                    checked ? 'bg-brand-gradient text-white' : 'bg-gray-100 text-gray-700'
-                }`}
-            >
+            <span className="gl-method-icon">
                 <Icon name={icon} className="h-[18px] w-[18px]" strokeWidth={1.8} />
             </span>
             <span className="min-w-0">
-                <b className={`block text-[15.5px] ${checked ? 'text-brand-600' : 'text-gray-900'}`}>{title}</b>
-                <small className="block text-[13px] text-gray-500">{hint}</small>
+                <b className="block text-[15px]">{title}</b>
+                <small className="gl-sub block !m-0 !text-[12.5px]">{hint}</small>
             </span>
-            <span
-                className={`ms-auto flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full border-[1.5px] transition ${
-                    checked ? 'border-brand-500 bg-brand-500' : 'border-gray-300'
-                }`}
-                aria-hidden="true"
-            >
-                {checked && <span className="h-2 w-2 rounded-full bg-surface" />}
-            </span>
+            <span className="gl-method-dot" aria-hidden="true" />
         </label>
     );
 }
 
-/** The dark panel beside the form: what will be recorded and what it does to the balance, before saving. */
+/**
+ * The receipt beside the form, as the prototype's preview: the receipt as
+ * it will print (the product's mark, the amount, the balance before and
+ * after), updating with every figure typed, before saving.
+ */
 export function PaymentSummary({ amount, currency, inShekels, balance, methodText, collector }) {
     const before = describeBalance(balance);
     const after = inShekels === null ? null : describeBalance(Number(balance) - inShekels);
     const owed = Number(balance) > 0 ? Number(balance) : 0;
     const coverage = owed > 0 && inShekels !== null ? Math.min(100, Math.round((inShekels / owed) * 100)) : 0;
     const now = new Date();
+    const brand = useBrand();
+    const afterColor = after ? { owes: 'var(--gl-bad)', credit: 'var(--gl-ok)', settled: 'var(--gl-ink)' }[after.tone] : 'var(--gl-faint)';
 
     return (
-        <aside
-            aria-live="polite"
-            className="relative flex flex-col gap-[18px] overflow-hidden bg-graphite-gradient p-5 text-white sm:p-6 lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:overflow-y-auto"
-        >
-            <span className="absolute inset-x-0 top-0 h-[3px] bg-spectrum" aria-hidden="true" />
-            <span className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-                <span className="absolute -bottom-32 -end-20 h-80 w-80 rounded-full bg-[radial-gradient(closest-side,rgb(var(--brand-solid)/0.25),transparent)]" />
-            </span>
-
-            <h4 className="relative flex items-center gap-2 font-luxe text-lg font-bold">
-                <Icon name="receipt" className="h-[18px] w-[18px]" strokeWidth={1.8} />
-                ملخص الدفعة
-                <span className="ms-auto rounded-full bg-white/10 px-2.5 py-0.5 font-sans text-[11.5px] font-semibold text-white/80">قبل الحفظ</span>
-            </h4>
-
-            <div className="relative">
-                <p className="text-[13px] text-white/60">المبلغ</p>
-                <p className="text-end font-display text-[34px] font-extrabold leading-tight sm:text-[40px]" dir="ltr">
-                    {formatMoney(amount || 0)}
-                    <span className="ms-1.5 text-lg font-semibold text-white/70">{currency === 'ILS' ? '₪' : currency}</span>
-                </p>
+        <aside aria-live="polite" className="gl-pay-side flex flex-col gap-4 p-5 sm:p-6 lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:overflow-y-auto">
+            <div className="flex items-center gap-2">
+                <h4 className="text-base font-bold" style={{ fontFamily: 'var(--gl-head)' }}>معاينة الوصل</h4>
+                <span className="gl-pill gl-info ms-auto">قبل الحفظ</span>
             </div>
 
-            <dl className="relative grid gap-2.5 rounded-[18px] border border-white/10 bg-white/5 p-3.5 text-sm text-white/75">
-                <div className="flex items-baseline justify-between gap-3">
-                    <dt>الرصيد الحالي</dt>
-                    <dd className="font-display text-[15px] font-semibold text-white">{balanceText(before)}</dd>
+            <div className="gl-receipt gl-receipt-cut">
+                <div className="flex items-center justify-between gap-3">
+                    <span className="gl-lockup">
+                        <BrandLogo markSize={28} className="h-7 w-auto" />
+                        <span className="gl-lockup-name">
+                            <b dir="auto">{brand.shortName ?? brand.name}</b>
+                            {brand.nameEnglish && <small dir="ltr">{brand.nameEnglish.toUpperCase()}</small>}
+                        </span>
+                    </span>
+                    <Icon name="receipt" className="h-[18px] w-[18px]" />
                 </div>
-                <div className="flex items-baseline justify-between gap-3">
-                    <dt>هذه الدفعة</dt>
-                    <dd className="font-display text-[15px] font-semibold text-white" dir="ltr">
-                        {formatMoney(inShekels ?? 0)} ₪
-                    </dd>
+                <div className="gl-receipt-line" />
+                <div>
+                    <span className="gl-sub !m-0">المبلغ المستلم</span>
+                    <p className="gl-big gl-num text-end" dir="ltr">
+                        {formatMoney(amount || 0)}
+                        <span className="ms-1.5 text-lg font-semibold" style={{ color: 'var(--gl-muted)' }}>{currency === 'ILS' ? '₪' : currency}</span>
+                    </p>
                 </div>
-                <div className="h-px bg-white/10" aria-hidden="true" />
-                <div className="flex items-baseline justify-between gap-3">
-                    <dt>الرصيد بعد الدفعة</dt>
-                    <dd
-                        className={`font-display text-lg font-semibold ${after ? { owes: 'text-red-300', credit: 'text-emerald-300', settled: 'text-white' }[after.tone] : 'text-white/50'}`}
-                    >
-                        {after ? balanceText(after) : '—'}
-                    </dd>
-                </div>
-            </dl>
+                <div className="gl-kv"><span>الرصيد الحالي</span><b className="gl-num">{balanceText(before)}</b></div>
+                <div className="gl-kv"><span>هذه الدفعة</span><b className="gl-num" dir="ltr">{formatMoney(inShekels ?? 0)} ₪</b></div>
+                <div className="gl-receipt-line" />
+                <div className="gl-kv"><span>الرصيد بعد الدفعة</span><b className="gl-num text-base" style={{ color: afterColor }}>{after ? balanceText(after) : '—'}</b></div>
+            </div>
 
             {owed > 0 && (
-                <div className="relative">
-                    <div className="mb-1.5 flex justify-between text-[12.5px] text-white/60">
-                        <span>تغطية المبلغ المستحق</span>
-                        <span className="font-display">{coverage}%</span>
-                    </div>
-                    <div className="h-2 overflow-hidden rounded-full bg-white/10" aria-hidden="true">
-                        <div
-                            className="h-full rounded-full bg-gradient-to-l from-emerald-400 to-emerald-500 transition-[width] duration-500"
-                            style={{ width: `${coverage}%` }}
-                        />
-                    </div>
+                <div>
+                    <div className="gl-kv mb-1.5"><span>تغطية المبلغ المستحق</span><b className="gl-num">{coverage}%</b></div>
+                    <div className="gl-bar" aria-hidden="true"><i style={{ width: `${coverage}%` }} /></div>
                 </div>
             )}
 
-            <ul className="relative hidden gap-2 text-[13.5px] text-white/75 lg:grid">
-                <li className="flex items-center gap-2">
-                    <Icon name="banknotes" className="h-[18px] w-[18px] text-white/50" />
-                    الطريقة: <b className="font-semibold text-white">{methodText}</b>
-                </li>
-                <li className="flex items-center gap-2">
-                    <Icon name="user" className="h-[18px] w-[18px] text-white/50" />
-                    المحصّل: <b className="font-semibold text-white">{collector}</b>
-                </li>
-                <li className="flex items-center gap-2">
-                    <Icon name="clock" className="h-[18px] w-[18px] text-white/50" />
-                    اليوم، <b className="font-display font-semibold text-white">{formatClock(`${now.getHours()}:${now.getMinutes()}`)}</b>
-                </li>
-            </ul>
+            <div className="hidden gap-2 lg:grid">
+                <div className="gl-kv"><span>الطريقة</span><b>{methodText}</b></div>
+                <div className="gl-kv"><span>المحصّل</span><b>{collector}</b></div>
+                <div className="gl-kv"><span>الوقت</span><b className="gl-num">اليوم، {formatClock(`${now.getHours()}:${now.getMinutes()}`)}</b></div>
+            </div>
+            <p className="gl-sub !mt-auto text-center">الدفعة تُرتجع ولا تُحذف، وتبقى في السجل المالي.</p>
         </aside>
     );
 }
@@ -144,18 +106,18 @@ export function PaymentReceipt({ receipt, subscriptionName, title, onAnother, on
 
     return (
         <div className="px-6 pb-8 pt-10 text-center sm:px-8">
-            <span className="mx-auto mb-3.5 flex h-[76px] w-[76px] items-center justify-center rounded-3xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <span className="gl-tone mx-auto mb-3.5 flex h-[76px] w-[76px] items-center justify-center rounded-3xl" style={{ '--gl-c': 'var(--gl-ok)' }}>
                 <Icon name="check" className="h-10 w-10" strokeWidth={2.2} />
             </span>
-            <h3 className="font-luxe text-[26px] font-bold text-gray-900">{title}</h3>
-            <p className="mt-1.5 text-gray-600">
+            <h3 className="text-[24px] font-extrabold" style={{ fontFamily: 'var(--gl-head)' }}>{title}</h3>
+            <p className="gl-sub mt-1.5 !text-sm">
                 {formatMoney(receipt.currency === 'ILS' ? receipt.amount : receipt.inShekels)} شيكل من {subscriptionName} · الرصيد الجديد {balanceText(after)}
             </p>
-            <dl className="mx-auto mt-6 w-full max-w-[420px] rounded-[20px] border border-gray-100 bg-gray-50 px-[18px] py-1.5 text-start">
+            <dl className="gl-receipt gl-receipt-cut mx-auto mt-6 w-full max-w-[420px] text-start">
                 {rows.map(([label, value]) => (
-                    <div key={label} className="flex justify-between gap-4 border-b border-dashed border-gray-200 py-2.5 text-[14.5px] last:border-0">
-                        <dt className="text-gray-500">{label}</dt>
-                        <dd className="font-semibold text-gray-900">{value}</dd>
+                    <div key={label} className="gl-kv">
+                        <dt>{label}</dt>
+                        <dd className="gl-num font-semibold" style={{ color: 'var(--gl-ink)' }}>{value}</dd>
                     </div>
                 ))}
             </dl>
@@ -191,7 +153,7 @@ export function PaymentReceipt({ receipt, subscriptionName, title, onAnother, on
  */
 export function TransferFields({ data, setData, errors, transferBanks, senderBanks, senderIsSubscriber, onSenderToggle, checkingReference, referenceStatus }) {
     return (
-        <div className="animate-menu mt-3 grid gap-4 rounded-[20px] border border-gray-100 bg-gray-50 p-4">
+        <div className="animate-menu gl-receipt mt-3 grid gap-4 !border-solid p-4">
             <fieldset>
                 <legend className="mb-2 text-[14.5px] font-semibold text-gray-700">
                     البنك المستلم <span className="text-brand-600">*</span>
