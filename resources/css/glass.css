@@ -508,7 +508,7 @@
     color: var(--gl-muted);
 }
 
-.gl-chip[aria-pressed='true'] {
+.gl-chip:is([aria-pressed='true'], [aria-checked='true']) {
     color: var(--gl-ink);
     background: rgb(var(--gl-brand) / 0.2);
     border-color: rgb(var(--gl-brand) / 0.5);
@@ -1524,4 +1524,138 @@
     text-align: center;
     color: var(--gl-faint);
     font-size: 12px;
+}
+
+/* ── The branch banner leading a data page (Components/BranchBanner.jsx) ── */
+.gl-banner {
+    background: linear-gradient(150deg, rgb(var(--gl-brand) / 0.26), rgb(var(--glass-panel) / var(--glass-alpha)) 62%);
+}
+
+.gl-banner::after {
+    content: '';
+    position: absolute;
+    inset-inline: 18px;
+    bottom: 0;
+    height: 2px;
+    background: linear-gradient(90deg, rgb(var(--gl-brand)), rgb(var(--silver-200) / 0.8), transparent);
+}
+
+.gl-text-muted {
+    color: var(--gl-muted);
+}
+
+@media print {
+    .gl-banner {
+        background: none;
+        border: 0;
+        box-shadow: none;
+        backdrop-filter: none;
+    }
+
+    .gl-banner::after {
+        display: none;
+    }
+}
+
+.gl-chip.gl-chip-sm {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 11px;
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--gl-ink);
+}
+
+.gl-chip:hover {
+    background: var(--gl-fill-2);
+    border-color: var(--gl-line-hi);
+}
+
+/* ── Windows (Components/DialogFrame.jsx, Modal.jsx) ──────────────────── */
+.gl-dialog-head {
+    border-bottom: 1px solid var(--gl-line);
+}
+
+.gl-dialog-foot {
+    border-top: 1px solid var(--gl-line);
+    background: var(--gl-fill);
+}
+
+.gl-tone {
+    background: color-mix(in srgb, var(--gl-c) 16%, transparent);
+    color: var(--gl-c);
+}
+
+.gl-tone-brand { --gl-c: rgb(var(--gl-brand)); }
+.gl-tone-info { --gl-c: var(--gl-info); }
+.gl-tone-warn { --gl-c: var(--gl-warn); }
+.gl-tone-bad { --gl-c: var(--gl-bad); }
+
+/* ── Notifications (Components/FlashNotifications.jsx) ────────────────── */
+.gl-toasts {
+    position: fixed;
+    inset-inline: 0;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding-inline: 16px;
+}
+
+.gl-toast {
+    position: relative;
+    width: min(460px, 100%);
+    overflow: hidden;
+    border-radius: 14px;
+    background: rgb(var(--glass-ink));
+    color: rgb(var(--glass-page));
+    font-size: 14px;
+    box-shadow: 0 24px 44px -12px rgb(0 0 0 / 0.6);
+    animation: gl-toast 0.45s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+
+@keyframes gl-toast {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.94);
+    }
+}
+
+.gl-toast-icon {
+    width: 32px;
+    height: 32px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    color: var(--gl-c);
+    background: color-mix(in srgb, var(--gl-c) 18%, transparent);
+}
+
+.gl-toast-close {
+    padding: 6px;
+    border-radius: 8px;
+    opacity: 0.7;
+}
+
+.gl-toast-close:hover {
+    opacity: 1;
+    background: rgb(var(--glass-page) / 0.12);
+}
+
+.gl-toast-track {
+    height: 3px;
+    background: rgb(var(--glass-page) / 0.12);
+}
+
+.gl-toast-track > div {
+    background: var(--gl-c);
+}
+
+/* ── Pages of a table (DataTable/Pagination.jsx) ──────────────────────── */
+.gl-pager button {
+    height: 30px;
 }

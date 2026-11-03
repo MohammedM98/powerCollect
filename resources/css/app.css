@@ -1332,27 +1332,20 @@ html[data-modal-open] {
  * viewer asks for less transparency, both fall back to solid colours.
  */
 .modal-glass-backdrop {
-    background: rgb(var(--graphite-900) / 0.55);
-    -webkit-backdrop-filter: blur(10px) saturate(140%);
-    backdrop-filter: blur(10px) saturate(140%);
+    background: rgb(2 6 18 / 0.5);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
 }
 
+/* The window itself is the prototype's glass panel, nearly opaque so the page behind does not read through. */
 .modal-glass-panel {
-    border: 1px solid rgb(255 255 255 / 0.6);
-    background: rgb(var(--surface) / 0.9);
-    box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 0.55),
-        0 2px 6px rgb(var(--shadow-ink) / 0.08),
-        0 36px 80px -24px rgb(var(--shadow-ink) / 0.55);
-    -webkit-backdrop-filter: blur(22px) saturate(160%);
-    backdrop-filter: blur(22px) saturate(160%);
-}
-
-.dark .modal-glass-panel {
-    border-color: rgb(255 255 255 / 0.09);
-    box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 0.06),
-        0 36px 80px -24px rgb(0 0 0 / 0.8);
+    border: 1px solid var(--gl-line);
+    border-radius: calc(20px * var(--radius-scale, 1));
+    background: rgb(var(--glass-panel) / 0.94);
+    color: var(--gl-ink);
+    box-shadow: inset 0 1px 0 var(--gl-line-hi), var(--glass-shadow);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -1361,7 +1354,7 @@ html[data-modal-open] {
     }
 
     .modal-glass-panel {
-        background: rgb(var(--surface));
+        background: rgb(var(--glass-panel) / 0.98);
     }
 }
 
@@ -1373,7 +1366,7 @@ html[data-modal-open] {
     }
 
     .modal-glass-panel {
-        background: rgb(var(--surface));
+        background: rgb(var(--glass-panel) / 0.98);
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
     }
@@ -3359,4 +3352,245 @@ input[type='radio'] {
         transition-duration: 0ms !important;
         scroll-behavior: auto !important;
     }
+}
+
+
+/*
+ * ── Tables in the navy look, as the prototype's ─────────────────────────
+ * One glass panel holds a table's toolbar, the table, its totals and its
+ * pages, divided by thin lines. Column titles are small and quiet with no
+ * fill, rows are separated by a line and tinted under the pointer; figures
+ * keep tabular digits. On phones each row is a glass card.
+ */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.data-table-toolbar, .data-table-container, .data-table-totals, .data-table-pagination) {
+    border-color: var(--gl-line);
+    background: rgb(var(--glass-panel) / var(--glass-alpha));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
+    color: var(--gl-ink);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table-toolbar {
+    padding: 16px 18px;
+    border-radius: calc(20px * var(--radius-scale, 1)) calc(20px * var(--radius-scale, 1)) 0 0;
+    box-shadow: inset 0 1px 0 var(--gl-line-hi);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table-toolbar::before {
+    display: none;
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table-container {
+    padding: 4px 10px 8px;
+    border-radius: calc(20px * var(--radius-scale, 1));
+    box-shadow: inset 0 1px 0 var(--gl-line-hi), var(--glass-shadow);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table-toolbar + .data-table-container {
+    border-top-color: var(--gl-line);
+    box-shadow: var(--glass-shadow);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table-totals {
+    padding: 12px 18px;
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table-totals + .data-table-pagination {
+    border-top-color: var(--gl-line);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table-pagination {
+    padding: 12px 18px 14px;
+    border-radius: 0 0 calc(20px * var(--radius-scale, 1)) calc(20px * var(--radius-scale, 1));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table-totals:not(:has(+ .data-table-pagination)) {
+    border-radius: 0 0 calc(20px * var(--radius-scale, 1)) calc(20px * var(--radius-scale, 1));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.data-table-toolbar, .table-controls) :is(input:not([type='checkbox'], [type='radio']), select, button[aria-expanded]):hover:not(:disabled) {
+    border-color: var(--gl-line-hi);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.data-table-toolbar, .table-controls) :is(input:not([type='checkbox'], [type='radio']), select):focus,
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.data-table-toolbar, .table-controls) button[aria-expanded]:focus-visible,
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.data-table-toolbar, .table-controls) button[aria-expanded='true'] {
+    border-color: rgb(var(--gl-brand) / 0.6);
+    --tw-ring-color: rgb(var(--gl-brand) / 0.16);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.data-table-toolbar, .table-controls) button[data-active],
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.data-table-toolbar, .table-controls) select:has(option[value='']):has(option:checked:not([value=''])) {
+    border-color: rgb(var(--gl-brand) / 0.5);
+    background-color: rgb(var(--gl-brand) / 0.14);
+}
+
+@container (min-width: 641px) {
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        font-size: 14px;
+    }
+
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table th,
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite'])[data-ui-table-header] .data-table th {
+        padding: 10px 12px;
+        border: 0;
+        border-radius: 0;
+        background: none;
+        color: var(--gl-faint);
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table td,
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table td:first-child,
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table td:last-child {
+        padding: 11px 12px;
+        border: 0;
+        border-top: 1px solid var(--gl-line);
+        border-radius: 0;
+        background: none;
+        box-shadow: none;
+    }
+
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table tbody tr:hover,
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table tbody tr:focus-within {
+        filter: none;
+    }
+
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table tbody tr:hover td,
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table tbody tr:focus-within td {
+        border-color: var(--gl-line);
+        background: var(--gl-fill);
+    }
+
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table tbody tr.bg-brand-50 td {
+        background: rgb(var(--gl-brand) / 0.1);
+    }
+
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table tbody tr.is-far-behind:not(.bg-brand-50, :focus-within) td:first-child {
+        box-shadow: inset -3px 0 0 var(--gl-bad);
+    }
+}
+
+@container (max-width: 640px) {
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table tbody tr {
+        border-color: var(--gl-line);
+        background: rgb(var(--glass-panel) / 0.7);
+    }
+
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table td:not(:first-child)[data-label]:not([data-label=''])::before {
+        color: var(--gl-faint);
+        font-size: 12px;
+    }
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .data-table td {
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* Row buttons, export buttons and the row's avatar in the navy look: the prototype's quiet icon buttons and avatar. */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-action {
+    width: 34px;
+    height: 34px;
+    border-color: var(--gl-line);
+    background: var(--gl-fill);
+    color: var(--gl-muted);
+    box-shadow: none;
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-action:hover {
+    border-color: var(--gl-line-hi);
+    background: var(--gl-fill-2);
+    color: var(--gl-ink);
+    box-shadow: none;
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-action-edit {
+    color: var(--gl-info);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-action-delete {
+    color: var(--gl-bad);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.row-action-edit, .row-action-delete, .row-action-print, .row-action-excel):hover {
+    border-color: transparent;
+    background: color-mix(in srgb, currentColor 18%, transparent);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-action-print {
+    color: rgb(var(--print-300));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-action-excel {
+    color: rgb(var(--excel-300));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-action[aria-expanded='true'] {
+    border-color: rgb(var(--gl-brand) / 0.5);
+    background: rgb(var(--gl-brand) / 0.2);
+    color: var(--gl-ink);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-action-view {
+    height: 34px;
+    background: var(--gl-fill-2);
+    color: var(--gl-ink);
+    box-shadow: inset 0 0 0 1px var(--gl-line);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-action-view:hover,
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-action-view:focus-within {
+    background: linear-gradient(180deg, rgb(var(--gl-btn)), color-mix(in srgb, rgb(var(--gl-btn)) 75%, rgb(var(--brand-lo))));
+    color: #fff;
+    box-shadow: 0 10px 22px -10px rgb(var(--gl-btn));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-action-view > button {
+    font-size: 13px;
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tone-print, .tone-excel):not(.tone-solid) {
+    border-color: var(--gl-line);
+    background: var(--gl-fill-2);
+    color: var(--gl-ink);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tone-print:not(.tone-solid) svg {
+    color: rgb(var(--print-300));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tone-excel:not(.tone-solid) svg {
+    color: rgb(var(--excel-300));
+}
+
+html:not(.dark):is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tone-print:not(.tone-solid) svg {
+    color: rgb(var(--print-600));
+}
+
+html:not(.dark):is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tone-excel:not(.tone-solid) svg {
+    color: rgb(var(--excel-600));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tone-print, .tone-excel):not(.tone-solid):hover:not(:disabled) {
+    border-color: var(--gl-line-hi);
+    background: var(--gl-fill-2);
+    color: var(--gl-ink);
+    box-shadow: none;
+    filter: brightness(1.1);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-identity-avatar {
+    border: 1px solid var(--gl-line);
+    border-radius: 50%;
+    background: var(--gl-fill-2);
+    color: var(--gl-ink);
+    font-family: var(--gl-head);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-identity-avatar > span:not(:empty) {
+    border-color: rgb(var(--glass-panel));
 }

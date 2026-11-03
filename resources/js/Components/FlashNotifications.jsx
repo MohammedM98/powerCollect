@@ -5,29 +5,15 @@ import { ACTION_MESSAGES, visitReturnsStatus } from '@/lib/actionMessages';
 import { createNotificationQueue } from '@/lib/notificationQueue';
 
 /**
- * Solid cards, in shades dark enough to keep white text readable: green for
- * success, red for a failed save (which also gets a title above its reason).
+ * The prototype's toast (glass.css `gl-toast`): a light bar at the bottom
+ * of the page, the status shown by its icon's colour and, when it failed,
+ * by a title above the reason.
  */
 const APPEARANCE = {
-    success: {
-        icon: 'check',
-        card: 'bg-gradient-to-br from-emerald-600 to-emerald-700 shadow-[0_18px_40px_-14px_rgb(var(--success-700)/0.7)]',
-    },
-    error: {
-        title: 'تعذّر الحفظ',
-        icon: 'alert',
-        card: 'bg-gradient-to-br from-red-600 to-red-700 shadow-[0_18px_40px_-14px_rgb(var(--danger-700)/0.7)]',
-    },
-    warning: {
-        title: 'تنبيه',
-        icon: 'alert',
-        card: 'bg-gradient-to-br from-amber-500 to-amber-600 shadow-[0_18px_40px_-14px_rgb(var(--warning-700)/0.7)]',
-    },
-    deleteError: {
-        title: 'تعذّر الحذف',
-        icon: 'alert',
-        card: 'bg-gradient-to-br from-red-600 to-red-700 shadow-[0_18px_40px_-14px_rgb(var(--danger-700)/0.7)]',
-    },
+    success: { icon: 'check', tone: 'var(--gl-ok)' },
+    error: { title: 'تعذّر الحفظ', icon: 'alert', tone: 'var(--gl-bad)' },
+    warning: { title: 'تنبيه', icon: 'alert', tone: 'var(--gl-warn)' },
+    deleteError: { title: 'تعذّر الحذف', icon: 'alert', tone: 'var(--gl-bad)' },
 };
 
 /** Only the newest few cards are shown at once; hidden older ones still close on their own timer. */
@@ -92,7 +78,7 @@ export default function FlashNotifications({ initialStatus }) {
             dir="rtl"
             role="region"
             aria-label="الإشعارات"
-            className="pointer-events-none fixed bottom-4 right-4 z-[100] flex w-[calc(100%-2rem)] max-w-md flex-col gap-3 sm:bottom-6 sm:right-6"
+            className="gl-toasts pointer-events-none"
         >
             {notifications.slice(-MAX_VISIBLE).map((notification) => {
                 const appearance = APPEARANCE[notification.type] ?? APPEARANCE.success;
@@ -101,20 +87,20 @@ export default function FlashNotifications({ initialStatus }) {
                     <div
                         key={notification.id}
                         role={notification.type !== 'success' ? 'alert' : 'status'}
-                        style={{ '--flash-duration': `${notification.duration}ms` }}
+                        style={{ '--flash-duration': `${notification.duration}ms`, '--gl-c': appearance.tone }}
                         onMouseEnter={() => queue.current.pause(notification.id)}
                         onMouseLeave={() => queue.current.resume(notification.id)}
-                        className={`flash-notification pointer-events-auto relative shrink-0 overflow-hidden rounded-row text-white ring-1 ring-inset ring-white/15 ${appearance.card} ${
+                        className={`gl-toast flash-notification pointer-events-auto ${
                             notification.type !== 'success' ? 'flash-notification-error' : ''
                         } ${notification.leaving ? 'flash-notification-leaving' : ''}`}
                     >
-                        <div className={`flex gap-3 py-4 pe-3 ps-4 ${appearance.title ? 'items-start' : 'items-center'}`}>
-                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/20 ring-1 ring-inset ring-white/25">
-                                <Icon name={appearance.icon} strokeWidth={2.25} />
+                        <div className={`flex gap-3 py-3 pe-2 ps-3 ${appearance.title ? 'items-start' : 'items-center'}`}>
+                            <span className="gl-toast-icon">
+                                <Icon name={appearance.icon} className="h-[18px] w-[18px]" strokeWidth={2.25} />
                             </span>
                             <div className="min-w-0 flex-1">
-                                {appearance.title && <p className="text-lg font-bold leading-8">{appearance.title}</p>}
-                                <p className={`break-words text-[18px] leading-8 ${appearance.title ? 'text-white/95' : 'font-semibold'}`}>
+                                {appearance.title && <p className="font-bold leading-7">{appearance.title}</p>}
+                                <p className={`break-words leading-7 ${appearance.title ? '' : 'font-bold'}`}>
                                     {notification.message}
                                 </p>
                             </div>
@@ -122,13 +108,13 @@ export default function FlashNotifications({ initialStatus }) {
                                 type="button"
                                 onClick={() => queue.current.dismiss(notification.id)}
                                 aria-label="إغلاق الإشعار"
-                                className="rounded-lg p-1.5 text-white/70 transition hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+                                className="gl-toast-close"
                             >
                                 <Icon name="close" className="h-4 w-4" strokeWidth={2} />
                             </button>
                         </div>
-                        <div aria-hidden="true" className="h-1 bg-black/15">
-                            <div className="flash-notification-countdown h-full bg-white/70" />
+                        <div aria-hidden="true" className="gl-toast-track">
+                            <div className="flash-notification-countdown h-full" />
                         </div>
                     </div>
                 );
