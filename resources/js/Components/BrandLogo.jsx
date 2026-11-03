@@ -1,13 +1,20 @@
+import { SuperPowerMark } from '@/Components/SuperPowerMark';
 import { useBrand } from '@/hooks/useBrand';
 
 /**
- * The company's logo. A company with a logo of its own for dark
- * backgrounds shows that one in the dark theme (app.css hides the other).
+ * The company's logo. The default identity draws the Super Power mark
+ * inline in the company's colour (`markSize` in pixels); a company with a
+ * logo of its own shows it, and one with a logo for dark backgrounds shows
+ * that one in the dark theme (app.css hides the other).
  */
-export default function BrandLogo({ className = '', alt, ...props }) {
+export default function BrandLogo({ className = '', alt, markSize = 36, ...props }) {
     const brand = useBrand();
     const { main, light } = brand.logos;
     const label = alt ?? `شعار ${brand.name}`;
+
+    if (brand.animatedLogo) {
+        return <SuperPowerMark size={markSize} label={label} />;
+    }
 
     if (light === main) {
         return <img src={main} alt={label} className={className} {...props} />;

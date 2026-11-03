@@ -56,7 +56,7 @@ export default function SideNavigation({ groups, badges, startsCollapsed = false
     return (
         <aside className="sn-panel text-gray-900" data-collapsed={collapsed || undefined} aria-label="التنقل">
             <div className="sn-head">
-                <BrandLogo alt={props.appName} className="sn-logo" />
+                <BrandLogo alt={props.appName} className="sn-logo" markSize={40} />
                 <span className="sn-title tn-nav-label">
                     <b dir="auto">{shortAppName(props.appName)}</b>
                     <small dir="auto">{branchLabel ?? 'نظام التحصيل الكهربائي'}</small>

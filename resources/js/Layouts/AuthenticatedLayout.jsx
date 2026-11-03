@@ -241,7 +241,8 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
             <main id="main-content" tabIndex={-1} className="mx-auto max-w-[var(--ui-content-width)] px-[var(--tn-gutter)] pb-16 pt-8 outline-none">
                 <BranchViewSwitcher />
                 <Breadcrumb trail={trail} />
-                <SectionPages trail={trail} url={url} badges={badges} />
+                {/* The side menu already lists the section's pages; the top bar shows them as a strip. */}
+                {!sideNavigation && <SectionPages trail={trail} url={url} badges={badges} />}
                 {header && <div className="rise-in mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">{header}</div>}
                 <div ref={titleEndRef} aria-hidden="true" />
                 {children}

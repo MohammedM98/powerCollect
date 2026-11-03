@@ -1199,7 +1199,7 @@
     }
 }
 
-/* ── The Super Power mark and lockup (Components/AnimatedLogo.jsx) ───────── */
+/* ── The Super Power mark and lockup (Components/SuperPowerMark.jsx) ────── */
 .gl-mark {
     display: block;
     flex: none;
@@ -1516,4 +1516,12 @@
 
 [dir='ltr'] .gl-switch[data-on] .gl-switch-knob {
     transform: translateX(18px);
+}
+
+/* ── The page's footer (Components/AppFooter.jsx) ─────────────────────── */
+.gl-footer {
+    padding: 8px 16px 18px;
+    text-align: center;
+    color: var(--gl-faint);
+    font-size: 12px;
 }

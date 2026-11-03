@@ -2540,15 +2540,55 @@ input[type='radio'] {
     color: rgb(var(--gray-900));
 }
 
-/* A section's row: quiet, whether open or holding the current page. */
+/*
+ * The menu as the prototype's: a section's row is a small quiet heading
+ * (open or not), its pages plain lines under it without an indent, and the
+ * home page a line like them.
+ */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) button.tn-drawer-group {
+    min-height: 36px;
+    padding-inline: 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gl-faint);
+}
+
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) button.tn-drawer-group:is([aria-expanded='true'], [data-current='true']) {
     background: none;
-    color: rgb(var(--gray-900));
+    color: var(--gl-faint);
     box-shadow: none;
 }
 
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) button.tn-drawer-group:hover {
+    background: none;
+    color: var(--gl-ink);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) button.tn-drawer-group svg.tn-section-icon,
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) button.tn-drawer-group:is([aria-expanded='true'], [data-current='true']) svg {
-    color: rgb(var(--gray-500));
+    width: 16px;
+    height: 16px;
+    color: inherit;
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(a.tn-drawer-group, .tn-drawer-link) {
+    min-height: 40px;
+    padding-inline: 10px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gl-muted);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(a.tn-drawer-group, .tn-drawer-link) svg {
+    width: 18px;
+    height: 18px;
+    color: inherit;
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-drawer-pages .ps-3 {
+    padding-inline-start: 0;
 }
 
 /* The open page, the home page among the sections, and a current section's page strip. */

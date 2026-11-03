@@ -459,7 +459,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                 >
                     <div className="flex min-w-0 items-center">
                         <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-brand" data-tour="brand" aria-label={`${appName}، ${branchLabel ?? 'نظام التحصيل الكهربائي'}، الصفحة الرئيسية`}>
-                            <BrandLogo alt={appName} />
+                            <BrandLogo alt={appName} markSize={38} />
                             <span className="tn-brand-divider" aria-hidden="true" />
                             <span className="tn-brand-text">
                                 <span className="tn-brand-name" dir="auto">{shortAppName(appName)}</span>
