@@ -119,7 +119,10 @@ class FinancialCycleReportsJourneyTest extends TestCase
         $this->assertBalances([135.0, 36.4, 53.0], $salem, $khaled, $mona);
 
         // A past day's money reads the same: day 3's refund, cancellation and reading correction count on day 3.
-        $this->assertSame(Arr::except($dayTwo, 'readings'), Arr::except($this->report($manager, '2026-10-22', '2026-10-22'), 'readings'));
+        // Only the receipts audit is read as of now, so it takes day 3's refund of Salem's 90 cash off day 2's pending cash.
+        $dayTwoAgain = $this->report($manager, '2026-10-22', '2026-10-22');
+        $this->assertSame(Arr::except($dayTwo, ['readings', 'collections.receipts']), Arr::except($dayTwoAgain, ['readings', 'collections.receipts']));
+        $this->assertSame(['127.00', '37.00'], [$dayTwo['collections']['receipts']['cashPending'], $dayTwoAgain['collections']['receipts']['cashPending']]);
 
         // The days so far, in every report.
         $report = $this->report($manager, '2026-10-20', '2026-10-23');
