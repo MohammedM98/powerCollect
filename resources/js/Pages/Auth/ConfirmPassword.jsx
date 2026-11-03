@@ -16,18 +16,15 @@ export default function ConfirmPassword() {
     }
 
     return (
-        <GuestLayout>
+        <GuestLayout subtitle="هذه منطقة آمنة. أكّد كلمة المرور قبل المتابعة.">
             <Head title="تأكيد كلمة المرور" />
-
-            <h2 className="text-3xl font-bold text-gray-900">تأكيد كلمة المرور</h2>
-            <p className="mb-8 mt-2 text-sm text-gray-500">هذه منطقة آمنة من التطبيق. الرجاء تأكيد كلمة المرور قبل المتابعة.</p>
 
             <form onSubmit={submit}>
                 <div>
                     <InputLabel htmlFor="password" value="كلمة المرور" />
                     <PasswordInput
                         id="password"
-                        className="mt-1 block w-full"
+                        className="mt-1.5 block h-11 w-full"
                         value={data.password}
                         autoFocus
                         autoComplete="current-password"
@@ -36,7 +33,7 @@ export default function ConfirmPassword() {
                     <InputError message={errors.password} className="mt-2" />
                 </div>
 
-                <PrimaryButton disabled={processing} className="mt-7 w-full py-3.5 text-base">
+                <PrimaryButton disabled={processing} className="gl-lg mt-6 w-full">
                     تأكيد
                 </PrimaryButton>
             </form>
