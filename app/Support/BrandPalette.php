@@ -107,8 +107,10 @@ class BrandPalette
     /**
      * The neutral tones a company may draw its pages, lines and text in, as a
      * hue and how strongly it tints the greys (1 = theme.css's own graphite).
+     * A strong tint may cap its chroma (`maxChroma`), so its mid greys, the
+     * ones quiet text is set in, stay grey enough to read.
      *
-     * @var array<string, array{hue: float, tint: float}>
+     * @var array<string, array{hue: float, tint: float, maxChroma?: float}>
      */
     public const NEUTRALS = [
         'slate' => ['hue' => 257, 'tint' => 2.0],
@@ -116,6 +118,8 @@ class BrandPalette
         'neutral' => ['hue' => 0, 'tint' => 0.0],
         'stone' => ['hue' => 70, 'tint' => 0.7],
         'sage' => ['hue' => 150, 'tint' => 0.9],
+        // The Superpower navy (theme.css, section 8): its dark page is 5 12 31.
+        'navy' => ['hue' => 264, 'tint' => 5.8, 'maxChroma' => 0.06],
     ];
 
     /**
@@ -145,7 +149,8 @@ class BrandPalette
         }
 
         ['hue' => $hue, 'tint' => $tint] = self::NEUTRALS[$name];
-        $grey = fn (array $step): string => self::triple(self::oklchToRgb($step[0], $step[1] * $tint, $hue));
+        $maxChroma = self::NEUTRALS[$name]['maxChroma'] ?? INF;
+        $grey = fn (array $step): string => self::triple(self::oklchToRgb($step[0], min($step[1] * $tint, $maxChroma), $hue));
 
         return [
             'light' => array_map($grey, self::GREYS['light']),

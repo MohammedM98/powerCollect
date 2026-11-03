@@ -65,6 +65,9 @@ class BrandDesign
             'gradient' => 'تدرّج من الأعلى',
             'dots' => 'نقاط',
             'grid' => 'شبكة خطوط',
+            'navy' => 'كحلي بإضاءة زرقاء',
+            'midnight' => 'أزرق ليلي',
+            'graphite' => 'فحمي',
         ]],
         'neutral' => ['label' => 'درجة الرمادي', 'options' => [
             'graphite' => 'جرافيت',
@@ -73,6 +76,7 @@ class BrandDesign
             'neutral' => 'رمادي محايد',
             'stone' => 'رمادي دافئ',
             'sage' => 'رمادي مخضر',
+            'navy' => 'كحلي',
         ]],
         'radius' => ['label' => 'الزوايا', 'options' => [
             'rounded' => 'مستديرة',
@@ -249,6 +253,8 @@ class BrandDesign
         'hoverLift' => ['label' => 'مقدار الارتفاع عند المرور', 'min' => 0, 'max' => 8, 'step' => 1, 'unit' => 'px'],
         'shadowStrength' => ['label' => 'قوة الظلال', 'min' => 0, 'max' => 2, 'step' => 0.05, 'unit' => '×'],
         'transitionMs' => ['label' => 'سرعة الحركة', 'min' => 0, 'max' => 800, 'step' => 20, 'unit' => 'ms'],
+        'glassAlpha' => ['label' => 'شفافية الزجاج', 'min' => 0.2, 'max' => 0.9, 'step' => 0.05, 'unit' => ''],
+        'glassBlur' => ['label' => 'قوة تمويه الزجاج', 'min' => 0, 'max' => 40, 'step' => 2, 'unit' => 'px'],
     ];
 
     /**
@@ -258,6 +264,11 @@ class BrandDesign
      * @var array<string, array{label: string, description: string, design: array<string, string>}>
      */
     public const PRESETS = [
+        'superpower' => [
+            'label' => 'سوبر باور زجاجي كحلي',
+            'description' => 'بطاقات زجاجية كحلية فوق خلفية بإضاءة زرقاء، قائمة جانبية، جداول داخل لوحات زجاجية، أزرار متدرجة وحقول معبأة.',
+            'design' => ['details' => 'drawer', 'navigation' => 'sidebar', 'background' => 'navy', 'neutral' => 'navy', 'cards' => 'glass', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand', 'navHighlight' => 'brand'],
+        ],
         'classic' => [
             'label' => 'كلاسيكي فاخر',
             'description' => 'الشكل الحالي: شريط علوي زجاجي، أزرار لامعة وصفوف كبطاقات.',
@@ -421,6 +432,8 @@ class BrandDesign
             '--hover-lift' => $tokens['hoverLift'] !== null ? $tokens['hoverLift'].'px' : null,
             '--shadow-strength' => $tokens['shadowStrength'],
             '--ui-transition' => $tokens['transitionMs'] !== null ? $tokens['transitionMs'].'ms' : null,
+            '--glass-alpha' => $tokens['glassAlpha'],
+            '--glass-blur' => $tokens['glassBlur'] !== null ? $tokens['glassBlur'].'px' : null,
         ], fn ($value): bool => $value !== null);
         $buttons = array_filter([
             'border-radius' => $tokens['buttonRadius'] !== null ? $tokens['buttonRadius'].'px' : null,

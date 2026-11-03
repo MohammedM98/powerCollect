@@ -381,7 +381,8 @@
       "file": "resources/js/Components/FlashNotifications.jsx",
       "prototype": "ToastHost",
       "spec": "شريط فاتح أسفل الوسط مع زر تراجع أو ارتجاع عندما تسمح العملية. الحركات المالية تُرتجع ولا تُحذف",
-      "audit": "لا يوجد اليوم زر تراجع أو ارتجاع في الإشعار. إضافته ممكنة فقط حيث توجد عملية عكسية في الخادم أصلًا (التغيير بصري فقط)."
+      "audit": "لا يوجد اليوم زر تراجع أو ارتجاع في الإشعار. إضافته ممكنة فقط حيث توجد عملية عكسية في الخادم أصلًا (التغيير بصري فقط).",
+      "decision": "معتمد: زر التراجع أو الارتجاع فقط حيث توجد عملية عكسية في الخادم أصلًا."
     },
     {
       "name": "SideNavigation",
@@ -418,7 +419,8 @@
       "file": "resources/js/Components/MoveBoard.jsx",
       "prototype": "MoveBoard + BoardPage",
       "spec": "أعمدة زجاجية، رأس كل عمود: نقطة لون + اسم + عدّاد + سطر ملاحظة. بطاقة العنصر: رقم mono وعمر، صورة رمزية واسم، سطر وصف، مبلغ + وسم. السحب: عتبة 6px، نسخة شبح scale 1.04 وميل -2deg، العمود الهدف يتوهج، حالة فارغة 'أفلت هنا'، وبعد الإفلات Toast مع تراجع. تبويبات underline فوق اللوحة. أي حالة مالية تمرّ بتأكيد.",
-      "audit": "غير موجود. يوجد نموذج لوحة حقيقي في lib/readingBoard.js (boardColumns: المتاحة، الكشوف الورقية، ثم كل قارئ؛ movePayload مع confirmDownloaded) تعرضه ReadingCycles/Show.jsx اليوم كجدول تحديد ثم نافذة نقل."
+      "audit": "غير موجود. يوجد نموذج لوحة حقيقي في lib/readingBoard.js (boardColumns: المتاحة، الكشوف الورقية، ثم كل قارئ؛ movePayload مع confirmDownloaded) تعرضه ReadingCycles/Show.jsx اليوم كجدول تحديد ثم نافذة نقل.",
+      "decision": "معتمد: عرض بديل بجانب جدول التوزيع في ReadingCycles/Show لا بديل عنه، ونقل طبلون بعد تحميل قراءاته إلى الهاتف يمرّ بتأكيد."
     },
     {
       "name": "StatStrip",
@@ -440,7 +442,8 @@
       "file": "resources/js/Components/StatRing.jsx",
       "prototype": "GoalRing",
       "spec": "حلقة 104px بسمك 10، تمتلئ بحركة ring-draw، الرقم في الوسط وتحته 'من الهدف'، ثم 3 أسطر kv.",
-      "audit": "لا توجد بيانات هدف شهري في الخادم. يلزم قرار: إما استبدال الهدف بمؤشر موجود (مثل اكتمال قراءات الدورة approved/total)، أو إضافة هدف (تغيير خارج النطاق البصري)."
+      "audit": "لا توجد بيانات هدف شهري في الخادم. يلزم قرار: إما استبدال الهدف بمؤشر موجود (مثل اكتمال قراءات الدورة approved/total)، أو إضافة هدف (تغيير خارج النطاق البصري).",
+      "decision": "معتمد: الحلقة تعرض اكتمال قراءات الدورة (approved من total في readings من DashboardOverview) بدل هدف شهري."
     },
     {
       "name": "LiveBars",
@@ -448,7 +451,8 @@
       "file": "resources/js/Components/LiveBars.jsx",
       "prototype": "المحصّلون الآن",
       "spec": "رقم كبير + 26 عمودًا تتغير ارتفاعاتها كل 1.6s بانتقال 0.6s، ثم أسطر kv. تتوقف مع reduced-motion.",
-      "audit": "لا توجد بيانات حيّة عن المحصّلين في الميدان. الموجود: collections.byCollector (اسم، مجموع، عدد، نسبة) والصناديق المفتوحة. يلزم قرار قبل التنفيذ بدل أعمدة عشوائية."
+      "audit": "لا توجد بيانات حيّة عن المحصّلين في الميدان. الموجود: collections.byCollector (اسم، مجموع، عدد، نسبة) والصناديق المفتوحة. يلزم قرار قبل التنفيذ بدل أعمدة عشوائية.",
+      "decision": "معتمد: أعمدة ثابتة من collections.byCollector (مجموع كل محصّل في الفترة) مع عدد الصناديق المفتوحة، بلا أعمدة عشوائية."
     },
     {
       "name": "SplitBar",
@@ -456,7 +460,8 @@
       "file": "resources/js/Components/SplitBar.jsx",
       "prototype": "طرق الدفع",
       "spec": "شريط مقسّم 8px بألوان: لون الزر، تحذير، رمادي. ينمو من بداية السطر بتتابع 120ms، تحته أسطر kv.",
-      "audit": "البيانات الموجودة: collections.cash وcollections.transfers (قسمان، لا ثلاثة كما في النموذج)."
+      "audit": "البيانات الموجودة: collections.cash وcollections.transfers (قسمان، لا ثلاثة كما في النموذج).",
+      "decision": "معتمد: قسمان (نقدًا وتحويلات) من collections.cash وcollections.transfers."
     },
     {
       "name": "UnderlineTabs",

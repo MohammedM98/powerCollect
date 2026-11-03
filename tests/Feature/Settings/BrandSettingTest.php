@@ -57,7 +57,7 @@ class BrandSettingTest extends TestCase
         $this->actingAs($this->superAdmin)->get(route('settings.appearance.edit'))
             ->assertInertia(fn ($page) => $page
                 ->component('Settings/Appearance')
-                ->where('profile.design.navigation', 'topbar')
+                ->where('profile.design.navigation', 'sidebar')
                 ->where('profile.ownLogos', ['main', 'icon'])
                 ->where('presets.corporate.design.navigation', 'sidebar')
                 ->where('can.manageBrand', true));
