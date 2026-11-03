@@ -24,9 +24,10 @@
     }
 
     /*
-     * Fields: 12px corners and a quiet border that turns burgundy under the
-     * pointer and, with a soft ring, while typing in it, so the user always
-     * sees which field they are on. Selectors are kept as weak as the forms
+     * Fields, as the prototype's (glass.css `gl-field`): the glass tint,
+     * 12px corners and a thin line that brightens under the pointer and,
+     * with a soft ring in the company's colour, while typing in it, so the
+     * user always sees which field they are on. Selectors are kept as weak as the forms
      * plugin's, so a utility class on a field still wins.
      */
     input:where(:not([type])),
@@ -39,7 +40,10 @@
     [type='date'],
     select,
     textarea {
-        @apply rounded-control border-gray-200 bg-surface text-gray-900;
+        border-color: var(--gl-line);
+        border-radius: calc(12px * var(--radius-scale, 1));
+        background-color: var(--gl-fill);
+        color: var(--gl-ink);
     }
 
     /*
@@ -72,7 +76,9 @@
     [type='date']:focus,
     select:focus,
     textarea:focus {
-        @apply border-brand-500 ring-4 ring-brand-500/15;
+        border-color: rgb(var(--gl-brand) / 0.6);
+        box-shadow: 0 0 0 3px rgb(var(--gl-brand) / 0.16);
+        outline: none;
     }
 
     :is(
@@ -87,12 +93,12 @@
             select,
             textarea
         ):hover:not(:disabled, [readonly], :focus) {
-        border-color: rgb(var(--brand-500) / 0.45);
+        border-color: var(--gl-line-hi);
     }
 
     /* A field with an error shown under it gets a red border. */
     :where(div):has(> [data-input-error]) :is(input:not([type='checkbox'], [type='radio']), select, textarea) {
-        @apply border-brand-500;
+        border-color: var(--gl-bad);
     }
 
     /*
@@ -120,11 +126,20 @@
     /* A read-only or disabled field gets a dashed border. */
     :read-only:where(input:not([type='checkbox'], [type='radio'])),
     :disabled:where(input, select, textarea) {
-        @apply border-dashed bg-gray-50 text-gray-500;
+        border-style: dashed;
+        background-color: transparent;
+        color: var(--gl-muted);
     }
 
     [type='checkbox'] {
-        @apply rounded border-gray-300 bg-surface text-brand-500 focus:ring-gray-900/20;
+        border-color: var(--gl-line-hi);
+        border-radius: 5px;
+        background-color: var(--gl-fill);
+        color: rgb(var(--gl-btn));
+    }
+
+    [type='checkbox']:focus {
+        box-shadow: 0 0 0 3px rgb(var(--gl-brand) / 0.2);
     }
 
     [type='date'] {
@@ -150,7 +165,11 @@
         }
 
         ::picker(select) {
-            @apply my-1.5 rounded-2xl border border-gray-100 bg-surface p-1.5 text-gray-900 shadow-lift;
+            @apply my-1.5 rounded-2xl border p-1.5;
+            border-color: var(--gl-line);
+            background: rgb(var(--glass-panel) / 0.97);
+            color: var(--gl-ink);
+            box-shadow: inset 0 1px 0 var(--gl-line-hi), var(--glass-shadow);
             max-block-size: min(18rem, 60vh);
         }
 
@@ -160,7 +179,9 @@
 
         select option:hover,
         select option:focus-visible {
-            @apply bg-gray-100 text-gray-900 outline-none;
+            @apply outline-none;
+            background: var(--gl-fill-2);
+            color: var(--gl-ink);
         }
 
         select option:checked {

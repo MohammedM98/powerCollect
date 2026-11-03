@@ -1,6 +1,7 @@
+/** A field's name above it, as the prototype's (glass.css `gl-label`). */
 export default function InputLabel({ value, className = '', children, ...props }) {
     return (
-        <label {...props} className={`block text-sm font-semibold text-gray-700 ${className}`}>
+        <label {...props} className={`gl-label block ${className}`}>
             {value ?? children}
         </label>
     );

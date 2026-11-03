@@ -1276,3 +1276,105 @@
         display: none;
     }
 }
+
+/* ── Shared controls drawn in the glass look (PrimaryButton, DangerButton, InputLabel, InputError, Switch…) ── */
+.gl-btn.gl-danger {
+    background: color-mix(in srgb, var(--gl-bad) 14%, transparent);
+    color: var(--gl-bad);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gl-bad) 40%, transparent);
+}
+
+.gl-btn.gl-danger:hover:not(:disabled) {
+    background: var(--gl-bad);
+    color: #fff;
+    filter: none;
+}
+
+/* The main button's look split into parts (a button and its menu). */
+.gl-btn-surface {
+    display: inline-flex;
+    overflow: hidden;
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 700;
+    background: linear-gradient(180deg, rgb(var(--gl-btn)), color-mix(in srgb, rgb(var(--gl-btn)) 75%, rgb(var(--brand-lo))));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 10px 22px -10px rgb(var(--gl-btn));
+}
+
+.gl-btn-part {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    transition: background 0.15s;
+}
+
+.gl-btn-part:hover:not(:disabled) {
+    background: rgb(255 255 255 / 0.1);
+}
+
+.gl-btn-part:disabled {
+    opacity: 0.5;
+}
+
+.gl-btn-part:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: -3px;
+}
+
+.gl-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--gl-muted);
+}
+
+.gl-error {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--gl-bad);
+}
+
+.gl-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    width: 42px;
+    height: 24px;
+    padding: 2px;
+    border-radius: 99px;
+    background: var(--gl-fill-2);
+    box-shadow: inset 0 0 0 1px var(--gl-line);
+    transition: background 0.2s;
+}
+
+.gl-switch[data-on] {
+    background: rgb(var(--gl-btn));
+    box-shadow: 0 6px 14px -8px rgb(var(--gl-btn));
+}
+
+.gl-switch:disabled {
+    cursor: not-allowed;
+}
+
+.gl-switch:focus-visible {
+    outline: 2px solid rgb(var(--gl-brand));
+    outline-offset: 2px;
+}
+
+.gl-switch-knob {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.3);
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.gl-switch[data-on] .gl-switch-knob {
+    transform: translateX(calc(-18px * var(--gl-d)));
+}
+
+[dir='ltr'] .gl-switch[data-on] .gl-switch-knob {
+    transform: translateX(18px);
+}
