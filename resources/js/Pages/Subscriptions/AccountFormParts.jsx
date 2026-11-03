@@ -4,8 +4,8 @@ import InfoTip from '@/Components/InfoTip';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
-import { describeBalance } from '@/lib/accountStatement';
-import { BALANCE_CHIP_CLASSES, BALANCE_HINTS, balanceInText } from '@/lib/balance';
+import { describeBalance, describedBalanceText } from '@/lib/accountStatement';
+import { BALANCE_CHIP_CLASSES, BALANCE_HINTS } from '@/lib/balance';
 import { initials } from '@/lib/format';
 
 /**
@@ -43,9 +43,9 @@ const TONES = {
     },
 };
 
-/** A described balance (describeBalance()) as text: "377 ₪", "-9.10 ₪" or "0 ₪", its minus kept before the number. */
+/** A described balance (describeBalance()) as text: "7,178 ₪", "-9.10 ₪" or "0 ₪" (lib/accountStatement.js). */
 export function balanceText(balance) {
-    return balanceInText(balance.signed);
+    return describedBalanceText(balance);
 }
 
 /** A field's label, as FormField draws it: the star when required, the guidance (`hint`) behind an "!". */

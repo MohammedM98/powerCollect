@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
     compactStatementEntries,
     describeBalance,
+    describedBalanceText,
     discountAmount,
     filterStatementEntries,
     netOfReadingDiscount,
@@ -110,11 +111,11 @@ test('recording date sorting composes with existing payment filters', () => {
 });
 
 test('a balance reads as owed, in credit or settled', () => {
-    assert.deepEqual(describeBalance('54.10'), { amount: '54.10', signed: '54.10', label: 'عليه', tone: 'owes' });
-    assert.deepEqual(describeBalance('-9.10'), { amount: '9.10', signed: '-9.10', label: 'له', tone: 'credit' });
-    assert.deepEqual(describeBalance('0.00'), { amount: '0', signed: '0', label: 'مسدّد', tone: 'settled' });
+    assert.deepEqual(describeBalance('54.10'), { value: 54.1, amount: '54.10', signed: '54.10', label: 'عليه', tone: 'owes' });
+    assert.deepEqual(describeBalance('-9.10'), { value: -9.1, amount: '9.10', signed: '-9.10', label: 'له', tone: 'credit' });
+    assert.deepEqual(describeBalance('0.00'), { value: 0, amount: '0', signed: '0', label: 'مسدّد', tone: 'settled' });
     // Whole amounts drop the .00.
-    assert.deepEqual(describeBalance('50.00'), { amount: '50', signed: '50', label: 'عليه', tone: 'owes' });
+    assert.deepEqual(describeBalance('50.00'), { value: 50, amount: '50', signed: '50', label: 'عليه', tone: 'owes' });
 });
 
 test('a payment in shekels ignores the rate; others are converted at it', () => {
@@ -263,4 +264,11 @@ test('lines that belong together share a chain number; a line on its own has non
     assert.equal(chains.get(7), 2);
     assert.equal(chains.get(9), 2);
     assert.equal(chains.has(8), false);
+});
+
+test('a described balance reads in full, thousands included, owed or in credit', () => {
+    assert.equal(describedBalanceText(describeBalance(7178)), '\u20667,178 ₪\u2069');
+    assert.equal(describedBalanceText(describeBalance('-1250.5')), '\u2066-1,250.50 ₪\u2069');
+    assert.equal(describedBalanceText(describeBalance(377)), '\u2066377 ₪\u2069');
+    assert.equal(describedBalanceText(describeBalance(0)), '\u20660 ₪\u2069');
 });
