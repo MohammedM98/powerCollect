@@ -3594,3 +3594,23 @@ html:not(.dark):is([data-ui-background='navy'], [data-ui-background='midnight'],
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .row-identity-avatar > span:not(:empty) {
     border-color: rgb(var(--glass-panel));
 }
+
+
+/* The box entries' and closing tables (financial-boxes.css) as the prototype's table. */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .financial-ledger-table th {
+    background: rgb(var(--glass-panel) / 0.96);
+    color: var(--gl-faint);
+    font-size: 12px;
+    font-weight: 700;
+    border-bottom: 1px solid var(--gl-line);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .financial-ledger-table td {
+    background: none;
+    border-bottom-color: var(--gl-line);
+    color: var(--gl-ink);
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .financial-ledger-table tbody tr:hover td {
+    background: var(--gl-fill);
+}

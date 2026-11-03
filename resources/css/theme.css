@@ -450,3 +450,35 @@
     --glass-ambient: radial-gradient(1300px 720px at 85% -12%, rgb(var(--brand-500) / 0.22), transparent 62%);
     --glass-nav: none;
 }
+
+/*
+ * The named colours (section 6) in the navy look: the pages that keep a
+ * stylesheet of their own (the ledger, reading entry, the profile, reading
+ * schedule, SMS settings) draw on the glass: panels, lines, text and the
+ * company's colour from the tokens above. Their hero cards keep white text
+ * on a deep blue in the company's colour.
+ */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) {
+    --ui-page: rgb(var(--glass-page));
+    --ui-surface: rgb(var(--glass-panel) / 0.86);
+    --ui-raised: rgb(var(--glass-fill));
+    --ui-sunken: rgb(var(--glass-fill));
+    --ui-line: rgb(var(--glass-line));
+    --ui-line2: rgb(var(--glass-line));
+    --ui-ink: rgb(var(--glass-ink));
+    --ui-ink2: rgb(var(--glass-ink));
+    --ui-muted: rgb(var(--glass-muted));
+    --ui-faint: rgb(var(--glass-faint));
+    --ui-success: rgb(var(--glass-success));
+    --ui-success-t: rgb(var(--glass-success) / 0.14);
+    --ui-info: rgb(var(--glass-info));
+    --ui-info-t: rgb(var(--glass-info) / 0.14);
+    --ui-warn: rgb(var(--glass-warning));
+    --ui-warn-t: rgb(var(--glass-warning) / 0.14);
+    --ui-danger: rgb(var(--glass-danger));
+    --ui-danger-t: rgb(var(--glass-danger) / 0.14);
+    --ui-focus: rgb(var(--brand-solid));
+    --ui-shadow: inset 0 1px 0 rgb(var(--glass-line-hi)), var(--glass-shadow);
+    --ui-pop: var(--glass-shadow);
+    --ui-hero: linear-gradient(135deg, rgb(var(--brand-lo)), rgb(var(--brand-deep)) 60%, rgb(var(--brand-deep)));
+}
