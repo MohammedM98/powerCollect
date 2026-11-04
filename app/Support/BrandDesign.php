@@ -36,8 +36,7 @@ class BrandDesign
             'none' => 'بدون حركة',
         ]],
         'details' => ['label' => 'عرض التفاصيل', 'options' => [
-            'modal' => 'نافذة وسط الشاشة',
-            'drawer' => 'لوحة جانبية',
+            'modal' => 'نافذة منبثقة وسط الشاشة',
         ]],
         'footerStyle' => ['label' => 'تذييل الصفحة', 'options' => [
             'full' => 'كامل',
@@ -45,8 +44,8 @@ class BrandDesign
         ]],
         'navigation' => ['label' => 'التنقل', 'options' => [
             'topbar' => 'شريط علوي عائم',
-            'sidebar' => 'قائمة جانبية',
-            'rail' => 'قائمة جانبية مصغّرة',
+            'sidebar' => 'شريط أقسام عائم',
+            'rail' => 'شريط أقسام عائم (الاسم السابق: قائمة مصغّرة)',
         ]],
         'navStyle' => ['label' => 'شكل الشريط والقائمة', 'options' => [
             'glass' => 'زجاجي شفاف',
@@ -266,8 +265,8 @@ class BrandDesign
     public const PRESETS = [
         'superpower' => [
             'label' => 'سوبر باور زجاجي كحلي',
-            'description' => 'بطاقات زجاجية كحلية فوق خلفية بإضاءة زرقاء، قائمة جانبية، جداول داخل لوحات زجاجية، أزرار متدرجة وحقول معبأة.',
-            'design' => ['details' => 'drawer', 'navigation' => 'sidebar', 'background' => 'navy', 'neutral' => 'navy', 'cards' => 'glass', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand', 'navHighlight' => 'brand'],
+            'description' => 'بطاقات زجاجية كحلية فوق خلفية بإضاءة زرقاء، شريط أقسام عائم، جداول داخل لوحات زجاجية، أزرار متدرجة وحقول معبأة.',
+            'design' => ['navigation' => 'sidebar', 'background' => 'navy', 'neutral' => 'navy', 'cards' => 'glass', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand', 'navHighlight' => 'brand'],
         ],
         'classic' => [
             'label' => 'كلاسيكي فاخر',
@@ -276,7 +275,7 @@ class BrandDesign
         ],
         'corporate' => [
             'label' => 'مؤسسي',
-            'description' => 'قائمة جانبية فاتحة وجداول بشبكة ورأس رمادي، كأنظمة المؤسسات والبنوك.',
+            'description' => 'شريط أقسام فاتح وجداول بشبكة ورأس رمادي، كأنظمة المؤسسات والبنوك.',
             'design' => ['navigation' => 'sidebar', 'navStyle' => 'solid', 'width' => 'full', 'background' => 'plain', 'neutral' => 'slate', 'radius' => 'soft', 'buttons' => 'solid', 'cards' => 'outlined', 'tables' => 'bordered', 'tableHeader' => 'tinted', 'density' => 'compact', 'headingFont' => 'plex', 'pageTitle' => 'bar', 'searchStyle' => 'filled', 'focusRing' => 'brand', 'checkboxes' => 'rounded'],
         ],
         'minimal' => [
@@ -296,7 +295,7 @@ class BrandDesign
         ],
         'executive' => [
             'label' => 'تنفيذي داكن',
-            'description' => 'قائمة جانبية داكنة، بطاقات بخط علوي ملوّن وأزرار بارزة ورأس جداول بلون الشركة.',
+            'description' => 'شريط أقسام داكن، بطاقات بخط علوي ملوّن وأزرار بارزة ورأس جداول بلون الشركة.',
             'design' => ['navigation' => 'sidebar', 'navStyle' => 'dark', 'background' => 'glow', 'neutral' => 'stone', 'buttons' => 'raised', 'cards' => 'accent', 'tableHeader' => 'brand', 'badges' => 'solid', 'pageTitle' => 'underline', 'headingFont' => 'messiri', 'buttonHover' => 'lift', 'cardHover' => 'lift', 'navHighlight' => 'brand', 'switches' => 'brand', 'inputFocus' => 'glow'],
         ],
         'glass' => [

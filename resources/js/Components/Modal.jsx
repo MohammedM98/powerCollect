@@ -16,8 +16,10 @@ let titleCount = 0;
 
 /**
  * Rendered into <body>, so a modal opened from inside another one (or
- * from inside an animated card) still covers the whole screen. `centered`
- * puts the panel in the middle of the screen instead of near the top.
+ * from inside an animated card) still covers the whole screen. Every
+ * window is a pop-up in the middle of the screen (never a side panel);
+ * one taller than the screen scrolls, and on phones it sits on the
+ * screen's bottom edge as a sheet (app.css `.modal-scroll`).
  *
  * While open, the page behind stays still (its scroll is locked), Tab and
  * Shift+Tab stay inside the newest window, and closing returns focus to
@@ -26,7 +28,7 @@ let titleCount = 0;
  * past the edge keeps the window open. A panel whose content doesn't name
  * its own role is announced as a dialog, titled by its first heading.
  */
-export default function Modal({ show, onClose, children, maxWidth = 'md', centered = false, panelClassName = '', presentation = 'details' }) {
+export default function Modal({ show, onClose, children, maxWidth = 'md', panelClassName = '', presentation = 'details' }) {
     const onCloseRef = useRef(onClose);
     const panelRef = useRef(null);
     const pressStartedOutside = useRef(false);
@@ -144,7 +146,7 @@ export default function Modal({ show, onClose, children, maxWidth = 'md', center
     return createPortal(
         <div
             data-modal-presentation={presentation}
-            className={`modal-scroll fixed inset-0 z-50 overflow-y-auto overscroll-contain px-4 py-6 sm:px-6 ${centered ? 'flex items-center' : ''}`}
+            className="modal-scroll fixed inset-0 z-50 flex overflow-y-auto overscroll-contain px-4 py-6 sm:px-6"
             onPointerDown={(e) => {
                 pressStartedOutside.current = e.target === e.currentTarget;
             }}
@@ -159,7 +161,7 @@ export default function Modal({ show, onClose, children, maxWidth = 'md', center
             <div
                 ref={panelRef}
                 tabIndex={-1}
-                className={`modal-glass-panel animate-modal-panel relative mx-auto mb-6 mt-6 w-full overflow-hidden rounded-panel outline-none ${maxWidthClass} ${panelClassName}`}
+                className={`modal-glass-panel animate-modal-panel relative m-auto w-full overflow-hidden rounded-panel outline-none ${maxWidthClass} ${panelClassName}`}
             >
                 {children}
             </div>

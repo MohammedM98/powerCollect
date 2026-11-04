@@ -1,10 +1,8 @@
 import Icon from '@/Components/Icon';
-import BrandLogo from '@/Components/BrandLogo';
-import { useBrand } from '@/hooks/useBrand';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { describeBalance } from '@/lib/accountStatement';
-import { formatClock, formatMoney } from '@/lib/format';
+import { formatMoney } from '@/lib/format';
 import InputError from '@/Components/InputError';
 import Switch from '@/Components/Switch';
 import { BankReceivedDateField } from '@/Components/BankReceivedDate';
@@ -27,69 +25,6 @@ export function MethodTile({ value, checked, onChange, icon, title, hint }) {
             </span>
             <span className="gl-method-dot" aria-hidden="true" />
         </label>
-    );
-}
-
-/**
- * The receipt beside the form, as the prototype's preview: the receipt as
- * it will print (the product's mark, the amount, the balance before and
- * after), updating with every figure typed, before saving.
- */
-export function PaymentSummary({ amount, currency, inShekels, balance, methodText, collector }) {
-    const before = describeBalance(balance);
-    const after = inShekels === null ? null : describeBalance(Number(balance) - inShekels);
-    const owed = Number(balance) > 0 ? Number(balance) : 0;
-    const coverage = owed > 0 && inShekels !== null ? Math.min(100, Math.round((inShekels / owed) * 100)) : 0;
-    const now = new Date();
-    const brand = useBrand();
-    const afterColor = after ? { owes: 'var(--gl-bad)', credit: 'var(--gl-ok)', settled: 'var(--gl-ink)' }[after.tone] : 'var(--gl-faint)';
-
-    return (
-        <aside aria-live="polite" className="gl-pay-side flex flex-col gap-4 p-5 sm:p-6 lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:overflow-y-auto">
-            <div className="flex items-center gap-2">
-                <h4 className="text-base font-bold" style={{ fontFamily: 'var(--gl-head)' }}>معاينة الوصل</h4>
-                <span className="gl-pill gl-info ms-auto">قبل الحفظ</span>
-            </div>
-
-            <div className="gl-receipt gl-receipt-cut">
-                <div className="flex items-center justify-between gap-3">
-                    <span className="gl-lockup">
-                        <BrandLogo markSize={28} className="h-7 w-auto" />
-                        <span className="gl-lockup-name">
-                            <b dir="auto">{brand.shortName ?? brand.name}</b>
-                            {brand.nameEnglish && <small dir="ltr">{brand.nameEnglish.toUpperCase()}</small>}
-                        </span>
-                    </span>
-                    <Icon name="receipt" className="h-[18px] w-[18px]" />
-                </div>
-                <div className="gl-receipt-line" />
-                <div>
-                    <span className="gl-sub !m-0">المبلغ المستلم</span>
-                    <p className="gl-big gl-num text-end" dir="ltr">
-                        {formatMoney(amount || 0)}
-                        <span className="ms-1.5 text-lg font-semibold" style={{ color: 'var(--gl-muted)' }}>{currency === 'ILS' ? '₪' : currency}</span>
-                    </p>
-                </div>
-                <div className="gl-kv"><span>الرصيد الحالي</span><b className="gl-num">{balanceText(before)}</b></div>
-                <div className="gl-kv"><span>هذه الدفعة</span><b className="gl-num" dir="ltr">{formatMoney(inShekels ?? 0)} ₪</b></div>
-                <div className="gl-receipt-line" />
-                <div className="gl-kv"><span>الرصيد بعد الدفعة</span><b className="gl-num text-base" style={{ color: afterColor }}>{after ? balanceText(after) : '—'}</b></div>
-            </div>
-
-            {owed > 0 && (
-                <div>
-                    <div className="gl-kv mb-1.5"><span>تغطية المبلغ المستحق</span><b className="gl-num">{coverage}%</b></div>
-                    <div className="gl-bar" aria-hidden="true"><i style={{ width: `${coverage}%` }} /></div>
-                </div>
-            )}
-
-            <div className="hidden gap-2 lg:grid">
-                <div className="gl-kv"><span>الطريقة</span><b>{methodText}</b></div>
-                <div className="gl-kv"><span>المحصّل</span><b>{collector}</b></div>
-                <div className="gl-kv"><span>الوقت</span><b className="gl-num">اليوم، {formatClock(`${now.getHours()}:${now.getMinutes()}`)}</b></div>
-            </div>
-            <p className="gl-sub !mt-auto text-center">الدفعة تُرتجع ولا تُحذف، وتبقى في السجل المالي.</p>
-        </aside>
     );
 }
 

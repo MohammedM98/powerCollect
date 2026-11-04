@@ -121,7 +121,7 @@ class BrandSettingTest extends TestCase
         $colors = ['secondary' => '#334155', 'accent' => '#B45309', 'background' => '#F8FAFC', 'surface' => '#FFFFFF'];
 
         $this->actingAs($this->superAdmin)
-            ->post(route('settings.appearance.update'), $this->form(['colors' => $colors, 'design' => ['details' => 'drawer', 'tableVariant' => 'ledger']]))
+            ->post(route('settings.appearance.update'), $this->form(['colors' => $colors, 'design' => ['tableVariant' => 'ledger']]))
             ->assertSessionHasNoErrors();
 
         foreach ($colors as $role => $hex) {
@@ -129,8 +129,7 @@ class BrandSettingTest extends TestCase
         }
         $this->get(route('dashboard'))->assertInertia(fn ($page) => $page
             ->where('brand.colors.secondary', '#334155')
-            ->where('brand.design.tableVariant', 'ledger')
-            ->where('brand.design.details', 'drawer'));
+            ->where('brand.design.tableVariant', 'ledger'));
     }
 
     public function test_rejects_a_look_the_interface_cannot_draw_and_a_logo_that_is_not_an_image(): void

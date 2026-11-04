@@ -78,7 +78,7 @@ function Devices({ devices, dateLabel }) {
                 {!device.current && <button type="button" className="pp-logout" onClick={() => open(device)}>تسجيل خروج</button>}
             </div>)}</div>
             <div className="pp-actions"><button type="button" className="pp-button" disabled={!others.length} onClick={() => open(null)}><Icon name="logout" />تسجيل الخروج من كل الأجهزة الأخرى</button></div>
-            <Modal show={target !== null} onClose={close} maxWidth="md" centered>
+            <Modal show={target !== null} onClose={close} maxWidth="md">
                 <form onSubmit={logout} className="profile-page pp-dialog" dir="rtl" role="dialog" aria-modal="true" aria-labelledby="device-logout-title">
                     <h3 id="device-logout-title">تسجيل الخروج من {target?.label}؟</h3>
                     <p>يبقى هذا الجهاز مسجّل الدخول. أدخل كلمة المرور للتأكيد.</p>

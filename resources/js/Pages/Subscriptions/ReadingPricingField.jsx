@@ -29,7 +29,7 @@ export default function ReadingPricingField({ reading, field }) {
 
     return <>
         <span className="rh-last-value"><span dir="ltr">{saved != null ? formatMoney(saved) : '—'}</span>{allowed && <button type="button" className="rh-last-pencil" aria-label={`تعديل ${label}`} title={`تعديل ${label} لهذه القراءة فقط`} onClick={() => { setValue(String(saved)); setError(null); setOpen(true); }}><Icon name="pencil" /></button>}</span>
-        <Modal show={open} onClose={saving ? undefined : () => setOpen(false)} maxWidth="lg" centered>
+        <Modal show={open} onClose={saving ? undefined : () => setOpen(false)} maxWidth="lg">
             <form onSubmit={submit} className="space-y-4 p-6" dir="rtl">
                 <h3 className="text-lg font-bold">تعديل {label} لهذه القراءة</h3>
                 <p className="text-sm text-gray-600">يُعاد حساب هذه القراءة فقط، وتبقى إعدادات المشترك والفواتير الأقدم كما هي.</p>

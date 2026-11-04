@@ -164,7 +164,7 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
     }
 
     return <>
-        <Modal show={Boolean(subscription)} onClose={onClose} maxWidth="full" centered panelClassName={`subscription-profile-panel ${expanded ? 'is-expanded' : ''}`}>
+        <Modal show={Boolean(subscription)} onClose={onClose} maxWidth="full" panelClassName={`subscription-profile-panel ${expanded ? 'is-expanded' : ''}`}>
             {subscription && <div className="subscription-profile" role="dialog" aria-modal="true" aria-labelledby={`${tabsId}-title`} dir="rtl" tabIndex={-1} ref={dialogRef} onKeyDown={handleKeyDown}>
                 <header className="sp-header">
                     <div className="sp-top">

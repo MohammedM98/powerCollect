@@ -1,96 +1,75 @@
-import { useEffect, useState } from 'react';
-import { usePage } from '@inertiajs/react';
+import { useEffect } from 'react';
+import { Link, usePage } from '@inertiajs/react';
 import BrandLogo from '@/Components/BrandLogo';
 import Icon from '@/Components/Icon';
-import NavigationMenu, { NavigationAccount } from '@/Components/TopBar/NavigationMenu';
-import { shortAppName } from '@/Components/TopBar/TopBar';
-import { currentGroup } from '@/lib/navigation';
+import { Avatar } from '@/Components/TopBar/AccountMenu';
+import { HOME_LINK, currentGroup, groupLandingLink, isActiveLink, shouldPrefetchPage } from '@/lib/navigation';
 import './side-navigation.css';
 
-const STORAGE_KEY = 'side-navigation-collapsed';
-
-/** Whether the rail was left narrow in this browser, else as the company's look starts it (`rail` starts narrow). */
-function readCollapsed(startsCollapsed) {
-    try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-
-        return saved === null ? startsCollapsed : saved === '1';
-    } catch {
-        return startsCollapsed;
-    }
+/** How many things wait in a section: the sum of its pages' badges. */
+export function sectionBadge(group, badges) {
+    return group.links.reduce((total, link) => total + (badges[link.href] ?? 0), 0);
 }
 
 /**
- * The side navigation on wide screens, for a company whose look puts the
- * sections at the side (`sidebar`, or `rail`, which starts narrow): the
- * logo, the sections with the current one open, and the account (the
- * notifications sit in the slim top bar beside it). It narrows to icons and back; a section's icon widens it
- * with that section open. Narrow screens keep the top bar and its menu.
+ * The section dock on wide screens, for a company whose look puts the
+ * sections at the side (`sidebar`, or `rail`): a slim floating glass
+ * column at the page's start (the right, in Arabic) with the logo, home,
+ * one icon per section with its short name and what waits in it, and the
+ * signed-in user at the bottom. A section opens its first page; its other
+ * pages are the tabs above the page's title (PageTrail `SectionPages`).
+ * Narrow screens keep the top bar and the bottom tab bar instead.
  */
-export default function SideNavigation({ groups, badges, startsCollapsed = false, onOpenPalette }) {
+export default function SideNavigation({ groups, badges }) {
     const { props, url } = usePage();
-    const [collapsed, setCollapsed] = useState(() => readCollapsed(startsCollapsed));
-    const [expanded, setExpanded] = useState(() => currentGroup(groups, url)?.id ?? null);
-    const branchLabel = props.branchView ? props.branchView.current?.name ?? 'جميع الفروع' : props.auth?.user?.branchName;
+    const user = props.auth?.user;
+    const current = currentGroup(groups, url);
 
     useEffect(() => {
-        setExpanded(currentGroup(groups, url)?.id ?? null);
-    }, [url]);
-
-    useEffect(() => {
-        document.documentElement.dataset.sideNavigation = collapsed ? 'collapsed' : 'open';
+        document.documentElement.dataset.sideNavigation = 'dock';
 
         return () => delete document.documentElement.dataset.sideNavigation;
-    }, [collapsed]);
-
-    function changeCollapsed(next) {
-        setCollapsed(next);
-
-        try {
-            localStorage.setItem(STORAGE_KEY, next ? '1' : '0');
-        } catch {
-            // Storage may be blocked (private mode); the choice still applies on this page.
-        }
-    }
+    }, []);
 
     return (
-        <aside className="sn-panel text-gray-900" data-collapsed={collapsed || undefined} aria-label="التنقل">
-            <div className="sn-head">
-                <BrandLogo alt={props.appName} className="sn-logo" markSize={40} />
-                <span className="sn-title tn-nav-label">
-                    <b dir="auto">{shortAppName(props.appName)}</b>
-                    <small dir="auto">{branchLabel ?? 'نظام التحصيل الكهربائي'}</small>
-                </span>
-                <button
-                    type="button"
-                    className="tn-tool sn-collapse"
-                    onClick={() => changeCollapsed(!collapsed)}
-                    aria-label={collapsed ? 'توسيع القائمة' : 'تصغير القائمة'}
-                    aria-expanded={!collapsed}
-                    title={collapsed ? 'توسيع القائمة' : 'تصغير القائمة'}
-                >
-                    <Icon name={collapsed ? 'chevron-left' : 'chevron-right'} />
-                </button>
-            </div>
+        <aside className="sn-panel sn-dock text-gray-900" aria-label="الأقسام">
+            <Link href={HOME_LINK.href} prefetch className="sn-dock-logo" aria-label={`${props.appName}، الرئيسية`}>
+                <BrandLogo alt="" markSize={40} className="h-10 w-auto max-w-[56px] object-contain" />
+            </Link>
 
-            <nav className="sn-body">
-                <NavigationMenu
-                    groups={groups}
-                    badges={badges}
-                    expanded={expanded}
-                    onExpandedChange={setExpanded}
-                    onOpenPalette={onOpenPalette}
-                    compact={collapsed}
-                    onExpand={(id) => {
-                        setExpanded(id);
-                        changeCollapsed(false);
-                    }}
-                />
+            <nav className="sn-dock-items">
+                <Link href={HOME_LINK.href} prefetch className="sn-dock-item" aria-current={isActiveLink(HOME_LINK, url) ? 'page' : undefined}>
+                    <Icon name={HOME_LINK.icon} />
+                    <span>{HOME_LINK.label}</span>
+                </Link>
+                {groups.map((group) => {
+                    const landing = groupLandingLink(group);
+                    const waiting = sectionBadge(group, badges);
+
+                    if (!landing) {
+                        return null;
+                    }
+
+                    return (
+                        <Link
+                            key={group.id}
+                            href={landing.href}
+                            prefetch={shouldPrefetchPage(landing.href)}
+                            className="sn-dock-item"
+                            aria-current={current?.id === group.id ? 'true' : undefined}
+                            title={group.description}
+                        >
+                            <Icon name={group.icon} />
+                            <span>{group.shortLabel}</span>
+                            {waiting > 0 && <b className="sn-dock-badge" aria-label={`${waiting} بانتظارك`}>{waiting}</b>}
+                        </Link>
+                    );
+                })}
             </nav>
 
-            <div className="sn-foot">
-                <NavigationAccount compact={collapsed} />
-            </div>
+            <Link href="/profile" prefetch className="sn-dock-me" aria-label={`${user?.name ?? ''}، الملف الشخصي`} title={user?.name}>
+                <Avatar name={user?.name} />
+            </Link>
         </aside>
     );
 }

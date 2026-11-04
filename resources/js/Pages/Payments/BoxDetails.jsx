@@ -115,7 +115,7 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
     const columns = [['الصندوق', 72], ...ledgerColumns.before, ['المشترك', 150], ...ledgerColumns.after, ['الحالة', 140], ...(bankAudit ? [['تدقيق البنك', 220]] : []), ['', 110]];
     const widths = columns.map(([, width]) => width);
 
-    return <Modal show onClose={onClose} maxWidth="full" centered panelClassName="financial-box-detail financial-surface flex flex-col">
+    return <Modal show onClose={onClose} maxWidth="full" panelClassName="financial-box-detail financial-surface flex flex-col">
         <header className="flex shrink-0 flex-wrap items-start justify-between gap-4 border-b border-gray-100 p-6">
             <div className="flex items-center gap-3">
                 <BoxTypeIcon type={type} className="h-12 w-12" />

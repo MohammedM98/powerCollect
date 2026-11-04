@@ -5,7 +5,7 @@ import Icon from '@/Components/Icon';
 export default function DistributionDialog({ title, subtitle, busy, onClose, children, footer }) {
     const titleId = useId();
     return (
-        <Modal show centered maxWidth="4xl" panelClassName="!my-auto sm:!max-w-[880px]" onClose={() => { if (!busy) onClose(); }}>
+        <Modal show maxWidth="4xl" panelClassName="!my-auto sm:!max-w-[880px]" onClose={() => { if (!busy) onClose(); }}>
             <section role="dialog" aria-modal="true" aria-labelledby={titleId} aria-busy={busy} dir="rtl" className="flex max-h-[calc(100dvh-4rem)] flex-col">
                 <header className="flex shrink-0 items-start justify-between gap-4 border-b border-gray-100 p-5 sm:px-7">
                     <div><h2 id={titleId} className="text-lg font-bold text-gray-900">{title}</h2><p className="mt-1 text-xs leading-6 text-gray-500">{subtitle}</p></div>

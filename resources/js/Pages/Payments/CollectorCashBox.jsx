@@ -143,7 +143,7 @@ export function CashBoxAction({ box, onClose, onSuccess }) {
     }
 
     return (
-        <Modal show onClose={close} centered maxWidth="lg">
+        <Modal show onClose={close} maxWidth="lg">
             <form onSubmit={submit} className="space-y-5 p-6">
                 <div className="flex items-start justify-between gap-4">
                     <div>

@@ -24,7 +24,7 @@ function DetailsModal({ change, details, onClose }) {
     const loaded = details && details.id === change.id;
 
     return (
-        <Modal show onClose={onClose} maxWidth="3xl" centered>
+        <Modal show onClose={onClose} maxWidth="3xl">
             <div role="dialog" aria-modal="true" aria-labelledby="bulk-details-title">
                 <div className="flex items-start justify-between gap-4 px-7 pb-3 pt-7">
                     <div>

@@ -33,7 +33,7 @@ function NewListModal({ branchOptions, onClose }) {
     }
 
     return (
-        <Modal show onClose={onClose} maxWidth="lg" centered>
+        <Modal show onClose={onClose} maxWidth="lg">
             <form onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="new-list-title">
                 <div className="flex items-start gap-4 px-7 pb-2 pt-7">
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600">

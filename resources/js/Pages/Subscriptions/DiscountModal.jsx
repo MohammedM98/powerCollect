@@ -12,19 +12,19 @@ import { clearErrorOnInput, submitOnCtrlEnter, validateFormFields } from '@/lib/
 import { weeklyCharges } from '@/lib/readings';
 import {
     AmountBox,
-    balanceAfterRow,
+    balanceCells,
     balanceText,
     ChoiceTile,
     DoneScreen,
-    FieldLabel,
     FieldWarning,
     FormFooter,
     FormHeader,
+    FormStep,
+    MovementCard,
+    MOVEMENT_TONES,
     QuickPick,
-    SubscriptionStrip,
-    SummaryFigure,
-    SummaryLedger,
-    SummaryPanel,
+    SheetBody,
+    SHEET_FORM_CLASS,
 } from './AccountFormParts';
 import { CorrectionReasonFields, EMPTY_CORRECTION, OriginalLine } from './CorrectionFields';
 
@@ -94,7 +94,7 @@ function withSegment(terms, segment) {
  * off the latest week's reading, straight away if it has been entered,
  * and every weekly reading after it — a
  * percentage of the reading, free kilowatts, or shekels off the kilo price
- * — until it is stopped. A dark panel beside the form shows the balance a
+ * — until it is stopped. The movement card under the title shows the balance a
  * discount leaves, or what the subscription pays for the latest week with a
  * standing one. Keys: Ctrl + Enter saves, 1 · 2 · 3 pick the weekly
  * readings discount's method.
@@ -179,6 +179,11 @@ export default function DiscountModal({
     const exampleWithDiscount =
         isStanding && value > 0 && !invalid ? weeklyCharges(example.kilos, example.unitPrice, example.minimumPayment, data) : exampleBill;
     const weeklySaving = Math.max(0, exampleBill.amountDue - exampleWithDiscount.amountDue);
+    const tone = correcting ? 'correction' : 'credit';
+
+    // The steps are numbered in the order they show: the kind (not when correcting), the weekly method and segment only for a standing discount.
+    const stepNumbers = [!correcting && 'kind', isStanding && 'method', 'value', isStanding && 'segment', 'notes'].filter(Boolean);
+    const steps = Object.fromEntries(stepNumbers.map((step, index) => [step, index + 1]));
 
     function close() {
         setDiscarding(false);
@@ -308,7 +313,7 @@ export default function DiscountModal({
 
     return (
         <>
-            <Modal show={show} onClose={requestClose} maxWidth="5xl">
+            <Modal show={show} onClose={requestClose} maxWidth="3xl">
                 {receipt ? (
                     <DoneScreen
                         tone={correcting ? 'amber' : 'green'}
@@ -332,7 +337,8 @@ export default function DiscountModal({
                         onSubmit={submit}
                         onInput={(e) => clearErrorOnInput(e, form)}
                         onKeyDown={onKeyDown}
-                        className="flex max-h-[calc(100dvh-6rem)] flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[auto_minmax(0,1fr)_auto]"
+                        className={SHEET_FORM_CLASS}
+                        style={{ '--gl-t': MOVEMENT_TONES[tone] }}
                     >
                         <FormHeader
                             titleId={titleId}
@@ -347,18 +353,45 @@ export default function DiscountModal({
                             onClose={requestClose}
                         />
 
-                        {/* On phones the fields and the summary scroll together; side by side they each scroll alone. */}
-                        <div className="min-h-0 flex-1 overflow-y-auto lg:contents">
-                            <div className="grid grid-cols-1 content-start gap-[22px] px-5 pb-3 pt-5 sm:px-6 lg:col-start-1 lg:row-start-2 lg:min-h-0 lg:overflow-y-auto">
-                                <SubscriptionStrip
-                                    subscription={subscription}
-                                    balance={balance}
-                                    balanceLabel={correcting ? 'الرصيد بدون الخصم الأصلي' : 'الرصيد الحالي'}
-                                />
+                        {isStanding ? (
+                            <MovementCard
+                                subscription={subscription}
+                                tone={tone}
+                                tag="كل أسبوع"
+                                ops={['−', '=']}
+                                cells={[
+                                    { label: 'فاتورة الأسبوع المعتادة', value: `${formatMoney(exampleBill.amountDue)} ₪`, note: `${formatAmount(example.kilos)} كيلو × ${formatMoney(example.unitPrice)} ₪` },
+                                    { label: 'الخصم', value: value > 0 && !invalid ? standingTerms(data.method, data.value) : '—', note: data.segment.trim(), move: true },
+                                    { label: example.label, value: `${formatMoney(exampleWithDiscount.amountDue)} ₪`, note: 'يبدأ من القراءة القادمة', color: 'var(--gl-ok)', result: true },
+                                ]}
+                            >
+                                <div className="gl-kv">
+                                    <span>توفير في الأسبوع <b className="gl-num" style={{ color: 'var(--gl-ok)' }}>{formatMoney(weeklySaving)} ₪</b></span>
+                                    <span>في الشهر تقريبًا <b className="gl-num" style={{ color: 'var(--gl-ok)' }}>{formatMoney(weeklySaving * WEEKS_PER_MONTH)} ₪</b></span>
+                                </div>
+                            </MovementCard>
+                        ) : (
+                            <MovementCard
+                                subscription={subscription}
+                                tone={tone}
+                                tag="مرة واحدة"
+                                ops={['−', '=']}
+                                cells={balanceCells({
+                                    balance,
+                                    balanceLabel: correcting ? 'الرصيد بدون الأصلي' : 'الرصيد الحالي',
+                                    amount: discount,
+                                    sign: -1,
+                                    moveLabel: 'الخصم',
+                                    afterLabel: 'الرصيد بعده',
+                                })}
+                            />
+                        )}
 
-                                {correcting ? (
-                                    <OriginalLine entry={correcting} />
-                                ) : (
+                        <SheetBody>
+                            {correcting && <OriginalLine entry={correcting} />}
+
+                            {!correcting && (
+                                <FormStep number={steps.kind} title="نوع الخصم" done>
                                     <fieldset>
                                         <legend className="sr-only">نوع الخصم</legend>
                                         <div className="grid gap-3 sm:grid-cols-2">
@@ -377,8 +410,6 @@ export default function DiscountModal({
                                             ))}
                                         </div>
                                     </fieldset>
-                                )}
-
                                 {isStanding && standingDiscount && (
                                     <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-emerald-600/45 bg-emerald-500/10 px-3.5 py-3 text-sm">
                                         <Icon name="repeat" className="h-[18px] w-[18px] shrink-0 text-emerald-700 dark:text-emerald-400" />
@@ -402,14 +433,13 @@ export default function DiscountModal({
                                         </button>
                                     </div>
                                 )}
+                                </FormStep>
+                            )}
 
-                                {isStanding && (
+                            {isStanding && (
+                                <FormStep number={steps.method} title="طريقة الخصم" hint="بالأرقام 1 · 2 · 3" done={Boolean(data.method)}>
                                     <fieldset>
-                                        <legend className="contents">
-                                            <FieldLabel required hint="اختر بالأرقام 1 · 2 · 3">
-                                                طريقة الخصم
-                                            </FieldLabel>
-                                        </legend>
+                                        <legend className="sr-only">طريقة الخصم</legend>
                                         <div className="grid gap-3 sm:grid-cols-3">
                                             {methods.map((method, index) => {
                                                 const look = fieldFor(data.kind, method, kiloPrice);
@@ -433,13 +463,12 @@ export default function DiscountModal({
                                         </div>
                                         <InputError message={errors.method} className="mt-2" />
                                     </fieldset>
-                                )}
-                                {!isStanding && <InputError message={errors.method} />}
+                                </FormStep>
+                            )}
+                            {!isStanding && <InputError message={errors.method} />}
 
+                            <FormStep number={steps.value} title={field.label} hint={field.hint} done={value > 0 && !invalid}>
                                 <div>
-                                    <FieldLabel htmlFor="value" required hint={field.hint}>
-                                        {field.label}
-                                    </FieldLabel>
                                     <AmountBox
                                         id="value"
                                         inputRef={valueInput}
@@ -477,12 +506,12 @@ export default function DiscountModal({
                                         </FieldWarning>
                                     )}
                                 </div>
+                            </FormStep>
 
-                                {isStanding && (
+                            {isStanding && (
+                                <FormStep number={steps.segment} title="تصنيف الزبون" hint="اختياري: لمن هذا الخصم؟ يفيد في التقارير" done={Boolean(data.segment.trim())}>
                                     <div>
-                                        <FieldLabel htmlFor="discount_segment" hint="لمن هذا الخصم؟ يفيد في التقارير">
-                                            تصنيف الزبون
-                                        </FieldLabel>
+                                        <label htmlFor="discount_segment" className="sr-only">تصنيف الزبون</label>
                                         <input
                                             id="discount_segment"
                                             name="segment"
@@ -514,12 +543,12 @@ export default function DiscountModal({
                                         )}
                                         <InputError message={errors.segment} className="mt-2" />
                                     </div>
-                                )}
+                                </FormStep>
+                            )}
 
+                            <FormStep number={steps.notes} title="ملاحظات" hint="اختياري" done={Boolean(data.notes.trim())}>
                                 <div>
-                                    <FieldLabel htmlFor="discount_notes">
-                                        ملاحظات
-                                    </FieldLabel>
+                                    <label htmlFor="discount_notes" className="sr-only">ملاحظات</label>
                                     <textarea
                                         id="discount_notes"
                                         name="notes"
@@ -532,57 +561,14 @@ export default function DiscountModal({
                                     />
                                     <InputError message={errors.notes} className="mt-2" />
                                 </div>
+                            </FormStep>
 
-                                {correcting && <CorrectionReasonFields form={form} reasons={correctionReasons} />}
-                            </div>
-
-                            {isStanding ? (
-                                <SummaryPanel title="ملخص خصم القراءات الأسبوعية" tag="كل أسبوع">
-                                    <SummaryFigure
-                                        label={example.label}
-                                        value={formatMoney(exampleWithDiscount.amountDue)}
-                                        tone="green"
-                                        note={`بدلًا من ${formatMoney(exampleBill.amountDue)} ₪ · ${formatAmount(example.kilos)} كيلو × ${formatMoney(example.unitPrice)} ₪`}
-                                    />
-                                    <SummaryLedger
-                                        rows={[
-                                            ['الخصم', value > 0 && !invalid ? standingTerms(data.method, data.value) : '—'],
-                                            ['التصنيف', data.segment.trim() || '—'],
-                                        ]}
-                                        result={{
-                                            label: 'يبدأ من',
-                                            value: 'القراءة القادمة',
-                                            className: 'text-[15px] text-white',
-                                        }}
-                                    />
-                                    <div className="relative grid grid-cols-2 gap-2.5">
-                                        <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                                            <small className="block text-[12.5px] text-white/60">توفير في الأسبوع</small>
-                                            <b className="block text-end font-display text-[22px] font-extrabold text-emerald-300" dir="ltr">
-                                                {formatMoney(weeklySaving)} ₪
-                                            </b>
-                                        </div>
-                                        <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                                            <small className="block text-[12.5px] text-white/60">توفير في الشهر تقريبًا</small>
-                                            <b className="block text-end font-display text-[22px] font-extrabold text-emerald-300" dir="ltr">
-                                                {formatMoney(weeklySaving * WEEKS_PER_MONTH)} ₪
-                                            </b>
-                                        </div>
-                                    </div>
-                                </SummaryPanel>
-                            ) : (
-                                <SummaryPanel title="ملخص الخصم" tag="مرة واحدة">
-                                    <SummaryFigure label="قيمة الخصم" value={`${formatMoney(discount ?? 0)}`} tone="green" />
-                                    <SummaryLedger
-                                        rows={[
-                                            [correcting ? 'الرصيد بدون الأصلي' : 'الرصيد الحالي', balanceText(describeBalance(balance))],
-                                            ['خصم', `${formatMoney(discount ?? 0)} ₪`, 'green'],
-                                        ]}
-                                        result={balanceAfterRow('الرصيد بعد الخصم', balanceAfter)}
-                                    />
-                                </SummaryPanel>
+                            {correcting && (
+                                <FormStep number={steps.notes + 1} title="سبب التصحيح">
+                                    <CorrectionReasonFields form={form} reasons={correctionReasons} />
+                                </FormStep>
                             )}
-                        </div>
+                        </SheetBody>
 
                         <FormFooter
                             onCancel={requestClose}
