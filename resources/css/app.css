@@ -3659,3 +3659,15 @@ html:not(.dark):is([data-ui-background='navy'], [data-ui-background='midnight'],
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .pm-group-icon {
     background: rgb(var(--brand-solid));
 }
+
+/* Under the glass look the company's colour fills flat, with no glow under it, like the glass buttons. */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) {
+    --brand-fill: linear-gradient(rgb(var(--brand-solid)), rgb(var(--brand-solid)));
+    --shadow-glow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+}
+
+/* The SMS page's segmented choices pick in the company's colour, like the glass segments. */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .sm-segments button[aria-pressed='true'] {
+    background: rgb(var(--brand-solid));
+    color: #fff;
+}

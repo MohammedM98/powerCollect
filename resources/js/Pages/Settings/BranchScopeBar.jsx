@@ -26,9 +26,9 @@ export default function BranchScopeBar({ path, scope, branch, branches, followsC
         <BranchBanner scope={scope} eyebrow="تضبط الآن مواعيد القراءات لـ" allLabel="إعدادات الشركة" className="mt-5"
             controls={branches.length > 0 ? (
                 <label className="flex w-full flex-col gap-1.5 sm:w-64" htmlFor="schedule-branch">
-                    <span className="text-xs font-semibold text-white/70">نطاق المواعيد</span>
+                    <span className="gl-label">نطاق المواعيد</span>
                     <select id="schedule-branch" value={branch?.id ?? ''} disabled={locked} onChange={pick}
-                        className="h-12 w-full rounded-control border border-white/15 bg-white/10 px-3.5 font-bold text-white [color-scheme:dark] focus:border-white/40 focus:ring-2 focus:ring-white/30 disabled:opacity-50"
+                        className="h-11 w-full px-3.5 font-bold disabled:opacity-50"
                         title={locked ? 'احفظ التغييرات أو تراجع عنها قبل تغيير الفرع.' : undefined}>
                         <option value="">جميع الفروع — إعدادات الشركة</option>
                         {branches.map((item) => (
@@ -40,7 +40,7 @@ export default function BranchScopeBar({ path, scope, branch, branches, followsC
                     </select>
                 </label>
             ) : null}>
-            <p className="text-sm leading-relaxed text-white/80">{note}</p>
+            <p className="text-sm leading-relaxed gl-text-muted">{note}</p>
         </BranchBanner>
     );
 }
