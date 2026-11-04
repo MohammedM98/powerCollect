@@ -166,25 +166,3 @@ export function isActiveLink(link, url) {
 export function isInsideAnyLink(links, url) {
     return links.some((link) => isActiveLink(link, url));
 }
-
-/** Where this browser keeps the navigation layout its user picked (hooks/useNavigationLayout.js). */
-export const NAVIGATION_LAYOUT_KEY = 'navigation-layout';
-
-/**
- * The navigation a browser shows: the layout its user picked (`saved`:
- * 'sidebar' or 'topbar'), else the company's (BrandDesign `navigation`).
- * Picking the side menu keeps a company's `rail`, which only starts narrow.
- */
-export function navigationLayout(saved, companyNavigation) {
-    const company = ['topbar', 'sidebar', 'rail'].includes(companyNavigation) ? companyNavigation : 'topbar';
-
-    if (saved === 'topbar') {
-        return 'topbar';
-    }
-
-    if (saved === 'sidebar') {
-        return company === 'rail' ? 'rail' : 'sidebar';
-    }
-
-    return company;
-}

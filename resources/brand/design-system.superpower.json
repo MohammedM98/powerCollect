@@ -403,19 +403,10 @@
         "TopBar/NavigationProgress",
         "TopBar/ThemeSegments",
         "TopBar/KeyboardShortcuts",
-        "TopBar/QuickTour",
-        "TopBar/NavigationLayoutSwitch"
+        "TopBar/QuickTour"
       ],
       "prototype": "TopBar / MegaMenu",
-      "spec": "شريط زجاجي لاصق، أزرار الأقسام تفتح MegaMenu بشبكة عمودين وأيقونة ووصف لكل صفحة. بجانب القائمة الجانبية على الشاشات العريضة يبقى الشريط نحيفًا (slim): البحث، مبدّل جانبي/علوي، الوضع، الإشعارات، الحساب."
-    },
-    {
-      "name": "NavigationLayoutSwitch",
-      "status": "existing",
-      "file": "resources/js/Components/TopBar/NavigationLayoutSwitch.jsx",
-      "prototype": "Segmented (نمط التنقل)",
-      "hook": "resources/js/hooks/useNavigationLayout.js",
-      "spec": "جانبي/علوي لهذا المتصفح فوق خيار الشركة design.navigation (يُحفظ في localStorage كـ navigation-layout، واختيار الجانبي يبقي rail مصغّرًا). على الشاشات العريضة فقط."
+      "spec": "شريط زجاجي لاصق، أزرار الأقسام تفتح MegaMenu بشبكة عمودين وأيقونة ووصف لكل صفحة. بجانب شريط الأقسام على الشاشات العريضة يبقى الشريط نحيفًا (slim): البحث، الوضع، الإشعارات، الحساب. على الجوال الشريط الكامل وشريط التبويب السفلي."
     },
     {
       "name": "ThemeToggle",

@@ -43,9 +43,7 @@ class BrandDesign
             'compact' => 'مختصر',
         ]],
         'navigation' => ['label' => 'التنقل', 'options' => [
-            'topbar' => 'شريط علوي عائم',
             'sidebar' => 'شريط أقسام عائم',
-            'rail' => 'شريط أقسام عائم (الاسم السابق: قائمة مصغّرة)',
         ]],
         'navStyle' => ['label' => 'شكل الشريط والقائمة', 'options' => [
             'glass' => 'زجاجي شفاف',
@@ -266,17 +264,17 @@ class BrandDesign
         'superpower' => [
             'label' => 'سوبر باور زجاجي كحلي',
             'description' => 'بطاقات زجاجية كحلية فوق خلفية بإضاءة زرقاء، شريط أقسام عائم، جداول داخل لوحات زجاجية، أزرار متدرجة وحقول معبأة.',
-            'design' => ['navigation' => 'sidebar', 'background' => 'navy', 'neutral' => 'navy', 'cards' => 'glass', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand', 'navHighlight' => 'brand'],
+            'design' => ['background' => 'navy', 'neutral' => 'navy', 'cards' => 'glass', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand', 'navHighlight' => 'brand'],
         ],
         'classic' => [
             'label' => 'كلاسيكي فاخر',
-            'description' => 'الشكل الحالي: شريط علوي زجاجي، أزرار لامعة وصفوف كبطاقات.',
+            'description' => 'الشكل الكلاسيكي: أزرار لامعة وصفوف كبطاقات.',
             'design' => [],
         ],
         'corporate' => [
             'label' => 'مؤسسي',
             'description' => 'شريط أقسام فاتح وجداول بشبكة ورأس رمادي، كأنظمة المؤسسات والبنوك.',
-            'design' => ['navigation' => 'sidebar', 'navStyle' => 'solid', 'width' => 'full', 'background' => 'plain', 'neutral' => 'slate', 'radius' => 'soft', 'buttons' => 'solid', 'cards' => 'outlined', 'tables' => 'bordered', 'tableHeader' => 'tinted', 'density' => 'compact', 'headingFont' => 'plex', 'pageTitle' => 'bar', 'searchStyle' => 'filled', 'focusRing' => 'brand', 'checkboxes' => 'rounded'],
+            'design' => ['navStyle' => 'solid', 'width' => 'full', 'background' => 'plain', 'neutral' => 'slate', 'radius' => 'soft', 'buttons' => 'solid', 'cards' => 'outlined', 'tables' => 'bordered', 'tableHeader' => 'tinted', 'density' => 'compact', 'headingFont' => 'plex', 'pageTitle' => 'bar', 'searchStyle' => 'filled', 'focusRing' => 'brand', 'checkboxes' => 'rounded'],
         ],
         'minimal' => [
             'label' => 'بسيط وهادئ',
@@ -286,17 +284,17 @@ class BrandDesign
         'soft' => [
             'label' => 'ناعم عصري',
             'description' => 'قائمة مصغّرة، زوايا مستديرة جداً وبطاقات عائمة وحقول معبأة.',
-            'design' => ['navigation' => 'rail', 'background' => 'gradient', 'radius' => 'round', 'buttons' => 'soft', 'cards' => 'floating', 'tables' => 'striped', 'inputs' => 'filled', 'bodyFont' => 'alexandria', 'headingFont' => 'alexandria', 'buttonHover' => 'glow', 'cardHover' => 'glow', 'searchStyle' => 'pill', 'switches' => 'brand', 'checkboxes' => 'circle'],
+            'design' => ['background' => 'gradient', 'radius' => 'round', 'buttons' => 'soft', 'cards' => 'floating', 'tables' => 'striped', 'inputs' => 'filled', 'bodyFont' => 'alexandria', 'headingFont' => 'alexandria', 'buttonHover' => 'glow', 'cardHover' => 'glow', 'searchStyle' => 'pill', 'switches' => 'brand', 'checkboxes' => 'circle'],
         ],
         'operations' => [
             'label' => 'تشغيلي كثيف',
             'description' => 'أكبر قدر من البيانات: قائمة داكنة، صفوف متناوبة مضغوطة، خط أصغر وزوايا حادة.',
-            'design' => ['navigation' => 'sidebar', 'navStyle' => 'dark', 'width' => 'full', 'background' => 'plain', 'neutral' => 'neutral', 'radius' => 'sharp', 'buttons' => 'solid', 'cards' => 'outlined', 'tableHeader' => 'dark', 'density' => 'compact', 'textSize' => 'small', 'headingFont' => 'plex', 'motion' => 'reduced', 'tables' => 'spreadsheet', 'searchStyle' => 'filled', 'buttonHover' => 'darken', 'buttonSize' => 'compact', 'rowHover' => 'tint'],
+            'design' => ['navStyle' => 'dark', 'width' => 'full', 'background' => 'plain', 'neutral' => 'neutral', 'radius' => 'sharp', 'buttons' => 'solid', 'cards' => 'outlined', 'tableHeader' => 'dark', 'density' => 'compact', 'textSize' => 'small', 'headingFont' => 'plex', 'motion' => 'reduced', 'tables' => 'spreadsheet', 'searchStyle' => 'filled', 'buttonHover' => 'darken', 'buttonSize' => 'compact', 'rowHover' => 'tint'],
         ],
         'executive' => [
             'label' => 'تنفيذي داكن',
             'description' => 'شريط أقسام داكن، بطاقات بخط علوي ملوّن وأزرار بارزة ورأس جداول بلون الشركة.',
-            'design' => ['navigation' => 'sidebar', 'navStyle' => 'dark', 'background' => 'glow', 'neutral' => 'stone', 'buttons' => 'raised', 'cards' => 'accent', 'tableHeader' => 'brand', 'badges' => 'solid', 'pageTitle' => 'underline', 'headingFont' => 'messiri', 'buttonHover' => 'lift', 'cardHover' => 'lift', 'navHighlight' => 'brand', 'switches' => 'brand', 'inputFocus' => 'glow'],
+            'design' => ['navStyle' => 'dark', 'background' => 'glow', 'neutral' => 'stone', 'buttons' => 'raised', 'cards' => 'accent', 'tableHeader' => 'brand', 'badges' => 'solid', 'pageTitle' => 'underline', 'headingFont' => 'messiri', 'buttonHover' => 'lift', 'cardHover' => 'lift', 'navHighlight' => 'brand', 'switches' => 'brand', 'inputFocus' => 'glow'],
         ],
         'glass' => [
             'label' => 'زجاجي حديث',
@@ -305,13 +303,13 @@ class BrandDesign
         ],
         'official' => [
             'label' => 'رسمي حكومي',
-            'description' => 'شريط علوي بلون الشركة، جداول بشبكة ورأس ملوّن وعناوين بخط سفلي.',
+            'description' => 'شريط أقسام بلون الشركة، جداول بشبكة ورأس ملوّن وعناوين بخط سفلي.',
             'design' => ['navStyle' => 'brand', 'width' => 'contained', 'background' => 'grid', 'neutral' => 'neutral', 'radius' => 'soft', 'buttons' => 'solid', 'cards' => 'outlined', 'tableHeader' => 'brand', 'pageTitle' => 'underline', 'bodyFont' => 'kufi', 'headingFont' => 'kufi', 'tables' => 'boxed', 'tableToolbar' => 'tinted', 'searchStyle' => 'panel', 'checkboxes' => 'large', 'navHighlight' => 'underline'],
         ],
         'friendly' => [
             'label' => 'ودود ومريح',
             'description' => 'خط Tajawal بحجم أكبر، أزرار كبسولة، خلفية نقاط وشارات مصمتة.',
-            'design' => ['navigation' => 'rail', 'navStyle' => 'solid', 'background' => 'dots', 'neutral' => 'sage', 'radius' => 'round', 'buttons' => 'pill', 'cards' => 'elevated', 'tables' => 'striped', 'badges' => 'solid', 'textSize' => 'large', 'bodyFont' => 'tajawal', 'headingFont' => 'tajawal', 'inputs' => 'pill', 'checkboxes' => 'circle', 'switches' => 'brand', 'buttonHover' => 'lift', 'buttonSize' => 'large', 'density' => 'spacious'],
+            'design' => ['navStyle' => 'solid', 'background' => 'dots', 'neutral' => 'sage', 'radius' => 'round', 'buttons' => 'pill', 'cards' => 'elevated', 'tables' => 'striped', 'badges' => 'solid', 'textSize' => 'large', 'bodyFont' => 'tajawal', 'headingFont' => 'tajawal', 'inputs' => 'pill', 'checkboxes' => 'circle', 'switches' => 'brand', 'buttonHover' => 'lift', 'buttonSize' => 'large', 'density' => 'spacious'],
         ],
         'paper' => [
             'label' => 'ورقي هادئ',

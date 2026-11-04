@@ -118,11 +118,11 @@ class BrandTest extends TestCase
         $this->artisan('brand:import', ['file' => $this->identityFile(['design' => ['preset' => 'soft', 'tables' => 'bordered']])])->assertSuccessful();
 
         $this->get(route('login'))->assertInertia(fn ($page) => $page
-            ->where('brand.design.navigation', 'rail')
+            ->where('brand.design.navigation', 'sidebar')
             ->where('brand.design.radius', 'round')
             ->where('brand.design.buttons', 'soft')
             ->where('brand.design.tables', 'bordered'))
-            ->assertSee('data-ui-navigation="rail"', false);
+            ->assertSee('data-ui-navigation="sidebar"', false);
     }
 
     public function test_company_forms_start_with_the_imported_company_on_their_letterhead(): void
