@@ -1,12 +1,12 @@
 /*
- * The side navigation (SideNavigation.jsx), for a company whose look puts the
- * sections at the side: a floating panel at the page's start (the right, in
- * Arabic) on wide screens, narrowing to a rail of icons. Narrow screens keep
- * the top bar, so the panel and the page's room for it apply from 1024px.
+ * The section dock (SideNavigation.jsx), for a company whose look puts the
+ * sections at the side: a slim floating glass column at the page's start
+ * (the right, in Arabic) on wide screens, one icon per section. Narrow
+ * screens keep the top bar and the bottom tab bar (MobileTabBar.jsx), so the
+ * dock and the page's room for it apply from 1024px.
  */
 :root {
-    --sn-width: 292px;
-    --sn-collapsed-width: 84px;
+    --sn-width: 92px;
     --sn-gap: 12px;
 }
 
@@ -22,28 +22,21 @@
         inset-inline-start: var(--sn-gap);
         display: flex;
         flex-direction: column;
+        align-items: center;
+        gap: 6px;
         width: var(--sn-width);
+        padding: 12px 8px;
         border: 1px solid rgb(var(--gray-200) / 0.8);
-        border-radius: calc(26px * var(--radius-scale, 1));
+        border-radius: calc(24px * var(--radius-scale, 1));
         background: rgb(var(--surface) / 0.88);
         backdrop-filter: blur(22px) saturate(1.5);
         box-shadow: var(--shadow-card);
-        font-size: 16px;
-        line-height: 1.5;
-        transition: width 0.3s var(--tn-ease);
+        line-height: 1.4;
     }
 
-    .sn-panel[data-collapsed] {
-        width: var(--sn-collapsed-width);
-    }
-
-    /* The page and the slim top bar (TopBar `slim`) sit beside the panel. */
-    :root[data-side-navigation='open'] :is(.sn-content, .tn-header[data-slim]) {
+    /* The page and the slim top bar (TopBar `slim`) sit beside the dock. */
+    :root[data-side-navigation='dock'] :is(.sn-content, .tn-header[data-slim]) {
         margin-inline-start: calc(var(--sn-width) + var(--sn-gap));
-    }
-
-    :root[data-side-navigation='collapsed'] :is(.sn-content, .tn-header[data-slim]) {
-        margin-inline-start: calc(var(--sn-collapsed-width) + var(--sn-gap));
     }
 
     :is(.sn-content, .tn-header[data-slim]) {
@@ -83,92 +76,197 @@
 }
 
 .sn-panel :focus-visible:not(input) {
-    outline: 2px solid rgb(var(--gray-900));
+    outline: 2px solid rgb(var(--brand-solid));
     outline-offset: 2px;
 }
 
-.sn-head {
+.sn-dock-logo {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 52px;
+    margin-bottom: 6px;
+    border-radius: 16px;
+}
+
+.sn-dock-items {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 72px;
-    padding: 14px 16px 8px;
-}
-
-.sn-logo {
-    flex: none;
-    width: auto;
-    max-width: 112px;
-    height: 42px;
-    object-fit: contain;
-}
-
-.sn-title {
-    min-width: 0;
-}
-
-.sn-title b {
-    display: block;
-    overflow: hidden;
-    font-size: 16px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.sn-title small {
-    display: block;
-    overflow: hidden;
-    color: rgb(var(--gray-500));
-    font-size: 12.5px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.sn-collapse {
-    flex: none;
-    margin-inline-start: auto;
-    width: 36px;
-    height: 36px;
-}
-
-/* The slim top bar beside the panel holds the search, so the panel doesn't repeat it. */
-.sn-panel .tn-nav-search {
-    display: none;
-}
-
-.sn-body {
     flex: 1;
-    overflow-y: auto;
-    padding: 4px 12px 12px;
-}
-
-.sn-foot {
-    padding: 12px;
-    border-top: 1px solid rgb(var(--gray-200) / 0.7);
-}
-
-/* Narrowed to icons. */
-.sn-panel[data-collapsed] :is(.tn-nav-label, .tn-chevron, .tn-nav-badge) {
-    display: none;
-}
-
-.sn-panel[data-collapsed] .sn-head {
     flex-direction: column;
-    justify-content: center;
-    padding-inline: 10px;
+    align-items: center;
+    gap: 4px;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
 }
 
-.sn-panel[data-collapsed] .sn-collapse {
-    margin-inline-start: 0;
+/* One section: its icon over its short name; the open one tinted, with a lit edge toward the page. */
+.sn-dock-item {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 3px;
+    width: 74px;
+    padding: 9px 4px 7px;
+    border-radius: 16px;
+    color: rgb(var(--gray-600));
+    font-size: 11.5px;
+    font-weight: 600;
+    text-align: center;
+    transition: background 0.2s, color 0.2s;
 }
 
-.sn-panel[data-collapsed] .sn-logo {
-    max-width: 56px;
-    height: 34px;
+.sn-dock-item svg {
+    width: 21px;
+    height: 21px;
 }
 
+.sn-dock-item span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
-.sn-panel[data-collapsed] :is(.tn-drawer-group, .tn-nav-search) {
-    justify-content: center;
-    padding-inline: 0;
+.sn-dock-item:hover {
+    background: rgb(var(--gray-900) / 0.06);
+    color: rgb(var(--gray-900));
+}
+
+.sn-dock-item[aria-current] {
+    background: rgb(var(--brand-solid) / 0.16);
+    color: rgb(var(--gray-900));
+}
+
+.sn-dock-item[aria-current] svg {
+    color: rgb(var(--brand-solid));
+}
+
+.sn-dock-item[aria-current]::before {
+    content: '';
+    position: absolute;
+    inset-block: 14px;
+    inset-inline-start: -8px;
+    width: 4px;
+    border-radius: 4px;
+    background: rgb(var(--brand-solid));
+    box-shadow: 0 0 12px rgb(var(--brand-solid));
+}
+
+.sn-dock-badge {
+    position: absolute;
+    top: 4px;
+    inset-inline-end: 10px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 99px;
+    background: rgb(var(--danger-600, 220 38 38));
+    color: #fff;
+    font-size: 10.5px;
+    line-height: 17px;
+}
+
+.sn-dock-me {
+    display: grid;
+    place-items: center;
+    padding-top: 10px;
+    border-top: 1px solid rgb(var(--gray-200) / 0.7);
+    width: 100%;
+}
+
+/* With the dock, the section's pages are tabs above the title; the open page is lit in the main button's colour. */
+:root[data-side-navigation='dock'] .tn-subnav a[aria-current='page'] {
+    background: linear-gradient(180deg, rgb(var(--brand-solid) / 0.92), rgb(var(--brand-solid)));
+    box-shadow: 0 10px 22px -12px rgb(var(--brand-solid));
+}
+
+/* The tab bar on phones (MobileTabBar.jsx), held to the screen's bottom edge. */
+.sn-tabbar {
+    position: fixed;
+    z-index: 40;
+    inset-inline: max(10px, env(safe-area-inset-left, 0px));
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    display: grid;
+    grid-template-columns: repeat(var(--sn-tabs, 5), minmax(0, 1fr));
+    padding: 6px;
+    border: 1px solid rgb(var(--gray-200) / 0.8);
+    border-radius: calc(22px * var(--radius-scale, 1));
+    background: rgb(var(--surface) / 0.88);
+    backdrop-filter: blur(22px) saturate(1.5);
+    box-shadow: var(--shadow-card);
+}
+
+.sn-tabbar[data-columns='3'] { --sn-tabs: 3; }
+.sn-tabbar[data-columns='4'] { --sn-tabs: 4; }
+
+.sn-tab {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    padding: 6px 0;
+    border-radius: 14px;
+    color: rgb(var(--gray-600));
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.sn-tab svg {
+    width: 21px;
+    height: 21px;
+}
+
+.sn-tab[aria-current] {
+    background: rgb(var(--brand-solid) / 0.14);
+    color: rgb(var(--brand-solid));
+}
+
+.sn-tab-main {
+    align-content: start;
+}
+
+.sn-tab-main > span {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    margin-top: -20px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgb(var(--brand-soft, var(--brand-solid))), rgb(var(--brand-solid)));
+    color: #fff;
+    box-shadow: 0 12px 22px -10px rgb(var(--brand-solid));
+}
+
+.sn-tab:focus-visible {
+    outline: 2px solid rgb(var(--brand-solid));
+    outline-offset: 2px;
+}
+
+/* The page keeps room above the bar. */
+@media (max-width: 1023px) {
+    .sn-content {
+        padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+    }
+}
+
+@media (min-width: 1024px) {
+    .sn-tabbar {
+        display: none;
+    }
+}
+
+@media print {
+    .sn-tabbar {
+        display: none;
+    }
+}
+
+/* On a dark or company-coloured dock (BrandDesign `navStyle`), the sections read in white. */
+:root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) .sn-dock-item {
+    color: rgb(255 255 255 / 0.72);
+}
+
+:root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) :is(.sn-dock-item:hover, .sn-dock-item[aria-current], .sn-dock-item[aria-current] svg) {
+    color: #fff;
 }

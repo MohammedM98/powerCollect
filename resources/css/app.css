@@ -2487,7 +2487,7 @@ input[type='radio'] {
  * (and the open section in the top bar) is a pill in the company's colour
  * with a soft glow and white text; a section's own row stays quiet.
  */
-:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-glass, .sn-panel, .tn-mega, .tn-popover, .tn-drawer-panel) {
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-glass, .sn-panel, .sn-tabbar, .tn-mega, .tn-popover, .tn-drawer-panel) {
     border: 1px solid rgb(var(--glass-line));
     background: rgb(var(--glass-panel) / var(--glass-alpha));
     box-shadow: inset 0 1px 0 rgb(var(--glass-line-hi)), var(--glass-shadow);
@@ -2638,8 +2638,17 @@ input[type='radio'] {
     box-shadow: none;
 }
 
-:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .sn-foot {
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .sn-dock-me {
     border-top-color: rgb(var(--glass-line));
+}
+
+/* In the glass look the dock's open section and the tab bar's take the glass tint of the main colour. */
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.sn-dock-item, .sn-tab) {
+    color: rgb(var(--glass-muted));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.sn-dock-item:hover, .sn-dock-item[aria-current]) {
+    color: rgb(var(--glass-ink));
 }
 
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-subnav {
@@ -2660,13 +2669,13 @@ input[type='radio'] {
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-glass, .sn-panel, .tn-subnav) {
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-glass, .sn-panel, .sn-tabbar, .tn-subnav) {
         background: rgb(var(--glass-panel) / 0.92);
     }
 }
 
 @media (prefers-reduced-transparency: reduce) {
-    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-glass, .sn-panel, .tn-mega, .tn-popover, .tn-drawer-panel, .tn-subnav) {
+    :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) :is(.tn-glass, .sn-panel, .sn-tabbar, .tn-mega, .tn-popover, .tn-drawer-panel, .tn-subnav) {
         background: rgb(var(--glass-panel) / 0.96);
         -webkit-backdrop-filter: none;
         backdrop-filter: none;

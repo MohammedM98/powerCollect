@@ -4,6 +4,7 @@ import TopBar from '@/Components/TopBar/TopBar';
 import BranchViewSwitcher from '@/Components/BranchViewSwitcher';
 import NavigationDrawer from '@/Components/TopBar/NavigationDrawer';
 import SideNavigation from '@/Components/SideNavigation/SideNavigation';
+import MobileTabBar from '@/Components/SideNavigation/MobileTabBar';
 import { useBrandDocument } from '@/hooks/useBrand';
 import { useNavigationLayout } from '@/hooks/useNavigationLayout';
 import { Breadcrumb, SectionPages } from '@/Components/TopBar/PageTrail';
@@ -40,8 +41,11 @@ function isTyping(target) {
 }
 
 /**
- * Every signed-in page: the floating top bar with the sections, the trail to
- * the page, the section's other pages, the page's title, then the page itself.
+ * Every signed-in page: the floating top bar with the sections (or, for a
+ * company whose look puts them at the side, the section dock beside a slim
+ * bar of tools), the trail to the page, the section's pages as tabs, the
+ * page's title, then the page itself; on phones a tab bar on the screen's
+ * bottom edge.
  * Only the top bar stays on screen while scrolling, so tables keep the room.
  * `badges` counts what waits on a page, by its link: { '/payments/summary': 2 }.
  * `scope` names the branch (or "جميع الفروع") whose figures the page shows;
@@ -215,7 +219,7 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
                 تخطي إلى المحتوى
             </a>
 
-            {sideNavigation && <SideNavigation key={navigation} groups={groups} badges={badges} startsCollapsed={navigation === 'rail'} onOpenPalette={() => onPaletteOpenChange(true)} />}
+            {sideNavigation && <SideNavigation groups={groups} badges={badges} />}
 
             {/* Beside the side menu on wide screens the bar keeps only its tools; on phones it is the full bar either way. */}
             <TopBar
@@ -241,14 +245,23 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
             <main id="main-content" tabIndex={-1} className="mx-auto max-w-[var(--ui-content-width)] px-[var(--tn-gutter)] pb-16 pt-8 outline-none">
                 <BranchViewSwitcher />
                 <Breadcrumb trail={trail} />
-                {/* The side menu already lists the section's pages; the top bar shows them as a strip. */}
-                {!sideNavigation && <SectionPages trail={trail} url={url} badges={badges} />}
+                {/* The section's pages, as tabs above the title (the dock and the top bar list only the sections). */}
+                <SectionPages trail={trail} url={url} badges={badges} />
                 {header && <div className="rise-in mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">{header}</div>}
                 <div ref={titleEndRef} aria-hidden="true" />
                 {children}
             </main>
             <AppFooter />
             </div>
+
+            <MobileTabBar
+                groups={groups}
+                badges={badges}
+                onOpenMore={(event) => {
+                    menuButtonRef.current = event.currentTarget;
+                    setDrawerOpen(true);
+                }}
+            />
 
             <NavigationDrawer
                 open={drawerOpen}
