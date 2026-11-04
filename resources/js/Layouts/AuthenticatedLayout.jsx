@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import TopBar from '@/Components/TopBar/TopBar';
-import BranchViewSwitcher from '@/Components/BranchViewSwitcher';
+import BranchViewSwitcher, { WorkingBranchChip } from '@/Components/BranchViewSwitcher';
 import NavigationDrawer from '@/Components/TopBar/NavigationDrawer';
 import SideNavigation from '@/Components/SideNavigation/SideNavigation';
 import MobileTabBar from '@/Components/SideNavigation/MobileTabBar';
@@ -12,7 +12,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { currentPrintSettings } from '@/lib/print';
 import AppFooter from '@/Components/AppFooter';
 import { watchSessionStatus } from '@/lib/sessionStatus';
-import { HOME_LINK, MAIN_LINKS, allowedNavigationGroups, navigationGroups, pageTrail } from '@/lib/navigation';
+import { HOME_LINK, MAIN_LINKS, allowedNavigationGroups, navigationGroups, pageTrail, sectionLinks } from '@/lib/navigation';
 import { useResponsiveTables } from '@/hooks/useResponsiveTables';
 import { QUICK_MESSAGE_EVENT, openQuickMessage } from '@/lib/quickMessage';
 const CommandPalette = lazy(() => import('@/Components/CommandPalette'));
@@ -221,6 +221,9 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
             <TopBar
                 groups={groups}
                 slim
+                trail={<Breadcrumb trail={trail} inBar />}
+                context={sectionLinks(trail?.group).length > 0 ? <SectionPages trail={trail} url={url} badges={badges} inBar /> : null}
+                branchChip={<WorkingBranchChip />}
                 badges={badges}
                 where={pastTitle && trail ? { section: trail.group?.shortLabel, page: trail.link.label, scope } : null}
                 drawerOpen={drawerOpen}
@@ -238,10 +241,12 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
 
             <main id="main-content" tabIndex={-1} className="mx-auto max-w-[var(--ui-content-width)] px-[var(--tn-gutter)] pb-16 pt-8 outline-none">
                 <BranchViewSwitcher />
-                <Breadcrumb trail={trail} />
-                {/* The section's pages, as tabs above the title (the dock and the top bar list only the sections). */}
-                <SectionPages trail={trail} url={url} badges={badges} />
-                {header && <div className="rise-in mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">{header}</div>}
+                {/* On phones the path and the section's pages sit above the title; wide screens show them in the top bar's context card. */}
+                <div className="lg:hidden">
+                    <Breadcrumb trail={trail} />
+                    <SectionPages trail={trail} url={url} badges={badges} />
+                </div>
+                {header && <div className="gl-page-head rise-in mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">{header}</div>}
                 <div ref={titleEndRef} aria-hidden="true" />
                 {children}
             </main>

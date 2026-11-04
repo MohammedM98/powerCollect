@@ -3,8 +3,8 @@ import { Link } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import { shouldPrefetchPage, HOME_LINK, isActiveLink, sectionLinks } from '@/lib/navigation';
 
-/** Where the page sits: home, its section, then the page. */
-export function Breadcrumb({ trail }) {
+/** Where the page sits: home, its section, then the page. `inBar` draws it in the top bar's context card. */
+export function Breadcrumb({ trail, inBar = false }) {
     if (!trail) {
         return null;
     }
@@ -12,7 +12,7 @@ export function Breadcrumb({ trail }) {
     const { group, link, exact } = trail;
 
     return (
-        <nav className="tn-trail tn-rise mb-3 flex items-center gap-1.5 text-[13.5px] text-gray-500" aria-label="مسار الصفحة">
+        <nav className={`tn-trail flex items-center gap-1.5 text-[13.5px] text-gray-500 ${inBar ? 'whitespace-nowrap' : 'tn-rise mb-3'}`} aria-label="مسار الصفحة">
             <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="hover:text-gray-900">{HOME_LINK.label}</Link>
             {group && (
                 <>
@@ -43,11 +43,12 @@ export function hiddenEnds(scrollLeft, scrollWidth, clientWidth) {
 }
 
 /**
- * The section's other pages, one click away, the current one dark and
+ * The section's other pages, one click away, the current one lit and
  * centred in view; an edge that hides more pages fades, so a phone shows
- * the strip scrolls.
+ * the strip scrolls. `inBar` draws them as the second row of the top
+ * bar's context card, without a card of their own.
  */
-export function SectionPages({ trail, url, badges }) {
+export function SectionPages({ trail, url, badges, inBar = false }) {
     const stripRef = useRef(null);
     const [fade, setFade] = useState(null);
     const links = sectionLinks(trail?.group);
@@ -99,7 +100,7 @@ export function SectionPages({ trail, url, badges }) {
             data-fade={fade ?? undefined}
             role="navigation"
             aria-label={`صفحات ${trail.group.label}`}
-            className="tn-subnav tn-rise mb-6 flex gap-1 overflow-x-auto rounded-2xl border border-gray-200/70 bg-surface/70 p-1.5 shadow-card backdrop-blur [scrollbar-width:none]"
+            className={inBar ? 'tn-subnav tn-subnav-in-bar flex gap-1 overflow-x-auto [scrollbar-width:none]' : 'tn-subnav tn-rise mb-6 flex gap-1 overflow-x-auto rounded-2xl border border-gray-200/70 bg-surface/70 p-1.5 shadow-card backdrop-blur [scrollbar-width:none]'}
         >
             {links.map((link) => (
                 <Link key={link.href} href={link.href} prefetch={shouldPrefetchPage(link.href)} aria-current={isActiveLink(link, url) ? 'page' : undefined}>

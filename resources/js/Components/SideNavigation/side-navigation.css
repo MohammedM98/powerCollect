@@ -43,18 +43,54 @@
         transition: margin 0.3s var(--tn-ease);
     }
 
-    /* Beside the panel the bar keeps its tools: no logo or sections; the search, at the start, takes the room. */
+    /*
+     * Beside the dock the bar is one context card (the gallery's): where the
+     * page sits, the working branch, the search and the tools on its first
+     * row, the section's pages as tabs on its second. It keeps its height
+     * when the page scrolls, so nothing under it moves.
+     */
+    :root[data-side-navigation='dock'] {
+        --tn-bar-rest-height: 122px;
+    }
+
+    .tn-header[data-slim],
+    .tn-header[data-slim].is-scrolled {
+        height: auto;
+        padding-top: 12px;
+    }
+
     .tn-header[data-slim] .tn-glass {
         display: flex;
+        flex-wrap: wrap;
+        row-gap: 8px;
+        height: auto;
+        padding-block: 10px;
     }
 
     .tn-header[data-slim] .tn-glass > :is(:first-child, .tn-sections) {
         display: none;
     }
 
-    .tn-header[data-slim] .tn-glass > :last-child {
+    .tn-header[data-slim] .tn-tools {
         flex: 1;
         min-width: 0;
+    }
+
+    .tn-header[data-slim] .tn-bar-trail {
+        display: block;
+        margin-inline: 6px 14px;
+    }
+
+    .tn-header[data-slim] .tn-branch-chip {
+        display: inline-flex;
+    }
+
+    .tn-header[data-slim] .tn-bar-tabs {
+        display: block;
+        flex-basis: 100%;
+        min-width: 0;
+        padding-top: 8px;
+        border-top: 1px solid rgb(var(--gray-200) / 0.7);
     }
 
     .tn-header[data-slim] .tn-search {
@@ -73,6 +109,65 @@
     .tn-header[data-slim] .tn-search .tn-kbd {
         display: inline-flex;
     }
+}
+
+/* Only wide screens beside the dock show the path, the branch chip and the section's tabs in the bar. */
+.tn-bar-trail,
+.tn-bar-tabs,
+.tn-branch-chip {
+    display: none;
+}
+
+/* The section's pages as the context card's second row: tabs without a card of their own. */
+.tn-subnav-in-bar a {
+    height: 40px;
+    padding: 0 14px;
+    font-size: 15px;
+}
+
+/* The working branch as a chip (BranchViewSwitcher WorkingBranchChip): a dot, the branch and its picker. */
+.tn-branch-chip {
+    position: relative;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 10px 0 12px;
+    margin-inline-end: 8px;
+    border: 1px solid rgb(var(--gray-200));
+    border-radius: 12px;
+    background: rgb(var(--gray-50) / 0.7);
+    font-size: 13.5px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.tn-branch-chip i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgb(var(--success-600, 5 150 105));
+    box-shadow: 0 0 0 3px rgb(var(--success-600, 5 150 105) / 0.25);
+}
+
+.tn-branch-chip select {
+    appearance: none;
+    max-width: 14rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.tn-branch-chip select:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.tn-branch-chip:focus-within {
+    outline: 2px solid rgb(var(--brand-solid));
+    outline-offset: 2px;
 }
 
 .sn-panel :focus-visible:not(input) {

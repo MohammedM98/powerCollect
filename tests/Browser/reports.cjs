@@ -36,7 +36,9 @@ const { readFileSync } = require('node:fs');
         await page.evaluate(() => window.scrollTo(0, 1100));
         await page.waitForFunction(() => document.querySelector('.tn-header')?.classList.contains('is-scrolled'));
         const sticky = await periodCard.boundingBox();
-        assert.ok(sticky.y >= 70 && sticky.y <= 100, JSON.stringify(sticky));
+        // It sticks just under the top bar's context card, not under it or far below.
+        const barBottom = await page.locator('.tn-header .tn-glass').evaluate((bar) => bar.getBoundingClientRect().bottom);
+        assert.ok(sticky.y >= barBottom && sticky.y <= barBottom + 30, JSON.stringify({ sticky, barBottom }));
         assert.ok(sticky.height < 120, JSON.stringify(sticky));
         await page.screenshot({ path: `${process.env.OUT_DIR}/report-period-sticky-desktop.png` });
         const monthStart = new URL(page.url()).searchParams.get('from');
