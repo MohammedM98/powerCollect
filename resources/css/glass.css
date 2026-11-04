@@ -2341,3 +2341,38 @@
         height: calc(100dvh - 12px - env(safe-area-inset-bottom, 0px));
     }
 }
+
+/* ── Colour swatches (Components/TopBar/LookStudio.jsx) ──────────────── */
+.gl-swatch {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 9px;
+    border: 2px solid transparent;
+    color: var(--gl-muted);
+    cursor: pointer;
+}
+
+.gl-swatch[aria-pressed='true'] {
+    border-color: var(--gl-ink);
+    box-shadow: 0 0 0 2px rgb(var(--glass-panel));
+}
+
+.gl-swatch-custom {
+    overflow: hidden;
+    border: 1px dashed var(--gl-line-hi);
+    background: var(--gl-fill);
+}
+
+.gl-swatch-custom input {
+    position: absolute;
+    inset: -8px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    cursor: pointer;
+}
