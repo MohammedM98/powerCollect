@@ -21,7 +21,7 @@ const { readFileSync } = require('node:fs');
         await page.goto('/reports?branch=all&section=statement');
         await page.getByRole('heading', { name: 'كشوفات حسابات المشتركين', exact: true }).waitFor();
         const periodCard = page.getByRole('region', { name: 'فلاتر التقرير', exact: true });
-        assert.ok(await periodCard.evaluate((element) => element.classList.contains('bg-graphite-gradient')));
+        assert.ok(await periodCard.evaluate((element) => element.classList.contains('gl-scope')));
         await periodCard.locator('#report-period').click();
         await page.locator('ul').getByRole('button', { name: 'هذا الشهر', exact: true }).click();
         await page.waitForURL((url) => url.searchParams.get('from')?.endsWith('-01'));

@@ -262,7 +262,7 @@ function PeriodCard({ branches, branchScope, scopeLabel, filters, presets, today
     return (
         <section aria-label="فلاتر التقرير" className="gl-scope sticky top-[calc(var(--tn-bar-rest-height)+1.5rem)] z-30">
             <div className="flex flex-wrap items-center gap-3">
-                <div className="flex min-w-0 flex-1 items-center gap-3"><span className="gl-scope-ico" aria-hidden="true"><Icon name="calendar" className="h-5 w-5" /></span><div className="min-w-0"><p className="gl-scope-eyebrow">الفترة</p><h3 className="gl-scope-name !text-base"><bdi dir="ltr">{periodText}</bdi></h3></div></div>
+                <div className="flex min-w-0 flex-1 items-center gap-3"><span className="gl-scope-ico" aria-hidden="true"><Icon name="calendar" className="h-5 w-5" /></span><div className="min-w-0"><h3 className="gl-scope-eyebrow">الفترة</h3><p className="gl-scope-name !text-base"><bdi dir="ltr">{periodText}</bdi></p></div></div>
                 {!branchScope && branches.length > 1 && (
                     <label className="order-3 flex w-full flex-col gap-1.5 gl-label text-xs sm:order-none sm:w-60">
                         الفرع

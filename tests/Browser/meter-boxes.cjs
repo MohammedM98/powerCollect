@@ -15,21 +15,12 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await page.getByRole('button', { name: 'تسجيل الدخول', exact: true }).click();
         await page.waitForURL((url) => !url.pathname.startsWith('/login'));
         await page.goto('/meter-boxes');
-        await page.getByRole('navigation', { name: 'أقسام النظام', exact: true }).getByRole('button', { name: 'المشتركون', exact: true }).hover();
-        const menuLinks = page.locator('#tn-mega .tn-mega-content:not(.is-leaving) .tn-mega-link');
-        await expect(menuLinks).toHaveCount(6);
-        const menuBoxes = await menuLinks.evaluateAll((links) => links.map((link) => ({
-            top: link.getBoundingClientRect().top,
-            height: link.getBoundingClientRect().height,
-            icon: link.querySelector('.tn-tile').getBoundingClientRect().top,
-            title: link.querySelector('b').getBoundingClientRect().top,
-        })));
-        for (let index = 0; index < menuBoxes.length; index += 2) {
-            assert.ok(Math.abs(menuBoxes[index].height - menuBoxes[0].height) < 1);
-            for (const key of ['top', 'height', 'icon', 'title']) assert.ok(Math.abs(menuBoxes[index][key] - menuBoxes[index + 1][key]) < 1, `Aligned menu ${key}`);
-        }
-        await page.locator('#tn-mega').screenshot({ path: `${process.env.OUT_DIR}/aligned-section-menu.png` });
-        await page.keyboard.press('Escape');
+        const dock = page.getByRole('complementary', { name: 'الأقسام', exact: true });
+        await expect(dock.getByRole('link', { name: 'المشتركون', exact: true })).toHaveAttribute('aria-current', 'true');
+        const sectionTabs = page.getByRole('navigation', { name: 'صفحات المشتركون', exact: true });
+        await expect(sectionTabs.getByRole('link')).toHaveCount(6);
+        await expect(sectionTabs.getByRole('link', { name: 'الطبلونات', exact: true })).toHaveAttribute('aria-current', 'page');
+        await dock.screenshot({ path: `${process.env.OUT_DIR}/section-dock.png` });
         const table = page.getByRole('table', { name: 'الطبلونات ومشتركوها', exact: true });
         await expect(table).toBeVisible();
         await expect(page.getByRole('columnheader', { name: /ديون|رصيد/ })).toHaveCount(0);
@@ -324,13 +315,10 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         const subnav = limited.getByRole('navigation', { name: 'صفحات المشتركون', exact: true });
         await expect(subnav.getByRole('link')).toHaveCount(1);
         await expect(subnav.getByRole('link', { name: 'المشتركون', exact: true })).toBeVisible();
-        const mainNav = limited.getByRole('navigation', { name: 'أقسام النظام', exact: true });
-        await expect(mainNav.getByText('المالية', { exact: true })).toBeVisible();
-        await expect(mainNav.getByText('التقارير', { exact: true })).toHaveCount(0);
-        await mainNav.getByRole('button', { name: 'المشتركون', exact: true }).hover();
-        const desktopMenu = limited.locator('#tn-mega');
-        await expect(desktopMenu.locator('a')).toHaveCount(1);
-        await expect(desktopMenu.getByRole('link', { name: /المشتركون/ })).toBeVisible();
+        const limitedDock = limited.getByRole('complementary', { name: 'الأقسام', exact: true });
+        await expect(limitedDock.getByRole('link', { name: 'المالية', exact: true })).toBeVisible();
+        await expect(limitedDock.getByText('التقارير', { exact: true })).toHaveCount(0);
+        await expect(limitedDock.getByRole('link', { name: 'المشتركون', exact: true })).toHaveAttribute('href', /\/subscriptions$/);
         assert.equal((await limited.request.get('/meter-readings')).status(), 403);
         await limited.screenshot({ path: `${process.env.OUT_DIR}/limited-sub-navigation.png`, fullPage: true });
         await limited.setViewportSize({ width: 390, height: 844 });
