@@ -31,10 +31,12 @@ function badgeOf(group, badges) {
  * that reshapes itself as the pointer moves between sections; a mouse click
  * on a section opens its first page, while touch and the keyboard, with no
  * hover, open the panel. Beside the section dock (`slim`), wide screens see
- * only the tools: the search, the theme, this person's appearance panel
- * (LookStudio), the activity and the account.
+ * one context card instead: where the page sits (`trail`), the working
+ * branch (`branchChip`), the search, the theme, this person's appearance
+ * panel (LookStudio), the activity and the account on its first row, and
+ * the section's pages (`context`) as tabs on its second.
  */
-export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDrawer, drawerOpen, layerOpen, onShowShortcuts, onStartTour, slim = false }) {
+export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDrawer, drawerOpen, layerOpen, onShowShortcuts, onStartTour, slim = false, trail = null, context = null, branchChip = null }) {
     const { props, url } = usePage();
     const { dark, changePreference } = useTheme();
     const { appName, auth } = props;
@@ -560,7 +562,9 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                         })}
                     </nav>
 
-                    <div className="flex items-center gap-1">
+                    <div className="tn-tools flex items-center gap-1">
+                        {trail && <div className="tn-bar-trail">{trail}</div>}
+                        {branchChip}
                         <button type="button" className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label="بحث وأوامر (Ctrl K)" title="بحث وأوامر · Ctrl K">
                             <Icon name="search" />
                             <span className="tn-search-text flex-1 text-start">{props.can?.recordPayments && props.can?.viewSubscriptions ? 'ابحث عن صفحة أو مشترك…' : 'ابحث عن صفحة أو أمر…'}</span>
@@ -589,6 +593,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             <Icon name="menu" />
                         </button>
                     </div>
+                    {context && <div className="tn-bar-tabs">{context}</div>}
                 </div>
             </header>
 

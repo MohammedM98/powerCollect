@@ -2640,6 +2640,15 @@ input[type='radio'] {
     box-shadow: none;
 }
 
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-header[data-slim] .tn-bar-tabs {
+    border-top-color: rgb(var(--glass-line));
+}
+
+:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .tn-branch-chip {
+    border-color: rgb(var(--glass-line));
+    background: rgb(var(--glass-fill));
+}
+
 :root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) .sn-dock-me {
     border-top-color: rgb(var(--glass-line));
 }
