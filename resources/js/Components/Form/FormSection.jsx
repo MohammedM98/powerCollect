@@ -8,16 +8,17 @@ const COLUMNS = {
 };
 
 /**
- * One part of a long form as its own card: an icon and a title (with an
- * "!" holding what the user must know about it, `info`), then its fields
- * in a grid of `columns` (1, 2 or 3 across on wide screens).
+ * One part of a long form as its own card (the component gallery's
+ * section card): a tinted icon tile and a title (with an "!" holding what
+ * the user must know about it, `info`), then its fields in a grid of
+ * `columns` (1, 2 or 3 across on wide screens).
  */
 export default function FormSection({ icon, title, info, columns = 3, children, className = '' }) {
     return (
-        <section className={`gl-glass gl-panel ${className}`}>
-            <div className="mb-4 flex items-center gap-3">
-                <span className="gl-ico" style={{ color: 'rgb(var(--gl-brand))' }}>
-                    <Icon name={icon} className="h-[18px] w-[18px]" />
+        <section className={`gl-section ${className}`}>
+            <div className="mb-4 flex items-center gap-2.5">
+                <span className="gl-section-ico" aria-hidden="true">
+                    <Icon name={icon} className="h-[17px] w-[17px]" />
                 </span>
                 <h4 className="text-base font-bold" style={{ fontFamily: 'var(--gl-head)' }}>{title}</h4>
                 {info && <InfoTip label={`عن ${title}`}>{info}</InfoTip>}
