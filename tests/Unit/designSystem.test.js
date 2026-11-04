@@ -48,4 +48,6 @@ test('the glass stylesheet is loaded and the identity files are where the design
     assert.ok(existsSync(new URL(design.stylesheet.file, root)));
     assert.ok(existsSync(new URL(design.identity.logo, root)));
     assert.ok(existsSync(new URL(design.identity.favicon, root)));
+    assert.ok(existsSync(new URL(design.identity.wordmark, root)));
+    assert.ok(existsSync(new URL(design.identity.wordmarkOnDark, root)));
 });

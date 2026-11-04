@@ -1007,6 +1007,9 @@
     "nameEnglish": "Super Power",
     "logo": "public/images/logo-superpower.svg",
     "favicon": "public/favicon.svg",
-    "signIn": "Components/AnimatedLogo.jsx (SuperPowerMark)"
+    "wordmark": "public/images/logo-superpower-wordmark.svg",
+    "wordmarkOnDark": "public/images/logo-superpower-wordmark-light.svg",
+    "symbol": "حرف S زاوي عموده يضرب كالبرق، بخط واحد بانعطافات حادة وطرفين مدببين. هو رمز المربع (SuperPowerMark) وأول حرف في الكلمة (SuperPowerWordmark): SUPERPOWER بحروف هندسية بوزن خط واحد، الـS بلون الهوية والباقي بلون النص، بلا تدرج ولا ظل.",
+    "signIn": "Components/AnimatedLogo.jsx (SuperPowerMark) ثم SuperPowerWordmark تحت الاسم"
   }
 }

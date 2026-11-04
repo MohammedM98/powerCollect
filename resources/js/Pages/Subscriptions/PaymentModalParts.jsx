@@ -1,5 +1,6 @@
 import Icon from '@/Components/Icon';
 import BrandLogo from '@/Components/BrandLogo';
+import { SuperPowerWordmark } from '@/Components/SuperPowerMark';
 import { useBrand } from '@/hooks/useBrand';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
@@ -57,7 +58,7 @@ export function PaymentSummary({ amount, currency, inShekels, balance, methodTex
                         <BrandLogo markSize={28} className="h-7 w-auto" />
                         <span className="gl-lockup-name">
                             <b dir="auto">{brand.shortName ?? brand.name}</b>
-                            {brand.nameEnglish && <small dir="ltr">{brand.nameEnglish.toUpperCase()}</small>}
+                            {brand.animatedLogo ? <SuperPowerWordmark height={8} className="gl-lockup-wordmark" label={brand.nameEnglish ?? 'Super Power'} /> : brand.nameEnglish && <small dir="ltr">{brand.nameEnglish.toUpperCase()}</small>}
                         </span>
                     </span>
                     <Icon name="receipt" className="h-[18px] w-[18px]" />

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 -3 395 47" role="img" aria-label="Super Power">
+  <clipPath id="s"><path d="M-6 -6H35L27.9 6.2H45V50H-3.6L5.1 33.8H-6Z"/></clipPath>
+  <clipPath id="cap"><rect width="393" height="40"/></clipPath>
+  <path clip-path="url(#s)" d="M36 1.5H9.4L2.6 25.5L29.4 14.5L22.6 38.5H-4" fill="none" stroke="#2F6BFF" stroke-width="7" stroke-miterlimit="20"/>
+  <g clip-path="url(#cap)" fill="none" stroke="#0F1A33" stroke-width="6.5" stroke-miterlimit="10">
+    <path transform="translate(41 0)" d="M3.25 -2V25A11.75 11.75 0 0 0 26.75 25V-2"/>
+    <path transform="translate(80 0)" d="M3.25 -2V42M3.25 3.25H14A9.75 9.75 0 0 1 14 22.75H3.25"/>
+    <path transform="translate(116 0)" d="M3.25 -2V42M3.25 3.25H23M3.25 20H20M3.25 36.75H23"/>
+    <path transform="translate(148 0)" d="M3.25 -2V42M3.25 3.25H14A9.75 9.75 0 0 1 14 22.75H3.25M12 22.75L29.5 43"/>
+    <path transform="translate(185 0)" d="M3.25 -2V42M3.25 3.25H14A9.75 9.75 0 0 1 14 22.75H3.25"/>
+    <path transform="translate(221 0)" d="M20 3.25A16.75 16.75 0 1 1 20 36.75A16.75 16.75 0 1 1 20 3.25Z"/>
+    <path transform="translate(270 0)" d="M2.25 -3L13.5 44L25 11L36.5 44L47.75 -3"/>
+    <path transform="translate(329 0)" d="M3.25 -2V42M3.25 3.25H23M3.25 20H20M3.25 36.75H23"/>
+    <path transform="translate(361 0)" d="M3.25 -2V42M3.25 3.25H14A9.75 9.75 0 0 1 14 22.75H3.25M12 22.75L29.5 43"/>
+  </g>
+</svg>

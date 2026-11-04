@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import AnimatedLogo from '@/Components/AnimatedLogo';
+import { SuperPowerWordmark } from '@/Components/SuperPowerMark';
 import { motionOff } from '@/Components/CountUp';
 import ThemeToggle from '@/Components/ThemeToggle';
 import { useBrandDocument } from '@/hooks/useBrand';
@@ -89,7 +90,8 @@ function EnergyField() {
 
 /**
  * The sign-in screen: one glass card in the middle of the page, over a field
- * of current, holding the mark, the product's name and the form (`children`).
+ * of current, holding the mark, the product's name with its wordmark under
+ * it, and the form (`children`).
  * `subtitle` is the line under the name.
  */
 export default function GuestLayout({ subtitle = 'سجّل الدخول لمتابعة التحصيل والقراءات.', children }) {
@@ -105,7 +107,7 @@ export default function GuestLayout({ subtitle = 'سجّل الدخول لمتا
                     <AnimatedLogo />
                     <div>
                         <h1>{brand.name}</h1>
-                        {brand.nameEnglish && <div className="gl-en" dir="ltr">{brand.nameEnglish.toUpperCase()}</div>}
+                        {brand.animatedLogo ? <SuperPowerWordmark height={17} label={brand.nameEnglish ?? 'Super Power'} /> : brand.nameEnglish && <div className="gl-en" dir="ltr">{brand.nameEnglish.toUpperCase()}</div>}
                     </div>
                     <p>{subtitle}</p>
                 </div>

@@ -1,5 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56">
   <rect width="56" height="56" rx="16" fill="#2F6BFF"/>
-  <path d="M37.5 9.5H24.8a2 2 0 0 0-1.86 1.27l-6.1 15.6A1.5 1.5 0 0 0 18.24 28.4H28l-5.3 15.8a.9.9 0 0 0 1.57.83l17.6-21.1A1.5 1.5 0 0 0 40.7 21.5H32.2l6.62-9.7A1.5 1.5 0 0 0 37.5 9.5z" fill="#fff"/>
-  <circle cx="40.6" cy="45.2" r="2.6" fill="#fff" opacity=".9"/>
+  <clipPath id="s"><path d="M-6 -6H35L27.9 6.2H45V50H-3.6L5.1 33.8H-6Z"/></clipPath>
+  <g transform="translate(28 28) scale(0.7045) translate(-16.8 -20)">
+    <path clip-path="url(#s)" d="M36 1.5H9.4L2.6 25.5L29.4 14.5L22.6 38.5H-4" fill="none" stroke="#fff" stroke-width="7.6" stroke-miterlimit="20"/>
+  </g>
 </svg>
