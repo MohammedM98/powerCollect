@@ -257,15 +257,14 @@ function Panel({ icon, title, hint = null, className = '', excelParts, children 
 function PeriodCard({ branches, branchScope, scopeLabel, filters, presets, today, period, periodText, visit }) {
     const preset = presets.find((item) => item.from === filters.from && item.to === filters.to)?.key ?? '';
     const [datesOpen, setDatesOpen] = useState(false);
-    const stepClass = 'inline-flex items-center gap-1 rounded-control px-2.5 py-1.5 text-sm font-semibold text-white/80 transition hover:bg-white/10 hover:text-white disabled:opacity-40';
+    const stepClass = 'gl-ib w-auto gap-1 px-2.5 text-sm font-semibold disabled:opacity-40';
 
     return (
-        <section aria-label="فلاتر التقرير" className="sticky top-[calc(var(--tn-bar-rest-height)+1.5rem)] z-30 rounded-panel border border-white/10 bg-graphite-gradient p-3 text-white shadow-card sm:p-4">
-            <span aria-hidden="true" className="absolute inset-x-5 top-0 h-[2px] bg-spectrum" />
+        <section aria-label="فلاتر التقرير" className="gl-scope sticky top-[calc(var(--tn-bar-rest-height)+1.5rem)] z-30">
             <div className="flex flex-wrap items-center gap-3">
-                <div className="flex min-w-0 flex-1 items-center gap-3"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/10"><Icon name="calendar" className="h-5 w-5" /></span><div className="min-w-0"><h3 className="text-sm font-bold text-white">الفترة</h3><p className="mt-1 text-xs text-white/70"><bdi dir="ltr">{periodText}</bdi></p></div></div>
+                <div className="flex min-w-0 flex-1 items-center gap-3"><span className="gl-scope-ico" aria-hidden="true"><Icon name="calendar" className="h-5 w-5" /></span><div className="min-w-0"><p className="gl-scope-eyebrow">الفترة</p><h3 className="gl-scope-name !text-base"><bdi dir="ltr">{periodText}</bdi></h3></div></div>
                 {!branchScope && branches.length > 1 && (
-                    <label className="order-3 flex w-full flex-col gap-1.5 text-xs font-semibold text-white/65 sm:order-none sm:w-60">
+                    <label className="order-3 flex w-full flex-col gap-1.5 gl-label text-xs sm:order-none sm:w-60">
                         الفرع
                         <SearchableSelect
                             value={filters.branch ?? ''}
@@ -273,15 +272,14 @@ function PeriodCard({ branches, branchScope, scopeLabel, filters, presets, today
                             options={[{ value: 'all', label: 'كل الفروع' }, ...branches.map((branch) => ({ value: String(branch.value), label: branch.label }))]}
                             searchable={branches.length > 6}
                             portal
-                            onDark
                         />
                     </label>
                 )}
                 {!branchScope && branches.length === 1 && (
-                    <div className="order-3 flex w-full flex-col gap-1.5 text-xs font-semibold text-white/65 sm:order-none sm:w-auto">
+                    <div className="order-3 flex w-full flex-col gap-1.5 gl-label text-xs sm:order-none sm:w-auto">
                         الفرع
-                        <span className="flex h-10 items-center gap-2 rounded-control border border-white/15 bg-white/10 px-3 text-sm font-bold text-white">
-                            <Icon name="pin" className="h-4 w-4 text-white/60" />
+                        <span className="flex h-10 items-center gap-2 rounded-control border px-3 text-sm font-bold" style={{ borderColor: 'var(--gl-line)', background: 'var(--gl-fill)' }}>
+                            <Icon name="pin" className="h-4 w-4" />
                             {scopeLabel}
                         </span>
                     </div>
@@ -290,7 +288,6 @@ function PeriodCard({ branches, branchScope, scopeLabel, filters, presets, today
                     <label htmlFor="report-period" className="sr-only">الفترة</label>
                     <SearchableSelect
                         id="report-period"
-                        onDark
                         portal
                         clearable={false}
                         searchable={false}
@@ -309,10 +306,10 @@ function PeriodCard({ branches, branchScope, scopeLabel, filters, presets, today
                     <button type="button" aria-label="الفترة التالية" disabled={!period?.next} className={stepClass} onClick={() => period?.next && visit({ ...period.next, page: undefined })}><Icon name="chevron-left" className="h-4 w-4" /></button>
                 </div>
             </div>
-            {datesOpen && <div className="mt-3 flex flex-wrap items-end gap-3 border-t border-white/15 pt-3">
+            {datesOpen && <div className="mt-3 flex flex-wrap items-end gap-3 border-t pt-3" style={{ borderColor: 'var(--gl-line)' }}>
                 <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row" role="group" aria-label="من تاريخ إلى تاريخ">
-                    <label className="flex min-w-0 flex-1 flex-col gap-1.5 text-xs font-semibold text-white/65 sm:flex-none"><span>من تاريخ</span><DateInput onDark aria-label="من تاريخ" className="w-full sm:w-52" required value={filters.from} max={filters.to} onChange={(value) => value && visit({ from: value, page: undefined })} /></label>
-                    <label className="flex min-w-0 flex-1 flex-col gap-1.5 text-xs font-semibold text-white/65 sm:flex-none"><span>إلى تاريخ</span><DateInput onDark aria-label="إلى تاريخ" className="w-full sm:w-52" required value={filters.to} min={filters.from} max={today} onChange={(value) => value && visit({ to: value, page: undefined })} /></label>
+                    <label className="flex min-w-0 flex-1 flex-col gap-1.5 gl-label text-xs sm:flex-none"><span>من تاريخ</span><DateInput aria-label="من تاريخ" className="w-full sm:w-52" required value={filters.from} max={filters.to} onChange={(value) => value && visit({ from: value, page: undefined })} /></label>
+                    <label className="flex min-w-0 flex-1 flex-col gap-1.5 gl-label text-xs sm:flex-none"><span>إلى تاريخ</span><DateInput aria-label="إلى تاريخ" className="w-full sm:w-52" required value={filters.to} min={filters.from} max={today} onChange={(value) => value && visit({ to: value, page: undefined })} /></label>
                 </div>
                 <button type="button" className={stepClass} onClick={() => setDatesOpen(false)}>إغلاق<Icon name="close" className="h-4 w-4" /></button>
             </div>}
@@ -328,17 +325,17 @@ function Figures({ flow, collections }) {
     return (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)]">
             <KpiTile hero label="إجمالي المقبوضات المسجّلة" value={reportMoney(collections.total)} unit="₪" hint={`${collections.count} دفعة في الفترة`} className="md:col-span-2 xl:col-span-1 xl:row-span-2">
-                <div className="mt-5 flex h-2 overflow-hidden rounded-full bg-white/10" role="img" aria-label="النقدي والتحويلات والشيكات">
+                <div className="gl-bar mt-5 flex" role="img" aria-label="النقدي والتحويلات والشيكات">
                     {total > 0 && (
                         <>
-                            <span className="bg-white" style={{ width: `${(Number(collections.cash) / total) * 100}%` }} />
+                            <span style={{ width: `${(Number(collections.cash) / total) * 100}%`, background: 'var(--gl-ink)' }} />
                             <span className="bg-brand-500" style={{ width: `${(Number(collections.nonCash) / total) * 100}%` }} />
                         </>
                     )}
                 </div>
-                <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-white/70">
-                    <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-white" />نقدي <b className="font-display text-white">{reportMoney(collections.cash)} ₪</b></span>
-                    <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-brand-500" />تحويلات وشيكات <b className="font-display text-white">{reportMoney(collections.nonCash)} ₪</b></span>
+                <div className="gl-hint mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs">
+                    <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full" style={{ background: 'var(--gl-ink)' }} />نقدي <b className="font-display" style={{ color: 'var(--gl-ink)' }}>{reportMoney(collections.cash)} ₪</b></span>
+                    <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-brand-500" />تحويلات وشيكات <b className="font-display" style={{ color: 'var(--gl-ink)' }}>{reportMoney(collections.nonCash)} ₪</b></span>
                 </div>
             </KpiTile>
             <KpiTile icon="ledger" label="الرصيد الافتتاحي" value={<bdi dir="ltr">{reportMoney(flow.opening)}</bdi>} unit="₪" hint={Number(flow.opening) < 0 ? 'لصالح المشتركين' : 'على المشتركين'} />
@@ -367,7 +364,7 @@ function SectionNav({ sections, current, onChange }) {
                             aria-current={item.key === current ? 'page' : undefined}
                             onClick={() => onChange(item.key)}
                             className={`flex w-full items-center gap-3 rounded-card border px-3 py-2.5 text-start transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 ${
-                                item.key === current ? 'border-transparent bg-graphite-gradient text-white shadow-card' : 'border-gray-100 bg-surface text-gray-700 hover:border-gray-200'
+                                item.key === current ? 'border-transparent bg-brand-gradient text-white shadow-card' : 'border-gray-100 bg-surface text-gray-700 hover:border-gray-200'
                             }`}
                         >
                             <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${item.key === current ? 'bg-white/10' : 'bg-gray-50 text-gray-500'}`}>

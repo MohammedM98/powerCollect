@@ -181,7 +181,7 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
     return (
         <section
             className={`relative flex flex-col gap-4 overflow-hidden rounded-[26px] p-5 sm:p-6 ${
-                dark ? 'bg-graphite-gradient text-white shadow-lift' : 'border border-gray-100 bg-surface text-gray-900 shadow-card'
+                dark ? 'bg-brand-gradient text-white shadow-lift' : 'border border-gray-100 bg-surface text-gray-900 shadow-card'
             }`}
         >
             {dark && (

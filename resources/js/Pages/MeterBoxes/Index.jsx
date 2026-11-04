@@ -12,6 +12,7 @@ import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Pagination from '@/Components/DataTable/Pagination';
 import ActionsTh from '@/Components/DataTable/ActionsTh';
 import Icon from '@/Components/Icon';
+import KpiTile from '@/Components/KpiTile';
 import { formatNumber } from '@/lib/format';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useDeleteRecord } from '@/hooks/useDeleteRecord';
@@ -51,13 +52,9 @@ function readSubscriptionOrder() {
 function MeterBoxSummary({ summary }) {
     return (
         <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="relative overflow-hidden rounded-card bg-graphite-gradient p-5 text-white shadow-card">
-                <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-spectrum" />
-                <p className="text-base font-bold text-white">إجمالي الطبلونات</p>
-                <p className="mt-1 text-xs text-white/70">ضمن نتائج البحث والتصفية</p>
-                <p className="mt-1 font-display text-4xl font-bold">{formatNumber(summary.total)} <span className="text-sm font-semibold text-white/70">طبلون</span></p>
-                <div className="mt-4 flex items-center gap-2 border-t border-white/15 pt-3 text-xs text-white/70"><Icon name="users" className="h-4 w-4" />المشتركون <b className="font-display text-sm text-white">{formatNumber(summary.subscriptions)}</b></div>
-            </div>
+            <KpiTile hero icon="table" label="إجمالي الطبلونات" value={formatNumber(summary.total)} unit="طبلون" hint="ضمن نتائج البحث والتصفية">
+                <div className="gl-kv mt-3 border-t pt-3" style={{ borderColor: 'var(--gl-line)' }}><span className="inline-flex items-center gap-1.5"><Icon name="users" className="h-4 w-4" />المشتركون</span><b className="gl-num">{formatNumber(summary.subscriptions)}</b></div>
+            </KpiTile>
             {[
                 { icon: 'pin', label: 'مناطق الطبلونات', unit: 'منطقة', value: formatNumber(summary.regions), hint: `${formatNumber(summary.located)} طبلون ضمن هذه المناطق${summary.total > summary.located ? ` · ${formatNumber(summary.total - summary.located)} بلا منطقة` : ''}` },
                 { icon: 'users', label: 'المشتركون الفعّالون', unit: 'مشترك', value: formatNumber(summary.active), hint: 'المشتركون بحالة فعّال ضمن نتائج البحث' },

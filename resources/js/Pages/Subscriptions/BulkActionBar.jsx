@@ -43,7 +43,7 @@ export default function BulkActionBar({ count, selection, abilities, onAction, o
         <div
             role="region"
             aria-label="إجراءات على المشتركين المحددين"
-            className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[calc(100%-2rem)] max-w-4xl flex-wrap items-center gap-2 rounded-2xl bg-graphite-gradient px-4 py-3 text-white shadow-lift ring-1 ring-white/10"
+            className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[calc(100%-2rem)] max-w-4xl flex-wrap items-center gap-2 rounded-2xl bg-brand-gradient px-4 py-3 text-white shadow-lift ring-1 ring-white/10"
         >
             <span className="me-2 flex items-center gap-2 text-sm" aria-live="polite">
                 <span className="flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-white px-2 font-display text-sm font-bold text-gray-900">
