@@ -62,13 +62,28 @@ class BrandTest extends TestCase
         $response = $this->get(route('login'));
 
         $response->assertInertia(fn ($page) => $page
-            ->where('brand.name', 'شركة أبناء فارس أبو زايد للتجارة والاستيراد')
-            ->where('brand.logos.main', '/images/logo-af.webp')
-            ->where('brand.logos.print', '/images/logo-af.webp')
+            ->where('brand.name', 'سوبر باور')
+            ->where('brand.logos.main', '/images/logo-superpower.svg')
+            ->where('brand.logos.print', '/images/logo-superpower.svg')
             ->where('brand.animatedLogo', true)
             ->where('brand.printColor', '#A51D26'));
         $response->assertSee('<link rel="icon" href="/favicon.svg">', false);
-        $response->assertDontSee('<style>', false);
+    }
+
+    public function test_pages_start_in_the_superpower_navy_look_in_its_blue(): void
+    {
+        $response = $this->get(route('login'));
+
+        $response->assertInertia(fn ($page) => $page
+            ->where('brand.primaryColor', '#2F6BFF')
+            ->where('brand.design.preset', 'superpower')
+            ->where('brand.design.navigation', 'sidebar')
+            ->where('brand.design.cards', 'glass'));
+        $response->assertSee('data-ui-background="navy"', false);
+        $response->assertSee('data-ui-neutral="navy"', false);
+        $response->assertSee(':root{--brand-50:', false);
+        $response->assertSee('.dark{--brand-50:', false);
+        $response->assertSee('--gray-50:', false);
     }
 
     public function test_an_imported_identity_reaches_every_page_with_its_logo_and_colours(): void
@@ -179,7 +194,7 @@ class BrandTest extends TestCase
 
         $this->assertFalse(app(Brand::class)->isImported());
         $this->assertSame([], Storage::disk('public')->files('brand'));
-        $this->get(route('login'))->assertInertia(fn ($page) => $page->where('brand.name', 'شركة أبناء فارس أبو زايد للتجارة والاستيراد'));
+        $this->get(route('login'))->assertInertia(fn ($page) => $page->where('brand.name', 'سوبر باور'));
     }
 
     public function test_every_ready_company_identity_imports_with_its_logos(): void
@@ -278,13 +293,13 @@ class BrandTest extends TestCase
 
     public function test_exact_values_reach_every_page_and_win_over_the_choices(): void
     {
-        $file = $this->identityFile(['design' => ['radius' => 'soft'], 'tokens' => ['radiusScale' => 1.6, 'buttonRadius' => 20, 'transitionMs' => 240]]);
+        $file = $this->identityFile(['design' => ['radius' => 'soft'], 'tokens' => ['radiusScale' => 1.6, 'buttonRadius' => 20, 'transitionMs' => 240, 'glassAlpha' => 0.75, 'glassBlur' => 24]]);
         $this->artisan('brand:import', ['file' => $file])->assertSuccessful();
 
         $response = $this->get(route('login'));
 
         $response->assertSee('data-ui-radius="soft"', false);
-        $response->assertSee(':root[data-ui-navigation]{--radius-scale:1.6;--ui-transition:240ms;}', false);
+        $response->assertSee(':root[data-ui-navigation]{--radius-scale:1.6;--ui-transition:240ms;--glass-alpha:0.75;--glass-blur:24px;}', false);
         $response->assertSee(':root[data-ui-navigation] :is(.ui-btn-primary,.ui-btn-secondary,.ui-btn-danger){border-radius:20px;}', false);
     }
 

@@ -4,8 +4,8 @@ import InfoTip from '@/Components/InfoTip';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
-import { describeBalance } from '@/lib/accountStatement';
-import { BALANCE_CHIP_CLASSES, BALANCE_HINTS, balanceInText } from '@/lib/balance';
+import { describeBalance, describedBalanceText } from '@/lib/accountStatement';
+import { BALANCE_CHIP_CLASSES, BALANCE_HINTS } from '@/lib/balance';
 import { initials } from '@/lib/format';
 
 /**
@@ -43,9 +43,9 @@ const TONES = {
     },
 };
 
-/** A described balance (describeBalance()) as text: "377 ₪", "-9.10 ₪" or "0 ₪", its minus kept before the number. */
+/** A described balance (describeBalance()) as text: "7,178 ₪", "-9.10 ₪" or "0 ₪" (lib/accountStatement.js). */
 export function balanceText(balance) {
-    return balanceInText(balance.signed);
+    return describedBalanceText(balance);
 }
 
 /** A field's label, as FormField draws it: the star when required, the guidance (`hint`) behind an "!". */
@@ -407,13 +407,8 @@ export function FormFooter({ onCancel, submitLabel, disabled, processing, tone =
             <button
                 type="submit"
                 disabled={disabled || processing}
-                className={`ms-auto inline-flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-[14px] px-5 text-[15.5px] font-bold text-white transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-55 disabled:shadow-none disabled:grayscale-[0.6] sm:min-w-[230px] sm:flex-none ${
-                    tone === 'green'
-                        ? 'bg-gradient-to-b from-emerald-600 to-emerald-800 shadow-[0_12px_26px_-12px_rgb(var(--success-700))]'
-                        : tone === 'amber'
-                          ? 'bg-gradient-to-b from-amber-500 to-amber-700 shadow-[0_12px_26px_-12px_rgb(var(--warning-700))]'
-                        : 'bg-brand-gradient shadow-[0_12px_26px_-12px_rgb(var(--brand-solid))]'
-                }`}
+                className="gl-btn gl-lg ms-auto min-w-0 flex-1 sm:min-w-[230px] sm:flex-none"
+                style={tone === 'green' ? { '--gl-btn': 'var(--success-700)' } : tone === 'amber' ? { '--gl-btn': 'var(--warning-700)' } : undefined}
             >
                 <Icon name="check" className="h-[18px] w-[18px]" strokeWidth={2.2} />
                 {processing ? 'جارٍ الحفظ...' : submitLabel}

@@ -7,7 +7,7 @@
         "tagline": "نظام التحصيل الكهربائي"
     },
     "logos": {
-        "main": "/images/logo-af.webp",
+        "main": "/images/logo-superpower.svg",
         "light": null,
         "icon": "/favicon.svg",
         "print": null
@@ -71,7 +71,9 @@
         "buttonFontWeight": 700,
         "hoverLift": 3,
         "shadowStrength": 1.2,
-        "transitionMs": 200
+        "transitionMs": 200,
+        "glassAlpha": null,
+        "glassBlur": null
     },
     "customCss": ".ui-page-title { letter-spacing: 0.01em; }\n.ui-btn-primary { text-transform: none; }"
 }

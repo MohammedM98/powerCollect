@@ -1,14 +1,14 @@
 import { useRef } from 'react';
 import Icon from '@/Components/Icon';
 
-const DOT_CLASSES = {
-    green: 'bg-emerald-500',
-    amber: 'bg-amber-500',
-    gray: 'bg-gray-400',
+const DOT_COLORS = {
+    green: 'var(--gl-ok)',
+    amber: 'var(--gl-warn)',
+    gray: 'var(--gl-faint)',
 };
 
 /**
- * A few choices shown as pill buttons, picked with one click instead of a
+ * A few choices shown as the prototype's chips (glass.css `gl-chip`), picked with one click instead of a
  * drop-down (a radio group). Each option is `{ value, label, hint?, dot?, icon? }`:
  * `hint` is a quiet second part beside the label (a price, say), `dot` a
  * status color, `icon` an icon before the label, `disabled` a choice that
@@ -53,17 +53,13 @@ export default function ChoiceChips({ id, name, value, onChange, options, label,
                         tabIndex={checked || (selectedIndex === -1 && index === 0) ? 0 : -1}
                         onClick={() => onChange(String(option.value))}
                         onKeyDown={(event) => onKeyDown(event, index)}
-                        className={`inline-flex items-center gap-2 rounded-control border px-3.5 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-50 ${
-                            checked
-                                ? 'border-gray-900 bg-gray-900 text-surface shadow-sm'
-                                : 'border-gray-200 bg-surface text-gray-700 hover:border-gray-300 hover:text-gray-900'
-                        }`}
+                        className="gl-chip inline-flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {option.icon && <Icon name={option.icon} className="h-4 w-4 shrink-0" />}
-                        {option.dot && <span className={`h-2 w-2 shrink-0 rounded-full ${DOT_CLASSES[option.dot]}`} aria-hidden="true" />}
+                        {option.dot && <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: DOT_COLORS[option.dot] }} aria-hidden="true" />}
                         {option.label}
                         {option.hint && (
-                            <span className={`font-display text-xs font-medium ${checked ? 'text-surface/70' : 'text-gray-500'}`}>{option.hint}</span>
+                            <span className="gl-num text-xs font-medium opacity-75">{option.hint}</span>
                         )}
                     </button>
                 );

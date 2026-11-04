@@ -49,29 +49,28 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
     return (
         <section
             aria-label="الفرع المعروض"
-            className={`relative overflow-hidden rounded-card bg-graphite-gradient p-4 text-white shadow-card sm:p-6 print:mb-4 print:overflow-visible print:rounded-none print:border-b-2 print:border-[rgb(var(--brand-solid))] print:bg-none print:p-0 print:pb-3 print:text-[rgb(var(--graphite-900))] print:shadow-none ${className}`}
+            className={`gl-glass gl-banner relative overflow-hidden p-4 sm:p-6 print:mb-4 print:overflow-visible print:rounded-none print:border-b-2 print:border-[rgb(var(--brand-solid))] print:bg-none print:p-0 print:pb-3 print:text-[rgb(var(--graphite-900))] print:shadow-none ${className}`}
         >
-            <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-spectrum print:hidden" />
             <div className="flex flex-wrap items-center gap-x-5 gap-y-3 sm:gap-y-4">
-                <span aria-hidden="true" className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/15 sm:flex print:hidden">
+                <span aria-hidden="true" className="gl-ico hidden !h-14 !w-14 !rounded-2xl sm:!grid print:hidden" style={{ color: 'rgb(var(--gl-brand))' }}>
                     <Icon name={scope.level === 'governorate' ? 'map' : scope.all ? 'layers' : 'building'} className="h-7 w-7" />
                 </span>
                 <div className="min-w-0 flex-1">
-                    <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm font-semibold text-white/70 print:text-[rgb(var(--silver-900))]">
+                    <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm font-semibold gl-text-muted print:text-[rgb(var(--silver-900))]">
                         <span className="hidden sm:inline print:inline">{eyebrow}</span>
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-0.5 text-xs text-white print:hidden">
-                            <span aria-hidden="true" className={`h-2 w-2 rounded-full ${scope.level === 'governorate' ? 'bg-sky-400' : scope.all ? 'bg-amber-400' : scope.isActive ? 'bg-emerald-400' : 'bg-gray-400'}`} />
+                        <span className="gl-pill print:hidden" style={{ '--gl-c': 'var(--gl-ink)' }}>
+                            <span aria-hidden="true" className="gl-dot" style={{ '--gl-c': scope.level === 'governorate' ? 'var(--gl-info)' : scope.all ? 'var(--gl-warn)' : scope.isActive ? 'var(--gl-ok)' : 'var(--gl-faint)' }} />
                             {scope.level === 'governorate' ? `محافظة · ${branchCount(scope.branches)}` : scope.all ? `${allLabel} · ${branchCount(scope.branches)}` : scope.isActive ? 'فرع واحد' : 'فرع واحد · متوقف'}
                         </span>
                     </p>
-                    <h2 className="mt-1 text-balance font-display text-2xl font-bold leading-tight sm:text-4xl" dir="auto">
+                    <h2 className="mt-1 text-balance text-2xl font-extrabold leading-tight sm:text-[34px]" style={{ fontFamily: 'var(--gl-head)' }} dir="auto">
                         {scope.name}
                     </h2>
-                    <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-white/70 print:text-[rgb(var(--silver-900))]">
+                    <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm gl-text-muted print:text-[rgb(var(--silver-900))]">
                         {facts.map((fact) => (
                             <li key={fact.icon} className="inline-flex items-center gap-1.5">
                                 <Icon name={fact.icon} className="h-4 w-4 shrink-0 print:hidden" />
-                                <span className="font-display tabular-nums">{fact.text}</span>
+                                <span className="gl-num">{fact.text}</span>
                             </li>
                         ))}
                     </ul>
@@ -79,14 +78,14 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
                 {controls && <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-2 sm:flex sm:w-auto sm:flex-wrap sm:gap-3 print:hidden">{controls}</div>}
                 {!controls && pick && pickerOptions.length > 1 && (
                     <label className="flex w-full flex-col gap-1.5 sm:w-64 print:hidden">
-                        <span className="text-xs font-semibold text-white/70">تغيير الفرع</span>
+                        <span className="gl-label">تغيير الفرع</span>
                         <span className="relative">
                             <select
                                 aria-label="تغيير الفرع"
                                 value={pickerValue ?? ''}
                                 disabled={view.switching}
                                 onChange={(event) => pick(event.target.value)}
-                                className="h-12 w-full appearance-none rounded-control border border-white/15 bg-white/10 bg-none pe-10 ps-3.5 font-bold text-white [color-scheme:dark] focus:border-white/40 focus:ring-2 focus:ring-white/30"
+                                className="h-11 w-full appearance-none bg-none pe-10 ps-3.5 font-bold"
                             >
                                 <option value={allValue}>جميع الفروع (تقرير مجمّع)</option>
                                 {pickerOptions.map((option) => (
@@ -100,7 +99,7 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
                     </label>
                 )}
             </div>
-            {children && <div className="mt-4 flex flex-wrap gap-2 border-t border-white/15 pt-4 print:hidden">{children}</div>}
+            {children && <div className="mt-4 flex flex-wrap gap-2 border-t pt-4 print:hidden" style={{ borderColor: 'var(--gl-line)' }}>{children}</div>}
         </section>
     );
 }
@@ -138,7 +137,7 @@ export function BranchFilterBanner({ scope, eyebrow, group, value, onChange, all
             eyebrow={eyebrow}
             controls={
                 options && (
-                    <label className="flex w-full flex-col gap-1.5 text-xs font-semibold text-white/70 sm:w-64">
+                    <label className="gl-label flex w-full flex-col gap-1.5 sm:w-64">
                         الفرع
                         <SearchableSelect
                             value={view.available ? String(view.value) : value ?? ''}
@@ -150,7 +149,6 @@ export function BranchFilterBanner({ scope, eyebrow, group, value, onChange, all
                             active={allowAll && Boolean(view.available ? view.value : value)}
                             clearable={allowAll}
                             portal
-                            onDark
                         />
                     </label>
                 )
@@ -188,10 +186,10 @@ export function BranchChip({ href, onClick, name, figure = null, as: Element = '
         <Element
             {...(Element === 'button' ? { type: 'button', onClick } : { href })}
             {...props}
-            className="inline-flex h-9 items-center gap-2 rounded-control border border-white/15 bg-white/[0.06] px-3 text-sm font-semibold text-white transition hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/60"
+            className="gl-chip gl-chip-sm"
         >
             {name}
-            {figure && <small className="font-display text-xs text-white/70 tabular-nums">{figure}</small>}
+            {figure && <small className="gl-num text-xs">{figure}</small>}
         </Element>
     );
 }

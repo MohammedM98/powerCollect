@@ -277,19 +277,15 @@ export default function PaymentModal({
                         onKeyDown={onKeyDown}
                         className="flex max-h-[calc(100dvh-6rem)] flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:grid-rows-[auto_minmax(0,1fr)_auto]"
                     >
-                        <div className="flex shrink-0 items-center gap-3.5 border-b border-gray-100 px-5 py-4 sm:px-6 sm:py-5 lg:col-start-1 lg:row-start-1">
-                            <span
-                                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] text-white shadow-sm ${
-                                    correcting ? 'bg-gradient-to-br from-amber-500 to-amber-700' : 'bg-graphite-gradient'
-                                }`}
-                            >
+                        <div className="gl-dialog-head flex shrink-0 items-center gap-3.5 px-5 py-4 sm:px-6 sm:py-5 lg:col-start-1 lg:row-start-1">
+                            <span className={`gl-tone flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] ${correcting ? 'gl-tone-warn' : 'gl-tone-brand'}`}>
                                 <Icon name={correcting ? 'repeat' : 'card'} className="h-[18px] w-[18px]" strokeWidth={1.8} />
                             </span>
                             <div className="min-w-0">
-                                <h3 id={titleId} className="font-luxe text-[22px] font-bold leading-tight text-gray-900">
+                                <h3 id={titleId} className="text-[21px] font-extrabold leading-tight" style={{ fontFamily: 'var(--gl-head)' }}>
                                     {correcting ? 'تصحيح دفعة' : 'تسجيل دفعة'}
                                 </h3>
-                                <p className="mt-0.5 text-[13.5px] text-gray-500">
+                                <p className="gl-sub mt-0.5 !text-[13px]">
                                     {correcting
                                         ? 'صحّح الدفعة؛ تبقى الأصلية في الكشف ملغاة مع سبب التصحيح.'
                                         : 'سجّل المبلغ المستلم، ويُحدَّث الرصيد تلقائيًا.'}
@@ -299,7 +295,7 @@ export default function PaymentModal({
                                 type="button"
                                 onClick={requestClose}
                                 aria-label="إغلاق"
-                                className="ms-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-100 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900"
+                                className="gl-ib ms-auto"
                             >
                                 <Icon name="close" className="h-[18px] w-[18px]" strokeWidth={2} />
                             </button>
@@ -320,13 +316,7 @@ export default function PaymentModal({
                                     <FieldLabel htmlFor="amount" required>
                                         المبلغ المستلم
                                     </FieldLabel>
-                                    <div
-                                        className={`rounded-[22px] border-[1.5px] bg-surface px-[18px] pb-3.5 pt-4 transition ${
-                                            errors.amount
-                                                ? 'border-brand-500 shadow-[0_0_0_5px_rgb(var(--brand-500)/0.08)]'
-                                                : 'border-gray-200 hover:border-brand-500/45 focus-within:border-brand-500 focus-within:shadow-[0_0_0_5px_rgb(var(--brand-500)/0.12)]'
-                                        }`}
-                                    >
+                                    <div className="gl-amount" data-invalid={errors.amount ? true : undefined}>
                                         <div className="flex items-center gap-3">
                                             <input
                                                 ref={amountInput}
@@ -341,7 +331,7 @@ export default function PaymentModal({
                                                 aria-describedby={errors.amount ? `${titleId}-amount-error` : undefined}
                                                 value={data.amount}
                                                 onChange={(e) => setData((current) => ({ ...current, amount: normalizeDecimalInput(e.target.value), confirm_overpayment: false }))}
-                                                className="min-w-0 flex-1 border-0 bg-transparent p-0 text-end font-display text-[38px] font-extrabold leading-tight text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-0 sm:text-[44px]"
+                                                className="gl-amount-input"
                                             />
                                             <div className="w-40 shrink-0 sm:w-44">
                                                 <label htmlFor="payment-currency" className="sr-only">عملة الدفع</label>
@@ -357,14 +347,14 @@ export default function PaymentModal({
                                                 />
                                             </div>
                                         </div>
-                                        {data.currency !== 'ILS' && <p className={`mt-3 text-sm ${Number(exchangeRate) > 0 ? 'text-gray-500' : 'text-brand-600'}`} role="status">{Number(exchangeRate) > 0 ? <>سعر الصرف المعتمد: 1 {currencyLabel} = <bdi className="font-display font-semibold">{Number(exchangeRate)}</bdi> شيكل</> : 'لم يُضبط سعر لهذه العملة؛ يجب ضبطه من صفحة العملات وأسعار الصرف أولًا.'}</p>}
-                                        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-dashed border-gray-200 pt-3">
+                                        {data.currency !== 'ILS' && <p className="mt-3 text-sm" style={{ color: Number(exchangeRate) > 0 ? 'var(--gl-muted)' : 'var(--gl-bad)' }} role="status">{Number(exchangeRate) > 0 ? <>سعر الصرف المعتمد: 1 {currencyLabel} = <bdi className="font-display font-semibold">{Number(exchangeRate)}</bdi> شيكل</> : 'لم يُضبط سعر لهذه العملة؛ يجب ضبطه من صفحة العملات وأسعار الصرف أولًا.'}</p>}
+                                        <div className="gl-amount-quick">
                                             {QUICK_AMOUNTS.map((quick) => (
                                                 <button
                                                     key={quick}
                                                     type="button"
                                                     onClick={() => setAmount(String(quick))}
-                                                    className="rounded-full border border-gray-100 bg-gray-50 px-3 py-1 font-display text-[13.5px] font-semibold text-gray-700 transition hover:border-gray-200 hover:bg-surface hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900"
+                                                    className="gl-chip gl-chip-sm gl-num"
                                                 >
                                                     {quick}
                                                 </button>
@@ -374,7 +364,7 @@ export default function PaymentModal({
                                                     type="button"
                                                     disabled={data.currency !== 'ILS' && !(Number(exchangeRate) > 0)}
                                                     onClick={() => setAmount(String(Number((owed / (data.currency === 'ILS' ? 1 : Number(exchangeRate))).toFixed(2))))}
-                                                    className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[13.5px] font-semibold text-emerald-700 transition hover:bg-emerald-500/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 dark:text-emerald-400"
+                                                    className="gl-chip gl-chip-sm" style={{ color: 'var(--gl-ok)', borderColor: 'color-mix(in srgb, var(--gl-ok) 40%, transparent)' }}
                                                 >
                                                     تسديد كامل الدين
                                                 </button>
@@ -388,7 +378,7 @@ export default function PaymentModal({
                                         <p
                                             id={`${titleId}-amount-error`}
                                             role="alert"
-                                            className="mt-2 flex items-center gap-1.5 text-[13.5px] text-brand-600"
+                                            className="gl-error mt-2 flex items-center gap-1.5"
                                         >
                                             <Icon name="info" className="h-[18px] w-[18px]" />
                                             {errors.amount}
@@ -397,11 +387,7 @@ export default function PaymentModal({
                                     {overpayment !== 'none' && (
                                         <div
                                             role={overpayment === 'confirm' ? 'alert' : 'status'}
-                                            className={`mt-3 rounded-xl border px-4 py-3 text-sm ${
-                                                overpayment === 'confirm'
-                                                    ? 'border-brand-500/40 bg-brand-500/[0.07] text-gray-900'
-                                                    : 'border-amber-500/40 bg-amber-500/[0.08] text-gray-800'
-                                            }`}
+                                            className="gl-notice mt-3" style={{ '--gl-c': overpayment === 'confirm' ? 'var(--gl-bad)' : 'var(--gl-warn)' }}
                                         >
                                             <p className="flex items-start gap-2 font-medium">
                                                 <Icon name="alert" className="mt-0.5 h-[18px] w-[18px] shrink-0" />
@@ -416,7 +402,7 @@ export default function PaymentModal({
                                                 <label className="mt-2 flex cursor-pointer items-center gap-2 font-semibold">
                                                     <input
                                                         type="checkbox"
-                                                        className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                                                        className="h-[18px] w-[18px]"
                                                         checked={data.confirm_overpayment}
                                                         onChange={(e) => setData('confirm_overpayment', e.target.checked)}
                                                     />
@@ -430,8 +416,8 @@ export default function PaymentModal({
                                 </div>
 
                                 <fieldset>
-                                    <legend className="mb-2 text-[14.5px] font-semibold text-gray-700">
-                                        طريقة الدفع <span className="text-brand-600">*</span>
+                                    <legend className="gl-label mb-2">
+                                        طريقة الدفع <span style={{ color: 'var(--gl-bad)' }}>*</span>
                                     </legend>
                                     <div className="grid gap-3 sm:grid-cols-2">
                                         {methods.map((method) =>
@@ -475,7 +461,7 @@ export default function PaymentModal({
                                     )}
 
                                     {!throughBank && (
-                                        <div className="animate-menu mt-3 grid gap-4 rounded-[20px] border border-gray-100 bg-gray-50 p-4">
+                                        <div className="animate-menu gl-receipt mt-3 grid gap-4 !border-solid p-4">
                                             <div>
                                                 <FieldLabel htmlFor="manual_voucher_number" hint="رقم الوصل الورقي">
                                                     رقم السند اليدوي
@@ -504,7 +490,7 @@ export default function PaymentModal({
                                         aria-expanded={detailsOpen || detailErrors}
                                         aria-controls={`${titleId}-details`}
                                         onClick={() => setDetailsOpen(!(detailsOpen || detailErrors))}
-                                        className="flex items-center gap-2 rounded-lg text-start text-[14.5px] font-semibold text-gray-600 transition hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+                                        className="flex items-center gap-2 rounded-lg text-start text-[14px] font-semibold" style={{ color: 'var(--gl-muted)' }}
                                     >
                                         <Icon
                                             name="chevron-down"
@@ -545,11 +531,11 @@ export default function PaymentModal({
                             />
                         </div>
 
-                        <div className="flex shrink-0 items-center gap-3 border-t border-gray-100 bg-gray-50 px-5 py-4 sm:px-6 lg:col-start-1 lg:row-start-3">
-                            <SecondaryButton onClick={requestClose} className="h-12 rounded-[14px] px-5 text-[15.5px]">
+                        <div className="gl-dialog-foot flex shrink-0 items-center gap-3 px-5 py-4 sm:px-6 lg:col-start-1 lg:row-start-3">
+                            <SecondaryButton onClick={requestClose} className="gl-lg">
                                 إلغاء
                             </SecondaryButton>
-                            <span className="hidden items-center gap-1.5 text-[13px] text-gray-500 xl:flex">
+                            <span className="gl-sub hidden items-center gap-1.5 !text-[12.5px] xl:flex">
                                 <span className="kbd" dir="ltr">
                                     Ctrl + Enter
                                 </span>
@@ -566,9 +552,7 @@ export default function PaymentModal({
                                     (Boolean(referenceStatus?.conflict) && !data.confirm_duplicate_reference) ||
                                     (overpayment === 'confirm' && !data.confirm_overpayment)
                                 }
-                                className={`ms-auto h-12 min-w-0 flex-1 rounded-[14px] px-5 text-[15.5px] font-bold sm:min-w-[230px] sm:flex-none ${
-                                    correcting ? '!bg-none !bg-amber-600 !shadow-[0_12px_26px_-12px_rgb(var(--warning-700))]' : ''
-                                }`}
+                                className={`gl-lg ms-auto min-w-0 flex-1 sm:min-w-[230px] sm:flex-none ${correcting ? 'gl-correcting' : ''}`}
                             >
                                 <Icon name="check" className="h-[18px] w-[18px]" strokeWidth={2.2} />
                                 {form.processing

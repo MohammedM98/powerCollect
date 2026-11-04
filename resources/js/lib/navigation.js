@@ -32,7 +32,7 @@ export const MAIN_LINKS = [
 ];
 
 export const SETTINGS_LINKS = [
-    { href: '/settings/mobile-app', label: 'تحميل تطبيق الهاتف', description: 'تثبيت تطبيق PowerCollect على Android', icon: 'phone' },
+    { href: '/settings/mobile-app', label: 'تحميل تطبيق الهاتف', description: 'تثبيت تطبيق سوبر باور على Android', icon: 'phone' },
     { href: '/settings/payments', label: 'إعدادات الدفعات', description: 'فترات الصناديق وأسعار الصرف وبنوك الاستلام والإرسال', icon: 'currency', can: 'managePaymentSettings' },
     { href: '/branches', label: 'الفروع', description: 'الفروع ومسؤولوها ومناطقها', icon: 'pin', can: 'viewBranches' },
     { href: '/tariffs', label: 'التعرفات', description: 'سعر الأمبير وشرائح الاشتراك', icon: 'dollar', can: 'viewTariffs' },
@@ -165,4 +165,26 @@ export function isActiveLink(link, url) {
 /** Whether `url` is inside any of the links' sections. */
 export function isInsideAnyLink(links, url) {
     return links.some((link) => isActiveLink(link, url));
+}
+
+/** Where this browser keeps the navigation layout its user picked (hooks/useNavigationLayout.js). */
+export const NAVIGATION_LAYOUT_KEY = 'navigation-layout';
+
+/**
+ * The navigation a browser shows: the layout its user picked (`saved`:
+ * 'sidebar' or 'topbar'), else the company's (BrandDesign `navigation`).
+ * Picking the side menu keeps a company's `rail`, which only starts narrow.
+ */
+export function navigationLayout(saved, companyNavigation) {
+    const company = ['topbar', 'sidebar', 'rail'].includes(companyNavigation) ? companyNavigation : 'topbar';
+
+    if (saved === 'topbar') {
+        return 'topbar';
+    }
+
+    if (saved === 'sidebar') {
+        return company === 'rail' ? 'rail' : 'sidebar';
+    }
+
+    return company;
 }

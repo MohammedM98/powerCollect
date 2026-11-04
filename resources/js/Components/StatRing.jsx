@@ -35,3 +35,24 @@ export default function StatRing({ percent = 0, color = 'text-brand-500', size =
         </div>
     );
 }
+
+/**
+ * The goal ring of the glass look: a 104px ring that draws itself to
+ * `percent`, the number in the middle with a line under it (`caption`).
+ */
+export function GoalRing({ percent = 0, caption }) {
+    const clamped = Math.min(100, Math.max(0, Number(percent) || 0));
+
+    return (
+        <div className="gl-ringbox">
+            <svg width="104" height="104" viewBox="0 0 104 104" aria-hidden="true">
+                <circle cx="52" cy="52" r="42" fill="none" stroke="var(--gl-fill-2)" strokeWidth="10" />
+                <circle className="gl-ring-draw" pathLength="1" style={{ '--t': 1 - clamped / 100 }} cx="52" cy="52" r="42" fill="none" stroke="rgb(var(--gl-brand))" strokeWidth="10" strokeLinecap="round" transform="rotate(-90 52 52)" />
+            </svg>
+            <b>
+                <span className="gl-num">{Math.round(clamped)}%</span>
+                <small>{caption}</small>
+            </b>
+        </div>
+    );
+}

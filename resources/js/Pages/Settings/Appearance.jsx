@@ -354,7 +354,7 @@ export default function Appearance({ profile, isImported, options, presets, them
                     <FormSection icon="swatch" title="الألوان" columns={2} info="من اللون الرئيسي تتولد كل درجات الواجهة في الوضعين الفاتح والغامق. ألوان الأخطاء تبقى حمراء.">
                         <div className="col-span-full flex flex-wrap gap-3" role="group" aria-label="لوحات ألوان الشركة">
                             {BRAND_PALETTES.map((palette) => <button key={palette.id} type="button" className="rounded-xl border border-gray-200 bg-surface px-4 py-3 text-start text-sm font-semibold text-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" onClick={() => form.setData('colors', { ...data.colors, ...palette.colors })}>
-                                <span className="mb-2 flex gap-1" aria-hidden="true">{Object.values(palette.colors).map((color, index) => <span key={index} className="h-5 w-5 rounded-full border border-gray-200" style={{ backgroundColor: color }} />)}</span>
+                                <span className="mb-2 flex gap-1" aria-hidden="true">{Object.values(palette.colors).filter(Boolean).map((color, index) => <span key={index} className="h-5 w-5 rounded-full border border-gray-200" style={{ backgroundColor: color }} />)}</span>
                                 {palette.name}
                             </button>)}
                         </div>

@@ -1,0 +1,1012 @@
+{
+  "name": "superpower-glass",
+  "version": 1,
+  "title": "سوبر باور · زجاجي كحلي",
+  "purpose": "المصدر الواحد لتصميم سوبر باور الزجاجي الكحلي: الرموز (tokens)، المكوّنات المعاد استخدامها، قوالب الصفحات، وأين تُستخدم كل صفحة. الواجهة تُنفَّذ من هذا الملف، وأي تغيير في التصميم يبدأ منه.",
+  "reference": {
+    "prototype": "resources/brand/reference/superpower-glass-prototype.html",
+    "note": "النموذج الأولي المعتمد بصريًا. عند أي اختلاف بين الكود والنموذج فالنموذج هو المرجع، إلا في الصفحات المستثناة في exclusions."
+  },
+  "tokens": {
+    "format": "قيم الألوان مثلثات RGB (مثل: 5 12 31) كما في resources/css/theme.css، وما له شفافية مكتوب 'R G B / alpha'. الألوان تُعرَّف في theme.css فقط.",
+    "dark": {
+      "bg": "5 12 31",
+      "ink": "234 240 255",
+      "muted": "157 176 211",
+      "faint": "111 130 168",
+      "glass": "15 30 66 / 0.60",
+      "line": "140 170 255 / 0.14",
+      "lineHighlight": "175 200 255 / 0.24",
+      "fill": "120 160 255 / 0.07",
+      "fillStrong": "120 160 255 / 0.14",
+      "ambient": [
+        "radial-gradient(1300px 720px at 85% -12%, rgb(37 78 170 / .34), transparent 62%)",
+        "radial-gradient(1000px 640px at 0% 112%, rgb(24 58 140 / .28), transparent 62%)"
+      ],
+      "sidebarGradient": "linear-gradient(180deg, rgb(34 72 165 / .5), glass 55%)",
+      "semantic": {
+        "success": "60 207 145",
+        "warning": "234 168 66",
+        "danger": "242 100 111",
+        "info": "106 165 255"
+      },
+      "brandOnDark": "91 146 255",
+      "brandButton": "47 107 255"
+    },
+    "light": {
+      "bg": "227 233 245",
+      "ink": "15 26 51",
+      "muted": "71 90 126",
+      "faint": "113 132 168",
+      "glass": "255 255 255 / 0.60",
+      "line": "30 60 120 / 0.12",
+      "lineHighlight": "255 255 255 / 0.90",
+      "fill": "30 60 130 / 0.05",
+      "fillStrong": "30 60 130 / 0.09",
+      "ambient": [
+        "radial-gradient(1200px 640px at 85% -12%, rgb(120 160 240 / .38), transparent 62%)",
+        "radial-gradient(900px 600px at 0% 112%, rgb(150 180 240 / .32), transparent 62%)"
+      ],
+      "semantic": {
+        "success": "11 143 90",
+        "warning": "169 106 6",
+        "danger": "198 42 58",
+        "info": "31 95 220"
+      },
+      "brandOnLight": "37 99 235",
+      "brandButton": "37 99 235"
+    },
+    "variants": {
+      "navy": "الافتراضي: القيم أعلاه",
+      "midnight": {
+        "bg": "4 12 39",
+        "glass": "14 38 98 / 0.60",
+        "muted": "159 182 230",
+        "faint": "112 136 184"
+      },
+      "graphite": {
+        "bg": "6 8 12",
+        "ink": "238 241 246",
+        "muted": "163 172 188",
+        "faint": "110 120 137",
+        "glass": "20 25 34 / 0.60",
+        "line": "255 255 255 / 0.09",
+        "fill": "255 255 255 / 0.05",
+        "fillStrong": "255 255 255 / 0.09"
+      },
+      "note": "تُطبَّق المتغيرات على الوضع الداكن فقط. الوضع الفاتح واحد."
+    },
+    "glass": {
+      "alphaDefault": 0.6,
+      "alphaRange": [
+        0.2,
+        0.9
+      ],
+      "blurDefaultPx": 18,
+      "blurRangePx": [
+        0,
+        40
+      ],
+      "saturate": 1.25,
+      "insetHighlight": "inset 0 1px 0 lineHighlight",
+      "shadowDark": "0 26px 50px -30px rgb(0 0 0 / .95)",
+      "shadowLight": "0 24px 40px -28px rgb(30 40 70 / .5)",
+      "fallbackWhenNoBackdropFilter": "رفع الشفافية إلى 0.92 بدل الزجاج"
+    },
+    "shape": {
+      "panelRadiusPx": 20,
+      "controlRadiusPx": 12,
+      "smallRadiusPx": 10,
+      "pillRadius": "99px",
+      "controlHeightPx": 40,
+      "iconButtonPx": 38,
+      "kpiHeroValueSizePx": 44,
+      "kpiValueSizePx": 32,
+      "h1SizePx": 28
+    },
+    "type": {
+      "heading": "Cairo (800 للعناوين، 700 للوحات)",
+      "body": "IBM Plex Sans Arabic (500 افتراضي)",
+      "numerals": "tabular-nums دائمًا في الأرقام والمبالغ",
+      "fontFilesAlreadyInRepo": "resources/fonts"
+    },
+    "motion": {
+      "pageIn": "0.55s cubic-bezier(.2,.7,.2,1) من opacity 0 و translateY 14px و blur 6px",
+      "rise": "0.65s cubic-bezier(.2,.7,.2,1) من opacity 0 و translateY 18px و scale .985، تأخير تتابعي 70ms لكل بطاقة، وحد أقصى 12 عنصرًا",
+      "lineDraw": "1.4s stroke-dashoffset (pathLength=1) ثم تظهر المساحة بعد 0.8s",
+      "barGrow": "1.1s scaleX من بداية السطر (inline-start)",
+      "countUp": "1200ms easeOutCubic",
+      "holdToConfirm": "1100ms، وفي reduced-motion 200ms",
+      "toast": "0.45s cubic-bezier(.2,1.3,.4,1)، يختفي بعد 4.5s وفيه زر تراجع عند الحاجة",
+      "drag": "عتبة 6px قبل البدء، نسخة شبح scale 1.04 وميل 2deg، عمود الهدف يتوهج بلون الهوية، العودة 200ms عند الإلغاء",
+      "rules": [
+        "transform و opacity فقط في الجداول",
+        "احترام prefers-reduced-motion وإعداد design.motionStyle=none",
+        "لا حركة دخول لأكثر من أول 12 صفًا في أي جدول"
+      ]
+    },
+    "accent": {
+      "default": "azure",
+      "azure": {
+        "dark": "91 146 255",
+        "light": "37 99 235",
+        "button": "47 107 255",
+        "hex": "#2F6BFF",
+        "note": "أزرق الفيديو: الأزرار، العنصر النشط في التنقل، خط المخطط، حلقة الهدف، تمييز عمود الإفلات"
+      },
+      "alternatives": {
+        "burgundy": {
+          "dark": "216 65 75",
+          "light": "165 29 38",
+          "button": "176 32 44"
+        },
+        "emerald": {
+          "dark": "60 207 145",
+          "light": "5 150 105",
+          "button": "4 120 87"
+        },
+        "amber": {
+          "dark": "234 168 66",
+          "light": "180 100 10",
+          "button": "161 98 7"
+        }
+      },
+      "navActive": "خلفية متدرجة بلون الزر مع ظل وتوهج ونص أبيض (وليست خلفية شفافة)"
+    }
+  },
+  "brandPreset": {
+    "id": "superpower",
+    "label": "سوبر باور زجاجي كحلي",
+    "description": "بطاقات زجاجية كحلية فوق خلفية متدرجة، شريط جانبي أو علوي، جداول داخل لوحات زجاجية، أزرار متدرجة وحقول معبأة.",
+    "design": {
+      "navigation": "sidebar",
+      "navStyle": "glass",
+      "background": "navy",
+      "neutral": "navy",
+      "radius": "rounded",
+      "buttons": "gradient",
+      "cards": "glass",
+      "tables": "boxed",
+      "tableHeader": "plain",
+      "tableToolbar": "plain",
+      "inputs": "filled",
+      "inputFocus": "ring",
+      "badges": "soft",
+      "details": "drawer",
+      "bodyFont": "plex",
+      "headingFont": "cairo",
+      "motion": "full",
+      "motionStyle": "standard",
+      "width": "wide",
+      "searchStyle": "filled",
+      "switches": "brand",
+      "rowHover": "tint",
+      "focusRing": "brand",
+      "navHighlight": "brand"
+    },
+    "newOptionsNeeded": {
+      "background.navy": "خلفية كحلية بإضاءة زرقاء واسعة وخافتة (وليست كرات). الأقرب الموجود glow (توهج بلون الشركة) وgradient (تدرّج من الأعلى)، ولا يعطي أيٌّ منهما الإضاءتين المتقابلتين في ambient.",
+      "neutral.navy": "تدرج رماديات مزرقة كحلية يرسمه Brand::stylesheet(). الأقرب الموجود slate (hue 257، tint 2.0) لكن لونيته في الداكن (~0.014) بعيدة عن bg 5 12 31 (~0.05)، فلا يصل إلى الكحلي."
+    },
+    "verify": "تُحقِّق في المرحلة 0 من BrandDesign::OPTIONS: كل القيم أعلاه موجودة عدا background.navy وneutral.navy. لون الهوية ليس خيارًا في design بل colors.primary في ملف الهوية، ويُشتق منه سلّم brand-* بـ BrandPalette::fromHex. الشريط المصغّر rail خيار مستقل في navigation وليس زر طيّ داخل sidebar كما في النموذج.",
+    "colors": {
+      "primary": "#2F6BFF"
+    }
+  },
+  "components": [
+    {
+      "name": "Panel",
+      "status": "existing",
+      "file": "resources/js/Components/Panel.jsx",
+      "prototype": "Panel",
+      "props": [
+        "title",
+        "sub",
+        "right",
+        "children",
+        "className"
+      ],
+      "spec": "لوحة زجاجية: padding 18px، عنوان 16px/700 وسطر فرعي muted 12.5px وأزرار على الطرف الآخر"
+    },
+    {
+      "name": "KpiTile",
+      "status": "existing",
+      "file": "resources/js/Components/KpiTile.jsx",
+      "prototype": "Kpi",
+      "variants": [
+        "hero",
+        "regular",
+        "compact"
+      ],
+      "spec": "hero بتدرج لون الهوية وخط سفلي signature، الرقم عبر CountUp",
+      "audit": "أُعيد رسمه بأصناف gl-kpi (المرحلة الحالية)؛ الرقم العددي يمر عبر CountUp."
+    },
+    {
+      "name": "CountUp",
+      "status": "existing",
+      "file": "resources/js/Components/CountUp.jsx",
+      "prototype": "CountUp",
+      "audit": "يدعم decimals وformat ويحترم إعداد الحركة للشركة."
+    },
+    {
+      "name": "PageHeader",
+      "status": "existing",
+      "file": "resources/js/Components/PageHeader.jsx",
+      "prototype": "PageHeader",
+      "spec": "عنوان h1 28px/800 + وصف muted + إجراءات الصفحة على الطرف الآخر"
+    },
+    {
+      "name": "PageTrail",
+      "status": "existing",
+      "file": "resources/js/Components/TopBar/PageTrail.jsx",
+      "prototype": "Trail",
+      "spec": "الرئيسية › القسم › الصفحة. التصدير المسمّى Breadcrumb في TopBar/PageTrail.jsx؛ التصدير الافتراضي هو شريط صفحات القسم (tn-subnav)."
+    },
+    {
+      "name": "SegmentedTabs",
+      "status": "existing",
+      "file": "resources/js/Components/SegmentedTabs.jsx",
+      "prototype": "Segmented",
+      "also": [
+        "PeriodTabs",
+        "ChoiceChips"
+      ],
+      "spec": "مجموعة أزرار داخل حاوية fill، المضغوط بخلفية أفتح وظل خفيف",
+      "audit": "PeriodTabs غلاف لـ SegmentedTabs بفترات ثابتة (اليوم، 7، 30، 90، الكل). ChoiceChips مكوّن مستقل."
+    },
+    {
+      "name": "Buttons",
+      "status": "existing",
+      "files": [
+        "PrimaryButton",
+        "SecondaryButton",
+        "DangerButton",
+        "AddButton",
+        "BlueActionButton",
+        "ExcelButton",
+        "PrintButton",
+        "BlueActionButton (gl-btn-surface / gl-btn-part)"
+      ],
+      "prototype": "btn / btn.sec / btn.sm",
+      "spec": "مسطّحة على الزجاج بلا تدرج ولا توهج ولا ظل طائف: تعبئة واحدة لكل دور مع خط ضوء رفيع أعلاها كحافة الزجاج. gl-btn رئيسي بلون الهوية، gl-sec ثانوي زجاجي بخط رفيع، gl-ghost هادئ نص فقط، gl-danger أحمر خفيف يمتلئ عند المرور. الأحجام gl-sm 32px والافتراضي 38px وgl-lg 44px. المرور يعمّق اللون درجة (النص الأبيض يبقى 4.5:1)، والضغط أعمق مع نزول 1px، والتركيز حلقة بلون الهوية، والمعطّل شفافية .45."
+    },
+    {
+      "name": "Fields",
+      "status": "existing",
+      "files": [
+        "TextInput",
+        "SearchableSelect",
+        "DateInput",
+        "PasswordInput",
+        "Form/FormField",
+        "Form/FormSelect",
+        "InputLabel",
+        "InputError",
+        "Form/FormSection",
+        "ChoiceChips",
+        "Switch"
+      ],
+      "prototype": "field / fl",
+      "spec": "ارتفاع 40px، خلفية fill، حد line، عند التركيز حد بلون الهوية .6 وحلقة 3px بلون الهوية .16. التسمية فوق الحقل muted 12.5px/600",
+      "audit": "لا يوجد مكوّن Textarea ولا Checkbox. الحقول الخام (input/select/textarea و input[type=checkbox]) تأخذ شكلها من قواعد العناصر في app.css، فهي متّسقة بصريًا رغم عدم استخدام المكوّن. يخرج عن ذلك: sm-input في Settings/SmsSettings.css وحقول CompanyForms/Editor."
+    },
+    {
+      "name": "Switch",
+      "status": "existing",
+      "file": "resources/js/Components/Switch.jsx",
+      "spec": "كبسولة، التشغيل بلون الهوية"
+    },
+    {
+      "name": "StatusPill",
+      "status": "existing",
+      "file": "resources/js/Components/DataTable/StatusPill.jsx",
+      "prototype": "pill",
+      "variants": [
+        "ok",
+        "warn",
+        "bad",
+        "info",
+        "neutral"
+      ],
+      "spec": "خلفية = لون الحالة بنسبة 15% في الشفاف، والنص باللون نفسه، 12px/700، كبسولة"
+    },
+    {
+      "name": "DataTable",
+      "status": "existing",
+      "files": [
+        "DataTable/DataTableToolbar",
+        "DataTable/SortableTh",
+        "DataTable/ActionsTh",
+        "DataTable/RowActionsMenu",
+        "DataTable/RowMenu",
+        "DataTable/Pagination",
+        "DataTable/DensityToggle",
+        "DataTable/DataTableFilterMenu",
+        "DataTable/TableExportActions",
+        "DataTable/RowIdentity",
+        "DataTable/DataTableSortControls",
+        "DataTable/ColumnWidths",
+        "DataTable/AreaChip",
+        "DataTable/MeterBoxCell",
+        "DataTable/TariffTag"
+      ],
+      "prototype": "tbl",
+      "spec": "داخل Panel واحد: شريط أدوات (بحث + فلاتر + كثافة) ثم الجدول ثم الترقيم. رأس بلا خلفية 12px/700 بلون faint. صفوف بخط فاصل line وتمرير بخلفية fill. الأرقام tabular وبلون الحالة (دين bad، سليم ok). الصف قابل للنقر ويفتح التفاصيل في drawer.",
+      "hooks": [
+        "resources/js/hooks/useDataTable.js",
+        "resources/js/hooks/useTableDensity.js",
+        "resources/js/hooks/usePagedRows.js",
+        "resources/js/hooks/useRowClick.js",
+        "resources/js/hooks/useRowActionsMenu.js"
+      ],
+      "audit": "الأصناف المشتركة: data-table و data-table-container. جداول تخرج عنها: financial-ledger-table (Payments)، ledger-table (Ledger)، re-table (MeterReadings)، rh-table وsp-statement (نوافذ المشترك)، financial-box-list-table، وجداول w-full text-sm في Reports/Index وBoxDetails وCashBoxReport وCollectorCashBox وغيرها."
+    },
+    {
+      "name": "Charts",
+      "status": "existing",
+      "files": [
+        "Charts/Sparkline",
+        "Charts/BarChart",
+        "Charts/MeterBar",
+        "StatRing"
+      ],
+      "prototype": "AreaChart / bar / ring",
+      "spec": "خط بلون الهوية سمك 2.6 مع مساحة متدرجة ونقطة نهاية، شبكة بخط line، التسميات بلون faint، اتجاه الرسم LTR",
+      "audit": "Sparkline خط polyline مع مساحة خافتة بلا محاور ولا تسميات ولا فترة سابقة. StatRing موجود لكنه غير مستخدم في أي صفحة. BarChart يرسم جدولًا مخفيًا لقارئات الشاشة."
+    },
+    {
+      "name": "Modal",
+      "status": "existing",
+      "files": [
+        "Modal",
+        "DialogFrame",
+        "FormModal",
+        "ConfirmDialog"
+      ],
+      "prototype": "drawer",
+      "spec": "زجاج. مع design.details=drawer تفتح التفاصيل لوحة جانبية على طرف النهاية (inline-end) بعرض 420px وخلفية معتمة",
+      "audit": "Modal يقبل presentation (الافتراضي details)، وapp.css يرسم اللوحة الجانبية عند data-ui-details=drawer لنوافذ presentation=details."
+    },
+    {
+      "name": "HoldToConfirm",
+      "status": "existing",
+      "file": "resources/js/Components/HoldToConfirm.jsx",
+      "prototype": "HoldToConfirm",
+      "spec": "شريط تعبئة بلون الهوية من بداية السطر أثناء الضغط المطوّل، ويعمل بالكيبورد",
+      "audit": "مستخدم فقط في Payments/AuditApprovalDialog وDisconnections/ActionModal (عبر إعادة تصدير Disconnections/HoldToConfirm.jsx). إغلاق الصناديق اليوم يمر بـ ConfirmDialog (CloseBoxesByType وBoxDetails)."
+    },
+    {
+      "name": "FlashNotifications",
+      "status": "existing",
+      "file": "resources/js/Components/FlashNotifications.jsx",
+      "prototype": "ToastHost",
+      "spec": "شريط فاتح أسفل الوسط مع زر تراجع أو ارتجاع عندما تسمح العملية. الحركات المالية تُرتجع ولا تُحذف",
+      "audit": "لا يوجد اليوم زر تراجع أو ارتجاع في الإشعار. إضافته ممكنة فقط حيث توجد عملية عكسية في الخادم أصلًا (التغيير بصري فقط).",
+      "decision": "معتمد: زر التراجع أو الارتجاع فقط حيث توجد عملية عكسية في الخادم أصلًا."
+    },
+    {
+      "name": "SideNavigation",
+      "status": "existing",
+      "file": "resources/js/Components/SideNavigation/SideNavigation.jsx",
+      "prototype": "Sidebar",
+      "spec": "زجاج بتدرج أزرق علوي، أقسام قابلة للطي (حركة grid-template-rows)، العنصر النشط بخلفية لون الهوية .18 وحد، وضع rail أيقونات فقط، ومصغّر في الجوال كدرج. البحث والإشعارات في الشريط النحيف بجانبها، وزر الطيّ في رأسها."
+    },
+    {
+      "name": "TopBar",
+      "status": "existing",
+      "files": [
+        "TopBar/TopBar",
+        "TopBar/MegaMenu",
+        "TopBar/NavigationDrawer",
+        "TopBar/AccountMenu",
+        "TopBar/NavigationMenu",
+        "TopBar/NavigationProgress",
+        "TopBar/ThemeSegments",
+        "TopBar/KeyboardShortcuts",
+        "TopBar/QuickTour",
+        "TopBar/NavigationLayoutSwitch"
+      ],
+      "prototype": "TopBar / MegaMenu",
+      "spec": "شريط زجاجي لاصق، أزرار الأقسام تفتح MegaMenu بشبكة عمودين وأيقونة ووصف لكل صفحة. بجانب القائمة الجانبية على الشاشات العريضة يبقى الشريط نحيفًا (slim): البحث، مبدّل جانبي/علوي، الوضع، الإشعارات، الحساب."
+    },
+    {
+      "name": "NavigationLayoutSwitch",
+      "status": "existing",
+      "file": "resources/js/Components/TopBar/NavigationLayoutSwitch.jsx",
+      "prototype": "Segmented (نمط التنقل)",
+      "hook": "resources/js/hooks/useNavigationLayout.js",
+      "spec": "جانبي/علوي لهذا المتصفح فوق خيار الشركة design.navigation (يُحفظ في localStorage كـ navigation-layout، واختيار الجانبي يبقي rail مصغّرًا). على الشاشات العريضة فقط."
+    },
+    {
+      "name": "ThemeToggle",
+      "status": "existing",
+      "file": "resources/js/Components/ThemeToggle.jsx"
+    },
+    {
+      "name": "MoveBoard",
+      "status": "existing",
+      "file": "resources/js/Components/MoveBoard.jsx",
+      "prototype": "MoveBoard + BoardPage",
+      "spec": "أعمدة زجاجية، رأس كل عمود: نقطة لون + اسم + عدّاد + سطر ملاحظة. بطاقة العنصر: رقم mono وعمر، صورة رمزية واسم، سطر وصف، مبلغ + وسم. السحب: عتبة 6px، نسخة شبح scale 1.04 وميل -2deg، العمود الهدف يتوهج، حالة فارغة 'أفلت هنا'، وبعد الإفلات Toast مع تراجع. تبويبات underline فوق اللوحة. أي حالة مالية تمرّ بتأكيد.",
+      "audit": "منفّذ في Components/MoveBoard.jsx: أعمدة boardColumns (المتاحة، الكشوف الورقية، ثم كل قارئ)، سحب بالمؤشر بعتبة 6px ونسخة شبح، وبديل لوحة المفاتيح (Enter للحمل، الأسهم للعمود، Enter للنقل، Escape للإلغاء). اللوحة لا تنقل شيئًا بنفسها: الإفلات يفتح ConfirmDialog ثم يرسل movePayload كما يفعل الجدول. لا Toast تراجع لأن التوزيع لا يملك عكسًا على الخادم؛ النقل العكسي نقل جديد.",
+      "decision": "معتمد: عرض بديل بجانب جدول التوزيع في ReadingCycles/Show لا بديل عنه، ونقل طبلون بعد تحميل قراءاته إلى الهاتف يمرّ بتأكيد."
+    },
+    {
+      "name": "StatStrip",
+      "status": "existing",
+      "file": "resources/js/Components/StatStrip.jsx",
+      "prototype": "Stat",
+      "spec": "شريط داخل لوحة واحدة: 3 إحصاءات، كل واحدة عنوان + رقم CountUp + وحدة + شارة نسبة + سطر مقارنة، وإحداها مع Spark مصغّر. فواصل عمودية line."
+    },
+    {
+      "name": "ChartStudio",
+      "status": "existing",
+      "file": "resources/js/Components/ChartStudio.jsx",
+      "prototype": "استوديو التحصيل",
+      "spec": "عنوان + إجمالي الفترة ونسبة التغير + زر تبديل 'الفترة السابقة' + SegmentedTabs للفترة، ثم مخطط مساحي بمحاور وتسميات وخط منقّط للفترة السابقة. Sparkline الحالي لا يكفي (بلا محاور ولا فترة سابقة)، فالمخطط يُبنى داخل ChartStudio. البيانات موجودة: collections.series[].value/previous وcollections.change من DashboardOverview."
+    },
+    {
+      "name": "GoalRing",
+      "status": "existing",
+      "file": "resources/js/Components/StatRing.jsx",
+      "prototype": "GoalRing",
+      "spec": "حلقة 104px بسمك 10، تمتلئ بحركة ring-draw، الرقم في الوسط وتحته 'من الهدف'، ثم 3 أسطر kv. التصدير GoalRing في StatRing.jsx.",
+      "audit": "لا توجد بيانات هدف شهري في الخادم. يلزم قرار: إما استبدال الهدف بمؤشر موجود (مثل اكتمال قراءات الدورة approved/total)، أو إضافة هدف (تغيير خارج النطاق البصري).",
+      "decision": "معتمد: الحلقة تعرض اكتمال قراءات الدورة (approved من total في readings من DashboardOverview) بدل هدف شهري."
+    },
+    {
+      "name": "LiveBars",
+      "status": "existing",
+      "file": "resources/js/Components/LiveBars.jsx",
+      "prototype": "المحصّلون الآن",
+      "spec": "رقم كبير + 26 عمودًا تتغير ارتفاعاتها كل 1.6s بانتقال 0.6s، ثم أسطر kv. تتوقف مع reduced-motion.",
+      "decision": "معتمد: أعمدة ثابتة من collections.byCollector (مجموع كل محصّل في الفترة) مع عدد الصناديق المفتوحة، بلا أعمدة عشوائية."
+    },
+    {
+      "name": "SplitBar",
+      "status": "existing",
+      "file": "resources/js/Components/SplitBar.jsx",
+      "prototype": "طرق الدفع",
+      "spec": "شريط مقسّم 8px بألوان: لون الزر، تحذير، رمادي. ينمو من بداية السطر بتتابع 120ms، تحته أسطر kv.",
+      "decision": "معتمد: قسمان (نقدًا وتحويلات) من collections.cash وcollections.transfers."
+    },
+    {
+      "name": "UnderlineTabs",
+      "status": "existing",
+      "file": "resources/js/Components/UnderlineTabs.jsx",
+      "prototype": "tabs",
+      "spec": "تبويبات بخط سفلي بلون الهوية وعدّاد صغير."
+    },
+    {
+      "name": "WordReveal",
+      "status": "existing",
+      "file": "resources/js/Components/WordReveal.jsx",
+      "prototype": "Words",
+      "spec": "ظهور عنوان الصفحة كلمة كلمة (وليس حرفًا حرفًا، لأن تقسيم الحروف العربية يكسر اتصالها). تأخير 70ms لكل كلمة."
+    },
+    {
+      "name": "FormPage",
+      "status": "existing",
+      "file": "resources/js/Components/FormPage.jsx",
+      "spec": "صفحة إنشاء/تعديل كاملة تُستخدم في كل صفحات Create/Edit."
+    },
+    {
+      "name": "FormSection",
+      "status": "existing",
+      "file": "resources/js/Components/Form/FormSection.jsx",
+      "spec": "قسم نموذج داخل بطاقة."
+    },
+    {
+      "name": "BranchBanner",
+      "status": "existing",
+      "file": "resources/js/Components/BranchBanner.jsx",
+      "spec": "شريط الفرع الحالي أعلى صفحات البيانات."
+    },
+    {
+      "name": "InfoTip",
+      "status": "existing",
+      "file": "resources/js/Components/InfoTip.jsx"
+    },
+    {
+      "name": "ChoiceChips",
+      "status": "existing",
+      "file": "resources/js/Components/ChoiceChips.jsx",
+      "prototype": "chips",
+      "spec": "المضغوط بخلفية لون الهوية .2 وحد .5."
+    },
+    {
+      "name": "CommandPalette",
+      "status": "existing",
+      "file": "resources/js/Components/CommandPalette.jsx"
+    }
+  ],
+  "pageTemplates": {
+    "dashboard": [
+      "PageHeader(عنوان WordReveal + زر إجراء)",
+      "عمود رئيسي: Panel(StatStrip + ChartStudio) ثم 3 Panel متجاورة (قائمة طابور، قائمة تنبيه، SplitBar)",
+      "عمود جانبي 280px: Panel(GoalRing) + Panel(LiveBars)"
+    ],
+    "list": [
+      "PageTrail",
+      "PageHeader(actions)",
+      "Panel(DataTableToolbar, DataTable, Pagination)",
+      "Modal drawer للتفاصيل"
+    ],
+    "form": [
+      "PageTrail",
+      "PageHeader",
+      "Panel(FormSection > FormField...)",
+      "شريط إجراءات: PrimaryButton + SecondaryButton"
+    ],
+    "detail": [
+      "PageTrail",
+      "PageHeader(actions)",
+      "KpiTile row",
+      "Panel(tabs: SegmentedTabs) > DataTable"
+    ],
+    "boxes": [
+      "PageHeader",
+      "شبكة auto-fill من بطاقات Panel، في كل بطاقة الإجماليات + HoldToConfirm"
+    ],
+    "board": [
+      "PageTrail",
+      "PageHeader",
+      "UnderlineTabs",
+      "MoveBoard"
+    ],
+    "settings": [
+      "PageHeader",
+      "شبكة Panel لكل مجموعة إعدادات، حقول Fields، Switch، وSegmentedTabs"
+    ]
+  },
+  "pages": [
+    {
+      "page": "Dashboard.jsx",
+      "template": "dashboard",
+      "uses": [
+        "StatStrip",
+        "ChartStudio",
+        "GoalRing",
+        "LiveBars",
+        "SplitBar",
+        "Panel",
+        "StatusPill"
+      ],
+      "audit": "مبنية على قالب النموذج: StatStrip + ChartStudio، ثم بانتظارك/أكبر المدينين/طرق الدفع، ثم KpiTile، وفي الجانب GoalRing (القراءات) وLiveBars (الفروع أو المحصّلون) والإجراءات والقواطع، ثم أحدث الدفعات في Panel."
+    },
+    {
+      "page": "Subscriptions/Index.jsx",
+      "template": "list",
+      "uses": [
+        "DataTable",
+        "StatusPill",
+        "BulkActionsMenu",
+        "Modal(drawer: StatementModal)"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Subscriptions/Statement.jsx",
+      "template": "detail",
+      "uses": [
+        "AccountStatement",
+        "StatementForms",
+        "SubscriptionSwitcher"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Subscriptions/BulkChanges.jsx",
+      "template": "list",
+      "uses": [
+        "DataTable",
+        "StatusPill",
+        "ConfirmDialog"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Subscriptions/Create.jsx, Edit.jsx",
+      "template": "form",
+      "uses": [
+        "FormPage",
+        "Fields",
+        "FormSection"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Payments/Index.jsx",
+      "template": "list",
+      "uses": [
+        "DataTable",
+        "StatusPill",
+        "Modal(PaymentModal: Fields + ChoiceChips + Panel(receipt preview))",
+        "SplitPaymentModal"
+      ],
+      "verify": true,
+      "audit": "الصفحة جدول بحث عن مشترك يفتح PaymentModal، وليست نموذجًا. نموذج الدفعة ومعاينة الوصل في النموذج الأولي يقابلان Subscriptions/PaymentModal."
+    },
+    {
+      "page": "Payments/Summary.jsx",
+      "template": "dashboard",
+      "uses": [
+        "KpiTile",
+        "Charts",
+        "DataTable"
+      ],
+      "verify": true
+    },
+    {
+      "page": "(صفحة مقترحة) لوحة التحصيل الأسبوعي",
+      "template": "board",
+      "uses": [
+        "MoveBoard",
+        "UnderlineTabs"
+      ],
+      "proposal": true,
+      "note": "غير موجودة في المشروع الآن. تُنشأ فقط بموافقتي، وتحويل المرحلة فيها لا يُنفَّذ بالسحب وحده بل بتأكيد."
+    },
+    {
+      "page": "Payments/CashBoxes.jsx, BranchCashBoxes.jsx, CashBoxShow.jsx",
+      "template": "boxes",
+      "uses": [
+        "Panel",
+        "ConfirmDialog",
+        "HoldToConfirm",
+        "StatusPill",
+        "DataTable"
+      ],
+      "verify": true,
+      "audit": "CollectorCashBox.jsx وFinancialBoxComponents.jsx وBoxDetails.jsx أجزاء مشتركة لهذه الصفحات وليست صفحات. الإغلاق اليوم بـ ConfirmDialog."
+    },
+    {
+      "page": "Payments/Entries.jsx",
+      "template": "list",
+      "uses": [
+        "OpenEntriesTable",
+        "BoxTabs",
+        "CloseBoxesByType"
+      ],
+      "verify": true,
+      "audit": "الجدول financial-ledger-table خاص بالحركات وليس data-table."
+    },
+    {
+      "page": "Payments/CashBoxReport.jsx",
+      "template": "list",
+      "uses": [
+        "TableExportActions",
+        "Panel"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Ledger/Index.jsx",
+      "template": "list",
+      "uses": [
+        "ledger-table",
+        "Pagination",
+        "TableExportActions",
+        "DateInput",
+        "SearchableSelect"
+      ],
+      "verify": true,
+      "audit": "لا يستخدم PeriodTabs. الجدول ledger-table خاص (Ledger.css)."
+    },
+    {
+      "page": "Receivables/Index.jsx",
+      "template": "list",
+      "uses": [
+        "DataTable",
+        "MeterBar",
+        "KpiTile",
+        "StatusPill"
+      ],
+      "verify": true
+    },
+    {
+      "page": "TransactionAudit/Index.jsx",
+      "template": "list",
+      "uses": [
+        "DataTable",
+        "PeriodTabs",
+        "KpiTile"
+      ],
+      "verify": true
+    },
+    {
+      "page": "BranchPerformance/Index.jsx, Show.jsx",
+      "template": "detail",
+      "uses": [
+        "MeterBar",
+        "Sparkline",
+        "BarChart",
+        "KpiTile",
+        "SegmentedTabs",
+        "StatRing"
+      ],
+      "verify": true,
+      "audit": "StatRing غير مستخدم هنا اليوم."
+    },
+    {
+      "page": "Reports/Index.jsx, ReportDetails.jsx",
+      "template": "list",
+      "uses": [
+        "Panel",
+        "DataTable",
+        "BarChart",
+        "MeterBar",
+        "KpiTile"
+      ],
+      "exclude": [
+        "ReportPrintSheet.jsx"
+      ],
+      "verify": true,
+      "audit": "Reports/Index فيه 6 جداول w-full text-sm خارج data-table."
+    },
+    {
+      "page": "CompanyForms/Index.jsx",
+      "template": "list",
+      "uses": [
+        "DataTable"
+      ],
+      "verify": true
+    },
+    {
+      "page": "CompanyForms/Editor.jsx",
+      "template": "form",
+      "uses": [
+        "FormSection",
+        "FormField",
+        "ChoiceChips",
+        "Switch"
+      ],
+      "exclude": [
+        "CompanyFormPaper.jsx (معاينة الورقة المطبوعة)"
+      ],
+      "verify": true
+    },
+    {
+      "page": "MeterBoxes/Index.jsx",
+      "template": "list",
+      "uses": [
+        "DataTable"
+      ],
+      "verify": true
+    },
+    {
+      "page": "MeterBoxes/Create.jsx, Edit.jsx",
+      "template": "form",
+      "uses": [
+        "FormPage"
+      ],
+      "verify": true
+    },
+    {
+      "page": "MeterReadings/Index.jsx",
+      "template": "list",
+      "uses": [
+        "re-table",
+        "DataTableToolbar",
+        "Pagination"
+      ],
+      "verify": true,
+      "audit": "لا يستخدم SegmentedTabs. الجدول re-table خاص بإدخال القراءات (ReadingEntry.css)."
+    },
+    {
+      "page": "MeterReadings/Branches.jsx",
+      "template": "boxes",
+      "uses": [
+        "Panel"
+      ],
+      "verify": true
+    },
+    {
+      "page": "ReadingCycles/Index.jsx, Submissions.jsx",
+      "template": "list",
+      "uses": [
+        "DataTable",
+        "Panel"
+      ],
+      "exclude": [
+        "PaperSheet.jsx"
+      ],
+      "verify": true
+    },
+    {
+      "page": "ReadingCycles/Show.jsx",
+      "template": "board",
+      "uses": [
+        "MoveBoard (candidate)",
+        "DataTable",
+        "UnderlineTabs"
+      ],
+      "verify": true,
+      "audit": "لوحة توزيع حقيقية (lib/readingBoard.js). Distribution*.jsx أجزاء من هذه الصفحة وليست صفحات. الجدول الحالي يدعم التحديد الجماعي وترقيمًا يدويًا (السابق/التالي)، فالمقترح أن تكون MoveBoard عرضًا بديلًا بجانب الجدول لا بديلًا عنه، والنقل بعد تحميل القراءات إلى الهاتف يبقى بتأكيد."
+    },
+    {
+      "page": "Disconnections/Index.jsx, Show.jsx, Candidates.jsx",
+      "template": "list",
+      "uses": [
+        "DataTable",
+        "StatusPill",
+        "Modal",
+        "HoldToConfirm"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Messages/Index.jsx, Show.jsx",
+      "template": "list",
+      "uses": [
+        "DataTable",
+        "StatusPill"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Messages/Create.jsx",
+      "template": "form",
+      "uses": [
+        "Fields",
+        "ChoiceChips",
+        "Switch"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Users/Index.jsx",
+      "template": "list",
+      "uses": [
+        "DataTable",
+        "Modal(drawer: UserModal)"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Users/Create.jsx, Edit.jsx",
+      "template": "form",
+      "uses": [
+        "FormPage"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Branches/Index.jsx",
+      "template": "list",
+      "uses": [
+        "DataTable",
+        "Modal(drawer: BranchModal)"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Branches/Access.jsx",
+      "template": "settings",
+      "uses": [
+        "Panel"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Branches/Create.jsx, Edit.jsx",
+      "template": "form",
+      "uses": [
+        "FormPage"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Governorates/Index.jsx",
+      "template": "list",
+      "uses": [
+        "HierarchyColumn",
+        "Pagination",
+        "FormModal"
+      ],
+      "verify": true,
+      "audit": "تُدار فيه المحافظات والمناطق والأحياء كأعمدة هرمية، لا يوجد Areas/Index ولا SubAreas/Index."
+    },
+    {
+      "page": "Governorates/*, Areas/*, SubAreas/* (Create, Edit)",
+      "template": "form",
+      "uses": [
+        "FormPage"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Tariffs/Index.jsx",
+      "template": "boxes",
+      "uses": [
+        "Panel",
+        "ClassificationChips"
+      ],
+      "verify": true,
+      "audit": "بطاقات وليست جدولًا."
+    },
+    {
+      "page": "Tariffs/Create.jsx, Edit.jsx, CircuitBreakers/Create.jsx, Edit.jsx",
+      "template": "form",
+      "uses": [
+        "FormPage"
+      ],
+      "verify": true
+    },
+    {
+      "page": "CircuitBreakers/Index.jsx",
+      "template": "list",
+      "uses": [
+        "DataTable",
+        "FormModal"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Settings/Payments.jsx, Permissions.jsx, PrintTemplates.jsx, ReadingSchedule.jsx, Sms.jsx, MobileApp.jsx",
+      "template": "settings",
+      "uses": [
+        "Panel",
+        "Fields",
+        "Switch",
+        "SegmentedTabs"
+      ],
+      "exclude": [
+        "Settings/Appearance.jsx يحتفظ بمعاينة الهوية الخاصة به"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Profile/Edit.jsx",
+      "template": "form",
+      "uses": [
+        "Fields",
+        "Panel"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Auth/Login.jsx, ConfirmPassword.jsx, Layouts/GuestLayout.jsx",
+      "template": "form",
+      "uses": [
+        "Fields",
+        "Panel(glass)",
+        "PrimaryButton"
+      ],
+      "verify": true
+    },
+    {
+      "page": "Error.jsx",
+      "template": "form",
+      "uses": [
+        "Panel",
+        "PrimaryButton"
+      ],
+      "verify": true
+    }
+  ],
+  "exclusions": [
+    "كل ما يُطبع أو يُصدَّر: Pages/Print/*، Subscriptions/StatementPrint وPaymentReceipt، Reports/ReportPrintSheet، ReadingCycles/PaperSheet، CompanyForms/Print وCompanyFormPaper، Components/Print/*، وملفات Excel (ExcelStudio، TableExcelDesigner). تبقى بألوانها الخاصة (design.print) فاتحة بلا زجاج.",
+    "تطبيق Flutter في /mobile.",
+    "منطق الحسابات والتحصيل والحركات المالية وAPI والصلاحيات. التغيير بصري فقط."
+  ],
+  "rules": [
+    "لا لون حرفيًا خارج theme.css. أي لون جديد يُضاف إلى theme.css كمثلث RGB.",
+    "الوضعان فاتح وداكن لكل مكوّن، وRTL أولًا بخصائص منطقية.",
+    "التباين: نص عادي 4.5:1 على الأقل فوق الزجاج في الوضعين، وحالة التركيز مرئية.",
+    "لا اعتماد جديد بدون موافقة. الحركة بـ CSS وWeb Animations وrAF.",
+    "أي مكوّن مشترك جديد يُسجَّل في هذا الملف، وأي صفحة تُضاف أو تُنقل تُحدَّث هنا."
+  ],
+  "layoutPrinciple": "التخطيط والبطاقات والحركة مأخوذة من نموذج لوحة الفيديو المعتمد (شريط إحصاءات، استوديو مخطط، حلقة هدف، أعمدة حيّة، لوحة سحب)، وليست من تخطيط صفحات powerCollect الحالي. الصفحات تُعاد ترتيبها على القوالب أدناه مع بقاء البيانات والسلوك كما هي.",
+  "stylesheet": {
+    "file": "resources/css/glass.css",
+    "note": "أصناف النموذج الأولي نفسها بالبادئة gl-، وألوانها من theme.css."
+  },
+  "identity": {
+    "name": "سوبر باور",
+    "nameEnglish": "Super Power",
+    "logo": "public/images/logo-superpower.svg",
+    "favicon": "public/favicon.svg",
+    "signIn": "Components/AnimatedLogo.jsx (SuperPowerMark)"
+  }
+}

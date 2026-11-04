@@ -268,7 +268,7 @@ export default function Show({ branch, canCompareBranches, dailyRegistrations, d
                     />
                     <Link
                         href={ledgerHref}
-                        className="inline-flex shrink-0 items-center gap-2 self-start rounded-control bg-brand-gradient px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 sm:self-center"
+                        className="gl-btn shrink-0 self-start sm:self-center"
                     >
                         <Icon name="ledger" className="h-[18px] w-[18px]" />
                         السجل المالي للفرع

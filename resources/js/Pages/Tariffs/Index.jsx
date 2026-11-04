@@ -156,9 +156,7 @@ function RateEditor({ tariff, dark, onDone }) {
                 <button
                     type="button"
                     onClick={onDone}
-                    className={`h-[42px] rounded-[13px] border px-4 text-[15px] font-bold transition ${
-                        dark ? 'border-white/15 bg-white/5 text-white hover:bg-white/10' : 'border-gray-200 bg-surface text-gray-800 hover:bg-gray-50'
-                    }`}
+                    className="gl-btn gl-sec"
                 >
                     إلغاء
                 </button>
@@ -166,7 +164,7 @@ function RateEditor({ tariff, dark, onDone }) {
                     type="button"
                     onClick={save}
                     disabled={!change.valid || !change.changed || saving}
-                    className="ms-auto h-[42px] rounded-[13px] bg-brand-gradient px-5 text-[15px] font-bold text-white shadow-glow transition hover:brightness-110 disabled:opacity-45 disabled:shadow-none"
+                    className="gl-btn ms-auto"
                 >
                     {saving ? 'جارٍ الحفظ...' : change.valid ? `حفظ ${price(change.rate)} ₪` : 'حفظ السعر'}
                 </button>

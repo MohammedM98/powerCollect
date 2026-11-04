@@ -1,10 +1,11 @@
+/** What is wrong with a field, under it, in the glass look's red. */
 export default function InputError({ message, className = '' }) {
     if (!message) {
         return null;
     }
 
     return (
-        <p data-input-error className={`text-sm leading-7 text-brand-600 ${className}`}>
+        <p data-input-error className={`gl-error ${className}`}>
             {message}
         </p>
     );

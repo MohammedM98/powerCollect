@@ -6,6 +6,8 @@ import ActivityBell from '@/Components/ActivityBell';
 import { shouldPrefetchPage, HOME_LINK, currentGroup, groupLandingLink, isActiveLink, topBarItems } from '@/lib/navigation';
 import MegaMenu, { megaWidth } from './MegaMenu';
 import AccountMenu from './AccountMenu';
+import NavigationLayoutSwitch from './NavigationLayoutSwitch';
+import { useTheme } from '@/hooks/useTheme';
 import { pageWindowOpen } from './shortcuts';
 import './top-bar.css';
 
@@ -28,10 +30,13 @@ function badgeOf(group, badges) {
  * user still sees where they are — and, with `scope`, whose figures they read. A section's pages open in one panel under it
  * that reshapes itself as the pointer moves between sections; a mouse click
  * on a section opens its first page, while touch and the keyboard, with no
- * hover, open the panel.
+ * hover, open the panel. Beside the side menu (`slim`), wide screens see only
+ * the tools: the search, the switch between the side menu and the top bar
+ * (`layout`, `onLayoutChange`), the theme, the activity and the account.
  */
-export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDrawer, drawerOpen, layerOpen, onShowShortcuts, onStartTour }) {
+export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDrawer, drawerOpen, layerOpen, onShowShortcuts, onStartTour, slim = false, layout = 'topbar', onLayoutChange }) {
     const { props, url } = usePage();
+    const { dark, changePreference } = useTheme();
     const { appName, auth } = props;
     const user = auth?.user;
     const branchLabel = props.branchView ? props.branchView.current?.name ?? 'جميع الفروع' : user?.branchName;
@@ -438,7 +443,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
 
     return (
         <>
-            <header className={`tn-header ${scrolled ? 'is-scrolled' : ''}`}>
+            <header className={`tn-header ${scrolled ? 'is-scrolled' : ''}`} data-slim={slim || undefined}>
                 <div
                     ref={barRef}
                     className="tn-glass"
@@ -454,7 +459,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                 >
                     <div className="flex min-w-0 items-center">
                         <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-brand" data-tour="brand" aria-label={`${appName}، ${branchLabel ?? 'نظام التحصيل الكهربائي'}، الصفحة الرئيسية`}>
-                            <BrandLogo alt={appName} />
+                            <BrandLogo alt={appName} markSize={38} />
                             <span className="tn-brand-divider" aria-hidden="true" />
                             <span className="tn-brand-text">
                                 <span className="tn-brand-name" dir="auto">{shortAppName(appName)}</span>
@@ -560,6 +565,10 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             <Icon name="search" />
                             <span className="tn-search-text flex-1 text-start">{props.can?.recordPayments && props.can?.viewSubscriptions ? 'ابحث عن صفحة أو مشترك…' : 'ابحث عن صفحة أو أمر…'}</span>
                             <span className="tn-kbd" dir="ltr">Ctrl K</span>
+                        </button>
+                        {onLayoutChange && <NavigationLayoutSwitch layout={layout} onChange={onLayoutChange} className="tn-desktop-only" />}
+                        <button type="button" className="tn-tool" onClick={() => changePreference(dark ? 'light' : 'dark')} aria-label={dark ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
+                            <Icon name={dark ? 'sun' : 'moon'} />
                         </button>
                         <ActivityBell open={popover === 'bell'} onToggle={() => togglePopover('bell')} onClose={() => setPopover(null)} />
                         <span className="tn-separator" aria-hidden="true" />

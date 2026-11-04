@@ -161,7 +161,6 @@ export default function Modal({ show, onClose, children, maxWidth = 'md', center
                 tabIndex={-1}
                 className={`modal-glass-panel animate-modal-panel relative mx-auto mb-6 mt-6 w-full overflow-hidden rounded-panel outline-none ${maxWidthClass} ${panelClassName}`}
             >
-                <span aria-hidden="true" className="pointer-events-none absolute inset-x-16 top-0 z-10 h-[2px] rounded-full bg-spectrum opacity-80" />
                 {children}
             </div>
         </div>,

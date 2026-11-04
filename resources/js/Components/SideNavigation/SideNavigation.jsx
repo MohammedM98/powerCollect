@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { usePage } from '@inertiajs/react';
-import ActivityBell from '@/Components/ActivityBell';
 import BrandLogo from '@/Components/BrandLogo';
 import Icon from '@/Components/Icon';
 import NavigationMenu, { NavigationAccount } from '@/Components/TopBar/NavigationMenu';
@@ -24,15 +23,14 @@ function readCollapsed(startsCollapsed) {
 /**
  * The side navigation on wide screens, for a company whose look puts the
  * sections at the side (`sidebar`, or `rail`, which starts narrow): the
- * logo, the notifications, the sections with the current one open, and
- * the account. It narrows to icons and back; a section's icon widens it
+ * logo, the sections with the current one open, and the account (the
+ * notifications sit in the slim top bar beside it). It narrows to icons and back; a section's icon widens it
  * with that section open. Narrow screens keep the top bar and its menu.
  */
 export default function SideNavigation({ groups, badges, startsCollapsed = false, onOpenPalette }) {
     const { props, url } = usePage();
     const [collapsed, setCollapsed] = useState(() => readCollapsed(startsCollapsed));
     const [expanded, setExpanded] = useState(() => currentGroup(groups, url)?.id ?? null);
-    const [bellOpen, setBellOpen] = useState(false);
     const branchLabel = props.branchView ? props.branchView.current?.name ?? 'جميع الفروع' : props.auth?.user?.branchName;
 
     useEffect(() => {
@@ -58,18 +56,14 @@ export default function SideNavigation({ groups, badges, startsCollapsed = false
     return (
         <aside className="sn-panel text-gray-900" data-collapsed={collapsed || undefined} aria-label="التنقل">
             <div className="sn-head">
-                <BrandLogo alt={props.appName} className="sn-logo" />
+                <BrandLogo alt={props.appName} className="sn-logo" markSize={40} />
                 <span className="sn-title tn-nav-label">
                     <b dir="auto">{shortAppName(props.appName)}</b>
                     <small dir="auto">{branchLabel ?? 'نظام التحصيل الكهربائي'}</small>
                 </span>
-            </div>
-
-            <div className="sn-tools">
-                <ActivityBell open={bellOpen} onToggle={() => setBellOpen(!bellOpen)} onClose={() => setBellOpen(false)} />
                 <button
                     type="button"
-                    className="tn-tool"
+                    className="tn-tool sn-collapse"
                     onClick={() => changeCollapsed(!collapsed)}
                     aria-label={collapsed ? 'توسيع القائمة' : 'تصغير القائمة'}
                     aria-expanded={!collapsed}

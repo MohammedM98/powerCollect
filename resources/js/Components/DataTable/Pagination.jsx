@@ -47,21 +47,20 @@ export default function Pagination({ meta, filters, baseUrl, extraParams = {}, p
         router.get(baseUrl, { ...extraParams, ...filters, [pageParam]: page }, { preserveState: true, preserveScroll: true, replace: true });
     }
 
-    const stepClass =
-        'flex h-8 items-center gap-1 rounded-[10px] px-2.5 text-sm font-semibold text-gray-500 transition hover:bg-surface hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40';
+    const stepClass = 'disabled:cursor-not-allowed disabled:opacity-40';
 
     return (
         <div className="data-table-pagination flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-gray-500">
+            <p className="gl-sub !m-0 !text-[13px]">
                 عرض{' '}
-                <b className="font-display font-bold text-gray-900">
+                <b className="gl-num font-bold" style={{ color: 'var(--gl-ink)' }}>
                     {from}–{to}
                 </b>{' '}
-                من <b className="font-display font-bold text-gray-900">{total}</b>
+                من <b className="gl-num font-bold" style={{ color: 'var(--gl-ink)' }}>{total}</b>
             </p>
 
             {last > 1 && (
-                <nav aria-label="صفحات الجدول" className="flex flex-wrap items-center gap-1 rounded-[14px] border border-gray-100 bg-gray-50 p-[3px]">
+                <nav aria-label="صفحات الجدول" className="gl-seg gl-pager">
                     <button type="button" disabled={current === 1} onClick={() => goTo(current - 1)} className={stepClass}>
                         <Icon name="chevron-right" className="h-3.5 w-3.5" strokeWidth={2} />
                         <span className="max-sm:sr-only">السابق</span>
@@ -69,7 +68,7 @@ export default function Pagination({ meta, filters, baseUrl, extraParams = {}, p
 
                     {pageNumbers(current, last).map((page, index) =>
                         page === '…' ? (
-                            <span key={`ellipsis-${index}`} className="px-1.5 text-sm text-gray-400">
+                            <span key={`ellipsis-${index}`} className="px-1.5 text-sm" style={{ color: 'var(--gl-faint)' }}>
                                 …
                             </span>
                         ) : (
@@ -78,11 +77,8 @@ export default function Pagination({ meta, filters, baseUrl, extraParams = {}, p
                                 key={page}
                                 aria-current={page === current ? 'page' : undefined}
                                 onClick={() => goTo(page)}
-                                className={`h-8 min-w-[2rem] rounded-[10px] px-2 font-display text-[15px] font-semibold transition ${
-                                    page === current
-                                        ? 'bg-brand-gradient text-white shadow-glow'
-                                        : 'text-gray-500 hover:bg-surface hover:text-gray-900'
-                                }`}
+                                aria-pressed={page === current}
+                                className="gl-num min-w-[2rem] justify-center"
                             >
                                 {page}
                             </button>

@@ -1,6 +1,6 @@
 import { csvText } from './csv.js';
 import { formatAmount, roundToCents } from './currency.js';
-import { signedBalance } from './balance.js';
+import { balanceInText, signedBalance } from './balance.js';
 import { formatDate } from './format.js';
 
 export const STATEMENT_SORT_OPTIONS = [
@@ -303,20 +303,29 @@ export const STATEMENT_VIEWS = [
  * How a balance reads: a positive balance is what the subscription owes
  * (عليه), a negative one is credit in their favour (له). `signed` is how it
  * is shown (see lib/balance.js): the number with its minus sign when it is
- * credit; `amount` is its size without the sign.
+ * credit; `amount` is its size without the sign; `value` the number itself.
  */
 export function describeBalance(balance) {
-    const value = Number(balance);
+    const value = Number(balance) || 0;
 
     if (value > 0) {
-        return { amount: formatAmount(value), signed: signedBalance(value), label: 'عليه', tone: 'owes' };
+        return { value, amount: formatAmount(value), signed: signedBalance(value), label: 'عليه', tone: 'owes' };
     }
 
     if (value < 0) {
-        return { amount: formatAmount(-value), signed: signedBalance(value), label: 'له', tone: 'credit' };
+        return { value, amount: formatAmount(-value), signed: signedBalance(value), label: 'له', tone: 'credit' };
     }
 
-    return { amount: '0', signed: '0', label: 'مسدّد', tone: 'settled' };
+    return { value: 0, amount: '0', signed: '0', label: 'مسدّد', tone: 'settled' };
+}
+
+/**
+ * A described balance (describeBalance()) as text: "7,178 ₪", "-9.10 ₪" or
+ * "0 ₪", its minus kept before the number. Formatted from the number, not
+ * from `signed`, which is already written with thousands separators.
+ */
+export function describedBalanceText(balance) {
+    return balanceInText(balance.value ?? 0);
 }
 
 /** A line's state as the statement marks it: corrected, cancelled, a correction, or nothing. */

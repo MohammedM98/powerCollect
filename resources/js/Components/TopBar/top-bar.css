@@ -605,6 +605,13 @@ html.tn-locked {
     display: none;
 }
 
+/* Wide screens only: the switch between the side menu and the top bar. */
+@media (max-width: 1023px) {
+    .tn-desktop-only {
+        display: none !important;
+    }
+}
+
 @media (max-width: 1023px) {
     :root {
         --tn-bar-height: 60px;

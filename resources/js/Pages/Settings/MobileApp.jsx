@@ -5,14 +5,14 @@ import Icon from '@/Components/Icon';
 import { primaryButtonClass } from '@/Components/PrimaryButton';
 
 export default function MobileApp({ release }) {
-    return <SettingsLayout header={<PageHeader title="تحميل تطبيق الهاتف" meta="PowerCollect للمحصّلين وقرّاء العدادات" />}>
+    return <SettingsLayout header={<PageHeader title="تحميل تطبيق الهاتف" meta="سوبر باور للمحصّلين وقرّاء العدادات" />}>
         <Head title="تحميل تطبيق الهاتف" />
         <div className="mx-auto max-w-3xl space-y-6">
             <section className="rounded-card border border-gray-100 bg-white p-6 shadow-card sm:p-8">
                 <div className="flex items-start gap-4">
                     <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-brand-700"><Icon name="phone" className="h-7 w-7" /></span>
                     <div className="min-w-0 space-y-2">
-                        <h3 className="text-xl font-bold text-gray-900">تطبيق PowerCollect</h3>
+                        <h3 className="text-xl font-bold text-gray-900">تطبيق سوبر باور</h3>
                         <p className="text-sm leading-7 text-gray-600">اطّلع على الطبلونات المخصصة لك، وسجّل القراءات والتحصيل حسب صلاحيات حسابك. يتصل التطبيق بنفس بيانات الموقع عند توفر الإنترنت.</p>
                         <p className="text-sm text-gray-500">Android 7.0 أو أحدث</p>
                     </div>
@@ -28,7 +28,7 @@ export default function MobileApp({ release }) {
                 <ol className="list-inside list-decimal space-y-4 text-sm leading-7 text-gray-600">
                     <li>افتح هذه الصفحة من هاتف Android، ثم اضغط تحميل التطبيق.</li>
                     <li>افتح الملف المحمّل. إذا طلب الهاتف إذن التثبيت لهذا المتصفح، اسمح به لإتمام التثبيت، ويمكنك إلغاؤه بعد ذلك.</li>
-                    <li>افتح PowerCollect وسجّل الدخول باسم المستخدم وكلمة المرور الخاصين بالموقع.</li>
+                    <li>افتح سوبر باور وسجّل الدخول باسم المستخدم وكلمة المرور الخاصين بالموقع.</li>
                 </ol>
                 <p className="mt-4 text-sm leading-7 text-gray-600">إذا بلغ الحساب حد الأجهزة المسموح، يُسجّل خروج الجهاز الأقدم تلقائيًا عند الدخول من جهاز جديد.</p>
                 <p className="mt-5 rounded-control bg-gray-50 p-4 text-sm leading-7 text-gray-600">إدخال القراءات متاح في يوم القراءة المحدد فقط. وتبقى القراءات المحفوظة دون اتصال بانتظار مراجعتك وتأكيد رفعها.</p>

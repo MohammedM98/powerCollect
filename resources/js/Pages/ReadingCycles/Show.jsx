@@ -18,6 +18,9 @@ import DistributionActionModal from './DistributionActionModal';
 import SearchableSelect from '@/Components/SearchableSelect';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import PrintButton from '@/Components/PrintButton';
+import MoveBoard from '@/Components/MoveBoard';
+import SegmentedTabs from '@/Components/SegmentedTabs';
+import ConfirmDialog from '@/Components/ConfirmDialog';
 
 
 function DistributionSummary({ boxes }) {
@@ -107,6 +110,37 @@ function ReadingDayModal({ cycle, onClose }) {
     );
 }
 
+/** Each kind of lane's dot and note on the distribution board. */
+const LANE_LOOKS = {
+    available: { color: 'var(--gl-warn)', note: 'بانتظار توزيعها' },
+    paper: { color: 'var(--gl-info)', note: 'تُطبع وتُسلَّم للقارئ' },
+    reader: { color: 'var(--gl-ok)', note: 'قارئ ميداني' },
+};
+
+/** A box's card on the distribution board: its number, subscribers, area, state and how much of it is read. */
+function BoxCard({ box }) {
+    const share = box.subscribers ? Math.round((box.read / box.subscribers) * 100) : 0;
+
+    return (
+        <>
+            <div className="gl-oh">
+                <span className="gl-id" dir="ltr">{box.number}</span>
+                <span>{formatNumber(box.subscribers)} مشترك</span>
+            </div>
+            <div className="gl-who">
+                <span className="gl-av" aria-hidden="true">{box.name.slice(0, 1)}</span>
+                <span className="min-w-0 truncate" dir="auto">{box.name}</span>
+            </div>
+            <div className="gl-items">{box.subAreaName ?? 'بدون منطقة 2'}</div>
+            <div className="gl-of">
+                <span className="gl-num text-sm" dir="ltr">{formatNumber(box.read)} / {formatNumber(box.subscribers)}</span>
+                <span className="gl-tag">{box.status === 'approved' ? 'معتمد' : box.status ? 'بانتظار الاعتماد' : 'غير موزع'}{box.downloaded ? ' · نُزّلت' : ''}</span>
+            </div>
+            <div className="gl-progress" role="img" aria-label={`قُرئ ${box.read} من ${box.subscribers}`}><span style={{ width: `${share}%` }} /></div>
+        </>
+    );
+}
+
 /** Weekly allocations grouped by area, with standing and one-week changes. */
 export default function Show({ cycle, boards, readers, paperSheets, reviewCount, abilities, showBranchSelector = false }) {
     const { flash, props } = usePage();
@@ -126,6 +160,9 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
     const [boxId, setBoxId] = useState('');
     const [perPage, setPerPage] = useState(25);
     const [page, setPage] = useState(1);
+    const [view, setView] = useState('table');
+    const [pendingMove, setPendingMove] = useState(null);
+    const [moveRecurring, setMoveRecurring] = useState(true);
     const boxOptions = useMemo(() => distributionBoxOptions(boards, subAreaIds, assignmentFilter), [boards, subAreaIds, assignmentFilter]);
     const visibleBoxes = boards.filter((box) => boxMatches(box, search, subAreaIds, boxId) && assignmentMatches(box, assignmentFilter));
     const remainingBoxes = visibleBoxes.filter((box) => box.column === 'available');
@@ -167,7 +204,7 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
         setSelected((current) => toggleBoxSelection(current, boxes));
     }
 
-    function move(boxIds, column, confirmDownloaded = false, repeat = recurring) {
+    function move(boxIds, column, confirmDownloaded = false, repeat = recurring, showSummary = true) {
         const ids = boxIds;
 
         if (busy || ids.length === 0 || ids.length > 1000) {
@@ -183,10 +220,22 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
             onSuccess: () => {
                 setSelected(column.key === 'paper' ? new Set(ids) : new Set());
                 setActionsOpen(false);
-                setSummaryOpen(true);
+                setSummaryOpen(showSummary);
             },
             onFinish: () => setBusy(false),
         });
+    }
+
+    /** A board drop waits here for confirmation; nothing is saved until it is confirmed. */
+    function askToMove(box, lane) {
+        setMoveRecurring(recurring);
+        setPendingMove({ box, column: lane });
+    }
+
+    function confirmMove() {
+        const { box, column } = pendingMove;
+        setPendingMove(null);
+        move([box.id], column, false, moveRecurring, false);
     }
 
     function approve(data) {
@@ -286,6 +335,10 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                         <div><p role="status" className="text-sm text-gray-700"><b className="font-display text-lg text-brand-600">{formatNumber(selectedTotals.boxes)}</b> طبلون محدد · {formatNumber(selectedTotals.subscribers)} مشترك</p>{hiddenSelected > 0 && <p className="mt-1 text-xs text-amber-700">منها {formatNumber(hiddenSelected)} خارج النتائج الظاهرة.</p>}</div>
                         <div className="flex flex-wrap items-center gap-3"><button type="button" disabled={busy} onClick={() => setSelected(new Set())} className="text-xs font-semibold text-gray-500 hover:underline">إلغاء التحديد كله</button><PrimaryButton disabled={busy} onClick={() => setActionsOpen(true)}>{abilities.manage ? 'توزيع المحدد' : 'إجراء على المحدد'} ({formatNumber(selectedTotals.boxes)})</PrimaryButton></div>
                     </section>}
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                        <p className="text-sm gl-text-muted">{view === 'board' ? (abilities.manage ? 'اسحب الطبلون إلى قارئ أو إلى الكشوف الورقية؛ يُطلب تأكيد قبل الحفظ.' : 'توزيع الطبلونات على القرّاء.') : 'الطبلونات حسب المنطقة.'}</p>
+                        <SegmentedTabs label="طريقة العرض" value={view} onChange={setView} options={[{ value: 'table', label: 'جدول' }, { value: 'board', label: 'لوحة التوزيع' }]} />
+                    </div>
                     <div>
                         <DataTableToolbar search={search} onSearchChange={(value) => { setSearch(value); setPage(1); }} placeholder="ابحث باسم المنطقة أو الطبلون أو رقمه..." perPage={perPage} onPerPageChange={(size) => { setPerPage(size); setPage(1); }} total={visibleBoxes.length} printable={false}
                             filterMenu={<div className="flex w-full flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-3">
@@ -307,11 +360,26 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                                 {(abilities.manage || abilities.printSheets) && <SecondaryButton disabled={busy || visibleBoxes.length === 0} onClick={() => toggleColumn(visibleBoxes)}>{allVisibleSelected ? 'إلغاء تحديد النتائج' : 'تحديد كل النتائج'} ({formatNumber(visibleBoxes.length)})</SecondaryButton>}
                             </div>}
                         />
+                        {view === 'board' ? (
+                            <MoveBoard
+                                label="لوحة توزيع الطبلونات"
+                                lanes={columns.map((column) => ({ ...column, ...LANE_LOOKS[column.key === 'available' || column.key === 'paper' ? column.key : 'reader'] }))}
+                                items={visibleBoxes}
+                                laneOf={(box) => box.column}
+                                itemKey={(box) => box.id}
+                                itemLabel={(box) => `الطبلون ${box.name} (${box.number})، ${formatNumber(box.subscribers)} مشترك`}
+                                renderCard={(box) => <BoxCard box={box} />}
+                                canMove={abilities.manage}
+                                busy={busy}
+                                onMove={askToMove}
+                            />
+                        ) : <>
                         <DistributionTable boxes={pageBoxes} allBoxes={visibleBoxes} readers={readers} selected={selected} canSelect={abilities.manage || abilities.printSheets} busy={busy} onToggle={toggle} onToggleGroup={toggleColumn} />
                         {totalPages > 1 && <nav aria-label="صفحات الطبلونات" className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-gray-500">
                             <span>الصفحة {formatNumber(currentPage)} من {formatNumber(totalPages)} · التحديد يشمل جميع صفحات النتائج</span>
                             <div className="flex gap-2"><SecondaryButton disabled={busy || currentPage === 1} onClick={() => setPage(currentPage - 1)}>السابق</SecondaryButton><SecondaryButton disabled={busy || currentPage === totalPages} onClick={() => setPage(currentPage + 1)}>التالي</SecondaryButton></div>
                         </nav>}
+                        </>}
                     </div>
 
                     {remainingBoxes.length > 0 && abilities.manage && <div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm text-gray-700">
@@ -356,6 +424,17 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
 
             {summaryOpen && <DistributionSummaryModal cycle={cycle} boards={boards} readers={readers} paperSheets={paperSheets} abilities={abilities} busy={busy} errors={errors} result={result} onClose={() => setSummaryOpen(false)} onApprove={() => approve({})} onPaper={showPaperSheets} onPreparePaper={() => openActions(boards.filter((box) => box.column === 'paper'), 'paper')} onRemaining={() => openActions(boards.filter((box) => box.column === 'available'), 'paper')} />}
             {actionsOpen && <DistributionActionModal boards={boards} selectedBoxes={selectedBoxes} readers={readers} abilities={abilities} busy={busy} errors={errors} target={target} onTargetChange={setTarget} recurring={recurring} onRecurringChange={setRecurring} hiddenSelected={hiddenSelected} onRemoveHidden={() => setSelected(new Set(selectedBoxes.filter((box) => visibleIds.has(box.id)).map((box) => box.id)))} onClose={() => setActionsOpen(false)} onAssign={assignSelected} onCreateSheet={createSheet} allocationReport={errors.box_ids ? allocationReport : null} />}
+            <ConfirmDialog
+                show={Boolean(pendingMove)}
+                title={pendingMove ? `نقل الطبلون ${pendingMove.box.number} إلى ${pendingMove.column.label}؟` : ''}
+                message={pendingMove && <><bdi>{pendingMove.box.name}</bdi> · {formatNumber(pendingMove.box.subscribers)} مشترك{pendingMove.box.downloaded && '. نزّل القارئ مهام هذا الطبلون؛ إن كان ذلك مانعًا ستظهر لك التفاصيل قبل النقل.'}</>}
+                confirmLabel="نقل"
+                icon="layers"
+                onCancel={() => setPendingMove(null)}
+                onConfirm={confirmMove}
+            >
+                {abilities.approve && <label className="flex items-start gap-2 text-sm leading-6"><input type="checkbox" checked={moveRecurring} onChange={(event) => setMoveRecurring(event.target.checked)} className="mt-1 rounded" /><span>حفظ هذا التوزيع للقراءات القادمة أيضًا<span className="block text-xs gl-text-muted">{moveRecurring ? 'يصبح التوزيع الثابت لهذا الطبلون.' : 'لهذه القراءة فقط؛ يبقى التوزيع الثابت للقراءات التالية.'}</span></span></label>}
+            </ConfirmDialog>
             {editingDay && <ReadingDayModal cycle={cycle} onClose={() => setEditingDay(false)} />}
         </AuthenticatedLayout>
     );

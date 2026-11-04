@@ -50,7 +50,7 @@ export default function DistributionAreas({ areas, chosen, onChange, disabled, f
                     </span>
                 </label>)}
             </div>
-            {chosen.length > 0 && onDistribute && <div className="border-t border-gray-100 p-4"><button type="button" disabled={disabled || distributionCount === 0} onClick={onDistribute} className="w-full rounded-control bg-brand-gradient px-3 py-2.5 text-sm font-bold text-white disabled:opacity-40">إجراء على المناطق المختارة ({formatNumber(distributionCount)})</button><p className="mt-2 text-xs leading-6 text-gray-500">يشمل الطبلونات المطابقة للتصفية في كل الصفحات.</p></div>}
+            {chosen.length > 0 && onDistribute && <div className="border-t border-gray-100 p-4"><button type="button" disabled={disabled || distributionCount === 0} onClick={onDistribute} className="gl-btn w-full">إجراء على المناطق المختارة ({formatNumber(distributionCount)})</button><p className="mt-2 text-xs leading-6 text-gray-500">يشمل الطبلونات المطابقة للتصفية في كل الصفحات.</p></div>}
         </aside>
     );
 }

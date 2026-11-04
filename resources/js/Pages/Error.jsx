@@ -14,9 +14,6 @@ const MESSAGES = {
     503: { icon: 'cog', title: 'النظام تحت الصيانة', text: 'نجري أعمال صيانة قصيرة. حاول مرة أخرى بعد قليل.' },
 };
 
-const BUTTON =
-    'inline-flex items-center justify-center gap-2 rounded-control px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
-
 /**
  * The page an error (no permission, not found, expired, server trouble)
  * shows instead of the framework's plain English one, with a way back.
@@ -32,11 +29,11 @@ export default function Error({ status, blank = false }) {
             <AuthenticatedLayout>
                 <Head title={appName} />
                 <div className="mx-auto flex max-w-md flex-col items-center gap-4 py-16 text-center" role="status">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-500">
+                    <span className="gl-ico !h-12 !w-12 !rounded-full">
                         <Icon name="lock" className="h-6 w-6" />
                     </span>
-                    <p className="text-base font-semibold text-gray-700">هذه الصفحة غير متاحة لحسابك</p>
-                    <Link href="/dashboard" className={`${BUTTON} border border-gray-200 bg-surface text-gray-900 hover:bg-gray-50`}>
+                    <p className="text-base font-semibold">هذه الصفحة غير متاحة لحسابك</p>
+                    <Link href="/dashboard" className="gl-btn gl-sec">
                         <Icon name="home" className="h-4 w-4" />
                         العودة إلى لوحة التحكم
                     </Link>
@@ -51,20 +48,20 @@ export default function Error({ status, blank = false }) {
     const body = (
         <div className="mx-auto flex max-w-md flex-col items-center py-16 text-center" role="alert">
             <Head title={message.title} />
-            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-500/10 text-brand-600">
+            <span className="gl-ico !h-16 !w-16 !rounded-full" style={{ color: 'rgb(var(--gl-brand))' }}>
                 <Icon name={message.icon} className="h-8 w-8" />
             </span>
-            <p className="mt-6 font-display text-sm font-semibold tracking-widest text-gray-400" dir="ltr">
+            <p className="gl-num mt-6 text-sm font-semibold gl-text-muted" dir="ltr">
                 {status}
             </p>
-            <h1 className="mt-2 text-2xl font-bold text-gray-900">{message.title}</h1>
-            <p className="mt-3 text-sm leading-7 text-gray-600">{message.text}</p>
+            <h1 className="mt-2 text-2xl font-extrabold" style={{ fontFamily: 'var(--gl-head)' }}>{message.title}</h1>
+            <p className="mt-3 text-sm leading-7 gl-text-muted">{message.text}</p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                <RecoveryLink href={branchContext?.recoveryUrl ?? (signedIn ? '/dashboard' : '/login')} className={`${BUTTON} bg-brand-gradient text-white shadow-glow hover:brightness-110`}>
+                <RecoveryLink href={branchContext?.recoveryUrl ?? (signedIn ? '/dashboard' : '/login')} className="gl-btn">
                     <Icon name={signedIn ? 'home' : 'enter'} className="h-4 w-4" />
                     {signedIn ? 'العودة إلى لوحة التحكم' : 'تسجيل الدخول'}
                 </RecoveryLink>
-                <button type="button" onClick={() => window.history.back()} className={`${BUTTON} border border-gray-200 bg-surface text-gray-900 hover:bg-gray-50`}>
+                <button type="button" onClick={() => window.history.back()} className="gl-btn gl-sec">
                     رجوع
                 </button>
             </div>

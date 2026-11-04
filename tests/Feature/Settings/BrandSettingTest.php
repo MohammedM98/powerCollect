@@ -57,7 +57,7 @@ class BrandSettingTest extends TestCase
         $this->actingAs($this->superAdmin)->get(route('settings.appearance.edit'))
             ->assertInertia(fn ($page) => $page
                 ->component('Settings/Appearance')
-                ->where('profile.design.navigation', 'topbar')
+                ->where('profile.design.navigation', 'sidebar')
                 ->where('profile.ownLogos', ['main', 'icon'])
                 ->where('presets.corporate.design.navigation', 'sidebar')
                 ->where('can.manageBrand', true));
@@ -179,7 +179,7 @@ class BrandSettingTest extends TestCase
         $this->actingAs($this->superAdmin)->post(route('settings.appearance.import'), ['file' => UploadedFile::fake()->createWithContent('brand.json', json_encode([
             'version' => 1,
             'company' => ['name' => 'شركة خليل'],
-            'logos' => ['main' => '/images/logo-af.webp'],
+            'logos' => ['main' => '/images/logo-superpower.svg'],
             'tokens' => ['buttonRadius' => 18],
             'customCss' => '.ui-page-title{color:red}',
         ]))])->assertSessionHasNoErrors();

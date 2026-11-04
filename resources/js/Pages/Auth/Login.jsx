@@ -25,51 +25,50 @@ export default function Login() {
         <GuestLayout>
             <Head title="تسجيل الدخول" />
 
-            <h2 className="login-welcome text-3xl font-bold text-gray-900">مرحبًا بعودتك</h2>
-            <p className="login-welcome mt-2 text-sm text-gray-500" style={{ '--welcome-index': 1 }}>
-                سجّل دخولك للمتابعة إلى لوحة التحكم.
-            </p>
-            {branchContext?.current && <p className="login-welcome mt-4 rounded-control border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900" style={{ '--welcome-index': 2 }}>تسجيل الدخول إلى <b>{branchContext.current.name}</b></p>}
+            {branchContext?.current && <p className="gl-pill gl-info self-center">تسجيل الدخول إلى {branchContext.current.name}</p>}
 
-            <form onSubmit={submit} className="mt-10 space-y-5">
+            <form onSubmit={submit} className="flex flex-col gap-4">
                 <div>
                     <InputLabel htmlFor="username" value="اسم المستخدم" />
                     <TextInput
                         id="username"
-                        className="mt-2 block w-full py-3 text-right"
+                        className="mt-1.5 block h-11 w-full text-right"
                         dir="auto"
                         value={data.username}
                         autoFocus
                         autoComplete="username"
                         onChange={(e) => setData('username', e.target.value)}
                     />
-                    <InputError message={errors.username} className="mt-2" />
+                    <InputError message={errors.username} className="mt-1.5" />
                 </div>
 
                 <div>
                     <InputLabel htmlFor="password" value="كلمة المرور" />
                     <PasswordInput
                         id="password"
-                        className="mt-2 block w-full py-3 text-right"
+                        className="mt-1.5 block h-11 w-full text-right"
                         value={data.password}
                         autoComplete="current-password"
                         onChange={(e) => setData('password', e.target.value)}
                     />
-                    <InputError message={errors.password} className="mt-2" />
+                    <InputError message={errors.password} className="mt-1.5" />
                 </div>
 
-                <label className="flex items-center gap-2.5">
-                    <input
-                        type="checkbox"
-                        className="h-[18px] w-[18px]"
-                        checked={data.remember}
-                        onChange={(e) => setData('remember', e.target.checked)}
-                    />
-                    <span className="text-sm text-gray-600">تذكرني على هذا الجهاز</span>
-                </label>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                    <label className="flex items-center gap-2.5 font-semibold">
+                        <input
+                            type="checkbox"
+                            className="h-[18px] w-[18px]"
+                            checked={data.remember}
+                            onChange={(e) => setData('remember', e.target.checked)}
+                        />
+                        تذكّرني على هذا الجهاز
+                    </label>
+                    <span className="gl-sub">نسيت كلمة المرور؟ اطلبها من مدير النظام</span>
+                </div>
 
-                <PrimaryButton disabled={processing} className="!mt-7 w-full py-3.5 text-base">
-                    تسجيل الدخول
+                <PrimaryButton disabled={processing} className="gl-lg mt-2 w-full">
+                    {processing ? <><span className="gl-spin" aria-hidden="true" />جارٍ الدخول</> : 'تسجيل الدخول'}
                 </PrimaryButton>
             </form>
         </GuestLayout>
