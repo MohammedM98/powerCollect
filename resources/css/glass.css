@@ -1535,6 +1535,240 @@
 .gl-tone-info { --gl-c: var(--gl-info); }
 .gl-tone-warn { --gl-c: var(--gl-warn); }
 .gl-tone-bad { --gl-c: var(--gl-bad); }
+.gl-tone-ok { --gl-c: var(--gl-ok); }
+
+/* ── Form windows (Pages/Subscriptions/AccountFormParts.jsx) ──────────── */
+/* The window is never taller than the screen: its title, movement card and footer stay, its steps scroll. */
+.gl-sheet {
+    max-height: calc(100dvh - 3rem);
+}
+
+@media (max-width: 639px) {
+    .gl-sheet {
+        max-height: calc(100dvh - 12px - env(safe-area-inset-bottom, 0px));
+    }
+}
+
+.gl-sheet-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: grid;
+    align-content: start;
+    gap: 24px;
+    padding: 20px 24px 24px;
+    scrollbar-width: thin;
+}
+
+/* The movement card: who, then the balance now, the movement and the balance it leaves. */
+.gl-mv {
+    flex: none;
+    display: grid;
+    gap: 14px;
+    margin: 14px 24px 0;
+    padding: 14px 16px 16px;
+    border-radius: 18px;
+    border: 1px solid var(--gl-line);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--gl-t) 12%, transparent), transparent 60%), var(--gl-fill);
+}
+
+.gl-mv-who {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.gl-mv-who b {
+    display: block;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.gl-mv-who small {
+    display: block;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+}
+
+.gl-mv-avatar {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(140deg, #2a3a5e, #101a34);
+    color: #eaf0ff;
+    font: 700 14px var(--gl-head);
+}
+
+.gl-mv-avatar i {
+    position: absolute;
+    bottom: -2px;
+    inset-inline-start: -2px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: 2px solid rgb(var(--glass-panel));
+}
+
+.gl-mv-tag {
+    margin-inline-start: auto;
+    padding: 2px 10px;
+    border-radius: 99px;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gl-t);
+    background: color-mix(in srgb, var(--gl-t) 15%, transparent);
+}
+
+.gl-mv-cells {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 8px;
+}
+
+.gl-mv-cells[data-count='2'] {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.gl-mv-cell {
+    min-width: 0;
+    padding: 9px 12px;
+    border-radius: 13px;
+    border: 1px solid var(--gl-line);
+    background: rgb(var(--glass-panel) / 0.55);
+}
+
+.gl-mv-cell small {
+    display: block;
+    color: var(--gl-muted);
+    font-size: 12px;
+}
+
+.gl-mv-cell b {
+    display: block;
+    overflow: hidden;
+    text-align: start;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--gl-cell, var(--gl-ink));
+    font: 800 19px/1.35 var(--gl-head);
+}
+
+.gl-mv-cell em {
+    color: var(--gl-muted);
+    font-size: 11.5px;
+    font-style: normal;
+    font-weight: 600;
+}
+
+.gl-mv-cell.is-move b {
+    color: var(--gl-t);
+}
+
+.gl-mv-cell.is-result {
+    border-color: color-mix(in srgb, var(--gl-cell, var(--gl-ink)) 45%, transparent);
+}
+
+.gl-mv-op {
+    display: grid;
+    place-items: center;
+    color: var(--gl-faint);
+    font: 700 18px var(--gl-head);
+}
+
+.gl-mv-cover {
+    display: grid;
+    gap: 6px;
+}
+
+.gl-mv-cover .gl-bar i {
+    transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    animation: none;
+}
+
+/* Numbered steps, in the order the form is filled in. */
+.gl-step {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 4px 12px;
+}
+
+.gl-step-n {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--gl-line-hi);
+    color: var(--gl-muted);
+    font: 700 13px var(--gl-head);
+}
+
+.gl-step[data-done] .gl-step-n {
+    border-color: var(--gl-t, rgb(var(--gl-btn)));
+    background: var(--gl-t, rgb(var(--gl-btn)));
+    color: #fff;
+}
+
+.gl-step h4 {
+    align-self: center;
+    margin: 0;
+    font: 700 15.5px/1.4 var(--gl-head);
+}
+
+.gl-step h4 small {
+    margin-inline-start: 6px;
+    color: var(--gl-muted);
+    font: 500 12.5px var(--font-body, inherit);
+}
+
+.gl-step-body {
+    grid-column: 2;
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+    padding-top: 6px;
+}
+
+@media (max-width: 639px) {
+    .gl-sheet-body {
+        padding-inline: 16px;
+    }
+
+    .gl-mv {
+        margin-inline: 16px;
+        padding: 12px;
+    }
+
+    .gl-mv-cells,
+    .gl-mv-cells[data-count='2'] {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .gl-mv-op {
+        display: none;
+    }
+
+    .gl-mv-cell.is-result {
+        grid-column: 1 / -1;
+    }
+
+    .gl-step {
+        grid-template-columns: 24px minmax(0, 1fr);
+        gap: 4px 10px;
+    }
+
+    .gl-step-n {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+    }
+}
 
 /* ── Notifications (Components/FlashNotifications.jsx) ────────────────── */
 .gl-toasts {
@@ -1704,11 +1938,6 @@
 .gl-method[data-checked] .gl-method-dot {
     border-color: rgb(var(--gl-btn));
     background: radial-gradient(circle, #fff 0 3.5px, rgb(var(--gl-btn)) 4px);
-}
-
-.gl-pay-side {
-    border-inline-start: 1px solid var(--gl-line);
-    background: var(--gl-fill);
 }
 
 .gl-receipt-cut {

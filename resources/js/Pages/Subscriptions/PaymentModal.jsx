@@ -12,9 +12,9 @@ import { paymentInShekels } from '@/lib/accountStatement';
 import { overpaymentLevel } from '@/lib/overpayment';
 import { formatMoney, normalizeDecimalInput } from '@/lib/format';
 import { clearErrorOnInput, submitOnCtrlEnter, validateFormFields } from '@/lib/formValidation';
-import { FieldLabel, SubscriptionStrip } from './AccountFormParts';
+import { balanceCells, CoverageBar, FieldLabel, FormHeader, FormStep, MovementCard, MOVEMENT_TONES, SheetBody, SHEET_FORM_CLASS } from './AccountFormParts';
 import { CorrectionReasonFields, EMPTY_CORRECTION, OriginalLine } from './CorrectionFields';
-import { inputClass, MethodTile, PaymentReceipt, PaymentSummary, TransferFields } from './PaymentModalParts';
+import { inputClass, MethodTile, PaymentReceipt, TransferFields } from './PaymentModalParts';
 
 export { inputClass };
 
@@ -25,8 +25,8 @@ const QUICK_AMOUNTS = [50, 100, 200];
  * Record a payment on a subscription's account: how much, in shekels, and
  * how it was paid — in cash, or
  * by a transfer to one of the company's banks or e-wallets, with who sent
- * it and its reference. A dark panel beside the form shows what it does to
- * the balance before saving; once saved, the window shows the receipt with
+ * it and its reference. The movement card under the title shows what it
+ * does to the balance before saving; once saved, the window shows the receipt with
  * the voucher number. Keys: Ctrl + Enter saves, 1 and 2 pick the method.
  *
  * With `correcting` (a statement line), it corrects that payment instead:
@@ -47,7 +47,6 @@ export default function PaymentModal({
 }) {
     const titleId = useId();
     const amountInput = useRef(null);
-    const collector = usePage().props.auth?.user?.name ?? '';
     const currencies = usePage().props.paymentOptions?.currencies ?? [{ code: 'ILS', label: 'شيكل', rate: '1' }];
     const recorded = correcting?.recorded;
     const form = useResourceForm(
@@ -93,7 +92,6 @@ export default function PaymentModal({
     );
     const { data, setData, errors } = form;
     const [senderIsSubscriber, setSenderIsSubscriber] = useState(!recorded?.sender_name || recorded.sender_name === subscription.fullName);
-    const [detailsOpen, setDetailsOpen] = useState(Boolean(recorded?.notes));
     const [discarding, setDiscarding] = useState(false);
     const [confirmingSave, setConfirmingSave] = useState(false);
     const [receipt, setReceipt] = useState(null);
@@ -115,7 +113,7 @@ export default function PaymentModal({
             : 'تحويل بنكي'
         : 'نقد';
     const methods = ['bank_transfer', 'cash'].filter((method) => paymentMethods.some((option) => option.value === method));
-    const detailErrors = Boolean(errors.notes);
+    const tone = correcting ? 'correction' : 'payment';
 
     useEffect(() => {
         const reference = data.reference_number.trim();
@@ -154,7 +152,6 @@ export default function PaymentModal({
     function close() {
         setDiscarding(false);
         setReceipt(null);
-        setDetailsOpen(false);
         setSenderIsSubscriber(true);
         form.resetAndClearErrors();
         onClose();
@@ -248,14 +245,13 @@ export default function PaymentModal({
                     form.setData('payment_token', paymentToken);
                 }
                 setSenderIsSubscriber(true);
-                setDetailsOpen(false);
-            },
+                    },
         });
     }
 
     return (
         <>
-            <Modal show={show} onClose={requestClose} maxWidth="5xl" panelClassName="!overflow-clip">
+            <Modal show={show} onClose={requestClose} maxWidth="3xl" panelClassName="!overflow-clip">
                 {receipt ? (
                     <div role="dialog" aria-modal="true" aria-label={correcting ? 'صُحّحت الدفعة' : 'سُجّلت الدفعة'}>
                         <PaymentReceipt
@@ -275,47 +271,41 @@ export default function PaymentModal({
                         onSubmit={submit}
                         onInput={(e) => clearErrorOnInput(e, form)}
                         onKeyDown={onKeyDown}
-                        className="flex max-h-[calc(100dvh-6rem)] flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:grid-rows-[auto_minmax(0,1fr)_auto]"
+                        className={SHEET_FORM_CLASS}
+                        style={{ '--gl-t': MOVEMENT_TONES[tone] }}
                     >
-                        <div className="gl-dialog-head flex shrink-0 items-center gap-3.5 px-5 py-4 sm:px-6 sm:py-5 lg:col-start-1 lg:row-start-1">
-                            <span className={`gl-tone flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] ${correcting ? 'gl-tone-warn' : 'gl-tone-brand'}`}>
-                                <Icon name={correcting ? 'repeat' : 'card'} className="h-[18px] w-[18px]" strokeWidth={1.8} />
-                            </span>
-                            <div className="min-w-0">
-                                <h3 id={titleId} className="text-[21px] font-extrabold leading-tight" style={{ fontFamily: 'var(--gl-head)' }}>
-                                    {correcting ? 'تصحيح دفعة' : 'تسجيل دفعة'}
-                                </h3>
-                                <p className="gl-sub mt-0.5 !text-[13px]">
-                                    {correcting
-                                        ? 'صحّح الدفعة؛ تبقى الأصلية في الكشف ملغاة مع سبب التصحيح.'
-                                        : 'سجّل المبلغ المستلم، ويُحدَّث الرصيد تلقائيًا.'}
-                                </p>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={requestClose}
-                                aria-label="إغلاق"
-                                className="gl-ib ms-auto"
-                            >
-                                <Icon name="close" className="h-[18px] w-[18px]" strokeWidth={2} />
-                            </button>
-                        </div>
+                        <FormHeader
+                            titleId={titleId}
+                            icon={correcting ? 'repeat' : 'card'}
+                            tone={correcting ? 'amber' : 'payment'}
+                            title={correcting ? 'تصحيح دفعة' : 'تسجيل دفعة'}
+                            subtitle={correcting ? 'صحّح الدفعة؛ تبقى الأصلية في الكشف ملغاة مع سبب التصحيح.' : 'سجّل المبلغ المستلم، ويُحدَّث الرصيد تلقائيًا.'}
+                            onClose={requestClose}
+                        />
 
-                        {/* On phones the fields and the summary scroll together; side by side they each scroll alone. */}
-                        <div className="min-h-0 flex-1 overflow-y-auto lg:contents">
-                            <div className="grid grid-cols-1 content-start gap-[22px] px-5 pb-3 pt-5 sm:px-6 lg:col-start-1 lg:row-start-2 lg:min-h-0 lg:overflow-y-auto">
-                                <SubscriptionStrip
-                                    subscription={subscription}
-                                    balance={balance}
-                                    balanceLabel={correcting ? 'الرصيد بدون الدفعة الأصلية' : 'الرصيد الحالي'}
-                                />
+                        <MovementCard
+                            subscription={subscription}
+                            tone={tone}
+                            tag={correcting ? 'تصحيح' : 'دفعة'}
+                            ops={['−', '=']}
+                            cells={balanceCells({
+                                balance,
+                                balanceLabel: correcting ? 'الرصيد بدون الأصلية' : 'الرصيد الحالي',
+                                amount: Number(data.amount) > 0 ? inShekels : null,
+                                sign: -1,
+                                moveLabel: 'هذه الدفعة',
+                                moveNote: methodText,
+                            })}
+                        >
+                            <CoverageBar amount={inShekels} owed={owed} />
+                        </MovementCard>
 
-                                {correcting && <OriginalLine entry={correcting} />}
+                        <SheetBody>
+                            {correcting && <OriginalLine entry={correcting} />}
 
+                            <FormStep number={1} title="المبلغ المستلم" done={Number(data.amount) > 0 && inShekels !== null}>
                                 <div>
-                                    <FieldLabel htmlFor="amount" required>
-                                        المبلغ المستلم
-                                    </FieldLabel>
+                                    <label htmlFor="amount" className="sr-only">المبلغ المستلم</label>
                                     <div className="gl-amount" data-invalid={errors.amount ? true : undefined}>
                                         <div className="flex items-center gap-3">
                                             <input
@@ -414,11 +404,11 @@ export default function PaymentModal({
                                     )}
                                     {data.currency !== 'ILS' && inShekels !== null && <p role="status" className="mt-3 text-sm text-gray-600">القيمة المسجلة على حساب المشترك: <bdi className="font-display font-semibold">{formatMoney(inShekels)}</bdi> شيكل.</p>}
                                 </div>
+                            </FormStep>
 
+                            <FormStep number={2} title="طريقة الدفع" hint={methods.length > 1 ? 'بالأرقام 1 · 2' : null} done={throughBank ? Boolean(data.bank_name) : Boolean(data.payment_method)}>
                                 <fieldset>
-                                    <legend className="gl-label mb-2">
-                                        طريقة الدفع <span style={{ color: 'var(--gl-bad)' }}>*</span>
-                                    </legend>
+                                    <legend className="sr-only">طريقة الدفع</legend>
                                     <div className="grid gap-3 sm:grid-cols-2">
                                         {methods.map((method) =>
                                             method === 'bank_transfer' ? (
@@ -481,30 +471,11 @@ export default function PaymentModal({
                                         </div>
                                     )}
                                 </fieldset>
+                            </FormStep>
 
-                                {correcting && <CorrectionReasonFields form={form} reasons={correctionReasons} />}
-
+                            <FormStep number={3} title="ملاحظة" hint="اختياري: تظهر في كشف الحساب" done={Boolean(data.notes)}>
                                 <div>
-                                    <button
-                                        type="button"
-                                        aria-expanded={detailsOpen || detailErrors}
-                                        aria-controls={`${titleId}-details`}
-                                        onClick={() => setDetailsOpen(!(detailsOpen || detailErrors))}
-                                        className="flex items-center gap-2 rounded-lg text-start text-[14px] font-semibold" style={{ color: 'var(--gl-muted)' }}
-                                    >
-                                        <Icon
-                                            name="chevron-down"
-                                            className={`h-[18px] w-[18px] shrink-0 transition-transform ${detailsOpen || detailErrors ? 'rotate-180' : ''}`}
-                                            strokeWidth={2}
-                                        />
-                                        تفاصيل إضافية <span className="font-medium text-gray-500">(اختياري: ملاحظة)</span>
-                                    </button>
-                                    {(detailsOpen || detailErrors) && (
-                                        <div id={`${titleId}-details`} className="animate-menu mt-3.5 grid gap-3.5">
-                                            <div>
-                                                <FieldLabel htmlFor="payment_notes" hint="تظهر في كشف الحساب">
-                                                    ملاحظة
-                                                </FieldLabel>
+                                    <label htmlFor="payment_notes" className="sr-only">ملاحظة</label>
                                                 <input
                                                     id="payment_notes"
                                                     name="notes"
@@ -514,24 +485,18 @@ export default function PaymentModal({
                                                     onChange={(e) => setData('notes', e.target.value)}
                                                     className={inputClass}
                                                 />
-                                                <InputError message={errors.notes} className="mt-2" />
-                                            </div>
-                                        </div>
-                                    )}
+                                    <InputError message={errors.notes} className="mt-2" />
                                 </div>
-                            </div>
+                            </FormStep>
 
-                            <PaymentSummary
-                                amount={data.amount}
-                                currency={data.currency}
-                                inShekels={inShekels}
-                                balance={balance}
-                                methodText={methodText}
-                                collector={collector}
-                            />
-                        </div>
+                            {correcting && (
+                                <FormStep number={4} title="سبب التصحيح">
+                                    <CorrectionReasonFields form={form} reasons={correctionReasons} />
+                                </FormStep>
+                            )}
+                        </SheetBody>
 
-                        <div className="gl-dialog-foot flex shrink-0 items-center gap-3 px-5 py-4 sm:px-6 lg:col-start-1 lg:row-start-3">
+                        <div className="gl-dialog-foot flex shrink-0 items-center gap-3 px-5 py-4 sm:px-6">
                             <SecondaryButton onClick={requestClose} className="gl-lg">
                                 إلغاء
                             </SecondaryButton>

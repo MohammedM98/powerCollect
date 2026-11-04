@@ -8,18 +8,18 @@ import { formatMoney, normalizeDecimalInput } from '@/lib/format';
 import { clearErrorOnInput, submitOnCtrlEnter, validateFormFields } from '@/lib/formValidation';
 import {
     AmountBox,
-    balanceAfterRow,
+    balanceCells,
     balanceText,
     DoneScreen,
-    FieldLabel,
     FieldWarning,
     FormFooter,
     FormHeader,
+    FormStep,
+    MovementCard,
+    MOVEMENT_TONES,
     QuickPick,
-    SubscriptionStrip,
-    SummaryFigure,
-    SummaryLedger,
-    SummaryPanel,
+    SheetBody,
+    SHEET_FORM_CLASS,
 } from './AccountFormParts';
 import { CorrectionReasonFields, EMPTY_CORRECTION, OriginalLine } from './CorrectionFields';
 import { inputClass } from './PaymentModal';
@@ -38,8 +38,8 @@ const notesClass =
  * value comes off what they owe, like a payment made in work instead of
  * money; more than they owe leaves them in credit and is saved only once
  * confirmed. The service must be named; it shows
- * on the statement. A dark panel beside the form shows the balance it
- * leaves; once saved, the window shows what was recorded. Keys: Ctrl +
+ * on the statement. The movement card under the title shows the balance
+ * it leaves; once saved, the window shows what was recorded. Keys: Ctrl +
  * Enter saves.
  *
  * With `correcting` (a statement line), it corrects that clearing instead:
@@ -69,6 +69,7 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
     const overBalance = amount > owed;
     const creditLeft = overBalance ? Math.round((amount - Number(balance)) * 100) / 100 : 0;
     const balanceAfter = amount > 0 ? Number(balance) - amount : null;
+    const tone = correcting ? 'correction' : 'credit';
 
     function close() {
         setDiscarding(false);
@@ -119,7 +120,7 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
 
     return (
         <>
-            <Modal show={show} onClose={requestClose} maxWidth="5xl">
+            <Modal show={show} onClose={requestClose} maxWidth="3xl">
                 {receipt ? (
                     <DoneScreen
                         tone={correcting ? 'amber' : 'green'}
@@ -145,7 +146,8 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
                         onSubmit={submit}
                         onInput={(e) => clearErrorOnInput(e, form)}
                         onKeyDown={submitOnCtrlEnter}
-                        className="flex max-h-[calc(100dvh-6rem)] flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_360px] lg:grid-rows-[auto_minmax(0,1fr)_auto]"
+                        className={SHEET_FORM_CLASS}
+                        style={{ '--gl-t': MOVEMENT_TONES[tone] }}
                     >
                         <FormHeader
                             titleId={titleId}
@@ -160,21 +162,27 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
                             onClose={requestClose}
                         />
 
-                        {/* On phones the fields and the summary scroll together; side by side they each scroll alone. */}
-                        <div className="min-h-0 flex-1 overflow-y-auto lg:contents">
-                            <div className="grid grid-cols-1 content-start gap-[22px] px-5 pb-3 pt-5 sm:px-6 lg:col-start-1 lg:row-start-2 lg:min-h-0 lg:overflow-y-auto">
-                                <SubscriptionStrip
-                                    subscription={subscription}
-                                    balance={balance}
-                                    balanceLabel={correcting ? 'الرصيد بدون المقاصة الأصلية' : 'الرصيد الحالي'}
-                                />
+                        <MovementCard
+                            subscription={subscription}
+                            tone={tone}
+                            tag="خدمة مقابل خدمة"
+                            ops={['−', '=']}
+                            cells={balanceCells({
+                                balance,
+                                balanceLabel: correcting ? 'الرصيد بدون الأصلية' : 'الرصيد الحالي',
+                                amount: amount > 0 ? amount : null,
+                                sign: -1,
+                                moveLabel: 'المقاصة',
+                                moveNote: data.notes.trim().slice(0, 40),
+                            })}
+                        />
 
+                        <SheetBody>
                                 {correcting && <OriginalLine entry={correcting} />}
 
+                                <FormStep number={1} title="الخدمة التي قدّمها المشترك" hint="تظهر في كشف الحساب" done={!missingService}>
                                 <div>
-                                    <FieldLabel htmlFor="clearing_service" required hint="تظهر في كشف الحساب">
-                                        الخدمة التي قدّمها المشترك للشركة
-                                    </FieldLabel>
+                                    <label htmlFor="clearing_service" className="sr-only">الخدمة التي قدّمها المشترك للشركة</label>
                                     <textarea
                                         id="clearing_service"
                                         name="notes"
@@ -189,11 +197,10 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
                                     />
                                     <InputError message={errors.notes} className="mt-2" />
                                 </div>
+                                </FormStep>
 
+                                <FormStep number={2} title="قيمة الخدمة" done={amount > 0}>
                                 <div>
-                                    <FieldLabel htmlFor="amount" required>
-                                        قيمة الخدمة
-                                    </FieldLabel>
                                     <AmountBox
                                         id="amount"
                                         inputRef={amountInput}
@@ -233,11 +240,11 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
                                         <FieldWarning>مبلغ كبير. تأكد أنه صحيح قبل الحفظ، فهو يظهر في كشف حساب المشترك.</FieldWarning>
                                     )}
                                 </div>
+                                </FormStep>
 
+                                <FormStep number={3} title="رقم السند اليدوي" hint="اختياري: رقم السند الورقي إن وُجد" done={Boolean(data.manual_voucher_number.trim())}>
                                 <div>
-                                    <FieldLabel htmlFor="clearing_manual_voucher_number" hint="رقم السند الورقي إن وُجد">
-                                        رقم السند اليدوي
-                                    </FieldLabel>
+                                    <label htmlFor="clearing_manual_voucher_number" className="sr-only">رقم السند اليدوي</label>
                                     <input
                                         id="clearing_manual_voucher_number"
                                         name="manual_voucher_number"
@@ -251,21 +258,14 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
                                     />
                                     <InputError message={errors.manual_voucher_number} className="mt-2" />
                                 </div>
+                                </FormStep>
 
-                                {correcting && <CorrectionReasonFields form={form} reasons={correctionReasons} />}
-                            </div>
-
-                            <SummaryPanel title="ملخص المقاصة" tag="خدمة مقابل خدمة">
-                                <SummaryFigure label="قيمة المقاصة" value={`${formatMoney(amount)}`} tone="green" note={data.notes.trim() || null} />
-                                <SummaryLedger
-                                    rows={[
-                                        [correcting ? 'الرصيد بدون الأصلية' : 'الرصيد الحالي', balanceText(describeBalance(balance))],
-                                        ['مقاصة', `${formatMoney(amount)} ₪`, 'green'],
-                                    ]}
-                                    result={balanceAfterRow('الرصيد بعد المقاصة', balanceAfter)}
-                                />
-                            </SummaryPanel>
-                        </div>
+                                {correcting && (
+                                    <FormStep number={4} title="سبب التصحيح">
+                                        <CorrectionReasonFields form={form} reasons={correctionReasons} />
+                                    </FormStep>
+                                )}
+                        </SheetBody>
 
                         <FormFooter
                             onCancel={requestClose}
