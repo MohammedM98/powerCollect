@@ -640,7 +640,7 @@
     height: 100%;
     border-radius: 99px;
     background: linear-gradient(90deg, rgb(var(--gl-btn)), rgb(var(--gl-brand)));
-    transform-origin: inline-start;
+    transform-origin: var(--gl-start-x, right);
     animation: gl-grow 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
     animation-delay: calc(0.2s + var(--i, 0) * 90ms);
 }
@@ -664,7 +664,7 @@
 .gl-split i {
     display: block;
     height: 100%;
-    transform-origin: inline-start;
+    transform-origin: var(--gl-start-x, right);
     animation: gl-grow 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
     animation-delay: calc(0.3s + var(--i, 0) * 120ms);
 }
@@ -926,7 +926,7 @@
     inset: 0;
     background: rgb(var(--gl-btn) / 0.75);
     transform: scaleX(var(--p, 0));
-    transform-origin: inline-start;
+    transform-origin: var(--gl-start-x, right);
 }
 
 .gl-hold span {
@@ -1026,6 +1026,37 @@
 
 .gl-mb.is-landing {
     animation: gl-land 0.5s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.gl-mb:focus-visible {
+    outline: 2px solid rgb(var(--gl-brand));
+    outline-offset: 2px;
+}
+
+/* Picked up from the keyboard: lifted in the company's colour until it is put down. */
+.gl-mb.is-held {
+    border-color: rgb(var(--gl-brand));
+    box-shadow: 0 0 0 1px rgb(var(--gl-brand)), 0 14px 30px -14px rgb(var(--gl-brand) / 0.8);
+    transform: translateY(-2px);
+}
+
+.gl-mb.is-static {
+    cursor: default;
+    touch-action: auto;
+}
+
+.gl-mb .gl-progress {
+    height: 4px;
+    border-radius: 99px;
+    background: var(--gl-fill-2);
+    overflow: hidden;
+}
+
+.gl-mb .gl-progress > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--gl-ok);
 }
 
 @keyframes gl-land {
@@ -1897,4 +1928,13 @@
 .gl-btn-part:focus-visible {
     outline: 2px solid #fff;
     outline-offset: -3px;
+}
+
+/* Bars grow from the start of the line: the right in Arabic, the left in a left-to-right block. */
+[dir='ltr'] {
+    --gl-start-x: left;
+}
+
+[dir='rtl'] {
+    --gl-start-x: right;
 }

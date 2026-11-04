@@ -424,11 +424,11 @@
     },
     {
       "name": "MoveBoard",
-      "status": "new",
+      "status": "existing",
       "file": "resources/js/Components/MoveBoard.jsx",
       "prototype": "MoveBoard + BoardPage",
       "spec": "أعمدة زجاجية، رأس كل عمود: نقطة لون + اسم + عدّاد + سطر ملاحظة. بطاقة العنصر: رقم mono وعمر، صورة رمزية واسم، سطر وصف، مبلغ + وسم. السحب: عتبة 6px، نسخة شبح scale 1.04 وميل -2deg، العمود الهدف يتوهج، حالة فارغة 'أفلت هنا'، وبعد الإفلات Toast مع تراجع. تبويبات underline فوق اللوحة. أي حالة مالية تمرّ بتأكيد.",
-      "audit": "غير موجود. يوجد نموذج لوحة حقيقي في lib/readingBoard.js (boardColumns: المتاحة، الكشوف الورقية، ثم كل قارئ؛ movePayload مع confirmDownloaded) تعرضه ReadingCycles/Show.jsx اليوم كجدول تحديد ثم نافذة نقل.",
+      "audit": "منفّذ في Components/MoveBoard.jsx: أعمدة boardColumns (المتاحة، الكشوف الورقية، ثم كل قارئ)، سحب بالمؤشر بعتبة 6px ونسخة شبح، وبديل لوحة المفاتيح (Enter للحمل، الأسهم للعمود، Enter للنقل، Escape للإلغاء). اللوحة لا تنقل شيئًا بنفسها: الإفلات يفتح ConfirmDialog ثم يرسل movePayload كما يفعل الجدول. لا Toast تراجع لأن التوزيع لا يملك عكسًا على الخادم؛ النقل العكسي نقل جديد.",
       "decision": "معتمد: عرض بديل بجانب جدول التوزيع في ReadingCycles/Show لا بديل عنه، ونقل طبلون بعد تحميل قراءاته إلى الهاتف يمرّ بتأكيد."
     },
     {
