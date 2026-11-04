@@ -124,7 +124,7 @@ export function MovementCard({ subscription, tone = 'payment', tag = null, cells
                         {index > 0 && ops[index - 1] && <span className="gl-mv-op" aria-hidden="true">{ops[index - 1]}</span>}
                         <div className={`gl-mv-cell ${cell.move ? 'is-move' : ''} ${cell.result ? 'is-result' : ''}`} style={cell.color ? { '--gl-cell': cell.color } : undefined}>
                             <small>{cell.label}</small>
-                            <b className="gl-num" dir="ltr">{cell.value}</b>
+                            <b className="gl-num"><bdi dir="ltr">{cell.value}</bdi></b>
                             {cell.note && <em>{cell.note}</em>}
                         </div>
                     </Fragment>
