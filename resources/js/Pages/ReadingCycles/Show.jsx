@@ -94,7 +94,7 @@ function ReadingDayModal({ cycle, onClose }) {
     }
 
     return (
-        <Modal show onClose={onClose} maxWidth="md" centered>
+        <Modal show onClose={onClose} maxWidth="md">
             <form onSubmit={submit} className="space-y-4 p-7" aria-labelledby="reading-day-title">
                 <h3 id="reading-day-title" className="text-lg font-bold text-gray-900">تغيير يوم القراءة لهذه الدورة</h3>
                 <p className="text-sm text-gray-600">موعد القراءة حسب إعدادات الفرع أو الموقع: <bdi dir="ltr" className="whitespace-nowrap">{cycle.scheduledReadingDate}</bdi>. يمكنك اختيار موعد من <bdi dir="ltr" className="whitespace-nowrap">{cycle.minReadingDate}</bdi> إلى <bdi dir="ltr" className="whitespace-nowrap">{cycle.maxReadingDate}</bdi>. تغيير يوم القراءة الأسبوعي الدائم يتم من صفحة إعدادات القراءات.</p>

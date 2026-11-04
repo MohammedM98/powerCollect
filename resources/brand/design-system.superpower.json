@@ -172,7 +172,7 @@
       "inputs": "filled",
       "inputFocus": "ring",
       "badges": "soft",
-      "details": "drawer",
+      "details": "modal",
       "bodyFont": "plex",
       "headingFont": "cairo",
       "motion": "full",
@@ -331,7 +331,7 @@
         "DataTable/TariffTag"
       ],
       "prototype": "tbl",
-      "spec": "داخل Panel واحد: شريط أدوات (بحث + فلاتر + كثافة) ثم الجدول ثم الترقيم. رأس بلا خلفية 12px/700 بلون faint. صفوف بخط فاصل line وتمرير بخلفية fill. الأرقام tabular وبلون الحالة (دين bad، سليم ok). الصف قابل للنقر ويفتح التفاصيل في drawer.",
+      "spec": "داخل Panel واحد: شريط أدوات (بحث + فلاتر + كثافة) ثم الجدول ثم الترقيم. رأس بلا خلفية 12px/700 بلون faint. صفوف بخط فاصل line وتمرير بخلفية fill. الأرقام tabular وبلون الحالة (دين bad، سليم ok). الصف قابل للنقر ويفتح التفاصيل في نافذة منبثقة وسط الشاشة.",
       "hooks": [
         "resources/js/hooks/useDataTable.js",
         "resources/js/hooks/useTableDensity.js",
@@ -363,9 +363,9 @@
         "FormModal",
         "ConfirmDialog"
       ],
-      "prototype": "drawer",
-      "spec": "زجاج. مع design.details=drawer تفتح التفاصيل لوحة جانبية على طرف النهاية (inline-end) بعرض 420px وخلفية معتمة",
-      "audit": "Modal يقبل presentation (الافتراضي details)، وapp.css يرسم اللوحة الجانبية عند data-ui-details=drawer لنوافذ presentation=details."
+      "prototype": "popup",
+      "spec": "زجاج. كل نافذة منبثقة وسط الشاشة فوق خلفية معتمة، ولا لوحات جانبية. الأطول من الشاشة تتمرر، وعلى الجوال تلتصق بأسفل الشاشة كورقة.",
+      "audit": "Modal يوسّط كل نافذة بهوامش تلقائية، وapp.css يجعلها ورقة سفلية على الجوال (.modal-scroll)."
     },
     {
       "name": "HoldToConfirm",
@@ -530,7 +530,7 @@
       "PageTrail",
       "PageHeader(actions)",
       "Panel(DataTableToolbar, DataTable, Pagination)",
-      "Modal drawer للتفاصيل"
+      "Modal منبثقة للتفاصيل"
     ],
     "form": [
       "PageTrail",
@@ -581,7 +581,7 @@
         "DataTable",
         "StatusPill",
         "BulkActionsMenu",
-        "Modal(drawer: StatementModal)"
+        "Modal(popup: StatementModal)"
       ],
       "verify": true
     },
@@ -859,7 +859,7 @@
       "template": "list",
       "uses": [
         "DataTable",
-        "Modal(drawer: UserModal)"
+        "Modal(popup: UserModal)"
       ],
       "verify": true
     },
@@ -876,7 +876,7 @@
       "template": "list",
       "uses": [
         "DataTable",
-        "Modal(drawer: BranchModal)"
+        "Modal(popup: BranchModal)"
       ],
       "verify": true
     },

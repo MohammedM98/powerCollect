@@ -66,7 +66,7 @@ export default function CloseBoxesByType({ boxes, branchId, userId, initialType,
         });
     }
 
-    return <Modal show onClose={onClose} maxWidth="3xl" centered panelClassName="flex max-h-[calc(100dvh-4rem)] flex-col">
+    return <Modal show onClose={onClose} maxWidth="3xl" panelClassName="flex max-h-[calc(100dvh-4rem)] flex-col">
         <header className="shrink-0 space-y-4 border-b border-gray-100 p-5 sm:p-6">
             <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">

@@ -146,7 +146,6 @@ export function PermissionReviewDialog({
                 }
             }}
             maxWidth="2xl"
-            centered
         >
             <div
                 role="dialog"

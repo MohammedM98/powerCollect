@@ -26,11 +26,11 @@ test('legacy customer files get neutral new choices and preserve original choice
 
 test('five color roles and structural options round trip without maker or unknown keys', () => {
     const { fromFile, toFile, COLOR_SETS } = designer();
-    const output = toFile(fromFile({ version: 1, company: { name: 'اختبار' }, maker: { product: 'overwrite' }, colors: { ...COLOR_SETS[1].colors, success: '#123456', unknown: '#000000' }, design: { tableVariant: 'ledger', motionStyle: 'slide', details: 'drawer', footerStyle: 'compact', unknown: 'ignored' } }));
+    const output = toFile(fromFile({ version: 1, company: { name: 'اختبار' }, maker: { product: 'overwrite' }, colors: { ...COLOR_SETS[1].colors, success: '#123456', unknown: '#000000' }, design: { tableVariant: 'ledger', motionStyle: 'slide', details: 'modal', footerStyle: 'compact', unknown: 'ignored' } }));
 
     assert.equal(output.colors.success, '#123456');
     for (const role of ['primary', 'secondary', 'accent', 'background', 'surface']) assert.match(output.colors[role], /^#[0-9A-F]{6}$/);
-    assert.equal(output.design.details, 'drawer');
+    assert.equal(output.design.details, 'modal');
     assert.equal(output.design.tableVariant, 'ledger');
     assert.equal(output.design.motionStyle, 'slide');
     assert.equal(output.design.footerStyle, 'compact');

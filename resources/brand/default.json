@@ -28,7 +28,7 @@
         "preset": "superpower",
         "tableVariant": "default",
         "motionStyle": "standard",
-        "details": "drawer",
+        "details": "modal",
         "footerStyle": "full",
         "navigation": "sidebar",
         "navStyle": "glass",

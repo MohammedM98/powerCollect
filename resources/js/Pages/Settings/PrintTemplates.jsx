@@ -56,7 +56,7 @@ function RenameModal({ template, onClose }) {
     }
 
     return (
-        <Modal show onClose={onClose} maxWidth="md" centered>
+        <Modal show onClose={onClose} maxWidth="md">
             <form onSubmit={save} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`}>
                 <div className="px-7 pb-4 pt-7">
                     <h3 id={`${id}-title`} className="flex items-center gap-2 text-lg font-bold text-gray-900">
@@ -86,7 +86,7 @@ function NewTemplateModal({ pages, onClose }) {
     const [path, setPath] = useState(pages[0]?.path ?? '');
 
     return (
-        <Modal show onClose={onClose} maxWidth="lg" centered>
+        <Modal show onClose={onClose} maxWidth="lg">
             <div role="dialog" aria-modal="true" aria-labelledby={`${id}-title`}>
                 <div className="px-7 pb-4 pt-7">
                     <h3 id={`${id}-title`} className="flex items-center gap-2 text-lg font-bold text-gray-900">

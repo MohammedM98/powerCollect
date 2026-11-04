@@ -35,7 +35,7 @@ export default function SubscriptionMessageHistoryModal({ subscription, onClose 
     }, [requestKey]);
 
     return (
-        <Modal show onClose={onClose} maxWidth="5xl" centered>
+        <Modal show onClose={onClose} maxWidth="5xl">
             <section role="dialog" aria-modal="true" aria-labelledby={titleId} className="flex max-h-[85dvh] min-h-0 flex-col">
                 <header className="flex shrink-0 items-start justify-between gap-4 border-b border-gray-100 px-5 py-5 sm:px-7">
                     <div className="flex min-w-0 items-center gap-3">

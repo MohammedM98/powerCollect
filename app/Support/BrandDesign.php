@@ -36,8 +36,7 @@ class BrandDesign
             'none' => 'بدون حركة',
         ]],
         'details' => ['label' => 'عرض التفاصيل', 'options' => [
-            'modal' => 'نافذة وسط الشاشة',
-            'drawer' => 'لوحة جانبية',
+            'modal' => 'نافذة منبثقة وسط الشاشة',
         ]],
         'footerStyle' => ['label' => 'تذييل الصفحة', 'options' => [
             'full' => 'كامل',
@@ -267,7 +266,7 @@ class BrandDesign
         'superpower' => [
             'label' => 'سوبر باور زجاجي كحلي',
             'description' => 'بطاقات زجاجية كحلية فوق خلفية بإضاءة زرقاء، قائمة جانبية، جداول داخل لوحات زجاجية، أزرار متدرجة وحقول معبأة.',
-            'design' => ['details' => 'drawer', 'navigation' => 'sidebar', 'background' => 'navy', 'neutral' => 'navy', 'cards' => 'glass', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand', 'navHighlight' => 'brand'],
+            'design' => ['navigation' => 'sidebar', 'background' => 'navy', 'neutral' => 'navy', 'cards' => 'glass', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand', 'navHighlight' => 'brand'],
         ],
         'classic' => [
             'label' => 'كلاسيكي فاخر',

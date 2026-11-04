@@ -65,7 +65,7 @@ export default function BulkChangeModal({ field, selection, count, statusOptions
     }
 
     return (
-        <Modal show onClose={() => { if (!saving) onClose(); }} maxWidth="lg" centered panelClassName={field === 'meter_box_id' ? '!overflow-visible' : ''}>
+        <Modal show onClose={() => { if (!saving) onClose(); }} maxWidth="lg" panelClassName={field === 'meter_box_id' ? '!overflow-visible' : ''}>
             <form onSubmit={apply} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-reach`}>
                 <div className="flex items-start gap-4 px-7 pb-2 pt-7">
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600">

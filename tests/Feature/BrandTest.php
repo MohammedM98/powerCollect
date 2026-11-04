@@ -78,7 +78,8 @@ class BrandTest extends TestCase
             ->where('brand.primaryColor', '#2F6BFF')
             ->where('brand.design.preset', 'superpower')
             ->where('brand.design.navigation', 'sidebar')
-            ->where('brand.design.cards', 'glass'));
+            ->where('brand.design.cards', 'glass')
+            ->where('brand.design.details', 'modal'));
         $response->assertSee('data-ui-background="navy"', false);
         $response->assertSee('data-ui-neutral="navy"', false);
         $response->assertSee(':root{--brand-50:', false);
@@ -252,7 +253,7 @@ class BrandTest extends TestCase
     public function test_an_identity_round_trips_all_palette_roles_and_component_choices(): void
     {
         $colors = ['secondary' => '#334155', 'accent' => '#b45309', 'background' => '#f8fafc', 'surface' => '#ffffff'];
-        $design = ['tableVariant' => 'ledger', 'motionStyle' => 'slide', 'details' => 'drawer', 'footerStyle' => 'compact', 'navHighlight' => 'accent'];
+        $design = ['tableVariant' => 'ledger', 'motionStyle' => 'slide', 'details' => 'modal', 'footerStyle' => 'compact', 'navHighlight' => 'accent'];
 
         $this->artisan('brand:import', ['file' => $this->identityFile(['colors' => $colors, 'design' => $design])])->assertSuccessful();
 
@@ -265,12 +266,20 @@ class BrandTest extends TestCase
         }
         $this->get(route('login'))->assertInertia(fn ($page) => $page
             ->where('brand.colors.accent', '#B45309')
-            ->where('brand.design.details', 'drawer'))
+            ->where('brand.design.details', 'modal'))
             ->assertSee('--brand-secondary-500:51 65 85;', false)
             ->assertSee('--brand-accent-500:180 83 9;', false)
             ->assertSee('--gray-50:248 250 252;', false)
             ->assertSee('--surface:255 255 255;', false)
             ->assertSee('data-ui-table-variant="ledger"', false);
+    }
+
+    public function test_a_look_saved_with_the_retired_side_panel_opens_details_as_a_popup(): void
+    {
+        $design = BrandDesign::normalize(['preset' => 'superpower', 'details' => 'drawer']);
+
+        $this->assertSame('modal', $design['details']);
+        $this->assertSame('superpower', $design['preset']);
     }
 
     public function test_import_rejects_invalid_palette_roles_and_component_choices_without_saving(): void
