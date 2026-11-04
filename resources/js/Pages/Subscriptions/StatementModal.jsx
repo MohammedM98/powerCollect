@@ -35,8 +35,9 @@ function StatementSkeleton() {
 
 /**
  * A subscription's financial history — their account statement — in a wide
- * window over the list, closed with its "إخفاء" button, Esc, or a click
- * outside it. `subscription` (from the list's row) fills the header at once;
+ * pop-up over the list, the height of the screen, closed with its close
+ * button, Esc, or a click outside it. Its header names the subscription
+ * and puts each movement it may add one click away. `subscription` (from the list's row) fills the header at once;
  * `statement` (the statement's props) fills the rest when it arrives.
  * `initialForm` ('payment', 'charge', 'discount' or 'clearing') opens that form as
  * soon as the statement is there. `onSwitch(header)` opens another of the
@@ -51,15 +52,15 @@ export default function StatementModal({ subscription, statement, initialForm = 
     return (
         <>
             <Modal show onClose={onClose} maxWidth="full">
-                <div role="dialog" aria-modal="true" aria-labelledby={titleId} className="flex h-[calc(100dvh-6rem)] min-h-0 flex-col">
-                    <div className="flex shrink-0 flex-wrap items-center justify-between gap-x-6 gap-y-4 border-b border-gray-100 px-4 py-4 sm:px-8 sm:py-5">
-                        <div className="flex min-w-0 items-center gap-3.5">
-                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600">
+                <div role="dialog" aria-modal="true" aria-labelledby={titleId} className="gl-statement flex min-h-0 flex-col">
+                    <header className="gl-dialog-head grid shrink-0 gap-3.5 px-4 py-4 sm:px-6">
+                        <div className="flex items-start gap-3.5">
+                            <span className="gl-tone gl-tone-brand hidden h-11 w-11 shrink-0 items-center justify-center rounded-[14px] sm:flex">
                                 <Icon name="ledger" className="h-[22px] w-[22px]" />
                             </span>
-                            <div className="min-w-0">
+                            <div className="min-w-0 flex-1">
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                                    <h3 id={titleId} className="text-xl font-bold text-gray-900">
+                                    <h3 id={titleId} className="text-xl font-extrabold" style={{ fontFamily: 'var(--gl-head)' }}>
                                         كشف حساب {header.fullName}
                                     </h3>
                                     {header.statusLabel && <StatusPill tone={STATUS_TONES[header.status]} label={header.statusLabel} />}
@@ -72,7 +73,7 @@ export default function StatementModal({ subscription, statement, initialForm = 
                                         />
                                     )}
                                 </div>
-                                <p className="mt-0.5 text-sm text-gray-500">
+                                <p className="gl-sub mt-0.5 !text-[13px]">
                                     {header.subscriberNumber && (
                                         <>
                                             مشترك <span dir="ltr">{header.subscriberNumber}</span> ·{' '}
@@ -93,53 +94,38 @@ export default function StatementModal({ subscription, statement, initialForm = 
                                     {header.branchName}
                                 </p>
                             </div>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2">
-                            {statement && (
-                                <StatementActions
-                                    canRecordPayment={statement.canRecordPayment}
-                                    canRecordLatePayment={statement.canRecordLatePayment}
-                                    canRecordSplitPayment={statement.canRecordSplitPayment}
-                                    canAddCharge={statement.canAddCharge}
-                                    canAddDiscount={statement.canAddDiscount}
-                                    canAddClearing={statement.canAddClearing}
-                                    onOpen={setOpenForm}
-                                />
-                            )}
-                            {onEdit && statement?.canUpdate && (
-                                <button
-                                    type="button"
-                                    onClick={() => onEdit(header)}
-                                    className="inline-flex h-10 items-center gap-2 rounded-control border border-blue-500/30 bg-blue-500/10 px-3.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-500/15 active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 dark:text-blue-600"
+                            <div className="flex shrink-0 items-center gap-2">
+                                {onEdit && statement?.canUpdate && (
+                                    <button type="button" onClick={() => onEdit(header)} aria-label="تعديل البيانات" title="تعديل البيانات" className="gl-ib">
+                                        <Icon name="pencil" className="h-[18px] w-[18px]" />
+                                    </button>
+                                )}
+                                <Link
+                                    href={`/subscriptions/${header.id}/statement${focusLineId ? `?transaction=${focusLineId}` : ''}`}
+                                    title="فتح الكشف في صفحة مستقلة"
+                                    aria-label="فتح الكشف في صفحة مستقلة"
+                                    className="gl-ib"
                                 >
-                                    <Icon name="pencil" className="h-[18px] w-[18px]" />
-                                    تعديل البيانات
+                                    <Icon name="external" className="h-[18px] w-[18px]" />
+                                </Link>
+                                <button type="button" onClick={onClose} aria-label="إخفاء الكشف" title="إخفاء (Esc)" className="gl-ib">
+                                    <Icon name="close" className="h-[18px] w-[18px]" />
                                 </button>
-                            )}
-                            <Link
-                                href={`/subscriptions/${header.id}/statement${focusLineId ? `?transaction=${focusLineId}` : ''}`}
-                                title="فتح الكشف في صفحة مستقلة"
-                                aria-label="فتح الكشف في صفحة مستقلة"
-                                className="flex h-10 w-10 items-center justify-center rounded-control border border-gray-200 bg-surface text-gray-600 transition hover:border-gray-300 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-                            >
-                                <Icon name="external" className="h-[18px] w-[18px]" />
-                            </Link>
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="inline-flex h-10 items-center gap-2 rounded-control border border-gray-200 bg-surface px-3.5 text-sm font-semibold text-gray-900 transition hover:border-gray-300 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-                            >
-                                <Icon name="eye-off" className="h-[18px] w-[18px]" />
-                                إخفاء
-                                <span className="kbd hidden sm:inline-flex" dir="ltr">
-                                    Esc
-                                </span>
-                            </button>
+                            </div>
                         </div>
-                    </div>
+                        {statement && (
+                            <StatementActions
+                                canRecordPayment={statement.canRecordPayment}
+                                canRecordSplitPayment={statement.canRecordSplitPayment}
+                                canAddCharge={statement.canAddCharge}
+                                canAddDiscount={statement.canAddDiscount}
+                                canAddClearing={statement.canAddClearing}
+                                onOpen={setOpenForm}
+                            />
+                        )}
+                    </header>
 
-                    <div className="min-h-0 flex-1 overflow-y-auto bg-gray-50 px-4 py-5 sm:px-8 sm:py-6" aria-busy={!statement}>
+                    <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6" aria-busy={!statement}>
                         <ArchiveNotice subscription={header} />
                         {statement ? (
                             <>

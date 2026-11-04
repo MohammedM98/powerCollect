@@ -47,7 +47,6 @@ export default function Statement(statement) {
                     </div>
                     <StatementActions
                         canRecordPayment={canRecordPayment}
-                        canRecordLatePayment={statement.canRecordLatePayment}
                         canRecordSplitPayment={statement.canRecordSplitPayment}
                         canAddCharge={canAddCharge}
                         canAddDiscount={canAddDiscount}

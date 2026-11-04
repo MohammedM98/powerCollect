@@ -1691,6 +1691,39 @@
     animation: none;
 }
 
+/* A statement's movements, one button each in its own colour (Pages/Subscriptions/StatementForms.jsx). */
+.gl-acts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.gl-act {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 38px;
+    padding: 0 13px;
+    border-radius: 11px;
+    border: 1px solid color-mix(in srgb, var(--gl-c) 35%, transparent);
+    background: color-mix(in srgb, var(--gl-c) 10%, transparent);
+    color: var(--gl-c);
+    font-size: 13.5px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+}
+
+.gl-act:hover {
+    background: var(--gl-c);
+    color: #fff;
+}
+
+.gl-act:focus-visible {
+    outline: 2px solid var(--gl-c);
+    outline-offset: 2px;
+}
+
 /* Numbered steps, in the order the form is filled in. */
 .gl-step {
     display: grid;
@@ -2166,4 +2199,15 @@
 
 [dir='rtl'] {
     --gl-start-x: right;
+}
+
+/* The statement window fills the screen's height; its header stays while the statement scrolls (Pages/Subscriptions/StatementModal.jsx). */
+.gl-statement {
+    height: calc(100dvh - 3rem);
+}
+
+@media (max-width: 639px) {
+    .gl-statement {
+        height: calc(100dvh - 12px - env(safe-area-inset-bottom, 0px));
+    }
 }
