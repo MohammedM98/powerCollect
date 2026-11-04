@@ -207,7 +207,7 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
             {selectionCount > 0 && !list.isClosed && (
                 <>
                     <div className="h-24" aria-hidden="true" />
-                    <div role="region" aria-label="إضافة المحددين" className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[calc(100%-2rem)] max-w-2xl flex-wrap items-center justify-between gap-2 rounded-2xl bg-graphite-gradient px-4 py-3 text-white shadow-lift">
+                    <div role="region" aria-label="إضافة المحددين" className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[calc(100%-2rem)] max-w-2xl flex-wrap items-center justify-between gap-2 rounded-2xl bg-brand-gradient px-4 py-3 text-white shadow-lift">
                         <span className="text-sm" aria-live="polite">
                             <b className="font-display">{selectionCount.toLocaleString('en')}</b> {allMatching ? 'مشترك (كل النتائج المطابقة)' : 'مشترك محدد'}
                         </span>

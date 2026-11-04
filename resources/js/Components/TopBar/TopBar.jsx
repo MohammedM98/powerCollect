@@ -6,7 +6,7 @@ import ActivityBell from '@/Components/ActivityBell';
 import { shouldPrefetchPage, HOME_LINK, currentGroup, groupLandingLink, isActiveLink, topBarItems } from '@/lib/navigation';
 import MegaMenu, { megaWidth } from './MegaMenu';
 import AccountMenu from './AccountMenu';
-import NavigationLayoutSwitch from './NavigationLayoutSwitch';
+import LookStudio from './LookStudio';
 import { useTheme } from '@/hooks/useTheme';
 import { pageWindowOpen } from './shortcuts';
 import './top-bar.css';
@@ -30,11 +30,11 @@ function badgeOf(group, badges) {
  * user still sees where they are — and, with `scope`, whose figures they read. A section's pages open in one panel under it
  * that reshapes itself as the pointer moves between sections; a mouse click
  * on a section opens its first page, while touch and the keyboard, with no
- * hover, open the panel. Beside the side menu (`slim`), wide screens see only
- * the tools: the search, the switch between the side menu and the top bar
- * (`layout`, `onLayoutChange`), the theme, the activity and the account.
+ * hover, open the panel. Beside the section dock (`slim`), wide screens see
+ * only the tools: the search, the theme, this person's appearance panel
+ * (LookStudio), the activity and the account.
  */
-export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDrawer, drawerOpen, layerOpen, onShowShortcuts, onStartTour, slim = false, layout = 'topbar', onLayoutChange }) {
+export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDrawer, drawerOpen, layerOpen, onShowShortcuts, onStartTour, slim = false }) {
     const { props, url } = usePage();
     const { dark, changePreference } = useTheme();
     const { appName, auth } = props;
@@ -566,10 +566,10 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             <span className="tn-search-text flex-1 text-start">{props.can?.recordPayments && props.can?.viewSubscriptions ? 'ابحث عن صفحة أو مشترك…' : 'ابحث عن صفحة أو أمر…'}</span>
                             <span className="tn-kbd" dir="ltr">Ctrl K</span>
                         </button>
-                        {onLayoutChange && <NavigationLayoutSwitch layout={layout} onChange={onLayoutChange} className="tn-desktop-only" />}
                         <button type="button" className="tn-tool" onClick={() => changePreference(dark ? 'light' : 'dark')} aria-label={dark ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
                             <Icon name={dark ? 'sun' : 'moon'} />
                         </button>
+                        <LookStudio open={popover === 'look'} onToggle={() => togglePopover('look')} onClose={() => setPopover(null)} />
                         <ActivityBell open={popover === 'bell'} onToggle={() => togglePopover('bell')} onClose={() => setPopover(null)} />
                         <span className="tn-separator" aria-hidden="true" />
                         <AccountMenu

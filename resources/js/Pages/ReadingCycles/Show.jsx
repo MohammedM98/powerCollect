@@ -3,6 +3,7 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import StatusPill from '@/Components/DataTable/StatusPill';
 import Icon from '@/Components/Icon';
+import KpiTile from '@/Components/KpiTile';
 import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton, { secondaryButtonClass } from '@/Components/SecondaryButton';
@@ -28,12 +29,9 @@ function DistributionSummary({ boxes }) {
     const read = columnTotals(boxes).read;
     return (
         <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]">
-            <div className="relative overflow-hidden rounded-card bg-graphite-gradient p-5 text-white shadow-card">
-                <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-spectrum" />
-                <p className="text-sm text-white/70">الطبلونات ضمن نتائج البحث والتصفية</p>
-                <p className="mt-1 font-display text-4xl font-bold">{formatNumber(boxes.length)} <span className="text-sm font-semibold text-white/70">طبلون</span></p>
-                <div className="mt-4 flex items-center gap-2 border-t border-white/15 pt-3 text-xs text-white/70"><Icon name="users" className="h-4 w-4" />المشتركون <b className="font-display text-sm text-white">{formatNumber(counters.subscribers)}</b></div>
-            </div>
+            <KpiTile hero icon="table" label="الطبلونات ضمن نتائج البحث والتصفية" value={formatNumber(boxes.length)} unit="طبلون">
+                <div className="gl-kv mt-3 border-t pt-3" style={{ borderColor: 'var(--gl-line)' }}><span className="inline-flex items-center gap-1.5"><Icon name="users" className="h-4 w-4" />المشتركون</span><b className="gl-num">{formatNumber(counters.subscribers)}</b></div>
+            </KpiTile>
             {[
                 { icon: 'users', label: 'موزعة على القرّاء', value: counters.mobile, hint: `قُرئ ${formatNumber(read)} من ${formatNumber(counters.subscribers)} مشترك`, tone: 'text-gray-900' },
                 { icon: 'table', label: 'بانتظار التوزيع', value: counters.available, hint: 'اختر قارئًا أو خصصها للكشوف الورقية', tone: 'text-amber-700 dark:text-amber-400' },

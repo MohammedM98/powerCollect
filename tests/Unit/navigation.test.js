@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { MAIN_LINKS, SETTINGS_LINKS, allowedNavigationGroups, groupLandingLink, isActiveLink, lockedLinkProps, navigationGroups, isInsideAnyLink, navigationLayout, pageTrail, topBarItems, shouldPrefetchPage } from '../../resources/js/lib/navigation.js';
+import { MAIN_LINKS, SETTINGS_LINKS, allowedNavigationGroups, groupLandingLink, isActiveLink, lockedLinkProps, navigationGroups, isInsideAnyLink, pageTrail, topBarItems, shouldPrefetchPage } from '../../resources/js/lib/navigation.js';
 
 test('hover navigation avoids background requests for financial and reading pages', () => {
     for (const href of ['/dashboard', '/subscriptions?sort=name', '/meter-readings', '/reading-cycles', '/reports', '/ledger', '/payments/summary', '/disconnection-lists', '/unknown']) {
@@ -183,14 +183,4 @@ test('the page trail names the section and page, also from a page inside it', ()
     assert.deepEqual([pageTrail(groups, '/dashboard').group, pageTrail(groups, '/dashboard').link.label], [undefined, 'لوحة التحكم']);
     assert.equal(pageTrail(groups, '/profile').link.label, 'الملف الشخصي');
     assert.equal(pageTrail(groups, '/ledger'), null);
-});
-
-test('a browser shows the navigation its user picked, else the company\'s, and picking the side keeps a rail narrow', () => {
-    assert.equal(navigationLayout(null, 'sidebar'), 'sidebar');
-    assert.equal(navigationLayout(null, 'rail'), 'rail');
-    assert.equal(navigationLayout(null, undefined), 'topbar');
-    assert.equal(navigationLayout('topbar', 'sidebar'), 'topbar');
-    assert.equal(navigationLayout('sidebar', 'topbar'), 'sidebar');
-    assert.equal(navigationLayout('sidebar', 'rail'), 'rail');
-    assert.equal(navigationLayout('anything', 'sidebar'), 'sidebar');
 });

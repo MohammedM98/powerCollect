@@ -17,7 +17,7 @@ export default function StatementViewTabs({ value, onChange }) {
                         onClick={() => onChange(option.value)}
                         className={`group relative inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-[14px] font-semibold transition duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 motion-reduce:transition-none ${
                             active
-                                ? 'bg-graphite-gradient text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.12),0_12px_24px_-12px_rgb(var(--shadow-ink)/0.7)] dark:bg-[linear-gradient(135deg,rgb(var(--graphite-400)),rgb(var(--graphite-600))_60%,rgb(var(--graphite-800)))] dark:ring-1 dark:ring-white/10'
+                                ? 'bg-brand-gradient text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.12),0_12px_24px_-12px_rgb(var(--shadow-ink)/0.7)] dark:bg-[linear-gradient(135deg,rgb(var(--graphite-400)),rgb(var(--graphite-600))_60%,rgb(var(--graphite-800)))] dark:ring-1 dark:ring-white/10'
                                 : 'bg-surface text-gray-800 shadow-sm ring-1 ring-gray-200/80 hover:-translate-y-px hover:text-gray-900 hover:shadow-card hover:ring-gray-300 motion-reduce:hover:translate-y-0'
                         }`}
                     >

@@ -6,8 +6,9 @@ import { formatNumber } from '@/lib/format';
 import { useBranchView } from '@/hooks/useBranchView';
 
 /**
- * Whose figures the page shows, large at its top: one branch's name, with
- * its place, phone and subscribers, a governorate's with how many branches
+ * Whose figures the page shows, as a slim bar at its top (the component
+ * gallery's scope bar): one branch's name, with its place, phone and
+ * subscribers, a governorate's with how many branches
  * it has, or "جميع الفروع" with how many — so whoever sees more than one
  * branch never mistakes one branch's money for another's. `scope` is what App\Support\BranchScope::describe() sends.
  * With more than one `options` ({ value, label }), the branch is changed
@@ -17,8 +18,8 @@ import { useBranchView } from '@/hooks/useBranchView';
  * (a chip per branch when all are shown). On paper it prints as the
  * page's heading, without the colours and the controls. `className`
  * replaces its space below, for a page that spaces its parts itself. On a
- * phone it stays compact: the name smaller, the lead-in line left to the
- * chip, and the pickers side by side.
+ * phone the lead-in line is left to the chip and the pickers sit side by
+ * side.
  */
 /** "فرع واحد", "فرعان", "5 فروع", "12 فرعاً": a count of branches as Arabic says it. */
 function branchCount(count) {
@@ -47,37 +48,33 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
     ].filter(Boolean);
 
     return (
-        <section
-            aria-label="الفرع المعروض"
-            className={`gl-glass gl-banner relative overflow-hidden p-4 sm:p-6 print:mb-4 print:overflow-visible print:rounded-none print:border-b-2 print:border-[rgb(var(--brand-solid))] print:bg-none print:p-0 print:pb-3 print:text-[rgb(var(--graphite-900))] print:shadow-none ${className}`}
-        >
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-3 sm:gap-y-4">
-                <span aria-hidden="true" className="gl-ico hidden !h-14 !w-14 !rounded-2xl sm:!grid print:hidden" style={{ color: 'rgb(var(--gl-brand))' }}>
-                    <Icon name={scope.level === 'governorate' ? 'map' : scope.all ? 'layers' : 'building'} className="h-7 w-7" />
+        <section aria-label="الفرع المعروض" className={`gl-scope print:mb-4 print:rounded-none print:border-0 print:border-b-2 print:border-[rgb(var(--brand-solid))] print:bg-none print:p-0 print:pb-3 print:text-[rgb(var(--graphite-900))] print:shadow-none ${className}`}>
+            <div className="gl-scope-row">
+                <span aria-hidden="true" className="gl-scope-ico print:hidden">
+                    <Icon name={scope.level === 'governorate' ? 'map' : scope.all ? 'layers' : 'building'} className="h-5 w-5" />
                 </span>
                 <div className="min-w-0 flex-1">
-                    <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm font-semibold gl-text-muted print:text-[rgb(var(--silver-900))]">
+                    <p className="gl-scope-eyebrow">
                         <span className="hidden sm:inline print:inline">{eyebrow}</span>
-                        <span className="gl-pill print:hidden" style={{ '--gl-c': 'var(--gl-ink)' }}>
-                            <span aria-hidden="true" className="gl-dot" style={{ '--gl-c': scope.level === 'governorate' ? 'var(--gl-info)' : scope.all ? 'var(--gl-warn)' : scope.isActive ? 'var(--gl-ok)' : 'var(--gl-faint)' }} />
+                        <span className="gl-pill print:hidden" style={{ '--gl-c': scope.level === 'governorate' ? 'var(--gl-info)' : scope.all ? 'var(--gl-warn)' : scope.isActive ? 'var(--gl-ok)' : 'var(--gl-faint)' }}>
                             {scope.level === 'governorate' ? `محافظة · ${branchCount(scope.branches)}` : scope.all ? `${allLabel} · ${branchCount(scope.branches)}` : scope.isActive ? 'فرع واحد' : 'فرع واحد · متوقف'}
                         </span>
                     </p>
-                    <h2 className="mt-1 text-balance text-2xl font-extrabold leading-tight sm:text-[34px]" style={{ fontFamily: 'var(--gl-head)' }} dir="auto">
-                        {scope.name}
-                    </h2>
-                    <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm gl-text-muted print:text-[rgb(var(--silver-900))]">
-                        {facts.map((fact) => (
-                            <li key={fact.icon} className="inline-flex items-center gap-1.5">
-                                <Icon name={fact.icon} className="h-4 w-4 shrink-0 print:hidden" />
-                                <span className="gl-num">{fact.text}</span>
-                            </li>
-                        ))}
-                    </ul>
+                    <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                        <h2 className="gl-scope-name" dir="auto">{scope.name}</h2>
+                        <ul className="gl-scope-facts print:text-[rgb(var(--silver-900))]">
+                            {facts.map((fact) => (
+                                <li key={fact.icon}>
+                                    <Icon name={fact.icon} className="h-3.5 w-3.5 shrink-0 print:hidden" />
+                                    <span className="gl-num">{fact.text}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
-                {controls && <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-2 sm:flex sm:w-auto sm:flex-wrap sm:gap-3 print:hidden">{controls}</div>}
+                {controls && <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-end sm:gap-3 print:hidden">{controls}</div>}
                 {!controls && pick && pickerOptions.length > 1 && (
-                    <label className="flex w-full flex-col gap-1.5 sm:w-64 print:hidden">
+                    <label className="flex w-full flex-col gap-1.5 sm:w-60 print:hidden">
                         <span className="gl-label">تغيير الفرع</span>
                         <span className="relative">
                             <select
@@ -85,7 +82,7 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
                                 value={pickerValue ?? ''}
                                 disabled={view.switching}
                                 onChange={(event) => pick(event.target.value)}
-                                className="h-11 w-full appearance-none bg-none pe-10 ps-3.5 font-bold"
+                                className="h-10 w-full appearance-none bg-none pe-10 ps-3.5 font-bold"
                             >
                                 <option value={allValue}>جميع الفروع (تقرير مجمّع)</option>
                                 {pickerOptions.map((option) => (
@@ -99,7 +96,7 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
                     </label>
                 )}
             </div>
-            {children && <div className="mt-4 flex flex-wrap gap-2 border-t pt-4 print:hidden" style={{ borderColor: 'var(--gl-line)' }}>{children}</div>}
+            {children && <div className="mt-3 flex flex-wrap gap-2 border-t pt-3 print:hidden" style={{ borderColor: 'var(--gl-line)' }}>{children}</div>}
         </section>
     );
 }

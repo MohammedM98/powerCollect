@@ -6,7 +6,6 @@ import NavigationDrawer from '@/Components/TopBar/NavigationDrawer';
 import SideNavigation from '@/Components/SideNavigation/SideNavigation';
 import MobileTabBar from '@/Components/SideNavigation/MobileTabBar';
 import { useBrandDocument } from '@/hooks/useBrand';
-import { useNavigationLayout } from '@/hooks/useNavigationLayout';
 import { Breadcrumb, SectionPages } from '@/Components/TopBar/PageTrail';
 import { handlePaletteShortcut, pageWindowOpen } from '@/Components/TopBar/shortcuts';
 import { useTheme } from '@/hooks/useTheme';
@@ -41,11 +40,10 @@ function isTyping(target) {
 }
 
 /**
- * Every signed-in page: the floating top bar with the sections (or, for a
- * company whose look puts them at the side, the section dock beside a slim
- * bar of tools), the trail to the page, the section's pages as tabs, the
- * page's title, then the page itself; on phones a tab bar on the screen's
- * bottom edge.
+ * Every signed-in page: the section dock at the side beside a slim bar of
+ * tools (on phones, the top bar and a tab bar on the screen's bottom edge),
+ * the trail to the page, the section's pages as tabs, the page's title,
+ * then the page itself.
  * Only the top bar stays on screen while scrolling, so tables keep the room.
  * `badges` counts what waits on a page, by its link: { '/payments/summary': 2 }.
  * `scope` names the branch (or "جميع الفروع") whose figures the page shows;
@@ -62,10 +60,8 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
         }
     }, [branchKey]);
     const { dark, changePreference } = useTheme();
-    // The company's look puts the sections in the floating top bar, or at the side on wide screens (`sidebar`, `rail`);
-    // each browser may switch between the two (hooks/useNavigationLayout.js).
-    const [navigation, changeNavigation] = useNavigationLayout(useBrandDocument().design?.navigation);
-    const sideNavigation = navigation === 'sidebar' || navigation === 'rail';
+    // Keeps the document drawn in the company's identity (design attributes, colours, icon).
+    useBrandDocument();
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [paletteOpen, setPaletteOpen] = useState(false);
     const [shortcutsOpen, setShortcutsOpen] = useState(false);
@@ -219,14 +215,12 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
                 تخطي إلى المحتوى
             </a>
 
-            {sideNavigation && <SideNavigation groups={groups} badges={badges} />}
+            <SideNavigation groups={groups} badges={badges} />
 
-            {/* Beside the side menu on wide screens the bar keeps only its tools; on phones it is the full bar either way. */}
+            {/* Beside the section dock on wide screens the bar keeps only its tools; on phones it is the full bar. */}
             <TopBar
                 groups={groups}
-                slim={sideNavigation}
-                layout={navigation}
-                onLayoutChange={changeNavigation}
+                slim
                 badges={badges}
                 where={pastTitle && trail ? { section: trail.group?.shortLabel, page: trail.link.label, scope } : null}
                 drawerOpen={drawerOpen}

@@ -59,7 +59,7 @@ class BrandSettingTest extends TestCase
                 ->component('Settings/Appearance')
                 ->where('profile.design.navigation', 'sidebar')
                 ->where('profile.ownLogos', ['main', 'icon'])
-                ->where('presets.corporate.design.navigation', 'sidebar')
+                ->where('presets.corporate.design.navStyle', 'solid')
                 ->where('can.manageBrand', true));
     }
 

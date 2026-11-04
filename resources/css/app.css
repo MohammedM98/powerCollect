@@ -242,6 +242,8 @@
  */
 .data-table-toolbar {
     position: relative;
+    /* Above the table under it: a filter's drop-down list opens over the rows (the glass blur makes each panel its own layer). */
+    z-index: 2;
     padding: 20px 24px;
     border: 1px solid rgb(var(--gray-100));
     border-bottom: 0;

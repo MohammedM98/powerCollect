@@ -221,7 +221,7 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                     <>
                         <div className="flex shrink-0 gap-1 border-b border-gray-100 p-2 lg:hidden" role="tablist">
                             {[['settings', 'الإعدادات'], ['preview', 'المعاينة']].map(([key, label]) => (
-                                <button key={key} type="button" role="tab" aria-selected={tab === key} onClick={() => setTab(key)} className={`flex-1 rounded-control px-3 py-2 text-sm font-semibold ${tab === key ? 'bg-graphite-gradient text-white' : 'text-gray-600'}`}>
+                                <button key={key} type="button" role="tab" aria-selected={tab === key} onClick={() => setTab(key)} className={`flex-1 rounded-control px-3 py-2 text-sm font-semibold ${tab === key ? 'bg-brand-gradient text-white' : 'text-gray-600'}`}>
                                     {label}
                                 </button>
                             ))}

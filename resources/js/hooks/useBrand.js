@@ -1,6 +1,8 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import { usePage } from '@inertiajs/react';
 import { applyBrandToDocument, getBrandPreview, subscribeBrandPreview, withPreview } from '@/lib/brandPreview';
+import { applyLook } from '@/lib/personalLook';
+import { usePersonalLook } from '@/hooks/usePersonalLook';
 import defaults from '../../brand/default.json' with { type: 'json' };
 
 /** The identity the application ships with, in the shape the server shares it (app/Support/Brand.php forPage). */
@@ -42,14 +44,21 @@ export function useBrand() {
     return withPreview(useSharedBrand(), tried);
 }
 
-/** Keeps the document (design attributes, colours, icon) drawn in the current identity; for the page layouts. */
+/**
+ * Keeps the document (design attributes, colours, icon) drawn in the
+ * current identity, with this person's own look over it (their background,
+ * glass, colour and motion, lib/personalLook.js); for the page layouts.
+ */
 export function useBrandDocument() {
     const brand = useBrand();
     const previewing = useSyncExternalStore(subscribeBrandPreview, getBrandPreview, () => null) !== null;
+    const { look } = usePersonalLook();
 
     useEffect(() => {
         applyBrandToDocument(brand, { themePrimary: THEME_PRIMARY, previewing });
-    }, [brand, previewing]);
+        // While the appearance screen tries a company identity, it shows as it is, without this person's look.
+        applyLook(previewing ? null : look);
+    }, [brand, previewing, look]);
 
     return brand;
 }
