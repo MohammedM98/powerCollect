@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 72" role="img" aria-label="Super Power">
+  <g transform="scale(0.72)">
+  <mask id="egap"><rect width="100" height="100" fill="#fff"/><path d="M110 24.1L40.76 24.1L31.24 57.7L68.76 42.3L59.24 75.9L-10 75.9" fill="none" stroke="#000" stroke-width="6.8" stroke-miterlimit="20"/></mask>
+  <clipPath id="eup"><path d="M110 24.1L40.76 24.1L31.24 57.7L68.76 42.3L59.24 75.9L-10 75.9L-10 -10L110 -10Z"/></clipPath>
+  <clipPath id="elo"><path d="M110 24.1L40.76 24.1L31.24 57.7L68.76 42.3L59.24 75.9L-10 75.9L-10 110L110 110Z"/></clipPath>
+  <g mask="url(#egap)">
+    <circle cx="50" cy="50" r="46" fill="#2F6BFF" clip-path="url(#eup)"/>
+    <circle cx="50" cy="50" r="46" fill="#1F4DC0" clip-path="url(#elo)"/>
+  </g>
+  </g>
+  <g transform="translate(98 16)">
+  <clipPath id="ws"><path d="M-6 -6H35L28.6 4H45V50H-3.6L4.6 36H-6Z"/></clipPath>
+  <clipPath id="wcap"><rect width="416" height="40"/></clipPath>
+  <path clip-path="url(#ws)" d="M36 0.9H9.4L2.6 25.5L29.4 14.5L22.6 39.1H-4" fill="none" stroke="#2F6BFF" stroke-width="5.8" stroke-miterlimit="20"/>
+  <g clip-path="url(#wcap)" fill="none" stroke="#0F1A33" stroke-width="5.2" stroke-miterlimit="10">
+    <path transform="translate(43.5 0)" d="M2.6 -2V25A12.4 12.4 0 0 0 27.4 25V-2"/>
+    <path transform="translate(85 0)" d="M2.6 -2V42M2.6 2.6H14A10.4 10.4 0 0 1 14 23.4H2.6"/>
+    <path transform="translate(123.5 0)" d="M2.6 -2V42M2.6 2.6H23M2.6 20H20M2.6 37.4H23"/>
+    <path transform="translate(158 0)" d="M2.6 -2V42M2.6 2.6H14A10.4 10.4 0 0 1 14 23.4H2.6M12 23.4L29.5 43"/>
+    <path transform="translate(197.5 0)" d="M2.6 -2V42M2.6 2.6H14A10.4 10.4 0 0 1 14 23.4H2.6"/>
+    <path transform="translate(236 0)" d="M20 2.6A17.4 17.4 0 1 1 20 37.4A17.4 17.4 0 1 1 20 2.6Z"/>
+    <path transform="translate(287.5 0)" d="M1.6 -3L13.5 44L25 11L36.5 44L48.4 -3"/>
+    <path transform="translate(349 0)" d="M2.6 -2V42M2.6 2.6H23M2.6 20H20M2.6 37.4H23"/>
+    <path transform="translate(383.5 0)" d="M2.6 -2V42M2.6 2.6H14A10.4 10.4 0 0 1 14 23.4H2.6M12 23.4L29.5 43"/>
+  </g>
+  </g>
+</svg>
