@@ -9,6 +9,8 @@ use App\Http\Requests\CheckMobileReferenceRequest;
 use App\Http\Requests\ListMobileSubscriptionsRequest;
 use App\Http\Requests\ListMobileTransactionsRequest;
 use App\Http\Requests\StoreMobileCollectionRequest;
+use App\Http\Resources\Mobile\CollectionResource;
+use App\Http\Resources\Mobile\RecordedCollectionResource;
 use App\Models\Closing;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
@@ -128,7 +130,7 @@ class MobileCollectionController extends Controller
             'payment_methods' => array_map(fn (PaymentMethod $method): string => $method->value, $methods),
             ...(in_array(PaymentMethod::Cash, $methods, true) ? ['cash_total' => Money::negate(Money::sum($collections->filter(fn (SubscriptionTransaction $transaction): bool => $transaction->payment_method === PaymentMethod::Cash)->pluck('amount')))] : []),
             ...(in_array(PaymentMethod::BankTransfer, $methods, true) ? ['bank_transfer_total' => Money::negate(Money::sum($collections->filter(fn (SubscriptionTransaction $transaction): bool => $transaction->payment_method === PaymentMethod::BankTransfer)->pluck('amount')))] : []),
-            'data' => $collections->map(fn (SubscriptionTransaction $transaction): array => MobileCollectionData::collectionData($transaction))->all(),
+            'data' => $collections->map(fn (SubscriptionTransaction $transaction): CollectionResource => new CollectionResource($transaction))->all(),
         ]);
     }
 
@@ -157,7 +159,7 @@ class MobileCollectionController extends Controller
     public function store(StoreMobileCollectionRequest $request): JsonResponse
     {
         if ($existingTransaction = $request->existingTransaction()) {
-            return response()->json(MobileCollectionData::recordedCollectionData($existingTransaction), 201);
+            return response()->json(new RecordedCollectionResource($existingTransaction), 201);
         }
 
         $subscription = Subscription::query()->visibleTo($request->user())->findOrFail($request->integer('subscription_id'));
@@ -198,6 +200,6 @@ class MobileCollectionController extends Controller
             abort_unless($transaction->recorded_by === $request->user()->id, 403);
         }
 
-        return response()->json(MobileCollectionData::recordedCollectionData($transaction), 201);
+        return response()->json(new RecordedCollectionResource($transaction), 201);
     }
 }

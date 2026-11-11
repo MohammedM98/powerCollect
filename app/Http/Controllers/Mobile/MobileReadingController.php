@@ -7,10 +7,10 @@ use App\Enums\SubscriptionStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ListMobileReadingsRequest;
 use App\Http\Requests\StoreMobileMeterReadingRequest;
+use App\Http\Resources\Mobile\MeterReadingResource;
 use App\Models\MeterReading;
 use App\Models\ReadingAssignment;
 use App\Models\Subscription;
-use App\Support\Readings\ReadingConsumption;
 use App\Support\Readings\ReadingWeeks;
 use App\Support\Readings\RecordReading;
 use Illuminate\Http\JsonResponse;
@@ -74,7 +74,7 @@ class MobileReadingController extends Controller
     public function store(StoreMobileMeterReadingRequest $request): JsonResponse
     {
         if ($existingReading = $request->existingReading()) {
-            return $this->responseFor($existingReading);
+            return response()->json(new MeterReadingResource($existingReading), 201);
         }
 
         $subscription = Subscription::with(['tariff', 'circuitBreaker', 'standingDiscount'])
@@ -88,18 +88,6 @@ class MobileReadingController extends Controller
             $request->validated('mobile_operation_id'),
         );
 
-        return $this->responseFor($reading);
-    }
-
-    private function responseFor(MeterReading $reading): JsonResponse
-    {
-        return response()->json([
-            'id' => $reading->id,
-            'mobile_operation_id' => $reading->mobile_operation_id,
-            'status' => $reading->status->value,
-            'current_reading' => $reading->current_reading,
-            // Far above what the subscription usually uses: it waits for a reviewer to confirm it.
-            'unusual_consumption' => ReadingConsumption::isUnusual($reading),
-        ], 201);
+        return response()->json(new MeterReadingResource($reading), 201);
     }
 }

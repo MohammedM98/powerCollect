@@ -7,6 +7,7 @@ use App\Enums\ChargeType;
 use App\Enums\PaymentMethod;
 use App\Enums\PermissionKey;
 use App\Http\Controllers\Mobile\MobileCollectionController;
+use App\Http\Resources\Mobile\CollectionResource;
 use App\Models\Closing;
 use App\Models\MessageBatch;
 use App\Models\Subscription;
@@ -40,50 +41,6 @@ class MobileCollectionData
         $balanceAfterInCents -= Closing::cents($transaction->amount);
 
         return $entry;
-    }
-
-    /**
-     * A payment just recorded, with the subscription's balance after it, as
-     * the website's receipt shows it.
-     *
-     * @return array<string, mixed>
-     */
-    public static function recordedCollectionData(SubscriptionTransaction $transaction): array
-    {
-        $transaction->load('subscription');
-
-        return [
-            ...self::collectionData($transaction),
-            'balance_after' => $transaction->subscription->balance(),
-        ];
-    }
-
-    /**
-     * The amount is in the currency it was paid in; `amount_in_shekels` is
-     * what it took off the balance.
-     *
-     * @return array{id: int, subscription: string, amount: string, currency: string, exchange_rate: ?string, amount_in_shekels: string, payment_method: string, bank_name: ?string, bank_received_on: ?string, sender_bank_name: ?string, status: string, recorded_at: string, voucher_number: ?string, reference_number: ?string, sender_name: ?string, notes: ?string}
-     */
-    public static function collectionData(SubscriptionTransaction $transaction): array
-    {
-        return [
-            'id' => $transaction->id,
-            'subscription' => $transaction->subscription->displayName(),
-            'amount' => $transaction->currency_amount,
-            'currency' => $transaction->currency->value,
-            'exchange_rate' => $transaction->exchange_rate,
-            'amount_in_shekels' => number_format(-(float) $transaction->amount, 2, '.', ''),
-            'payment_method' => $transaction->payment_method->value,
-            'bank_name' => $transaction->bank_name,
-            'bank_received_on' => $transaction->bank_received_on?->toDateString(),
-            'sender_bank_name' => $transaction->sender_bank_name,
-            'status' => 'recorded',
-            'recorded_at' => $transaction->created_at->toIso8601String(),
-            'voucher_number' => LinePresenter::printedVoucherNumber($transaction),
-            'reference_number' => $transaction->reference_number,
-            'sender_name' => $transaction->sender_name,
-            'notes' => $transaction->notes,
-        ];
     }
 
     public static function show(Request $request, string $subscription): JsonResponse
@@ -160,7 +117,7 @@ class MobileCollectionData
                 'status' => $lastReading->status->value,
                 'status_label' => __($lastReading->status->label()),
             ] : null,
-            'last_payment' => $lastPayment ? MobileCollectionData::collectionData($lastPayment->setRelation('subscription', $subscription)) : null,
+            'last_payment' => $lastPayment ? new CollectionResource($lastPayment->setRelation('subscription', $subscription)) : null,
             'transactions' => $transactions->all(),
             'permissions' => [
                 'view_history' => $canViewHistory,
