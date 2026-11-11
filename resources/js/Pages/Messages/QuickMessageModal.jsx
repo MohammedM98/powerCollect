@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useId, useRef, useState } from 'react';
 import { Link, router, useHttp } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
@@ -92,7 +92,7 @@ export default function QuickMessageModal({ subscriptionIds = [], selection = nu
     const [confirming, setConfirming] = useState(false);
     const [sending, setSending] = useState(false);
 
-    useEffect(() => {
+    const loadSetupAndPicked = useEffectEvent(() => {
         setupHttp
             .get('/messages/quick')
             .then((loaded) => {
@@ -116,8 +116,8 @@ export default function QuickMessageModal({ subscriptionIds = [], selection = nu
                 .catch(() => setSelectionError('تعذّر تحميل المستلمين. تأكد أن النتائج لا تتجاوز 5,000 اشتراك، ثم أغلق النافذة وحدّدهم مجددًا.'))
                 .finally(() => setDetailsLoaded(true));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    });
+    useEffect(() => loadSetupAndPicked(), []);
 
     // What the chosen kind is asked for with: who it reaches out of the picked ones depends on all of it.
     const kindParams = { kind };
@@ -131,7 +131,7 @@ export default function QuickMessageModal({ subscriptionIds = [], selection = nu
     const kindKey = JSON.stringify([kindParams, pickedIds]);
 
     // Which of the picked subscriptions the kind reaches, asked again a moment after anything it depends on changes.
-    useEffect(() => {
+    const askWhoKindReaches = useEffectEvent(() => {
         if (kind === 'custom' || pickedIds.length === 0 || (kind === 'weekly_reading' && !weekStart)) {
             return undefined;
         }
@@ -152,11 +152,11 @@ export default function QuickMessageModal({ subscriptionIds = [], selection = nu
             current = false;
             clearTimeout(timer);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [kindKey]);
+    });
+    useEffect(() => askWhoKindReaches(), [kindKey]);
 
     // Subscriptions whose name, phone or account matches, once two letters are typed.
-    useEffect(() => {
+    const searchSubscriptions = useEffectEvent(() => {
         const term = search.trim();
 
         if (term.length < 2) {
@@ -177,19 +177,22 @@ export default function QuickMessageModal({ subscriptionIds = [], selection = nu
             current = false;
             clearTimeout(timer);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [search]);
+    });
+    useEffect(() => searchSubscriptions(), [search]);
 
     // Each branch reads on its own weeks: those of the first picked subscription's branch, or else the user's.
     const weekBranchKey = String(people[pickedIds[0]]?.branchId ?? setup?.weekBranchId ?? '');
     const weekOptions = setup?.weekOptions[weekBranchKey] ?? [];
 
-    useEffect(() => {
+    const [weeksShown, setWeeksShown] = useState({ branch: null, setup: null });
+
+    // Another branch has other weeks: move to its latest one when the chosen week isn't one of them.
+    if (weeksShown.branch !== weekBranchKey || weeksShown.setup !== setup) {
+        setWeeksShown({ branch: weekBranchKey, setup });
         if (weekOptions.length > 0 && !weekOptions.some((option) => option.value === weekStart)) {
             setWeekStart(weekOptions[0].value);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [weekBranchKey, setup]);
+    }
 
     const maxRecipients = setup?.maxRecipients ?? 400;
     const kindTemplates = (setup?.templates ?? []).filter((template) => template.kind === kind);

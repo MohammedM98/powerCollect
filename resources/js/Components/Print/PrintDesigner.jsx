@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -136,12 +136,14 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
         return () => root.classList.remove('print-mode');
     }, []);
 
+    const fitLayoutToColumns = useEffectEvent((columns) => setLayout((current) => fitLayout(current ?? start.layout, freshLayout(columns))));
+
     // Read the page's table now and whenever it redraws.
     useEffect(() => {
         if (provided) {
             setTable({ columns: provided.columns, rows: provided.rows });
             setSummary(provided.summary ?? '');
-            setLayout((current) => fitLayout(current ?? start.layout, freshLayout(provided.columns)));
+            fitLayoutToColumns(provided.columns);
             return;
         }
         let frame = null;
@@ -153,11 +155,7 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
             if (extracted) {
                 setTable(extracted);
                 setSummary(extractSummary(sourceRef.current));
-                setLayout((current) => {
-                    const fresh = freshLayout(extracted.columns);
-
-                    return fitLayout(current ?? start.layout, fresh);
-                });
+                fitLayoutToColumns(extracted.columns);
             }
         }
 
@@ -171,7 +169,6 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
             observer.disconnect();
             cancelAnimationFrame(frame);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [provided]);
 
     useEffect(() => {

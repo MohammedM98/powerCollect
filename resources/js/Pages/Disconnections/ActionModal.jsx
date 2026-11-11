@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useEffectEvent, useId, useMemo, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
@@ -74,7 +74,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
     const [sendId] = useState(operationId);
     const meta = ACTIONS[action];
 
-    useEffect(() => {
+    const loadPreview = useEffectEvent(() => {
         let current = true;
         http.transform(() => selection);
         http.post(`/disconnection-lists/${list.id}/items/preview`)
@@ -91,8 +91,8 @@ export default function ActionModal({ action, list, selection, count, channelOpt
         return () => {
             current = false;
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    });
+    useEffect(() => loadPreview(), []);
 
     const reached = useMemo(() => (preview?.items ?? []).filter((item) => !exclusion(action, item)), [preview, action]);
     const excluded = useMemo(() => (preview?.items ?? []).filter((item) => exclusion(action, item)), [preview, action]);

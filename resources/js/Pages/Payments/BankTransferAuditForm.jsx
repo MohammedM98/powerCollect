@@ -1,5 +1,5 @@
 import BankReceivedDate from '@/Components/BankReceivedDate';
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useEffectEvent, useId, useState } from 'react';
 import { useForm, useHttp } from '@inertiajs/react';
 import DialogFrame from '@/Components/DialogFrame';
 import LatePaymentDetails from '@/Components/LatePaymentDetails';
@@ -30,7 +30,7 @@ export default function BankTransferAuditForm({ entry, onClose }) {
     const needsReason = difference !== 0 || Boolean(split && data.parts.some((part, index) => Math.round(Number(part.bank_amount || 0) * 100) !== Math.round(Number(split.parts[index].recorded) * 100)));
 
     const http = useHttp();
-    useEffect(() => {
+    const loadAuditReview = useEffectEvent(() => {
         let current = true;
         http.get(entry.audit_url)
             .then((body) => {
@@ -42,8 +42,8 @@ export default function BankTransferAuditForm({ entry, onClose }) {
             })
             .catch((error) => { if (current) setReview({ loading: false, split: null, error: httpErrorMessage(error, loadFailed) }); });
         return () => { current = false; };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [entry.audit_url]);
+    });
+    useEffect(() => loadAuditReview(), [entry.audit_url]);
 
     function submit(event) {
         event.preventDefault();

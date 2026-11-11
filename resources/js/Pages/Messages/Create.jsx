@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useId, useMemo, useRef, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Icon from '@/Components/Icon';
@@ -138,39 +138,36 @@ export default function Create({
     // Each branch reads on its own weeks: those of the branch messaged, or else of the branch the page starts on.
     const weekBranchKey = String(criteria.branch_id !== '' ? criteria.branch_id : weekBranchId);
     const branchWeekOptions = weekOptions[weekBranchKey] ?? [];
-    const previousWeekBranchKey = useRef(weekBranchKey);
+    const [receivedRecipients, setReceivedRecipients] = useState(undefined);
+    const [shownWeekBranchKey, setShownWeekBranchKey] = useState(weekBranchKey);
     const isStale = recipients !== null && loadedKey !== requestKey;
 
     // Keep the list loaded here: a template save reloads the page without it.
-    useEffect(() => {
-        if (loadedRecipients === undefined) {
-            return;
-        }
-
+    if (loadedRecipients !== undefined && loadedRecipients !== receivedRecipients) {
+        setReceivedRecipients(loadedRecipients);
         setRecipients(loadedRecipients);
         setSelected(new Set(loadedRecipients.filter((recipient) => recipient.phone).map((recipient) => recipient.id)));
         setPreviewId(loadedRecipients.find((recipient) => recipient.phone)?.id ?? null);
-    }, [loadedRecipients]);
-
-    // A subscription or weekly-reading shortcut opens its recipients straight away.
-    useEffect(() => {
-        if (criteria.subscription_ids.length > 0 || initialCriteria.kind === 'weekly_reading') {
-            loadRecipients();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }
 
     // Another branch has other weeks: move to its latest one when the chosen week isn't one of them.
-    useEffect(() => {
-        if (previousWeekBranchKey.current === weekBranchKey) {
-            return;
-        }
-        previousWeekBranchKey.current = weekBranchKey;
+    if (shownWeekBranchKey !== weekBranchKey) {
+        setShownWeekBranchKey(weekBranchKey);
         if (branchWeekOptions.length > 0 && !branchWeekOptions.some((option) => option.value === criteria.week_start)) {
             setCriterion('week_start', branchWeekOptions[0].value);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [weekBranchKey]);
+    }
+
+    const openShortcut = useEffectEvent(() => {
+        if (criteria.subscription_ids.length > 0 || initialCriteria.kind === 'weekly_reading') {
+            loadRecipients();
+        }
+    });
+
+    // A subscription or weekly-reading shortcut opens its recipients straight away.
+    useEffect(() => {
+        openShortcut();
+    }, []);
 
     function loadRecipients() {
         setLoading(true);

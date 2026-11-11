@@ -684,7 +684,7 @@ export default function AccountStatement({ subscription, entries, summary, payme
     useEffect(() => () => clearTimeout(highlightTimer.current), []);
 
     // Opened at a line: go to it and say which it is, or that it is no longer on the statement.
-    useEffect(() => {
+    const showOpenedLine = useEffectEvent(() => {
         if (!focusLineId) {
             return undefined;
         }
@@ -704,8 +704,8 @@ export default function AccountStatement({ subscription, entries, summary, payme
         }, 250);
 
         return () => clearTimeout(timer);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    });
+    useEffect(() => showOpenedLine(), []);
 
     // The printout is light whatever the app's theme, from the print button or the browser's own print.
     useEffect(() => {

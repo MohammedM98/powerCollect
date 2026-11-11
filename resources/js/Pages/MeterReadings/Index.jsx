@@ -152,10 +152,14 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
     // Changing an approved reading sends it back for approval, so it waits on "are you sure?".
     const [confirmingApprovedEdit, setConfirmingApprovedEdit] = useState(false);
 
+    const savedState = `${savedValue}|${row.previousReading}`;
+    const [shownState, setShownState] = useState(savedState);
+
     // Pick up the saved value whenever the server sends a fresh row.
-    useEffect(() => {
+    if (shownState !== savedState) {
+        setShownState(savedState);
         setValue(savedValue);
-    }, [savedValue, row.previousReading]);
+    }
 
     // A reading the server refused is entered again: the field gets the focus back, its number selected,
     // unless the user has already moved on to another field.

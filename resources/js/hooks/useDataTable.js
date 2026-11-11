@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { router } from '@inertiajs/react';
 
 // Drives a server-backed data table: debounces the search box into a
@@ -9,14 +9,22 @@ import { router } from '@inertiajs/react';
 // `extraParams` are merged into every request unchanged — e.g. a `selected`
 // id another part of the same page depends on, so it survives search/sort/
 // page-size/filter changes instead of being dropped.
+const NO_FILTER = {};
+
 export function useDataTable(url, filters, extraParams = {}, visitOptions = {}) {
+    const serverFilter = filters.filter ?? NO_FILTER;
     const [search, setSearch] = useState(filters.search ?? '');
-    const [filterValues, setFilterValues] = useState(filters.filter ?? {});
+    const [filterValues, setFilterValues] = useState(serverFilter);
+    const [appliedFilter, setAppliedFilter] = useState(serverFilter);
     const isFirstRun = useRef(true);
 
-    useEffect(() => {
-        setFilterValues(filters.filter ?? {});
-    }, [filters.filter]);
+    // Each response's filter replaces the one picked while it loaded.
+    if (appliedFilter !== serverFilter) {
+        setAppliedFilter(serverFilter);
+        setFilterValues(serverFilter);
+    }
+
+    const visitWithSearch = useEffectEvent((typed) => visit({ search: typed }));
 
     useEffect(() => {
         if (isFirstRun.current) {
@@ -24,12 +32,9 @@ export function useDataTable(url, filters, extraParams = {}, visitOptions = {}) 
             return;
         }
 
-        const timeout = setTimeout(() => {
-            visit({ search });
-        }, 350);
+        const timeout = setTimeout(() => visitWithSearch(search), 350);
 
         return () => clearTimeout(timeout);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
     function visit(overrides = {}) {
