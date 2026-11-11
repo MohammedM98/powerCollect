@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
 import Affix from '@/Components/Affix';
 import ChoiceChips from '@/Components/ChoiceChips';
@@ -183,7 +183,10 @@ export default function SubscriptionForm({
     const [selectedBox, setSelectedBox] = useState(meterBox);
     const [subAreaId, setSubAreaId] = useState(() => (meterBox?.sub_area_id ? String(meterBox.sub_area_id) : ''));
 
-    const subAreasInArea = resolvedAreaId ? subAreas.filter((subArea) => String(subArea.area_id) === String(resolvedAreaId)) : [];
+    const subAreasInArea = useMemo(
+        () => (resolvedAreaId ? subAreas.filter((subArea) => String(subArea.area_id) === String(resolvedAreaId)) : []),
+        [resolvedAreaId, subAreas],
+    );
 
     // A Super Admin's boxes are those of the branch chosen; a branch's staff already get only their own.
     const boxBranchId = canChooseBranch ? data.branch_id : '';
@@ -206,7 +209,7 @@ export default function SubscriptionForm({
         if (!isEdit && !subAreaId && subAreasInArea.length === 1) {
             setSubAreaId(String(subAreasInArea[0].id));
         }
-    }, [isEdit, resolvedAreaId, subAreaId, subAreasInArea]);
+    }, [isEdit, subAreaId, subAreasInArea]);
 
     const selectedTariff = tariffs.find((tariff) => String(tariff.id) === String(data.tariff_id));
     const selectedCircuitBreaker = circuitBreakers.find((circuitBreaker) => String(circuitBreaker.id) === String(data.circuit_breaker_id));

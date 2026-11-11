@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -70,7 +70,7 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
             setPrinting(false);
         }
     }
-    const templates = props.printTemplates ?? [];
+    const templates = useMemo(() => props.printTemplates ?? [], [props.printTemplates]);
     const supportsTemplates = Array.isArray(props.printTemplates);
     const canManageTemplates = Boolean(props.can?.managePrintTemplates) && supportsTemplates;
     // Without the permission to customise, the printout keeps the company's template as it is.

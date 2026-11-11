@@ -167,7 +167,7 @@ export default function SearchableSelect({
             // A portalled list is placed (fixed, beside the field) only after this first render, so focusing it must not scroll the page to where it was drawn before.
             searchRef.current?.focus({ preventScroll: portal });
         }
-    }, [open]);
+    }, [open, portal]);
 
     function select(option) {
         setChosen(option);

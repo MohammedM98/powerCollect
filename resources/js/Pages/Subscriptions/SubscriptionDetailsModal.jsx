@@ -119,14 +119,15 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
     const currentWeekRecorded = subscription ? hasLatestWeekReading(subscription, readingWeekOptions) : false;
     const lastPayment = statement?.entries.findLast((entry) => entry.type === 'payment' && !entry.cancellation && !entry.isReversal);
 
+    const subscriptionId = subscription?.id ?? null;
     useEffect(() => {
-        if (!subscription) {
-            return;
+        if (subscriptionId === null) {
+            return undefined;
         }
         const previousFocus = document.activeElement;
         dialogRef.current?.focus();
         return () => previousFocus?.focus();
-    }, [subscription?.id]);
+    }, [subscriptionId]);
 
     function selectTab(tab, focus = false) {
         setActiveTab(tab);

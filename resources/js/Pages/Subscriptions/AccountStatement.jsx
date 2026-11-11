@@ -1,5 +1,5 @@
 import BankReceivedDate from '@/Components/BankReceivedDate';
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import StatusPill from '@/Components/DataTable/StatusPill';
 import Balance from '@/Components/Balance';
@@ -671,10 +671,13 @@ export default function AccountStatement({ subscription, entries, summary, payme
         setPendingJump(lineId);
     }
 
+    const jumpOnceShown = useEffectEvent((lineId) => jumpToLine(lineId));
+
+    // The line is reached after the render that unfolds or switches the view to show it.
     useEffect(() => {
         if (pendingJump !== null) {
             setPendingJump(null);
-            jumpToLine(pendingJump);
+            jumpOnceShown(pendingJump);
         }
     }, [pendingJump]);
 

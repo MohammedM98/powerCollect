@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useId, useRef, useState } from 'react';
 import { useHttp, usePage } from '@inertiajs/react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import Icon from '@/Components/Icon';
@@ -115,11 +115,17 @@ export default function PaymentModal({
     const methods = ['bank_transfer', 'cash'].filter((method) => paymentMethods.some((option) => option.value === method));
     const tone = correcting ? 'correction' : 'payment';
 
+    const askReferenceStatus = useEffectEvent((query) => referenceCheck
+        .get(`/subscriptions/${subscription.id}/payments/reference-status?${query}`)
+        .then((status) => setReferenceStatus(status ?? null))
+        .catch(() => setReferenceStatus(null)));
+    const cancelReferenceCheck = useEffectEvent(() => referenceCheck.cancel());
+
     useEffect(() => {
         const reference = data.reference_number.trim();
 
         if (!show || !throughBank || reference === '') {
-            referenceCheck.cancel();
+            cancelReferenceCheck();
             setReferenceStatus(null);
 
             return undefined;
@@ -137,15 +143,12 @@ export default function PaymentModal({
                 query.set('ignore_transaction_id', correcting.id);
             }
 
-            referenceCheck
-                .get(`/subscriptions/${subscription.id}/payments/reference-status?${query}`)
-                .then((status) => setReferenceStatus(status ?? null))
-                .catch(() => setReferenceStatus(null));
+            askReferenceStatus(query);
         }, 400);
 
         return () => {
             clearTimeout(timer);
-            referenceCheck.cancel();
+            cancelReferenceCheck();
         };
     }, [show, throughBank, data.reference_number, data.amount, data.currency, data.sender_name, correcting?.id, subscription.id]);
 

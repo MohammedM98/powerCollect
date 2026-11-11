@@ -50,7 +50,8 @@ const NUM = 'px-3 py-2.5 text-right [direction:ltr] font-display tabular-nums te
  */
 export default function Index({ branches, filters, scopeLabel, branchScope, presets, today, kinds, flow, collections, readings, days, transactions, period, comparison, branchSummary, canExport, canViewStatements, reportSection = 'overview', debts, boxData, reportStatement }) {
     const { errors, auth } = usePage().props;
-    const [excelOpen, setExcelOpen] = useState(false);
+    const [excelOpenedAt, setExcelOpenedAt] = useState(null);
+    const excelOpen = excelOpenedAt !== null;
     const section = reportSection;
     const [printView, setPrintView] = useState('summary');
     const printing = isPrintMode();
@@ -78,9 +79,9 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
             ['تصفية ورقة الحركات فقط', kindLabel],
             ['الملخص والتحصيل', 'جميع أنواع الحركات في الفترة المحددة'],
             ['أعدّه', auth?.user?.name ?? ''],
-            ['تاريخ الإعداد', new Date().toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })],
+            ['تاريخ الإعداد', (excelOpenedAt ?? new Date()).toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short' })],
         ],
-    }), [scopeName, period, periodText, filters.from, filters.to, kindLabel, auth?.user?.name, excelOpen]);
+    }), [scopeName, period, periodText, filters.from, filters.to, kindLabel, auth?.user?.name, excelOpenedAt]);
 
     /** The parts on the page now, and every line of the period fetched with the same filters. */
     async function loadExcelParts(options) {
@@ -114,7 +115,7 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                 <Suspense fallback={null}>
                     <ExcelStudio
                         show={excelOpen}
-                        onClose={() => setExcelOpen(false)}
+                        onClose={() => setExcelOpenedAt(null)}
                         title="تصدير التقرير إلى Excel"
                         storageKey="reports"
                         loadParts={loadExcelParts}
@@ -160,7 +161,7 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                                 <option value="lines">الحركات التفصيلية</option>
                             </select>
                         </label>
-                        <TableExportActions showExcel={canExport} onExcel={() => setExcelOpen(true)} printHref={printUrl(`${printView === 'lines' ? 'الحركات التفصيلية' : 'الملخص المالي'} — ${scopeName} — ${periodText}`, `/reports?${query}&print_view=${printView}`)} />
+                        <TableExportActions showExcel={canExport} onExcel={() => setExcelOpenedAt(new Date())} printHref={printUrl(`${printView === 'lines' ? 'الحركات التفصيلية' : 'الملخص المالي'} — ${scopeName} — ${periodText}`, `/reports?${query}&print_view=${printView}`)} />
                     </div>
                 )}
 

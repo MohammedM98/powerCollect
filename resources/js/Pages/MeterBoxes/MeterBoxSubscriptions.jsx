@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { Link, useHttp } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
@@ -59,12 +59,16 @@ export default function MeterBoxSubscriptions({ meterBox, sort, direction, canRe
         });
     }
 
+    const loadFirstPage = useEffectEvent(() => load());
+    const stopLoading = useEffectEvent(() => {
+        requestNumber.current++;
+        http.cancel();
+    });
+
+    // A new order starts again from the first page; an older answer is dropped.
     useEffect(() => {
-        load();
-        return () => {
-            requestNumber.current++;
-            http.cancel();
-        };
+        loadFirstPage();
+        return () => stopLoading();
     }, [sort, direction]);
 
     const rows = http.response;

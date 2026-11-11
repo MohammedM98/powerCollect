@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
@@ -22,27 +22,33 @@ export default function NavigationDrawer({ open, groups, badges, onClose, onOpen
     const [expanded, setExpanded] = useState(current?.id ?? null);
     const panelRef = useRef(null);
 
-    useEffect(() => {
+    const [wasOpen, setWasOpen] = useState(open);
+
+    // Opening shows the drawer with the current section expanded; closing plays the slide-out first.
+    if (open !== wasOpen) {
+        setWasOpen(open);
+
         if (open) {
             setShown(true);
             setClosing(false);
-            setExpanded(currentGroup(groups, url)?.id ?? null);
+            setExpanded(current?.id ?? null);
+        } else if (shown) {
+            setClosing(true);
+        }
+    }
 
+    useEffect(() => {
+        if (!closing) {
             return undefined;
         }
 
-        if (!shown) {
-            return undefined;
-        }
-
-        setClosing(true);
         const timer = setTimeout(() => {
             setShown(false);
             setClosing(false);
         }, 230);
 
         return () => clearTimeout(timer);
-    }, [open]);
+    }, [closing]);
 
     // While open the page behind stays still; closing returns to the menu button.
     useEffect(() => {
@@ -50,12 +56,13 @@ export default function NavigationDrawer({ open, groups, badges, onClose, onOpen
             return undefined;
         }
 
+        const menuButton = returnFocusTo?.current;
         document.documentElement.classList.add('tn-locked');
         requestAnimationFrame(() => panelRef.current?.querySelector('button')?.focus());
 
         return () => {
             document.documentElement.classList.remove('tn-locked');
-            returnFocusTo?.current?.focus();
+            menuButton?.focus();
         };
     }, [open, returnFocusTo]);
 
@@ -89,11 +96,15 @@ export default function NavigationDrawer({ open, groups, badges, onClose, onOpen
         return () => document.removeEventListener('keydown', onKeyDown);
     }, [open, onClose]);
 
-    // A page opened from the menu closes it.
-    useEffect(() => {
+    const closeAfterVisit = useEffectEvent(() => {
         if (open) {
             onClose();
         }
+    });
+
+    // A page opened from the menu closes it.
+    useEffect(() => {
+        closeAfterVisit();
     }, [url]);
 
     if (!open && !shown) {

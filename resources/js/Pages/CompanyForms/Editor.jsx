@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import FormSection from '@/Components/Form/FormSection';
@@ -64,13 +64,17 @@ export default function Editor({ template, defaultLayout, fields }) {
         const url = URL.createObjectURL(data.source); setObjectUrl(url);
         return () => URL.revokeObjectURL(url);
     }, [data.source]);
-    useEffect(() => {
-        if (!source?.url || sourceState.pages.length === 0 || syncedSource.current === source.url) return;
-        syncedSource.current = source.url;
-        const pages = sourceState.pages.map((_, index) => data.source ? { id: crypto.randomUUID(), blocks: [] } : layout.pages[index] ?? { id: crypto.randomUUID(), blocks: [] });
+    const fitPagesToSource = useEffectEvent((sourcePages) => {
+        const pages = sourcePages.map((_, index) => data.source ? { id: crypto.randomUUID(), blocks: [] } : layout.pages[index] ?? { id: crypto.randomUUID(), blocks: [] });
         setData('layout', { ...layout, pages });
         setPageIndex(0);
-    }, [source?.url, sourceState.pages]);
+    });
+    const sourceUrl = source?.url;
+    useEffect(() => {
+        if (!sourceUrl || sourceState.pages.length === 0 || syncedSource.current === sourceUrl) return;
+        syncedSource.current = sourceUrl;
+        fitPagesToSource(sourceState.pages);
+    }, [sourceUrl, sourceState.pages]);
 
     function chooseFile(file) {
         if (!file) return;

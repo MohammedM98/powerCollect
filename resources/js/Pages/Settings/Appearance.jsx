@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import PageHeader from '@/Components/PageHeader';
@@ -229,10 +229,13 @@ export default function Appearance({ profile, isImported, options, presets, them
     const { data } = form;
 
     // A save, upload or reset sends the identity back: start again from it.
-    useEffect(() => {
+    const startFromProfile = useEffectEvent(() => {
         const fields = formFields(profile, themePrimary);
         form.setDefaults(fields);
         form.setData(fields);
+    });
+    useEffect(() => {
+        startFromProfile();
     }, [profile]);
     const [confirmReset, setConfirmReset] = useState(false);
     const importInput = useRef(null);
@@ -245,6 +248,9 @@ export default function Appearance({ profile, isImported, options, presets, them
     const logoUrl = (key) => fileUrls[key] ?? (key !== 'main' && data.remove_logos.includes(key) ? null : profile.ownLogos.includes(key) ? shared.logos[key] : null);
     const mainLogo = logoUrl('main') ?? shared.logos.main;
     const suggestions = useLogoColors(mainLogo);
+    const lightLogo = logoUrl('light') ?? mainLogo;
+    const iconLogo = logoUrl('icon') ?? mainLogo;
+    const printLogo = logoUrl('print') ?? mainLogo;
 
     // The identity being edited, as the interface draws it: tried on every part of the page until saved or left.
     const tried = useMemo(() => ({
@@ -257,13 +263,8 @@ export default function Appearance({ profile, isImported, options, presets, them
         printColor: isHex(data.colors.print) ? data.colors.print : isHex(data.colors.primary) ? data.colors.primary : shared.printColor,
         design: data.design,
         animatedLogo: !fileUrls.main && shared.animatedLogo,
-        logos: {
-            main: mainLogo,
-            light: logoUrl('light') ?? mainLogo,
-            icon: logoUrl('icon') ?? mainLogo,
-            print: logoUrl('print') ?? mainLogo,
-        },
-    }), [data, shared, fileUrls.main, fileUrls.light, fileUrls.icon, fileUrls.print]);
+        logos: { main: mainLogo, light: lightLogo, icon: iconLogo, print: printLogo },
+    }), [data, shared, fileUrls.main, mainLogo, lightLogo, iconLogo, printLogo]);
 
     useEffect(() => setBrandPreview(tried), [tried]);
     useEffect(() => () => setBrandPreview(null), []);

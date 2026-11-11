@@ -29,6 +29,7 @@ export default function TableExcelActions() {
 
     useEffect(() => {
         if (!canExport) return;
+        const tracked = hosts.current;
         let frame;
         function scan() {
             frame = null;
@@ -69,8 +70,8 @@ export default function TableExcelActions() {
         return () => {
             observer.disconnect();
             cancelAnimationFrame(frame);
-            for (const { host } of hosts.current.values()) host.remove();
-            hosts.current.clear();
+            for (const { host } of tracked.values()) host.remove();
+            tracked.clear();
         };
     }, [canExport]);
 

@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useEffectEvent, useId, useMemo, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import { DialogHeader } from '@/Components/DialogFrame';
@@ -75,11 +75,8 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
     const listHttp = useHttp({});
     const saveHttp = useHttp({});
 
-    useEffect(() => {
-        if (!show) {
-            return;
-        }
-
+    // Each opening reads the rows and the saved settings afresh, with whatever the caller passes then.
+    const loadWorkbook = useEffectEvent(() => {
         let cancelled = false;
         const controller = new AbortController();
         setParts(null);
@@ -106,6 +103,14 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
             cancelled = true;
             controller.abort();
         };
+    });
+
+    useEffect(() => {
+        if (!show) {
+            return undefined;
+        }
+
+        return loadWorkbook();
     }, [show]);
 
     const sheets = useMemo(() => (parts && settings ? buildWorkbookModel(parts, settings, meta) : []), [parts, settings, meta]);

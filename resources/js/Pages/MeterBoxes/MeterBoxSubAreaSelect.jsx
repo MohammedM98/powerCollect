@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import FormSelect from '@/Components/Form/FormSelect';
 import InputError from '@/Components/InputError';
@@ -14,9 +14,11 @@ export default function MeterBoxSubAreaSelect({ id, value, onChange, onCreated, 
         .sort((first, second) => first.name.localeCompare(second.name, 'ar'))
         .map((item) => ({ value: item.id, label: item.name, hint: item.isNew ? 'جديدة' : undefined }));
 
+    const cancelSaving = useEffectEvent(() => http.cancel());
+
     useEffect(() => {
         current.current = true;
-        return () => { current.current = false; http.cancel(); };
+        return () => { current.current = false; cancelSaving(); };
     }, []);
 
     function startAdding(name) {

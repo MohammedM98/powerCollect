@@ -192,16 +192,22 @@ function LiveRow({ subscription, week, reading, maximum, average, editableLastRe
     const [confirming, setConfirming] = useState(false);
     const inputRef = useRef(null);
 
-    useEffect(() => {
+    const savedState = JSON.stringify([savedValue, reading?.previous_reading, reading ? null : subscription.lastReading]);
+    const [shownState, setShownState] = useState(savedState);
+
+    // A save elsewhere (or this one) puts the stored figures back in the field.
+    if (shownState !== savedState) {
+        setShownState(savedState);
         setValue(savedValue);
         setError(null);
-    }, [savedValue, reading?.previous_reading, !reading ? subscription.lastReading : null]);
+    }
 
+    const readingId = reading?.id ?? null;
     useEffect(() => {
-        if (!reading) {
+        if (readingId === null) {
             inputRef.current?.focus();
         }
-    }, [reading?.id]);
+    }, [readingId]);
 
     const previous = reading ? reading.previous_reading : subscription.lastReading;
     const isDraft = value !== savedValue;

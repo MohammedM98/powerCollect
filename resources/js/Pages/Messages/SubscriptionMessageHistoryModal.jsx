@@ -32,7 +32,7 @@ export default function SubscriptionMessageHistoryModal({ subscription, onClose 
             .then((data) => { if (active) setResult({ key: requestKey, data }); })
             .catch(() => { if (active) setResult({ key: requestKey, error: 'تعذّر تحميل سجل الرسائل. حاول مرة أخرى.' }); });
         return () => { active = false; client.cancel(); };
-    }, [requestKey]);
+    }, [requestKey, subscription.id, kind, status, page]);
 
     return (
         <Modal show onClose={onClose} maxWidth="5xl">

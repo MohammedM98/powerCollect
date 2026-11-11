@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useForm, useHttp } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
@@ -43,13 +43,15 @@ export default function IssueModal({ templateId = null, mode = 'blank', onClose 
         return { options: response.options, hasMore: response.options.length === 15 };
     }, []);
 
+    const fillForm = useEffectEvent((...change) => setData(...change));
+
     useEffect(() => {
         if (!templateId) return undefined;
         let active = true; const client = setupRef.current;
         setSetupError('');
         client.get(`/company-forms/${templateId}`).then((response) => {
             if (!active) return;
-            setLoaded(response); setData((old) => ({ ...old, template_version: response.template.version, values: response.values ?? {} }));
+            setLoaded(response); fillForm((old) => ({ ...old, template_version: response.template.version, values: response.values ?? {} }));
         }).catch(() => { if (active) setSetupError('تعذّر تحميل النموذج. أعد المحاولة.'); });
         return () => { active = false; client.cancel(); };
     }, [templateId, attempt]);
@@ -58,7 +60,7 @@ export default function IssueModal({ templateId = null, mode = 'blank', onClose 
         let active = true; const client = contextRef.current;
         setContextLoading(true); setContextError('');
         client.get(`/company-forms/subscriptions?id=${data.subscription_id}`).then((response) => {
-            if (active) setData('values', response.values);
+            if (active) fillForm('values', response.values);
         }).catch(() => { if (active) setContextError('تعذّر تحميل بيانات الاشتراك. اختره مجددًا قبل الإصدار.'); })
             .finally(() => { if (active) setContextLoading(false); });
         return () => { active = false; client.cancel(); };
