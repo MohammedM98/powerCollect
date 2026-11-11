@@ -8,8 +8,9 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Drops the tables of the earlier, counting-based closing model that no code
  * reads or writes any more: safe counts, closing versions, closing
- * adjustments and debt repayments. A database that still holds rows in any
- * of them is left untouched and the migration stops, so no history is lost.
+ * adjustments and debt repayments. A table that still holds rows is kept,
+ * so no history is lost and the deploy is not stopped; it can be archived
+ * and dropped by hand later.
  * The closing model in use is BranchClosingWorkflow (boxes, box entries,
  * audit notes and closings).
  */
@@ -24,13 +25,9 @@ return new class extends Migration
     public function up(): void
     {
         foreach (self::TABLES as $table) {
-            if (Schema::hasTable($table) && DB::table($table)->exists()) {
-                throw new RuntimeException("The {$table} table still holds rows; move or archive them before dropping the old closing tables.");
+            if (Schema::hasTable($table) && ! DB::table($table)->exists()) {
+                Schema::drop($table);
             }
-        }
-
-        foreach (self::TABLES as $table) {
-            Schema::dropIfExists($table);
         }
     }
 
@@ -39,7 +36,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::create('debt_repayments', function (Blueprint $table): void {
+        Schema::hasTable('debt_repayments') || Schema::create('debt_repayments', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('collector_debt_id')->constrained()->restrictOnDelete();
             $table->foreignId('closing_id')->constrained()->restrictOnDelete();
@@ -47,7 +44,7 @@ return new class extends Migration
             $table->decimal('amount', 12, 2);
             $table->timestamps();
         });
-        Schema::create('safe_counts', function (Blueprint $table): void {
+        Schema::hasTable('safe_counts') || Schema::create('safe_counts', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('closing_id')->unique()->constrained()->restrictOnDelete();
             $table->foreignId('user_id')->constrained()->restrictOnDelete();
@@ -57,7 +54,7 @@ return new class extends Migration
             $table->text('reason')->nullable();
             $table->timestamps();
         });
-        Schema::create('closing_versions', function (Blueprint $table): void {
+        Schema::hasTable('closing_versions') || Schema::create('closing_versions', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('closing_id')->constrained()->restrictOnDelete();
             $table->unsignedInteger('version');
@@ -68,7 +65,7 @@ return new class extends Migration
             $table->timestamps();
             $table->unique(['closing_id', 'version']);
         });
-        Schema::create('closing_adjustments', function (Blueprint $table): void {
+        Schema::hasTable('closing_adjustments') || Schema::create('closing_adjustments', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('closing_id')->constrained()->restrictOnDelete();
             $table->foreignId('original_closing_id')->constrained('closings')->restrictOnDelete();

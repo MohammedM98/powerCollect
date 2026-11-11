@@ -2,7 +2,6 @@
 
 namespace App\Support\Closing;
 
-use App\Support\Branches\BranchSettings;
 use App\Enums\CashBoxType;
 use App\Enums\ClosingStatus;
 use App\Enums\PaymentMethod;
@@ -16,13 +15,25 @@ use App\Models\ClosingSettingChange;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Notifications\BranchClosingNotification;
+use App\Support\Branches\BranchSettings;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-/** Branch sessions and packages are separate from historical company closings. */
+/**
+ * The closing model in use: each collector's cash boxes (one open box per
+ * person, type and period) collect the box entries of their payments, are
+ * closed at the branch's cut-off, received by the branch head and audited;
+ * closings group the closed boxes of a period for the financial audit, with
+ * audit notes on what does not match. The earlier counting-based closing
+ * (safe counts, closing versions and adjustments, debt repayments, counted
+ * cash and denominations on closings) is gone; collector debts, closing
+ * payments and box syncs remain only for the history they hold and the
+ * field app's sync. Branch sessions and packages are separate from
+ * historical company closings.
+ */
 class BranchClosingWorkflow
 {
     public const CURRENCIES = ['ILS', 'USD', 'JOD'];

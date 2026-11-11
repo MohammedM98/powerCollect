@@ -40,11 +40,11 @@ class ClosingFactory extends Factory
 
     public function submitted(): static
     {
-        return $this->state(fn (): array => ['status' => ClosingStatus::Submitted, 'counted_cash' => '0.00', 'opening_cash' => '0.00', 'submitted_at' => now()]);
+        return $this->state(fn (): array => ['status' => ClosingStatus::Submitted, 'opening_cash' => '0.00', 'submitted_at' => now()]);
     }
 
     public function approved(): static
     {
-        return $this->state(fn (): array => ['status' => ClosingStatus::Approved, 'counted_cash' => '0.00', 'opening_cash' => '0.00', 'submitted_at' => now(), 'reviewed_at' => now()]);
+        return $this->state(fn (): array => ['status' => ClosingStatus::Approved, 'opening_cash' => '0.00', 'submitted_at' => now(), 'reviewed_at' => now()]);
     }
 }
