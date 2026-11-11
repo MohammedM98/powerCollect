@@ -16,10 +16,10 @@ function companyToken(name, fallback) {
 function Row({ label, value = null, children }) {
     return (
         <div className="grid gap-2">
-            <div className="flex items-center justify-between gap-2 text-[13px] font-semibold" style={{ color: 'var(--gl-muted)' }}>
+            <div className="flex items-center justify-between gap-2 text-[13px] font-semibold !text-[color:var(--gl-muted)]">
                 <span>{label}</span>
                 {value !== null && (
-                    <b className="gl-num" style={{ color: 'var(--gl-ink)' }}>
+                    <b className="gl-num !text-[color:var(--gl-ink)]">
                         {value}
                     </b>
                 )}
@@ -70,7 +70,7 @@ export default function LookStudioPanel({ popoverRef, onShown }) {
         <div ref={popoverRef} dir="rtl" className="tn-popover w-[360px] max-w-[calc(100vw-24px)] text-gray-900" role="dialog" aria-label="المظهر">
             <div className="grid gap-4 p-4">
                 <div>
-                    <h3 className="text-base font-bold" style={{ fontFamily: 'var(--gl-head)' }}>
+                    <h3 className="text-base font-bold !font-[family-name:var(--gl-head)]">
                         المظهر
                     </h3>
                     <p className="gl-sub !text-[12.5px]">يظهر التغيير فورًا ويُحفظ في هذا المتصفح لك وحدك.</p>
@@ -98,8 +98,8 @@ export default function LookStudioPanel({ popoverRef, onShown }) {
                         step={GLASS_RANGE.step}
                         value={glass}
                         onChange={(event) => change({ glass: Number(event.target.value) })}
-                        className="w-full"
-                        style={{ accentColor: 'rgb(var(--brand-solid))' }}
+                        className="w-full !accent-[rgb(var(--brand-solid))]"
+                       
                     />
                 </Row>
 
@@ -112,8 +112,8 @@ export default function LookStudioPanel({ popoverRef, onShown }) {
                         step={BLUR_RANGE.step}
                         value={blur}
                         onChange={(event) => change({ blur: Number(event.target.value) })}
-                        className="w-full"
-                        style={{ accentColor: 'rgb(var(--brand-solid))' }}
+                        className="w-full !accent-[rgb(var(--brand-solid))]"
+                       
                     />
                 </Row>
 

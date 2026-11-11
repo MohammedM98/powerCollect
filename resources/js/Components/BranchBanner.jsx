@@ -96,7 +96,7 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
                     </label>
                 )}
             </div>
-            {children && <div className="mt-3 flex flex-wrap gap-2 border-t pt-3 print:hidden" style={{ borderColor: 'var(--gl-line)' }}>{children}</div>}
+            {children && <div className="mt-3 flex flex-wrap gap-2 border-t pt-3 print:hidden !border-[color:var(--gl-line)]">{children}</div>}
         </section>
     );
 }

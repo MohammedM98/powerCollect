@@ -94,7 +94,7 @@ export default function DashboardFiguresColumn({
                                         <small className="gl-sub">{subtitle}</small>
                                     </span>
                                     <b className="gl-num">{formatNumber(count)}</b>
-                                    <span style={{ color: 'var(--gl-faint)' }}>
+                                    <span className="!text-[color:var(--gl-faint)]">
                                         <Icon name={icon} className="h-4 w-4" />
                                     </span>
                                 </Link>

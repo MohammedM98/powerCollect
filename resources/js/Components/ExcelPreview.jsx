@@ -49,7 +49,7 @@ export function Preview({ sheet, sheets, sheetIndex, onSheet, shownCell, onCell,
             <div className="min-h-0 flex-1 overflow-auto" dir={settings.rtl ? 'rtl' : 'ltr'}>
                 <table className="border-collapse" style={{ width, tableLayout: 'fixed', fontFamily: 'Arial, sans-serif', fontSize: px(font.body) }}>
                     <colgroup>
-                        <col style={{ width: 40 }} />
+                        <col className="!w-[40px]" />
                         {sheet.widths.map((columnWidth, index) => (
                             <col key={index} style={{ width: columnWidth * 7.5 }} />
                         ))}

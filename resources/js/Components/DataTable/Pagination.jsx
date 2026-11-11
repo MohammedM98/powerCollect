@@ -53,10 +53,10 @@ export default function Pagination({ meta, filters, baseUrl, extraParams = {}, p
         <div className="data-table-pagination flex flex-wrap items-center justify-between gap-3">
             <p className="gl-sub !m-0 !text-[13px]">
                 عرض{' '}
-                <b className="gl-num font-bold" style={{ color: 'var(--gl-ink)' }}>
+                <b className="gl-num font-bold !text-[color:var(--gl-ink)]">
                     {from}–{to}
                 </b>{' '}
-                من <b className="gl-num font-bold" style={{ color: 'var(--gl-ink)' }}>{total}</b>
+                من <b className="gl-num font-bold !text-[color:var(--gl-ink)]">{total}</b>
             </p>
 
             {last > 1 && (
@@ -68,7 +68,7 @@ export default function Pagination({ meta, filters, baseUrl, extraParams = {}, p
 
                     {pageNumbers(current, last).map((page, index) =>
                         page === '…' ? (
-                            <span key={`ellipsis-${index}`} className="px-1.5 text-sm" style={{ color: 'var(--gl-faint)' }}>
+                            <span key={`ellipsis-${index}`} className="px-1.5 text-sm !text-[color:var(--gl-faint)]">
                                 …
                             </span>
                         ) : (

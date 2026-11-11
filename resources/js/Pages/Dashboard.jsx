@@ -229,7 +229,7 @@ export default function Dashboard({
                     <Panel index={1} className="py-14 text-center">
                         {fieldApp ? (
                             <>
-                                <span className="gl-ico mx-auto" style={{ width: 56, height: 56, color: 'rgb(var(--gl-brand))' }}><Icon name="phone" className="h-7 w-7" /></span>
+                                <span className="gl-ico mx-auto !w-[56px] !h-[56px] !text-[rgb(var(--gl-brand))]"><Icon name="phone" className="h-7 w-7" /></span>
                                 <h2 className="mt-4">حسابك للعمل الميداني</h2>
                                 <p className="gl-sub mx-auto mt-2 max-w-md leading-7">
                                     تُسجَّل الدفعات والقراءات من تطبيق التحصيل على الهاتف، وتدخل إليه بنفس اسم المستخدم وكلمة المرور. لا تظهر لك بيانات في الموقع.

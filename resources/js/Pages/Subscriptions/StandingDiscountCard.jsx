@@ -38,13 +38,13 @@ export default function StandingDiscountCard({ data, example, exampleBill, examp
             <div className="gl-kv">
                 <span>
                     توفير في الأسبوع{' '}
-                    <b className="gl-num" style={{ color: 'var(--gl-ok)' }}>
+                    <b className="gl-num !text-[color:var(--gl-ok)]">
                         {formatMoney(weeklySaving)} ₪
                     </b>
                 </span>
                 <span>
                     في الشهر تقريبًا{' '}
-                    <b className="gl-num" style={{ color: 'var(--gl-ok)' }}>
+                    <b className="gl-num !text-[color:var(--gl-ok)]">
                         {formatMoney(weeklySaving * WEEKS_PER_MONTH)} ₪
                     </b>
                 </span>

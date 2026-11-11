@@ -54,7 +54,7 @@ function MeterBoxSummary({ summary }) {
     return (
         <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <KpiTile hero icon="table" label="إجمالي الطبلونات" value={formatNumber(summary.total)} unit="طبلون" hint="ضمن نتائج البحث والتصفية">
-                <div className="gl-kv mt-3 border-t pt-3" style={{ borderColor: 'var(--gl-line)' }}><span className="inline-flex items-center gap-1.5"><Icon name="users" className="h-4 w-4" />المشتركون</span><b className="gl-num">{formatNumber(summary.subscriptions)}</b></div>
+                <div className="gl-kv mt-3 border-t pt-3 !border-[color:var(--gl-line)]"><span className="inline-flex items-center gap-1.5"><Icon name="users" className="h-4 w-4" />المشتركون</span><b className="gl-num">{formatNumber(summary.subscriptions)}</b></div>
             </KpiTile>
             {[
                 { icon: 'pin', label: 'مناطق الطبلونات', unit: 'منطقة', value: formatNumber(summary.regions), hint: `${formatNumber(summary.located)} طبلون ضمن هذه المناطق${summary.total > summary.located ? ` · ${formatNumber(summary.total - summary.located)} بلا منطقة` : ''}` },

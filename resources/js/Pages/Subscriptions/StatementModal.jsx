@@ -60,7 +60,7 @@ export default function StatementModal({ subscription, statement, initialForm = 
                             </span>
                             <div className="min-w-0 flex-1">
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                                    <h3 id={titleId} className="text-xl font-extrabold" style={{ fontFamily: 'var(--gl-head)' }}>
+                                    <h3 id={titleId} className="text-xl font-extrabold !font-[family-name:var(--gl-head)]">
                                         كشف حساب {header.fullName}
                                     </h3>
                                     {header.statusLabel && <StatusPill tone={STATUS_TONES[header.status]} label={header.statusLabel} />}

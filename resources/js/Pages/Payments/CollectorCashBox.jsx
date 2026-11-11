@@ -252,7 +252,7 @@ export function BoxEntriesTable({ boxNumber, entries, pagination }) {
                                 <tr key={entry.id} className={cancelled ? 'opacity-60' : undefined}>
                                     <BoxNumberCell number={boxNumber} position={entries.from + index} />
                                     <LedgerLeadCells ledger={ledger} />
-                                    <td title={entry.subscriber} style={{ whiteSpace: 'normal' }}>
+                                    <td title={entry.subscriber} className="!whitespace-normal">
                                         {entry.statementUrl ? (
                                             <Link href={entry.statementUrl} prefetch title="فتح كشف الحساب عند هذه الحركة" className="block font-semibold text-gray-900 hover:text-brand-600 hover:underline">{entry.subscriber}</Link>
                                         ) : (
@@ -261,7 +261,7 @@ export function BoxEntriesTable({ boxNumber, entries, pagination }) {
                                         <span className="block font-display text-xs text-gray-400"><bdi dir="ltr">{entry.accountNumber}</bdi></span>
                                     </td>
                                     <LedgerTrailCells ledger={ledger} amount={entry.amount} currency={entry.currency} cancelled={cancelled} />
-                                    <td style={{ whiteSpace: 'normal' }}><StatusPill tone={tone} label={label} />{entry.isLate && <div className="mt-1"><StatusPill tone="amber" label="متأخرة" /></div>}</td>
+                                    <td className="!whitespace-normal"><StatusPill tone={tone} label={label} />{entry.isLate && <div className="mt-1"><StatusPill tone="amber" label="متأخرة" /></div>}</td>
                                     <td className="text-end">{(entry.receiptUrl || entry.statementUrl) && (
                                         <RowActionsMenu>
                                             {entry.statementUrl && <button onClick={() => router.visit(entry.statementUrl)}>كشف الحساب</button>}

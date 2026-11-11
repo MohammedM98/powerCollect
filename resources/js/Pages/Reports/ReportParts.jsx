@@ -103,7 +103,7 @@ export function PeriodCard({ branches, branchScope, scopeLabel, filters, presets
                     <button type="button" aria-label="الفترة التالية" disabled={!period?.next} className={stepClass} onClick={() => period?.next && visit({ ...period.next, page: undefined })}><Icon name="chevron-left" className="h-4 w-4" /></button>
                 </div>
             </div>
-            {datesOpen && <div className="mt-3 flex flex-wrap items-end gap-3 border-t pt-3" style={{ borderColor: 'var(--gl-line)' }}>
+            {datesOpen && <div className="mt-3 flex flex-wrap items-end gap-3 border-t pt-3 !border-[color:var(--gl-line)]">
                 <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row" role="group" aria-label="من تاريخ إلى تاريخ">
                     <label className="flex min-w-0 flex-1 flex-col gap-1.5 gl-label text-xs sm:flex-none"><span>من تاريخ</span><DateInput aria-label="من تاريخ" className="w-full sm:w-52" required value={filters.from} max={filters.to} onChange={(value) => value && visit({ from: value, page: undefined })} /></label>
                     <label className="flex min-w-0 flex-1 flex-col gap-1.5 gl-label text-xs sm:flex-none"><span>إلى تاريخ</span><DateInput aria-label="إلى تاريخ" className="w-full sm:w-52" required value={filters.to} min={filters.from} max={today} onChange={(value) => value && visit({ to: value, page: undefined })} /></label>
@@ -131,8 +131,8 @@ export function Figures({ flow, collections }) {
                     )}
                 </div>
                 <div className="gl-hint mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs">
-                    <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full" style={{ background: 'var(--gl-ink)' }} />نقدي <b className="font-display" style={{ color: 'var(--gl-ink)' }}>{reportMoney(collections.cash)} ₪</b></span>
-                    <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-brand-500" />تحويلات وشيكات <b className="font-display" style={{ color: 'var(--gl-ink)' }}>{reportMoney(collections.nonCash)} ₪</b></span>
+                    <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full" style={{ background: 'var(--gl-ink)' }} />نقدي <b className="font-display !text-[color:var(--gl-ink)]">{reportMoney(collections.cash)} ₪</b></span>
+                    <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-brand-500" />تحويلات وشيكات <b className="font-display !text-[color:var(--gl-ink)]">{reportMoney(collections.nonCash)} ₪</b></span>
                 </div>
             </KpiTile>
             <KpiTile icon="ledger" label="الرصيد الافتتاحي" value={<bdi dir="ltr">{reportMoney(flow.opening)}</bdi>} unit="₪" hint={Number(flow.opening) < 0 ? 'لصالح المشتركين' : 'على المشتركين'} />
