@@ -4,9 +4,9 @@ import react from '@vitejs/plugin-react';
 import path from 'node:path';
 import fs from 'node:fs';
 
-/** PDF fonts and decoders stay on the application's own origin in development and production. */
 /**
- * Serves and copies the files pdf.js loads at run time (character maps,
+ * PDF fonts and decoders stay on the application's own origin in development
+ * and production: serves and copies the files pdf.js loads at run time (character maps,
  * standard fonts, the WebAssembly decoders) from node_modules/pdfjs-dist.
  * When upgrading pdfjs-dist, check these folders still exist under the same
  * names, and open a company form PDF before releasing.
