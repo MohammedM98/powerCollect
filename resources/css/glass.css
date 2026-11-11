@@ -87,10 +87,6 @@
     grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr));
 }
 
-.gl-g2 {
-    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-}
-
 .gl-g3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -456,12 +452,6 @@
     color: var(--gl-muted);
 }
 
-.gl-chips {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
 .gl-chip {
     padding: 8px 14px;
     border-radius: 12px;
@@ -765,19 +755,6 @@
     box-shadow: none;
 }
 
-.gl-fl {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    min-width: 0;
-}
-
-.gl-fl > span:first-child {
-    font-size: 12.5px;
-    color: var(--gl-muted);
-    font-weight: 600;
-}
-
 /* ── Tables ───────────────────────────────────────────────────────────── */
 .gl-tblw {
     overflow-x: auto;
@@ -836,16 +813,6 @@
     color: var(--gl-muted);
 }
 
-.gl-amount-due {
-    color: var(--gl-bad);
-    font-weight: 700;
-}
-
-.gl-amount-clear {
-    color: var(--gl-ok);
-    font-weight: 700;
-}
-
 .gl-foot-line {
     display: flex;
     align-items: center;
@@ -856,34 +823,7 @@
     font-size: 13px;
 }
 
-/* ── Drawer and receipt ───────────────────────────────────────────────── */
-.gl-dr-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 60;
-    background: rgb(0 0 0 / 0.4);
-    animation: gl-fade 0.25s both;
-}
-
-.gl-drawer {
-    position: fixed;
-    z-index: 61;
-    top: 14px;
-    bottom: 14px;
-    inset-inline-end: 14px;
-    width: min(420px, calc(100% - 28px));
-    padding: 18px;
-    overflow-y: auto;
-    animation: gl-slide 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-@keyframes gl-slide {
-    from {
-        opacity: 0;
-        transform: translateX(calc(-34px * var(--gl-d)));
-    }
-}
-
+/* ── Receipt ──────────────────────────────────────────────────────────── */
 .gl-receipt {
     display: flex;
     flex-direction: column;
@@ -896,46 +836,6 @@
 
 .gl-receipt .gl-big {
     font: 800 34px var(--gl-head);
-}
-
-/* ── Boxes and the hold-to-confirm button ─────────────────────────────── */
-.gl-box {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 18px;
-}
-
-.gl-hold {
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    padding: 10px 16px;
-    border-radius: 12px;
-    font-weight: 700;
-    color: var(--gl-ink);
-    background: var(--gl-fill-2);
-    box-shadow: inset 0 0 0 1px var(--gl-line);
-    user-select: none;
-    touch-action: none;
-}
-
-.gl-hold::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgb(var(--gl-btn) / 0.75);
-    transform: scaleX(var(--p, 0));
-    transform-origin: var(--gl-start-x, right);
-}
-
-.gl-hold span {
-    position: relative;
-}
-
-.gl-hold:disabled {
-    opacity: 0.55;
-    cursor: default;
 }
 
 /* ── The board ────────────────────────────────────────────────────────── */
@@ -1156,7 +1056,6 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .gl-g2,
     .gl-dash {
         grid-template-columns: 1fr;
     }
@@ -1382,7 +1281,6 @@
     color: var(--gl-faint);
     font-size: 12px;
 }
-
 
 .gl-spin {
     width: 16px;
@@ -2127,10 +2025,6 @@
     left: -10px;
 }
 
-.gl-receipt-line {
-    border-top: 1px dashed var(--gl-line-hi);
-}
-
 .gl-notice {
     padding: 12px 14px;
     border-radius: 12px;
@@ -2139,8 +2033,6 @@
     color: var(--gl-ink);
     font-size: 14px;
 }
-
-
 
 /* Underlined tabs that are links (the financial boxes' places). */
 .gl-tabs .gl-tab {
@@ -2167,7 +2059,6 @@
     outline: 2px solid rgb(var(--gl-brand));
     outline-offset: 2px;
 }
-
 
 /*
  * ── The button system ───────────────────────────────────────────────────
