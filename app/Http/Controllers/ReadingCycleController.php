@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Enums\ReadingAssignmentChannel;
 use App\Enums\ReadingAssignmentStatus;
 use App\Enums\ReadingSubmissionStatus;
+use App\Http\Requests\PrepareReadingCycleRequest;
 use App\Http\Requests\StoreReadingCycleRequest;
+use App\Http\Requests\UpdateReadingCycleRequest;
 use App\Models\Branch;
 use App\Models\MeterBox;
 use App\Models\MeterReading;
@@ -104,10 +106,9 @@ class ReadingCycleController extends Controller
         return redirect()->route('reading-cycles.show', $cycle)->with('status', 'reading-cycle-created');
     }
 
-    public function prepare(Request $request, RecurringReadingDistribution $distribution): RedirectResponse
+    public function prepare(PrepareReadingCycleRequest $request, RecurringReadingDistribution $distribution): RedirectResponse
     {
-        $this->authorize('create', ReadingCycle::class);
-        $validated = $request->validate(['branch_id' => ['required', 'integer', 'exists:branches,id']]);
+        $validated = $request->validated();
         $branch = Branch::query()->findOrFail($validated['branch_id']);
         abort_unless($request->user()->isSuperAdmin() || $branch->id === $request->user()->workBranchId(), 403);
         $cycle = $distribution->prepare($branch, $request->user(), false);
@@ -212,20 +213,11 @@ class ReadingCycleController extends Controller
      * Move the cycle's reading day (within the days its week allows), change
      * its notes, or close or reopen it.
      */
-    public function update(Request $request, ReadingCycle $readingCycle): RedirectResponse
+    public function update(UpdateReadingCycleRequest $request, ReadingCycle $readingCycle): RedirectResponse
     {
-        $this->authorize('manage', $readingCycle);
-
         $dateBounds = $readingCycle->readingDateBounds();
 
-        $validated = $request->validate([
-            'reading_date' => ['sometimes', 'date_format:Y-m-d', 'after_or_equal:'.$dateBounds['min']->toDateString(), 'before_or_equal:'.$dateBounds['max']->toDateString()],
-            'notes' => ['sometimes', 'nullable', 'string', 'max:1000'],
-            'closed' => ['sometimes', 'boolean'],
-        ], [
-            'reading_date.after_or_equal' => 'اختر يوم القراءة حسب إعدادات الفرع أو يومًا بعده، ولا تختَر تاريخًا قبل اليوم.',
-            'reading_date.before_or_equal' => 'يوم القراءة لا يتجاوز ستة أيام بعد الموعد المحدد في إعدادات الفرع.',
-        ]);
+        $validated = $request->validated();
 
         $data = collect($validated)->only(['reading_date', 'notes'])->all();
 

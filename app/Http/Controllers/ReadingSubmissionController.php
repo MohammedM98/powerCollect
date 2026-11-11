@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\ReadingSubmissionStatus;
 use App\Http\Concerns\FiltersDataTable;
+use App\Http\Requests\ReviewReadingSubmissionRequest;
 use App\Models\ReadingCycle;
 use App\Models\ReadingSubmission;
 use App\Notifications\ActionCompleted;
@@ -63,14 +64,10 @@ class ReadingSubmissionController extends Controller
     /**
      * Save a held reading as the week's reading, or refuse it.
      */
-    public function review(Request $request, ReadingSubmission $readingSubmission): RedirectResponse
+    public function review(ReviewReadingSubmissionRequest $request, ReadingSubmission $readingSubmission): RedirectResponse
     {
-        $this->authorize('review', $readingSubmission->cycle);
 
-        $validated = $request->validate([
-            'decision' => ['required', 'in:accept,reject'],
-            'note' => ['nullable', 'string', 'max:1000'],
-        ]);
+        $validated = $request->validated();
 
         if ($validated['decision'] === 'accept') {
             $why = $this->sync->accept($readingSubmission, $request->user(), $validated['note'] ?? null);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Currency;
+use App\Http\Requests\CheckPaymentReferenceRequest;
 use App\Http\Requests\StoreSubscriptionPaymentRequest;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
@@ -20,17 +21,10 @@ use Inertia\Response as InertiaResponse;
 class SubscriptionPaymentController extends Controller
 {
     /** Check a transfer reference while the collector is still filling the form. */
-    public function referenceStatus(Request $request, Subscription $subscription): JsonResponse
+    public function referenceStatus(CheckPaymentReferenceRequest $request, Subscription $subscription): JsonResponse
     {
-        $this->authorize('recordPayment', $subscription);
 
-        $validated = $request->validate([
-            'reference_number' => ['required', 'string', 'max:100'],
-            'ignore_transaction_id' => ['nullable', 'integer'],
-            'amount' => ['nullable', 'numeric', 'gt:0'],
-            'currency' => ['nullable', 'string', 'max:3'],
-            'sender_name' => ['nullable', 'string', 'max:255'],
-        ]);
+        $validated = $request->validated();
         $ignoreId = isset($validated['ignore_transaction_id']) ? (int) $validated['ignore_transaction_id'] : null;
         $conflict = SubscriptionTransaction::activeReferenceConflict($validated['reference_number'], $ignoreId);
         $warning = null;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ListCompanyFormTemplatesRequest;
 use App\Http\Requests\SaveCompanyFormTemplateRequest;
 use App\Models\CompanyDocument;
 use App\Models\CompanyFormTemplate;
@@ -19,10 +20,9 @@ use Throwable;
 
 class CompanyFormTemplateController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(ListCompanyFormTemplatesRequest $request): Response
     {
-        $this->authorize('viewAny', CompanyFormTemplate::class);
-        $filters = $request->validate(['search' => ['nullable', 'string', 'max:150'], 'view' => ['nullable', 'in:templates,documents'], 'per_page' => ['nullable', 'in:15,25,50,100']]);
+        $filters = $request->validated();
         $search = trim($filters['search'] ?? '');
         $perPage = (int) ($filters['per_page'] ?? 15);
         $templates = CompanyFormTemplate::query()->with('updatedBy')

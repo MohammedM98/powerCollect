@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Mobile;
 use App\Enums\PaymentMethod;
 use App\Enums\PermissionKey;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreMobileSessionRequest;
 use App\Models\Bank;
 use App\Models\CurrencyRate;
 use App\Models\MessageBatch;
@@ -20,13 +21,9 @@ use Illuminate\Support\Str;
 
 class MobileSessionController extends Controller
 {
-    public function store(Request $request): JsonResponse
+    public function store(StoreMobileSessionRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'username' => ['required', 'string'],
-            'password' => ['required', 'string'],
-            'remember' => ['sometimes', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         $rateLimitKey = Str::transliterate(Str::lower($validated['username']).'|'.$request->ip());
 

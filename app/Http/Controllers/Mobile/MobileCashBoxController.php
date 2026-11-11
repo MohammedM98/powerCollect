@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Mobile;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BranchClosingActionRequest;
+use App\Http\Requests\ReplyToMobileAuditNoteRequest;
+use App\Http\Requests\SyncMobileCashBoxRequest;
 use App\Models\AuditNote;
 use App\Models\CashBox;
 use App\Models\CashBoxSync;
@@ -59,9 +61,9 @@ class MobileCashBoxController extends Controller
         return response()->json(['status' => 'saved']);
     }
 
-    public function reply(Request $request, int $note): JsonResponse
+    public function reply(ReplyToMobileAuditNoteRequest $request, int $note): JsonResponse
     {
-        $data = $request->validate(['body' => ['required', 'string', 'max:3000']]);
+        $data = $request->validated();
         $actor = $request->user();
         $this->workflow->locked($actor->workBranchId(), function () use ($actor, $note, $data): void {
             $item = AuditNote::query()->where('assigned_to', $actor->id)->where('status', 'with_collector')->whereHas('closing', fn ($query) => $query->where('branch_id', $actor->workBranchId()))->findOrFail($note);
@@ -71,9 +73,9 @@ class MobileCashBoxController extends Controller
         return response()->json(['status' => 'saved']);
     }
 
-    public function sync(Request $request): JsonResponse
+    public function sync(SyncMobileCashBoxRequest $request): JsonResponse
     {
-        $data = $request->validate(['pending_payments' => ['required', 'integer', 'between:0,100000']]);
+        $data = $request->validated();
         $actor = $request->user();
         abort_unless($actor->workBranchId(), 403);
         CashBoxSync::query()->updateOrCreate(['branch_id' => $actor->workBranchId(), 'user_id' => $actor->id], ['synced_at' => now(), 'pending_payments' => $data['pending_payments']]);

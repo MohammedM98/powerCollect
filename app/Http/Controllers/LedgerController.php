@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\PaymentMethod;
 use App\Http\Concerns\BuildsSubscriptionStatement;
 use App\Http\Concerns\FiltersDataTable;
+use App\Http\Requests\ViewLedgerRequest;
 use App\Models\Branch;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
@@ -59,13 +60,12 @@ class LedgerController extends Controller
 
     private const CREDIT = 'credit';
 
-    public function index(Request $request): InertiaResponse|StreamedResponse
+    public function index(ViewLedgerRequest $request): InertiaResponse|StreamedResponse
     {
-        $this->authorize('viewAny', SubscriptionTransaction::class);
 
         $actor = $request->user();
         $period = $this->period($request);
-        $dateBasis = $request->validate(['date_basis' => ['sometimes', 'in:recorded,paid']])['date_basis'] ?? 'recorded';
+        $dateBasis = $request->validated('date_basis') ?? 'recorded';
         [$from, $until, $days] = $this->dateWindow($request, $period);
         $side = $this->headlineSide($request);
 
@@ -410,7 +410,7 @@ class LedgerController extends Controller
     /**
      * @return array{CarbonImmutable|null, CarbonImmutable, int|null}
      */
-    private function dateWindow(Request $request, string $period): array
+    private function dateWindow(ViewLedgerRequest $request, string $period): array
     {
         $today = DailySeries::today();
         $until = $today->addDay();
@@ -424,10 +424,7 @@ class LedgerController extends Controller
             $from = $today->startOfMonth();
             $days = $today->day;
         } elseif ($period === 'custom') {
-            $dates = $request->validate([
-                'from' => ['required', 'date_format:Y-m-d'],
-                'to' => ['required', 'date_format:Y-m-d', 'after_or_equal:from'],
-            ]);
+            $dates = $request->validated();
             $from = CarbonImmutable::parse($dates['from'], config('app.business_timezone'))->startOfDay();
             $until = CarbonImmutable::parse($dates['to'], config('app.business_timezone'))->startOfDay()->addDay();
             $days = (int) CarbonImmutable::parse($dates['from'], 'UTC')->diffInDays(CarbonImmutable::parse($dates['to'], 'UTC')) + 1;

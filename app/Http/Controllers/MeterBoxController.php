@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\SubscriptionStatus;
 use App\Http\Concerns\DeletesRecords;
 use App\Http\Concerns\FiltersDataTable;
+use App\Http\Requests\PrintMeterBoxSubscriptionsRequest;
 use App\Http\Requests\StoreMeterBoxRequest;
 use App\Http\Requests\UpdateMeterBoxRequest;
 use App\Models\Area;
@@ -105,19 +106,14 @@ class MeterBoxController extends Controller
      * keep the order chosen on the list. Boxes without subscribers are left
      * out and counted in the printout's summary.
      */
-    public function printSubscriptions(Request $request): InertiaResponse|RedirectResponse
+    public function printSubscriptions(PrintMeterBoxSubscriptionsRequest $request): InertiaResponse|RedirectResponse
     {
-        $this->authorize('viewAny', MeterBox::class);
-        $this->authorize('viewAny', Subscription::class);
 
         if (! $request->boolean('print')) {
             return redirect()->route('meter-boxes.index', $request->except(['subscription_sort', 'subscription_direction']));
         }
 
-        $validated = $request->validate([
-            'subscription_sort' => ['nullable', 'in:name,account_number'],
-            'subscription_direction' => ['nullable', 'in:asc,desc'],
-        ]);
+        $validated = $request->validated();
         $actor = $request->user();
         $boxes = $this->matchingBoxes($request, $actor)->get();
         $subscriptions = Subscription::query()->visibleTo($actor)

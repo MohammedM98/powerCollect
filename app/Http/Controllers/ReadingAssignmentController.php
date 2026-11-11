@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Enums\ReadingAssignmentChannel;
 use App\Http\Requests\AllocateReadingBoxesRequest;
+use App\Http\Requests\ApproveReadingAssignmentRequest;
 use App\Models\ReadingCycle;
 use App\Models\User;
 use App\Notifications\ActionCompleted;
 use App\Support\ReadingAllocation;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 /**
@@ -55,14 +55,10 @@ class ReadingAssignmentController extends Controller
      * Approve the drafts of one reader (`user_id`), of the paper sheets
      * (`paper`), or all of them.
      */
-    public function approve(Request $request, ReadingCycle $readingCycle): RedirectResponse
+    public function approve(ApproveReadingAssignmentRequest $request, ReadingCycle $readingCycle): RedirectResponse
     {
-        $this->authorize('approve', $readingCycle);
 
-        $validated = $request->validate([
-            'user_id' => ['nullable', 'integer'],
-            'paper' => ['boolean'],
-        ]);
+        $validated = $request->validated();
 
         if ($readingCycle->isClosed()) {
             return back()->withErrors(['approve' => 'دورة القراءة مغلقة.']);

@@ -10,6 +10,7 @@ use App\Http\Concerns\ApprovesCorrectedReadings;
 use App\Http\Concerns\FiltersDataTable;
 use App\Http\Concerns\FiltersReadingSheet;
 use App\Http\Requests\ApproveMeterReadingsRequest;
+use App\Http\Requests\ListMeterReadingsRequest;
 use App\Http\Requests\StoreMeterReadingRequest;
 use App\Http\Requests\UpdateMeterReadingRequest;
 use App\Models\Area;
@@ -53,11 +54,8 @@ class MeterReadingController extends Controller
      * chosen week, with their last reading, this week's reading (if
      * entered), and what that week costs them.
      */
-    public function index(Request $request): InertiaResponse
+    public function index(ListMeterReadingsRequest $request): InertiaResponse
     {
-        $this->authorize('viewAny', MeterReading::class);
-
-        $request->validate(['filter.subscription_status' => ['nullable', 'in:all,active,suspended,disconnected']]);
 
         $actor = auth()->user();
         if ($actor->isSuperAdmin() && BranchDomainContext::id() === null && ! $request->filled('filter.branch_id')) {

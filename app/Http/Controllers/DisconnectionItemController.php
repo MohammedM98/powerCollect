@@ -11,6 +11,7 @@ use App\Http\Concerns\FiltersDisconnectionItems;
 use App\Http\Concerns\PresentsDisconnectionItems;
 use App\Http\Requests\AddDisconnectionItemsRequest;
 use App\Http\Requests\ConfirmDisconnectionItemsRequest;
+use App\Http\Requests\PreviewDisconnectionItemsRequest;
 use App\Http\Requests\RemoveDisconnectionItemsRequest;
 use App\Http\Requests\RescheduleDisconnectionItemsRequest;
 use App\Http\Requests\WarnDisconnectionItemsRequest;
@@ -92,15 +93,8 @@ class DisconnectionItemController extends Controller
      * match of the list's search and filters — with what the action needs to
      * show: their status, balance, fee and, for those who may warn, phone.
      */
-    public function preview(Request $request, DisconnectionList $disconnectionList): JsonResponse
+    public function preview(PreviewDisconnectionItemsRequest $request, DisconnectionList $disconnectionList): JsonResponse
     {
-        $this->authorize('view', $disconnectionList);
-
-        $request->validate([
-            'all' => ['boolean'],
-            'ids' => ['exclude_if:all,true', 'required', 'array', 'min:1'],
-            'ids.*' => ['integer'],
-        ]);
 
         $query = $request->boolean('all')
             ? $this->filteredDisconnectionItems($disconnectionList, $request)

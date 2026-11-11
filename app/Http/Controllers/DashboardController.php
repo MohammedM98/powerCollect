@@ -6,6 +6,7 @@ use App\Enums\PermissionKey;
 use App\Http\Concerns\BuildsSubscriptionStatement;
 use App\Http\Concerns\ProvidesFormOptions;
 use App\Http\Concerns\ProvidesSubscriptionForm;
+use App\Http\Requests\ViewDashboardRequest;
 use App\Models\Branch;
 use App\Models\Governorate;
 use App\Models\Subscription;
@@ -17,7 +18,6 @@ use App\Support\DashboardOverview;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
@@ -32,17 +32,10 @@ class DashboardController extends Controller
      * appears only for someone who may open the page it summarizes, so the
      * dashboard differs per user without any role name hardcoded here.
      */
-    public function index(Request $request): InertiaResponse
+    public function index(ViewDashboardRequest $request): InertiaResponse
     {
         $actor = $request->user();
-        $validated = $request->validate([
-            'days' => ['nullable', 'integer', Rule::in(DashboardOverview::PERIODS)],
-            'branch' => ['nullable', 'integer'],
-            'governorate' => ['nullable', 'integer'],
-            'method' => ['nullable', Rule::in(['cash', 'transfer'])],
-            'search' => ['nullable', 'string', 'max:100'],
-            'page' => ['nullable', 'integer', 'min:1'],
-        ]);
+        $validated = $request->validated();
         $days = (int) ($validated['days'] ?? 30);
         $company = BranchScope::shownTo($actor);
         $allBranches = $company ? Branch::query()->with('governorate')->orderBy('name')->get() : collect();

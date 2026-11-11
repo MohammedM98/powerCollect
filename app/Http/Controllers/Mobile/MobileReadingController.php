@@ -5,26 +5,20 @@ namespace App\Http\Controllers\Mobile;
 use App\Enums\PermissionKey;
 use App\Enums\SubscriptionStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ListMobileReadingsRequest;
 use App\Http\Requests\StoreMobileMeterReadingRequest;
 use App\Models\MeterReading;
 use App\Models\ReadingAssignment;
 use App\Models\Subscription;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 class MobileReadingController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(ListMobileReadingsRequest $request): JsonResponse
     {
-        $this->authorize('viewAny', MeterReading::class);
 
-        $validated = $request->validate([
-            'week' => ['nullable', 'date_format:Y-m-d'],
-            'search' => ['nullable', 'string', 'max:100'],
-            'subscription_status' => ['nullable', 'in:all,active,suspended,disconnected'],
-            'page' => ['sometimes', 'integer', 'min:1'],
-        ]);
+        $validated = $request->validated();
         $branchId = $request->user()->branch_id;
         // Someone who may not browse earlier weeks always gets the latest one.
         $canBrowseWeeks = $request->user()->can('browseWeeks', MeterReading::class);

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ArchiveSubscriptionRequest;
+use App\Http\Requests\RestoreSubscriptionRequest;
 use App\Models\Subscription;
 use App\Notifications\ActionCompleted;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -39,10 +39,9 @@ class SubscriptionArchiveController extends Controller
         return back()->with('status', 'subscription-archived');
     }
 
-    public function destroy(Request $request, Subscription $subscription): RedirectResponse
+    public function destroy(RestoreSubscriptionRequest $request, Subscription $subscription): RedirectResponse
     {
-        $this->authorize('restore', $subscription);
-        $data = $request->validate(['reason' => ['required', 'string', 'max:2000'], 'confirmed' => ['accepted']]);
+        $data = $request->validated();
 
         DB::transaction(function () use ($request, $subscription, $data): void {
             $current = Subscription::query()->lockForUpdate()->findOrFail($subscription->id);

@@ -8,6 +8,7 @@ use App\Enums\MessageStatus;
 use App\Enums\SubscriptionStatus;
 use App\Http\Concerns\FiltersDataTable;
 use App\Http\Concerns\FiltersSubscriptionList;
+use App\Http\Requests\MessageRecipientsRequest;
 use App\Http\Requests\StoreMessageBatchRequest;
 use App\Jobs\SendSubscriptionMessage;
 use App\Models\Branch;
@@ -140,20 +141,10 @@ class MessageController extends Controller
      * reading, who has a reading that week), each with the values for the
      * placeholders. Nothing without either.
      */
-    public function recipients(Request $request): JsonResponse
+    public function recipients(MessageRecipientsRequest $request): JsonResponse
     {
-        $this->authorize('create', MessageBatch::class);
-
-        $request->validate([
-            'selection' => ['nullable', 'array'],
-            'selection.all' => ['sometimes', 'boolean'],
-            'subscription_ids' => ['nullable', 'array', 'max:'.MessageComposer::MAX_RECIPIENTS],
-            'subscription_ids.*' => ['integer'],
-            'search' => ['nullable', 'string', 'max:255'],
-        ]);
 
         if ($request->boolean('selection.all')) {
-            $request->validate(['selection' => ['array'], 'selection.search' => ['nullable', 'string', 'max:255'], 'selection.filter' => ['nullable', 'array']]);
             $selectionRequest = new Request([
                 'search' => $request->input('selection.search', ''),
                 'filter' => $request->input('selection.filter', []),

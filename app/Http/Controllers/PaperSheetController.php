@@ -6,6 +6,7 @@ use App\Enums\PermissionKey;
 use App\Enums\ReadingAssignmentChannel;
 use App\Enums\ReadingAssignmentStatus;
 use App\Enums\SubscriptionStatus;
+use App\Http\Requests\StorePaperSheetRequest;
 use App\Models\PaperSheet;
 use App\Models\ReadingAssignment;
 use App\Models\ReadingCycle;
@@ -31,14 +32,10 @@ class PaperSheetController extends Controller
     /**
      * Put the chosen approved paper boxes on a new numbered sheet.
      */
-    public function store(Request $request, ReadingCycle $readingCycle): RedirectResponse
+    public function store(StorePaperSheetRequest $request, ReadingCycle $readingCycle): RedirectResponse
     {
-        $this->authorize('printSheets', $readingCycle);
 
-        $validated = $request->validate([
-            'box_ids' => ['required', 'array', 'min:1', 'max:200'],
-            'box_ids.*' => ['integer', 'distinct'],
-        ], ['box_ids.required' => 'اختر طبلونًا ورقيًا واحدًا على الأقل.']);
+        $validated = $request->validated();
 
         $assignments = $readingCycle->assignments()
             ->whereIn('meter_box_id', $validated['box_ids'])

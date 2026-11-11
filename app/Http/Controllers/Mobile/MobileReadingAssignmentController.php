@@ -8,6 +8,7 @@ use App\Enums\ReadingAssignmentStatus;
 use App\Enums\ReadingSubmissionStatus;
 use App\Enums\SubscriptionStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SyncMobileReadingsRequest;
 use App\Models\Branch;
 use App\Models\MeterBox;
 use App\Models\MeterReading;
@@ -90,22 +91,11 @@ class MobileReadingAssignmentController extends Controller
      * held for review or refused — and an upload retried with the same
      * operation ids is answered the same way without saving anything twice.
      */
-    public function sync(Request $request): JsonResponse
+    public function sync(SyncMobileReadingsRequest $request): JsonResponse
     {
         $reader = $request->user();
-        abort_unless($reader->hasPermission(PermissionKey::RecordMeterReadings), 403);
 
-        $validated = $request->validate([
-            'readings' => ['required', 'array', 'min:1', 'max:'.self::MAX_READINGS],
-            'readings.*.operation_id' => ['required', 'uuid', 'distinct'],
-            'readings.*.assignment_id' => ['required', 'integer'],
-            'readings.*.authorization' => ['required', 'string', 'max:1000'],
-            'readings.*.subscription_id' => ['required', 'integer'],
-            'readings.*.current_reading' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:9999999999.99'],
-            'readings.*.captured_at' => ['required', 'date'],
-            'readings.*.device_id' => ['nullable', 'string', 'max:100'],
-            'readings.*.notes' => ['nullable', 'string', 'max:1000'],
-        ]);
+        $validated = $request->validated();
 
         return response()->json([
             'results' => array_map(fn (array $reading): array => $this->sync->submit($reader, $reading), $validated['readings']),

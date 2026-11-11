@@ -7,6 +7,9 @@ use App\Enums\ChargeType;
 use App\Enums\PaymentMethod;
 use App\Enums\PermissionKey;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CheckMobileReferenceRequest;
+use App\Http\Requests\ListMobileSubscriptionsRequest;
+use App\Http\Requests\ListMobileTransactionsRequest;
 use App\Http\Requests\StoreMobileCollectionRequest;
 use App\Models\Closing;
 use App\Models\MessageBatch;
@@ -28,13 +31,10 @@ class MobileCollectionController extends Controller
     /** How many of the latest statement lines the subscription page shows. */
     private const RECENT_TRANSACTIONS = 10;
 
-    public function subscriptions(Request $request): JsonResponse
+    public function subscriptions(ListMobileSubscriptionsRequest $request): JsonResponse
     {
-        abort_unless($request->user()->can('recordAnyPayment', Subscription::class)
-            || $request->user()->can('viewAny', Subscription::class)
-            || $request->user()->hasAnyPermission(PermissionKey::AddCharges, PermissionKey::AddDiscounts, PermissionKey::AddClearings), 403);
 
-        $validated = $request->validate(['search' => ['nullable', 'string', 'max:100']]);
+        $validated = $request->validated();
         $search = trim($validated['search'] ?? '');
         // Any subscription of the branch can pay, as on the website: a
         // suspended or disconnected one may still be settling their debt.
@@ -164,9 +164,8 @@ class MobileCollectionController extends Controller
         ]);
     }
 
-    public function transactions(Request $request, string $subscription): JsonResponse
+    public function transactions(ListMobileTransactionsRequest $request, string $subscription): JsonResponse
     {
-        $request->validate(['page' => ['sometimes', 'integer', 'min:1']]);
         $subscription = Subscription::query()->visibleTo($request->user())->findOrFail($subscription);
         $this->authorize('view', $subscription);
         $transactions = $subscription->transactions()
@@ -251,11 +250,10 @@ class MobileCollectionController extends Controller
      * app to say as it is typed. A repeated one is still recorded once the
      * collector confirms it (`confirm_duplicate_reference`).
      */
-    public function referenceStatus(Request $request): JsonResponse
+    public function referenceStatus(CheckMobileReferenceRequest $request): JsonResponse
     {
-        abort_unless($request->user()->hasPermission(PermissionKey::RecordCollections), 403);
 
-        $validated = $request->validate(['reference_number' => ['required', 'string', 'max:100']]);
+        $validated = $request->validated();
         $conflict = SubscriptionTransaction::activeReferenceConflict($validated['reference_number']);
         $mayDiscloseConflict = $conflict?->mayDiscloseReferenceTo($request->user()) ?? false;
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SearchCompanyDocumentSubscriptionsRequest;
 use App\Http\Requests\StoreCompanyDocumentRequest;
 use App\Models\CompanyDocument;
 use App\Models\CompanyFormTemplate;
@@ -22,10 +23,9 @@ use Throwable;
 
 class CompanyDocumentController extends Controller
 {
-    public function subscriptions(Request $request): JsonResponse
+    public function subscriptions(SearchCompanyDocumentSubscriptionsRequest $request): JsonResponse
     {
-        $this->authorize('create', CompanyDocument::class);
-        $data = $request->validate(['search' => ['nullable', 'string', 'max:100'], 'id' => ['nullable', 'integer']]);
+        $data = $request->validated();
         $query = Subscription::query()->visibleTo($request->user());
         if (! empty($data['id'])) {
             $subscription = $query->findOrFail($data['id']);

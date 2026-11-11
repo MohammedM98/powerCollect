@@ -6,6 +6,8 @@ use App\Enums\AuditAction;
 use App\Enums\CashBoxType;
 use App\Http\Concerns\FiltersDataTable;
 use App\Http\Concerns\PresentsCashBoxes;
+use App\Http\Requests\ReplyToAuditNoteRequest;
+use App\Http\Requests\ViewCashBoxesRequest;
 use App\Models\Branch;
 use App\Models\CashBox;
 use App\Models\CashBoxPayment;
@@ -48,7 +50,7 @@ class CashBoxController extends Controller
      * every box they had, filtered by `?type=` and `?state=`, each with its
      * totals, dates, who closed it and its report.
      */
-    public function cashBoxes(Request $request): InertiaResponse
+    public function cashBoxes(ViewCashBoxesRequest $request): InertiaResponse
     {
         $actor = $request->user();
         if (BranchClosingAccess::view($actor)) {
@@ -208,7 +210,6 @@ class CashBoxController extends Controller
      */
     private function allBranchCashBoxes(Request $request, User $actor, EloquentCollection $branches): InertiaResponse
     {
-        $request->validate(['week' => ['nullable', 'date_format:Y-m-d']]);
         $place = $request->query('place') === 'open' ? 'open' : 'closed';
         $visible = $place === 'open' ? $branches->reject(fn (Branch $item): bool => BranchClosingAccess::closedOnly($actor, $item->id)) : $branches;
         abort_if($visible->isEmpty(), 403);
@@ -261,11 +262,6 @@ class CashBoxController extends Controller
         if (BranchClosingAccess::closedOnly($actor, $branch->id)) {
             $place = 'closed';
         }
-        $request->validate([
-            'week' => ['nullable', 'date_format:Y-m-d'],
-            'transfer_search' => ['nullable', 'string', 'max:100'],
-            'transfer_state' => ['nullable', 'in:differences,unreviewed,draft,missing,short,over,matched'],
-        ]);
         $canSearchTransfers = $actor->is_active && ($actor->isSuperAdmin() || $actor->hasFinancialAuditAccess());
         $searchingTransfers = $request->query('view') === 'transfers';
         abort_if($searchingTransfers && ! $canSearchTransfers, 403);
@@ -386,10 +382,9 @@ class CashBoxController extends Controller
     /**
      * The collector's answer to an audit note the branch sent them.
      */
-    public function replyToAuditNote(Request $request, int $auditNote): RedirectResponse
+    public function replyToAuditNote(ReplyToAuditNoteRequest $request, int $auditNote): RedirectResponse
     {
-        $this->authorize('viewOwnCashBoxes', Subscription::class);
-        $data = $request->validate(['body' => ['required', 'string', 'max:3000']]);
+        $data = $request->validated();
         $actor = $request->user();
         abort_unless($actor->workBranchId(), 403);
 

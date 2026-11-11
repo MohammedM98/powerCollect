@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ImportBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
 use App\Notifications\ActionCompleted;
 use App\Support\Brand;
@@ -95,11 +96,8 @@ class BrandSettingController extends Controller
     /**
      * Make an uploaded identity file the company's, as `brand:import` does.
      */
-    public function import(Request $request, Brand $brand): RedirectResponse
+    public function import(ImportBrandRequest $request, Brand $brand): RedirectResponse
     {
-        Gate::authorize('manage-brand');
-
-        $request->validate(['file' => ['required', 'file', 'max:12288']], [], ['file' => 'ملف الهوية']);
 
         try {
             $data = json_decode($request->file('file')->getContent(), true, flags: JSON_THROW_ON_ERROR);

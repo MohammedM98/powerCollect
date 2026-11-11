@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Concerns\FiltersDataTable;
+use App\Http\Requests\FinancialReportFiltersRequest;
+use App\Http\Requests\ViewFinancialReportRequest;
 use App\Models\Branch;
 use App\Models\Closing;
 use App\Models\Subscription;
@@ -23,7 +25,6 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -51,10 +52,9 @@ class ReportController extends Controller
      * period's figures and lines for the screen, print and Excel; the
      * detail sections (boxes, debts, statement) build only their own table.
      */
-    public function index(Request $request): InertiaResponse
+    public function index(ViewFinancialReportRequest $request): InertiaResponse
     {
-        abort_unless(FinancialReportAccess::view($request->user()), 403);
-        $section = $request->validate(['section' => ['nullable', Rule::in(['overview', 'collections', 'boxes', 'debts', 'statement', 'movements'])]])['section'] ?? 'overview';
+        $section = $request->validated('section') ?? 'overview';
         $branches = FinancialReportAccess::branches($request->user());
         ['chosen' => $chosen, 'branch' => $branch, 'from' => $from, 'to' => $to, 'today' => $today, 'kind' => $kind] = $this->filters($request, $branches);
         $report = new BranchReport($chosen, $from, $to);
@@ -186,14 +186,9 @@ class ReportController extends Controller
     }
 
     /** Filter presentation rows after historical running balances have been calculated. @param Collection<int, array<string, mixed>> $rows @return array<string, mixed> */
-    private function detailTable(Request $request, Collection $rows, string $section): array
+    private function detailTable(ViewFinancialReportRequest $request, Collection $rows, string $section): array
     {
-        $validated = $request->validate([
-            'search' => ['nullable', 'string', 'max:100'],
-            'filter' => ['nullable', 'array'],
-            'filter.*' => ['nullable', 'string', 'max:200'],
-            'sort' => ['nullable', 'string', 'max:40'],
-        ]);
+        $validated = $request->validated();
         $columns = match ($section) {
             'statement' => ['day', 'voucherNumber', 'description', 'debit', 'credit', 'balance'],
             'debts' => ['name', 'accountNumber', 'branchName', ...array_keys(DebtAging::BUCKETS), 'balance', 'lastPaymentDate'],
@@ -273,9 +268,9 @@ class ReportController extends Controller
     }
 
     /** @param Collection<int, Branch> $branches */
-    private function accountDirectory(Request $request, Collection $branches): LengthAwarePaginator
+    private function accountDirectory(ViewFinancialReportRequest $request, Collection $branches): LengthAwarePaginator
     {
-        $validated = $request->validate(['search' => ['nullable', 'string', 'max:100'], 'sort' => ['nullable', 'string', 'max:40']]);
+        $validated = $request->validated();
         $sort = in_array($validated['sort'] ?? '', ['account_number', 'display_name'], true) ? $validated['sort'] : 'account_number';
 
         return Subscription::query()->readableTo($request->user())
@@ -290,9 +285,9 @@ class ReportController extends Controller
     }
 
     /** All signed ledger lines in the period, including reversals, share one running balance. @param Collection<int, Branch> $branches @return array<string, mixed>|null */
-    private function statement(Request $request, Collection $branches, CarbonImmutable $from, CarbonImmutable $to): ?array
+    private function statement(ViewFinancialReportRequest $request, Collection $branches, CarbonImmutable $from, CarbonImmutable $to): ?array
     {
-        $validated = $request->validate(['subscription' => ['nullable', 'integer', 'min:1']]);
+        $validated = $request->validated();
         if (! isset($validated['subscription'])) {
             return null;
         }
@@ -380,7 +375,7 @@ class ReportController extends Controller
      * with the same filters as on the page. The branch's name heads the
      * file and names it, so a file shared later still says whose it is.
      */
-    public function export(Request $request): StreamedResponse
+    public function export(FinancialReportFiltersRequest $request): StreamedResponse
     {
         ['chosen' => $chosen, 'from' => $from, 'to' => $to, 'lines' => $lines] = $this->exportedLines($request);
         $scope = BranchScope::describe($chosen)['name'];
@@ -411,7 +406,7 @@ class ReportController extends Controller
      * A bounded page of export lines, oldest first, and its next cursor.
      * Every request applies the same authorization and report filters.
      */
-    public function lines(Request $request): JsonResponse
+    public function lines(FinancialReportFiltersRequest $request): JsonResponse
     {
         ['lines' => $lines] = $this->exportedLines($request);
         $page = $lines->cursorPaginate(500);
@@ -427,9 +422,8 @@ class ReportController extends Controller
      *
      * @return array{chosen: Collection<int, Branch>, from: CarbonImmutable, to: CarbonImmutable, lines: Builder<SubscriptionTransaction>}
      */
-    private function exportedLines(Request $request): array
+    private function exportedLines(FinancialReportFiltersRequest $request): array
     {
-        abort_unless(FinancialReportAccess::export($request->user()), 403);
         ['chosen' => $chosen, 'from' => $from, 'to' => $to, 'kind' => $kind] = $this->filters($request, FinancialReportAccess::branches($request->user()));
         $lines = (new BranchReport($chosen, $from, $to))->lines($kind)
             ->with(['subscription.branch', 'subscription.meterBox', 'recordedBy', 'meterReading', 'reverses.meterReading', 'bankTransferAudit', 'referenceTransaction'])
@@ -448,14 +442,9 @@ class ReportController extends Controller
      * @param  Collection<int, Branch>  $branches
      * @return array{chosen: Collection<int, Branch>, branch: int|string|null, from: CarbonImmutable, to: CarbonImmutable, today: CarbonImmutable, kind: string}
      */
-    private function filters(Request $request, Collection $branches): array
+    private function filters(FinancialReportFiltersRequest $request, Collection $branches): array
     {
-        $validated = $request->validate([
-            'branch' => ['nullable', 'string'],
-            'from' => ['nullable', 'date_format:Y-m-d'],
-            'to' => ['nullable', 'date_format:Y-m-d'],
-            'kind' => ['nullable', Rule::in(array_column(BranchReport::kinds(), 'value'))],
-        ]);
+        $validated = $request->validated();
         $requested = $validated['branch'] ?? null;
         $all = ($requested === null || $requested === '' || $requested === 'all') && $branches->count() > 1;
         $branch = $all ? null : ($branches->firstWhere('id', (int) $requested)

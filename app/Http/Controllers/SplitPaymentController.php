@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Enums\AuditAction;
 use App\Enums\PermissionKey;
+use App\Http\Requests\CheckSplitPaymentReferenceRequest;
 use App\Http\Requests\StoreSplitPaymentRequest;
 use App\Http\Requests\UpdateSplitPaymentRequest;
 use App\Models\SplitPayment;
-use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Notifications\ActionCompleted;
 use App\Support\DailySeries;
@@ -39,11 +39,10 @@ class SplitPaymentController extends Controller
      * it already, for the form to say as it is typed. A reference already
      * used is allowed, once the user confirms it.
      */
-    public function referenceStatus(Request $request): JsonResponse
+    public function referenceStatus(CheckSplitPaymentReferenceRequest $request): JsonResponse
     {
-        $this->authorize('recordAnyPayment', Subscription::class);
 
-        $validated = $request->validate(['reference_number' => ['required', 'string', 'max:100']]);
+        $validated = $request->validated();
         $conflict = SubscriptionTransaction::activeReferenceConflict($validated['reference_number']);
         $outsideDomain = $conflict && ! $conflict->mayDiscloseReferenceTo($request->user());
 
