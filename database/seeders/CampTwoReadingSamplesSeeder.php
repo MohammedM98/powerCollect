@@ -5,9 +5,10 @@ namespace Database\Seeders;
 use App\Enums\SubscriptionStatus;
 use App\Enums\UserRole;
 use App\Models\Branch;
-use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Support\Readings\ReadingWeeks;
+use App\Support\Readings\RecordReading;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -33,8 +34,8 @@ class CampTwoReadingSamplesSeeder extends Seeder
         DB::transaction(function (): void {
             $branch = Branch::query()->where('seed_key', 'camp-two')->lockForUpdate()->sole();
             $recorder = User::query()->where('role', UserRole::SuperAdmin)->where('is_active', true)->orderBy('id')->firstOrFail();
-            $currentWeek = MeterReading::latestEndedWeekStart($branch);
-            $previousWeek = MeterReading::weekStartFor($currentWeek->copy()->subDay(), $branch);
+            $currentWeek = ReadingWeeks::latestEndedWeekStart($branch);
+            $previousWeek = ReadingWeeks::weekStartFor($currentWeek->copy()->subDay(), $branch);
             $subscriptions = Subscription::query()->where('branch_id', $branch->id)
                 ->where('status', SubscriptionStatus::Active)->whereNull('archived_at')
                 ->whereIn('account_number', array_column(self::SAMPLES, 'account'))
@@ -49,11 +50,11 @@ class CampTwoReadingSamplesSeeder extends Seeder
                 }
 
                 if (! $subscription->meterReadings()->whereDate('week_start', $previousWeek->toDateString())->exists()) {
-                    MeterReading::recordFor($subscription, $previousWeek, $subscription->previousReadingBefore($currentWeek), $recorder,
+                    RecordReading::handle($subscription, $previousWeek, $subscription->previousReadingBefore($currentWeek), $recorder,
                         'قراءة تجريبية لاستكمال الأسبوع السابق مع الحفاظ على قيمة البداية');
                 }
 
-                MeterReading::recordFor($subscription, $currentWeek, $subscription->previousReadingBefore($currentWeek) + $sample['consumption'], $recorder,
+                RecordReading::handle($subscription, $currentWeek, $subscription->previousReadingBefore($currentWeek) + $sample['consumption'], $recorder,
                     'قراءة حالية تجريبية لاختبار تعديل القراءة السابقة');
                 $created++;
             }

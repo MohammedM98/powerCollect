@@ -10,6 +10,7 @@ use App\Models\MeterReading;
 use App\Models\ReadingEntrySetting;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Support\Readings\ReadingWeeks;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -166,14 +167,14 @@ trait FiltersReadingSheet
      */
     protected function selectedWeek(Request $request, ?int $branchId, bool $canBrowseWeeks): Carbon
     {
-        $latestWeek = MeterReading::latestEndedWeekStart($branchId);
+        $latestWeek = ReadingWeeks::latestEndedWeekStart($branchId);
         $requested = $request->date('week');
 
         if ($requested === null || ! $canBrowseWeeks) {
             return $latestWeek;
         }
 
-        return MeterReading::weekStartFor($requested, $branchId)->min($latestWeek);
+        return ReadingWeeks::weekStartFor($requested, $branchId)->min($latestWeek);
     }
 
     /**
@@ -188,7 +189,7 @@ trait FiltersReadingSheet
             return 60;
         }
 
-        $weeks = (int) floor(MeterReading::latestEndedWeekStart($branchId)->diffInDays(Carbon::parse($first), absolute: true) / 7) + 1;
+        $weeks = (int) floor(ReadingWeeks::latestEndedWeekStart($branchId)->diffInDays(Carbon::parse($first), absolute: true) / 7) + 1;
 
         return max(60, min(520, $weeks));
     }

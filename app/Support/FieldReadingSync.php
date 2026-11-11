@@ -6,11 +6,13 @@ use App\Enums\ReadingAssignmentChannel;
 use App\Enums\ReadingAssignmentStatus;
 use App\Enums\ReadingSubmissionStatus;
 use App\Enums\SubscriptionStatus;
-use App\Models\MeterReading;
 use App\Models\ReadingAssignment;
 use App\Models\ReadingSubmission;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Support\Readings\ReadingConsumption;
+use App\Support\Readings\ReadingWeeks;
+use App\Support\Readings\RecordReading;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -122,7 +124,7 @@ class FieldReadingSync
         ]);
 
         if ($status === ReadingSubmissionStatus::Accepted) {
-            $meterReading = MeterReading::recordFor($subscription, $cycle->week_start, $currentReading, $reader, $reading['notes'] ?? null, $reading['operation_id']);
+            $meterReading = RecordReading::handle($subscription, $cycle->week_start, $currentReading, $reader, $reading['notes'] ?? null, $reading['operation_id']);
             $submission->update(['meter_reading_id' => $meterReading->id]);
         }
 
@@ -149,9 +151,9 @@ class FieldReadingSync
             now()->gt($cycle->syncDeadline()) => 'late_sync',
             $subscription->meterReadings()->whereDate('week_start', $cycle->week_start->toDateString())->exists() => 'already_read',
             $subscription->meterReadings()->whereDate('week_start', '>', $cycle->week_start->toDateString())->exists() => 'later_week_read',
-            ! $cycle->week_start->equalTo(MeterReading::latestEndedWeekStart($subscription->branch_id)) => 'week_locked',
+            ! $cycle->week_start->equalTo(ReadingWeeks::latestEndedWeekStart($subscription->branch_id)) => 'week_locked',
             $currentReading < $subscription->previousReadingBefore($cycle->week_start) => 'below_previous',
-            MeterReading::isImpossibleConsumption(MeterReading::consumptionBetween($subscription->previousReadingBefore($cycle->week_start), $currentReading)) => 'impossible_consumption',
+            ReadingConsumption::isImpossibleConsumption(ReadingConsumption::consumptionBetween($subscription->previousReadingBefore($cycle->week_start), $currentReading)) => 'impossible_consumption',
             default => null,
         };
     }
@@ -175,11 +177,11 @@ class FieldReadingSync
             $weekStart = $held->cycle->week_start;
             $previous = $subscription->previousReadingBefore($weekStart);
             $why = match (true) {
-                ! $weekStart->equalTo(MeterReading::latestEndedWeekStart($subscription->branch_id)) => ReadingSubmission::ISSUES['week_locked'],
+                ! $weekStart->equalTo(ReadingWeeks::latestEndedWeekStart($subscription->branch_id)) => ReadingSubmission::ISSUES['week_locked'],
                 $subscription->status !== SubscriptionStatus::Active => ReadingSubmission::ISSUES['not_on_box'],
                 $subscription->meterReadings()->whereDate('week_start', '>=', $weekStart->toDateString())->exists() => ReadingSubmission::ISSUES['already_read'],
                 $held->current_reading < $previous => ReadingSubmission::ISSUES['below_previous'],
-                MeterReading::isImpossibleConsumption(MeterReading::consumptionBetween($previous, $held->current_reading)) => ReadingSubmission::ISSUES['impossible_consumption'],
+                ReadingConsumption::isImpossibleConsumption(ReadingConsumption::consumptionBetween($previous, $held->current_reading)) => ReadingSubmission::ISSUES['impossible_consumption'],
                 default => null,
             };
 
@@ -187,7 +189,7 @@ class FieldReadingSync
                 return $why;
             }
 
-            $meterReading = MeterReading::recordFor($subscription, $weekStart, $held->current_reading, $held->user, $held->notes, $held->operation_id);
+            $meterReading = RecordReading::handle($subscription, $weekStart, $held->current_reading, $held->user, $held->notes, $held->operation_id);
             $held->update([
                 'status' => ReadingSubmissionStatus::Accepted,
                 'meter_reading_id' => $meterReading->id,

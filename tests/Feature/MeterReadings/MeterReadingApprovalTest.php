@@ -10,6 +10,7 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Readings\ApproveReading;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -135,7 +136,7 @@ class MeterReadingApprovalTest extends TestCase
         $pending = $this->pendingReading('2026-09-18', '42.50', 'Ahmad Pending');
         $this->pendingReading('2026-09-18', '7.50', 'Basem Pending');
         $approved = $this->pendingReading('2026-09-18', '1.00', 'Carla Approved');
-        $approved->approve($this->accountant);
+        ApproveReading::handle($approved, $this->accountant);
         $this->pendingReading('2026-09-11', '9.00', 'Dana Earlier');
 
         $this->actingAs($this->accountant)
@@ -201,7 +202,7 @@ class MeterReadingApprovalTest extends TestCase
     {
         $reading = $this->pendingReading('2026-09-18', '42.50');
         $reading->update(['previous_reading' => 1000, 'current_reading' => 1100, 'consumption' => 100, 'unit_price' => '0.50', 'minimum_payment' => '10.00']);
-        $reading->approve($this->accountant);
+        ApproveReading::handle($reading, $this->accountant);
         $dataEntry = User::factory()->dataEntry()->create(['branch_id' => $this->branch->id, 'name' => 'Elenora']);
 
         $this->actingAs($dataEntry)
@@ -223,7 +224,7 @@ class MeterReadingApprovalTest extends TestCase
         $this->assertSame('0.00', $reading->subscription->balance());
 
         // Approving it again charges the corrected amount, as the correction of the cancelled line.
-        $reading->approve($this->accountant);
+        ApproveReading::handle($reading, $this->accountant);
         $corrected = SubscriptionTransaction::where('type', SubscriptionTransaction::TYPE_METER_READING)->whereNull('cancelled_at')->sole();
         $this->assertSame(['40.00', $charge->id], [$corrected->amount, $corrected->corrects_id]);
         $this->assertSame('40.00', $reading->subscription->balance());
@@ -232,7 +233,7 @@ class MeterReadingApprovalTest extends TestCase
     public function test_the_people_who_approve_are_told_when_an_approved_reading_is_corrected(): void
     {
         $reading = $this->pendingReading('2026-09-18', '42.50', 'Ahmad');
-        $reading->approve($this->accountant);
+        ApproveReading::handle($reading, $this->accountant);
         $superAdmin = User::factory()->superAdmin()->create();
         $otherBranchAccountant = User::factory()->accountant()->create();
         $dataEntry = User::factory()->dataEntry()->create(['branch_id' => $this->branch->id, 'name' => 'Elenora']);
@@ -263,7 +264,7 @@ class MeterReadingApprovalTest extends TestCase
     public function test_the_readings_sheet_can_be_filtered_by_approval(): void
     {
         $this->pendingReading('2026-09-18', '5.00', 'Ahmad Pending');
-        $this->pendingReading('2026-09-18', '6.00', 'Basem Approved')->approve($this->accountant);
+        ApproveReading::handle($this->pendingReading('2026-09-18', '6.00', 'Basem Approved'), $this->accountant);
         $this->actingAs($this->accountant);
 
         foreach (['pending' => 'Ahmad Pending', 'approved' => 'Basem Approved'] as $approval => $name) {
@@ -277,7 +278,7 @@ class MeterReadingApprovalTest extends TestCase
         $pending = $this->pendingReading('2026-09-18', '5.00', 'Ahmad Pending');
         $approved = $this->pendingReading('2026-09-18', '6.00', 'Ahmad Approved');
         $approved->subscription->update(['meter_box_id' => $pending->subscription->meter_box_id]);
-        $approved->approve($this->accountant);
+        ApproveReading::handle($approved, $this->accountant);
         Subscription::factory()->create([
             'branch_id' => $this->branch->id,
             'meter_box_id' => $pending->subscription->meter_box_id,
@@ -319,7 +320,7 @@ class MeterReadingApprovalTest extends TestCase
             'mobile_operation_id' => fake()->uuid(),
             'created_at' => '2026-09-24 10:00:00',
         ]);
-        $reading->approve($this->accountant);
+        ApproveReading::handle($reading, $this->accountant);
         $this->accountant->permissions()->attach(Permission::idsFor([PermissionKey::ViewTransactionAudit]));
 
         $this->actingAs($this->accountant)

@@ -20,6 +20,9 @@ use App\Support\Ledger\RecordCharge;
 use App\Support\Ledger\RecordClearing;
 use App\Support\Ledger\RecordDiscount;
 use App\Support\Ledger\RecordPayment;
+use App\Support\Readings\AdjustLastReading;
+use App\Support\Readings\ApproveReading;
+use App\Support\Readings\ReadingCharges;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Testing\TestResponse;
@@ -748,7 +751,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
             'discount_amount' => '0.00',
             'amount_due' => '30.00',
         ]);
-        $reading->approve($this->branchAdmin);
+        ApproveReading::handle($reading, $this->branchAdmin);
         $charge = SubscriptionTransaction::where('meter_reading_id', $reading->id)->where('type', 'meter_reading')->sole();
 
         $this->actingAs($this->branchAdmin)
@@ -777,7 +780,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
             'discount_amount' => '5.00',
             'amount_due' => '25.00',
         ]);
-        $reading->approve($this->branchAdmin);
+        ApproveReading::handle($reading, $this->branchAdmin);
 
         $charge = SubscriptionTransaction::where('meter_reading_id', $reading->id)->where('type', 'meter_reading')->sole();
         $discount = SubscriptionTransaction::where('meter_reading_id', $reading->id)->where('type', 'reading_discount')->sole();
@@ -790,14 +793,14 @@ class SubscriptionTransactionCorrectionTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertSame(MeterReadingStatus::Approved, $reading->fresh()->status);
-        $this->assertSame($reading->chargeSourceKey(), $charge->refresh()->source_key);
-        $this->assertSame($reading->discountSourceKey(), $discount->refresh()->source_key);
+        $this->assertSame(ReadingCharges::chargeSourceKey($reading), $charge->refresh()->source_key);
+        $this->assertSame(ReadingCharges::discountSourceKey($reading), $discount->refresh()->source_key);
         $this->assertDatabaseHas('subscription_transactions', ['reverses_id' => $charge->id, 'amount' => '-30.00']);
         $this->assertDatabaseHas('subscription_transactions', ['reverses_id' => $discount->id, 'amount' => '5.00']);
         $this->assertSame('200.00', $this->subscription->balance());
 
-        $this->assertTrue($reading->correct(1012, 'تصحيح لاحق', $this->branchAdmin));
-        $reading->approve($this->branchAdmin);
+        $this->assertTrue(AdjustLastReading::correct($reading, 1012, 'تصحيح لاحق', $this->branchAdmin));
+        ApproveReading::handle($reading, $this->branchAdmin);
 
         $this->assertSame(MeterReadingStatus::Approved, $reading->fresh()->status);
         $this->assertSame(0, SubscriptionTransaction::query()

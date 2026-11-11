@@ -4,6 +4,7 @@ namespace App\Http\Concerns;
 
 use App\Models\MeterReading;
 use App\Models\User;
+use App\Support\Readings\ApproveReading;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -21,7 +22,7 @@ trait ApprovesCorrectedReadings
      */
     protected function approveCorrectedLastReading(MeterReading $reading, User $actor, bool $confirmUnusual): bool
     {
-        if (! $reading->approve($actor, $confirmUnusual)) {
+        if (! ApproveReading::handle($reading, $actor, $confirmUnusual)) {
             throw ValidationException::withMessages([
                 'confirm_unusual' => 'استهلاك أسبوع '.$reading->week_start->format('d/m').' بعد التعديل ('.rtrim(rtrim(number_format((float) $reading->consumption, 2, '.', ''), '0'), '.').' كيلو) أعلى بكثير من المعتاد؛ أكّد أنه صحيح ليُعتمد.',
             ]);

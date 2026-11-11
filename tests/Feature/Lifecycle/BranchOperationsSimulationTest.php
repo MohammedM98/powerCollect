@@ -27,6 +27,9 @@ use App\Support\BranchBoxes;
 use App\Support\ClosingPeriods;
 use App\Support\Ledger\LineHistory;
 use App\Support\Ledger\TransactionActions;
+use App\Support\Readings\ReadingCharges;
+use App\Support\Readings\ReadingConsumption;
+use App\Support\Readings\ReadingWeeks;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -250,7 +253,7 @@ class BranchOperationsSimulationTest extends TestCase
         if ($subscription === null) {
             return;
         }
-        $week = MeterReading::latestEndedWeekStart($this->branch->id);
+        $week = ReadingWeeks::latestEndedWeekStart($this->branch->id);
         $previous = $subscription->previousReadingBefore($week);
         $consumption = $this->chance(8) ? mt_rand(2100, 2600) : mt_rand(0, 140);
 
@@ -270,10 +273,10 @@ class BranchOperationsSimulationTest extends TestCase
 
         $this->submit('approve '.$pending->count().' readings', fn () => $this->actingAs($this->head)->post(route('meter-readings.approve'), [
             'reading_ids' => $pending->modelKeys(), 'confirm_unusual' => $confirmUnusual,
-        ]), mustSucceed: $confirmUnusual || $pending->contains(fn (MeterReading $reading): bool => ! $reading->isUnusual()));
+        ]), mustSucceed: $confirmUnusual || $pending->contains(fn (MeterReading $reading): bool => ! ReadingConsumption::isUnusual($reading)));
 
         foreach ($pending as $reading) {
-            $this->assertSame($confirmUnusual || ! $reading->isUnusual(), $reading->fresh()->status === MeterReadingStatus::Approved, $this->failure("reading {$reading->id} was not approved as asked"));
+            $this->assertSame($confirmUnusual || ! ReadingConsumption::isUnusual($reading), $reading->fresh()->status === MeterReadingStatus::Approved, $this->failure("reading {$reading->id} was not approved as asked"));
         }
     }
 
@@ -875,7 +878,7 @@ class BranchOperationsSimulationTest extends TestCase
             // A bill deleted for good leaves its reading approved and unbilled, with the deletion in the audit log.
             $this->assertTrue($lines->where('type', SubscriptionTransaction::TYPE_METER_READING)->isNotEmpty() || in_array($reading->id, $this->deletedBillReadingIds(), true), $this->failure("approved reading {$reading->id} was never billed"));
             if ($charge = $charges->first()) {
-                $this->assertSame($reading->amountBeforeDiscount(), $charge->amount, $this->failure("approved reading {$reading->id} is billed another amount than it costs"));
+                $this->assertSame(ReadingCharges::amountBeforeDiscount($reading), $charge->amount, $this->failure("approved reading {$reading->id} is billed another amount than it costs"));
                 $this->assertSame($this->cents($reading->discount_amount) > 0 ? $this->money(-$this->cents($reading->discount_amount)) : null, $discounts->first()?->amount, $this->failure("reading {$reading->id} takes off another standing discount than it was given"));
             }
         }

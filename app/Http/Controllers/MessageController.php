@@ -15,7 +15,6 @@ use App\Models\Branch;
 use App\Models\MessageBatch;
 use App\Models\MessageTemplate;
 use App\Models\MeterBox;
-use App\Models\MeterReading;
 use App\Models\SmsSetting;
 use App\Models\Subscription;
 use App\Models\SubscriptionMessage;
@@ -24,6 +23,7 @@ use App\Notifications\ActionCompleted;
 use App\Support\Messaging\MessageComposer;
 use App\Support\Messaging\PhoneNumber;
 use App\Support\Messaging\SmsGateway;
+use App\Support\Readings\ReadingWeeks;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -129,7 +129,7 @@ class MessageController extends Controller
         return response()->json([
             ...$this->writingOptions($request->user()),
             'weekBranchId' => $weekBranchId,
-            'weekStart' => MeterReading::latestEndedWeekStart($weekBranchId)->toDateString(),
+            'weekStart' => ReadingWeeks::latestEndedWeekStart($weekBranchId)->toDateString(),
             'maxRecipients' => MessageComposer::MAX_RECIPIENTS,
         ]);
     }
@@ -325,7 +325,7 @@ class MessageController extends Controller
             'templates' => MessageTemplate::query()->orderBy('name')->get(['id', 'name', 'kind', 'body']),
             'placeholders' => collect(MessageKind::composable())
                 ->mapWithKeys(fn (MessageKind $kind) => [$kind->value => MessageComposer::placeholdersFor($kind)]),
-            'weekOptions' => MeterReading::recentWeekOptionsFor($actor),
+            'weekOptions' => ReadingWeeks::recentWeekOptionsFor($actor),
         ];
     }
 
@@ -383,7 +383,7 @@ class MessageController extends Controller
     private function criteria(Request $request): array
     {
         return [
-            'week_start' => (string) ($request->input('week_start') ?: MeterReading::latestEndedWeekStart($this->readingBranchId($request))->toDateString()),
+            'week_start' => (string) ($request->input('week_start') ?: ReadingWeeks::latestEndedWeekStart($this->readingBranchId($request))->toDateString()),
             'approved_only' => $request->boolean('approved_only', true),
             'min_balance' => (float) $request->input('min_balance', 0),
             'branch_id' => $request->filled('branch_id') ? (string) $request->input('branch_id') : null,

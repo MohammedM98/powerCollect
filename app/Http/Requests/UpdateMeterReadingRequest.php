@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\MeterReading;
+use App\Support\Readings\ReadingConsumption;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
@@ -89,9 +90,9 @@ class UpdateMeterReadingRequest extends FormRequest
                     return;
                 }
 
-                $consumption = MeterReading::consumptionBetween($meterReading->previous_reading, $this->float('current_reading'));
+                $consumption = ReadingConsumption::consumptionBetween($meterReading->previous_reading, $this->float('current_reading'));
 
-                if (MeterReading::isImpossibleConsumption($consumption)) {
+                if (ReadingConsumption::isImpossibleConsumption($consumption)) {
                     $validator->errors()->add('current_reading', StoreMeterReadingRequest::impossibleConsumptionMessage($consumption));
 
                     return;
@@ -155,9 +156,9 @@ class UpdateMeterReadingRequest extends FormRequest
             return;
         }
 
-        $nextConsumption = MeterReading::consumptionBetween($this->float('current_reading'), $nextCurrentReading);
+        $nextConsumption = ReadingConsumption::consumptionBetween($this->float('current_reading'), $nextCurrentReading);
 
-        if (MeterReading::isImpossibleConsumption($nextConsumption)) {
+        if (ReadingConsumption::isImpossibleConsumption($nextConsumption)) {
             $validator->errors()->add($field, StoreMeterReadingRequest::impossibleConsumptionMessage($nextConsumption));
         }
     }

@@ -14,6 +14,7 @@ use App\Support\Ledger\CancelLine;
 use App\Support\Ledger\LinePresenter;
 use App\Support\Ledger\RecordCharge;
 use App\Support\Ledger\RecordPayment;
+use App\Support\Readings\ApproveReading;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
@@ -45,7 +46,7 @@ class SubscriptionStatementTest extends TestCase
         SubscriptionTransaction::factory()->for($this->subscription)->create(['amount' => '50.00', 'recorded_by' => $this->branchAdmin->id]);
 
         $this->travelTo('2026-08-28 10:02:00');
-        MeterReading::factory()->create([
+        ApproveReading::handle(MeterReading::factory()->create([
             'subscription_id' => $this->subscription->id,
             'week_start' => '2026-08-21',
             'week_end' => '2026-08-27',
@@ -54,7 +55,7 @@ class SubscriptionStatementTest extends TestCase
             'consumption' => 179,
             'amount_due' => '53.70',
             'notes' => 'قراءة من الطبلون',
-        ])->approve($this->branchAdmin);
+        ]), $this->branchAdmin);
 
         $this->travelTo('2026-08-30 12:40:00');
         $this->recordPayment(['amount' => '74', 'cash_box' => '3', 'manual_voucher_number' => '4471'])

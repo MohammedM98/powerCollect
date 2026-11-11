@@ -10,6 +10,9 @@ use App\Http\Requests\StoreMobileMeterReadingRequest;
 use App\Models\MeterReading;
 use App\Models\ReadingAssignment;
 use App\Models\Subscription;
+use App\Support\Readings\ReadingConsumption;
+use App\Support\Readings\ReadingWeeks;
+use App\Support\Readings\RecordReading;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 
@@ -23,8 +26,8 @@ class MobileReadingController extends Controller
         // Someone who may not browse earlier weeks always gets the latest one.
         $canBrowseWeeks = $request->user()->can('browseWeeks', MeterReading::class);
         $weekStart = isset($validated['week']) && $canBrowseWeeks
-            ? MeterReading::weekStartFor(Carbon::parse($validated['week']), $branchId)
-            : MeterReading::latestEndedWeekStart($branchId);
+            ? ReadingWeeks::weekStartFor(Carbon::parse($validated['week']), $branchId)
+            : ReadingWeeks::latestEndedWeekStart($branchId);
         $week = $weekStart->toDateString();
         $search = trim($validated['search'] ?? '');
         $subscriptions = Subscription::query()
@@ -42,8 +45,8 @@ class MobileReadingController extends Controller
 
         return response()->json([
             'week_start' => $week,
-            'week_end' => MeterReading::weekEndFor($weekStart, $branchId)->toDateString(),
-            'week_options' => MeterReading::recentWeekOptions($branchId, $canBrowseWeeks ? 8 : 1),
+            'week_end' => ReadingWeeks::weekEndFor($weekStart, $branchId)->toDateString(),
+            'week_options' => ReadingWeeks::recentWeekOptions($branchId, $canBrowseWeeks ? 8 : 1),
             'data' => $subscriptions->getCollection()->map(function (Subscription $subscription) use ($week): array {
                 $latest = $subscription->meterReadings->first();
                 $reading = $latest?->week_start->toDateString() === $week ? $latest : null;
@@ -76,7 +79,7 @@ class MobileReadingController extends Controller
 
         $subscription = Subscription::with(['tariff', 'circuitBreaker', 'standingDiscount'])
             ->findOrFail($request->integer('subscription_id'));
-        $reading = MeterReading::recordFor(
+        $reading = RecordReading::handle(
             $subscription,
             $request->weekStart(),
             $request->float('current_reading'),
@@ -96,7 +99,7 @@ class MobileReadingController extends Controller
             'status' => $reading->status->value,
             'current_reading' => $reading->current_reading,
             // Far above what the subscription usually uses: it waits for a reviewer to confirm it.
-            'unusual_consumption' => $reading->isUnusual(),
+            'unusual_consumption' => ReadingConsumption::isUnusual($reading),
         ], 201);
     }
 }

@@ -9,6 +9,7 @@ use App\Models\ClosingPayment;
 use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
+use App\Support\Readings\ReadingCharges;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -103,7 +104,7 @@ class LineHistory
             : null;
 
         // A reading awaiting its current reading again is refused on its own, by reinstate().
-        return $reading !== null && ! $reading->requires_reentry && Closing::cents($transaction->amount) !== Closing::cents($reading->amountBeforeDiscount());
+        return $reading !== null && ! $reading->requires_reentry && Closing::cents($transaction->amount) !== Closing::cents(ReadingCharges::amountBeforeDiscount($reading));
     }
 
     /**

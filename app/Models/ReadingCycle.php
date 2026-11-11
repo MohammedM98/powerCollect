@@ -7,6 +7,7 @@ use App\Enums\ReadingAssignmentStatus;
 use App\Enums\SubscriptionStatus;
 use App\Models\Concerns\BelongsToBranch;
 use App\Support\DailySeries;
+use App\Support\Readings\ReadingWeeks;
 use Carbon\CarbonInterface;
 use Database\Factories\ReadingCycleFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -77,7 +78,7 @@ class ReadingCycle extends Model
      */
     public function readingDateBounds(): array
     {
-        $weekEnd = MeterReading::weekEndFor($this->week_start, $this->branch_id);
+        $weekEnd = ReadingWeeks::weekEndFor($this->week_start, $this->branch_id);
 
         return [
             'weekEnd' => $weekEnd,

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\MeterReading;
+use App\Support\Readings\ReadingConsumption;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -51,7 +51,7 @@ class AdjustLastReadingRequest extends FormRequest
             }
             if ($this->float('current_reading') < $reading->previous_reading) {
                 $validator->errors()->add('current_reading', "تصحيح القراءة لا يمكن أن يقل عن بداية الفترة ({$reading->previous_reading}). عند تغيير العداد اختر «عداد جديد / مستبدل».");
-            } elseif (MeterReading::isImpossibleConsumption(MeterReading::consumptionBetween($reading->previous_reading, $this->float('current_reading')))) {
+            } elseif (ReadingConsumption::isImpossibleConsumption(ReadingConsumption::consumptionBetween($reading->previous_reading, $this->float('current_reading')))) {
                 $validator->errors()->add('current_reading', StoreMeterReadingRequest::impossibleConsumptionMessage($this->float('current_reading') - $reading->previous_reading));
             }
         }];

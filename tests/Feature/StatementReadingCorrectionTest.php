@@ -10,6 +10,8 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Notifications\ReadingNeedsReapproval;
 use App\Support\Money;
+use App\Support\Readings\ApproveReading;
+use App\Support\Readings\ReadingCharges;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -80,11 +82,11 @@ class StatementReadingCorrectionTest extends TestCase
         $this->assertSame('0.00', $this->subscription->balance());
         $this->assertSame(MeterReadingStatus::Pending, $this->reading->refresh()->status);
 
-        $this->reading->approve($this->branchAdmin);
+        ApproveReading::handle($this->reading, $this->branchAdmin);
 
         $replacement = SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_METER_READING)->whereNull('cancelled_at')->sole();
         $this->assertSame($line->id, $replacement->corrects_id);
-        $this->assertSame((float) $this->reading->refresh()->amountBeforeDiscount(), (float) $replacement->amount);
+        $this->assertSame((float) ReadingCharges::amountBeforeDiscount($this->reading->refresh()), (float) $replacement->amount);
         $this->assertSame(Money::amount($replacement->amount), $this->subscription->balance());
     }
 
@@ -130,7 +132,7 @@ class StatementReadingCorrectionTest extends TestCase
         $this->assertSame(MeterReadingStatus::Approved, $this->reading->refresh()->status);
         $replacement = SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_METER_READING)->whereNull('cancelled_at')->sole();
         $this->assertSame($line->id, $replacement->corrects_id);
-        $this->assertSame((float) $this->reading->amountBeforeDiscount(), (float) $replacement->amount);
+        $this->assertSame((float) ReadingCharges::amountBeforeDiscount($this->reading), (float) $replacement->amount);
         $this->assertSame(Money::amount($replacement->amount), $this->subscription->balance());
         Notification::assertNotSentTo($this->reading->approvers(), ReadingNeedsReapproval::class);
     }
@@ -164,7 +166,7 @@ class StatementReadingCorrectionTest extends TestCase
             'consumption' => $current - $previous,
             'amount_due' => $amountDue,
         ]);
-        $reading->approve($this->branchAdmin);
+        ApproveReading::handle($reading, $this->branchAdmin);
 
         return $reading;
     }

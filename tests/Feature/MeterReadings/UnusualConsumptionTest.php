@@ -14,6 +14,8 @@ use App\Models\ReadingEntrySetting;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Readings\ReadingConsumption;
+use App\Support\Readings\ReadingWeeks;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -60,7 +62,7 @@ class UnusualConsumptionTest extends TestCase
 
         $reading = MeterReading::sole();
         $this->assertSame(20000.0, $reading->consumption);
-        $this->assertTrue($reading->isUnusual());
+        $this->assertTrue(ReadingConsumption::isUnusual($reading));
         $this->assertSame(0.0, $reading->usual_consumption);
     }
 
@@ -94,7 +96,7 @@ class UnusualConsumptionTest extends TestCase
 
         $reading = MeterReading::query()->latest('id')->first();
         $this->assertSame(MeterReadingStatus::Pending, $reading->status);
-        $this->assertTrue($reading->isUnusual());
+        $this->assertTrue(ReadingConsumption::isUnusual($reading));
         $this->assertSame(50.0, $reading->usual_consumption);
     }
 
@@ -105,7 +107,7 @@ class UnusualConsumptionTest extends TestCase
         $this->actingAs($this->dataEntry)->post(route('meter-readings.store'), $this->payload(['current_reading' => $this->nextPrevious() + 90]))
             ->assertSessionHas('status', 'meter-reading-created');
 
-        $this->assertFalse(MeterReading::query()->latest('id')->first()->isUnusual());
+        $this->assertFalse(ReadingConsumption::isUnusual(MeterReading::query()->latest('id')->first()));
     }
 
     public function test_a_small_subscription_is_not_flagged_for_a_rise_that_is_still_small(): void
@@ -146,7 +148,7 @@ class UnusualConsumptionTest extends TestCase
             'meter_box_id' => $this->subscription->meter_box_id, 'assigned_by' => $this->accountant->id,
         ]);
         $this->withHeader('Authorization', 'Bearer '.MobileAccessToken::issue($user));
-        $week = MeterReading::latestEndedWeekStart(null)->toDateString();
+        $week = ReadingWeeks::latestEndedWeekStart(null)->toDateString();
         $payload = fn (float $reading) => ['mobile_operation_id' => Str::uuid()->toString(), 'subscription_id' => $this->subscription->id, 'week_start' => $week, 'current_reading' => $reading];
 
         $this->postJson(route('mobile.readings.store'), $payload(999999))->assertUnprocessable()->assertJsonValidationErrors('current_reading');
@@ -171,7 +173,7 @@ class UnusualConsumptionTest extends TestCase
         $this->postJson(route('mobile.readings.store'), [
             'mobile_operation_id' => Str::uuid()->toString(),
             'subscription_id' => $this->subscription->id,
-            'week_start' => MeterReading::latestEndedWeekStart(null)->toDateString(),
+            'week_start' => ReadingWeeks::latestEndedWeekStart(null)->toDateString(),
             'current_reading' => 1050,
         ])->assertCreated()->assertJsonPath('unusual_consumption', false);
     }
@@ -181,10 +183,10 @@ class UnusualConsumptionTest extends TestCase
         $this->history(consumptions: [50, 50, 50, 50]);
         $this->actingAs($this->dataEntry)->post(route('meter-readings.store'), $this->payload(['current_reading' => $this->nextPrevious() + 400]));
         $reading = MeterReading::query()->latest('id')->first();
-        $this->assertTrue($reading->isUnusual());
+        $this->assertTrue(ReadingConsumption::isUnusual($reading));
 
         $this->put(route('meter-readings.update', $reading), ['current_reading' => $reading->previous_reading + 60])->assertSessionHasNoErrors();
-        $this->assertFalse($reading->fresh()->isUnusual());
+        $this->assertFalse(ReadingConsumption::isUnusual($reading->fresh()));
 
         $this->put(route('meter-readings.update', $reading), ['current_reading' => $reading->previous_reading + 500])->assertSessionHasNoErrors();
         $this->assertSame(50.0, $reading->fresh()->usual_consumption);
@@ -262,7 +264,7 @@ class UnusualConsumptionTest extends TestCase
             ->assertSessionHas('status', 'meter-reading-reopened');
 
         $this->assertSame(MeterReadingStatus::Pending, $reading->fresh()->status);
-        $this->assertTrue($reading->fresh()->isUnusual());
+        $this->assertTrue(ReadingConsumption::isUnusual($reading->fresh()));
     }
 
     public function test_the_sheet_shows_which_readings_are_unusual_and_how_many_are_waiting(): void

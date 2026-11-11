@@ -29,6 +29,12 @@ use App\Support\BranchDomainContext;
 use App\Support\BranchScope;
 use App\Support\PrintSelection;
 use App\Support\ReadingPrintData;
+use App\Support\Readings\AdjustLastReading;
+use App\Support\Readings\ApproveReading;
+use App\Support\Readings\ReadingCharges;
+use App\Support\Readings\ReadingConsumption;
+use App\Support\Readings\ReadingWeeks;
+use App\Support\Readings\RepriceReading;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -68,12 +74,12 @@ class MeterReadingController extends Controller
                 return Inertia::render('MeterReadings/Branches', [
                     'branchScope' => BranchScope::describe($branches),
                     'branches' => $branches->map(function (Branch $branch): array {
-                        $week = MeterReading::latestEndedWeekStart($branch->id);
+                        $week = ReadingWeeks::latestEndedWeekStart($branch->id);
 
                         return [
                             'id' => $branch->id, 'name' => $branch->name,
                             'weekStart' => $week->toDateString(),
-                            'weekEnd' => MeterReading::weekEndFor($week, $branch->id)->toDateString(),
+                            'weekEnd' => ReadingWeeks::weekEndFor($week, $branch->id)->toDateString(),
                             'url' => route('meter-readings.index', ['filter' => ['branch_id' => $branch->id]]),
                         ];
                     })->values(),
@@ -120,7 +126,7 @@ class MeterReadingController extends Controller
             ->through(fn (Subscription $subscription) => $this->sheetRow($subscription, $weekStart, $actor, $request->boolean('print')));
 
         if ($request->boolean('print')) {
-            $weekEnd = MeterReading::weekEndFor($weekStart, $weekBranchId);
+            $weekEnd = ReadingWeeks::weekEndFor($weekStart, $weekBranchId);
             $context = [
                 'templatePage' => '/meter-readings',
                 'title' => 'القراءات الأسبوعية',
@@ -141,10 +147,10 @@ class MeterReadingController extends Controller
         return Inertia::render('MeterReadings/Index', [
             'rows' => $rows,
             'week' => $week,
-            'weekEnd' => MeterReading::weekEndFor($weekStart, $weekBranchId)->toDateString(),
+            'weekEnd' => ReadingWeeks::weekEndFor($weekStart, $weekBranchId)->toDateString(),
             // The weeks back to the first reading (at least fourteen months), for the year, month and week pickers;
             // only the latest one for someone who may not browse earlier weeks.
-            'weekOptions' => fn () => MeterReading::recentWeekOptions($weekBranchId, $canBrowseWeeks ? $this->weeksToOffer($actor, $weekBranchId) : 1),
+            'weekOptions' => fn () => ReadingWeeks::recentWeekOptions($weekBranchId, $canBrowseWeeks ? $this->weeksToOffer($actor, $weekBranchId) : 1),
             'summary' => fn () => [
                 'total' => (clone $scope)->count(),
                 'entered' => (clone $scope)->whereHas('meterReadings', $enteredThisWeek)->count(),
@@ -179,8 +185,8 @@ class MeterReadingController extends Controller
         $weekStart = $request->weekStart();
         $previousReading = $subscription->previousReadingBefore($weekStart);
         $currentReading = $request->float('current_reading');
-        $consumption = MeterReading::consumptionBetween($previousReading, $currentReading);
-        $usualConsumption = MeterReading::usualConsumptionIfUnusual($subscription, $consumption, $weekStart);
+        $consumption = ReadingConsumption::consumptionBetween($previousReading, $currentReading);
+        $usualConsumption = ReadingConsumption::usualConsumptionIfUnusual($subscription, $consumption, $weekStart);
         $unitPrice = $subscription->kilowattPrice();
         $minimumPayment = $subscription->weeklyMinimumPayment();
         $discount = $subscription->standingDiscount;
@@ -189,7 +195,7 @@ class MeterReadingController extends Controller
             'subscription_id' => $subscription->id,
             'branch_id' => $subscription->branch_id,
             'week_start' => $weekStart,
-            'week_end' => MeterReading::weekEndFor($weekStart, $subscription->branch_id),
+            'week_end' => ReadingWeeks::weekEndFor($weekStart, $subscription->branch_id),
             'previous_reading' => $previousReading,
             'current_reading' => $currentReading,
             'consumption' => $consumption,
@@ -199,7 +205,7 @@ class MeterReadingController extends Controller
             'discount_method' => $discount?->method,
             'discount_value' => $discount?->value,
             'discount_segment' => $discount?->segment,
-            ...MeterReading::chargesFor($consumption, $unitPrice, $minimumPayment, $discount?->method, $discount?->value),
+            ...ReadingCharges::chargesFor($consumption, $unitPrice, $minimumPayment, $discount?->method, $discount?->value),
             'status' => MeterReadingStatus::Pending,
             'recorded_by' => $request->user()->id,
             'notes' => $request->input('notes'),
@@ -236,12 +242,12 @@ class MeterReadingController extends Controller
         $nextReading = $request->nextReading();
         $confirmedAtOnce = $request->boolean('as_last_reading') && $actor->can('updateAsLastReading', $meterReading);
         [$wentBackToReview, $approvedAgain, $nextWentBackToReview, $nextApprovedAgain] = DB::transaction(function () use ($request, $meterReading, $nextReading, $actor, $confirmedAtOnce): array {
-            $wentBackToReview = $meterReading->correct(
+            $wentBackToReview = AdjustLastReading::correct($meterReading,
                 $request->float('current_reading'),
                 $request->has('notes') ? $request->input('notes') : $meterReading->notes,
                 $actor,
             );
-            $nextWentBackToReview = $nextReading?->startFrom($meterReading->current_reading, $actor, $request->nextCurrentReading()) ?? false;
+            $nextWentBackToReview = $nextReading !== null && RepriceReading::startFrom($nextReading, $meterReading->current_reading, $actor, $request->nextCurrentReading());
 
             if ($confirmedAtOnce) {
                 return [
@@ -256,7 +262,7 @@ class MeterReadingController extends Controller
             $approvedAgain = $wentBackToReview
                 && $request->boolean('approve')
                 && $actor->can('approve', $meterReading)
-                && $meterReading->approve($actor, $request->boolean('confirm_unusual'));
+                && ApproveReading::handle($meterReading, $actor, $request->boolean('confirm_unusual'));
 
             return [$wentBackToReview, $approvedAgain, $nextWentBackToReview, false];
         });
@@ -290,7 +296,7 @@ class MeterReadingController extends Controller
     {
         $actor = $request->user();
         $query = $request->boolean('all')
-            ? $this->pendingInSheet($request, $actor, MeterReading::weekStartFor($request->date('week'), $this->sheetBranchId($request, $actor))->toDateString())
+            ? $this->pendingInSheet($request, $actor, ReadingWeeks::weekStartFor($request->date('week'), $this->sheetBranchId($request, $actor))->toDateString())
             : $this->pendingReadings($actor)->whereKey($request->validated('reading_ids'));
 
         // An unusual reading is only approved when ticked on its own and confirmed, never as part of "all".
@@ -298,9 +304,9 @@ class MeterReadingController extends Controller
         $approved = $heldBack = 0;
         $query->with('subscription')->chunkById(200, function (Collection $readings) use ($actor, $confirmUnusual, &$approved, &$heldBack): void {
             foreach ($readings as $reading) {
-                if ($reading->approve($actor, $confirmUnusual)) {
+                if (ApproveReading::handle($reading, $actor, $confirmUnusual)) {
                     $approved++;
-                } elseif ($reading->isUnusual() && ! $confirmUnusual) {
+                } elseif (ReadingConsumption::isUnusual($reading) && ! $confirmUnusual) {
                     $heldBack++;
                 }
             }
@@ -435,7 +441,7 @@ class MeterReadingController extends Controller
                 // An approved reading whose bill was cancelled from the statement is not billed any more.
                 'billed' => $reading->chargeLine !== null,
                 // Far above what the subscription usually uses: it is approved only after being looked at and confirmed.
-                'unusual' => $reading->isUnusual() ? ['usual' => $reading->usual_consumption] : null,
+                'unusual' => ReadingConsumption::isUnusual($reading) ? ['usual' => $reading->usual_consumption] : null,
             ] + ($this->seesWhoRecorded($actor) ? [
                 'recordedByName' => $reading->recordedBy?->name,
                 'recordedAt' => $reading->created_at?->timezone(config('app.business_timezone'))->format('d/m H:i'),

@@ -14,6 +14,8 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Ledger\CancelLine;
 use App\Support\Ledger\RecordCharge;
+use App\Support\Readings\ApproveReading;
+use App\Support\Readings\ReadingCharges;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -68,7 +70,7 @@ class ReadingChargeCancellationTest extends TestCase
         $rebilled = SubscriptionTransaction::where('meter_reading_id', $reading->id)->where('type', 'meter_reading')->whereNull('cancelled_at')->sole();
         $this->assertSame('210.00', $rebilled->amount);
         $this->assertSame($charge->id, $rebilled->corrects_id);
-        $this->assertSame($reading->chargeSourceKey(), $rebilled->source_key);
+        $this->assertSame(ReadingCharges::chargeSourceKey($reading), $rebilled->source_key);
         $this->assertSame('220.00', $this->subscription->balance());
     }
 
@@ -98,7 +100,7 @@ class ReadingChargeCancellationTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertSame(MeterReadingStatus::Pending, $reading->fresh()->status);
-        $this->assertNotSame($reading->chargeSourceKey(), $charge->fresh()->source_key);
+        $this->assertNotSame(ReadingCharges::chargeSourceKey($reading), $charge->fresh()->source_key);
     }
 
     public function test_cancelling_a_reading_with_a_standing_discount_frees_both_lines_for_billing_again(): void
@@ -130,7 +132,7 @@ class ReadingChargeCancellationTest extends TestCase
 
         $charge->refresh();
         $this->assertTrue($charge->isCancelled());
-        $this->assertNotSame($reading->chargeSourceKey(), $charge->source_key);
+        $this->assertNotSame(ReadingCharges::chargeSourceKey($reading), $charge->source_key);
         $this->assertSame(MeterReadingStatus::Pending, $reading->fresh()->status);
         $this->assertNull($reading->fresh()->approved_by);
         $this->assertSame('0.00', $this->subscription->balance());
@@ -146,7 +148,7 @@ class ReadingChargeCancellationTest extends TestCase
         ])->assertSessionHasNoErrors();
 
         $this->assertSame(MeterReadingStatus::Approved, $reading->fresh()->status);
-        $this->assertSame($reading->chargeSourceKey(), $charge->fresh()->source_key);
+        $this->assertSame(ReadingCharges::chargeSourceKey($reading), $charge->fresh()->source_key);
         $this->assertSame('10.00', $this->subscription->balance());
     }
 
@@ -199,7 +201,7 @@ class ReadingChargeCancellationTest extends TestCase
             'reading_fee' => '30.00', 'minimum_payment' => '0.00', 'discount_amount' => '0.00', 'amount_due' => '30.00',
             'status' => MeterReadingStatus::Pending,
         ]);
-        $reading->approve($this->admin);
+        ApproveReading::handle($reading, $this->admin);
 
         return $reading;
     }
@@ -228,7 +230,7 @@ class ReadingChargeCancellationTest extends TestCase
             'discount_amount' => $discount ?? '0.00',
             'amount_due' => number_format((float) $amountBeforeDiscount - (float) $discount, 2, '.', ''),
         ]);
-        $reading->approve($this->admin);
+        ApproveReading::handle($reading, $this->admin);
 
         return [
             $reading,

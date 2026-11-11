@@ -17,6 +17,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Ledger\LinePresenter;
+use App\Support\Readings\ReadingWeeks;
 use Brick\Math\RoundingMode;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
@@ -222,7 +223,7 @@ class DashboardOverview
         $weeks = [];
 
         foreach ($this->branches as $branch) {
-            $week = MeterReading::latestEndedWeekStart($branch)->toDateString();
+            $week = ReadingWeeks::latestEndedWeekStart($branch)->toDateString();
             $weeks[] = $week;
             $active = Subscription::query()->where('branch_id', $branch->id)->whereNull('archived_at')->where('status', SubscriptionStatus::Active);
             $statuses = MeterReading::query()

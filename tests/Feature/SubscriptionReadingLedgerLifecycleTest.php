@@ -13,6 +13,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Ledger\RecordCharge;
 use App\Support\Ledger\RecordPayment;
+use App\Support\Readings\ReadingCharges;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
@@ -77,7 +78,7 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
         $this->assertSame(0, $subscription->transactions()->where('meter_reading_id', $reading->id)
             ->whereIn('type', [SubscriptionTransaction::TYPE_METER_READING, SubscriptionTransaction::TYPE_READING_DISCOUNT])
             ->whereNull('cancelled_at')->count());
-        $this->assertSame($reading->chargeSourceKey(), $charge->fresh()->source_key);
+        $this->assertSame(ReadingCharges::chargeSourceKey($reading), $charge->fresh()->source_key);
     }
 
     #[TestWith([0])]

@@ -6,6 +6,7 @@ use App\Http\Requests\AdjustSubscriptionReadingBaselineRequest;
 use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Notifications\ActionCompleted;
+use App\Support\Readings\AdjustLastReading;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -53,8 +54,8 @@ class SubscriptionReadingBaselineController extends Controller
             if ($save && $changed) {
                 $locked->update(['initial_reading' => $after]);
                 if ($current !== null) {
-                    $current->recordAdjustment('initial_reading_adjustment', ['previousReading' => $before], ['previousReading' => $after], $request->user(), $request->input('reason'));
-                    $current->requireCurrentReadingAgain($after, $request->user());
+                    AdjustLastReading::recordAdjustment($current, 'initial_reading_adjustment', ['previousReading' => $before], ['previousReading' => $after], $request->user(), $request->input('reason'));
+                    AdjustLastReading::requireCurrentReadingAgain($current, $after, $request->user());
                 }
             }
 

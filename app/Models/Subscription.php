@@ -10,6 +10,7 @@ use App\Support\ArabicSearch;
 use App\Support\DailySeries;
 use App\Support\DeletionBlocker;
 use App\Support\Money;
+use App\Support\Readings\ReadingWeeks;
 use Database\Factories\SubscriptionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -273,7 +274,7 @@ class Subscription extends Model
      */
     public function latestWeekReading(): ?MeterReading
     {
-        return $this->meterReadings()->whereDate('week_start', MeterReading::latestEndedWeekStart($this->branch_id)->toDateString())->first();
+        return $this->meterReadings()->whereDate('week_start', ReadingWeeks::latestEndedWeekStart($this->branch_id)->toDateString())->first();
     }
 
     /**

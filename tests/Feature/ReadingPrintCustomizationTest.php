@@ -15,6 +15,7 @@ use App\Models\ReadingAssignment;
 use App\Models\ReadingCycle;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Support\Readings\ReadingWeeks;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -41,7 +42,7 @@ class ReadingPrintCustomizationTest extends TestCase
     private function reading(Subscription $subscription, User $reader): MeterReading
     {
         return MeterReading::factory()->for($subscription)->create([
-            'week_start' => MeterReading::latestEndedWeekStart($subscription->branch_id),
+            'week_start' => ReadingWeeks::latestEndedWeekStart($subscription->branch_id),
             'previous_reading' => 100, 'current_reading' => 105, 'consumption' => 5,
             'unit_price' => 3, 'reading_fee' => 15, 'minimum_payment' => 10, 'amount_due' => 15,
             'recorded_by' => $reader->id,

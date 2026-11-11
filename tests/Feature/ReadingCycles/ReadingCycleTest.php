@@ -19,6 +19,7 @@ use App\Models\ReadingEntrySetting;
 use App\Models\ReadingSubmission;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Support\Readings\RecordReading;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -483,7 +484,7 @@ class ReadingCycleTest extends TestCase
         $this->actingAs($this->branchAdmin)->post(route('reading-cycles.assignments.approve', $cycle), []);
         $download = $this->mobile($reader)->getJson(route('mobile.reading-assignments.index'))->json('assignments.0');
         $this->assertTrue($download['cycle']['entry_open']);
-        MeterReading::recordFor($subscription->load(['tariff', 'circuitBreaker', 'standingDiscount']), Carbon::parse('2026-10-16'), 140, $this->branchAdmin, null);
+        RecordReading::handle($subscription->load(['tariff', 'circuitBreaker', 'standingDiscount']), Carbon::parse('2026-10-16'), 140, $this->branchAdmin, null);
 
         $this->mobile($reader)->postJson(route('mobile.reading-assignments.sync'), ['readings' => [[
             'operation_id' => (string) Str::uuid(), 'assignment_id' => $download['id'], 'authorization' => $download['authorization'],

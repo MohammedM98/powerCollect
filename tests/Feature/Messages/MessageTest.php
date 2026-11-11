@@ -15,6 +15,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionMessage;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Readings\ReadingWeeks;
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\ConnectionException;
@@ -29,7 +30,7 @@ class MessageTest extends TestCase
 
     private function weekStart(): string
     {
-        return MeterReading::latestEndedWeekStart(null)->toDateString();
+        return ReadingWeeks::latestEndedWeekStart(null)->toDateString();
     }
 
     public function test_guest_is_redirected_to_login(): void

@@ -3,9 +3,9 @@
 namespace App\Policies;
 
 use App\Enums\PermissionKey;
-use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Support\Readings\ReadingWeeks;
 use Carbon\CarbonInterface;
 
 class SubscriptionPolicy
@@ -73,7 +73,7 @@ class SubscriptionPolicy
         return $subscription->archived_at === null
             && $user->hasPermission(PermissionKey::CorrectLastMeterReadings)
             && ($user->isSuperAdmin() || $subscription->branch_id === $user->workBranchId())
-            && ($weekStart === null || $weekStart->equalTo(MeterReading::latestEndedWeekStart($subscription->branch_id)));
+            && ($weekStart === null || $weekStart->equalTo(ReadingWeeks::latestEndedWeekStart($subscription->branch_id)));
     }
 
     /**

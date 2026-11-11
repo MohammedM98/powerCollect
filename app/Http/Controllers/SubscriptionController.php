@@ -28,6 +28,8 @@ use App\Support\BranchScope;
 use App\Support\DailySeries;
 use App\Support\Ledger\LedgerAmounts;
 use App\Support\Money;
+use App\Support\Readings\ReadingConsumption;
+use App\Support\Readings\ReadingWeeks;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -92,7 +94,7 @@ class SubscriptionController extends Controller
             // Whoever sees every branch's subscribers reads, large above the table, which branch the list holds.
             'branchScope' => fn () => BranchScope::shownTo($actor) ? BranchScope::forFilter($actor, $request->input('filter.branch_id')) : null,
             // New reading forms offer only the latest week of each branch.
-            'readingWeekOptions' => fn () => MeterReading::recentWeekOptionsFor($actor, 1),
+            'readingWeekOptions' => fn () => ReadingWeeks::recentWeekOptionsFor($actor, 1),
             'statement' => fn () => $this->requestedStatement($request, $actor),
             ...$this->subscriptionFormOptions(),
         ]);
@@ -240,7 +242,7 @@ class SubscriptionController extends Controller
     {
         $readings = $subscription->meterReadings->sortByDesc('week_start')->values();
         $latestReading = $readings->first();
-        $entryWeek = MeterReading::latestEndedWeekStart($subscription->branch_id);
+        $entryWeek = ReadingWeeks::latestEndedWeekStart($subscription->branch_id);
         $entryReading = $readings->first(fn (MeterReading $reading): bool => $reading->week_start->equalTo($entryWeek));
         $hasPreviousReading = $readings->contains(fn (MeterReading $reading): bool => $reading->week_start->lessThan($entryWeek));
         $hasLaterReading = $readings->contains(fn (MeterReading $reading): bool => $reading->week_start->greaterThan($entryWeek));
@@ -306,7 +308,7 @@ class SubscriptionController extends Controller
      */
     private function editableLastReadingId(Subscription $subscription, Collection $readings, User $actor): ?int
     {
-        $latestWeekStart = MeterReading::latestEndedWeekStart($subscription->branch_id);
+        $latestWeekStart = ReadingWeeks::latestEndedWeekStart($subscription->branch_id);
         $lastReading = $readings->first(fn (MeterReading $reading): bool => $reading->week_start->lessThan($latestWeekStart));
 
         if ($lastReading === null || $readings->filter(fn (MeterReading $reading): bool => $reading->week_start->greaterThan($lastReading->week_start))->count() > 1) {
@@ -347,7 +349,7 @@ class SubscriptionController extends Controller
             'minimumApplied' => $reading->discount_method === null && (float) $reading->reading_fee < (float) $reading->minimum_payment,
             'canUpdate' => $actor->can('update', $reading),
             'canApprove' => $actor->can('approve', $reading),
-            'unusual' => $reading->isUnusual() ? ['usual' => $reading->usual_consumption] : null,
+            'unusual' => ReadingConsumption::isUnusual($reading) ? ['usual' => $reading->usual_consumption] : null,
             'canUpdateUnitPrice' => $actor->can('updateUnitPrice', $reading),
             'canUpdateMinimumPayment' => $actor->can('updateMinimumPayment', $reading),
         ];

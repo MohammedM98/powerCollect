@@ -19,6 +19,7 @@ use App\Support\Ledger\LinePresenter;
 use App\Support\Ledger\RecordCharge;
 use App\Support\Ledger\RecordDiscount;
 use App\Support\Ledger\RecordPayment;
+use App\Support\Readings\ReadingCharges;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -653,7 +654,7 @@ class SubscriptionTransactionActionTest extends TestCase
             'recorded_by' => $actor->id,
             'meter_reading_id' => $reading->id,
             'type' => SubscriptionTransaction::TYPE_METER_READING,
-            'source_key' => $reading->chargeSourceKey(),
+            'source_key' => ReadingCharges::chargeSourceKey($reading),
             'amount' => '83.40',
             'currency_amount' => '83.40',
         ]);
@@ -661,7 +662,7 @@ class SubscriptionTransactionActionTest extends TestCase
             'recorded_by' => $actor->id,
             'meter_reading_id' => $reading->id,
             'type' => SubscriptionTransaction::TYPE_READING_DISCOUNT,
-            'source_key' => $reading->discountSourceKey(),
+            'source_key' => ReadingCharges::discountSourceKey($reading),
             'amount' => '-30.00',
             'currency_amount' => '30.00',
             'discount_method' => DiscountMethod::Kilowatt,
@@ -693,7 +694,7 @@ class SubscriptionTransactionActionTest extends TestCase
 
         $this->assertDatabaseHas('subscription_transactions', [
             'id' => $readingDiscount->id,
-            'source_key' => $reading->discountSourceKey(),
+            'source_key' => ReadingCharges::discountSourceKey($reading),
         ]);
     }
 

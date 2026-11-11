@@ -19,6 +19,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Ledger\RecordPayment;
 use App\Support\Money;
+use App\Support\Readings\ReadingWeeks;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -37,9 +38,9 @@ class MobileApiTest extends TestCase
         if ($subscription->meter_box_id === null) {
             $subscription->update(['meter_box_id' => MeterBox::factory()->create(['branch_id' => $reader->branch_id])->id]);
         }
-        $week = MeterReading::latestEndedWeekStart($reader->branch_id);
+        $week = ReadingWeeks::latestEndedWeekStart($reader->branch_id);
         $cycle = ReadingCycle::firstOrCreate(['branch_id' => $reader->branch_id, 'week_start' => $week->toDateString()], [
-            'week_end' => MeterReading::weekEndFor($week, $reader->branch_id)->toDateString(),
+            'week_end' => ReadingWeeks::weekEndFor($week, $reader->branch_id)->toDateString(),
             'reading_date' => now()->timezone(config('app.business_timezone'))->toDateString(), 'created_by' => $reader->id,
         ]);
         ReadingAssignment::factory()->mobile($reader)->approved()->create([
@@ -128,7 +129,7 @@ class MobileApiTest extends TestCase
         $this->travelTo('2026-09-24 10:00:00');
         $user = User::factory()->collector()->create();
         $user->permissions()->sync(Permission::idsFor([PermissionKey::ViewMeterReadings, PermissionKey::BrowseMeterReadingWeeks]));
-        $week = MeterReading::latestEndedWeekStart(null);
+        $week = ReadingWeeks::latestEndedWeekStart(null);
         $olderWeek = $week->copy()->subWeek();
         $subscription = Subscription::factory()->create(['branch_id' => $user->branch_id, 'full_name' => 'Alpha', 'account_number' => 'WEEK-42']);
         $missing = Subscription::factory()->create(['branch_id' => $user->branch_id, 'full_name' => 'Beta', 'initial_reading' => 40]);
@@ -315,7 +316,7 @@ class MobileApiTest extends TestCase
         $user = User::factory()->dataEntry()->create();
         $subscription = Subscription::factory()->create(['branch_id' => $user->branch_id, 'initial_reading' => 0]);
         $this->assignReading($user, $subscription);
-        $week = MeterReading::latestEndedWeekStart(null);
+        $week = ReadingWeeks::latestEndedWeekStart(null);
         foreach ([4 => [0, 100], 3 => [100, 130], 2 => [130, 170], 1 => [170, 195]] as $weeksAgo => [$previous, $current]) {
             MeterReading::factory()->approved()->create([
                 'subscription_id' => $subscription->id, 'week_start' => $week->copy()->subWeeks($weeksAgo),
@@ -361,7 +362,7 @@ class MobileApiTest extends TestCase
         $payload = [
             'mobile_operation_id' => $operationId,
             'subscription_id' => $subscription->id,
-            'week_start' => MeterReading::latestEndedWeekStart(null)->toDateString(),
+            'week_start' => ReadingWeeks::latestEndedWeekStart(null)->toDateString(),
             'current_reading' => 1250,
         ];
 
@@ -414,7 +415,7 @@ class MobileApiTest extends TestCase
             ->postJson(route('mobile.readings.store'), [
                 'mobile_operation_id' => Str::uuid()->toString(),
                 'subscription_id' => $otherSubscription->id,
-                'week_start' => MeterReading::latestEndedWeekStart(null)->toDateString(),
+                'week_start' => ReadingWeeks::latestEndedWeekStart(null)->toDateString(),
                 'current_reading' => 100,
             ])->assertUnprocessable()->assertJsonValidationErrors('subscription_id');
         $this->assertDatabaseCount('meter_readings', 0);

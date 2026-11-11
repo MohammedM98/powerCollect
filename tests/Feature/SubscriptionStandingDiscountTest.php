@@ -11,6 +11,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\TariffSegment;
 use App\Models\User;
+use App\Support\Readings\ApproveReading;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -252,7 +253,7 @@ class SubscriptionStandingDiscountTest extends TestCase
         $discount = StandingDiscount::factory()->for($this->subscription)->kilowatts(3)->create();
         $this->recordReading(1205);
         $reading = MeterReading::sole();
-        $reading->approve($this->branchAdmin);
+        ApproveReading::handle($reading, $this->branchAdmin);
         $discount->update(['method' => DiscountMethod::Percentage, 'value' => 50]);
 
         $this->actingAs($this->branchAdmin)
@@ -285,7 +286,7 @@ class SubscriptionStandingDiscountTest extends TestCase
     {
         $this->recordReading(1205);
         $latestWeek = MeterReading::sole();
-        $latestWeek->approve($this->branchAdmin);
+        ApproveReading::handle($latestWeek, $this->branchAdmin);
 
         $this->giveDiscount(['method' => 'kilowatt', 'value' => '3'])->assertSessionHasNoErrors();
 
@@ -298,7 +299,7 @@ class SubscriptionStandingDiscountTest extends TestCase
     {
         StandingDiscount::factory()->for($this->subscription)->kilowatts(3)->create();
         $this->recordReading(1205);
-        MeterReading::sole()->approve($this->branchAdmin);
+        ApproveReading::handle(MeterReading::sole(), $this->branchAdmin);
 
         $this->giveDiscount(['method' => 'percentage', 'value' => '10'])->assertSessionHasNoErrors();
 
@@ -310,7 +311,7 @@ class SubscriptionStandingDiscountTest extends TestCase
     {
         StandingDiscount::factory()->for($this->subscription)->kilowatts(3)->create();
         $this->recordReading(1205);
-        MeterReading::sole()->approve($this->branchAdmin);
+        ApproveReading::handle(MeterReading::sole(), $this->branchAdmin);
 
         $this->actingAs($this->branchAdmin)
             ->delete(route('subscriptions.standing-discount.destroy', $this->subscription))

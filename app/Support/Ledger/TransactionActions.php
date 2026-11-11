@@ -12,6 +12,7 @@ use App\Models\SplitPayment;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Money;
+use App\Support\Readings\ReopenReading;
 use Brick\Math\RoundingMode;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -366,7 +367,10 @@ class TransactionActions
     public static function reopenReading(SubscriptionTransaction $transaction): void
     {
         if ($transaction->type === SubscriptionTransaction::TYPE_METER_READING && $transaction->isBilledByReading()) {
-            MeterReading::query()->lockForUpdate()->find($transaction->meter_reading_id)?->reopen();
+            $reading = MeterReading::query()->lockForUpdate()->find($transaction->meter_reading_id);
+            if ($reading !== null) {
+                ReopenReading::handle($reading);
+            }
         }
     }
 

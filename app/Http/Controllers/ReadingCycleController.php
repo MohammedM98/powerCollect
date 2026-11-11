@@ -10,7 +10,6 @@ use App\Http\Requests\StoreReadingCycleRequest;
 use App\Http\Requests\UpdateReadingCycleRequest;
 use App\Models\Branch;
 use App\Models\MeterBox;
-use App\Models\MeterReading;
 use App\Models\PaperSheet;
 use App\Models\ReadingCycle;
 use App\Models\ReadingDistribution;
@@ -21,6 +20,7 @@ use App\Notifications\ActionCompleted;
 use App\Support\BranchDomainContext;
 use App\Support\DailySeries;
 use App\Support\ReadingAllocation;
+use App\Support\Readings\ReadingWeeks;
 use App\Support\RecurringReadingDistribution;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -95,7 +95,7 @@ class ReadingCycleController extends Controller
         $cycle = ReadingCycle::create([
             'branch_id' => $branch->id,
             'week_start' => $weekStart->toDateString(),
-            'week_end' => MeterReading::weekEndFor($weekStart, $branch)->toDateString(),
+            'week_end' => ReadingWeeks::weekEndFor($weekStart, $branch)->toDateString(),
             'reading_date' => $request->validated('reading_date'),
             'notes' => $request->validated('notes'),
             'created_by' => $request->user()->id,

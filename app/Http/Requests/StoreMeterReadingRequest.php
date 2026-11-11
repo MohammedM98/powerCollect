@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use App\Enums\SubscriptionStatus;
 use App\Models\MeterReading;
 use App\Models\Subscription;
+use App\Support\Readings\ReadingConsumption;
+use App\Support\Readings\ReadingWeeks;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
@@ -72,7 +74,7 @@ class StoreMeterReadingRequest extends FormRequest
                 $subscription = $this->subscription();
                 $weekStart = $this->weekStart();
 
-                if ($weekStart->greaterThan(MeterReading::latestEndedWeekStart($subscription->branch_id))) {
+                if ($weekStart->greaterThan(ReadingWeeks::latestEndedWeekStart($subscription->branch_id))) {
                     $validator->errors()->add('week_start', 'لا يمكن إدخال قراءة لأسبوع لم ينتهِ بعد.');
 
                     return;
@@ -108,9 +110,9 @@ class StoreMeterReadingRequest extends FormRequest
                     return;
                 }
 
-                $consumption = MeterReading::consumptionBetween($previousReading, $this->float('current_reading'));
+                $consumption = ReadingConsumption::consumptionBetween($previousReading, $this->float('current_reading'));
 
-                if (MeterReading::isImpossibleConsumption($consumption)) {
+                if (ReadingConsumption::isImpossibleConsumption($consumption)) {
                     $validator->errors()->add('current_reading', self::impossibleConsumptionMessage($consumption));
                 }
             },
@@ -133,7 +135,7 @@ class StoreMeterReadingRequest extends FormRequest
      */
     public function weekStart(): Carbon
     {
-        return MeterReading::weekStartFor(Carbon::parse($this->input('week_start')), $this->subscription()->branch_id);
+        return ReadingWeeks::weekStartFor(Carbon::parse($this->input('week_start')), $this->subscription()->branch_id);
     }
 
     private function subscription(): Subscription
