@@ -19,7 +19,7 @@ before(async () => {
             if (id.endsWith('.css')) return '\0css';
             if (/Components[/\\]Modal(?:\.jsx)?$/.test(id)) return '\0modal';
         }, load(id) {
-            if (id === '\0entry') return "export {SheetRow} from '@/Pages/MeterReadings/Index'; export {default as Dialog} from '@/Pages/MeterReadings/ReadingApprovalDialog'; export {default as History} from '@/Pages/Subscriptions/ReadingHistoryModal';";
+            if (id === '\0entry') return "export {SheetRow} from '@/Pages/MeterReadings/ReadingSheetRow'; export {default as Dialog} from '@/Pages/MeterReadings/ReadingApprovalDialog'; export {default as History} from '@/Pages/Subscriptions/ReadingHistoryModal';";
             if (id === '\0css') return '';
             if (id === '\0modal') return 'export default function Modal({show, children}) { return show ? children : null; }';
         } }],

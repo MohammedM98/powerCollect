@@ -125,3 +125,17 @@ export function lastReadingBalanceChange(weeks) {
 export function lastReadingNeedsUnusualConfirmation(weeks) {
     return (weeks ?? []).some((week) => week.isApproved && week.unusual);
 }
+
+/**
+ * The week's cost for a typed reading: consumption × kilowatt price, less
+ * the row's standing discount, but never less than the minimum payment.
+ */
+export function calculateCharges(currentReading, row) {
+    if (currentReading === '' || Number.isNaN(Number(currentReading))) {
+        return null;
+    }
+
+    const consumption = consumptionBetween(row.previousReading, currentReading);
+
+    return { consumption, ...weeklyCharges(consumption, row.unitPrice, row.minimumPayment, row.discount) };
+}
