@@ -37,3 +37,19 @@ export function Card({ icon, title, description, children, actions = null }) {
         </section>
     );
 }
+
+export function Section({ title, hint, children }) {
+    const titleId = useId();
+
+    return (
+        <section aria-labelledby={titleId} className="space-y-3">
+            <div>
+                <h4 id={titleId} className="text-sm font-bold text-gray-900">
+                    {title}
+                </h4>
+                {hint && <p className="mt-0.5 text-xs text-gray-500">{hint}</p>}
+            </div>
+            {children}
+        </section>
+    );
+}

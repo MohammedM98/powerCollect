@@ -1,54 +1,23 @@
 import { useEffect, useEffectEvent, useId, useRef, useState } from 'react';
-import { Link, router, useHttp } from '@inertiajs/react';
+import { router, useHttp } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
-import ChoiceChips from '@/Components/ChoiceChips';
-import Switch from '@/Components/Switch';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import ConfirmDialog from '@/Components/ConfirmDialog';
-import InputError from '@/Components/InputError';
-import { smsParts } from '@/lib/disconnections';
-import { CHANNEL_ICONS, KIND_HINTS, KIND_ICONS, MessageText, renderMessage, withIcons } from './MessageParts';
+import { renderMessage } from './MessageParts';
+import QuickMessageBody from './QuickMessageBody';
+import QuickMessageRecipients from './QuickMessageRecipients';
+import { recipientsUrl, byId } from '@/lib/quickMessage';
+import QuickMessageKind from './QuickMessageKind';
+import QuickMessageChannel from './QuickMessageChannel';
+import QuickMessageFooter from './QuickMessageFooter';
+import AsyncState from '@/Components/AsyncState';
 
 const SEARCH_DELAY = 250;
-
-/** The keyboard focus ring every custom button here uses, like the app's own buttons. */
-const FOCUS_RING = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
-
-/** The recipients' address for the given subscriptions: every status, as they were picked by hand. */
-function recipientsUrl(params, ids = []) {
-    const query = new URLSearchParams({ status: '', ...params });
-    ids.forEach((id) => query.append('subscription_ids[]', id));
-
-    return `/messages/recipients?${query}`;
-}
-
-/** Rows by subscription id. */
-function byId(rows) {
-    return Object.fromEntries(rows.map((row) => [row.id, row]));
-}
 
 /** Keep large selections in the request body, rather than in the URL. */
 function loadRecipients(http, data) {
     http.transform(() => data);
     return http.post('/messages/recipients');
-}
-
-function Section({ title, hint, children }) {
-    const titleId = useId();
-
-    return (
-        <section aria-labelledby={titleId} className="space-y-3">
-            <div>
-                <h4 id={titleId} className="text-sm font-bold text-gray-900">
-                    {title}
-                </h4>
-                {hint && <p className="mt-0.5 text-xs text-gray-500">{hint}</p>}
-            </div>
-            {children}
-        </section>
-    );
 }
 
 /**
@@ -329,329 +298,82 @@ export default function QuickMessageModal({ subscriptionIds = [], selection = nu
                         </button>
                     </div>
 
-                    {setupFailed ? (
-                        <div role="alert" className="px-7 py-10 text-center text-sm text-gray-600">
-                            تعذّر تحميل نافذة الرسائل. أغلقها وحاول مرة أخرى.
-                        </div>
-                    ) : setup === null ? (
-                        <div role="status" className="space-y-3 px-7 py-6">
-                            <p className="text-sm text-gray-500">جارٍ التحميل…</p>
-                            <div className="grid gap-3 motion-safe:animate-pulse" aria-hidden="true">
-                                {[1, 2, 3].map((row) => (
-                                    <div key={row} className="h-12 rounded-lg bg-gray-100" />
-                                ))}
-                            </div>
+                    {setupFailed || setup === null ? (
+                        <div className="px-7 py-6">
+                            <AsyncState loading={setup === null} error={setupFailed ? 'تعذّر تحميل نافذة الرسائل. أغلقها وحاول مرة أخرى.' : null} />
                         </div>
                     ) : (
                         <div className="flex-1 space-y-6 overflow-y-auto px-7 py-6">
-                            <Section title="نوع الرسالة" hint={KIND_HINTS[kind]}>
-                                <ChoiceChips options={withIcons(setup.kinds, KIND_ICONS)} value={kind} onChange={changeKind} label="نوع الرسالة" />
-                                {kind === 'weekly_reading' && (
-                                    <div className="flex flex-wrap items-end gap-4">
-                                        <div className="min-w-[220px] flex-1">
-                                            <label htmlFor={`${id}-week`} className="mb-1.5 block text-sm font-semibold text-gray-700">
-                                                أسبوع القراءة
-                                            </label>
-                                            <select
-                                                id={`${id}-week`}
-                                                value={weekStart}
-                                                onChange={(e) => setWeekStart(e.target.value)}
-                                                className="block w-full text-sm"
-                                            >
-                                                {weekOptions.map((option) => (
-                                                    <option key={option.value} value={option.value}>
-                                                        {option.label}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <InputError message={errors.week_start} className="mt-1" />
-                                        </div>
-                                        <div className="pb-2">
-                                            <Switch checked={approvedOnly} onChange={setApprovedOnly} label="القراءات المعتمدة فقط" />
-                                        </div>
-                                    </div>
-                                )}
-                                {kind === 'balance_reminder' && (
-                                    <div className="max-w-xs">
-                                        <label htmlFor={`${id}-min-balance`} className="mb-1.5 block text-sm font-semibold text-gray-700">
-                                            لمن عليه رصيد أكبر من (₪)
-                                        </label>
-                                        <input
-                                            id={`${id}-min-balance`}
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            inputMode="decimal"
-                                            value={minBalance}
-                                            onChange={(e) => setMinBalance(e.target.value)}
-                                            placeholder="0"
-                                            className="block w-full text-sm"
-                                        />
-                                    </div>
-                                )}
-                            </Section>
+                            <QuickMessageKind
+                                approvedOnly={approvedOnly}
+                                changeKind={changeKind}
+                                errors={errors}
+                                id={id}
+                                kind={kind}
+                                minBalance={minBalance}
+                                setApprovedOnly={setApprovedOnly}
+                                setMinBalance={setMinBalance}
+                                setWeekStart={setWeekStart}
+                                setup={setup}
+                                weekOptions={weekOptions}
+                                weekStart={weekStart}
+                            />
 
-                            <Section
-                                title={`المستلمون${pickedIds.length > 0 ? ` (${pickedIds.length.toLocaleString('en')})` : ''}`}
-                                hint={selection?.all ? 'الاشتراكات المطابقة لفلاتر صفحة المشتركين عند فتح النافذة. راجع المستلمين ومعاينة الرسالة قبل الإرسال.' : 'مشترك واحد أو أكثر: ابحث بالاسم أو الهاتف أو رقم الاشتراك وأضفه.'}
-                            >
-                                {selectionError && <p role="alert" className="text-sm text-red-600">{selectionError}</p>}
-                                <div>
-                                    <label htmlFor={`${id}-search`} className="sr-only">
-                                        بحث عن مشترك
-                                    </label>
-                                    <div className="relative">
-                                        <Icon
-                                            name="search"
-                                            className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-                                        />
-                                        <input
-                                            ref={searchRef}
-                                            id={`${id}-search`}
-                                            type="search"
-                                            value={search}
-                                            onChange={(e) => setSearch(e.target.value)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter' && results[0]) {
-                                                    e.preventDefault();
-                                                    pick(results[0]);
-                                                }
-                                            }}
-                                            placeholder="الاسم أو الهاتف أو رقم الاشتراك"
-                                            autoComplete="off"
-                                            autoFocus={subscriptionIds.length === 0}
-                                            disabled={pickedIds.length >= maxRecipients}
-                                            className="block w-full ps-9 text-sm"
-                                            aria-describedby={`${id}-search-results`}
-                                        />
-                                    </div>
-                                    {search.trim().length >= 2 && (
-                                        <ul
-                                            id={`${id}-search-results`}
-                                            aria-label="نتائج البحث"
-                                            aria-busy={searchHttp.processing}
-                                            className="mt-1.5 divide-y divide-gray-100 overflow-hidden rounded-control border border-gray-200 bg-surface shadow-card"
-                                        >
-                                            {results.length === 0 ? (
-                                                <li className="px-3 py-2.5 text-sm text-gray-500">
-                                                    {searchHttp.processing ? 'جارٍ البحث...' : 'لا يوجد مشترك مطابق.'}
-                                                </li>
-                                            ) : (
-                                                results.map((row) => {
-                                                    const alreadyPicked = pickedIds.includes(row.id);
+                            <QuickMessageRecipients
+                                detailsLoaded={detailsLoaded}
+                                errors={errors}
+                                exclusion={exclusion}
+                                id={id}
+                                maxRecipients={maxRecipients}
+                                people={people}
+                                pick={pick}
+                                pickedIds={pickedIds}
+                                previewRow={previewRow}
+                                results={results}
+                                search={search}
+                                searchHttp={searchHttp}
+                                searchRef={searchRef}
+                                selection={selection}
+                                selectionError={selectionError}
+                                setPreviewId={setPreviewId}
+                                setSearch={setSearch}
+                                subscriptionIds={subscriptionIds}
+                                unpick={unpick}
+                            />
 
-                                                    return (
-                                                        <li key={row.id}>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => pick(row)}
-                                                                disabled={alreadyPicked}
-                                                                className={`flex w-full items-center gap-3 px-3 py-2.5 text-start text-sm transition hover:bg-gray-50 disabled:cursor-default disabled:opacity-60 ${FOCUS_RING}`}
-                                                            >
-                                                                <Icon
-                                                                    name={alreadyPicked ? 'check' : 'plus'}
-                                                                    className="h-4 w-4 shrink-0 text-gray-400"
-                                                                />
-                                                                <span className="min-w-0 flex-1">
-                                                                    <span className="block truncate font-semibold text-gray-900">{row.name}</span>
-                                                                    <span className="block truncate text-xs text-gray-500">{row.accountNumber}</span>
-                                                                </span>
-                                                                <span dir="ltr" className="shrink-0 text-xs text-gray-600">
-                                                                    {row.phone ?? 'لا يوجد رقم'}
-                                                                </span>
-                                                            </button>
-                                                        </li>
-                                                    );
-                                                })
-                                            )}
-                                        </ul>
-                                    )}
-                                </div>
+                            <QuickMessageBody
+                                body={body}
+                                bodyRef={bodyRef}
+                                channel={channel}
+                                errors={errors}
+                                id={id}
+                                insertPlaceholder={insertPlaceholder}
+                                kind={kind}
+                                kindTemplates={kindTemplates}
+                                pickTemplate={pickTemplate}
+                                previewRow={previewRow}
+                                previewText={previewText}
+                                setBody={setBody}
+                                setup={setup}
+                                templateId={templateId}
+                            />
 
-                                {pickedIds.length >= maxRecipients && (
-                                    <p className="text-sm text-amber-700">
-                                        الرسالة السريعة تصل لـ {maxRecipients.toLocaleString('en')} مشترك على الأكثر؛ للأكثر استخدم صفحة الرسائل.
-                                    </p>
-                                )}
-
-                                {pickedIds.length > 0 && (
-                                    <ul
-                                        aria-label="المستلمون المختارون"
-                                        className="max-h-56 divide-y divide-gray-100 overflow-y-auto rounded-control border border-gray-100"
-                                    >
-                                        {pickedIds.map((subscriptionId) => {
-                                            const person = people[subscriptionId];
-                                            const reason = exclusion(subscriptionId);
-
-                                            return (
-                                                <li
-                                                    key={subscriptionId}
-                                                    className={`flex items-center gap-3 px-3 py-2 text-sm ${previewRow?.id === subscriptionId ? 'bg-brand-500/5' : ''}`}
-                                                >
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setPreviewId(subscriptionId)}
-                                                        disabled={Boolean(reason) || !person}
-                                                        title="معاينة رسالته"
-                                                        className={`min-w-0 flex-1 rounded-lg text-start disabled:cursor-default ${FOCUS_RING}`}
-                                                    >
-                                                        <span
-                                                            className={`block truncate font-semibold ${reason ? 'text-gray-400 line-through' : 'text-gray-900'}`}
-                                                        >
-                                                            {person?.name ?? (detailsLoaded ? `مشترك رقم ${subscriptionId}` : '…')}
-                                                        </span>
-                                                        <span className="block truncate text-xs text-gray-500">
-                                                            {person?.accountNumber}
-                                                            {person?.phone && (
-                                                                <>
-                                                                    {' — '}
-                                                                    <bdi dir="ltr">{person.phone}</bdi>
-                                                                </>
-                                                            )}
-                                                        </span>
-                                                    </button>
-                                                    {reason && (
-                                                        <span className="inline-flex shrink-0 items-center gap-1 text-xs text-amber-700 dark:text-amber-400">
-                                                            <Icon name="warning" className="h-3.5 w-3.5" />
-                                                            {reason}
-                                                        </span>
-                                                    )}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => unpick(subscriptionId)}
-                                                        aria-label={`إزالة ${person?.name ?? 'المشترك'}`}
-                                                        title="إزالة"
-                                                        className={`shrink-0 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-brand-600 ${FOCUS_RING}`}
-                                                    >
-                                                        <Icon name="close" className="h-4 w-4" />
-                                                    </button>
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
-                                )}
-                                <InputError message={errors.subscription_ids} />
-                            </Section>
-
-                            <Section title="نص الرسالة" hint="اضغط على أي معلومة لإضافتها، وتُكتب لكل مشترك بقيمته.">
-                                {kindTemplates.length > 0 && (
-                                    <div>
-                                        <label htmlFor={`${id}-template`} className="mb-1.5 block text-sm font-semibold text-gray-700">
-                                            القالب
-                                        </label>
-                                        <select
-                                            id={`${id}-template`}
-                                            value={templateId}
-                                            onChange={(e) => pickTemplate(e.target.value)}
-                                            className="block w-full text-sm"
-                                        >
-                                            <option value="">— بدون قالب —</option>
-                                            {kindTemplates.map((template) => (
-                                                <option key={template.id} value={template.id}>
-                                                    {template.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                )}
-                                <div role="group" aria-label="أضف معلومة من بيانات المشترك إلى النص" className="flex flex-wrap gap-1.5">
-                                    {setup.placeholders[kind].map((name) => (
-                                        <button
-                                            key={name}
-                                            type="button"
-                                            onClick={() => insertPlaceholder(name)}
-                                            aria-label={`أضف «${name.replaceAll('_', ' ')}» إلى نص الرسالة`}
-                                            className={`inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-semibold text-gray-700 transition hover:border-brand-500/40 hover:text-brand-600 ${FOCUS_RING}`}
-                                        >
-                                            <Icon name="plus" className="h-3.5 w-3.5" strokeWidth={2} />
-                                            {name.replaceAll('_', ' ')}
-                                        </button>
-                                    ))}
-                                </div>
-                                <label htmlFor={`${id}-body`} className="sr-only">
-                                    نص الرسالة
-                                </label>
-                                <textarea
-                                    ref={bodyRef}
-                                    id={`${id}-body`}
-                                    rows={4}
-                                    value={body}
-                                    onChange={(e) => setBody(e.target.value)}
-                                    maxLength={1000}
-                                    className="block w-full text-sm leading-7"
-                                    placeholder="اكتب الرسالة هنا..."
-                                    aria-describedby={`${id}-body-length`}
-                                    aria-invalid={errors.body ? true : undefined}
-                                />
-                                <InputError message={errors.body} />
-                                {previewRow && body.trim() !== '' && (
-                                    <div>
-                                        <p className="mb-1.5 text-xs font-semibold text-gray-600">كما تصل إلى {previewRow.name}:</p>
-                                        <div className="whitespace-pre-line rounded-2xl rounded-tr-sm bg-emerald-500/10 px-4 py-3 text-sm leading-7 text-gray-900">
-                                            <MessageText text={previewText} />
-                                        </div>
-                                    </div>
-                                )}
-                                <p id={`${id}-body-length`} className="text-xs text-gray-500">
-                                    {previewText.length} حرفًا
-                                    {channel === 'sms' && <> — نحو {smsParts(previewText)} رسالة SMS لكل مشترك</>}
-                                </p>
-                            </Section>
-
-                            <Section title="طريقة الإرسال">
-                                <ChoiceChips
-                                    options={withIcons(setup.channels, CHANNEL_ICONS)}
-                                    value={channel}
-                                    onChange={setChannel}
-                                    label="طريقة الإرسال"
-                                />
-                                {channel === 'sms' && !setup.smsDeliversMessages && (
-                                    <p
-                                        role="note"
-                                        className="flex items-start gap-2 rounded-control bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-300"
-                                    >
-                                        <Icon name="warning" className="mt-0.5 h-4 w-4 shrink-0" />
-                                        لم تُضبط بوابة الرسائل النصية بعد، فتُسجَّل الرسائل في سجل النظام فقط ولا تصل للمشتركين. أرسل عبر واتساب أو
-                                        اطلب ضبط مزوّد SMS.
-                                    </p>
-                                )}
-                                {channel === 'whatsapp' && (
-                                    <p className="text-sm text-gray-500">
-                                        تُجهَّز الرسائل وتنتقل إلى صفحة الإرسال: زر لكل مشترك يفتح واتساب والرسالة مكتوبة.
-                                    </p>
-                                )}
-                            </Section>
+                            <QuickMessageChannel channel={channel} setChannel={setChannel} setup={setup} />
                         </div>
                     )}
 
-                    <div className="flex flex-wrap items-center justify-end gap-3 border-t border-gray-100 bg-gray-50 px-7 py-4">
-                        {setup !== null && pickedIds.length <= 400 && (
-                            <Link
-                                href={fullPageUrl}
-                                className={`me-auto inline-flex items-center gap-1 rounded text-sm font-semibold text-gray-600 hover:text-gray-900 ${FOCUS_RING}`}
-                            >
-                                <Icon name="external" className="h-4 w-4" />
-                                الصفحة الكاملة
-                            </Link>
-                        )}
-                        {setup !== null && sendBlocker && (
-                            <p id={`${id}-send-blocker`} className="flex items-center gap-1.5 text-sm text-gray-500">
-                                <Icon name="info" className="h-4 w-4 shrink-0" />
-                                {sendBlocker}
-                            </p>
-                        )}
-                        <SecondaryButton onClick={onClose}>إلغاء</SecondaryButton>
-                        <PrimaryButton
-                            type="button"
-                            onClick={() => setConfirming(true)}
-                            disabled={!canSend}
-                            aria-busy={sending}
-                            aria-describedby={sendBlocker ? `${id}-send-blocker` : undefined}
-                        >
-                            <Icon name="send" className="h-4 w-4" />
-                            {sending ? 'جارٍ الإرسال...' : `إرسال إلى ${reachedIds.length.toLocaleString('en')} مشترك`}
-                        </PrimaryButton>
-                    </div>
+                    <QuickMessageFooter
+                        canSend={canSend}
+                        fullPageUrl={fullPageUrl}
+                        id={id}
+                        onClose={onClose}
+                        pickedIds={pickedIds}
+                        reachedIds={reachedIds}
+                        sendBlocker={sendBlocker}
+                        sending={sending}
+                        setConfirming={setConfirming}
+                        setup={setup}
+                    />
                 </div>
             </Modal>
 

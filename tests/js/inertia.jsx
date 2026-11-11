@@ -81,8 +81,9 @@ export function useForm(initial = {}) {
 
 export function useHttp(initial = {}) {
     const form = useForm(initial);
+    const transformer = useRef(null);
     const request = (method) => async (url, options = {}) => {
-        submissions.push({ method, url, data: form.data, options, http: true });
+        submissions.push({ method, url, data: transformer.current ? transformer.current(form.data) : form.data, options, http: true });
         const index = responses.findIndex((response) => url.startsWith(response.prefix));
         const response = responses[index];
         if (response?.once) responses.splice(index, 1);
@@ -90,7 +91,18 @@ export function useHttp(initial = {}) {
         return response?.body ?? {};
     };
 
-    return { ...form, get: request('get'), post: request('post'), put: request('put'), patch: request('patch'), delete: request('delete') };
+    return {
+        ...form,
+        transform: (callback) => {
+            transformer.current = callback;
+        },
+        cancel: () => {},
+        get: request('get'),
+        post: request('post'),
+        put: request('put'),
+        patch: request('patch'),
+        delete: request('delete'),
+    };
 }
 
 export const router = {
