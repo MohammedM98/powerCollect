@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { COLUMN_WIDTHS, filtersCaption, followsLineAbove, hasLineMenu, rowClass, STATEMENT_COLUMNS, transactionNoun } from '../../resources/js/lib/accountStatement.js';
+import { COLUMN_WIDTHS, filtersCaption, statementHeader, followsLineAbove, hasLineMenu, rowClass, STATEMENT_COLUMNS, transactionNoun } from '../../resources/js/lib/accountStatement.js';
 
 const NO_FILTERS = { search: '', type: '', method: '', dateFrom: '', dateTo: '', sort: '' };
 
@@ -44,4 +44,10 @@ test('a row is marked cancelled, focused, related, folded or following, and plai
 
 test('every statement column has a width', () => {
     assert.equal(COLUMN_WIDTHS.length, STATEMENT_COLUMNS.length);
+});
+
+test('a subscriptions-list row becomes the statement window header', () => {
+    const header = statementHeader({ id: 7, display_name: 'سامي', account_number: 'A-7', subscriber_number: 'S-7', status: 'active', statusLabel: 'فعّال', branchName: 'الفرع', tariffCategoryLabel: 'منزلي', tariffSegmentName: 'شريحة 1', meterBoxNumber: '12', extra: true });
+
+    assert.deepEqual(header, { id: 7, fullName: 'سامي', accountNumber: 'A-7', subscriberNumber: 'S-7', status: 'active', statusLabel: 'فعّال', branchName: 'الفرع', tariffCategoryLabel: 'منزلي', tariffSegmentName: 'شريحة 1', meterBoxNumber: '12' });
 });

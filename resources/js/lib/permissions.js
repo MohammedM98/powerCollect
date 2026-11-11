@@ -1,3 +1,5 @@
+
+
 /**
  * The permissions editor's model (Pages/Settings/Permissions.jsx). Each
  * section's everyday permissions climb a ladder — view, then add, then edit
@@ -300,7 +302,6 @@ export function copyWorkPermissions(sections, selectedIds, sourceIds) {
     ])];
 }
 
-
 /** Each actual grant added or removed; a swap always produces both changes. */
 export function individualChanges(sections, saved, current) {
     return permissionEntries(sections)
@@ -502,6 +503,7 @@ export function riskCounts(sections, selectedIds) {
 
 /** The job-title colours, in the order the titles are listed; an unset title is grey. */
 export const ROLE_COLORS = ['#2f66d6', '#1f8750', '#c27803', '#7c3aed', '#0e8a8a', '#c2410c', '#be185d', '#4f46e5'];
+
 export const UNSET_ROLE_COLOR = '#6b7480';
 
 /**
@@ -571,4 +573,8 @@ export function permissionsWord(count) {
     const rest = Math.abs(count) % 100;
 
     return rest >= 3 && rest <= 10 ? 'صلاحيات' : 'صلاحية';
+}
+
+export function needsPermission(permission) {
+    return `تحتاج صلاحية «${permission}» — يمنحها مدير الفرع أو مدير النظام.`;
 }

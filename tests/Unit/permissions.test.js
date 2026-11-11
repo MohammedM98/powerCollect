@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { changesBetween, copyWorkPermissions, filterSections, individualChanges, levelOf, permissionCells, samePermissions, sectionExtras, sectionIds, sectionModel, sectionSentence, withGroupAccess, withLevel, withSectionLevel, withToggled } from '../../resources/js/lib/permissions.js';
+import { changesBetween, copyWorkPermissions, needsPermission, filterSections, individualChanges, levelOf, permissionCells, samePermissions, sectionExtras, sectionIds, sectionModel, sectionSentence, withGroupAccess, withLevel, withSectionLevel, withToggled } from '../../resources/js/lib/permissions.js';
 
 const entry = (action, id, label = action) => ({ action, permission: id === null ? null : { id, label } });
 
@@ -210,4 +210,8 @@ test('browsing earlier reading weeks is a viewing switch, and editing the last r
     assert.deepEqual(readings.switches.map((item) => [item.id, item.label]), [[12, 'الأسابيع السابقة']]);
     assert.deepEqual(readings.sensitive.map((item) => [item.id, item.label]), [[13, 'تصحيح القراءة الأسبوعية'], [14, 'تعديل القراءة السابقة واعتمادها']]);
     assert.deepEqual(withGroupAccess([readings], [10, 11, 13, 14], true), [10, 12]);
+});
+
+test('a locked action names the permission it needs and who grants it', () => {
+    assert.equal(needsPermission('إضافة خصم'), 'تحتاج صلاحية «إضافة خصم» — يمنحها مدير الفرع أو مدير النظام.');
 });

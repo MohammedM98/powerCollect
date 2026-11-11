@@ -467,3 +467,19 @@ export const STATEMENT_COLUMNS = [
 ];
 
 export const COLUMN_WIDTHS = [52, 72, 88, 180, 116, 150, 220, 130, 76, 104, 116, 88, 148, 136];
+
+/** A row of the list in the shape the statement window's header reads. */
+export function statementHeader(subscription) {
+    return {
+        id: subscription.id,
+        fullName: subscription.display_name,
+        accountNumber: subscription.account_number,
+        subscriberNumber: subscription.subscriber_number,
+        status: subscription.status,
+        statusLabel: subscription.statusLabel,
+        branchName: subscription.branchName,
+        tariffCategoryLabel: subscription.tariffCategoryLabel,
+        tariffSegmentName: subscription.tariffSegmentName,
+        meterBoxNumber: subscription.meterBoxNumber,
+    };
+}
