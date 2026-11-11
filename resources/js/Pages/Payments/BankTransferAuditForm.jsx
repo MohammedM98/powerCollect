@@ -1,6 +1,6 @@
 import BankReceivedDate from '@/Components/BankReceivedDate';
 import { useEffect, useId, useState } from 'react';
-import { useForm } from '@inertiajs/react';
+import { useForm, useHttp } from '@inertiajs/react';
 import DialogFrame from '@/Components/DialogFrame';
 import LatePaymentDetails from '@/Components/LatePaymentDetails';
 import FormField from '@/Components/Form/FormField';
@@ -12,6 +12,16 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import { formatMoney } from '@/lib/format';
 import { bankAuditReasonChoice, bankAuditReasonPresets, splitAuditTotal } from '@/lib/bankAudit';
 import { ledgerOf } from './LedgerColumns';
+
+const loadFailed = 'تعذر تحميل مراجعة الحوالة. حدّث الصفحة وأعد فتح النافذة.';
+
+/** The server's first validation message, a connection message, or the general one. */
+function auditLoadError(error) {
+    if (error?.name === 'HttpNetworkError') return 'تعذر الاتصال بالخادم. أعد فتح النافذة للمحاولة مجددًا.';
+    const body = error?.response?.data;
+    const parsed = typeof body === 'string' ? (() => { try { return JSON.parse(body); } catch { return {}; } })() : body || {};
+    return Object.values(parsed.errors || {}).flat()[0] || loadFailed;
+}
 
 /** A saved bank review, posted only when the box receives final approval. */
 export default function BankTransferAuditForm({ entry, onClose }) {
@@ -25,21 +35,20 @@ export default function BankTransferAuditForm({ entry, onClose }) {
     const allocationMismatch = split && allocated !== Math.round(Number(data.bank_amount || 0) * 100);
     const needsReason = difference !== 0 || Boolean(split && data.parts.some((part, index) => Math.round(Number(part.bank_amount || 0) * 100) !== Math.round(Number(split.parts[index].recorded) * 100)));
 
+    const http = useHttp();
     useEffect(() => {
-        const controller = new AbortController();
-        fetch(entry.audit_url, { headers: { Accept: 'application/json' }, signal: controller.signal })
-            .then(async (response) => {
-                const body = await response.json().catch(() => ({}));
-                if (!response.ok || !Object.hasOwn(body, 'split')) throw new Error(Object.values(body.errors || {}).flat()[0] || 'تعذر تحميل مراجعة الحوالة. حدّث الصفحة وأعد فتح النافذة.');
-                return body.split;
-            })
-            .then((loaded) => {
-                if (controller.signal.aborted) return;
-                if (loaded) setData((current) => ({ ...current, bank_amount: loaded.bank_amount, reason: loaded.reason, revision: loaded.revision, parts: loaded.parts.map((part) => ({ transaction_id: part.transaction_id, bank_amount: part.bank_amount })) }));
+        let current = true;
+        http.get(entry.audit_url)
+            .then((body) => {
+                if (!current) return;
+                if (!body || !Object.hasOwn(body, 'split')) throw new Error(loadFailed);
+                const loaded = body.split;
+                if (loaded) setData((form) => ({ ...form, bank_amount: loaded.bank_amount, reason: loaded.reason, revision: loaded.revision, parts: loaded.parts.map((part) => ({ transaction_id: part.transaction_id, bank_amount: part.bank_amount })) }));
                 setReview({ loading: false, split: loaded, error: '' });
             })
-            .catch((error) => { if (!controller.signal.aborted) setReview({ loading: false, split: null, error: error instanceof TypeError ? 'تعذر الاتصال بالخادم. أعد فتح النافذة للمحاولة مجددًا.' : error.message }); });
-        return () => controller.abort();
+            .catch((error) => { if (current) setReview({ loading: false, split: null, error: auditLoadError(error) }); });
+        return () => { current = false; };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [entry.audit_url]);
 
     function submit(event) {
