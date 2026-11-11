@@ -29,8 +29,13 @@ class SplitPaymentPage extends StatefulWidget {
       required this.subscriber,
       required this.transferBanks,
       this.senderBanks = const [],
+      this.store,
       super.key});
   final ApiClient api;
+
+  /// Where a transfer sent without a settling answer is kept (see
+  /// [FieldStore.pendingCollections]).
+  final FieldStore? store;
   final Map<String, dynamic> subscriber;
   final List<String> transferBanks;
   final List<String> senderBanks;
@@ -54,6 +59,9 @@ class _SplitPaymentPageState extends State<SplitPaymentPage> {
   bool needsOverpayment = false, overpaymentConfirmed = false;
   bool needsDuplicate = false, duplicateConfirmed = false;
   Map<String, dynamic>? submission, receipt;
+
+  /// The transfer on screen was sent earlier without an answer.
+  bool unconfirmed = false;
   bool get locked => busy || submission != null;
   int get allocated => parts.fold(
       0, (sum, part) => sum + (splitAmountCents(part.amount.text) ?? 0));
@@ -69,6 +77,127 @@ class _SplitPaymentPageState extends State<SplitPaymentPage> {
       confirmed &&
       (!needsOverpayment || overpaymentConfirmed) &&
       (!needsDuplicate || duplicateConfirmed);
+
+  static const unconfirmedMessage =
+      'لم نتمكن من تأكيد التسجيل. أعد المحاولة هنا بنفس البيانات؛ لا تنشئ حوالة أخرى قبل التحقق من دفعات اليوم.';
+
+  @override
+  void initState() {
+    super.initState();
+    restoreUnconfirmed();
+  }
+
+  /// A transfer sent before the app closed, still unanswered: shown as sent,
+  /// to be sent again with the same operation id or discarded.
+  void restoreUnconfirmed() {
+    final pending =
+        widget.store?.pendingCollection('split', widget.subscriber['id']);
+    if (pending == null) return;
+    final sent = Map<String, dynamic>.from(pending['submission'] as Map);
+    final shares = [
+      for (final part in (sent['parts'] as List? ?? []))
+        Map<String, dynamic>.from(part as Map)
+    ];
+    final people = [
+      for (final person
+          in ((pending['context'] as Map?)?['subscribers'] as List? ?? []))
+        Map<String, dynamic>.from(person as Map)
+    ];
+    if (people.length != shares.length) return;
+    submission = sent;
+    unconfirmed = true;
+    confirmed = true;
+    total.text = '${sent['total_amount'] ?? ''}';
+    bank = sent['bank_name'] as String?;
+    senderBank = sent['sender_bank_name'] as String?;
+    bankReceivedOn = DateTime.tryParse('${sent['bank_received_on']}');
+    sender.text = '${sent['sender_name'] ?? ''}';
+    reference.text = '${sent['reference_number'] ?? ''}';
+    notes.text = '${sent['notes'] ?? ''}';
+    overpaymentConfirmed = needsOverpayment = sent['confirm_overpayment'] == true;
+    duplicateConfirmed =
+        needsDuplicate = sent['confirm_duplicate_reference'] == true;
+    for (final part in parts) {
+      part.amount.dispose();
+    }
+    parts
+      ..clear()
+      ..addAll([
+        for (var index = 0; index < shares.length; index++)
+          _SplitPart(people[index])
+            ..amount.text = '${shares[index]['amount'] ?? ''}'
+      ]);
+    error = unconfirmedMessage;
+  }
+
+  Future<void> rememberSubmission() async {
+    final store = widget.store;
+    if (store == null || submission == null) return;
+    try {
+      await store.rememberCollection(
+          kind: 'split',
+          subscriber: widget.subscriber,
+          submission: submission!,
+          summary:
+              'حوالة مقسّمة ${submission!['total_amount']} ₪ بمرجع ${submission!['reference_number']}',
+          context: {
+            'subscribers': [
+              for (final part in parts)
+                {
+                  for (final key in [
+                    'id',
+                    'full_name',
+                    'account_number',
+                    'balance'
+                  ])
+                    key: part.subscriber[key],
+                }
+            ],
+          });
+    } catch (_) {
+      // The transfer is still sent; only its copy on the phone is missing.
+    }
+  }
+
+  Future<void> forgetSubmission() async {
+    final store = widget.store;
+    final operationId = submission?['mobile_operation_id'];
+    if (store == null || operationId == null) return;
+    try {
+      await store.forgetCollection(operationId);
+    } catch (_) {
+      // Kept on the phone; sending it again is answered with the same transfer.
+    }
+  }
+
+  /// After checking today's payments, drop the unconfirmed transfer and
+  /// open the form again.
+  Future<void> discardUnconfirmed() async {
+    final discard = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+                title: const Text('تجاهل الحوالة غير المؤكدة؟'),
+                content: const Text(
+                    'تحقق أولًا من دفعات اليوم: إن وصلت هذه الحوالة للخادم فلا تسجلها مرة أخرى.'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(dialogContext, false),
+                      child: const Text('رجوع')),
+                  TextButton(
+                      key: const ValueKey('split-discard-confirm'),
+                      onPressed: () => Navigator.pop(dialogContext, true),
+                      child: const Text('تجاهلها')),
+                ]));
+    if (discard != true || !mounted) return;
+    await forgetSubmission();
+    if (!mounted) return;
+    setState(() {
+      submission = null;
+      unconfirmed = false;
+      confirmed = false;
+      error = null;
+    });
+  }
 
   @override
   void dispose() {
@@ -154,11 +283,18 @@ class _SplitPaymentPageState extends State<SplitPaymentPage> {
           .toList(),
     };
     try {
+      await rememberSubmission();
       final response = await widget.api.sendSplitPayment(submission!);
+      await forgetSubmission();
+      unconfirmed = false;
       if (mounted) setState(() => receipt = response);
     } on ApiException catch (exception) {
       final uncertain = exception.isNetwork || exception.statusCode >= 500;
-      if (!uncertain) submission = null;
+      if (!uncertain) {
+        await forgetSubmission();
+        submission = null;
+      }
+      unconfirmed = uncertain;
       if (mounted)
         setState(() {
           needsOverpayment = needsOverpayment ||
@@ -166,9 +302,7 @@ class _SplitPaymentPageState extends State<SplitPaymentPage> {
           needsDuplicate = needsDuplicate ||
               (exception.errors.containsKey('reference_number') &&
                   exception.message.contains('مسبق'));
-          error = uncertain
-              ? 'لم نتمكن من تأكيد التسجيل. أعد المحاولة هنا بنفس البيانات؛ لا تنشئ حوالة أخرى قبل التحقق من دفعات اليوم.'
-              : exception.message;
+          error = uncertain ? unconfirmedMessage : exception.message;
         });
     } finally {
       if (mounted) setState(() => busy = false);
@@ -274,6 +408,14 @@ class _SplitPaymentPageState extends State<SplitPaymentPage> {
                             AppNotice(error!, error: true),
                             const SizedBox(height: 12)
                           ],
+                          if (unconfirmed && !busy && widget.store != null)
+                            Align(
+                                alignment: AlignmentDirectional.centerStart,
+                                child: TextButton(
+                                    key: const ValueKey('split-discard'),
+                                    onPressed: discardUnconfirmed,
+                                    child: const Text(
+                                        'تحققت من دفعات اليوم: تجاهل هذه الحوالة'))),
                           const AppSection('بيانات الحوالة'),
                           AppPanel(
                               child: Column(children: [

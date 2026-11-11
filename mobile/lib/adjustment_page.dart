@@ -13,8 +13,13 @@ class AdjustmentPage extends StatefulWidget {
       required this.action,
       required this.title,
       this.chargeType,
+      this.store,
       super.key});
   final ApiClient api;
+
+  /// Where a movement sent without a settling answer is kept (see
+  /// [FieldStore.pendingCollections]).
+  final FieldStore? store;
   final Map<String, dynamic> subscriber;
   final String action;
   final String title;
@@ -33,6 +38,10 @@ class _AdjustmentPageState extends State<AdjustmentPage> {
   bool accessDenied = false;
   String? error;
   Map<String, dynamic>? submission;
+
+  /// The movement on screen was sent earlier without an answer.
+  bool unconfirmed = false;
+  String get pendingKind => 'adjustment:${widget.action}';
   double get balance => double.tryParse('${widget.subscriber['balance']}') ?? 0;
   bool get isCharge => widget.action == 'charge';
   bool get isClearing => widget.action == 'clearing';
@@ -47,6 +56,68 @@ class _AdjustmentPageState extends State<AdjustmentPage> {
         ? widget.subscriber['minimum_payment']
         : widget.chargeType?['usualAmount'];
     if (usual != null) amount.text = '$usual';
+    restoreUnconfirmed();
+  }
+
+  static const unconfirmedMessage =
+      'لم يصل تأكيد التسجيل. أعد المحاولة بنفس البيانات؛ لن تُسجّل الحركة مرتين.';
+
+  /// A movement sent before the app closed, still unanswered: shown as sent,
+  /// to be sent again with the same operation id or discarded.
+  void restoreUnconfirmed() {
+    final pending =
+        widget.store?.pendingCollection(pendingKind, widget.subscriber['id']);
+    if (pending == null) return;
+    final sent = Map<String, dynamic>.from(pending['submission'] as Map);
+    if (isCharge && sent['type'] != widget.chargeType?['value']) return;
+    submission = sent;
+    unconfirmed = true;
+    amount.text = '${sent['amount'] ?? sent['value'] ?? ''}';
+    notes.text = '${sent['notes'] ?? ''}';
+    voucher.text = '${sent['manual_voucher_number'] ?? ''}';
+    error = unconfirmedMessage;
+  }
+
+  Future<void> rememberSubmission() async {
+    final store = widget.store;
+    if (store == null || submission == null) return;
+    try {
+      await store.rememberCollection(
+          kind: pendingKind,
+          subscriber: widget.subscriber,
+          submission: submission!,
+          summary:
+              '${widget.title} ${submission!['amount'] ?? submission!['value']} ₪ على ${widget.subscriber['full_name']}');
+    } catch (_) {
+      // The movement is still sent; only its copy on the phone is missing.
+    }
+  }
+
+  Future<void> forgetSubmission() async {
+    final store = widget.store;
+    final operationId = submission?['mobile_operation_id'];
+    if (store == null || operationId == null) return;
+    try {
+      await store.forgetCollection(operationId);
+    } catch (_) {
+      // Kept on the phone; sending it again is answered with the same movement.
+    }
+  }
+
+  /// After checking the statement, drop the unconfirmed movement and open
+  /// the form again.
+  Future<void> discardUnconfirmed() async {
+    if (!await confirm(
+        'تجاهل الحركة غير المؤكدة؟',
+        'تحقق أولًا من السجل المالي: إن وصلت هذه الحركة للخادم فلا تسجلها مرة أخرى.',
+        'تجاهلها')) return;
+    await forgetSubmission();
+    if (!mounted) return;
+    setState(() {
+      submission = null;
+      unconfirmed = false;
+      error = null;
+    });
   }
 
   @override
@@ -128,18 +199,24 @@ class _AdjustmentPageState extends State<AdjustmentPage> {
       error = null;
     });
     try {
+      await rememberSubmission();
       await widget.api
           .sendAdjustment(widget.subscriber['id'] as int, submission!);
+      await forgetSubmission();
       if (mounted) Navigator.pop(context, true);
     } on ApiException catch (exception) {
       accessDenied = [401, 403, 404].contains(exception.statusCode);
-      if (exception.statusCode >= 400 && exception.statusCode < 500)
+      final uncertain = exception.isNetwork || exception.statusCode >= 500;
+      if (exception.statusCode >= 400 && exception.statusCode < 500) {
+        await forgetSubmission();
         submission = null;
+      }
+      unconfirmed = uncertain;
       if (mounted)
         setState(() => error = accessDenied
             ? 'لم تعد هذه العملية متاحة لحسابك. ارجع إلى المشترك لتحديث الصلاحيات، أو سجّل الدخول مجددًا إذا انتهت الجلسة.'
             : exception.isNetwork || exception.statusCode >= 500
-                ? 'لم يصل تأكيد التسجيل. أعد المحاولة بنفس البيانات؛ لن تُسجّل الحركة مرتين.'
+                ? unconfirmedMessage
                 : exception.message);
     } finally {
       if (mounted) setState(() => busy = false);
@@ -216,6 +293,14 @@ class _AdjustmentPageState extends State<AdjustmentPage> {
                     const SizedBox(height: 16),
                     AppNotice(error!, error: true)
                   ],
+                  if (unconfirmed && !busy && widget.store != null)
+                    Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: TextButton(
+                            key: const ValueKey('adjustment-discard'),
+                            onPressed: discardUnconfirmed,
+                            child: const Text(
+                                'تحققت من السجل المالي: تجاهل هذه الحركة'))),
                 ]))),
         Padding(
             padding: const EdgeInsets.all(16),

@@ -416,6 +416,7 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
     final recorded = await Navigator.of(context).push<bool>(MaterialPageRoute(
       builder: (_) => SubscriberPage(
           api: widget.api,
+          store: widget.store,
           subscriber: subscriber,
           paymentMethods: paymentMethods,
           exchangeRates: exchangeRatesFrom(currentUser['currencies']),
@@ -426,7 +427,10 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
               ? List<String>.from(currentUser['sender_banks'] as List)
               : const []),
     ));
-    if (!mounted || section != FieldSection.collections) return;
+    if (!mounted) return;
+    // A submission sent from that page may have been settled or left unconfirmed.
+    setState(() {});
+    if (section != FieldSection.collections) return;
     try {
       if (recorded == true && canCollect) await refreshCollections();
       if (mounted && recorded == true) await searchCollections();
@@ -665,6 +669,19 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
         TextButton(
             onPressed: widget.onReauthenticate,
             child: const Text('تسجيل الدخول مجددًا')),
+      if (section == FieldSection.collections || section == FieldSection.home)
+        for (final pending in widget.store.pendingCollections)
+          Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+              child: InkWell(
+                  key: ValueKey(
+                      'unconfirmed-${Map<String, dynamic>.from(pending['submission'] as Map)['mobile_operation_id']}'),
+                  onTap: () => unawaited(openSubscriber(
+                      Map<String, dynamic>.from(pending['subscriber'] as Map))),
+                  child: AppNotice(
+                      '${pending['summary']}: لم يُؤكَّد تسجيلها. افتح المشترك لإعادة إرسالها بنفس البيانات، أو تجاهلها بعد التحقق من دفعات اليوم.',
+                      warning: true,
+                      icon: 'err'))),
       Expanded(
           child: switch (section) {
         FieldSection.collections when canBrowseSubscribers => CollectionView(

@@ -66,8 +66,13 @@ class PaymentPage extends StatefulWidget {
       this.exchangeRates = const {},
       this.receiptScanner = const ReceiptScanner(),
       this.receiptReader = const DeviceReceiptTextReader(),
+      this.store,
       super.key});
   final ApiClient api;
+
+  /// Where a payment sent without a settling answer is kept, so it can be
+  /// sent again with the same operation id after the app closes.
+  final FieldStore? store;
   final Map<String, dynamic> subscriber;
   final List<String> transferBanks;
   final List<String> paymentMethods;
@@ -103,6 +108,10 @@ class _PaymentPageState extends State<PaymentPage> {
   Map<String, dynamic>? submission;
   Map<String, dynamic>? receipt;
 
+  /// The payment on screen was sent earlier without an answer, and is kept
+  /// on the phone until it is sent again or discarded.
+  bool unconfirmed = false;
+
   String get subscriberName => '${widget.subscriber['full_name']}';
   bool get editable => !busy && !scanning && submission == null;
   bool get throughBank => method == 'bank_transfer';
@@ -128,6 +137,88 @@ class _PaymentPageState extends State<PaymentPage> {
         ? 'bank_transfer'
         : widget.paymentMethods.firstOrNull ?? '';
     sender.text = subscriberName;
+    restoreUnconfirmed();
+  }
+
+  /// A payment sent before the app closed, still unanswered: shown as it was
+  /// sent, to be sent again with the same operation id or discarded.
+  void restoreUnconfirmed() {
+    final pending =
+        widget.store?.pendingCollection('payment', widget.subscriber['id']);
+    if (pending == null) return;
+    final sent = Map<String, dynamic>.from(pending['submission'] as Map);
+    submission = sent;
+    unconfirmed = true;
+    collectorConfirmed = true;
+    amount.text = '${sent['amount'] ?? ''}';
+    currency = '${sent['currency'] ?? 'ILS'}';
+    method = '${sent['payment_method'] ?? method}';
+    bank = sent['bank_name'] as String?;
+    senderBank = sent['sender_bank_name'] as String?;
+    bankReceivedOn = DateTime.tryParse('${sent['bank_received_on']}');
+    if (sent['sender_name'] != null) sender.text = '${sent['sender_name']}';
+    reference.text = '${sent['reference_number'] ?? ''}';
+    voucher.text = '${sent['manual_voucher_number'] ?? ''}';
+    notes.text = '${sent['notes'] ?? ''}';
+    error = unconfirmedMessage;
+  }
+
+  static const unconfirmedMessage =
+      'تعذر تأكيد تسجيل الدفعة. أعد المحاولة من هذه الشاشة بنفس البيانات، أو تحقق من دفعات اليوم قبل إنشاء دفعة أخرى.';
+
+  /// After checking today's payments, the collector drops the unconfirmed
+  /// payment and the form opens again for a new one.
+  Future<void> discardUnconfirmed() async {
+    final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+                title: const Text('تجاهل الدفعة غير المؤكدة؟'),
+                content: const Text(
+                    'تحقق أولًا من دفعات اليوم: إن وصلت هذه الدفعة للخادم فلا تسجلها مرة أخرى.'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(dialogContext, false),
+                      child: const Text('رجوع')),
+                  TextButton(
+                      key: const ValueKey('payment-discard-confirm'),
+                      onPressed: () => Navigator.pop(dialogContext, true),
+                      child: const Text('تجاهلها')),
+                ]));
+    if (confirmed != true || !mounted) return;
+    await forgetSubmission();
+    if (!mounted) return;
+    setState(() {
+      submission = null;
+      unconfirmed = false;
+      collectorConfirmed = false;
+      error = null;
+    });
+  }
+
+  Future<void> rememberSubmission() async {
+    final store = widget.store;
+    if (store == null || submission == null) return;
+    try {
+      await store.rememberCollection(
+          kind: 'payment',
+          subscriber: widget.subscriber,
+          submission: submission!,
+          summary:
+              'دفعة ${submission!['amount']} ${submission!['currency']} من $subscriberName');
+    } catch (_) {
+      // The payment is still sent; only its copy on the phone is missing.
+    }
+  }
+
+  Future<void> forgetSubmission() async {
+    final store = widget.store;
+    final operationId = submission?['mobile_operation_id'];
+    if (store == null || operationId == null) return;
+    try {
+      await store.forgetCollection(operationId);
+    } catch (_) {
+      // Kept on the phone; sending it again is answered with the same payment.
+    }
   }
 
   @override
@@ -293,17 +384,23 @@ class _PaymentPageState extends State<PaymentPage> {
           'manual_voucher_number': voucher.text.trim(),
         'notes': notes.text.trim(),
       };
+      await rememberSubmission();
       final result = await widget.api.sendCollection(submission!);
+      await forgetSubmission();
       recordedAny = true;
+      unconfirmed = false;
       if (mounted) setState(() => receipt = result);
     } on ApiException catch (exception) {
-      if (exception.statusCode >= 400 && exception.statusCode < 500)
+      final uncertain = exception.isNetwork || exception.statusCode >= 500;
+      if (!uncertain) {
+        await forgetSubmission();
         submission = null;
-      if (mounted)
-        setState(() => error = exception.isNetwork ||
-                exception.statusCode >= 500
-            ? 'تعذر تأكيد تسجيل الدفعة. أعد المحاولة من هذه الشاشة بنفس البيانات، أو تحقق من دفعات اليوم قبل إنشاء دفعة أخرى.'
-            : exception.message);
+      }
+      unconfirmed = uncertain;
+      if (mounted) {
+        setState(() =>
+            error = uncertain ? unconfirmedMessage : exception.message);
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -384,6 +481,14 @@ class _PaymentPageState extends State<PaymentPage> {
                               const SizedBox(height: 12),
                               AppNotice(error!, error: true)
                             ],
+                            if (unconfirmed && !busy && widget.store != null)
+                              Align(
+                                  alignment: AlignmentDirectional.centerStart,
+                                  child: TextButton(
+                                      key: const ValueKey('payment-discard'),
+                                      onPressed: discardUnconfirmed,
+                                      child: const Text(
+                                          'تحققت من دفعات اليوم: تجاهل هذه الدفعة'))),
                           ])),
                       Container(
                           padding: const EdgeInsets.symmetric(

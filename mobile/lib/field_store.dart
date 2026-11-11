@@ -228,6 +228,72 @@ class FieldStore {
         }).toList();
       });
 
+  /// Money submissions sent to the server without an answer that settled
+  /// them (a timeout, a dropped connection, a server error), kept so a
+  /// closed or killed app can send the same one again with the same
+  /// mobile_operation_id, or the collector can discard it after checking
+  /// today's payments. Only the collector who sent one sees it.
+  List<Map<String, dynamic>> get pendingCollections =>
+      (state['pending_collections'] as List<dynamic>? ?? [])
+          .map((item) => Map<String, dynamic>.from(item as Map))
+          .where((item) => item['user_id'] == user?['id'])
+          .toList();
+
+  /// The unconfirmed submission of [kind] ('payment', 'split' or
+  /// 'adjustment') for the subscription, if there is one.
+  Map<String, dynamic>? pendingCollection(String kind, Object? subscriptionId) =>
+      pendingCollections
+          .where((item) =>
+              item['kind'] == kind && item['subscription_id'] == subscriptionId)
+          .firstOrNull;
+
+  /// Keep [submission] until the server settles it; [summary] says what it
+  /// is in the collector's words, [subscriber] reopens its page, and
+  /// [context] holds what the page needs to show it again.
+  Future<void> rememberCollection(
+          {required String kind,
+          required Map<String, dynamic> subscriber,
+          required Map<String, dynamic> submission,
+          required String summary,
+          Map<String, dynamic> context = const {}}) =>
+      _mutate(() {
+        final operationId = submission['mobile_operation_id'];
+        final kept = (state['pending_collections'] as List<dynamic>? ?? [])
+            .map((item) => Map<String, dynamic>.from(item as Map))
+            .where((item) =>
+                Map<String, dynamic>.from(item['submission'] as Map)[
+                    'mobile_operation_id'] !=
+                operationId)
+            .toList();
+        kept.add({
+          'kind': kind,
+          'user_id': user?['id'],
+          'subscription_id': subscriber['id'],
+          'subscriber': {
+            for (final key in ['id', 'full_name', 'account_number', 'balance'])
+              key: subscriber[key],
+          },
+          'summary': summary,
+          'saved_at': DateTime.now().toIso8601String(),
+          'submission': submission,
+          if (context.isNotEmpty) 'context': context,
+        });
+        state['pending_collections'] = kept;
+      });
+
+  /// The server settled the submission (recorded it, or refused it for
+  /// good), or the collector discarded it.
+  Future<void> forgetCollection(Object? operationId) => _mutate(() {
+        state['pending_collections'] =
+            (state['pending_collections'] as List<dynamic>? ?? [])
+                .map((item) => Map<String, dynamic>.from(item as Map))
+                .where((item) =>
+                    Map<String, dynamic>.from(item['submission'] as Map)[
+                        'mobile_operation_id'] !=
+                    operationId)
+                .toList();
+      });
+
   Future<void> _mutate(void Function() change) {
     final mutation = _lastMutation.then<void>((_) async {
       final previous = jsonEncode(state);

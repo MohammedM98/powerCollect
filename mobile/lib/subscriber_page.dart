@@ -6,6 +6,7 @@ import 'api_client.dart';
 import 'adjustment_page.dart';
 import 'app_balance.dart';
 import 'app_identity.dart';
+import 'field_store.dart';
 import 'payment_page.dart';
 import 'split_payment_page.dart';
 import 'subscriber_history_page.dart';
@@ -22,8 +23,12 @@ class SubscriberPage extends StatefulWidget {
       this.senderBanks = const [],
       this.paymentMethods = const ['cash', 'bank_transfer'],
       this.exchangeRates = const {},
+      this.store,
       super.key});
   final ApiClient api;
+
+  /// Keeps money sent without a settling answer (see [FieldStore.pendingCollections]).
+  final FieldStore? store;
 
   /// The subscriber as the search listed them, shown until their page loads.
   final Map<String, dynamic> subscriber;
@@ -143,6 +148,7 @@ class _SubscriberPageState extends State<SubscriberPage>
         builder: (_) => AdjustmentPage(
             api: widget.api,
             subscriber: subscriber,
+            store: widget.store,
             action: selected['action'] as String,
             title: selected['title'] as String,
             chargeType: selected['type'] == null
@@ -177,6 +183,7 @@ class _SubscriberPageState extends State<SubscriberPage>
     final submitted = await Navigator.of(context).push<bool>(MaterialPageRoute(
         builder: (_) => PaymentPage(
             api: widget.api,
+            store: widget.store,
             subscriber: subscriber,
             paymentMethods: paymentMethods,
             exchangeRates: widget.exchangeRates,
@@ -191,11 +198,39 @@ class _SubscriberPageState extends State<SubscriberPage>
 
   void close() => Navigator.pop(context, recordedAny);
 
+  /// A payment or split transfer sent for this subscriber without an answer
+  /// that settled it: opened again with the same operation id to resend or
+  /// discard. (An unconfirmed charge, discount or clearing reopens from its
+  /// own menu entry.)
+  List<Widget> unconfirmedMoney() {
+    final store = widget.store;
+    if (store == null) return const [];
+    return [
+      for (final (kind, open) in [
+        ('payment', recordPayment),
+        ('split', recordSplitPayment),
+      ])
+        if (store.pendingCollection(kind, widget.subscriber['id'])
+            case final pending?) ...[
+          const SizedBox(height: 12),
+          AppNotice('${pending['summary']}: لم يُؤكَّد تسجيلها.',
+              warning: true, icon: 'err'),
+          Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton(
+                  key: ValueKey('subscriber-resume-$kind'),
+                  onPressed: open,
+                  child: const Text('افتحها لإعادة الإرسال أو التجاهل'))),
+        ],
+    ];
+  }
+
   Future<void> recordSplitPayment() async {
     if (!canRecordSplitPayment) return;
     final recorded = await Navigator.of(context).push<bool>(MaterialPageRoute(
         builder: (_) => SplitPaymentPage(
             api: widget.api,
+            store: widget.store,
             subscriber: subscriber,
             transferBanks: widget.transferBanks,
             senderBanks: widget.senderBanks)));
@@ -235,6 +270,7 @@ class _SubscriberPageState extends State<SubscriberPage>
                               child:
                                   Text(name, style: AppIdentity.heading(22))),
                         balanceCard(),
+                        ...unconfirmedMoney(),
                         if (loading)
                           Padding(
                               padding: const EdgeInsets.only(top: 12),
