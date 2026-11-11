@@ -63,6 +63,7 @@ class PermissionPage
     public static function manageableUsers(User $actor): Builder
     {
         return User::query()
+            ->with(['auditScope', 'auditBranches'])
             ->where('role', '!=', UserRole::SuperAdmin)
             ->when(! $actor->isSuperAdmin(), fn (Builder $query) => $query
                 ->where('branch_id', $actor->workBranchId())

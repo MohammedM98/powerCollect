@@ -141,6 +141,12 @@ class Subscription extends Model
         return filled($this->subscription_phone) ? $this->subscription_phone : $this->phone;
     }
 
+    /** Each time the subscription was archived or restored, oldest first. */
+    public function archiveEvents(): HasMany
+    {
+        return $this->hasMany(SubscriptionArchiveEvent::class)->orderBy('id');
+    }
+
     public function profile(): BelongsTo
     {
         return $this->belongsTo(SubscriberProfile::class, 'subscriber_profile_id');
@@ -178,7 +184,6 @@ class Subscription extends Model
             'activated_at' => 'datetime',
             'archived_at' => 'datetime',
             'service_ended_on' => 'date',
-            'archive_history' => 'array',
             'subscription_fee' => 'decimal:2',
             'kilowatt_price' => 'decimal:2',
             'initial_reading' => 'float',
@@ -318,7 +323,7 @@ class Subscription extends Model
      */
     public function deletionBlocker(): ?string
     {
-        if ($this->archived_at !== null || ! empty($this->archive_history)) {
+        if ($this->archived_at !== null || $this->archiveEvents()->exists()) {
             return 'لا يمكن حذف اشتراك مؤرشف؛ يبقى ملفه وسجله المالي محفوظين في الأرشيف.';
         }
 

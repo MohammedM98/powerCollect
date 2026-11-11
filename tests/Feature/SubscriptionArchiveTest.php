@@ -63,7 +63,7 @@ class SubscriptionArchiveTest extends TestCase
         $this->assertSame(SubscriptionStatus::Active, $sibling->fresh()->status);
         $this->assertSame($user->id, $subscription->fresh()->archived_by);
         $this->assertSame('2026-10-20', $subscription->fresh()->service_ended_on->toDateString());
-        $this->assertSame($user->id, $subscription->fresh()->archive_history[0]['user_id']);
+        $this->assertSame($user->id, $subscription->archiveEvents()->first()->user_id);
         $this->get(route('subscriptions.statement', $subscription))->assertOk()->assertInertia(fn ($page) => $page->where('summary.balance', '70.00')->has('entries', 2)->where('subscription.statusLabel', 'مؤرشف'));
     }
 
@@ -147,12 +147,12 @@ class SubscriptionArchiveTest extends TestCase
         $this->delete(route('subscriptions.archive.destroy', $subscription), ['reason' => '', 'confirmed' => false])->assertSessionHasErrors(['reason', 'confirmed']);
         $user->permissions()->detach(Permission::idsFor([PermissionKey::RestoreArchivedSubscriptions]));
         $this->actingAs($user->fresh())->delete(route('subscriptions.archive.destroy', $subscription), ['reason' => 'استعادة', 'confirmed' => true])->assertForbidden();
-        $this->assertCount(1, $subscription->fresh()->archive_history);
+        $this->assertSame(1, $subscription->archiveEvents()->count());
         $this->actingAs(User::factory()->superAdmin()->create())->delete(route('subscriptions.archive.destroy', $subscription), ['reason' => 'مراجعة الملف', 'confirmed' => true])->assertSessionHasNoErrors()->assertSessionHas('status', 'subscription-restored');
         $this->assertNull($subscription->fresh()->archived_at);
         $this->assertSame(SubscriptionStatus::Disconnected, $subscription->fresh()->status);
-        $this->assertCount(2, $subscription->fresh()->archive_history);
-        $this->assertSame('مراجعة الملف', $subscription->fresh()->archive_history[1]['reason']);
+        $this->assertSame(2, $subscription->archiveEvents()->count());
+        $this->assertSame('مراجعة الملف', $subscription->archiveEvents()->get()[1]->reason);
         $this->delete(route('subscriptions.destroy', $subscription))->assertForbidden();
         $this->delete(route('subscriptions.archive.destroy', $subscription), ['reason' => 'تكرار', 'confirmed' => true])->assertSessionHasErrors('archive');
     }

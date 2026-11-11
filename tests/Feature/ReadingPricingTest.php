@@ -38,9 +38,9 @@ class ReadingPricingTest extends TestCase
         $this->assertSame(['2.00', '20.00', MeterReadingStatus::Pending], [$reading->unit_price, $reading->amount_due, $reading->status]);
         $this->assertSame('0.50', $subscription->fresh()->kilowatt_price);
         $this->assertSame('0.00', $subscription->fresh()->balance());
-        $this->assertSame('0.50', $reading->adjustment_history[0]['before']['unit_price']);
-        $this->assertSame('2.00', $reading->adjustment_history[0]['after']['unit_price']);
-        $this->assertSame($actor->id, $reading->adjustment_history[0]['userId']);
+        $this->assertSame('0.50', $reading->adjustments()->first()->before['unit_price']);
+        $this->assertSame('2.00', $reading->adjustments()->first()->after['unit_price']);
+        $this->assertSame($actor->id, $reading->adjustments()->first()->user_id);
         $this->assertTrue(ApproveReading::handle($reading, $actor));
         $this->assertSame('20.00', $subscription->fresh()->balance());
     }

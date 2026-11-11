@@ -116,7 +116,7 @@ class SubscriberLifecycleJourneyTest extends TestCase
         $subscription->refresh();
         $this->assertNull($subscription->archived_at);
         $this->assertSame(SubscriptionStatus::Disconnected, $subscription->status);
-        $this->assertSame(['archive', 'restore'], array_column($subscription->archive_history, 'action'));
+        $this->assertSame(['archive', 'restore'], $subscription->archiveEvents()->pluck('action')->all());
         $this->actingAs($head)->get(route('subscriptions.statement', $subscription))->assertInertia(fn ($page) => $page
             ->where('summary.balance', '0.00')
             ->where('summary.charged', '170.00')

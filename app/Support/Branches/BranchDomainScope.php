@@ -21,6 +21,8 @@ class BranchDomainScope implements Scope
         'SubscriptionTransaction' => ['subscription_id', 'Subscription'],
         'TransactionDeletion' => ['subscription_id', 'Subscription'],
         'TransactionAmendment' => ['transaction_id', 'SubscriptionTransaction'],
+        'SubscriptionArchiveEvent' => ['subscription_id', 'Subscription'],
+        'MeterReadingAdjustment' => ['meter_reading_id', 'MeterReading'],
         'StandingDiscount' => ['subscription_id', 'Subscription'],
         'SubscriptionBulkChangeItem' => ['subscription_id', 'Subscription'],
         'ReadingSubmission' => ['reading_cycle_id', 'ReadingCycle'],

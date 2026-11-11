@@ -15,13 +15,14 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
     'subscription_id', 'branch_id', 'week_start', 'week_end', 'previous_reading', 'current_reading',
     'consumption', 'usual_consumption', 'unit_price', 'reading_fee', 'minimum_payment', 'discount_method', 'discount_value', 'discount_segment', 'discount_amount',
     'amount_due', 'status', 'recorded_by', 'notes', 'approved_by', 'approved_at', 'mobile_operation_id',
-    'next_previous_reading', 'requires_reentry', 'adjustment_history',
+    'next_previous_reading', 'requires_reentry',
 ])]
 class MeterReading extends Model
 {
@@ -33,7 +34,6 @@ class MeterReading extends Model
         return [
             'next_previous_reading' => 'float',
             'requires_reentry' => 'boolean',
-            'adjustment_history' => 'array',
             'week_start' => 'date',
             'week_end' => 'date',
             'previous_reading' => 'float',
@@ -112,6 +112,12 @@ class MeterReading extends Model
 
         return $this->subscription->meterReadings()->where('week_start', '>', $this->week_start)
             ->where('week_start', '<', $weekStart)->exists();
+    }
+
+    /** The changes made to the reading after it was recorded, oldest first. */
+    public function adjustments(): HasMany
+    {
+        return $this->hasMany(MeterReadingAdjustment::class)->orderBy('id');
     }
 
     public function subscription(): BelongsTo

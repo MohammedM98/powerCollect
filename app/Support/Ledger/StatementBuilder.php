@@ -13,14 +13,9 @@ use App\Models\Bank;
 use App\Models\MeterReading;
 use App\Models\StandingDiscount;
 use App\Models\Subscription;
+use App\Models\SubscriptionArchiveEvent;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Ledger\LedgerAmounts;
-use App\Support\Ledger\LineHistory;
-use App\Support\Ledger\LinePresenter;
-use App\Support\Ledger\LineRules;
-use App\Support\Ledger\Money;
-use App\Support\Ledger\TransactionActions;
 use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -169,7 +164,7 @@ class StatementBuilder
                 'archivedAt' => $subscription->archived_at?->toIso8601String(),
                 'serviceEndedOn' => $subscription->service_ended_on?->format('Y-m-d'),
                 'archiveReason' => $subscription->archive_reason,
-                'archiveHistory' => $subscription->archive_history ?? [],
+                'archiveHistory' => $subscription->archiveEvents->map(fn (SubscriptionArchiveEvent $event): array => $event->historyEntry())->all(),
             ],
             'subscriptions' => self::profileSubscriptions($actor, $subscription),
             'entries' => $entries,

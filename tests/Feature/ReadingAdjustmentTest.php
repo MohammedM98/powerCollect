@@ -43,7 +43,7 @@ class ReadingAdjustmentTest extends TestCase
         $this->assertSame([true, 205.0, MeterReadingStatus::Pending, '0.00'], [
             $current->fresh()->requires_reentry, $current->fresh()->previous_reading, $current->fresh()->status, $current->fresh()->amount_due,
         ]);
-        $this->assertSame(230, $current->fresh()->adjustment_history[0]['before']['currentReading']);
+        $this->assertSame(230, $current->adjustments()->first()->before['currentReading']);
         $this->assertSame(SubscriptionTransaction::STATUS_CANCELLED, $oldCurrentCharge->fresh()->status);
         $this->assertFalse(ApproveReading::handle($current->fresh(), $actor, true));
         $this->assertSame('2.50', $subscription->fresh()->balance());
@@ -76,7 +76,7 @@ class ReadingAdjustmentTest extends TestCase
         $this->assertSame($oldBill, array_intersect_key($last->fresh()->getAttributes(), $oldBill));
         $this->assertSame($transactions, $subscription->transactions()->get()->map->getAttributes()->all());
         $this->assertSame(0.0, $last->fresh()->nextPreviousReading());
-        $history = $last->fresh()->adjustment_history[0];
+        $history = $last->adjustments()->first()->historyEntry();
         $this->assertSame('استبدال العداد التالف', $history['reason']);
         $this->assertSame($actor->id, $history['userId']);
         $this->assertSame(210, $history['before']['previousReading']);
@@ -124,7 +124,7 @@ class ReadingAdjustmentTest extends TestCase
         ])->assertSessionHasErrors(['current_reading' => 'تغيّرت القراءة؛ حدّث الصفحة وراجع القيمة الجديدة قبل التعديل.']);
 
         $this->assertNull($last->fresh()->next_previous_reading);
-        $this->assertNull($last->fresh()->adjustment_history);
+        $this->assertFalse($last->adjustments()->exists());
         $this->assertSame('5.00', $subscription->balance());
     }
 
@@ -170,7 +170,7 @@ class ReadingAdjustmentTest extends TestCase
 
         $this->assertSame($value, $last->fresh()->nextPreviousReading());
         $this->assertSame(210.0, $last->fresh()->current_reading);
-        $this->assertSame('تركيب عداد بديل', $last->fresh()->adjustment_history[0]['reason']);
+        $this->assertSame('تركيب عداد بديل', $last->adjustments()->first()->reason);
         $this->assertSame('5.00', $subscription->balance());
     }
 
@@ -186,7 +186,7 @@ class ReadingAdjustmentTest extends TestCase
         $this->postJson(route('meter-readings.adjustment-preview', $last), [
             'adjustment_type' => 'meter_change', 'current_reading' => 205, 'expected_reading' => 210,
         ])->assertUnprocessable()->assertJsonValidationErrors('reason');
-        $this->assertNull($last->fresh()->adjustment_history);
+        $this->assertFalse($last->adjustments()->exists());
         $this->assertSame('5.00', $subscription->balance());
     }
 
@@ -274,7 +274,7 @@ class ReadingAdjustmentTest extends TestCase
         ])->assertSessionHasErrors('confirm_unusual');
 
         $this->assertSame(210.0, $last->fresh()->current_reading);
-        $this->assertNull($last->fresh()->adjustment_history);
+        $this->assertFalse($last->adjustments()->exists());
         $this->assertSame('5.00', $subscription->balance());
     }
 

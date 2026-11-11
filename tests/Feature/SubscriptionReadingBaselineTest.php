@@ -70,7 +70,7 @@ class SubscriptionReadingBaselineTest extends TestCase
         $this->assertTrue($current->fresh()->requires_reentry);
         $this->assertSame('0.00', $subscription->fresh()->balance());
         $this->assertSame(1, $subscription->meterReadings()->count());
-        $this->assertSame('initial_reading_adjustment', $current->fresh()->adjustment_history[0]['kind']);
+        $this->assertSame('initial_reading_adjustment', $current->adjustments()->first()->kind);
         $this->get(route('subscriptions.index'))->assertInertia(fn ($page) => $page
             ->where('subscriptions.data.0.initialReading.value', 130)
             ->where('subscriptions.data.0.meterReadings.0.requiresReentry', true)

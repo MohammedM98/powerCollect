@@ -43,11 +43,10 @@ class AdjustLastReading
      */
     public static function recordAdjustment(MeterReading $reading, string $kind, array $before, array $after, User $editor, ?string $reason = null): void
     {
-        $reading->update(['adjustment_history' => [
-            ...($reading->adjustment_history ?? []),
-            ['kind' => $kind, 'before' => $before, 'after' => $after, 'reason' => $reason,
-                'userId' => $editor->id, 'userName' => $editor->name, 'at' => now()->toIso8601String()],
-        ]]);
+        $reading->adjustments()->create([
+            'kind' => $kind, 'before' => $before, 'after' => $after, 'reason' => $reason,
+            'user_id' => $editor->id, 'user_name' => $editor->name,
+        ]);
     }
 
     /** Keep the old entry in the audit trail, but never bill it from a new baseline. */

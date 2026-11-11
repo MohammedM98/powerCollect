@@ -189,7 +189,7 @@ class SubscriptionPolicy
      */
     public function delete(User $user, Subscription $subscription): bool
     {
-        return $subscription->archived_at === null && empty($subscription->archive_history) && $user->hasPermission(PermissionKey::DeleteSubscriptions)
+        return $subscription->archived_at === null && ! $subscription->archiveEvents()->exists() && $user->hasPermission(PermissionKey::DeleteSubscriptions)
             && ($user->isSuperAdmin() || $subscription->branch_id === $user->workBranchId());
     }
 

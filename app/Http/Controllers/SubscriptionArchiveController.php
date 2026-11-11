@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ArchiveSubscriptionRequest;
 use App\Http\Requests\RestoreSubscriptionRequest;
 use App\Models\Subscription;
+use App\Models\SubscriptionArchiveEvent;
 use App\Notifications\ActionCompleted;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -26,11 +27,10 @@ class SubscriptionArchiveController extends Controller
             $current->service_ended_on = $request->validated('service_ended_on');
             $current->archive_reason = $request->validated('reason');
             $current->archived_by = $request->user()->id;
-            $current->archive_history = [...($current->archive_history ?? []), [
-                'action' => 'archive', 'at' => now()->toIso8601String(),
-                'user_id' => $request->user()->id, 'user_name' => $request->user()->name,
+            $current->archiveEvents()->create([
+                'action' => SubscriptionArchiveEvent::ARCHIVE, 'user_id' => $request->user()->id, 'user_name' => $request->user()->name,
                 'reason' => $request->validated('reason'), 'service_ended_on' => $request->validated('service_ended_on'),
-            ]];
+            ]);
             $current->save();
         });
 
@@ -51,11 +51,10 @@ class SubscriptionArchiveController extends Controller
                 throw ValidationException::withMessages(['archive' => 'هذا الاشتراك غير مؤرشف.']);
             }
 
-            $current->archive_history = [...($current->archive_history ?? []), [
-                'action' => 'restore', 'at' => now()->toIso8601String(),
-                'user_id' => $request->user()->id, 'user_name' => $request->user()->name,
+            $current->archiveEvents()->create([
+                'action' => SubscriptionArchiveEvent::RESTORE, 'user_id' => $request->user()->id, 'user_name' => $request->user()->name,
                 'reason' => $data['reason'],
-            ]];
+            ]);
             $current->archived_at = null;
             $current->archived_by = null;
             $current->service_ended_on = null;

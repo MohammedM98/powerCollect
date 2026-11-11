@@ -8,8 +8,10 @@ use App\Models\Branch;
 use App\Models\CircuitBreaker;
 use App\Models\MeterBox;
 use App\Models\MeterReading;
+use App\Models\MeterReadingAdjustment;
 use App\Models\SubArea;
 use App\Models\Subscription;
+use App\Models\SubscriptionArchiveEvent;
 use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\TariffSegment;
@@ -54,7 +56,7 @@ class SubscriptionPage
      */
     public static function indexRow(Subscription $subscription, User $actor, bool $canRecordReadings): array
     {
-        $readings = $subscription->meterReadings->sortByDesc('week_start')->values();
+        $readings = $subscription->loadMissing('meterReadings.adjustments')->meterReadings->sortByDesc('week_start')->values();
         $latestReading = $readings->first();
         $entryWeek = ReadingWeeks::latestEndedWeekStart($subscription->branch_id);
         $entryReading = $readings->first(fn (MeterReading $reading): bool => $reading->week_start->equalTo($entryWeek));
@@ -83,7 +85,7 @@ class SubscriptionPage
             'archivedAt' => $subscription->archived_at?->toIso8601String(),
             'serviceEndedOn' => $subscription->service_ended_on?->format('Y-m-d'),
             'archiveReason' => $subscription->archive_reason,
-            'archiveHistory' => $subscription->archive_history ?? [],
+            'archiveHistory' => $subscription->archiveEvents->map(fn (SubscriptionArchiveEvent $event): array => $event->historyEntry())->all(),
             'canArchive' => $actor->can('archive', $subscription),
             'archiveBlocker' => $subscription->archiveBlocker(),
             'canRestore' => $subscription->archived_at !== null && $actor->can('restore', $subscription),
@@ -147,7 +149,7 @@ class SubscriptionPage
             'current_reading' => $reading->requires_reentry ? null : $reading->current_reading,
             'nextPreviousReading' => $reading->nextPreviousReading(),
             'requiresReentry' => $reading->requires_reentry,
-            'adjustmentHistory' => $reading->adjustment_history ?? [],
+            'adjustmentHistory' => $reading->adjustments->map(fn (MeterReadingAdjustment $adjustment): array => $adjustment->historyEntry())->all(),
             'consumption' => $reading->consumption,
             'amountDue' => $reading->amount_due,
             'discountAmount' => $reading->discount_amount,

@@ -18,13 +18,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 #[Fillable(['name', 'username', 'password', 'role', 'branch_id', 'is_active', 'user_type_id', 'max_devices'])]
-#[Hidden(['password', 'remember_token', 'audit_settings'])]
+#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -36,6 +37,8 @@ class User extends Authenticatable
     /** Keep administrator lockout protections independent of employee job titles. */
     protected static function booted(): void
     {
+        static::saved(fn (User $user) => $user->savePendingAuditSettings());
+
         // However it is reached, the company must keep one active Super Admin, or nobody can get back in to fix anything.
         static::updating(function (User $user): void {
             $losesTheRole = $user->isDirty('role') && $user->role !== UserRole::SuperAdmin;
@@ -64,7 +67,6 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => UserRole::class,
             'is_active' => 'boolean',
-            'audit_settings' => 'array',
             'max_devices' => 'integer',
         ];
     }
@@ -207,6 +209,74 @@ class User extends Authenticatable
             && $this->loadMissing('permissions')->permissions->every(
                 fn (Permission $permission): bool => in_array($permission->key, [PermissionKey::AuditClosings->value, PermissionKey::ViewAllClosings->value], true),
             );
+    }
+
+    /**
+     * Audit settings waiting to be saved with the user: set through the
+     * audit_settings attribute, written to user_audit_scopes and
+     * user_audit_branches once the user is saved. False when none are waiting.
+     *
+     * @var array{scope: string, branch_ids: list<int>, actions: list<string>}|false|null
+     */
+    private array|false|null $pendingAuditSettings = false;
+
+    public function auditScope(): HasOne
+    {
+        return $this->hasOne(UserAuditScope::class);
+    }
+
+    /** The branches a financial auditor limited to selected branches may audit. */
+    public function auditBranches(): BelongsToMany
+    {
+        return $this->belongsToMany(Branch::class, 'user_audit_branches')->orderBy('user_audit_branches.id');
+    }
+
+    /**
+     * The saved audit settings, or null when none were set (everything is audited).
+     *
+     * @return array{scope: string, branch_ids: list<int>, actions: list<string>}|null
+     */
+    public function getAuditSettingsAttribute(): ?array
+    {
+        if ($this->pendingAuditSettings !== false) {
+            return $this->pendingAuditSettings;
+        }
+
+        $scope = $this->loadMissing('auditScope')->auditScope;
+
+        return $scope === null ? null : [
+            'scope' => $scope->scope,
+            'branch_ids' => $this->loadMissing('auditBranches')->auditBranches->modelKeys(),
+            'actions' => $scope->actions,
+        ];
+    }
+
+    /** @param  array{scope: string, branch_ids: list<int>, actions: list<string>}|null  $settings */
+    public function setAuditSettingsAttribute(?array $settings): void
+    {
+        $this->pendingAuditSettings = $settings;
+    }
+
+    /** Write the audit settings set on the user, once the user has been saved. */
+    private function savePendingAuditSettings(): void
+    {
+        if ($this->pendingAuditSettings === false) {
+            return;
+        }
+
+        $settings = $this->pendingAuditSettings;
+        $this->pendingAuditSettings = false;
+
+        if ($settings === null) {
+            $this->auditScope()->delete();
+            $this->auditBranches()->detach();
+        } else {
+            $this->auditScope()->updateOrCreate([], ['scope' => $settings['scope'], 'actions' => array_values($settings['actions'])]);
+            $this->auditBranches()->detach();
+            $this->auditBranches()->attach(array_values(array_unique($settings['branch_ids'])));
+        }
+
+        $this->unsetRelation('auditScope')->unsetRelation('auditBranches');
     }
 
     /** @return array{scope: string, branch_ids: list<int>, actions: list<string>} */
