@@ -13,8 +13,8 @@ use App\Models\ReadingCycle;
 use App\Models\ReadingDistribution;
 use App\Models\ReadingEntrySetting;
 use App\Models\User;
-use App\Support\ReadingAllocation;
-use App\Support\RecurringReadingDistribution;
+use App\Support\Readings\ReadingAllocation;
+use App\Support\Readings\RecurringReadingDistribution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

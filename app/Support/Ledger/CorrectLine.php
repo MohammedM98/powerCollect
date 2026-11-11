@@ -6,7 +6,7 @@ use App\Enums\CorrectionReason;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\BranchClosingWorkflow;
+use App\Support\Closing\BranchClosingWorkflow;
 use Closure;
 
 /**

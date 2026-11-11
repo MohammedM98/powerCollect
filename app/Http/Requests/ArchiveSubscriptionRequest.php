@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Support\DailySeries;
+use App\Support\Reports\DailySeries;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 

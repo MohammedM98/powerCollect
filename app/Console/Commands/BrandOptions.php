@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Support\Brand;
-use App\Support\BrandDesign;
-use App\Support\BrandPalette;
+use App\Support\Branding\Brand;
+use App\Support\Branding\BrandDesign;
+use App\Support\Branding\BrandPalette;
 use Illuminate\Console\Command;
 
 class BrandOptions extends Command

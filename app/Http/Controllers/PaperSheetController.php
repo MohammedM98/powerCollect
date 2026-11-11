@@ -12,7 +12,7 @@ use App\Models\ReadingAssignment;
 use App\Models\ReadingCycle;
 use App\Models\Subscription;
 use App\Notifications\ActionCompleted;
-use App\Support\ReadingPrintData;
+use App\Support\Readings\ReadingPrintData;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;

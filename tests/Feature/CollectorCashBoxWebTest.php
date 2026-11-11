@@ -13,7 +13,7 @@ use App\Models\MobileAccessToken;
 use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\User;
-use App\Support\BranchClosingWorkflow;
+use App\Support\Closing\BranchClosingWorkflow;
 use App\Support\Ledger\RecordClearing;
 use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;

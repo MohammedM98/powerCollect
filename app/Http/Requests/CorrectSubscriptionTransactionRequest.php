@@ -6,7 +6,7 @@ use App\Enums\CorrectionReason;
 use App\Models\CurrencyRate;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
-use App\Support\Money;
+use App\Support\Ledger\Money;
 use Brick\Math\BigDecimal;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;

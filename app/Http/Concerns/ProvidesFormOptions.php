@@ -6,7 +6,7 @@ use App\Models\Area;
 use App\Models\Branch;
 use App\Models\Governorate;
 use App\Models\UserType;
-use App\Support\BranchDomainContext;
+use App\Support\Branches\BranchDomainContext;
 use Illuminate\Support\Collection;
 
 /**

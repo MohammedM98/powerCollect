@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ApproveCashBoxAuditRequest;
 use App\Models\CashBox;
-use App\Support\BankTransferAuditing;
+use App\Support\Closing\BankTransferAuditing;
 use Illuminate\Http\RedirectResponse;
 
 class CashBoxAuditController extends Controller

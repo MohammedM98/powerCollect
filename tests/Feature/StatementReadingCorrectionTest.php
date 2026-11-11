@@ -9,7 +9,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Notifications\ReadingNeedsReapproval;
-use App\Support\Money;
+use App\Support\Ledger\Money;
 use App\Support\Readings\ApproveReading;
 use App\Support\Readings\ReadingCharges;
 use Illuminate\Foundation\Testing\RefreshDatabase;

@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\CompanyFormTemplate;
-use App\Support\CompanyForms;
+use App\Support\Branding\CompanyForms;
 use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

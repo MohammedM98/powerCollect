@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Enums\ClosingDifferenceReason;
 use App\Enums\ClosingStatus;
 use App\Enums\ClosingType;
-use App\Support\Money;
+use App\Support\Ledger\Money;
 use Database\Factories\ClosingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

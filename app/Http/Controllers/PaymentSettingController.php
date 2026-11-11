@@ -8,7 +8,7 @@ use App\Models\Bank;
 use App\Models\Branch;
 use App\Models\ClosingSetting;
 use App\Models\CurrencyRate;
-use App\Support\BranchDomainContext;
+use App\Support\Branches\BranchDomainContext;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;

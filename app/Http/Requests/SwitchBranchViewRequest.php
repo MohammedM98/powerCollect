@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Support\BranchViewContext;
+use App\Support\Branches\BranchViewContext;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 

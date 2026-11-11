@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Support\BranchReport;
-use App\Support\FinancialReportAccess;
+use App\Support\Reports\BranchReport;
+use App\Support\Reports\FinancialReportAccess;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

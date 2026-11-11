@@ -12,7 +12,7 @@ use App\Models\SubscriptionBulkChange;
 use App\Models\SubscriptionBulkChangeItem;
 use App\Models\User;
 use App\Notifications\ActionCompleted;
-use App\Support\Money;
+use App\Support\Ledger\Money;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

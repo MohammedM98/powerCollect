@@ -12,7 +12,7 @@ use App\Models\CashBoxSync;
 use App\Models\ClosingSetting;
 use App\Models\CollectorDebt;
 use App\Models\Subscription;
-use App\Support\BranchClosingWorkflow;
+use App\Support\Closing\BranchClosingWorkflow;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

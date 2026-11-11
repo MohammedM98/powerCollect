@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Branch;
-use App\Support\BranchViewContext;
+use App\Support\Branches\BranchViewContext;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;

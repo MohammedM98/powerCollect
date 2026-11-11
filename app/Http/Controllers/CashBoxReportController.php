@@ -9,7 +9,7 @@ use App\Models\CashBox;
 use App\Models\CashBoxPayment;
 use App\Models\Closing;
 use App\Models\SubscriptionTransaction;
-use App\Support\BranchClosingAccess;
+use App\Support\Closing\BranchClosingAccess;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Inertia\Inertia;

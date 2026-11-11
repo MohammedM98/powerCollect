@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Support\BrandPalette;
+use App\Support\Branding\BrandPalette;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 

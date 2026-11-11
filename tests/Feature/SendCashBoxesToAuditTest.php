@@ -9,7 +9,7 @@ use App\Models\CashBoxPayment;
 use App\Models\Closing;
 use App\Models\Subscription;
 use App\Models\User;
-use App\Support\BranchClosingWorkflow;
+use App\Support\Closing\BranchClosingWorkflow;
 use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;

@@ -5,7 +5,7 @@ namespace App\Http\Concerns;
 use App\Enums\DisconnectionItemStatus;
 use App\Models\DisconnectionList;
 use App\Models\DisconnectionListItem;
-use App\Support\DailySeries;
+use App\Support\Reports\DailySeries;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 

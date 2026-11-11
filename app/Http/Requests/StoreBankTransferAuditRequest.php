@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Support\BankTransferAuditing;
+use App\Support\Closing\BankTransferAuditing;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 

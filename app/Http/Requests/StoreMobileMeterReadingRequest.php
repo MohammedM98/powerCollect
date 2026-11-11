@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Models\MeterReading;
 use App\Models\ReadingAssignment;
 use App\Models\Subscription;
-use App\Support\DailySeries;
+use App\Support\Reports\DailySeries;
 use Illuminate\Validation\Validator;
 
 class StoreMobileMeterReadingRequest extends StoreMeterReadingRequest

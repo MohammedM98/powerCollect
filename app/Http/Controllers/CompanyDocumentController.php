@@ -8,7 +8,7 @@ use App\Models\CompanyDocument;
 use App\Models\CompanyFormTemplate;
 use App\Models\Subscription;
 use App\Models\User;
-use App\Support\CompanyForms;
+use App\Support\Branding\CompanyForms;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;

@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\DiscountMethod;
 use App\Models\Subscription;
 use App\Support\Ledger\LedgerAmounts;
-use App\Support\Money;
+use App\Support\Ledger\Money;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

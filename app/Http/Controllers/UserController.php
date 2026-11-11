@@ -13,7 +13,7 @@ use App\Models\Branch;
 use App\Models\User;
 use App\Models\UserType;
 use App\Notifications\ActionCompleted;
-use App\Support\BranchDomainContext;
+use App\Support\Branches\BranchDomainContext;
 use App\Support\UserDeviceAccess;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;

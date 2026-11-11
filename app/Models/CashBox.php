@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\CashBoxType;
-use App\Support\BranchClosingWorkflow;
+use App\Support\Closing\BranchClosingWorkflow;
 use Carbon\CarbonImmutable;
 use Database\Factories\CashBoxFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;

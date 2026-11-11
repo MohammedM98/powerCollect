@@ -6,7 +6,7 @@ use App\Enums\ClosingStatus;
 use App\Enums\ClosingType;
 use App\Models\Branch;
 use App\Models\Closing;
-use App\Support\ClosingPeriods;
+use App\Support\Closing\ClosingPeriods;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

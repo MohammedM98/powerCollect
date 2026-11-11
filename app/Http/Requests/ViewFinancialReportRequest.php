@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Support\FinancialReportAccess;
+use App\Support\Reports\FinancialReportAccess;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rule;
 

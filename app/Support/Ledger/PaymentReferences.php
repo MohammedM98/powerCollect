@@ -5,7 +5,7 @@ namespace App\Support\Ledger;
 use App\Models\Bank;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\BranchDomainContext;
+use App\Support\Branches\BranchDomainContext;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;

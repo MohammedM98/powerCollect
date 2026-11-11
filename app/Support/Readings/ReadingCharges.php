@@ -5,7 +5,7 @@ namespace App\Support\Readings;
 use App\Enums\DiscountMethod;
 use App\Models\MeterReading;
 use App\Models\Subscription;
-use App\Support\Money;
+use App\Support\Ledger\Money;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 

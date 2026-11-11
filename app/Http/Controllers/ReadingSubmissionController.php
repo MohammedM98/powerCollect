@@ -8,7 +8,7 @@ use App\Http\Requests\ReviewReadingSubmissionRequest;
 use App\Models\ReadingCycle;
 use App\Models\ReadingSubmission;
 use App\Notifications\ActionCompleted;
-use App\Support\FieldReadingSync;
+use App\Support\Readings\FieldReadingSync;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

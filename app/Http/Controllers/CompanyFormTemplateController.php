@@ -6,7 +6,7 @@ use App\Http\Requests\ListCompanyFormTemplatesRequest;
 use App\Http\Requests\SaveCompanyFormTemplateRequest;
 use App\Models\CompanyDocument;
 use App\Models\CompanyFormTemplate;
-use App\Support\CompanyForms;
+use App\Support\Branding\CompanyForms;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

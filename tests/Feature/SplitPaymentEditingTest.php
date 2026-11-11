@@ -10,7 +10,7 @@ use App\Models\SplitPayment;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\BranchClosingWorkflow;
+use App\Support\Closing\BranchClosingWorkflow;
 use App\Support\Ledger\PaymentReferences;
 use App\Support\Ledger\RecordPayment;
 use App\Support\Ledger\TransactionActions;

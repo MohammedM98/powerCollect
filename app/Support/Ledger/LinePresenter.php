@@ -9,8 +9,7 @@ use App\Enums\PaymentMethod;
 use App\Models\Bank;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\DailySeries;
-use App\Support\Money;
+use App\Support\Reports\DailySeries;
 use Carbon\CarbonImmutable;
 use Closure;
 

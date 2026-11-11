@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SwitchBranchViewRequest;
-use App\Support\BranchViewContext;
+use App\Support\Branches\BranchViewContext;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 

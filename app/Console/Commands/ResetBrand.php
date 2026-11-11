@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Support\Brand;
+use App\Support\Branding\Brand;
 use Illuminate\Console\Command;
 
 class ResetBrand extends Command

@@ -17,7 +17,7 @@ class BranchScopeEscapeTest extends TestCase
         $offenders = [];
 
         foreach (Finder::create()->files()->in(app_path())->name('*.php') as $file) {
-            if ($file->getRelativePathname() === 'Support/BranchDomainScope.php') {
+            if ($file->getRelativePathname() === 'Support/Branches/BranchDomainScope.php') {
                 continue;
             }
 

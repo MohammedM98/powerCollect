@@ -8,7 +8,7 @@ use App\Http\Requests\ApproveReadingAssignmentRequest;
 use App\Models\ReadingCycle;
 use App\Models\User;
 use App\Notifications\ActionCompleted;
-use App\Support\ReadingAllocation;
+use App\Support\Readings\ReadingAllocation;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 

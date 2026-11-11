@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\ReadingEntryMode;
 use App\Models\Branch;
 use App\Models\ReadingEntrySetting;
-use App\Support\BranchDomainContext;
+use App\Support\Branches\BranchDomainContext;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\ClosingSetting;
-use App\Support\BranchClosingWorkflow;
+use App\Support\Closing\BranchClosingWorkflow;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;

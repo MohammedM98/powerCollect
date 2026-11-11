@@ -6,7 +6,7 @@ use App\Enums\MessageKind;
 use App\Enums\MeterReadingStatus;
 use App\Models\Subscription;
 use App\Models\User;
-use App\Support\Money;
+use App\Support\Ledger\Money;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 

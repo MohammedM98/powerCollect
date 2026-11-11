@@ -12,7 +12,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Notifications\BranchClosingNotification;
-use App\Support\BranchClosingWorkflow;
+use App\Support\Closing\BranchClosingWorkflow;
 use App\Support\Ledger\LineHistory;
 use App\Support\Ledger\LinePresenter;
 use App\Support\Ledger\RecordClearing;
