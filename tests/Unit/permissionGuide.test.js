@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { sectionModel } from '../../resources/js/lib/permissions.js';
-import { permissionGuideEntries, permissionGuideHtml, CATEGORIES } from '../../resources/js/lib/permissionGuide.js';
+import { permissionGuideEntries, permissionGuideHtml, CATEGORIES, matrixGroups } from '../../resources/js/lib/permissionGuide.js';
 
 test('the guide uses canonical permissions and identifies financial audit as independent from payment entry', () => {
     const payments = sectionModel({ key: 'collections', label: 'الدفعات', actions: [{ action: 'amend', permission: { id: 1, key: 'collections.amend', label: 'تعديل بيانات الدفعة', centralOnly: false } }] });
@@ -25,4 +25,21 @@ test('printable guides escape all employee and permission text and preserve the 
     assert.match(html, /صلاحية محفوظة/);
     assert.match(html, /@page\{size:A4/);
     assert.doesNotMatch(html, /<script|<img|https?:\/\//);
+});
+
+test('the editor grid groups matching sections under the guide, with unlisted sections last', () => {
+    const payments = sectionModel({ key: 'collections', label: 'الدفعات', actions: [{ action: 'create', permission: { id: 1, key: 'collections.create', label: 'تسجيل دفعة' } }] });
+    const audit = sectionModel({ key: 'financial_audit', label: 'التدقيق المالي', actions: [{ action: 'audit', permission: { id: 2, key: 'closings.audit', label: 'التدقيق المالي' } }] });
+    const extra = sectionModel({ key: 'unlisted_area', label: 'قسم جديد', actions: [{ action: 'view', permission: { id: 3, key: 'unlisted.view', label: 'عرض' } }] });
+
+    const all = matrixGroups([payments, audit, extra], [1], [1], '', 'all');
+    assert.deepEqual(all.groups.map((group) => [group.key, group.sections.map((section) => section.key)]), [
+        ['finance', ['collections']],
+        ['audit', ['financial_audit']],
+        ['other', ['unlisted_area']],
+    ]);
+
+    assert.deepEqual(matrixGroups([payments, audit, extra], [1, 3], [1], '', 'changed').matching.map((section) => section.key), ['unlisted_area']);
+    assert.deepEqual(matrixGroups([payments, audit, extra], [1], [1], '', 'changed', true).matching.map((section) => section.key), ['financial_audit']);
+    assert.deepEqual(matrixGroups([payments, audit, extra], [1], [1], 'الدفعات', 'all').matching.map((section) => section.key), ['collections']);
 });

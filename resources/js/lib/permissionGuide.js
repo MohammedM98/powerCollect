@@ -1,4 +1,4 @@
-import { sectionExtras } from './permissions.js';
+import { filterSections, sectionExtras } from './permissions.js';
 export const CATEGORIES = [
     { key:'all', label:'كل الأقسام', icon:'grid', sections:[] },
     { key:'basic', label:'البيانات الأساسية', icon:'users', sections:['subscriptions','meter_boxes','circuit_breakers','tariffs'] },
@@ -92,4 +92,31 @@ export function permissionGuideHtml({ title, entries, auditActions = [], scopeNo
     const audit = auditActions.length ? '<section><h2>إجراءات التدقيق المالي</h2><p>يحدد السوبر أدمن فروع التدقيق والإجراءات المسموحة. اعتماد الفترة يتطلب اعتماد الصناديق.</p>' + auditActions.map(action => '<article><h3>' + escapeHtml(action.label) + '</h3><p>' + escapeHtml(action.hint) + '</p></article>').join('') + '</section>' : '';
     const locked = lockedPermissions.length ? '<section><h2>صلاحيات محفوظة خارج نطاق إدارة محرّر هذا الدليل</h2><p>' + lockedPermissions.map(escapeHtml).join('، ') + '</p></section>' : '';
     return '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + escapeHtml(title) + '</title><style>body{max-width:960px;margin:24px auto;padding:24px;font-family:Tahoma,sans-serif;color:#17202a;background:white;line-height:1.9}header{border-bottom:2px solid #a51d26;padding-bottom:18px}h1{font-size:25px}h2{font-size:20px;padding:10px 14px;background:#eff1f4;break-after:avoid;margin-top:28px}h3{font-size:16px;margin:0}article{padding:15px 0;border-bottom:1px solid #dfe2e6;break-inside:avoid}p{margin:7px 0;font-size:15px}.muted,.delegation{color:#596373;font-size:13px}.note{background:#f6f7f9;padding:12px 15px}.no-print{font-size:13px;color:#626c7b}@page{size:A4;margin:16mm 14mm}@media print{body{margin:0;padding:0;max-width:none}.no-print{display:none}h1{font-size:20pt}h2{font-size:14pt}h3{font-size:12pt}p{font-size:10.5pt}.muted,.delegation{font-size:10pt}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><p class="no-print">استخدم أمر الطباعة في المتصفح للطباعة أو حفظ PDF. هذا الدليل لا يغيّر صلاحيات أي حساب.</p><header><h1>' + escapeHtml(title) + '</h1><p>' + escapeHtml(scopeNote) + '</p></header><p class="note">منح صلاحية لا يلغي شروط الفرع أو حالة الحركة أو موعد العمل. المسمى الوظيفي لا يمنح صلاحيات. مدير الفرع يفوض موظفي فرعه ضمن الصلاحيات التي يملكها والمسموح بتفويضها.</p>' + items + audit + locked + '</body></html>';
+}
+
+/**
+ * The editor grid's sections for a search and a filter, and the same
+ * sections under the guide's groups (the sections no group lists come last,
+ * under «أقسام أخرى»). Showing only the changed ones keeps the audit section
+ * whenever its audit access changed, even with no permission changed in it.
+ */
+export function matrixGroups(sections, selected, saved, query, mode, auditChanged = false) {
+    const matching = filterSections(sections, selected, saved, query, mode);
+
+    if (mode === 'changed' && auditChanged && !matching.some((section) => section.key === 'financial_audit')) {
+        matching.push(...filterSections(sections.filter((section) => section.key === 'financial_audit'), selected, saved, query, 'all'));
+    }
+
+    const listed = new Set(CATEGORIES.flatMap((category) => category.sections));
+    const groups = [
+        ...CATEGORIES.filter((category) => category.key !== 'all').map((category) => ({
+            key: category.key,
+            label: category.label,
+            icon: category.icon,
+            sections: category.sections.map((key) => matching.find((section) => section.key === key)).filter(Boolean),
+        })),
+        { key: 'other', label: 'أقسام أخرى', icon: 'layers', sections: matching.filter((section) => !listed.has(section.key)) },
+    ].filter((group) => group.sections.length > 0);
+
+    return { matching, groups };
 }
