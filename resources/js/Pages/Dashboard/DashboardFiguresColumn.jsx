@@ -6,7 +6,7 @@ import Panel from '@/Components/Panel';
 import SplitBar from '@/Components/SplitBar';
 import StatStrip, { ChangePill, Spark, Stat } from '@/Components/StatStrip';
 import { formatMoney, formatNumber, formatShortDay, percentOf } from '@/lib/format';
-import { TileLink } from '../DashboardParts';
+import { TileLink } from './DashboardParts';
 
 /** The home page's main column: collections, subscriptions, boxes, readings and disconnections for the period. */
 export default function DashboardFiguresColumn({
