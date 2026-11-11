@@ -5,17 +5,28 @@ namespace App\Support\Disconnections;
 use App\Enums\DisconnectionEventType;
 use App\Enums\DisconnectionItemStatus;
 use App\Enums\DisconnectionReason;
+use App\Enums\MessageChannel;
+use App\Enums\MessageKind;
+use App\Enums\PermissionKey;
+use App\Http\Controllers\DisconnectionListController;
 use App\Models\Branch;
 use App\Models\DisconnectionEvent;
 use App\Models\DisconnectionList;
 use App\Models\DisconnectionListItem;
+use App\Models\MessageTemplate;
 use App\Models\MeterBox;
 use App\Models\SubArea;
 use App\Models\User;
+use App\Support\Branches\BranchScope;
+use App\Support\Messaging\MessageComposer;
+use App\Support\Messaging\SmsGateway;
 use App\Support\Queries\DataTableFilters;
+use App\Support\Queries\DisconnectionItemsQuery;
 use App\Support\Reports\DailySeries;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 
 /**
  * Builds the disconnection list pages: candidates, lists and their items.
@@ -150,5 +161,121 @@ class DisconnectionListPage
                 ] : null,
             ])->all(),
         ];
+    }
+
+    public static function index(Request $request): InertiaResponse
+    {
+
+        $actor = $request->user();
+        $today = DailySeries::today()->toDateString();
+        $scheduled = fn (Builder $items) => $items->where('status', DisconnectionItemStatus::Scheduled);
+
+        $query = DisconnectionList::query()
+            ->visibleTo($actor)
+            ->with(['branch', 'createdBy', 'closedBy'])
+            ->withCount([
+                'items',
+                'items as scheduled_count' => $scheduled,
+                'items as overdue_count' => fn (Builder $items) => $scheduled($items)->whereDate('scheduled_for', '<', $today),
+                'items as disconnected_count' => fn (Builder $items) => $items->where('status', DisconnectionItemStatus::Disconnected),
+                'items as removed_count' => fn (Builder $items) => $items->where('status', DisconnectionItemStatus::Removed),
+            ])
+            ->withSum('items as fees_total', 'fee_amount')
+            ->withMin(['items as next_date' => $scheduled], 'scheduled_for');
+        DataTableFilters::applyDataTableFilters($query, $request, ['title', 'notes'], ['created_at', 'title'], 'created_at', 'desc');
+        DataTableFilters::applyDataTableFilterSelects($query, $request, ['branch_id']);
+
+        $state = ((array) $request->input('filter', []))['state'] ?? null;
+        $query->when($state === 'open', fn (Builder $lists) => $lists->whereNull('closed_at'))
+            ->when($state === 'closed', fn (Builder $lists) => $lists->whereNotNull('closed_at'));
+
+        $lists = $query->paginate(DataTableFilters::dataTablePerPage($request))
+            ->withQueryString()
+            ->through(fn (DisconnectionList $list) => [
+                'id' => $list->id,
+                'title' => $list->title,
+                'notes' => $list->notes,
+                'branchName' => $list->branch->name,
+                'createdBy' => $list->createdBy?->name,
+                'createdAt' => $list->created_at->toIso8601String(),
+                'isClosed' => $list->isClosed(),
+                'closedAt' => $list->closed_at?->toIso8601String(),
+                'itemsCount' => (int) $list->items_count,
+                'scheduledCount' => (int) $list->scheduled_count,
+                'overdueCount' => (int) $list->overdue_count,
+                'disconnectedCount' => (int) $list->disconnected_count,
+                'removedCount' => (int) $list->removed_count,
+                'feesTotal' => number_format((float) $list->fees_total, 2, '.', ''),
+                'nextDate' => $list->next_date ? substr((string) $list->next_date, 0, 10) : null,
+            ]);
+
+        $filterOptions = [
+            DataTableFilters::filterGroup('state', 'الحالة', [['value' => 'open', 'label' => 'مفتوحة'], ['value' => 'closed', 'label' => 'مغلقة']]),
+        ];
+
+        if ($actor->isSuperAdmin()) {
+            $filterOptions[] = DataTableFilters::branchFilterGroup();
+        }
+
+        // The Super Admin narrows the page to one branch in the banner: the figures above the lists follow it.
+        $branchId = $actor->isSuperAdmin() && is_numeric($request->input('filter.branch_id')) ? (int) $request->input('filter.branch_id') : null;
+
+        return Inertia::render('Disconnections/Index', [
+            'lists' => $lists,
+            'summary' => DisconnectionListPage::summary($actor, $branchId),
+            'branchScope' => fn () => BranchScope::shownTo($actor) ? BranchScope::forFilter($actor, $branchId) : null,
+            'canCreate' => $actor->can('create', DisconnectionList::class),
+            'branchOptions' => $actor->isSuperAdmin() ? DataTableFilters::modelOptions(Branch::orderBy('name')->get()) : [],
+            'filters' => DataTableFilters::dataTableState($request, 'created_at', 'desc'),
+            'filterOptions' => $filterOptions,
+        ]);
+    }
+
+    public static function show(Request $request, DisconnectionList $disconnectionList): InertiaResponse
+    {
+
+        $actor = $request->user();
+        $list = $disconnectionList->load(['branch', 'createdBy', 'closedBy']);
+        $canWarn = $actor->can('warn', $list);
+
+        $items = DisconnectionItemsQuery::filteredDisconnectionItems($list, $request)
+            ->with(DisconnectionItemPresenter::disconnectionItemRelations())
+            ->paginate(DataTableFilters::dataTablePerPage($request, 25))
+            ->withQueryString()
+            ->through(fn (DisconnectionListItem $item) => DisconnectionItemPresenter::disconnectionItemRow($item, $canWarn));
+
+        return Inertia::render('Disconnections/Show', [
+            'list' => [
+                'id' => $list->id,
+                'title' => $list->title,
+                'notes' => $list->notes,
+                'branchName' => $list->branch->name,
+                'createdBy' => $list->createdBy?->name,
+                'createdAt' => $list->created_at->toIso8601String(),
+                'isClosed' => $list->isClosed(),
+                'closedAt' => $list->closed_at?->toIso8601String(),
+                'closedBy' => $list->closedBy?->name,
+            ],
+            'items' => $items,
+            'summary' => DisconnectionListPage::listSummary($list),
+            'abilities' => [
+                'manage' => $actor->can('manage', $list) && ! $list->isClosed(),
+                'manageList' => $actor->can('manage', $list),
+                'warn' => $canWarn && ! $list->isClosed(),
+                'execute' => $actor->can('execute', $list) && ! $list->isClosed(),
+                'changeFee' => $actor->hasPermission(PermissionKey::ChangeDisconnectionFee),
+            ],
+            'reasonOptions' => DisconnectionReason::options(),
+            'channelOptions' => MessageChannel::options(),
+            'smsDeliversMessages' => app(SmsGateway::class)->deliversMessages(),
+            'warningTemplates' => MessageTemplate::query()->where('kind', MessageKind::DisconnectionWarning)->orderBy('name')->get(['id', 'name', 'body']),
+            'defaultWarning' => DisconnectionListController::DEFAULT_WARNING,
+            'placeholders' => MessageComposer::placeholdersFor(MessageKind::DisconnectionWarning),
+            'today' => DailySeries::today()->toDateString(),
+            'usualFee' => DisconnectionListItem::usualFee(),
+            'filters' => DataTableFilters::dataTableState($request, 'scheduled_for', 'asc', 25),
+            'filterOptions' => DisconnectionListPage::itemFilterOptions($actor, $request),
+            'history' => Inertia::optional(fn () => DisconnectionListPage::history($list, $request->integer('history'))),
+        ]);
     }
 }

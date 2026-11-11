@@ -7,34 +7,24 @@ use App\Http\Requests\ApproveMeterReadingsRequest;
 use App\Http\Requests\ListMeterReadingsRequest;
 use App\Http\Requests\StoreMeterReadingRequest;
 use App\Http\Requests\UpdateMeterReadingRequest;
-use App\Models\Branch;
-use App\Models\MessageBatch;
 use App\Models\MeterReading;
-use App\Models\ReadingEntrySetting;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Notifications\ActionCompleted;
 use App\Notifications\ReadingNeedsReapproval;
-use App\Support\Branches\BranchDomainContext;
-use App\Support\Branches\BranchScope;
-use App\Support\Queries\DataTableFilters;
 use App\Support\Queries\ReadingSheetQuery;
 use App\Support\Readings\AdjustLastReading;
 use App\Support\Readings\ApproveCorrectedReading;
 use App\Support\Readings\ApproveReading;
 use App\Support\Readings\MeterReadingPage;
-use App\Support\Readings\PrintSelection;
 use App\Support\Readings\ReadingCharges;
 use App\Support\Readings\ReadingConsumption;
-use App\Support\Readings\ReadingPrintData;
 use App\Support\Readings\ReadingWeeks;
 use App\Support\Readings\RepriceReading;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
-use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
 class MeterReadingController extends Controller
@@ -52,116 +42,7 @@ class MeterReadingController extends Controller
      */
     public function index(ListMeterReadingsRequest $request): InertiaResponse
     {
-
-        $actor = auth()->user();
-        if ($actor->isSuperAdmin() && BranchDomainContext::id() === null && ! $request->filled('filter.branch_id')) {
-            $branches = Branch::query()->orderBy('name')->get(['id', 'name']);
-            $schedules = $branches->map(fn (Branch $branch): string => json_encode([
-                ReadingEntrySetting::forBranch($branch->id)->reading_day,
-                ReadingEntrySetting::forBranch($branch->id)->reading_day_history,
-            ]))->unique();
-            if ($schedules->count() > 1) {
-                return Inertia::render('MeterReadings/Branches', [
-                    'branchScope' => BranchScope::describe($branches),
-                    'branches' => $branches->map(function (Branch $branch): array {
-                        $week = ReadingWeeks::latestEndedWeekStart($branch->id);
-
-                        return [
-                            'id' => $branch->id, 'name' => $branch->name,
-                            'weekStart' => $week->toDateString(),
-                            'weekEnd' => ReadingWeeks::weekEndFor($week, $branch->id)->toDateString(),
-                            'url' => route('meter-readings.index', ['filter' => ['branch_id' => $branch->id]]),
-                        ];
-                    })->values(),
-                ]);
-            }
-        }
-        $weekBranchId = ReadingSheetQuery::sheetBranchId($request, $actor);
-        $canBrowseWeeks = $actor->can('browseWeeks', MeterReading::class);
-        $weekStart = ReadingSheetQuery::selectedWeek($request, $weekBranchId, $canBrowseWeeks);
-        $week = $weekStart->toDateString();
-
-        $query = ReadingSheetQuery::subscriptionsInScope($actor, $request)
-            ->with([
-                'tariff',
-                'circuitBreaker',
-                'standingDiscount',
-                'meterBox.subArea',
-                'meterReadings' => fn ($q) => $q->chaperone()->withLaterReadingsCount()->whereDate('week_start', '<=', $week)->orderByDesc('week_start')->limit(2)
-                    ->with(['recordedBy:id,name', 'approvedBy:id,name', 'chargeLine:id,meter_reading_id']),
-            ])
-            ->withExists(['meterReadings as has_later_week' => fn ($q) => $q->whereDate('week_start', '>', $week)]);
-        if ($request->boolean('print')) {
-            $query->with('branch:id,name');
-            $selected = PrintSelection::ids($request, '/meter-readings');
-            if ($selected !== null) {
-                $query->whereHas('meterReadings', fn (Builder $readings): Builder => $readings->whereKey($selected)->whereDate('week_start', $week));
-            }
-        }
-
-        ReadingSheetQuery::withSheetColumns($query, $week);
-        ReadingSheetQuery::applyMeterBoxSort($query, $request);
-        DataTableFilters::applyDataTableFilters($query, $request, ['full_name', 'subscription_name', 'account_number', 'phone', 'subscription_phone'], self::SORTABLE, 'full_name');
-        $query->orderBy('subscriptions.id');
-        DataTableFilters::applyDataTableFilterSelects($query, $request, ['branch_id', 'meter_box_id', 'tariff_id']);
-        DataTableFilters::applyMeterBoxNameFilter($query, $request);
-        ReadingSheetQuery::applySheetFilters($query, $request, $week, includeStatus: false);
-        $summaryQuery = clone $query;
-        ReadingSheetQuery::applySheetStatusFilters($query, $request, $week);
-
-        $enteredThisWeek = fn (Builder $q) => $q->whereDate('week_start', $week);
-
-        $rows = fn () => $query->paginate(DataTableFilters::dataTablePerPage($request, 25))
-            ->withQueryString()
-            ->through(fn (Subscription $subscription) => MeterReadingPage::sheetRow($subscription, $weekStart, $actor, $request->boolean('print')));
-
-        if ($request->boolean('print')) {
-            $weekEnd = ReadingWeeks::weekEndFor($weekStart, $weekBranchId);
-            $context = [
-                'templatePage' => '/meter-readings',
-                'title' => 'القراءات الأسبوعية',
-                'branchName' => $actor->workBranch()?->name ?? 'كل الفروع',
-                'readingDate' => $weekEnd->toDateString(),
-                'readingDayName' => $weekEnd->locale('ar')->dayName,
-                'weekStart' => $week,
-                'weekEnd' => $weekEnd->toDateString(),
-                'sourceUrl' => route('meter-readings.index'),
-            ];
-
-            return Inertia::render('Print/ReadingReport', ['printData' => fn (): array => ReadingPrintData::sheet($rows(), $context, MeterReadingPage::seesWhoRecorded($actor))]);
-        }
-
-        $scope = ReadingSheetQuery::subscriptionsInScope($actor, $request);
-        $canApprove = $actor->can('approveAny', MeterReading::class);
-
-        return Inertia::render('MeterReadings/Index', [
-            'rows' => $rows,
-            'week' => $week,
-            'weekEnd' => ReadingWeeks::weekEndFor($weekStart, $weekBranchId)->toDateString(),
-            // The weeks back to the first reading (at least fourteen months), for the year, month and week pickers;
-            // only the latest one for someone who may not browse earlier weeks.
-            'weekOptions' => fn () => ReadingWeeks::recentWeekOptions($weekBranchId, $canBrowseWeeks ? ReadingSheetQuery::weeksToOffer($actor, $weekBranchId) : 1),
-            'summary' => fn () => [
-                'total' => (clone $scope)->count(),
-                'entered' => (clone $scope)->whereHas('meterReadings', $enteredThisWeek)->count(),
-                'amountDue' => number_format((float) MeterReading::query()
-                    ->whereIn('subscription_id', (clone $scope)->select('id'))
-                    ->whereDate('week_start', $week)
-                    ->sum('amount_due'), 2, '.', ''),
-            ],
-            'canRecord' => $actor->can('create', MeterReading::class),
-            'canApprove' => $canApprove,
-            'canSendReadingMessages' => $canApprove && $actor->can('create', MessageBatch::class),
-            'messageBranchId' => $weekBranchId,
-            'seesWhoRecorded' => MeterReadingPage::seesWhoRecorded($actor),
-            'statusSummary' => fn () => MeterReadingPage::statusSummary($summaryQuery, $week),
-            'pendingApproval' => fn () => $canApprove ? MeterReadingPage::pendingApprovalSummary($request, $actor, $week) : null,
-            // The actor could record now, just not in this earlier week.
-            'weekIsViewOnly' => $actor->can('create', MeterReading::class) && ! $actor->can('create', [MeterReading::class, $weekStart, $weekBranchId]),
-            'entryWindow' => MeterReadingPage::entryWindow($actor),
-            'filters' => DataTableFilters::dataTableState($request, 'full_name', 'asc', 25),
-            'filterOptions' => fn () => MeterReadingPage::filterOptions($actor, $request),
-        ]);
+        return MeterReadingPage::index($request);
     }
 
     /**

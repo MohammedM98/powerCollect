@@ -6,16 +6,24 @@ use App\Enums\MessageChannel;
 use App\Enums\MessageKind;
 use App\Enums\MessageStatus;
 use App\Enums\SubscriptionStatus;
+use App\Http\Requests\StoreMessageBatchRequest;
 use App\Jobs\SendSubscriptionMessage;
 use App\Models\Branch;
 use App\Models\MessageBatch;
 use App\Models\MessageTemplate;
+use App\Models\SmsSetting;
 use App\Models\Subscription;
 use App\Models\SubscriptionMessage;
 use App\Models\User;
+use App\Notifications\ActionCompleted;
+use App\Support\Queries\DataTableFilters;
 use App\Support\Readings\ReadingWeeks;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 
 /**
  * Builds the messages pages: recipients for each kind of message and the batches sent.
@@ -146,5 +154,99 @@ class MessagePage
             ])
             ->values()
             ->all();
+    }
+
+    public static function store(StoreMessageBatchRequest $request): RedirectResponse
+    {
+        $actor = $request->user();
+        $kind = MessageKind::from($request->validated('kind'));
+        $channel = MessageChannel::from($request->validated('channel'));
+        $body = $request->validated('body');
+
+        $recipients = app(MessageComposer::class)
+            ->recipients($kind, $actor, [...MessagePage::criteria($request), 'subscription_ids' => $request->validated('subscription_ids')])
+            ->filter(fn (Subscription $subscription): bool => filled($subscription->contactPhone()));
+
+        if ($recipients->isEmpty()) {
+            return back()->withErrors(['subscription_ids' => 'لا يوجد بين المختارين من لديه رقم هاتف ويطابق شروط الرسالة.']);
+        }
+
+        $branchIds = $recipients->pluck('branch_id')->unique();
+
+        $batch = DB::transaction(function () use ($actor, $kind, $channel, $body, $request, $recipients, $branchIds): MessageBatch {
+            $batch = MessageBatch::create([
+                'branch_id' => $actor->isSuperAdmin() ? ($branchIds->count() === 1 ? $branchIds->first() : null) : $actor->workBranchId(),
+                'kind' => $kind,
+                'channel' => $channel,
+                'body' => $body,
+                'week_start' => $kind === MessageKind::WeeklyReading ? $request->validated('week_start') : null,
+                'created_by' => $actor->id,
+            ]);
+
+            foreach ($recipients as $subscription) {
+                $batch->messages()->create([
+                    'subscription_id' => $subscription->id,
+                    'branch_id' => $subscription->branch_id,
+                    'phone' => $subscription->contactPhone(),
+                    'body' => app(MessageComposer::class)->render($body, app(MessageComposer::class)->variables($subscription, $kind)),
+                    'status' => MessageStatus::Pending,
+                ]);
+            }
+
+            return $batch;
+        });
+
+        if ($channel === MessageChannel::Sms) {
+            MessagePage::dispatchPending($batch);
+        }
+
+        $actor->notify(new ActionCompleted('messages-created', __($kind->label()).' — '.$recipients->count()));
+
+        if ($channel === MessageChannel::Sms && $request->boolean('stay_on_page')) {
+            return back()->with('status', 'messages-queued');
+        }
+
+        return redirect()
+            ->route('messages.show', $batch)
+            ->with('status', $channel === MessageChannel::Sms ? 'messages-queued' : 'messages-ready');
+    }
+
+    public static function show(Request $request, MessageBatch $batch): InertiaResponse
+    {
+
+        $actor = $request->user();
+        $batch = MessageBatch::query()->withStatusCounts()->with(['branch', 'createdBy'])->findOrFail($batch->id);
+
+        $query = $batch->messages()->getQuery()->with(['subscription', 'sentBy']);
+        DataTableFilters::applyDataTableFilters($query, $request, ['phone', 'body'], ['id', 'status', 'sent_at'], 'id');
+        DataTableFilters::applyDataTableFilterSelects($query, $request, ['status']);
+
+        $countryCode = SmsSetting::countryCode();
+
+        $messages = $query->paginate(DataTableFilters::dataTablePerPage($request, 25))
+            ->withQueryString()
+            ->through(fn (SubscriptionMessage $message) => [
+                'id' => $message->id,
+                'subscriptionName' => $message->subscription?->displayName(),
+                'accountNumber' => $message->subscription?->account_number,
+                'phone' => $message->phone,
+                'body' => $message->body,
+                'status' => $message->status->value,
+                'statusLabel' => __($message->status->label()),
+                'error' => $message->error,
+                'sentAt' => $message->sent_at?->toIso8601String(),
+                'sentBy' => $message->sentBy?->name,
+                'whatsAppLink' => $batch->channel === MessageChannel::WhatsApp
+                    ? PhoneNumber::whatsAppLink($message->phone, $message->body, $countryCode)
+                    : null,
+            ]);
+
+        return Inertia::render('Messages/Show', [
+            'batch' => MessagePage::batchSummary($batch) + ['body' => $batch->body],
+            'messages' => $messages,
+            'canUpdate' => $actor->can('update', $batch),
+            'filters' => DataTableFilters::dataTableState($request, 'id', 'asc', 25),
+            'filterOptions' => [DataTableFilters::filterGroup('status', 'الحالة', MessageStatus::options())],
+        ]);
     }
 }
