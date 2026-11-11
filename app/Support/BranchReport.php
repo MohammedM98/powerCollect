@@ -11,6 +11,7 @@ use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\LinePresenter;
 use Carbon\CarbonImmutable;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
@@ -106,7 +107,7 @@ class BranchReport
      */
     public function flow(): array
     {
-        $labels = SubscriptionTransaction::typeLabels();
+        $labels = LinePresenter::typeLabels();
         $opening = $this->openingBalance();
         $charges = [];
         $credits = [];

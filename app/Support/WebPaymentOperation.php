@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -22,7 +23,7 @@ class WebPaymentOperation
                     return $existing;
                 }
 
-                $transaction = SubscriptionTransaction::recordPayment($subscription, $actor, $payment);
+                $transaction = RecordPayment::handle($subscription, $actor, $payment);
                 DB::table('web_payment_operations')->insert([
                     'token' => strtolower($payment['payment_token']),
                     'fingerprint' => $this->fingerprint($subscription, $actor, $payment),

@@ -12,6 +12,9 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\BranchClosingWorkflow;
+use App\Support\Ledger\RecordClearing;
+use App\Support\Ledger\RecordDiscount;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -79,7 +82,7 @@ class FinancialFlowSeeder extends Seeder
                 ]);
 
                 $isTransfer = $index % 2 === 1;
-                $payment = SubscriptionTransaction::recordPayment($subscription, $collector, [
+                $payment = RecordPayment::handle($subscription, $collector, [
                     'amount' => match ($index) {
                         2 => 20, 3 => 10, 19 => 550, default => 60 + $index * 5
                     },
@@ -99,12 +102,12 @@ class FinancialFlowSeeder extends Seeder
                 $payment->update(['source_key' => self::SOURCE_PREFIX.'payment:'.$index]);
 
                 if (in_array($index, [0, 7, 14], true)) {
-                    $clearing = SubscriptionTransaction::recordClearing($subscription, $collector, 25, 'خدمة صيانة تجريبية مقابل مقاصة');
+                    $clearing = RecordClearing::handle($subscription, $collector, 25, 'خدمة صيانة تجريبية مقابل مقاصة');
                     $clearing->update(['source_key' => self::SOURCE_PREFIX.'clearing:'.$index]);
                 }
 
                 if ($index < 2) {
-                    $discount = SubscriptionTransaction::recordDiscount($subscription, $manager, DiscountMethod::Shekel, 10, 'خصم تجريبي');
+                    $discount = RecordDiscount::handle($subscription, $manager, DiscountMethod::Shekel, 10, 'خصم تجريبي');
                     $discount->update(['source_key' => self::SOURCE_PREFIX.'discount:'.$index]);
                 }
 

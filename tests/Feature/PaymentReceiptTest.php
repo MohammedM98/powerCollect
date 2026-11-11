@@ -8,6 +8,8 @@ use App\Models\Branch;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -42,7 +44,7 @@ class PaymentReceiptTest extends TestCase
 
     public function test_the_receipt_shows_the_voucher_the_payer_the_amount_and_the_balance_it_left(): void
     {
-        SubscriptionTransaction::recordCharge($this->subscription, $this->branchAdmin, ChargeType::Penalty, '100', null);
+        RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '100', null);
         $payment = $this->recordPayment(['amount' => '20', 'currency' => 'USD', 'exchange_rate' => '3.7', 'cash_box' => '3', 'manual_voucher_number' => '4471']);
 
         $this->actingAs($this->branchAdmin)
@@ -95,9 +97,9 @@ class PaymentReceiptTest extends TestCase
 
     public function test_only_a_payment_of_the_same_subscription_has_a_receipt(): void
     {
-        $charge = SubscriptionTransaction::recordCharge($this->subscription, $this->branchAdmin, ChargeType::Penalty, '100', null);
+        $charge = RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '100', null);
         $otherSubscription = Subscription::factory()->create(['branch_id' => $this->branch->id]);
-        $otherPayment = SubscriptionTransaction::recordPayment($otherSubscription, $this->branchAdmin, ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $otherPayment = RecordPayment::handle($otherSubscription, $this->branchAdmin, ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $this->actingAs($this->branchAdmin)->get(route('subscriptions.payments.receipt', [$this->subscription, $charge]))->assertNotFound();
         $this->actingAs($this->branchAdmin)->get(route('subscriptions.payments.receipt', [$this->subscription, $otherPayment]))->assertNotFound();
@@ -118,7 +120,7 @@ class PaymentReceiptTest extends TestCase
 
     public function test_the_statement_offers_a_receipt_on_payment_lines_only(): void
     {
-        SubscriptionTransaction::recordCharge($this->subscription, $this->branchAdmin, ChargeType::Penalty, '100', null);
+        RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '100', null);
         $payment = $this->recordPayment();
 
         $this->actingAs($this->branchAdmin)
@@ -133,7 +135,7 @@ class PaymentReceiptTest extends TestCase
      */
     private function recordPayment(array $details = []): SubscriptionTransaction
     {
-        return SubscriptionTransaction::recordPayment($this->subscription, $this->branchAdmin, [
+        return RecordPayment::handle($this->subscription, $this->branchAdmin, [
             'amount' => '25',
             'currency' => 'ILS',
             'payment_method' => 'cash',

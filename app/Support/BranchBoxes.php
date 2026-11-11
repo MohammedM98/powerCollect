@@ -9,6 +9,7 @@ use App\Models\Closing;
 use App\Models\ClosingSetting;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\LinePresenter;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
@@ -236,7 +237,7 @@ class BranchBoxes
         $ids = array_values(array_unique(array_filter($transactionIds)));
 
         return $ids === [] ? [] : SubscriptionTransaction::query()->whereIn('id', $ids)->with('recordedBy:id,name')->get()
-            ->mapWithKeys(fn (SubscriptionTransaction $transaction): array => [$transaction->id => $transaction->ledgerDetails()])->all();
+            ->mapWithKeys(fn (SubscriptionTransaction $transaction): array => [$transaction->id => LinePresenter::ledgerDetails($transaction)])->all();
     }
 
     /**

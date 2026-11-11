@@ -7,6 +7,8 @@ use App\Models\CircuitBreaker;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -223,7 +225,7 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
     public function test_a_clearing_gets_a_voucher_like_a_cash_payment_and_keeps_its_paper_voucher(): void
     {
         $this->subscriptionOwes('100.00');
-        $payment = SubscriptionTransaction::recordPayment($this->subscription, $this->branchAdmin, ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($this->subscription, $this->branchAdmin, ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['amount' => '40', 'notes' => 'صيانة المولد', 'manual_voucher_number' => 'M-77'])
             ->assertSessionHasNoErrors();
@@ -236,7 +238,7 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
                 ->component('Subscriptions/PaymentReceipt')
                 ->where('receipt.isClearing', true)
                 ->where('receipt.voucherNumber', 'M-77')
-                ->where('receipt.systemVoucherNumber', $clearing->printedVoucherNumber()));
+                ->where('receipt.systemVoucherNumber', LinePresenter::printedVoucherNumber($clearing)));
     }
 
     public function test_a_clearing_worth_more_than_the_subscription_owes_is_saved_only_once_confirmed(): void

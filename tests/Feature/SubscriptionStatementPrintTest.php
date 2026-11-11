@@ -6,8 +6,8 @@ use App\Enums\ChargeType;
 use App\Enums\PermissionKey;
 use App\Models\PrintTemplate;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordCharge;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,8 +19,8 @@ class SubscriptionStatementPrintTest extends TestCase
     {
         $actor = User::factory()->branchAdmin()->create();
         $subscription = Subscription::factory()->for($actor->branch)->create();
-        $charge = SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '50', 'غرامة قديمة');
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::DisconnectionFee, '20', null);
+        $charge = RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '50', 'غرامة قديمة');
+        RecordCharge::handle($subscription, $actor, ChargeType::DisconnectionFee, '20', null);
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $charge]), [
             'action' => 'cancel', 'correction_reason' => 'other', 'correction_notes' => 'أُضيفت بالخطأ',
         ])->assertSessionHasNoErrors();

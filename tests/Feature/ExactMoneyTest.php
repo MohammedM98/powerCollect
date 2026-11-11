@@ -9,6 +9,7 @@ use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\LedgerAmounts;
 use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -19,8 +20,8 @@ class ExactMoneyTest extends TestCase
 
     public function test_discounts_preserve_decimal_cents_beyond_binary_float_precision(): void
     {
-        $this->assertSame('90071992547409.91', SubscriptionTransaction::discountFor(DiscountMethod::Shekel, '90071992547409.91', null));
-        $this->assertSame('0.01', SubscriptionTransaction::discountFor(DiscountMethod::Percentage, '50', '0.01'));
+        $this->assertSame('90071992547409.91', LedgerAmounts::discountFor(DiscountMethod::Shekel, '90071992547409.91', null));
+        $this->assertSame('0.01', LedgerAmounts::discountFor(DiscountMethod::Percentage, '50', '0.01'));
     }
 
     public function test_reading_charges_multiply_and_apply_minimums_as_decimal_strings(): void

@@ -7,6 +7,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Notifications\ActionCompleted;
+use App\Support\Ledger\RecordCharge;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
@@ -69,7 +70,7 @@ class WebPaymentIdempotencyTest extends TestCase
     {
         $collector = User::factory()->branchAdmin()->create();
         $subscription = Subscription::factory()->create(['branch_id' => $collector->branch_id]);
-        SubscriptionTransaction::recordCharge($subscription, $collector, ChargeType::Penalty, '1000', null);
+        RecordCharge::handle($subscription, $collector, ChargeType::Penalty, '1000', null);
         $payment = [...$this->payment(), 'amount' => '1000'];
         $url = route('subscriptions.payments.store', $subscription);
 

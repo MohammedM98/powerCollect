@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Enums\DiscountMethod;
 use App\Http\Requests\StoreSubscriptionDiscountRequest;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
 use App\Notifications\ActionCompleted;
+use App\Support\Ledger\LedgerAmounts;
+use App\Support\Ledger\RecordDiscount;
 use Illuminate\Http\RedirectResponse;
 
 class SubscriptionDiscountController extends Controller
@@ -17,7 +18,7 @@ class SubscriptionDiscountController extends Controller
      */
     public function store(StoreSubscriptionDiscountRequest $request, Subscription $subscription): RedirectResponse
     {
-        $discount = SubscriptionTransaction::recordDiscount(
+        $discount = RecordDiscount::handle(
             $subscription,
             $request->user(),
             DiscountMethod::from($request->validated('method')),
@@ -27,7 +28,7 @@ class SubscriptionDiscountController extends Controller
 
         $request->user()->notify(new ActionCompleted(
             'discount-recorded',
-            sprintf('%s — %s شيكل', $subscription->displayName(), SubscriptionTransaction::formatAmount(ltrim($discount->amount, '-'))),
+            sprintf('%s — %s شيكل', $subscription->displayName(), LedgerAmounts::formatAmount(ltrim($discount->amount, '-'))),
         ));
 
         return back()->with('status', 'discount-recorded');

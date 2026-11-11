@@ -7,9 +7,9 @@ use App\Models\CashBox;
 use App\Models\CashBoxPayment;
 use App\Models\MeterBox;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\BranchClosingWorkflow;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -94,7 +94,7 @@ class DefaultBranchScopeTest extends TestCase
         $subscription = Subscription::factory()->for($branch)->create([
             'registered_by' => $collector->id, 'meter_box_id' => MeterBox::factory()->for($branch)->create()->id,
         ]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $collector, [
+        $payment = RecordPayment::handle($subscription, $collector, [
             'amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash',
         ]);
         $box = CashBoxPayment::query()->where('subscription_transaction_id', $payment->id)->sole()->box;

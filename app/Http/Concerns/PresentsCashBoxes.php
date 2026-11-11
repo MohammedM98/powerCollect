@@ -12,6 +12,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\BranchClosingWorkflow;
+use App\Support\Ledger\LinePresenter;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -83,7 +84,7 @@ trait PresentsCashBoxes
             'bankName' => $entry->transaction->bank_name, 'senderBank' => $entry->transaction->sender_bank_name,
             'referenceNumber' => $entry->transaction->reference_number, 'service' => $entry->transaction->notes,
             'receiptUrl' => $entry->transaction->isPayment() || $entry->transaction->isClearing() ? route('subscriptions.payments.receipt', [$entry->transaction->subscription, $entry->transaction]) : null,
-            'ledger' => $entry->transaction->ledgerDetails(),
+            'ledger' => LinePresenter::ledgerDetails($entry->transaction),
             'statementUrl' => $linksStatement ? route('subscriptions.statement', [$entry->transaction->subscription_id, 'transaction' => $entry->transaction->id]) : null,
         ];
     }

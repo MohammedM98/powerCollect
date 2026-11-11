@@ -15,6 +15,11 @@ use App\Models\StandingDiscount;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\LedgerAmounts;
+use App\Support\Ledger\LineHistory;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\LineRules;
+use App\Support\Ledger\TransactionActions;
 use App\Support\Money;
 use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
@@ -128,7 +133,7 @@ trait BuildsSubscriptionStatement
                     $entry['actionEffects']['delete_tree'] = $this->money($effect);
                 }
 
-                return [...$entry, 'readingDiscount' => $readingDiscount ? SubscriptionTransaction::formatAmount(abs((float) $readingDiscount->amount)) : null];
+                return [...$entry, 'readingDiscount' => $readingDiscount ? LedgerAmounts::formatAmount(abs((float) $readingDiscount->amount)) : null];
             })
             ->values();
 
@@ -198,7 +203,7 @@ trait BuildsSubscriptionStatement
             'discountMethods' => DiscountMethod::options(),
             // Offered while typing a standing discount's customer segment.
             'discountSegments' => $canAddDiscount ? StandingDiscount::segmentSuggestions() : [],
-            'transactionTypes' => collect(SubscriptionTransaction::typeLabels())
+            'transactionTypes' => collect(LinePresenter::typeLabels())
                 ->map(fn (string $label, string $type): array => ['value' => $type, 'label' => $label])
                 ->values(),
             'correctionReasons' => [
@@ -321,7 +326,7 @@ trait BuildsSubscriptionStatement
         $canForceDelete = $isLastLegacyLine && $actor->can('forceDelete', $transaction);
         $mayCancel = $hasDeletePermission;
         $eraseTarget = $transaction->isReversal() ? $transaction->reverses : $transaction;
-        $availableActions = $transaction->availableActions($actor, $isLastTransaction, $hasPayment);
+        $availableActions = TransactionActions::availableActions($transaction, $actor, $isLastTransaction, $hasPayment);
         $linkedReversals = $transaction->linkedReversals
             ->whereIn('type', SubscriptionTransaction::REVERSAL_TYPES)
             ->values();
@@ -344,12 +349,12 @@ trait BuildsSubscriptionStatement
             'paidOn' => $transaction->paid_on?->toDateString(),
             'bankReceivedOn' => $transaction->bank_received_on?->toDateString(),
             'lateReason' => $transaction->late_reason,
-            'voucherNumber' => $receipt->displayVoucherNumber(),
-            'systemVoucherNumber' => $receipt->printedVoucherNumber(),
+            'voucherNumber' => LinePresenter::displayVoucherNumber($receipt),
+            'systemVoucherNumber' => LinePresenter::printedVoucherNumber($receipt),
             'manualVoucherNumber' => $receipt->manual_voucher_number,
-            'description' => $transaction->description(),
+            'description' => LinePresenter::description($transaction),
             'type' => $transaction->type,
-            'typeLabel' => $transaction->typeLabel(),
+            'typeLabel' => LinePresenter::typeLabel($transaction),
             'status' => $transaction->status,
             'reference_transaction_id' => $transaction->reference_transaction_id,
             'auditOriginal' => $transaction->type === SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT ? ['id' => $transaction->reference_transaction_id, 'lineNumber' => $lineNumbers[$transaction->reference_transaction_id] ?? null] : null,
@@ -379,7 +384,7 @@ trait BuildsSubscriptionStatement
             // The bank transfer this payment is one part of, if it is.
             'splitPayment' => $receipt->splitPayment?->badge(),
             // Open membership is provisional; only closure gives the movement its final box number.
-            'cashBox' => $receipt->cashBoxNumber(),
+            'cashBox' => LinePresenter::cashBoxNumber($receipt),
             'recordedByName' => $transaction->recordedBy?->name,
             // The weekly reading the line was billed from, which a reading and its standing discount share.
             'meterReadingId' => $transaction->meter_reading_id,
@@ -411,9 +416,9 @@ trait BuildsSubscriptionStatement
                 'id' => $reversal->id,
                 'lineNumber' => $lineNumbers[$reversal->id] ?? null,
                 'type' => $reversal->type,
-                'typeLabel' => $reversal->typeLabel(),
-                'description' => $reversal->description(),
-                'amount' => SubscriptionTransaction::formatAmount(abs((float) $reversal->amount)),
+                'typeLabel' => LinePresenter::typeLabel($reversal),
+                'description' => LinePresenter::description($reversal),
+                'amount' => LedgerAmounts::formatAmount(abs((float) $reversal->amount)),
             ])->all(),
             // The line a replacement corrects, which stays further up the statement.
             'corrects' => $transaction->corrects ? [
@@ -447,18 +452,18 @@ trait BuildsSubscriptionStatement
             'canCorrect' => $canCorrect,
             'canDelete' => $canDelete,
             'canForceDelete' => $canForceDelete,
-            'amendUnavailableReason' => $hasAmendPermission && ! $canAmend ? ($transaction->amendmentUnavailableReason() ?? 'غير متاح الآن') : null,
+            'amendUnavailableReason' => $hasAmendPermission && ! $canAmend ? (LinePresenter::amendmentUnavailableReason($transaction) ?? 'غير متاح الآن') : null,
             'correctUnavailableReason' => $hasEditPermission && ! $canCorrect
                 ? match (true) {
                     $transaction->isCancelled() || $transaction->isReversal() => 'الحركة ملغاة',
-                    $transaction->isPayment() && $transaction->isInClosedDay() => 'بعد إغلاق اليوم',
+                    $transaction->isPayment() && LineHistory::isInClosedDay($transaction) => 'بعد إغلاق اليوم',
                     default => 'لا ينطبق على هذه الحركة',
                 }
                 : null,
             'deleteUnavailableReason' => $mayCancel && ! $canDelete
                 ? match (true) {
                     $transaction->isCancelled() || $transaction->isReversal() => 'الحركة ملغاة',
-                    $transaction->isPayment() && $transaction->isInClosedDay() => 'بعد إغلاق اليوم',
+                    $transaction->isPayment() && LineHistory::isInClosedDay($transaction) => 'بعد إغلاق اليوم',
                     default => 'لا يمكن إلغاؤها الآن',
                 }
                 : null,
@@ -471,11 +476,11 @@ trait BuildsSubscriptionStatement
                 : null,
             // What erasing it takes off the balance: nothing for a reversal or a cancelled line, which go together.
             'eraseEffect' => $transaction->isCancelled() || $transaction->isReversal() ? '0.00' : $transaction->amount,
-            'deletionReasons' => $transaction->isCancellable() ? CorrectionReason::options(CorrectionReason::forDeletionOf($transaction)) : [],
+            'deletionReasons' => LineRules::isCancellable($transaction) ? CorrectionReason::options(CorrectionReason::forDeletionOf($transaction)) : [],
             // What the correction form starts from: the line as it was recorded.
-            'recorded' => $transaction->isCorrectable()
+            'recorded' => LineRules::isCorrectable($transaction)
                 ? $this->recordedFields($transaction)
-                : ($transaction->isCancellable() ? ['kind' => $transaction->type, 'effect' => $transaction->amount] : null),
+                : (LineRules::isCancellable($transaction) ? ['kind' => $transaction->type, 'effect' => $transaction->amount] : null),
         ];
     }
 
@@ -549,7 +554,7 @@ trait BuildsSubscriptionStatement
         $fields = match (true) {
             $transaction->isPayment() => [
                 'kind' => 'payment',
-                'amount' => SubscriptionTransaction::formatAmount($transaction->currency_amount),
+                'amount' => LedgerAmounts::formatAmount($transaction->currency_amount),
                 'currency' => $transaction->currency->value,
                 'exchange_rate' => $transaction->currency === Currency::Shekel ? '' : rtrim(rtrim($transaction->exchange_rate, '0'), '.'),
                 'payment_method' => $transaction->payment_method?->value,
@@ -568,13 +573,13 @@ trait BuildsSubscriptionStatement
             ],
             $transaction->isClearing() => [
                 'kind' => 'clearing',
-                'amount' => SubscriptionTransaction::formatAmount(ltrim($transaction->amount, '-')),
+                'amount' => LedgerAmounts::formatAmount(ltrim($transaction->amount, '-')),
                 'manual_voucher_number' => $transaction->manual_voucher_number ?? '',
             ],
             default => [
                 'kind' => 'charge',
                 'type' => $transaction->type,
-                'amount' => SubscriptionTransaction::formatAmount(ltrim($transaction->amount, '-')),
+                'amount' => LedgerAmounts::formatAmount(ltrim($transaction->amount, '-')),
             ],
         };
 

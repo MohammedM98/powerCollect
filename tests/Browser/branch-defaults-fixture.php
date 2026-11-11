@@ -5,9 +5,9 @@ use App\Models\CashBoxPayment;
 use App\Models\MeterBox;
 use App\Models\ReadingEntrySetting;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\BranchClosingWorkflow;
+use App\Support\Ledger\RecordPayment;
 
 foreach (['فرع ألف', 'فرع باء'] as $index => $name) {
     $branch = Branch::factory()->create(['name' => $name]);
@@ -19,7 +19,7 @@ foreach (['فرع ألف', 'فرع باء'] as $index => $name) {
         'registered_by' => $collector->id, 'meter_box_id' => MeterBox::factory()->for($branch)->create()->id,
     ]);
     foreach (['100', '25'] as $amount) {
-        $payment = SubscriptionTransaction::recordPayment($subscription, $collector, ['amount' => $amount, 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($subscription, $collector, ['amount' => $amount, 'currency' => 'ILS', 'payment_method' => 'cash']);
         if ($amount === '100') {
             CashBoxPayment::query()->where('subscription_transaction_id', $payment->id)->sole()->box
                 ->update(['status' => 'received', 'closed_at' => now(), 'received_at' => now()]);

@@ -3,6 +3,11 @@
 namespace App\Models;
 
 use App\Support\BranchDomainContext;
+use App\Support\Ledger\AmendLine;
+use App\Support\Ledger\LedgerAmounts;
+use App\Support\Ledger\LineRules;
+use App\Support\Ledger\PaymentReferences;
+use App\Support\Ledger\RecordPayment;
 use App\Support\Money;
 use Closure;
 use Database\Factories\SplitPaymentFactory;
@@ -122,7 +127,7 @@ class SplitPayment extends Model
             $fields = array_intersect_key($data, array_flip(SubscriptionTransaction::AMENDABLE_FIELDS));
             $reference = trim($data['reference_number'] ?? $this->reference_number);
             $referenceChanged = $active->contains(fn (SubscriptionTransaction $part): bool => $part->reference_number !== $reference);
-            if ($referenceChanged && SubscriptionTransaction::activeReferenceConflict($reference, null, $this->id) !== null) {
+            if ($referenceChanged && PaymentReferences::activeReferenceConflict($reference, null, $this->id) !== null) {
                 throw ValidationException::withMessages(['reference_number' => 'هذا الرقم المرجعي مسجّل مسبقًا على دفعة أخرى.']);
             }
             $reason = trim($data['amendment_reason']);
@@ -137,7 +142,7 @@ class SplitPayment extends Model
                     }
                 }
                 if ($changes !== []) {
-                    $part->amend($actor, $fields, $reason);
+                    AmendLine::amend($part, $actor, $fields, $reason);
                 }
                 $changed = $changed || $changes !== [];
             }
@@ -153,7 +158,7 @@ class SplitPayment extends Model
     {
         $active = $parts->reject(fn (SubscriptionTransaction $part): bool => $part->isCancelled());
         if ($active->isEmpty() || $parts->contains(fn (SubscriptionTransaction $part): bool => $part->isCancelled() && ! $parts->contains('corrects_id', $part->id))
-            || $active->contains(fn (SubscriptionTransaction $part): bool => ! $part->isAmendable(lockForUpdate: true) || ! $actor->can('amend', $part))) {
+            || $active->contains(fn (SubscriptionTransaction $part): bool => ! LineRules::isAmendable($part, lockForUpdate: true) || ! $actor->can('amend', $part))) {
             throw ValidationException::withMessages(['action' => 'لا يمكن تعديل الحوالة كاملة: أحد أجزائها مغلق أو مُرجع أو غير مسموح بتعديله.']);
         }
 
@@ -194,7 +199,7 @@ class SplitPayment extends Model
             ]);
 
             foreach ($parts as $part) {
-                SubscriptionTransaction::recordPayment($part['subscription'], $collector, [
+                RecordPayment::handle($part['subscription'], $collector, [
                     'amount' => $part['amount'],
                     'currency' => 'ILS',
                     'payment_method' => 'bank_transfer',
@@ -222,7 +227,7 @@ class SplitPayment extends Model
      */
     public function badge(): array
     {
-        return ['id' => $this->id, 'total' => SubscriptionTransaction::formatAmount($this->total_amount)];
+        return ['id' => $this->id, 'total' => LedgerAmounts::formatAmount($this->total_amount)];
     }
 
     /**

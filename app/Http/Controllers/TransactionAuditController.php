@@ -11,6 +11,8 @@ use App\Models\TransactionAmendment;
 use App\Models\TransactionDeletion;
 use App\Models\User;
 use App\Support\DailySeries;
+use App\Support\Ledger\LedgerAmounts;
+use App\Support\Ledger\LinePresenter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
@@ -175,7 +177,7 @@ class TransactionAuditController extends Controller
 
         return [
             ...$this->eventBase('amendment', $amendment->id, $amendment->created_at, $amendment->user, $line->subscription),
-            'lines' => [$this->lineSummary($line->type, $line->amount, $line->displayVoucherNumber())],
+            'lines' => [$this->lineSummary($line->type, $line->amount, LinePresenter::displayVoucherNumber($line))],
             'changes' => collect($amendment->changes)->map(fn (array $values, string $field): array => [
                 'label' => $this->amendmentFieldLabel($field),
                 'from' => $values[0] ?? null,
@@ -202,9 +204,9 @@ class TransactionAuditController extends Controller
             'kindNote' => $kind === 'refund' ? ($isFullRefund ? 'كامل' : 'جزئي') : null,
             'lines' => [
                 $original
-                    ? $this->lineSummary($original->type, $original->amount, $original->displayVoucherNumber())
+                    ? $this->lineSummary($original->type, $original->amount, LinePresenter::displayVoucherNumber($original))
                     : $this->lineSummary($reversal->type, $reversal->amount, null),
-                ...($kind === 'refund' ? [['label' => 'المبلغ المُرجع', 'amount' => SubscriptionTransaction::formatAmount(abs((float) $reversal->amount)), 'voucherNumber' => null]] : []),
+                ...($kind === 'refund' ? [['label' => 'المبلغ المُرجع', 'amount' => LedgerAmounts::formatAmount(abs((float) $reversal->amount)), 'voucherNumber' => null]] : []),
             ],
             'changes' => [],
             // A partial refund leaves the payment standing, without a reason of its own.
@@ -276,8 +278,8 @@ class TransactionAuditController extends Controller
     private function lineSummary(string $type, string $amount, ?string $voucherNumber): array
     {
         return [
-            'label' => SubscriptionTransaction::typeLabels()[$type] ?? 'حركة',
-            'amount' => SubscriptionTransaction::formatAmount(abs((float) $amount)),
+            'label' => LinePresenter::typeLabels()[$type] ?? 'حركة',
+            'amount' => LedgerAmounts::formatAmount(abs((float) $amount)),
             'voucherNumber' => $voucherNumber,
         ];
     }

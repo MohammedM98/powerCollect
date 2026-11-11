@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\DiscountMethod;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
+use App\Support\Ledger\LedgerAmounts;
 use App\Support\Money;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -83,7 +83,7 @@ class StoreSubscriptionDiscountRequest extends FormRequest
         }
 
         $method = DiscountMethod::from($method);
-        $discount = SubscriptionTransaction::discountFor($method, $value, match ($method) {
+        $discount = LedgerAmounts::discountFor($method, $value, match ($method) {
             DiscountMethod::Percentage => $owed,
             DiscountMethod::Kilowatt => $subscription->kilowattPrice(),
             DiscountMethod::Shekel => null,
@@ -94,8 +94,8 @@ class StoreSubscriptionDiscountRequest extends FormRequest
         } elseif (Money::decimal($discount)->isGreaterThan((string) $owed)) {
             $validator->errors()->add('value', sprintf(
                 'لا يمكن أن يزيد الخصم (%s شيكل) عن الرصيد المستحق (%s شيكل).',
-                SubscriptionTransaction::formatAmount($discount),
-                SubscriptionTransaction::formatAmount($owed),
+                LedgerAmounts::formatAmount($discount),
+                LedgerAmounts::formatAmount($owed),
             ));
         }
     }

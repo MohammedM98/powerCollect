@@ -25,6 +25,8 @@ use App\Models\TransactionDeletion;
 use App\Models\User;
 use App\Support\BranchBoxes;
 use App\Support\ClosingPeriods;
+use App\Support\Ledger\LineHistory;
+use App\Support\Ledger\TransactionActions;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -603,7 +605,7 @@ class BranchOperationsSimulationTest extends TestCase
         $this->submit("close box {$box->id} ({$box->type->value}) by {$closer->name}", fn () => $this->actingAs($closer)->post(route('payments.cash-boxes.actions', ['action' => 'receive', 'record' => $box->id]), ['branch_id' => $this->branch->id]), mustSucceed: true);
 
         $this->assertSame('received', $box->fresh()->status, $this->failure("box {$box->id} did not close"));
-        $this->assertSame([], $box->payments()->with('transaction')->get()->map->transaction->filter()->flatMap(fn (SubscriptionTransaction $line): array => $line->fresh()->availableActions($this->head))->all(), $this->failure("a line in closed box {$box->id} still offers actions"));
+        $this->assertSame([], $box->payments()->with('transaction')->get()->map->transaction->filter()->flatMap(fn (SubscriptionTransaction $line): array => TransactionActions::availableActions($line->fresh(), $this->head))->all(), $this->failure("a line in closed box {$box->id} still offers actions"));
     }
 
     private function closeBoxesOfType(int $step): void
@@ -755,7 +757,7 @@ class BranchOperationsSimulationTest extends TestCase
 
             foreach ($lines as $line) {
                 $runningInCents += $this->cents($line->amount);
-                if ($line->type !== SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT && ! $line->isInClosedDay()) {
+                if ($line->type !== SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT && ! LineHistory::isInClosedDay($line)) {
                     $this->assertSame($this->money($runningInCents), (string) $line->balance_after, $this->failure("balance_after of line {$line->id} ({$line->type}) is not the running total"));
                 }
                 if ($line->isReversal()) {
@@ -780,7 +782,7 @@ class BranchOperationsSimulationTest extends TestCase
             $this->assertSame($summary['balance'], $this->money($this->cents($summary['charged']) - $this->cents($summary['paid']) - $this->cents($summary['discounted']) - $this->cents($summary['cleared'])), $this->failure("the statement summary of {$subscription->id} does not add up to its balance"));
             $this->assertSame($lines->modelKeys(), collect($statement['entries'])->pluck('id')->all(), $this->failure("the statement of {$subscription->id} does not list every line once, in order"));
             foreach ($statement['entries'] as $entry) {
-                $this->assertSame($byId[$entry['id']]->availableActions($this->head), $entry['available_actions'], $this->failure("the statement offers other actions for line {$entry['id']} than the server allows"));
+                $this->assertSame(TransactionActions::availableActions($byId[$entry['id']], $this->head), $entry['available_actions'], $this->failure("the statement offers other actions for line {$entry['id']} than the server allows"));
             }
         }
 

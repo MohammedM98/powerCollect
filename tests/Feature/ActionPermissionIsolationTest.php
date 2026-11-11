@@ -8,8 +8,9 @@ use App\Models\Branch;
 use App\Models\MeterReading;
 use App\Models\Permission;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
@@ -31,8 +32,8 @@ class ActionPermissionIsolationTest extends TestCase
         $permissions = [PermissionKey::ViewSubscriptions, ...array_map(PermissionKey::from(...), $keys)];
         $actor->permissions()->sync(Permission::idsFor($permissions));
         $subscription = Subscription::factory()->create(['branch_id' => $actor->branch_id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
-        $invoice = SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
+        $payment = RecordPayment::handle($subscription, $actor, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $invoice = RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
 
         $this->actingAs($actor)->get(route('subscriptions.statement', $subscription))->assertInertia(fn ($page) => $page
             ->where('entries.0.available_actions', $paymentActions)
@@ -64,8 +65,8 @@ class ActionPermissionIsolationTest extends TestCase
     {
         $actor = User::factory()->collector()->create();
         $subscription = Subscription::factory()->create(['branch_id' => $actor->branch_id]);
-        $invoice = SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
-        SubscriptionTransaction::recordPayment($subscription, $actor, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $invoice = RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
+        RecordPayment::handle($subscription, $actor, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
         $actor->permissions()->sync(Permission::idsFor([PermissionKey::ViewSubscriptions, PermissionKey::ForceDeleteTransactions]));
         $this->actingAs($actor)->delete(route('subscriptions.transactions.destroy', [$subscription, $invoice]), [
             'correction_reason' => 'wrong_amount', 'correction_notes' => 'تصحيح',
@@ -123,7 +124,7 @@ class ActionPermissionIsolationTest extends TestCase
         $this->get(route('reports.export'))->assertOk();
         $foreign = Branch::factory()->create();
         $foreignSubscription = Subscription::factory()->create(['branch_id' => $foreign->id]);
-        SubscriptionTransaction::recordCharge($foreignSubscription, $actor, ChargeType::Penalty, '50', 'Foreign confidential charge');
+        RecordCharge::handle($foreignSubscription, $actor, ChargeType::Penalty, '50', 'Foreign confidential charge');
         $response = $this->get(route('reports.export', ['branch' => $foreign->id]))->assertOk();
         $this->assertStringNotContainsString('Foreign confidential charge', $response->streamedContent());
         $this->getJson(route('reports.lines', ['branch' => $foreign->id]))->assertOk()->assertDontSee('Foreign confidential charge');

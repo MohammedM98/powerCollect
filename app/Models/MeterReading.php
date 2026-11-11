@@ -8,6 +8,7 @@ use App\Enums\MeterReadingStatus;
 use App\Enums\PermissionKey;
 use App\Enums\UserRole;
 use App\Models\Concerns\BelongsToBranch;
+use App\Support\Ledger\CancelLine;
 use App\Support\Money;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
@@ -382,10 +383,12 @@ class MeterReading extends Model
                 $chargeNeedsRebilling = $charge && $charge->amount !== $reading->amountBeforeDiscount();
 
                 if ($chargeNeedsRebilling) {
-                    $charge->cancelForReading($recorder, CorrectionReason::StandingDiscountChanged);
+                    CancelLine::cancelForReading($charge, $recorder, CorrectionReason::StandingDiscountChanged);
                 }
 
-                $discountLine?->cancelForReading($recorder, CorrectionReason::StandingDiscountChanged);
+                if ($discountLine !== null) {
+                    CancelLine::cancelForReading($discountLine, $recorder, CorrectionReason::StandingDiscountChanged);
+                }
 
                 if ($chargeNeedsRebilling) {
                     $reading->recordChargeLine($recorder);
@@ -536,7 +539,10 @@ class MeterReading extends Model
         ], ['previousReading' => $previousReading, 'currentReading' => null], $editor);
 
         foreach ([SubscriptionTransaction::TYPE_METER_READING, SubscriptionTransaction::TYPE_READING_DISCOUNT] as $type) {
-            $this->currentLine($type)?->cancelForReading($editor, CorrectionReason::ReadingCorrected);
+            $currentLine = $this->currentLine($type);
+            if ($currentLine !== null) {
+                CancelLine::cancelForReading($currentLine, $editor, CorrectionReason::ReadingCorrected);
+            }
         }
 
         $this->update([
@@ -599,7 +605,10 @@ class MeterReading extends Model
 
             if ($wasApproved) {
                 foreach ([SubscriptionTransaction::TYPE_METER_READING, SubscriptionTransaction::TYPE_READING_DISCOUNT] as $type) {
-                    $this->currentLine($type)?->cancelForReading($editor, CorrectionReason::ReadingCorrected);
+                    $currentLine = $this->currentLine($type);
+                    if ($currentLine !== null) {
+                        CancelLine::cancelForReading($currentLine, $editor, CorrectionReason::ReadingCorrected);
+                    }
                 }
             }
 

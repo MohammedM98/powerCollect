@@ -26,6 +26,7 @@ use App\Models\User;
 use App\Notifications\ActionCompleted;
 use App\Support\BranchScope;
 use App\Support\DailySeries;
+use App\Support\Ledger\LedgerAmounts;
 use App\Support\Money;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -425,7 +426,7 @@ class SubscriptionController extends Controller
             ->distinct()
             ->orderBy('minimum_charge')
             ->pluck('minimum_charge')
-            ->map(fn ($charge) => ['value' => (string) (float) $charge, 'label' => SubscriptionTransaction::formatAmount($charge).' شيكل']));
+            ->map(fn ($charge) => ['value' => (string) (float) $charge, 'label' => LedgerAmounts::formatAmount($charge).' شيكل']));
     }
 
     /**

@@ -12,6 +12,8 @@ use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\CancelLine;
+use App\Support\Ledger\RecordCharge;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -39,7 +41,7 @@ class ReadingChargeCancellationTest extends TestCase
     public function test_cancelling_a_readings_charge_from_the_statement_sends_the_reading_back_for_approval(): void
     {
         [$reading, $charge] = $this->approvedReading('210.00');
-        SubscriptionTransaction::recordCharge($this->subscription, $this->admin, ChargeType::Penalty, '10', 'غرامة');
+        RecordCharge::handle($this->subscription, $this->admin, ChargeType::Penalty, '10', 'غرامة');
 
         $this->actingAs($this->admin)->post(route('subscriptions.transactions.actions.store', [$this->subscription, $charge]), [
             'action' => 'cancel', 'correction_reason' => 'wrong_reading', 'correction_notes' => 'قراءة خاطئة', 'reopen_reading' => true,
@@ -57,8 +59,8 @@ class ReadingChargeCancellationTest extends TestCase
     public function test_the_reading_is_then_approved_again_and_billed_afresh_under_the_cancelled_line(): void
     {
         [$reading, $charge] = $this->approvedReading('210.00');
-        SubscriptionTransaction::recordCharge($this->subscription, $this->admin, ChargeType::Penalty, '10', 'غرامة');
-        $charge->cancel($this->admin, CorrectionReason::WrongReading, 'خطأ', reopenReading: true);
+        RecordCharge::handle($this->subscription, $this->admin, ChargeType::Penalty, '10', 'غرامة');
+        CancelLine::cancel($charge, $this->admin, CorrectionReason::WrongReading, 'خطأ', reopenReading: true);
 
         $this->actingAs($this->admin)->post(route('meter-readings.approve'), ['reading_ids' => [$reading->id]])->assertSessionHasNoErrors();
 
@@ -73,8 +75,8 @@ class ReadingChargeCancellationTest extends TestCase
     public function test_the_weeks_reading_can_be_corrected_after_its_charge_was_cancelled(): void
     {
         [$reading, $charge] = $this->approvedReading('210.00');
-        SubscriptionTransaction::recordCharge($this->subscription, $this->admin, ChargeType::Penalty, '10', 'غرامة');
-        $charge->cancel($this->admin, CorrectionReason::WrongReading, 'خطأ', reopenReading: true);
+        RecordCharge::handle($this->subscription, $this->admin, ChargeType::Penalty, '10', 'غرامة');
+        CancelLine::cancel($charge, $this->admin, CorrectionReason::WrongReading, 'خطأ', reopenReading: true);
 
         $this->actingAs($this->admin)->get(route('meter-readings.index', ['week' => '2026-09-18']))->assertInertia(fn ($page) => $page
             ->where('rows.data', fn ($rows): bool => collect($rows)->contains(fn (array $row): bool => ($row['reading']['id'] ?? null) === $reading->id
@@ -90,7 +92,7 @@ class ReadingChargeCancellationTest extends TestCase
     public function test_deleting_a_readings_charge_by_its_legacy_route_does_the_same(): void
     {
         [$reading, $charge] = $this->approvedReading('210.00');
-        SubscriptionTransaction::recordCharge($this->subscription, $this->admin, ChargeType::Penalty, '10', 'غرامة');
+        RecordCharge::handle($this->subscription, $this->admin, ChargeType::Penalty, '10', 'غرامة');
 
         $this->actingAs($this->admin)->delete(route('subscriptions.transactions.destroy', [$this->subscription, $charge]), ['correction_reason' => 'wrong_reading', 'correction_notes' => 'خطأ', 'reopen_reading' => true])
             ->assertSessionHasNoErrors();
@@ -102,7 +104,7 @@ class ReadingChargeCancellationTest extends TestCase
     public function test_cancelling_a_reading_with_a_standing_discount_frees_both_lines_for_billing_again(): void
     {
         [$reading, $charge, $discount] = $this->approvedReading('83.40', discount: '30.00');
-        SubscriptionTransaction::recordCharge($this->subscription, $this->admin, ChargeType::Penalty, '10', 'غرامة');
+        RecordCharge::handle($this->subscription, $this->admin, ChargeType::Penalty, '10', 'غرامة');
 
         $this->actingAs($this->admin)->post(route('subscriptions.transactions.actions.store', [$this->subscription, $charge]), [
             'action' => 'cancel', 'correction_reason' => 'wrong_reading', 'correction_notes' => 'خطأ', 'reopen_reading' => true,
@@ -120,7 +122,7 @@ class ReadingChargeCancellationTest extends TestCase
     public function test_deleting_the_cancellation_is_refused_and_keeps_the_reading_pending(): void
     {
         [$reading, $charge] = $this->approvedReading('210.00');
-        $charge->cancel($this->admin, CorrectionReason::WrongReading, 'خطأ', reopenReading: true);
+        CancelLine::cancel($charge, $this->admin, CorrectionReason::WrongReading, 'خطأ', reopenReading: true);
         $reversal = SubscriptionTransaction::where('reverses_id', $charge->id)->sole();
 
         $this->actingAs($this->admin)->post(route('subscriptions.transactions.actions.store', [$this->subscription, $reversal]), ['action' => 'delete_reversal', 'correction_notes' => 'الإلغاء كان خطأ'])
@@ -137,7 +139,7 @@ class ReadingChargeCancellationTest extends TestCase
     public function test_without_asking_for_a_review_cancelling_a_readings_charge_waives_it_and_the_reading_stays_approved(): void
     {
         [$reading, $charge] = $this->approvedReading('210.00');
-        SubscriptionTransaction::recordCharge($this->subscription, $this->admin, ChargeType::Penalty, '10', 'غرامة');
+        RecordCharge::handle($this->subscription, $this->admin, ChargeType::Penalty, '10', 'غرامة');
 
         $this->actingAs($this->admin)->post(route('subscriptions.transactions.actions.store', [$this->subscription, $charge]), [
             'action' => 'cancel', 'correction_reason' => 'duplicate', 'correction_notes' => 'إعفاء',
@@ -151,7 +153,7 @@ class ReadingChargeCancellationTest extends TestCase
     public function test_the_sheet_says_when_an_approved_readings_bill_was_cancelled_and_not_otherwise(): void
     {
         [$waived, $charge] = $this->approvedReading('210.00');
-        $charge->cancel($this->admin, CorrectionReason::Duplicate, 'إعفاء');
+        CancelLine::cancel($charge, $this->admin, CorrectionReason::Duplicate, 'إعفاء');
         $billed = $this->otherSubscriptionsApprovedReading();
 
         $this->actingAs($this->admin)->get(route('meter-readings.index', ['week' => '2026-09-18']))->assertInertia(fn ($page) => $page

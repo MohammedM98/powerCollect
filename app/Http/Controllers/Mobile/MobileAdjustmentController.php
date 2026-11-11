@@ -8,6 +8,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMobileAdjustmentRequest;
 use App\Models\SubscriptionTransaction;
 use App\Support\BranchClosingWorkflow;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordClearing;
+use App\Support\Ledger\RecordDiscount;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
@@ -33,9 +37,9 @@ class MobileAdjustmentController extends Controller
                 $validator->validate();
                 $data = $request->validated();
                 $transaction = match ($data['action']) {
-                    'charge' => SubscriptionTransaction::recordCharge($subscription, $request->user(), ChargeType::from($data['type']), $data['amount'], $data['notes'] ?? null),
-                    'discount' => SubscriptionTransaction::recordDiscount($subscription, $request->user(), DiscountMethod::Shekel, $data['value'], $data['notes'] ?? null),
-                    'clearing' => SubscriptionTransaction::recordClearing($subscription, $request->user(), $data['amount'], $data['notes'], $data['manual_voucher_number'] ?? null),
+                    'charge' => RecordCharge::handle($subscription, $request->user(), ChargeType::from($data['type']), $data['amount'], $data['notes'] ?? null),
+                    'discount' => RecordDiscount::handle($subscription, $request->user(), DiscountMethod::Shekel, $data['value'], $data['notes'] ?? null),
+                    'clearing' => RecordClearing::handle($subscription, $request->user(), $data['amount'], $data['notes'], $data['manual_voucher_number'] ?? null),
                 };
                 $transaction->update(['mobile_operation_id' => $data['mobile_operation_id']]);
 
@@ -53,7 +57,7 @@ class MobileAdjustmentController extends Controller
             'id' => $transaction->id,
             'type' => $transaction->type,
             'amount' => $transaction->amount,
-            'voucher_number' => $transaction->displayVoucherNumber(),
+            'voucher_number' => LinePresenter::displayVoucherNumber($transaction),
             'balance_after' => $subscription->balance(),
         ], 201);
     }

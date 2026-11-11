@@ -9,6 +9,8 @@ use App\Models\ClosingPayment;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\CancelLine;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -80,7 +82,7 @@ class ClosedDayTransactionGuardTest extends TestCase
         $payment = $this->paymentInClosing($state);
 
         try {
-            $payment->cancel($this->branchAdmin, CorrectionReason::Duplicate, 'x');
+            CancelLine::cancel($payment, $this->branchAdmin, CorrectionReason::Duplicate, 'x');
             $this->fail('Cancelling a payment in a locked closing should be refused.');
         } catch (ValidationException $exception) {
             $this->assertSame(['reason'], array_keys($exception->errors()));
@@ -115,7 +117,7 @@ class ClosedDayTransactionGuardTest extends TestCase
 
     private function paymentInClosing(string $state): SubscriptionTransaction
     {
-        $payment = SubscriptionTransaction::recordPayment($this->subscription, $this->branchAdmin, [
+        $payment = RecordPayment::handle($this->subscription, $this->branchAdmin, [
             'amount' => '100',
             'currency' => 'ILS',
             'payment_method' => 'cash',

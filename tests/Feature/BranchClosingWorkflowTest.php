@@ -15,6 +15,8 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\BranchClosingWorkflow;
+use App\Support\Ledger\CancelLine;
+use App\Support\Ledger\TransactionActions;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -263,7 +265,7 @@ class BranchClosingWorkflowTest extends TestCase
         [$branch, $head, $collector] = $this->start();
         $payment = $this->payment($branch, $collector);
         $box = CashBox::query()->sole();
-        $payment->cancel($head, CorrectionReason::PaymentRefunded, 'Refund');
+        CancelLine::cancel($payment, $head, CorrectionReason::PaymentRefunded, 'Refund');
 
         $this->travelTo($box->closing->coverage_until);
         $this->artisan('closings:process')->assertSuccessful();
@@ -437,7 +439,7 @@ class BranchClosingWorkflowTest extends TestCase
 
         $this->assertSame('75.00', $entry->fresh()->amount);
         $this->assertSame('75.00', app(BranchClosingWorkflow::class)->expected($entry->box)['ILS']);
-        $payment->cancel($head, CorrectionReason::PaymentRefunded, 'Refund');
+        CancelLine::cancel($payment, $head, CorrectionReason::PaymentRefunded, 'Refund');
         $this->assertModelExists($entry);
         $this->assertModelExists($payment);
         $this->assertSame(0, CashBoxPayment::visibleInBox()->count());
@@ -454,10 +456,10 @@ class BranchClosingWorkflowTest extends TestCase
         SubscriptionTransaction::factory()->for($payment->subscription)->create(['amount' => '25']);
 
         $before = $payment->fresh()->getAttributes();
-        $this->assertSame([], $payment->fresh()->availableActions($actor));
+        $this->assertSame([], TransactionActions::availableActions($payment->fresh(), $actor));
 
         try {
-            $payment->applyAction($actor, TransactionAction::Refund, []);
+            TransactionActions::applyAction($payment, $actor, TransactionAction::Refund, []);
             $this->fail('A closed-box payment must not be refunded.');
         } catch (ValidationException $exception) {
             $this->assertArrayHasKey('action', $exception->errors());

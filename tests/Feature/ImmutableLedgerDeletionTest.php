@@ -8,6 +8,9 @@ use App\Models\Branch;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordPayment;
+use App\Support\Ledger\TransactionActions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -24,7 +27,7 @@ class ImmutableLedgerDeletionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, ['amount' => '25.17', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($subscription, $actor, ['amount' => '25.17', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $response = $legacy
             ? $this->actingAs($actor)->delete(route('subscriptions.transactions.force-destroy', [$subscription, $payment]), ['correction_notes' => 'Duplicate receipt'])
@@ -55,7 +58,7 @@ class ImmutableLedgerDeletionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions, PermissionKey::DeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $charge = SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '50', null);
+        $charge = RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '50', null);
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $charge]), ['action' => 'delete', 'correction_notes' => 'Duplicate charge'])->assertSessionHasNoErrors();
         $reversal = $subscription->transactions()->where('reverses_id', $charge->id)->firstOrFail();
 
@@ -64,8 +67,8 @@ class ImmutableLedgerDeletionTest extends TestCase
 
         $this->assertModelExists($charge);
         $this->assertModelExists($reversal);
-        $this->assertSame([], $reversal->availableActions($actor));
-        $this->assertSame([], $charge->refresh()->availableActions($actor));
+        $this->assertSame([], TransactionActions::availableActions($reversal, $actor));
+        $this->assertSame([], TransactionActions::availableActions($charge->refresh(), $actor));
         $this->assertSame('0.00', $subscription->balance());
     }
 
@@ -86,7 +89,7 @@ class ImmutableLedgerDeletionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, ['amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($subscription, $actor, ['amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash']);
         $earlierRefund = $subscription->transactions()->create([
             'type' => SubscriptionTransaction::TYPE_REFUND,
             'recorded_by' => $actor->id,
@@ -127,7 +130,7 @@ class ImmutableLedgerDeletionTest extends TestCase
     {
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::RefundPayments])->create();
         $subscription = Subscription::factory()->create(['branch_id' => $actor->branch_id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, ['amount' => '100', 'currency' => 'USD', 'exchange_rate' => $rate, 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($subscription, $actor, ['amount' => '100', 'currency' => 'USD', 'exchange_rate' => $rate, 'payment_method' => 'cash']);
         $subscription->transactions()->create([
             'type' => SubscriptionTransaction::TYPE_REFUND,
             'recorded_by' => $actor->id,
@@ -155,7 +158,7 @@ class ImmutableLedgerDeletionTest extends TestCase
     {
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create();
         $subscription = Subscription::factory()->create(['branch_id' => $actor->branch_id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, ['amount' => '100', 'currency' => 'USD', 'exchange_rate' => '0.5000', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($subscription, $actor, ['amount' => '100', 'currency' => 'USD', 'exchange_rate' => '0.5000', 'payment_method' => 'cash']);
         $payment->update(['exchange_rate' => $rate]);
 
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $payment]), ['action' => 'delete', 'correction_notes' => 'Invalid stored exchange rate'])->assertSessionHasErrors('action');

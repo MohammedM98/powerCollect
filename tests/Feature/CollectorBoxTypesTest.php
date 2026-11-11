@@ -13,6 +13,10 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Notifications\BranchClosingNotification;
 use App\Support\BranchClosingWorkflow;
+use App\Support\Ledger\LineHistory;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\RecordClearing;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
@@ -41,8 +45,8 @@ class CollectorBoxTypesTest extends TestCase
     {
         $subscription ??= Subscription::factory()->for($branch)->create();
         $transaction = $type === CashBoxType::Clearing
-            ? SubscriptionTransaction::recordClearing($subscription, $collector, $amount, 'صيانة مولد')
-            : SubscriptionTransaction::recordPayment($subscription, $collector, ['amount' => $amount, 'currency' => 'ILS', 'payment_method' => $type->value, 'bank_name' => 'بنك فلسطين', 'reference_number' => 'TRX-'.Str::ulid()]);
+            ? RecordClearing::handle($subscription, $collector, $amount, 'صيانة مولد')
+            : RecordPayment::handle($subscription, $collector, ['amount' => $amount, 'currency' => 'ILS', 'payment_method' => $type->value, 'bank_name' => 'بنك فلسطين', 'reference_number' => 'TRX-'.Str::ulid()]);
 
         return CashBoxPayment::query()->where('subscription_transaction_id', $transaction->id)->sole();
     }
@@ -133,7 +137,7 @@ class CollectorBoxTypesTest extends TestCase
 
         $this->action($head, $branch, 'receive', $entry->cash_box_id)->assertSessionHasNoErrors();
 
-        $this->assertTrue($transaction->fresh()->isInClosedDay());
+        $this->assertTrue(LineHistory::isInClosedDay($transaction->fresh()));
         $amend('بنك فلسطين')->assertForbidden();
     }
 
@@ -168,12 +172,12 @@ class CollectorBoxTypesTest extends TestCase
     public function test_a_payment_in_dollars_sits_in_the_box_at_its_value_in_shekels(): void
     {
         [$branch, , $collector] = $this->start();
-        $payment = SubscriptionTransaction::recordPayment(Subscription::factory()->for($branch)->create(), $collector, ['amount' => '10', 'currency' => 'USD', 'exchange_rate' => '3.6', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle(Subscription::factory()->for($branch)->create(), $collector, ['amount' => '10', 'currency' => 'USD', 'exchange_rate' => '3.6', 'payment_method' => 'cash']);
         $entry = CashBoxPayment::query()->where('subscription_transaction_id', $payment->id)->sole();
 
         $this->assertSame(['ILS', '36.00'], [$entry->currency, $entry->amount]);
         $this->assertSame(['ILS' => '36.00', 'USD' => '0.00', 'JOD' => '0.00'], $entry->box->totals());
-        $this->assertSame(['10.00', false, '3.6'], [$payment->ledgerDetails()['paidAmount'], $payment->ledgerDetails()['isShekel'], $payment->ledgerDetails()['exchangeRate']]);
+        $this->assertSame(['10.00', false, '3.6'], [LinePresenter::ledgerDetails($payment)['paidAmount'], LinePresenter::ledgerDetails($payment)['isShekel'], LinePresenter::ledgerDetails($payment)['exchangeRate']]);
     }
 
     public function test_rejected_entries_stay_rejected_when_the_branch_confirms_the_box(): void
@@ -405,7 +409,7 @@ class CollectorBoxTypesTest extends TestCase
         $this->actingAs($head)->post(route('subscriptions.transactions.actions.store', [$entry->transaction->subscription, $entry->transaction]), ['action' => 'cancel', 'correction_reason' => 'other', 'correction_notes' => 'تصحيح'])->assertSessionHasErrors('action');
 
         $this->assertSame($before, $entry->transaction->fresh()->getAttributes());
-        $this->assertTrue($entry->transaction->fresh()->isInClosedDay());
+        $this->assertTrue(LineHistory::isInClosedDay($entry->transaction->fresh()));
         $this->assertSame('100.00', $entry->box->fresh()->totals()['ILS']);
     }
 

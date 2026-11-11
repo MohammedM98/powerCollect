@@ -4,8 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\MobileAccessToken;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -24,7 +24,7 @@ class PaymentReferencePrivacyTest extends TestCase
         $own = Subscription::factory()->create(['branch_id' => $actor->branch_id]);
         $foreignActor = User::factory()->branchAdmin()->create();
         $foreign = Subscription::factory()->create(['branch_id' => $foreignActor->branch_id, 'full_name' => 'Private Foreign Subscriber']);
-        SubscriptionTransaction::recordPayment($foreign, $foreignActor, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Foreign Sender', 'reference_number' => 'PRIVATE-123']);
+        RecordPayment::handle($foreign, $foreignActor, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Foreign Sender', 'reference_number' => 'PRIVATE-123']);
 
         $url = $split
             ? route('payments.split.reference-status', ['reference_number' => 'PRIVATE-123'])
@@ -43,7 +43,7 @@ class PaymentReferencePrivacyTest extends TestCase
         $own = Subscription::factory()->create(['branch_id' => $actor->branch_id]);
         $foreignActor = User::factory()->branchAdmin()->create();
         $foreign = Subscription::factory()->create(['branch_id' => $foreignActor->branch_id, 'full_name' => 'Private Foreign Subscriber']);
-        SubscriptionTransaction::recordPayment($foreign, $foreignActor, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Foreign Sender', 'reference_number' => 'PRIVATE-123']);
+        RecordPayment::handle($foreign, $foreignActor, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Foreign Sender', 'reference_number' => 'PRIVATE-123']);
 
         $this->actingAs($actor)->getJson(route('subscriptions.payments.reference-status', [$own, 'reference_number' => 'NEW-123', 'amount' => '40', 'currency' => 'ILS', 'sender_name' => 'Foreign Sender']))
             ->assertOk()->assertJsonPath('available', true)->assertJsonPath('warning.id', null)
@@ -58,11 +58,11 @@ class PaymentReferencePrivacyTest extends TestCase
         $foreignActor = User::factory()->branchAdmin()->create();
         $foreign = Subscription::factory()->create(['branch_id' => $foreignActor->branch_id, 'full_name' => 'Private Foreign Subscriber']);
         $payment = ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Foreign Sender', 'reference_number' => 'PRIVATE-123'];
-        SubscriptionTransaction::recordPayment($foreign, $foreignActor, $payment);
+        RecordPayment::handle($foreign, $foreignActor, $payment);
         $this->actingAs($actor);
 
         try {
-            SubscriptionTransaction::recordPayment($own, $actor, $payment);
+            RecordPayment::handle($own, $actor, $payment);
             $this->fail('A reference already used by another branch must be refused.');
         } catch (ValidationException $exception) {
             $this->assertSame(['reference_number' => ['هذا الرقم المرجعي مسجّل مسبقًا على دفعة أخرى.']], $exception->errors());
@@ -76,7 +76,7 @@ class PaymentReferencePrivacyTest extends TestCase
         $actor = User::factory()->branchAdmin()->create();
         $foreignActor = User::factory()->branchAdmin()->create();
         $foreign = Subscription::factory()->create(['branch_id' => $foreignActor->branch_id, 'full_name' => 'Private Foreign Subscriber']);
-        SubscriptionTransaction::recordPayment($foreign, $foreignActor, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Foreign Sender', 'reference_number' => 'PRIVATE-123']);
+        RecordPayment::handle($foreign, $foreignActor, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Foreign Sender', 'reference_number' => 'PRIVATE-123']);
 
         $this->withHeader('Authorization', 'Bearer '.MobileAccessToken::issue($actor))
             ->getJson(route('mobile.collections.reference-status', ['reference_number' => 'PRIVATE-123']))

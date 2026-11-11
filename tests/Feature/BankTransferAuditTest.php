@@ -15,6 +15,8 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\BankTransferAuditing;
 use App\Support\BranchClosingWorkflow;
+use App\Support\Ledger\RecordPayment;
+use App\Support\Ledger\TransactionActions;
 use App\Support\Money;
 use Closure;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -37,7 +39,7 @@ class BankTransferAuditTest extends TestCase
         $auditor = User::factory()->financialAuditor()->for(Branch::factory()->create(['name' => 'الإدارة الرئيسية']))->create();
         $subscription = Subscription::factory()->for($branch)->create();
         SubscriptionTransaction::factory()->for($subscription)->create(['amount' => '200.00']);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $collector, [
+        $payment = RecordPayment::handle($subscription, $collector, [
             'amount' => $amount, 'currency' => $currency, 'exchange_rate' => $rate, 'payment_method' => $method,
             'bank_name' => 'بنك فلسطين', 'reference_number' => 'BANK-100',
         ]);
@@ -92,7 +94,7 @@ class BankTransferAuditTest extends TestCase
             $this->assertSame($payment->branch_id, $adjustment->branch_id);
             $this->assertSame($auditor->id, $adjustment->recorded_by);
             $this->assertSame(SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT, $adjustment->type);
-            $this->assertSame([], $adjustment->availableActions($head));
+            $this->assertSame([], TransactionActions::availableActions($adjustment, $head));
             $this->assertSame((float) $difference < 0, $adjustment->isCredit());
             $this->assertSame((float) $difference < 0, SubscriptionTransaction::query()->credits()->whereKey($adjustment)->exists());
             $this->assertSame((float) $difference > 0, SubscriptionTransaction::query()->charges()->whereKey($adjustment)->exists());
@@ -272,7 +274,7 @@ class BankTransferAuditTest extends TestCase
         $approver = User::factory()->financialAuditor()->create();
         $payments = [$first];
         for ($index = 1; $index < 100; $index++) {
-            $payments[] = SubscriptionTransaction::recordPayment($subscription, $first->recordedBy, [
+            $payments[] = RecordPayment::handle($subscription, $first->recordedBy, [
                 'amount' => '100', 'currency' => 'ILS', 'exchange_rate' => '1', 'payment_method' => 'bank_transfer',
                 'bank_name' => 'بنك فلسطين', 'reference_number' => 'BANK-BULK-'.$index,
             ]);
@@ -304,7 +306,7 @@ class BankTransferAuditTest extends TestCase
     public function test_failed_final_posting_rolls_back_all_adjustments_and_keeps_the_saved_drafts(): void
     {
         [$head, $auditor, $subscription, $first, $box] = $this->payment(closed: false);
-        $second = SubscriptionTransaction::recordPayment($subscription, $first->recordedBy, [
+        $second = RecordPayment::handle($subscription, $first->recordedBy, [
             'amount' => '100', 'currency' => 'ILS', 'exchange_rate' => '1', 'payment_method' => 'bank_transfer',
             'bank_name' => 'بنك فلسطين', 'reference_number' => 'BANK-SECOND',
         ]);

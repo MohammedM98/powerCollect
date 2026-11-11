@@ -10,6 +10,13 @@ use App\Models\Branch;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\EraseLine;
+use App\Support\Ledger\LineRules;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordClearing;
+use App\Support\Ledger\RecordDiscount;
+use App\Support\Ledger\RecordPayment;
+use App\Support\Ledger\TransactionActions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\ViewErrorBag;
@@ -88,9 +95,9 @@ class TransactionHistoryInvariantsTest extends TestCase
     public function test_cancelling_the_last_line_preserves_historical_running_balances(): void
     {
         Carbon::setTestNow(Carbon::parse('2026-10-01 08:00:00'));
-        $penalty = SubscriptionTransaction::recordCharge($this->subscription, $this->actor, ChargeType::Penalty, '50', 'غرامة');
+        $penalty = RecordCharge::handle($this->subscription, $this->actor, ChargeType::Penalty, '50', 'غرامة');
         Carbon::setTestNow(now()->addMinute());
-        $payment = SubscriptionTransaction::recordPayment($this->subscription, $this->actor, ['amount' => '226', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($this->subscription, $this->actor, ['amount' => '226', 'currency' => 'ILS', 'payment_method' => 'cash']);
         Carbon::setTestNow(now()->addMinute());
 
         $this->actingAs($this->actor)
@@ -123,12 +130,12 @@ class TransactionHistoryInvariantsTest extends TestCase
         $amount = (string) mt_rand(5, 300);
 
         match ($kind) {
-            1 => $this->note($step, 'payment cash '.$amount, SubscriptionTransaction::recordPayment($this->subscription, $this->actor, ['amount' => $amount, 'currency' => 'ILS', 'payment_method' => 'cash'])),
-            2 => $this->note($step, 'payment transfer '.$amount, SubscriptionTransaction::recordPayment($this->subscription, $this->actor, ['amount' => $amount, 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Ahmad', 'reference_number' => 'REF-'.$step.'-'.mt_rand()])),
-            3 => $this->note($step, 'penalty '.$amount, SubscriptionTransaction::recordCharge($this->subscription, $this->actor, ChargeType::Penalty, $amount, 'غرامة')),
-            4 => $this->note($step, 'clearing '.$amount, SubscriptionTransaction::recordClearing($this->subscription, $this->actor, $amount, 'تصفية')),
-            5 => $this->note($step, 'payment cash in dollars '.$amount, SubscriptionTransaction::recordPayment($this->subscription, $this->actor, ['amount' => $amount, 'currency' => 'USD', 'exchange_rate' => '3.6700', 'payment_method' => 'cash'])),
-            6 => $this->note($step, 'payment transfer in dinars '.$amount, SubscriptionTransaction::recordPayment($this->subscription, $this->actor, ['amount' => $amount, 'currency' => 'JOD', 'exchange_rate' => '5.1500', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Ahmad', 'reference_number' => 'JOD-'.$step.'-'.mt_rand()])),
+            1 => $this->note($step, 'payment cash '.$amount, RecordPayment::handle($this->subscription, $this->actor, ['amount' => $amount, 'currency' => 'ILS', 'payment_method' => 'cash'])),
+            2 => $this->note($step, 'payment transfer '.$amount, RecordPayment::handle($this->subscription, $this->actor, ['amount' => $amount, 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Ahmad', 'reference_number' => 'REF-'.$step.'-'.mt_rand()])),
+            3 => $this->note($step, 'penalty '.$amount, RecordCharge::handle($this->subscription, $this->actor, ChargeType::Penalty, $amount, 'غرامة')),
+            4 => $this->note($step, 'clearing '.$amount, RecordClearing::handle($this->subscription, $this->actor, $amount, 'تصفية')),
+            5 => $this->note($step, 'payment cash in dollars '.$amount, RecordPayment::handle($this->subscription, $this->actor, ['amount' => $amount, 'currency' => 'USD', 'exchange_rate' => '3.6700', 'payment_method' => 'cash'])),
+            6 => $this->note($step, 'payment transfer in dinars '.$amount, RecordPayment::handle($this->subscription, $this->actor, ['amount' => $amount, 'currency' => 'JOD', 'exchange_rate' => '5.1500', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Ahmad', 'reference_number' => 'JOD-'.$step.'-'.mt_rand()])),
             default => $this->recordDiscountWithinBalance($step),
         };
     }
@@ -136,12 +143,12 @@ class TransactionHistoryInvariantsTest extends TestCase
     private function recordDiscountWithinBalance(int $step): void
     {
         if ($this->subscription->balance() <= 0) {
-            $this->note($step, 'penalty 50 (no balance to discount)', SubscriptionTransaction::recordCharge($this->subscription, $this->actor, ChargeType::Penalty, '50', 'غرامة'));
+            $this->note($step, 'penalty 50 (no balance to discount)', RecordCharge::handle($this->subscription, $this->actor, ChargeType::Penalty, '50', 'غرامة'));
 
             return;
         }
 
-        $this->note($step, 'discount 10%', SubscriptionTransaction::recordDiscount($this->subscription, $this->actor, DiscountMethod::Percentage, '10', null));
+        $this->note($step, 'discount 10%', RecordDiscount::handle($this->subscription, $this->actor, DiscountMethod::Percentage, '10', null));
     }
 
     private function note(int $step, string $what, SubscriptionTransaction $line): void
@@ -155,19 +162,19 @@ class TransactionHistoryInvariantsTest extends TestCase
         $offers = [];
 
         foreach ($lines as $line) {
-            foreach ($line->availableActions($this->actor) as $action) {
+            foreach (TransactionActions::availableActions($line, $this->actor) as $action) {
                 $offers[] = [$line, $action];
             }
 
-            if ($line->isCancellable() && ! $line->isReversal()) {
+            if (LineRules::isCancellable($line) && ! $line->isReversal()) {
                 $offers[] = [$line, 'legacy-delete'];
             }
 
-            if ($line->isCorrectable() && ($line->type === 'penalty' || $line->isPayment() && $line->payment_method?->value === 'cash')) {
+            if (LineRules::isCorrectable($line) && ($line->type === 'penalty' || $line->isPayment() && $line->payment_method?->value === 'cash')) {
                 $offers[] = [$line, 'legacy-correct'];
             }
 
-            if ($line->isErasable()) {
+            if (EraseLine::isErasable($line)) {
                 $offers[] = [$line, 'legacy-erase'];
             }
         }
@@ -271,7 +278,7 @@ class TransactionHistoryInvariantsTest extends TestCase
         foreach ($props['entries'] as $entry) {
             $line = $byId->get($entry['id']);
             $this->assertNotNull($line, $this->failure("the statement shows a line that does not exist: {$entry['id']}"));
-            $this->assertSame($line->availableActions($this->actor), $entry['available_actions'], $this->failure("statement actions differ for line {$line->id}"));
+            $this->assertSame(TransactionActions::availableActions($line, $this->actor), $entry['available_actions'], $this->failure("statement actions differ for line {$line->id}"));
         }
 
         $this->assertSame($lines->count(), count($props['entries']), $this->failure('the statement does not list every line once'));

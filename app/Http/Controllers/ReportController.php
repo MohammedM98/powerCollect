@@ -16,6 +16,8 @@ use App\Support\ClosingPeriods;
 use App\Support\DailySeries;
 use App\Support\DebtAging;
 use App\Support\FinancialReportAccess;
+use App\Support\Ledger\LedgerAmounts;
+use App\Support\Ledger\LinePresenter;
 use App\Support\ReportDetails;
 use App\Support\ReportPeriod;
 use Carbon\CarbonImmutable;
@@ -508,17 +510,17 @@ class ReportController extends Controller
             'day' => ClosingPeriods::for($line->subscription->branch_id)->dayOf($line->created_at),
             'time' => DailySeries::localTime($line->created_at),
             'branchName' => $line->subscription->branch?->name,
-            'voucherNumber' => $line->printedVoucherNumber(),
+            'voucherNumber' => LinePresenter::printedVoucherNumber($line),
             'subscriptionName' => $line->subscription->displayName(),
             'accountNumber' => $line->subscription->account_number,
             'meterBoxNumber' => $line->subscription->meterBox?->box_number,
             'type' => $line->type,
-            'typeLabel' => $line->typeLabel(),
-            'description' => $line->description(),
+            'typeLabel' => LinePresenter::typeLabel($line),
+            'description' => LinePresenter::description($line),
             'methodLabel' => $isPayment && $line->payment_method ? __($line->payment_method->label()) : null,
             'account' => $isPayment ? ($line->bank_name ?? 'الصندوق النقدي') : null,
             'currency' => $isPayment ? $line->currency?->value : null,
-            'currencyAmount' => $isPayment && $line->currency_amount !== null ? SubscriptionTransaction::formatAmount($line->currency_amount) : null,
+            'currencyAmount' => $isPayment && $line->currency_amount !== null ? LedgerAmounts::formatAmount($line->currency_amount) : null,
             'isCredit' => $line->isCredit(),
             'isCancelled' => $line->isCancelled() || $line->isReversal(),
             'amount' => ltrim((string) $line->amount, '-'),

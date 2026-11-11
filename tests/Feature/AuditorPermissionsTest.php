@@ -13,6 +13,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\TransactionAmendment;
 use App\Models\User;
 use App\Support\BranchClosingWorkflow;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
@@ -202,7 +203,7 @@ class AuditorPermissionsTest extends TestCase
         $collector = User::factory()->collector()->for($branch)->create();
         $auditor = User::factory()->financialAuditor()->create();
         $subscription = Subscription::factory()->for($branch)->create();
-        $payment = SubscriptionTransaction::recordPayment($subscription, $collector, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'reference_number' => 'AUDIT-SCOPE']);
+        $payment = RecordPayment::handle($subscription, $collector, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'reference_number' => 'AUDIT-SCOPE']);
         $box = $payment->boxEntry->box;
         app(BranchClosingWorkflow::class)->receive($box, $admin);
 

@@ -14,6 +14,11 @@ use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\CancelLine;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordDiscount;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -26,8 +31,8 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $invoice = SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $invoice = RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
+        $payment = RecordPayment::handle($subscription, $actor, [
             'amount' => '20',
             'currency' => 'ILS',
             'payment_method' => 'cash',
@@ -47,7 +52,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $invoice = SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
+        $invoice = RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
 
         $response = $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $invoice]), [
             'action' => 'edit',
@@ -72,7 +77,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $invoice = SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
+        $invoice = RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
         $edit = fn (string $amount) => $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $invoice]), [
             'action' => 'edit',
             'amount' => $amount,
@@ -92,12 +97,12 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $payment = RecordPayment::handle($subscription, $actor, [
             'amount' => '50',
             'currency' => 'ILS',
             'payment_method' => 'cash',
         ]);
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
 
         $response = $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $payment]), [
             'action' => 'refund',
@@ -123,8 +128,8 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, ['amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash']);
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
+        $payment = RecordPayment::handle($subscription, $actor, ['amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
 
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $payment]), [
             'action' => 'refund',
@@ -140,8 +145,8 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, ['amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash']);
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
+        $payment = RecordPayment::handle($subscription, $actor, ['amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
         $this->legacyPartialRefund($payment, $actor, '20.00');
 
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $payment]), [
@@ -158,8 +163,8 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $invoice = SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
-        SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $invoice = RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
+        RecordPayment::handle($subscription, $actor, [
             'amount' => '20',
             'currency' => 'ILS',
             'payment_method' => 'cash',
@@ -182,7 +187,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $payment = RecordPayment::handle($subscription, $actor, [
             'amount' => '50',
             'currency' => 'ILS',
             'payment_method' => 'cash',
@@ -205,8 +210,8 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
-        SubscriptionTransaction::recordDiscount($subscription, $actor, DiscountMethod::Shekel, '20', 'البيان الأصلي');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
+        RecordDiscount::handle($subscription, $actor, DiscountMethod::Shekel, '20', 'البيان الأصلي');
 
         $response = $this->actingAs($actor)->get(route('subscriptions.statement', $subscription));
 
@@ -218,8 +223,8 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
-        $discount = SubscriptionTransaction::recordDiscount($subscription, $actor, DiscountMethod::Shekel, '20', 'البيان الأصلي');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
+        $discount = RecordDiscount::handle($subscription, $actor, DiscountMethod::Shekel, '20', 'البيان الأصلي');
 
         $response = $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $discount]), [
             'action' => 'edit_metadata',
@@ -238,9 +243,9 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::AmendTransactionDetails])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '100', 'غرامة');
-        $cash = SubscriptionTransaction::recordPayment($subscription, $actor, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
-        $transfer = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '100', 'غرامة');
+        $cash = RecordPayment::handle($subscription, $actor, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $transfer = RecordPayment::handle($subscription, $actor, [
             'amount' => '30', 'currency' => 'ILS', 'payment_method' => 'bank_transfer',
             'bank_name' => 'بنك فلسطين', 'sender_name' => 'Ahmad', 'reference_number' => 'TR-1',
         ]);
@@ -269,12 +274,12 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $payment = RecordPayment::handle($subscription, $actor, [
             'amount' => '50',
             'currency' => 'ILS',
             'payment_method' => 'cash',
         ]);
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
 
         $response = $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $payment]), [
             'action' => 'refund',
@@ -290,9 +295,9 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
-        $discount = SubscriptionTransaction::recordDiscount($subscription, $actor, DiscountMethod::Shekel, '20', 'خصم اجتماعي');
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '5', 'غرامة لاحقة');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '50', 'غرامة');
+        $discount = RecordDiscount::handle($subscription, $actor, DiscountMethod::Shekel, '20', 'خصم اجتماعي');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '5', 'غرامة لاحقة');
 
         $this->actingAs($actor)->get(route('subscriptions.statement', $subscription))
             ->assertInertia(fn ($page) => $page->where('entries.1.available_actions', ['cancel']));
@@ -305,7 +310,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $response->assertSessionHasNoErrors();
         $cancellation = SubscriptionTransaction::query()->where('reference_transaction_id', $discount->id)->sole();
         $this->assertSame(SubscriptionTransaction::TYPE_CANCELLATION, $cancellation->type);
-        $this->assertStringContainsString('إلغاء:', $cancellation->description());
+        $this->assertStringContainsString('إلغاء:', LinePresenter::description($cancellation));
         $this->assertDatabaseMissing('subscription_transactions', [
             'reference_transaction_id' => $discount->id,
             'type' => SubscriptionTransaction::TYPE_REFUND,
@@ -317,12 +322,12 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $payment = RecordPayment::handle($subscription, $actor, [
             'amount' => '50',
             'currency' => 'ILS',
             'payment_method' => 'cash',
         ]);
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $payment]), [
             'action' => 'refund',
         ])->assertSessionHasNoErrors();
@@ -340,12 +345,12 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $payment = RecordPayment::handle($subscription, $actor, [
             'amount' => '50',
             'currency' => 'ILS',
             'payment_method' => 'cash',
         ]);
-        $charge = SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
+        $charge = RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $payment]), [
             'action' => 'refund',
         ]);
@@ -369,17 +374,17 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $payment = RecordPayment::handle($subscription, $actor, [
             'amount' => '50',
             'currency' => 'ILS',
             'payment_method' => 'cash',
         ]);
-        $firstCharge = SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'غرامة أولى');
+        $firstCharge = RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'غرامة أولى');
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $payment]), [
             'action' => 'refund',
         ]);
         $refund = SubscriptionTransaction::query()->where('type', SubscriptionTransaction::TYPE_REFUND)->sole();
-        $lastCharge = SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '20', 'غرامة لاحقة');
+        $lastCharge = RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '20', 'غرامة لاحقة');
 
         $response = $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $payment]), [
             'action' => 'delete_tree',
@@ -400,12 +405,12 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $payment = RecordPayment::handle($subscription, $actor, [
             'amount' => '50',
             'currency' => 'ILS',
             'payment_method' => 'cash',
         ]);
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
         // Partial refunds can't be made any more, but older ones stay on the books.
         $this->legacyPartialRefund($payment, $actor, '20.00');
 
@@ -428,7 +433,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $payment = RecordPayment::handle($subscription, $actor, [
             'amount' => '50',
             'currency' => 'ILS',
             'payment_method' => 'cash',
@@ -452,7 +457,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $payment = RecordPayment::handle($subscription, $actor, [
             'amount' => '50',
             'currency' => 'ILS',
             'payment_method' => 'cash',
@@ -476,14 +481,14 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $payment = RecordPayment::handle($subscription, $actor, [
             'amount' => '50',
             'currency' => 'ILS',
             'payment_method' => 'cash',
         ]);
         $closing = Closing::factory()->create(['branch_id' => $branch->id, 'status' => ClosingStatus::Returned]);
         $closingLine = ClosingPayment::create(['closing_id' => $closing->id, 'subscription_transaction_id' => $payment->id]);
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $payment]), [
             'action' => 'refund',
         ]);
@@ -506,7 +511,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
         [$charge, $discount] = $this->billedReadingWithDiscount($subscription, $actor);
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
 
         $this->actingAs($actor)->get(route('subscriptions.statement', $subscription))
             ->assertInertia(fn ($page) => $page
@@ -576,7 +581,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->superAdmin()->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
         [$charge, $discount] = $this->billedReadingWithDiscount($subscription, $actor);
 
         $this->actingAs($actor)->get(route('subscriptions.statement', $subscription))
@@ -603,7 +608,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $actor = User::factory()->superAdmin()->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
         [$charge, $discount] = $this->billedReadingWithDiscount($subscription, $actor);
-        $charge->cancel($actor, CorrectionReason::WrongReading, 'خطأ');
+        CancelLine::cancel($charge, $actor, CorrectionReason::WrongReading, 'خطأ');
         $discountReversal = SubscriptionTransaction::query()->where('reverses_id', $discount->id)->sole();
 
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $discountReversal]), [
@@ -673,8 +678,8 @@ class SubscriptionTransactionActionTest extends TestCase
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
         [$charge, $readingDiscount] = $this->billedReadingWithDiscount($subscription, $actor);
         $reading = $charge->meterReading;
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
-        $charge->cancel($actor, CorrectionReason::WrongReading, 'خطأ');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'غرامة');
+        CancelLine::cancel($charge, $actor, CorrectionReason::WrongReading, 'خطأ');
 
         $this->actingAs($actor)->get(route('subscriptions.statement', $subscription))
             ->assertInertia(fn ($page) => $page
@@ -697,7 +702,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $payment = RecordPayment::handle($subscription, $actor, [
             'amount' => '50',
             'currency' => 'ILS',
             'payment_method' => 'cash',
@@ -715,7 +720,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $branch = Branch::factory()->create();
         $actor = User::factory()->branchAdmin()->withPermissions([PermissionKey::ForceDeleteTransactions])->create(['branch_id' => $branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $payment = RecordPayment::handle($subscription, $actor, [
             'amount' => '50',
             'currency' => 'ILS',
             'payment_method' => 'cash',

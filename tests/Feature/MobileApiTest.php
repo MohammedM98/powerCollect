@@ -17,6 +17,7 @@ use App\Models\SubArea;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordPayment;
 use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
@@ -496,7 +497,7 @@ class MobileApiTest extends TestCase
         $paymentAt = function (string $utc) use ($collector, $subscription): int {
             $this->travelTo($utc);
 
-            return SubscriptionTransaction::recordPayment($subscription, $collector, ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash'])->id;
+            return RecordPayment::handle($subscription, $collector, ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash'])->id;
         };
         $paymentAt('2026-10-05 09:00:00'); // 12:00 on the 5th in Gaza
         $paymentAt('2026-10-05 20:30:00'); // 23:30 on the 5th in Gaza
@@ -606,7 +607,7 @@ class MobileApiTest extends TestCase
         $collector = $this->collectorWithPermission(...[...self::TAKES_PAYMENTS, PermissionKey::ViewSubscriptions]);
         $subscription = Subscription::factory()->create(['branch_id' => $collector->branch_id, 'full_name' => 'أحمد', 'phone' => '0599000111']);
         $charge = SubscriptionTransaction::factory()->for($subscription)->create(['amount' => '120.00', 'created_at' => now()->subDays(2)]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $collector, ['amount' => '30', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($subscription, $collector, ['amount' => '30', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $this->withHeader('Authorization', 'Bearer '.MobileAccessToken::issue($collector))
             ->getJson(route('mobile.collections.subscriptions.show', $subscription))
@@ -743,7 +744,7 @@ class MobileApiTest extends TestCase
         $collector = User::factory()->collector()->create();
         $collector->permissions()->sync(Permission::idsFor(self::TAKES_PAYMENTS));
         $subscription = Subscription::factory()->create(['branch_id' => $collector->branch_id]);
-        SubscriptionTransaction::recordPayment($subscription, $collector, [
+        RecordPayment::handle($subscription, $collector, [
             'amount' => '10',
             'currency' => 'ILS',
             'payment_method' => 'bank_transfer',
@@ -780,7 +781,7 @@ class MobileApiTest extends TestCase
             ->assertOk()
             ->assertJson(['available' => true, 'message' => 'الرقم المرجعي متاح.']);
 
-        SubscriptionTransaction::recordPayment(Subscription::factory()->create(['branch_id' => $collector->branch_id]), $collector, [
+        RecordPayment::handle(Subscription::factory()->create(['branch_id' => $collector->branch_id]), $collector, [
             'amount' => '10', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Ahmad', 'reference_number' => 'WEB-100',
         ]);
 

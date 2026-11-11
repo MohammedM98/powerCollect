@@ -28,6 +28,8 @@ use App\Models\User;
 use App\Support\BranchClosingWorkflow;
 use App\Support\ClosingPeriods;
 use App\Support\DailySeries;
+use App\Support\Ledger\LedgerAmounts;
+use App\Support\Ledger\LinePresenter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -176,8 +178,8 @@ class PaymentController extends Controller
                     'closing' => $note->closing->only(['coverage_from', 'coverage_until', 'workflow_settings']),
                     'entry' => $note->entry?->transaction ? [
                         'subscriber' => $note->entry->transaction->subscription->displayName(),
-                        'voucherNumber' => $note->entry->transaction->displayVoucherNumber(),
-                        'typeLabel' => $note->entry->transaction->typeLabel(),
+                        'voucherNumber' => LinePresenter::displayVoucherNumber($note->entry->transaction),
+                        'typeLabel' => LinePresenter::typeLabel($note->entry->transaction),
                         'amount' => $note->entry->amount, 'currency' => $note->entry->currency,
                     ] : null,
                     'box' => $note->box ? ['number' => $note->box->number, 'url' => route('payments.cash-boxes.show', $note->box)] : null,
@@ -391,10 +393,10 @@ class PaymentController extends Controller
             'payments' => $payments->take(self::RECENT_PAYMENTS)->map(fn (SubscriptionTransaction $payment): array => [
                 'id' => $payment->id,
                 'subscriptionName' => $payment->subscription->displayName(),
-                'amount' => SubscriptionTransaction::formatAmount(ltrim($payment->amount, '-')),
+                'amount' => LedgerAmounts::formatAmount(ltrim($payment->amount, '-')),
                 'methodLabel' => $payment->payment_method ? __($payment->payment_method->label()) : null,
                 'bankName' => $payment->bank_name,
-                'voucherNumber' => $payment->displayVoucherNumber(),
+                'voucherNumber' => LinePresenter::displayVoucherNumber($payment),
                 'time' => DailySeries::localTime($payment->created_at),
                 'receiptUrl' => route('subscriptions.payments.receipt', [$payment->subscription, $payment]),
             ])->values()->all(),

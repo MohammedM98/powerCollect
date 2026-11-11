@@ -10,6 +10,7 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -201,7 +202,7 @@ class DashboardTest extends TestCase
     private function pay(Branch $branch, float $amount, array $subscription = []): void
     {
         $recorder = User::factory()->collector()->create(['branch_id' => $branch->id]);
-        SubscriptionTransaction::recordPayment(
+        RecordPayment::handle(
             Subscription::factory()->create(['branch_id' => $branch->id, 'status' => 'active', ...$subscription]),
             $recorder,
             ['amount' => (string) $amount, 'currency' => 'ILS', 'payment_method' => 'cash'],

@@ -10,6 +10,9 @@ use App\Models\SplitPayment;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\CancelLine;
+use App\Support\Ledger\PaymentReferences;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
@@ -130,7 +133,7 @@ class SplitPaymentTest extends TestCase
     public function test_a_reference_already_on_another_payment_is_refused_unless_confirmed(): void
     {
         $other = $this->subscriptionOwing(100);
-        SubscriptionTransaction::recordPayment($other, $this->cashier, [
+        RecordPayment::handle($other, $this->cashier, [
             'amount' => '10', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Someone', 'reference_number' => 'bop 558201',
         ]);
 
@@ -153,7 +156,7 @@ class SplitPaymentTest extends TestCase
             ->assertJson(['available' => true, 'conflict' => null]);
 
         $other = $this->subscriptionOwing(100);
-        $payment = SubscriptionTransaction::recordPayment($other, $this->cashier, [
+        $payment = RecordPayment::handle($other, $this->cashier, [
             'amount' => '10', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Someone', 'reference_number' => 'bop 558201',
         ]);
 
@@ -194,7 +197,7 @@ class SplitPaymentTest extends TestCase
         $split = $this->recordSplit();
         $parts = $split->payments;
 
-        $parts[1]->cancel(User::factory()->superAdmin()->create(), CorrectionReason::NotReceived, 'bounced');
+        CancelLine::cancel($parts[1], User::factory()->superAdmin()->create(), CorrectionReason::NotReceived, 'bounced');
 
         $this->assertSame('0.00', $split->standingTotal());
         foreach ($parts as $part) {
@@ -234,10 +237,10 @@ class SplitPaymentTest extends TestCase
     {
         $split = $this->recordSplit();
         $part = $split->payments[0];
-        $part->cancel(User::factory()->superAdmin()->create(), CorrectionReason::Other, 'oops');
+        CancelLine::cancel($part, User::factory()->superAdmin()->create(), CorrectionReason::Other, 'oops');
 
-        $this->assertNull(SubscriptionTransaction::activeReferenceConflict('BOP-558201', null, $split->id));
-        $this->assertNull(SubscriptionTransaction::activeReferenceConflict('BOP-558201'));
+        $this->assertNull(PaymentReferences::activeReferenceConflict('BOP-558201', null, $split->id));
+        $this->assertNull(PaymentReferences::activeReferenceConflict('BOP-558201'));
     }
 
     public function test_the_details_list_the_parts_of_the_users_branch_and_only_count_the_rest(): void
@@ -245,7 +248,7 @@ class SplitPaymentTest extends TestCase
         $split = $this->recordSplit();
         $otherBranch = Branch::factory()->create();
         $elsewhere = Subscription::factory()->create(['branch_id' => $otherBranch->id]);
-        SubscriptionTransaction::recordPayment($elsewhere, $this->cashier, [
+        RecordPayment::handle($elsewhere, $this->cashier, [
             'amount' => '50', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'محمد حمدان',
             'reference_number' => 'BOP-558201', 'split_payment_id' => $split->id, 'confirm_duplicate_reference' => true,
         ]);

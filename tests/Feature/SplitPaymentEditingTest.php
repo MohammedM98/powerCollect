@@ -11,6 +11,9 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\BranchClosingWorkflow;
+use App\Support\Ledger\PaymentReferences;
+use App\Support\Ledger\RecordPayment;
+use App\Support\Ledger\TransactionActions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
@@ -57,7 +60,7 @@ class SplitPaymentEditingTest extends TestCase
             $this->assertSame(['أحمد', 'محمد'], $amendment->changes['sender_name']);
         }
         $this->assertSame('NEW-456', $this->split->fresh()->reference_number);
-        $this->assertNull(SubscriptionTransaction::activeReferenceConflict('OLD-123'));
+        $this->assertNull(PaymentReferences::activeReferenceConflict('OLD-123'));
     }
 
     #[TestWith([0, 'canonical'])]
@@ -91,7 +94,7 @@ class SplitPaymentEditingTest extends TestCase
     public function test_a_normalized_reference_used_in_another_branch_refuses_all_changes(): void
     {
         $other = Subscription::factory()->create();
-        SubscriptionTransaction::recordPayment($other, $this->actor, ['amount' => 10, 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'reference_number' => 'new / 456']);
+        RecordPayment::handle($other, $this->actor, ['amount' => 10, 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'reference_number' => 'new / 456']);
         $this->patch(route('split-payments.update', $this->split), $this->payload())->assertSessionHasErrors('reference_number');
         $this->assertSame(['OLD-123'], $this->split->payments()->pluck('reference_number')->unique()->all());
         $this->assertSame(['أحمد'], $this->split->payments()->pluck('sender_name')->unique()->all());
@@ -141,7 +144,7 @@ class SplitPaymentEditingTest extends TestCase
     public function test_hidden_foreign_shares_prevent_loading_or_saving_a_partial_transfer(): void
     {
         $payload = $this->payload();
-        SubscriptionTransaction::recordPayment(Subscription::factory()->create(), $this->actor, ['amount' => 10, 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'reference_number' => 'OLD-123', 'split_payment_id' => $this->split->id]);
+        RecordPayment::handle(Subscription::factory()->create(), $this->actor, ['amount' => 10, 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'reference_number' => 'OLD-123', 'split_payment_id' => $this->split->id]);
         $this->getJson(route('split-payments.edit', $this->split))->assertUnprocessable()->assertJsonValidationErrors('action');
         $this->patch(route('split-payments.update', $this->split), $payload)->assertSessionHasErrors('action');
         $this->assertSame(['OLD-123'], $this->split->payments()->pluck('reference_number')->unique()->all());
@@ -151,7 +154,7 @@ class SplitPaymentEditingTest extends TestCase
     public function test_refunding_after_an_edit_still_returns_the_whole_transfer(): void
     {
         $this->patch(route('split-payments.update', $this->split), $this->payload())->assertSessionHasNoErrors();
-        $this->split->payments[0]->applyAction(User::factory()->superAdmin()->create(), TransactionAction::Refund, ['correction_notes' => 'لم تصل']);
+        TransactionActions::applyAction($this->split->payments[0], User::factory()->superAdmin()->create(), TransactionAction::Refund, ['correction_notes' => 'لم تصل']);
         $this->assertSame('0.00', $this->split->standingTotal());
         $this->assertSame(2, SubscriptionTransaction::where('type', 'refund')->count());
     }

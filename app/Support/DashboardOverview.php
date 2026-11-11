@@ -16,6 +16,7 @@ use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\LinePresenter;
 use Brick\Math\RoundingMode;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
@@ -356,7 +357,7 @@ class DashboardOverview
                 'subscriptionId' => $payment->subscription_id,
                 'subscriber' => $payment->subscription->displayName(),
                 'accountNumber' => $payment->subscription->account_number,
-                'voucherNumber' => $payment->displayVoucherNumber(),
+                'voucherNumber' => LinePresenter::displayVoucherNumber($payment),
                 'branchName' => $payment->subscription->branch?->name,
                 'recordedBy' => $payment->recordedBy?->name,
                 'isCash' => $payment->payment_method === PaymentMethod::Cash,

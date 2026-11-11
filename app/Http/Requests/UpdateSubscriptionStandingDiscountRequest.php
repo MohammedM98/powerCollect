@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\DiscountMethod;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
+use App\Support\Ledger\LedgerAmounts;
 use App\Support\Money;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -61,7 +61,7 @@ class UpdateSubscriptionStandingDiscountRequest extends FormRequest
                 if (Money::decimal($this->input('value'))->isGreaterThan($kiloPrice)) {
                     $validator->errors()->add('value', sprintf(
                         'لا يمكن أن يزيد الخصم على سعر الكيلو (%s شيكل).',
-                        SubscriptionTransaction::formatAmount($kiloPrice),
+                        LedgerAmounts::formatAmount($kiloPrice),
                     ));
                 }
             },

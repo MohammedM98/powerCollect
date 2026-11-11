@@ -11,6 +11,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\BranchDomainScope;
+use App\Support\Ledger\RecordPayment;
 use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -259,7 +260,7 @@ class SplitTransferAuditTest extends TestCase
     {
         [$head, $auditor, $split, $box] = $this->transfer();
         $foreign = Subscription::factory()->create();
-        SubscriptionTransaction::recordPayment($foreign, User::factory()->collector()->create(['branch_id' => $foreign->branch_id]), [
+        RecordPayment::handle($foreign, User::factory()->collector()->create(['branch_id' => $foreign->branch_id]), [
             'amount' => '1', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين',
             'reference_number' => 'AUDIT-GROUP', 'split_payment_id' => $split->id,
         ]);

@@ -8,6 +8,8 @@ use App\Models\MobileAccessToken;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -95,7 +97,7 @@ class OverpaymentConfirmationTest extends TestCase
     public function test_correcting_a_payment_is_checked_against_what_is_owed_without_it(): void
     {
         $this->owe('250');
-        $payment = SubscriptionTransaction::recordPayment($this->subscription, $this->admin, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($this->subscription, $this->admin, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
         $correct = fn (array $extra = []) => $this->actingAs($this->admin)->put(route('subscriptions.transactions.update', [$this->subscription, $payment]), [
             ...$this->payment('5000'), 'correction_reason' => 'wrong_amount', 'correction_notes' => 'x', ...$extra,
         ]);
@@ -141,7 +143,7 @@ class OverpaymentConfirmationTest extends TestCase
 
     private function owe(string $amount): void
     {
-        SubscriptionTransaction::recordCharge($this->subscription, $this->admin, ChargeType::Penalty, $amount, 'غرامة');
+        RecordCharge::handle($this->subscription, $this->admin, ChargeType::Penalty, $amount, 'غرامة');
     }
 
     /**

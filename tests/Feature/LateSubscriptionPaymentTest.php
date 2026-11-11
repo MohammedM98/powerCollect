@@ -8,6 +8,8 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia;
@@ -102,7 +104,7 @@ class LateSubscriptionPaymentTest extends TestCase
         $head = User::factory()->branchAdmin()->for($branch)->create();
         $this->travelTo('2026-10-11 08:00:00');
         $this->actingAs($head)->post(route('payments.cash-boxes.actions', ['action' => 'start']), ['branch_id' => $branch->id])->assertSessionHasNoErrors();
-        $oldPayment = SubscriptionTransaction::recordPayment($subscription, $collector, ['amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $oldPayment = RecordPayment::handle($subscription, $collector, ['amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash']);
         $oldBox = $oldPayment->boxEntry->box;
         $this->post(route('payments.cash-boxes.actions', ['action' => 'receive', 'record' => $oldBox->id]), ['branch_id' => $branch->id])->assertSessionHasNoErrors();
         $oldBoxAttributes = $oldBox->fresh()->getAttributes();
@@ -173,7 +175,7 @@ class LateSubscriptionPaymentTest extends TestCase
         $payload = [...$this->payload(), 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_bank_name' => 'بنك القدس', 'sender_name' => 'أحمد', 'reference_number' => 'BANK-OLD-10'];
         $this->archivedPayment($collector, $subscription, $payload);
         $payment = $subscription->transactions()->where('type', 'payment')->sole();
-        $details = $payment->ledgerDetails();
+        $details = LinePresenter::ledgerDetails($payment);
         $this->assertSame('2026-10-10', $details['paidOn']);
         $this->assertSame('2026-10-21 11:00', $details['date']);
         $this->assertSame('بنك فلسطين', $details['bankName']);
@@ -200,6 +202,6 @@ class LateSubscriptionPaymentTest extends TestCase
     {
         $this->actingAs($collector);
 
-        return SubscriptionTransaction::recordPayment($subscription, $collector, $payload);
+        return RecordPayment::handle($subscription, $collector, $payload);
     }
 }

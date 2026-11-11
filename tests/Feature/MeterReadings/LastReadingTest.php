@@ -10,6 +10,7 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\LinePresenter;
 use App\Support\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -116,7 +117,7 @@ class LastReadingTest extends TestCase
             $lines->map(fn (SubscriptionTransaction $line): array => [$line->type, $line->meter_reading_id, $line->isCancelled()])->all(),
         );
         // A cancelled charge still says the consumption it was billed for, not the corrected one.
-        $this->assertSame(['50 كيلو', '40 كيلو'], [str($lines[0]->description())->afterLast('· ')->value(), str($lines[4]->description())->afterLast('· ')->value()]);
+        $this->assertSame(['50 كيلو', '40 كيلو'], [str(LinePresenter::description($lines[0]))->afterLast('· ')->value(), str(LinePresenter::description($lines[4]))->afterLast('· ')->value()]);
     }
 
     public function test_an_edit_that_makes_an_approved_week_unusual_saves_nothing_until_it_is_confirmed(): void

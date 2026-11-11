@@ -11,6 +11,8 @@ use App\Models\StandingDiscount;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
@@ -60,7 +62,7 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
     public function test_a_manually_cancelled_reading_stays_waived_after_correction_and_reapproval(int $freeKilowatts): void
     {
         [$actor, $subscription, $reading, $charge] = $this->approvedWeek($freeKilowatts);
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'Later charge');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'Later charge');
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $charge]), [
             'action' => 'cancel', 'correction_notes' => 'Waive the bill',
         ])->assertSessionHasNoErrors();
@@ -99,7 +101,7 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
     public function test_giving_a_first_discount_after_cancelling_the_bill_does_not_create_credit_without_a_charge(): void
     {
         [$actor, $subscription, $reading, $charge] = $this->approvedWeek();
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'Later charge');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'Later charge');
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $charge]), [
             'action' => 'cancel', 'correction_notes' => 'Waive the bill',
         ])->assertSessionHasNoErrors();
@@ -115,7 +117,7 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
     public function test_a_cancelled_undiscounted_bill_does_not_gain_an_orphan_discount_when_corrected_and_reapproved(): void
     {
         [$actor, $subscription, $reading, $charge] = $this->approvedWeek();
-        SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::Penalty, '10', 'Later charge');
+        RecordCharge::handle($subscription, $actor, ChargeType::Penalty, '10', 'Later charge');
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $charge]), [
             'action' => 'cancel', 'correction_notes' => 'Waive the bill',
         ])->assertSessionHasNoErrors();
@@ -155,7 +157,7 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
     public function test_repeated_reading_corrections_preserve_the_payment_and_link_each_replacement(): void
     {
         [$actor, $subscription, $reading, $charge] = $this->approvedWeek(2);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $actor, [
+        $payment = RecordPayment::handle($subscription, $actor, [
             'amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash',
         ]);
         $this->actingAs($actor)->put(route('meter-readings.update', $reading), ['current_reading' => 1206, 'approve' => true])
@@ -226,7 +228,7 @@ class SubscriptionReadingLedgerLifecycleTest extends TestCase
         [$actor, $subscription, $reading, $charge] = $this->approvedWeek(2);
         $this->actingAs($actor)->get(route('subscriptions.statement', $subscription))
             ->assertInertia(fn ($page) => $page->where('entries.0.available_actions', ['delete']));
-        SubscriptionTransaction::recordPayment($subscription, $actor, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        RecordPayment::handle($subscription, $actor, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $this->post(route('subscriptions.transactions.actions.store', [$subscription, $charge]), [
             'action' => 'delete', 'correction_notes' => 'Stale menu',

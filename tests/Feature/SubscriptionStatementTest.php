@@ -9,6 +9,11 @@ use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\AmendLine;
+use App\Support\Ledger\CancelLine;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
@@ -195,7 +200,7 @@ class SubscriptionStatementTest extends TestCase
             ['جوال باي', 'TRX-88214', null, null],
             [$transfer->bank_name, $transfer->reference_number, $transfer->cash_box, $transfer->manual_voucher_number],
         );
-        $this->assertSame('دفعة بتحويل بنكي من محمود سالم', $transfer->description());
+        $this->assertSame('دفعة بتحويل بنكي من محمود سالم', LinePresenter::description($transfer));
     }
 
     public function test_a_transfer_can_be_recorded_without_a_reference_number(): void
@@ -212,7 +217,7 @@ class SubscriptionStatementTest extends TestCase
     {
         $otherSubscription = Subscription::factory()->create(['full_name' => 'Mona']);
         $otherCollector = User::factory()->branchAdmin()->create(['branch_id' => $otherSubscription->branch_id]);
-        $existing = SubscriptionTransaction::recordPayment($otherSubscription, $otherCollector, [
+        $existing = RecordPayment::handle($otherSubscription, $otherCollector, [
             'amount' => '25',
             'currency' => 'ILS',
             'payment_method' => 'bank_transfer',
@@ -251,7 +256,7 @@ class SubscriptionStatementTest extends TestCase
             ->assertOk()
             ->assertJsonPath('available', false)
             ->assertJsonPath('conflict.id', $payment->id)
-            ->assertJsonPath('conflict.voucherNumber', $payment->printedVoucherNumber());
+            ->assertJsonPath('conflict.voucherNumber', LinePresenter::printedVoucherNumber($payment));
 
         $this->getJson(route('subscriptions.payments.reference-status', [
             $this->subscription,
@@ -364,11 +369,11 @@ class SubscriptionStatementTest extends TestCase
     {
         // 22:30 UTC on 30 August is 01:30 on 31 August in Gaza.
         $this->travelTo('2026-08-30 22:30:00');
-        $payment = SubscriptionTransaction::recordPayment($this->subscription, $this->branchAdmin, ['amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash']);
-        SubscriptionTransaction::recordCharge($this->subscription, $this->branchAdmin, ChargeType::Penalty, '10', null);
+        $payment = RecordPayment::handle($this->subscription, $this->branchAdmin, ['amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '10', null);
         $this->travelTo('2026-08-30 23:10:00');
-        $payment->amend($this->branchAdmin, ['notes' => 'تصحيح'], 'توضيح');
-        $payment->cancel($this->branchAdmin, CorrectionReason::Duplicate, null);
+        AmendLine::amend($payment, $this->branchAdmin, ['notes' => 'تصحيح'], 'توضيح');
+        CancelLine::cancel($payment, $this->branchAdmin, CorrectionReason::Duplicate, null);
 
         $this->actingAs($this->branchAdmin)
             ->get(route('subscriptions.statement', $this->subscription))
@@ -399,7 +404,7 @@ class SubscriptionStatementTest extends TestCase
         $this->assertNull($payment->sender_name);
         $this->assertNull($payment->bank_name);
         $this->assertNull($payment->sender_bank_name);
-        $this->assertSame('دفعة نقدية', $payment->description());
+        $this->assertSame('دفعة نقدية', LinePresenter::description($payment));
     }
 
     /**

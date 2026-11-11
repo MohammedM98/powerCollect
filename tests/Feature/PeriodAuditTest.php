@@ -11,6 +11,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\BankTransferAuditing;
 use App\Support\BranchClosingWorkflow;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -31,7 +32,7 @@ class PeriodAuditTest extends TestCase
         $auditor = User::factory()->financialAuditor()->create();
         $subscription = Subscription::factory()->create(['branch_id' => $collector->branch_id]);
         SubscriptionTransaction::factory()->for($subscription)->create(['amount' => '200.00']);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $collector, [
+        $payment = RecordPayment::handle($subscription, $collector, [
             'amount' => '100', 'currency' => 'ILS', 'exchange_rate' => '1', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'reference_number' => 'BANK-'.$subscription->id,
         ]);
         $box = $payment->boxEntry->box;

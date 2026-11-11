@@ -11,6 +11,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\BranchScope;
 use App\Support\DailySeries;
+use App\Support\Ledger\LinePresenter;
 use App\Support\Money;
 use Brick\Math\RoundingMode;
 use Carbon\CarbonImmutable;
@@ -146,7 +147,7 @@ class LedgerController extends Controller
             ->when($type === self::DEBIT, fn (Builder $query) => $query->charges())
             ->when($type === self::CREDIT, fn (Builder $query) => $query->credits())
             ->when(
-                ! in_array($type, [self::DEBIT, self::CREDIT], true) && array_key_exists((string) $type, SubscriptionTransaction::typeLabels()),
+                ! in_array($type, [self::DEBIT, self::CREDIT], true) && array_key_exists((string) $type, LinePresenter::typeLabels()),
                 fn (Builder $query) => $query->where('type', $type),
             )
             ->when($recordedBy, fn (Builder $query) => $query->where('recorded_by', $recordedBy))
@@ -316,13 +317,13 @@ class LedgerController extends Controller
             'subscriptionStatusLabel' => __($transaction->subscription->status->label()),
             'branchName' => $transaction->subscription->branch->name,
             'type' => $transaction->type,
-            'typeLabel' => $transaction->typeLabel(),
+            'typeLabel' => LinePresenter::typeLabel($transaction),
             'isCredit' => $transaction->isCredit(),
             // Listed, but left out of the totals.
             'isCancelled' => $transaction->isCancelled() || $transaction->isReversal(),
             'recordedByName' => $transaction->recordedBy?->name,
             'amount' => ltrim($transaction->amount, '-'),
-            'voucherNumber' => $transaction->displayVoucherNumber(),
+            'voucherNumber' => LinePresenter::displayVoucherNumber($transaction),
             'isManualVoucher' => (bool) $transaction->manual_voucher_number,
             'paymentMethod' => $transaction->payment_method?->value,
             'paymentMethodLabel' => $transaction->payment_method ? __($transaction->payment_method->label()) : null,
@@ -365,7 +366,7 @@ class LedgerController extends Controller
         $groups[] = $this->filterGroup('type', 'نوع القيد', [
             ['value' => self::DEBIT, 'label' => 'كل ما عليه (تحميل)'],
             ['value' => self::CREDIT, 'label' => 'كل ما له (تسديد وخصم ومقاصة)'],
-            ...collect(SubscriptionTransaction::typeLabels())->map(fn (string $label, string $type): array => ['value' => $type, 'label' => $label])->values(),
+            ...collect(LinePresenter::typeLabels())->map(fn (string $label, string $type): array => ['value' => $type, 'label' => $label])->values(),
         ]);
 
         $groups[] = $this->filterGroup('payment_method', 'طريقة الدفع', collect(PaymentMethod::cases())

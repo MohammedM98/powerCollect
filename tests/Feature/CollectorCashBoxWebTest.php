@@ -12,9 +12,10 @@ use App\Models\CollectorDebt;
 use App\Models\MobileAccessToken;
 use App\Models\Permission;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\BranchClosingWorkflow;
+use App\Support\Ledger\RecordClearing;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia;
@@ -45,7 +46,7 @@ class CollectorCashBoxWebTest extends TestCase
 
     private function payment(Branch $branch, User $collector): CashBox
     {
-        SubscriptionTransaction::recordPayment(Subscription::factory()->for($branch)->create(), $collector, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        RecordPayment::handle(Subscription::factory()->for($branch)->create(), $collector, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         return CashBox::query()->where('user_id', $collector->id)->where('status', 'open')->sole();
     }
@@ -304,7 +305,7 @@ class CollectorCashBoxWebTest extends TestCase
         [$branch, $head, $collector] = $this->start();
         $cashBox = $this->payment($branch, $collector);
         $payment = $cashBox->payments()->sole()->transaction;
-        $clearing = SubscriptionTransaction::recordClearing(Subscription::factory()->for($branch)->create(), $collector, '40', 'صيانة المولد');
+        $clearing = RecordClearing::handle(Subscription::factory()->for($branch)->create(), $collector, '40', 'صيانة المولد');
         $clearingBox = CashBox::query()->where('user_id', $collector->id)->where('type', 'clearing')->where('status', 'open')->sole();
 
         $this->actingAs($collector)->get(route('payments.summary'))->assertInertia(fn (AssertableInertia $page) => $page

@@ -13,6 +13,18 @@ use App\Http\Requests\ForceDeleteSubscriptionTransactionRequest;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Notifications\ActionCompleted;
+use App\Support\Ledger\AmendLine;
+use App\Support\Ledger\CancelLine;
+use App\Support\Ledger\CorrectLine;
+use App\Support\Ledger\EraseLine;
+use App\Support\Ledger\LedgerAmounts;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\PaymentReferences;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordClearing;
+use App\Support\Ledger\RecordDiscount;
+use App\Support\Ledger\RecordPayment;
+use App\Support\Ledger\TransactionActions;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 
@@ -30,9 +42,9 @@ class SubscriptionTransactionController extends Controller
         SubscriptionTransaction $transaction,
     ): RedirectResponse {
         $action = $request->action();
-        $summary = sprintf('%s — %s', $subscription->displayName(), $transaction->description());
+        $summary = sprintf('%s — %s', $subscription->displayName(), LinePresenter::description($transaction));
 
-        $transaction->applyAction($request->user(), $action, $request->validated());
+        TransactionActions::applyAction($transaction, $request->user(), $action, $request->validated());
 
         $request->user()->notify(new ActionCompleted('transaction-'.$action->value, $summary));
 
@@ -45,7 +57,7 @@ class SubscriptionTransactionController extends Controller
         if ($transaction->split_payment_id !== null) {
             $transaction->splitPayment->revise($request->user(), $request->validated());
         } else {
-            $transaction->amend(
+            AmendLine::amend($transaction,
                 $request->user(),
                 $request->safe()->except(['amendment_reason']),
                 $request->validated('amendment_reason'),
@@ -54,7 +66,7 @@ class SubscriptionTransactionController extends Controller
 
         $request->user()->notify(new ActionCompleted(
             'transaction-amended',
-            sprintf('%s — دفعة%s', $subscription->displayName(), $transaction->printedVoucherNumber() ? ' · السند '.$transaction->printedVoucherNumber() : ''),
+            sprintf('%s — دفعة%s', $subscription->displayName(), LinePresenter::printedVoucherNumber($transaction) ? ' · السند '.LinePresenter::printedVoucherNumber($transaction) : ''),
         ));
 
         return back()->with('status', 'transaction-amended');
@@ -72,25 +84,25 @@ class SubscriptionTransactionController extends Controller
 
         // A corrected part of a split transfer stays a part of it, so it still shares the transfer's reference.
         if ($transaction->isPayment() && $transaction->split_payment_id !== null
-            && SubscriptionTransaction::normalizeReference($details['reference_number'] ?? null) === SubscriptionTransaction::normalizeReference($transaction->reference_number)) {
+            && PaymentReferences::normalizeReference($details['reference_number'] ?? null) === PaymentReferences::normalizeReference($transaction->reference_number)) {
             $details['split_payment_id'] = $transaction->split_payment_id;
         }
 
-        $replacement = $transaction->correct(
+        $replacement = CorrectLine::correct($transaction,
             $actor,
             CorrectionReason::from($request->validated('correction_reason')),
             $request->validated('correction_notes'),
             fn (Subscription $subscription): SubscriptionTransaction => match (true) {
-                $transaction->isPayment() => SubscriptionTransaction::recordPayment($subscription, $actor, $details),
-                $transaction->isDiscount() => SubscriptionTransaction::recordDiscount($subscription, $actor, DiscountMethod::from($details['method']), $details['value'], $details['notes'] ?? null),
-                $transaction->isClearing() => SubscriptionTransaction::recordClearing($subscription, $actor, $details['amount'], $details['notes'], $details['manual_voucher_number'] ?? null),
-                default => SubscriptionTransaction::recordCharge($subscription, $actor, ChargeType::from($details['type']), $details['amount'], $details['notes'] ?? null),
+                $transaction->isPayment() => RecordPayment::handle($subscription, $actor, $details),
+                $transaction->isDiscount() => RecordDiscount::handle($subscription, $actor, DiscountMethod::from($details['method']), $details['value'], $details['notes'] ?? null),
+                $transaction->isClearing() => RecordClearing::handle($subscription, $actor, $details['amount'], $details['notes'], $details['manual_voucher_number'] ?? null),
+                default => RecordCharge::handle($subscription, $actor, ChargeType::from($details['type']), $details['amount'], $details['notes'] ?? null),
             },
         );
 
         $actor->notify(new ActionCompleted(
             'transaction-corrected',
-            sprintf('%s — %s %s شيكل', $subscription->displayName(), $replacement->typeLabel(), SubscriptionTransaction::formatAmount(ltrim($replacement->amount, '-'))),
+            sprintf('%s — %s %s شيكل', $subscription->displayName(), LinePresenter::typeLabel($replacement), LedgerAmounts::formatAmount(ltrim($replacement->amount, '-'))),
         ));
 
         if ($replacement->isPayment()) {
@@ -98,7 +110,7 @@ class SubscriptionTransactionController extends Controller
                 'amount' => $replacement->currency_amount,
                 'currency' => $replacement->currency->value,
                 'inShekels' => ltrim($replacement->amount, '-'),
-                'voucherNumber' => $replacement->printedVoucherNumber(),
+                'voucherNumber' => LinePresenter::printedVoucherNumber($replacement),
                 'balance' => $subscription->balance(),
                 'receiptUrl' => route('subscriptions.payments.receipt', [$subscription, $replacement]),
             ]);
@@ -113,7 +125,7 @@ class SubscriptionTransactionController extends Controller
      */
     public function destroy(DeleteSubscriptionTransactionRequest $request, Subscription $subscription, SubscriptionTransaction $transaction): RedirectResponse
     {
-        $transaction->cancel(
+        CancelLine::cancel($transaction,
             $request->user(),
             CorrectionReason::from($request->validated('correction_reason')),
             $request->validated('correction_notes'),
@@ -122,7 +134,7 @@ class SubscriptionTransactionController extends Controller
 
         $request->user()->notify(new ActionCompleted(
             'transaction-deleted',
-            sprintf('%s — %s %s شيكل', $subscription->displayName(), $transaction->typeLabel(), SubscriptionTransaction::formatAmount(ltrim($transaction->amount, '-'))),
+            sprintf('%s — %s %s شيكل', $subscription->displayName(), LinePresenter::typeLabel($transaction), LedgerAmounts::formatAmount(ltrim($transaction->amount, '-'))),
         ));
 
         return back()->with('status', 'transaction-deleted');
@@ -134,9 +146,9 @@ class SubscriptionTransactionController extends Controller
      */
     public function forceDestroy(ForceDeleteSubscriptionTransactionRequest $request, Subscription $subscription, SubscriptionTransaction $transaction): RedirectResponse
     {
-        $summary = sprintf('%s — %s %s شيكل', $subscription->displayName(), $transaction->typeLabel(), SubscriptionTransaction::formatAmount(ltrim($transaction->amount, '-')));
+        $summary = sprintf('%s — %s %s شيكل', $subscription->displayName(), LinePresenter::typeLabel($transaction), LedgerAmounts::formatAmount(ltrim($transaction->amount, '-')));
 
-        $transaction->erase($request->user(), $request->validated('correction_notes'));
+        EraseLine::erase($transaction, $request->user(), $request->validated('correction_notes'));
 
         $request->user()->notify(new ActionCompleted('transaction-erased', $summary));
 

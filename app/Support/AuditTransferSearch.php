@@ -7,6 +7,8 @@ use App\Models\CashBoxPayment;
 use App\Models\Closing;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\PaymentReferences;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -57,7 +59,7 @@ class AuditTransferSearch
         }
         if ($search !== '') {
             $number = strtr($search, array_combine(preg_split('//u', '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹', -1, PREG_SPLIT_NO_EMPTY), str_split('01234567890123456789')));
-            $references = array_filter([SubscriptionTransaction::normalizeReference($number), SubscriptionTransaction::normalizeReference($search)]);
+            $references = array_filter([PaymentReferences::normalizeReference($number), PaymentReferences::normalizeReference($search)]);
             $query->whereHas('transaction', function (Builder $payment) use ($search, $number, $references): void {
                 $payment->where(function (Builder $matching) use ($search, $number, $references): void {
                     $matching->whereIn('manual_voucher_number', [$search, $number])->orWhereIn('reference_number', [$search, $number]);
@@ -94,7 +96,7 @@ class AuditTransferSearch
                 return [
                     'id' => $entry->id,
                     'transaction' => [...$payment->only(['id', 'amount', 'exchange_rate']), 'subscription' => $payment->subscription->only(['full_name', 'subscription_name'])],
-                    'ledger' => $payment->ledgerDetails(),
+                    'ledger' => LinePresenter::ledgerDetails($payment),
                     'audit' => $entry->audit,
                     'box' => ['number' => $entry->box->number, 'collector' => $entry->box->user?->name],
                     'canReview' => BankTransferAuditing::allowed($actor, AuditAction::ReviewTransfers) && $entry->box->audit === null && ! $entry->audit?->isPosted(),

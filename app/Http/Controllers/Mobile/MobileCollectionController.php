@@ -18,6 +18,9 @@ use App\Models\SubscriptionTransaction;
 use App\Support\ArabicSearch;
 use App\Support\BranchClosingWorkflow;
 use App\Support\ClosingPeriods;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\PaymentReferences;
+use App\Support\Ledger\RecordPayment;
 use App\Support\Messaging\SmsGateway;
 use App\Support\Money;
 use Carbon\CarbonImmutable;
@@ -198,10 +201,10 @@ class MobileCollectionController extends Controller
             'recorded_at' => $transaction->created_at->copy()->setTimezone(config('app.business_timezone'))->format('Y-m-d H:i'),
             'bank_received_on' => $transaction->bank_received_on?->toDateString(),
             'type' => $transaction->type,
-            'type_label' => $transaction->typeLabel(),
-            'description' => $transaction->description(),
+            'type_label' => LinePresenter::typeLabel($transaction),
+            'description' => LinePresenter::description($transaction),
             'notes' => $transaction->notes,
-            'voucher_number' => $transaction->displayVoucherNumber(),
+            'voucher_number' => LinePresenter::displayVoucherNumber($transaction),
             'reference_number' => $transaction->reference_number,
             'amount' => Closing::money(abs(Closing::cents($transaction->amount))),
             'is_credit' => (float) $transaction->amount < 0,
@@ -254,14 +257,14 @@ class MobileCollectionController extends Controller
     {
 
         $validated = $request->validated();
-        $conflict = SubscriptionTransaction::activeReferenceConflict($validated['reference_number']);
-        $mayDiscloseConflict = $conflict?->mayDiscloseReferenceTo($request->user()) ?? false;
+        $conflict = PaymentReferences::activeReferenceConflict($validated['reference_number']);
+        $mayDiscloseConflict = $conflict !== null && PaymentReferences::mayDiscloseReferenceTo($conflict, $request->user());
 
         return response()->json([
             'available' => $conflict === null,
             'message' => $conflict === null ? 'الرقم المرجعي متاح.' : 'الرقم المرجعي مكرر: مسجَّل مسبقًا على دفعة أخرى.',
             'conflict' => $conflict ? [
-                'voucher_number' => $mayDiscloseConflict ? $conflict->displayVoucherNumber() : null,
+                'voucher_number' => $mayDiscloseConflict ? LinePresenter::displayVoucherNumber($conflict) : null,
                 'subscription_name' => $mayDiscloseConflict ? $conflict->subscription->displayName() : null,
             ] : null,
         ]);
@@ -279,7 +282,7 @@ class MobileCollectionController extends Controller
 
         try {
             $transaction = DB::transaction(function () use ($subscription, $request, $validated): SubscriptionTransaction {
-                $transaction = SubscriptionTransaction::recordPayment($subscription, $request->user(), [
+                $transaction = RecordPayment::handle($subscription, $request->user(), [
                     'mobile_operation_id' => $validated['mobile_operation_id'],
                     'amount' => $validated['amount'],
                     'currency' => $validated['currency'],
@@ -351,7 +354,7 @@ class MobileCollectionController extends Controller
             'sender_bank_name' => $transaction->sender_bank_name,
             'status' => 'recorded',
             'recorded_at' => $transaction->created_at->toIso8601String(),
-            'voucher_number' => $transaction->printedVoucherNumber(),
+            'voucher_number' => LinePresenter::printedVoucherNumber($transaction),
             'reference_number' => $transaction->reference_number,
             'sender_name' => $transaction->sender_name,
             'notes' => $transaction->notes,

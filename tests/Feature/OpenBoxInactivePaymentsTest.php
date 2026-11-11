@@ -9,6 +9,9 @@ use App\Models\MobileAccessToken;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordClearing;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -32,8 +35,8 @@ class OpenBoxInactivePaymentsTest extends TestCase
     private function recordEntry(User $collector, Subscription $subscription, CashBoxType $type, string $amount): SubscriptionTransaction
     {
         return $type === CashBoxType::Clearing
-            ? SubscriptionTransaction::recordClearing($subscription, $collector, $amount, 'خدمة مولد')
-            : SubscriptionTransaction::recordPayment($subscription, $collector, [
+            ? RecordClearing::handle($subscription, $collector, $amount, 'خدمة مولد')
+            : RecordPayment::handle($subscription, $collector, [
                 'amount' => $amount, 'currency' => 'ILS', 'payment_method' => $type->value,
                 'bank_name' => 'بنك فلسطين', 'reference_number' => 'BOX-'.Str::ulid(),
             ]);
@@ -108,7 +111,7 @@ class OpenBoxInactivePaymentsTest extends TestCase
     {
         [$head, $collector, $subscription] = $this->staffAndSubscription();
         $payment = $this->recordEntry($collector, $subscription, CashBoxType::BankTransfer, '100');
-        SubscriptionTransaction::recordCharge($subscription, $head, ChargeType::Penalty, '10', 'غرامة');
+        RecordCharge::handle($subscription, $head, ChargeType::Penalty, '10', 'غرامة');
         $entry = $payment->boxEntry;
 
         $this->actingAs($head)->post(route('subscriptions.transactions.actions.store', [$subscription, $payment]), [

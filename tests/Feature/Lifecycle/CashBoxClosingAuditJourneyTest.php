@@ -11,6 +11,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Notifications\BranchClosingNotification;
+use App\Support\Ledger\TransactionActions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
@@ -60,7 +61,7 @@ class CashBoxClosingAuditJourneyTest extends TestCase
         $this->closingAction($head, 'electronic', $clearing->boxEntry->id, ['status' => 'rejected'])->assertSessionHasNoErrors();
         $this->closingAction($head, 'electronic', $firstCash->boxEntry->id, ['status' => 'missing'])->assertSessionHasErrors('action');
         Notification::assertSentTo($head, BranchClosingNotification::class);
-        $this->assertSame(['cancel'], $clearing->fresh()->availableActions($head));
+        $this->assertSame(['cancel'], TransactionActions::availableActions($clearing->fresh(), $head));
         $this->actingAs($head)->post(route('subscriptions.transactions.actions.store', [$second, $clearing]), [
             'action' => 'cancel', 'correction_reason' => 'other', 'correction_notes' => 'المقاصة لم تتم',
         ])->assertSessionHasNoErrors();
@@ -72,8 +73,8 @@ class CashBoxClosingAuditJourneyTest extends TestCase
         $this->closingAction($head, 'receive', $clearing->boxEntry->cash_box_id)->assertSessionHasNoErrors();
         $this->closingAction($head, 'receive', $clearing->boxEntry->cash_box_id)->assertSessionHasErrors('action');
         $this->assertSame(['completed', 'completed'], [$firstCash->boxEntry->box->fresh()->stage(), $secondCash->boxEntry->box->fresh()->stage()]);
-        $this->assertSame([], $firstCash->fresh()->availableActions($head));
-        $this->assertSame([], $firstTransfer->fresh()->availableActions($head));
+        $this->assertSame([], TransactionActions::availableActions($firstCash->fresh(), $head));
+        $this->assertSame([], TransactionActions::availableActions($firstTransfer->fresh(), $head));
         $lateCash = $this->pay($firstCollector, $first, '10');
         $this->assertNotSame($firstCash->boxEntry->cash_box_id, $lateCash->boxEntry->cash_box_id);
         $this->assertSame('190.00', $first->balance());

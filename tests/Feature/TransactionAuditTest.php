@@ -11,6 +11,12 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\AmendLine;
+use App\Support\Ledger\CancelLine;
+use App\Support\Ledger\CorrectLine;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordPayment;
+use App\Support\Ledger\TransactionActions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -112,9 +118,9 @@ class TransactionAuditTest extends TestCase
     public function test_branch_staff_see_only_their_own_branchs_changes(): void
     {
         $otherSubscription = Subscription::factory()->create(['branch_id' => Branch::factory()->create()->id]);
-        $otherCharge = SubscriptionTransaction::recordCharge($otherSubscription, $this->branchAdmin, ChargeType::Penalty, '30', null);
-        SubscriptionTransaction::recordCharge($otherSubscription, $this->branchAdmin, ChargeType::Penalty, '10', null);
-        $otherCharge->cancel($this->branchAdmin, CorrectionReason::Duplicate, null);
+        $otherCharge = RecordCharge::handle($otherSubscription, $this->branchAdmin, ChargeType::Penalty, '30', null);
+        RecordCharge::handle($otherSubscription, $this->branchAdmin, ChargeType::Penalty, '10', null);
+        CancelLine::cancel($otherCharge, $this->branchAdmin, CorrectionReason::Duplicate, null);
 
         $this->actingAs($this->branchAdmin)
             ->get(route('transaction-audit.index'))
@@ -128,8 +134,8 @@ class TransactionAuditTest extends TestCase
     public function test_the_period_tabs_limit_the_log_to_recent_changes(): void
     {
         $this->travelTo('2026-08-01 12:00:00');
-        $payment = SubscriptionTransaction::recordPayment($this->subscription, $this->branchAdmin, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
-        $payment->amend($this->branchAdmin, ['notes' => 'قديمة'], 'توضيح');
+        $payment = RecordPayment::handle($this->subscription, $this->branchAdmin, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        AmendLine::amend($payment, $this->branchAdmin, ['notes' => 'قديمة'], 'توضيح');
         $this->travelTo('2026-09-20 12:00:00');
 
         $this->actingAs($this->branchAdmin)
@@ -150,22 +156,21 @@ class TransactionAuditTest extends TestCase
     private function recordTheChanges(User $canceller): void
     {
         $this->travelTo('2026-09-01 12:00:00');
-        $payment = SubscriptionTransaction::recordPayment($this->subscription, $this->branchAdmin, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($this->subscription, $this->branchAdmin, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
         $this->travelTo('2026-09-02 12:00:00');
-        $payment->amend($this->branchAdmin, ['notes' => 'دفعة أيلول'], 'توضيح');
+        AmendLine::amend($payment, $this->branchAdmin, ['notes' => 'دفعة أيلول'], 'توضيح');
         $this->travelTo('2026-09-03 12:00:00');
-        $cancelled = SubscriptionTransaction::recordCharge($this->subscription, $this->branchAdmin, ChargeType::Penalty, '30', null);
+        $cancelled = RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '30', null);
         $this->travelTo('2026-09-04 12:00:00');
-        $corrected = SubscriptionTransaction::recordCharge($this->subscription, $this->branchAdmin, ChargeType::Penalty, '10', null);
+        $corrected = RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '10', null);
         $this->travelTo('2026-09-05 12:00:00');
-        $cancelled->cancel($canceller, CorrectionReason::Duplicate, 'مكررة');
+        CancelLine::cancel($cancelled, $canceller, CorrectionReason::Duplicate, 'مكررة');
         $this->travelTo('2026-09-06 12:00:00');
-        $corrected->correct($this->branchAdmin, CorrectionReason::WrongAmount, 'المبلغ الصحيح 15', fn (Subscription $subscription): SubscriptionTransaction => SubscriptionTransaction::recordCharge($subscription, $this->branchAdmin, ChargeType::Penalty, '15', null));
+        CorrectLine::correct($corrected, $this->branchAdmin, CorrectionReason::WrongAmount, 'المبلغ الصحيح 15', fn (Subscription $subscription): SubscriptionTransaction => RecordCharge::handle($subscription, $this->branchAdmin, ChargeType::Penalty, '15', null));
         $this->travelTo('2026-09-07 12:00:00');
-        $payment->applyAction($this->branchAdmin, TransactionAction::Refund, ['correction_notes' => 'سُجّلت بمبلغ خطأ']);
+        TransactionActions::applyAction($payment, $this->branchAdmin, TransactionAction::Refund, ['correction_notes' => 'سُجّلت بمبلغ خطأ']);
         $this->travelTo('2026-09-08 12:00:00');
-        SubscriptionTransaction::recordCharge($this->subscription, $this->branchAdmin, ChargeType::Penalty, '5', null)
-            ->applyAction($this->branchAdmin, TransactionAction::Delete, ['correction_notes' => 'سُجّلت بالخطأ']);
+        TransactionActions::applyAction(RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '5', null), $this->branchAdmin, TransactionAction::Delete, ['correction_notes' => 'سُجّلت بالخطأ']);
         $this->travelTo('2026-09-20 12:00:00');
     }
 }
