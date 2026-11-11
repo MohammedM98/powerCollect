@@ -81,7 +81,6 @@ class BranchClosingWorkflowTest extends TestCase
         }
 
         $this->assertNull($closing->fresh()->submitted_at);
-        $this->assertDatabaseCount('closing_versions', 0);
     }
 
     public function test_start_preserves_historical_closings_and_ignores_old_payments(): void

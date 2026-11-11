@@ -32,12 +32,8 @@ class BranchDomainScope implements Scope
         'AuditNote' => ['closing_id', 'Closing'],
         'AuditNoteReply' => ['audit_note_id', 'AuditNote'],
         'ClosingPayment' => ['closing_id', 'Closing'],
-        'ClosingAdjustment' => ['closing_id', 'Closing'],
         'ClosingEvent' => ['closing_id', 'Closing'],
-        'ClosingVersion' => ['closing_id', 'Closing'],
-        'SafeCount' => ['closing_id', 'Closing'],
         'CollectorDebt' => ['cash_box_id', 'CashBox'],
-        'DebtRepayment' => ['collector_debt_id', 'CollectorDebt'],
         'DisconnectionEvent' => ['disconnection_list_item_id', 'DisconnectionListItem'],
     ];
 
