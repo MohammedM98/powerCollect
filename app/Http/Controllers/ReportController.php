@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Concerns\FiltersDataTable;
 use App\Http\Requests\FinancialReportFiltersRequest;
 use App\Http\Requests\ViewFinancialReportRequest;
 use App\Models\Branch;
@@ -14,6 +13,7 @@ use App\Support\Branches\BranchScope;
 use App\Support\Closing\ClosingPeriods;
 use App\Support\Ledger\LedgerAmounts;
 use App\Support\Ledger\LinePresenter;
+use App\Support\Queries\DataTableFilters;
 use App\Support\Reports\BranchReport;
 use App\Support\Reports\DailySeries;
 use App\Support\Reports\DebtAging;
@@ -40,8 +40,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class ReportController extends Controller
 {
-    use FiltersDataTable;
-
     /**
      * The longest stretch a report covers.
      */
@@ -106,7 +104,7 @@ class ReportController extends Controller
                 ->with(['subscription.branch', 'subscription.meterBox', 'recordedBy', 'meterReading', 'reverses.meterReading', 'bankTransferAudit', 'referenceTransaction'])
                 ->orderByDesc('subscription_transactions.created_at')
                 ->orderByDesc('subscription_transactions.id')
-                ->paginate($request->boolean('print') ? $this->dataTablePerPage($request, self::PER_PAGE) : self::PER_PAGE)
+                ->paginate($request->boolean('print') ? DataTableFilters::dataTablePerPage($request, self::PER_PAGE) : self::PER_PAGE)
                 ->withQueryString()
                 ->through(fn (SubscriptionTransaction $line): array => $this->row($line))
             : null;
@@ -159,7 +157,7 @@ class ReportController extends Controller
         return Inertia::render('Reports/Index', [
             'reportSection' => $section,
             'reportAccounts' => $accountDirectory,
-            'accountFilters' => $accountDirectory !== null ? $this->dataTableState($request, 'account_number') : null,
+            'accountFilters' => $accountDirectory !== null ? DataTableFilters::dataTableState($request, 'account_number') : null,
             'detailTable' => $detailTable === null ? null : $this->detailTablePage($request, $detailTable),
             'detailExport' => Inertia::optional(fn (): ?Collection => $detailTable['rows'] ?? null),
             'debts' => $debtData === null ? null : Arr::except($debtData, 'rows'),
@@ -202,7 +200,7 @@ class ReportController extends Controller
             default => ['status', 'type', 'collector', 'currency'],
         };
         $defaultSort = $section === 'statement' ? 'day' : ($section === 'debts' ? 'balance' : 'number');
-        $state = $this->dataTableState($request, $defaultSort, $section === 'debts' ? 'desc' : 'asc');
+        $state = DataTableFilters::dataTableState($request, $defaultSort, $section === 'debts' ? 'desc' : 'asc');
         $state['sort'] = in_array($validated['sort'] ?? '', $columns, true) ? $validated['sort'] : $defaultSort;
         $state['filter'] = array_intersect_key($validated['filter'] ?? [], array_flip($allowedFilters));
         $state['search'] = $validated['search'] ?? '';
@@ -214,7 +212,7 @@ class ReportController extends Controller
             };
             $labels = ['side' => 'جهة الحركة', 'type' => 'نوع الحركة', 'age' => 'عمر الدين', 'branchName' => 'الفرع', 'status' => 'الحالة', 'collector' => 'المحصّل', 'currency' => 'العملة'];
 
-            return $this->filterGroup($key, $labels[$key], $values);
+            return DataTableFilters::filterGroup($key, $labels[$key], $values);
         })->all();
         $terms = ArabicSearch::terms($state['search']);
         $matching = $rows->filter(function (array $row) use ($terms, $state, $columns): bool {
@@ -281,8 +279,8 @@ class ReportController extends Controller
             ->select('subscriptions.*')->selectRaw("COALESCE(NULLIF(subscription_name, ''), full_name) as display_name")
             ->with('branch:id,name')
             ->when(($validated['search'] ?? '') !== '', fn (Builder $query) => $query->matchingSearch($validated['search']))
-            ->orderBy($sort, $this->sortDirection($request))->orderBy('subscriptions.id')
-            ->paginate($this->dataTablePerPage($request))->withQueryString()
+            ->orderBy($sort, DataTableFilters::sortDirection($request))->orderBy('subscriptions.id')
+            ->paginate(DataTableFilters::dataTablePerPage($request))->withQueryString()
             ->through(fn (Subscription $subscription): array => ['id' => $subscription->id, 'name' => $subscription->displayName(), 'accountNumber' => $subscription->account_number, 'branchName' => $subscription->branch?->name]);
     }
 

@@ -8,10 +8,6 @@ use App\Enums\DiscountMethod;
 use App\Enums\PaymentMethod;
 use App\Enums\PermissionKey;
 use App\Enums\SubscriptionStatus;
-use App\Http\Concerns\BuildsSubscriptionStatement;
-use App\Http\Concerns\FiltersDataTable;
-use App\Http\Concerns\FiltersSubscriptionList;
-use App\Http\Concerns\PresentsCashBoxes;
 use App\Http\Requests\StoreSplitPaymentRequest;
 use App\Models\AuditNote;
 use App\Models\Bank;
@@ -26,9 +22,13 @@ use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\User;
 use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\CashBoxPresenter;
 use App\Support\Closing\ClosingPeriods;
 use App\Support\Ledger\LedgerAmounts;
 use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\StatementBuilder;
+use App\Support\Queries\DataTableFilters;
+use App\Support\Queries\SubscriptionListQuery;
 use App\Support\Reports\DailySeries;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -39,8 +39,6 @@ use Inertia\Response as InertiaResponse;
 
 class PaymentController extends Controller
 {
-    use BuildsSubscriptionStatement, FiltersDataTable, FiltersSubscriptionList, PresentsCashBoxes;
-
     public function __construct(private BranchClosingWorkflow $workflow) {}
 
     /** The columns the subscribers table may be sorted by. */
@@ -83,22 +81,22 @@ class PaymentController extends Controller
         $this->applyTableFilters($query, $request);
 
         return Inertia::render('Payments/Index', [
-            'subscriptions' => fn () => $query->paginate($this->dataTablePerPage($request))
+            'subscriptions' => fn () => $query->paginate(DataTableFilters::dataTablePerPage($request))
                 ->withQueryString()
                 ->through(fn (Subscription $subscription): array => [
                     ...$this->row($subscription),
                     'canAddCharge' => $actor->can('addCharge', $subscription),
                     'canAddDiscount' => $actor->can('addDiscount', $subscription),
                     'canAddClearing' => $actor->can('addClearing', $subscription),
-                    'standingDiscount' => $canAddDiscounts ? $this->statementStandingDiscount($subscription->standingDiscount) : null,
+                    'standingDiscount' => $canAddDiscounts ? StatementBuilder::statementStandingDiscount($subscription->standingDiscount) : null,
                 ]),
             'scopeLabel' => $actor->isSuperAdmin() ? 'كل الفروع' : ($actor->workBranch()?->name ?? '—'),
-            'filters' => $this->dataTableState($request, 'display_name'),
+            'filters' => DataTableFilters::dataTableState($request, 'display_name'),
             'filterOptions' => fn () => $this->filterOptions($actor, $request),
             // A subscriber's statement, opened over the list from their row.
-            'statement' => fn () => $this->requestedStatement($request, $actor),
-            'pendingCount' => fn () => $this->collectionCounts($actor)['pendingCount'],
-            'collectionUrls' => $this->collectionUrls(),
+            'statement' => fn () => StatementBuilder::requestedStatement($request, $actor),
+            'pendingCount' => fn () => CashBoxPresenter::collectionCounts($actor)['pendingCount'],
+            'collectionUrls' => CashBoxPresenter::collectionUrls(),
             // The ways this user may take a payment: what the payment form offers.
             'paymentMethods' => PaymentMethod::options($actor->allowedPaymentMethods()),
             'canSplitPayments' => $actor->can('recordSplitPayment', Subscription::class),
@@ -128,10 +126,10 @@ class PaymentController extends Controller
             'today' => $this->todaysPayments($actor),
             'cashBox' => $cashBox,
             'current' => $cashBox['current'],
-            ...$this->entryList($request, $this->ownOpenEntries($actor), fn (CashBox $box): string => route('payments.cash-boxes.show', $box)),
+            ...CashBoxPresenter::entryList($request, $this->ownOpenEntries($actor), fn (CashBox $box): string => route('payments.cash-boxes.show', $box)),
             'needsAction' => $cashBox['needsAction'],
-            ...$this->collectionCounts($actor),
-            'collectionUrls' => $this->collectionUrls(),
+            ...CashBoxPresenter::collectionCounts($actor),
+            'collectionUrls' => CashBoxPresenter::collectionUrls(),
         ]);
     }
 
@@ -153,15 +151,15 @@ class PaymentController extends Controller
      */
     private function ownCashBoxes(User $actor, bool $includeRecentHistory = true): array
     {
-        if (! $this->boxesStarted($actor)) {
+        if (! CashBoxPresenter::boxesStarted($actor)) {
             return ['started' => false, 'branchName' => $actor->workBranch()?->name, 'boxes' => [], 'current' => [], 'needsAction' => [], 'auditNotes' => [], 'debts' => []];
         }
 
         $this->workflow->refresh($actor->workBranchId());
-        $query = $this->ownBoxQuery($actor);
+        $query = CashBoxPresenter::ownBoxQuery($actor);
         $outstanding = (clone $query)->whereNull('confirmed_at')->get();
         $history = $includeRecentHistory ? (clone $query)->whereNotNull('confirmed_at')->limit(10)->get() : collect();
-        $rows = $outstanding->concat($history)->map(fn (CashBox $box): array => $this->cashBoxRow($box));
+        $rows = $outstanding->concat($history)->map(fn (CashBox $box): array => CashBoxPresenter::cashBoxRow($box));
 
         return [
             'started' => true,
@@ -169,7 +167,7 @@ class PaymentController extends Controller
             'boxes' => $rows->values()->all(),
             'current' => collect(CashBoxType::cases())->mapWithKeys(fn (CashBoxType $type): array => [$type->value => $rows->first(fn (array $box): bool => $box['type'] === $type->value && $box['status'] === 'open')])->all(),
             'needsAction' => $rows->filter(fn (array $box): bool => $box['stage'] === 'awaiting_confirmation')->values()->all(),
-            'auditNotes' => $this->waitingAuditNotes($actor)->with(['box:id,number', 'closing:id,coverage_from,coverage_until,workflow_settings', 'entry.transaction.subscription:id,full_name,subscription_name,account_number', 'replies' => fn ($query) => $query->where('kind', 'collector')->latest('id')])
+            'auditNotes' => CashBoxPresenter::waitingAuditNotes($actor)->with(['box:id,number', 'closing:id,coverage_from,coverage_until,workflow_settings', 'entry.transaction.subscription:id,full_name,subscription_name,account_number', 'replies' => fn ($query) => $query->where('kind', 'collector')->latest('id')])
                 ->latest('id')->get()->map(fn (AuditNote $note): array => [
                     'id' => $note->id,
                     'body' => $note->body,
@@ -206,16 +204,16 @@ class PaymentController extends Controller
      */
     private function applyTableFilters(Builder $query, Request $request): void
     {
-        $search = $this->searchTerm($request);
+        $search = DataTableFilters::searchTerm($request);
 
         if ($search !== '') {
             $this->applySearch($query, $search);
         }
 
-        $this->applyDataTableFilters($query, $request, [], self::SORTABLE, 'display_name');
-        $this->applyDataTableFilterSelects($query, $request, ['status', 'branch_id', 'tariff_id', 'meter_box_id']);
-        $this->applyMeterBoxNameFilter($query, $request);
-        $this->applySubAreaFilter($query, $request);
+        DataTableFilters::applyDataTableFilters($query, $request, [], self::SORTABLE, 'display_name');
+        DataTableFilters::applyDataTableFilterSelects($query, $request, ['status', 'branch_id', 'tariff_id', 'meter_box_id']);
+        DataTableFilters::applyMeterBoxNameFilter($query, $request);
+        SubscriptionListQuery::applySubAreaFilter($query, $request);
 
         $balance = self::BALANCE_FILTERS[(string) $this->filterValue($request, 'balance')] ?? null;
 
@@ -233,15 +231,15 @@ class PaymentController extends Controller
     private function filterOptions(User $actor, Request $request): array
     {
         $groups = [
-            $this->filterGroup('balance', 'الرصيد', collect(self::BALANCE_FILTERS)->map(fn (array $filter, string $value): array => ['value' => $value, 'label' => $filter[1]])),
-            $this->filterGroup('status', 'الحالة', SubscriptionStatus::options()),
-            $this->filterGroup('tariff_id', 'نوع الاشتراك', $this->modelOptions(Tariff::orderBy('category')->get(), fn (Tariff $tariff): string => __($tariff->category->label()))),
-            $this->subAreaFilterGroup(SubArea::query()->visibleTo($actor)->orderBy('name')->get()),
-            ...$this->meterBoxFilterGroupsFor($actor, $request, $actor->isSuperAdmin() ? fn (MeterBox $box): string => $box->branch->name : null),
+            DataTableFilters::filterGroup('balance', 'الرصيد', collect(self::BALANCE_FILTERS)->map(fn (array $filter, string $value): array => ['value' => $value, 'label' => $filter[1]])),
+            DataTableFilters::filterGroup('status', 'الحالة', SubscriptionStatus::options()),
+            DataTableFilters::filterGroup('tariff_id', 'نوع الاشتراك', DataTableFilters::modelOptions(Tariff::orderBy('category')->get(), fn (Tariff $tariff): string => __($tariff->category->label()))),
+            DataTableFilters::subAreaFilterGroup(SubArea::query()->visibleTo($actor)->orderBy('name')->get()),
+            ...DataTableFilters::meterBoxFilterGroupsFor($actor, $request, $actor->isSuperAdmin() ? fn (MeterBox $box): string => $box->branch->name : null),
         ];
 
         if ($actor->isSuperAdmin()) {
-            $groups[] = $this->branchFilterGroup();
+            $groups[] = DataTableFilters::branchFilterGroup();
         }
 
         return $groups;

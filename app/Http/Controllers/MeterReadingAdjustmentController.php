@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Concerns\ApprovesCorrectedReadings;
 use App\Http\Requests\AdjustLastReadingRequest;
 use App\Http\Requests\PreviewLastReadingRequest;
 use App\Http\Requests\UpdateReadingPricingRequest;
@@ -11,6 +10,7 @@ use App\Models\User;
 use App\Notifications\ActionCompleted;
 use App\Notifications\ReadingNeedsReapproval;
 use App\Support\Readings\AdjustLastReading;
+use App\Support\Readings\ApproveCorrectedReading;
 use App\Support\Readings\RepriceReading;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -26,8 +26,6 @@ use Illuminate\Validation\ValidationException;
  */
 class MeterReadingAdjustmentController extends Controller
 {
-    use ApprovesCorrectedReadings;
-
     public function previewAdjustment(AdjustLastReadingRequest $request, MeterReading $meterReading): JsonResponse
     {
         $newReading = $request->float('current_reading');
@@ -68,7 +66,7 @@ class MeterReadingAdjustmentController extends Controller
                 $wasApproved = AdjustLastReading::correct($reading, $newReading, $reading->notes, $actor);
                 $reading->update(['next_previous_reading' => null]);
                 if ($wasApproved) {
-                    $this->approveCorrectedLastReading($reading, $actor, $request->boolean('confirm_unusual'));
+                    ApproveCorrectedReading::approveCorrectedLastReading($reading, $actor, $request->boolean('confirm_unusual'));
                 }
             }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Concerns;
+namespace App\Support\Ledger;
 
 use App\Enums\AuditAction;
 use App\Enums\ChargeType;
@@ -33,7 +33,7 @@ use Illuminate\Support\Collection;
  * page and the statement window on the subscriptions list. Transactions stay
  * in their original chronological order, including reversals and corrections.
  */
-trait BuildsSubscriptionStatement
+class StatementBuilder
 {
     /**
      * The statement shown in a window over a list, for the subscription named
@@ -43,7 +43,7 @@ trait BuildsSubscriptionStatement
      *
      * @return array<string, mixed>|null
      */
-    protected function requestedStatement(Request $request, User $actor): ?array
+    public static function requestedStatement(Request $request, User $actor): ?array
     {
         $subscriptionId = $request->query('statement');
 
@@ -53,13 +53,13 @@ trait BuildsSubscriptionStatement
 
         $subscription = Subscription::query()->readableTo($actor)->find($subscriptionId);
 
-        return $subscription && $actor->can('view', $subscription) ? $this->subscriptionStatement($actor, $subscription) : null;
+        return $subscription && $actor->can('view', $subscription) ? self::subscriptionStatement($actor, $subscription) : null;
     }
 
     /**
      * @return array<string, mixed>
      */
-    protected function subscriptionStatement(User $actor, Subscription $subscription): array
+    public static function subscriptionStatement(User $actor, Subscription $subscription): array
     {
         $subscription->loadMissing(['profile', 'branch', 'tariff', 'tariffSegment', 'meterBox', 'circuitBreaker', 'standingDiscount.grantedBy', 'latestMeterReading']);
 
@@ -86,7 +86,7 @@ trait BuildsSubscriptionStatement
             ->get()
             ->each(fn (SubscriptionTransaction $transaction) => $transaction->setRelation('subscription', $subscription));
 
-        $firstLineIds = $this->firstLineIds($transactions);
+        $firstLineIds = self::firstLineIds($transactions);
         $lineNumbers = $transactions->values()->mapWithKeys(fn (SubscriptionTransaction $transaction, int $index): array => [$transaction->id => $index + 1])->all();
         $balanceInCents = 0;
         $lastTransactionId = $transactions->last()?->id;
@@ -97,7 +97,7 @@ trait BuildsSubscriptionStatement
             ->last()?->id;
         $entries = $transactions
             ->map(function (SubscriptionTransaction $transaction) use (&$balanceInCents, $actor, $firstLineIds, $lineNumbers, $lastTransactionId, $previousTransactionId, $lastLegacyLineId, $transactions): array {
-                $balanceInCents += $this->cents($transaction->amount);
+                $balanceInCents += self::cents($transaction->amount);
                 $hasPayment = $transactions->contains(fn (SubscriptionTransaction $candidate): bool => $candidate->reference_transaction_id === $transaction->id
                     && in_array($candidate->type, SubscriptionTransaction::PAYMENT_LIKE_TYPES, true));
                 // A standing weekly reading's own standing discount, which cancelling the reading cancels too.
@@ -110,7 +110,7 @@ trait BuildsSubscriptionStatement
                 // A reading followed only by its own standing discount is the last bill: the two are deleted together.
                 $isLast = $transaction->id === $lastTransactionId
                     || ($transaction->id === $previousTransactionId && $readingDiscount?->id === $lastTransactionId);
-                $entry = $this->statementEntry(
+                $entry = self::statementEntry(
                     $transaction,
                     $balanceInCents,
                     $actor,
@@ -122,15 +122,15 @@ trait BuildsSubscriptionStatement
                 );
 
                 if ($readingDiscount !== null) {
-                    $entry['actionEffects']['delete'] = $this->money($this->cents($transaction->amount) + $this->cents($readingDiscount->amount));
+                    $entry['actionEffects']['delete'] = self::money(self::cents($transaction->amount) + self::cents($readingDiscount->amount));
                 }
                 if ($transaction->split_payment_id !== null) {
                     $partIds = $transactions->where('split_payment_id', $transaction->split_payment_id)->modelKeys();
                     $effect = $transactions->filter(fn (SubscriptionTransaction $line): bool => in_array($line->id, $partIds, true)
                         || ($line->isReversal() && in_array($line->reverses_id, $partIds, true)))
-                        ->sum(fn (SubscriptionTransaction $line): int => $this->cents($line->amount));
-                    $entry['actionEffects']['delete'] = $this->money($effect);
-                    $entry['actionEffects']['delete_tree'] = $this->money($effect);
+                        ->sum(fn (SubscriptionTransaction $line): int => self::cents($line->amount));
+                    $entry['actionEffects']['delete'] = self::money($effect);
+                    $entry['actionEffects']['delete_tree'] = self::money($effect);
                 }
 
                 return [...$entry, 'readingDiscount' => $readingDiscount ? LedgerAmounts::formatAmount(abs((float) $readingDiscount->amount)) : null];
@@ -143,7 +143,7 @@ trait BuildsSubscriptionStatement
         $paymentAdjustments = $counted->where('type', SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT);
         $discounts = $counted->filter(fn (SubscriptionTransaction $transaction): bool => $transaction->isDiscount());
         $clearings = $counted->filter(fn (SubscriptionTransaction $transaction): bool => $transaction->isClearing());
-        $sumOf = fn ($lines): int => $lines->sum(fn (SubscriptionTransaction $transaction): int => $this->cents($transaction->amount));
+        $sumOf = fn ($lines): int => $lines->sum(fn (SubscriptionTransaction $transaction): int => self::cents($transaction->amount));
         $canAddDiscount = $actor->can('addDiscount', $subscription);
 
         return [
@@ -163,7 +163,7 @@ trait BuildsSubscriptionStatement
                 'subscriptionFee' => $subscription->subscription_fee,
                 // The discount form's worked example uses the last week read.
                 'lastConsumption' => $subscription->latestMeterReading?->consumption,
-                'standingDiscount' => $this->statementStandingDiscount($subscription->standingDiscount),
+                'standingDiscount' => self::statementStandingDiscount($subscription->standingDiscount),
                 'status' => $subscription->status->value,
                 'statusLabel' => $subscription->archived_at !== null ? 'مؤرشف' : __($subscription->status->label()),
                 'archivedAt' => $subscription->archived_at?->toIso8601String(),
@@ -171,16 +171,16 @@ trait BuildsSubscriptionStatement
                 'archiveReason' => $subscription->archive_reason,
                 'archiveHistory' => $subscription->archive_history ?? [],
             ],
-            'subscriptions' => $this->profileSubscriptions($actor, $subscription),
+            'subscriptions' => self::profileSubscriptions($actor, $subscription),
             'entries' => $entries,
             'summary' => [
-                'balance' => $this->money($balanceInCents),
-                'charged' => $this->money($sumOf($counted->reject(fn (SubscriptionTransaction $transaction): bool => $transaction->isCredit() || $transaction->type === SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT))),
-                'paid' => $this->money(-$sumOf($payments) - $sumOf($paymentAdjustments)),
+                'balance' => self::money($balanceInCents),
+                'charged' => self::money($sumOf($counted->reject(fn (SubscriptionTransaction $transaction): bool => $transaction->isCredit() || $transaction->type === SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT))),
+                'paid' => self::money(-$sumOf($payments) - $sumOf($paymentAdjustments)),
                 'paymentsCount' => $payments->count(),
-                'discounted' => $this->money(-$sumOf($discounts)),
+                'discounted' => self::money(-$sumOf($discounts)),
                 'discountsCount' => $discounts->count(),
-                'cleared' => $this->money(-$sumOf($clearings)),
+                'cleared' => self::money(-$sumOf($clearings)),
                 'clearingsCount' => $clearings->count(),
             ],
             'canRecordPayment' => $actor->can('recordPayment', $subscription),
@@ -220,7 +220,7 @@ trait BuildsSubscriptionStatement
      *
      * @return array<int, array<string, mixed>>
      */
-    private function profileSubscriptions(User $actor, Subscription $subscription): array
+    public static function profileSubscriptions(User $actor, Subscription $subscription): array
     {
         if ($subscription->subscriber_profile_id === null) {
             return [];
@@ -247,7 +247,7 @@ trait BuildsSubscriptionStatement
                 'subAreaName' => $sibling->meterBox?->subArea?->name,
                 'status' => $sibling->status->value,
                 'statusLabel' => $sibling->archived_at !== null ? 'مؤرشف' : __($sibling->status->label()),
-                'balance' => $this->money($this->cents((string) ($sibling->balance ?? '0'))),
+                'balance' => self::money(self::cents((string) ($sibling->balance ?? '0'))),
             ])
             ->all();
     }
@@ -260,7 +260,7 @@ trait BuildsSubscriptionStatement
      * @param  Collection<int, SubscriptionTransaction>  $transactions  oldest first
      * @return array<int, int>
      */
-    private function firstLineIds(Collection $transactions): array
+    public static function firstLineIds(Collection $transactions): array
     {
         $byId = $transactions->keyBy('id');
 
@@ -277,7 +277,7 @@ trait BuildsSubscriptionStatement
      *
      * @return array{method: string, value: string, terms: string, segment: ?string, notes: ?string, grantedByName: ?string, grantedAt: string}|null
      */
-    private function statementStandingDiscount(?StandingDiscount $discount): ?array
+    public static function statementStandingDiscount(?StandingDiscount $discount): ?array
     {
         if ($discount === null) {
             return null;
@@ -290,7 +290,7 @@ trait BuildsSubscriptionStatement
             'segment' => $discount->segment,
             'notes' => $discount->notes,
             'grantedByName' => $discount->grantedBy?->name,
-            'grantedAt' => $this->businessTime($discount->updated_at, 'Y-m-d'),
+            'grantedAt' => self::businessTime($discount->updated_at, 'Y-m-d'),
         ];
     }
 
@@ -305,7 +305,7 @@ trait BuildsSubscriptionStatement
      *
      * @return array<string, mixed>
      */
-    private function statementEntry(
+    public static function statementEntry(
         SubscriptionTransaction $transaction,
         int $balanceInCents,
         User $actor,
@@ -331,11 +331,11 @@ trait BuildsSubscriptionStatement
             ->whereIn('type', SubscriptionTransaction::REVERSAL_TYPES)
             ->values();
         $linkedReversal = $linkedReversals->last();
-        $treeEffectInCents = $this->cents($transaction->amount)
-            + $linkedReversals->sum(fn (SubscriptionTransaction $reversal): int => $this->cents($reversal->amount));
+        $treeEffectInCents = self::cents($transaction->amount)
+            + $linkedReversals->sum(fn (SubscriptionTransaction $reversal): int => self::cents($reversal->amount));
         $refundedInCents = $linkedReversals
             ->where('type', SubscriptionTransaction::TYPE_REFUND)
-            ->sum(fn (SubscriptionTransaction $refund): int => abs($this->cents($refund->amount)));
+            ->sum(fn (SubscriptionTransaction $refund): int => abs(self::cents($refund->amount)));
 
         return [
             'id' => $transaction->id,
@@ -345,7 +345,7 @@ trait BuildsSubscriptionStatement
             'employee_id' => $transaction->employee_id,
             'lineNumber' => $lineNumbers[$transaction->id],
             'groupId' => $groupId,
-            'date' => $this->businessTime($transaction->created_at),
+            'date' => self::businessTime($transaction->created_at),
             'paidOn' => $transaction->paid_on?->toDateString(),
             'bankReceivedOn' => $transaction->bank_received_on?->toDateString(),
             'lateReason' => $transaction->late_reason,
@@ -358,23 +358,23 @@ trait BuildsSubscriptionStatement
             'status' => $transaction->status,
             'reference_transaction_id' => $transaction->reference_transaction_id,
             'auditOriginal' => $transaction->type === SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT ? ['id' => $transaction->reference_transaction_id, 'lineNumber' => $lineNumbers[$transaction->reference_transaction_id] ?? null] : null,
-            'balance_after' => $transaction->balance_after ?? $this->money($balanceInCents),
+            'balance_after' => $transaction->balance_after ?? self::money($balanceInCents),
             'available_actions' => $availableActions,
             'actionEffects' => [
                 'delete' => $transaction->isPayment()
-                    ? $this->money(-max(0, abs($this->cents($transaction->amount)) - $refundedInCents))
+                    ? self::money(-max(0, abs(self::cents($transaction->amount)) - $refundedInCents))
                     : $transaction->amount,
                 'delete_reversal' => $transaction->amount,
-                'delete_tree' => $this->money($treeEffectInCents),
+                'delete_tree' => self::money($treeEffectInCents),
             ],
             'refundableAmount' => $transaction->isPayment()
-                ? $this->money(max(0, abs($this->cents($transaction->amount)) - $refundedInCents))
+                ? self::money(max(0, abs(self::cents($transaction->amount)) - $refundedInCents))
                 : null,
             'isCredit' => $transaction->isCredit(),
             'amount' => $transaction->currency_amount ?? ltrim($transaction->amount, '-'),
             'currencyLabel' => __($transaction->currency->label()),
             'exchangeRate' => rtrim(rtrim($transaction->exchange_rate, '0'), '.'),
-            'balance' => $this->money($balanceInCents),
+            'balance' => self::money($balanceInCents),
             'paymentMethod' => $transaction->payment_method?->value,
             'paymentMethodLabel' => $transaction->payment_method ? __($transaction->payment_method->label()) : null,
             'bankName' => $receipt->bank_name,
@@ -390,7 +390,7 @@ trait BuildsSubscriptionStatement
             'meterReadingId' => $transaction->meter_reading_id,
             // The weekly reading a standing line was billed from, to correct from the line's menu;
             // a reading's discount has no menu of its own, as it goes with its reading.
-            'reading' => $transaction->type === SubscriptionTransaction::TYPE_READING_DISCOUNT ? null : $this->correctableReading($transaction, $actor),
+            'reading' => $transaction->type === SubscriptionTransaction::TYPE_READING_DISCOUNT ? null : self::correctableReading($transaction, $actor),
             // A payment's receipt, to print or reprint from the line's menu.
             'receiptUrl' => (($transaction->isPayment() || $transaction->isClearing()) && (! $actor->hasFinancialAuditAccess() || $actor->canAuditAction(AuditAction::PrintReports))) ? route('subscriptions.payments.receipt', [$transaction->subscription_id, $transaction->id]) : null,
             'details' => match ($transaction->type) {
@@ -424,7 +424,7 @@ trait BuildsSubscriptionStatement
             'corrects' => $transaction->corrects ? [
                 'id' => $transaction->corrects->id,
                 'lineNumber' => $lineNumbers[$transaction->corrects->id] ?? null,
-                'date' => $this->businessTime($transaction->corrects->created_at),
+                'date' => self::businessTime($transaction->corrects->created_at),
             ] : null,
             'cancellation' => $transaction->isCancelled() ? [
                 'wasCorrected' => $transaction->correction !== null,
@@ -433,17 +433,17 @@ trait BuildsSubscriptionStatement
                 'reasonLabel' => $transaction->cancellation_reason ? __($transaction->cancellation_reason->label()) : 'تصحيح الحركة',
                 'notes' => $transaction->cancellation_notes,
                 'byName' => $transaction->cancelledBy?->name,
-                'at' => $this->businessTime($transaction->cancelled_at),
+                'at' => self::businessTime($transaction->cancelled_at),
             ] : null,
             'isAmended' => $transaction->amendments->isNotEmpty(),
             'amendments' => $transaction->amendments->map(fn ($amendment): array => [
                 'id' => $amendment->id,
                 'userName' => $amendment->user?->name,
-                'at' => $this->businessTime($amendment->created_at),
+                'at' => self::businessTime($amendment->created_at),
                 'reason' => $amendment->reason,
                 'changes' => collect($amendment->changes)->map(fn (array $values, string $field): array => [
                     'field' => $field,
-                    'label' => $this->amendmentFieldLabel($field),
+                    'label' => self::amendmentFieldLabel($field),
                     'from' => $values[0] ?? null,
                     'to' => $values[1] ?? null,
                 ])->values()->all(),
@@ -479,7 +479,7 @@ trait BuildsSubscriptionStatement
             'deletionReasons' => LineRules::isCancellable($transaction) ? CorrectionReason::options(CorrectionReason::forDeletionOf($transaction)) : [],
             // What the correction form starts from: the line as it was recorded.
             'recorded' => LineRules::isCorrectable($transaction)
-                ? $this->recordedFields($transaction)
+                ? self::recordedFields($transaction)
                 : (LineRules::isCancellable($transaction) ? ['kind' => $transaction->type, 'effect' => $transaction->amount] : null),
         ];
     }
@@ -494,7 +494,7 @@ trait BuildsSubscriptionStatement
      *
      * @return array{id: int, weekStart: string, weekEnd: string, previous_reading: float, current_reading: float, consumption: float, notes: ?string, status: string, subscriptionName: string, accountNumber: ?string, canCorrect: bool, canApprove: bool, correctUnavailableReason: ?string}|null
      */
-    private function correctableReading(SubscriptionTransaction $transaction, User $actor): ?array
+    public static function correctableReading(SubscriptionTransaction $transaction, User $actor): ?array
     {
         $reading = $transaction->meterReading;
 
@@ -528,7 +528,7 @@ trait BuildsSubscriptionStatement
         ];
     }
 
-    private function amendmentFieldLabel(string $field): string
+    public static function amendmentFieldLabel(string $field): string
     {
         return match ($field) {
             'amount' => 'المبلغ',
@@ -549,7 +549,7 @@ trait BuildsSubscriptionStatement
      *
      * @return array<string, mixed>
      */
-    private function recordedFields(SubscriptionTransaction $transaction): array
+    public static function recordedFields(SubscriptionTransaction $transaction): array
     {
         $fields = match (true) {
             $transaction->isPayment() => [
@@ -590,17 +590,17 @@ trait BuildsSubscriptionStatement
      * A stored (UTC) moment as the business's clock shows it, as receipts,
      * the financial log and the audit log show it too.
      */
-    private function businessTime(CarbonInterface $moment, string $format = 'Y-m-d H:i'): string
+    public static function businessTime(CarbonInterface $moment, string $format = 'Y-m-d H:i'): string
     {
         return $moment->copy()->setTimezone(config('app.business_timezone'))->format($format);
     }
 
-    private function cents(string $amount): int
+    public static function cents(string $amount): int
     {
         return Money::decimal(Money::amount($amount))->multipliedBy('100')->toInt();
     }
 
-    private function money(int $cents): string
+    public static function money(int $cents): string
     {
         return Money::amount(Money::decimal($cents)->dividedBy('100', 2));
     }

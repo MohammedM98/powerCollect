@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\AuditAction;
 use App\Enums\CashBoxType;
-use App\Http\Concerns\FiltersDataTable;
-use App\Http\Concerns\PresentsCashBoxes;
 use App\Http\Requests\ReplyToAuditNoteRequest;
 use App\Http\Requests\ViewCashBoxesRequest;
 use App\Models\Branch;
@@ -22,7 +20,9 @@ use App\Support\Closing\BankTransferAuditing;
 use App\Support\Closing\BranchBoxes;
 use App\Support\Closing\BranchClosingAccess;
 use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\CashBoxPresenter;
 use App\Support\Closing\ClosingPeriods;
+use App\Support\Queries\DataTableFilters;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -40,8 +40,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class CashBoxController extends Controller
 {
-    use FiltersDataTable, PresentsCashBoxes;
-
     public function __construct(private BranchClosingWorkflow $workflow, private BranchBoxes $branchBoxes) {}
 
     /**
@@ -58,26 +56,26 @@ class CashBoxController extends Controller
         }
         $this->authorize('viewOwnCashBoxes', Subscription::class);
 
-        $started = $this->boxesStarted($actor);
+        $started = CashBoxPresenter::boxesStarted($actor);
         if ($started) {
             $this->workflow->refresh($actor->workBranchId());
         }
         $type = in_array($request->query('type'), array_column(CashBoxType::cases(), 'value'), true) ? $request->query('type') : '';
         $state = in_array($request->query('state'), ['open', 'closed'], true) ? $request->query('state') : '';
-        $perPage = $this->dataTablePerPage($request);
-        $boxes = $this->ownBoxQuery($actor)
+        $perPage = DataTableFilters::dataTablePerPage($request);
+        $boxes = CashBoxPresenter::ownBoxQuery($actor)
             ->when($type, fn (Builder $query) => $query->where('type', $type))
             ->when($state === 'open', fn (Builder $query) => $query->whereIn('status', ['open', 'pending']))
             ->when($state === 'closed', fn (Builder $query) => $query->where('status', 'received'))
-            ->paginate($perPage)->withQueryString()->through(fn (CashBox $box): array => $this->cashBoxRow($box));
+            ->paginate($perPage)->withQueryString()->through(fn (CashBox $box): array => CashBoxPresenter::cashBoxRow($box));
 
         return Inertia::render('Payments/CashBoxes', [
             'started' => $started,
             'branchName' => $actor->workBranch()?->name,
             'boxes' => $boxes,
             'filters' => ['type' => $type, 'state' => $state, 'per_page' => $perPage],
-            ...$this->collectionCounts($actor),
-            'collectionUrls' => $this->collectionUrls(),
+            ...CashBoxPresenter::collectionCounts($actor),
+            'collectionUrls' => CashBoxPresenter::collectionUrls(),
         ]);
     }
 
@@ -157,7 +155,7 @@ class CashBoxController extends Controller
         $people = $this->branchBoxes->people($branchIds);
         $person = $people->firstWhere('id', $request->integer('filter.user'));
         $query = CashBoxPayment::query()->whereHas('box', fn (Builder $box) => $box->whereIn('branch_id', $branchIds)->whereIn('status', ['open', 'pending'])->when($person, fn (Builder $box) => $box->where('user_id', $person->id)));
-        $list = $this->entryList($request, $query, fn (CashBox $box): string => route('payments.cash-boxes', ['branch_id' => $box->branch_id, 'box' => $box->id]));
+        $list = CashBoxPresenter::entryList($request, $query, fn (CashBox $box): string => route('payments.cash-boxes', ['branch_id' => $box->branch_id, 'box' => $box->id]));
         $list['filters']['filter']['user'] = $person ? (string) $person->id : '';
         $started = $visible->contains(fn (Branch $item): bool => ClosingSetting::forBranch($item->id)->workflow_started_at !== null);
 
@@ -169,8 +167,8 @@ class CashBoxController extends Controller
             'tabs' => $this->boxTabs($branches, $branch, $actor),
             ...$list,
             'closableBoxes' => $branch && $started && BranchClosingAccess::receive($actor, $branch->id) ? $this->closableBoxes($branch->id, $actor, $person?->id) : null,
-            ...($actor->can('viewOwnCashBoxes', Subscription::class) ? $this->collectionCounts($actor) : ['pendingCount' => 0]),
-            'collectionUrls' => $this->collectionUrls(),
+            ...($actor->can('viewOwnCashBoxes', Subscription::class) ? CashBoxPresenter::collectionCounts($actor) : ['pendingCount' => 0]),
+            'collectionUrls' => CashBoxPresenter::collectionUrls(),
             'urls' => ['index' => route('payments.cash-boxes.entries'), 'actions' => url('/payments/cash-boxes/actions')],
         ]);
     }
@@ -237,8 +235,8 @@ class CashBoxController extends Controller
             'periodAudit' => null, 'canApprovePeriod' => false,
             'canSearchTransfers' => false, 'searchingTransfers' => false, 'transferSearch' => null,
             'access' => [],
-            ...($actor->can('viewOwnCashBoxes', Subscription::class) ? $this->collectionCounts($actor) : ['pendingCount' => 0]),
-            'collectionUrls' => $this->collectionUrls(),
+            ...($actor->can('viewOwnCashBoxes', Subscription::class) ? CashBoxPresenter::collectionCounts($actor) : ['pendingCount' => 0]),
+            'collectionUrls' => CashBoxPresenter::collectionUrls(),
             'urls' => ['index' => route('payments.cash-boxes'), 'actions' => url('/payments/cash-boxes/actions'), 'auditPeriod' => route('payments.period-audits.store')],
         ]);
     }
@@ -299,8 +297,8 @@ class CashBoxController extends Controller
             'transferSearch' => $searchingTransfers ? app(AuditTransferSearch::class)->results($request, $actor, $branch->id, $week) : null,
             'periods' => $periods, 'week' => $week, 'weekStartsOn' => ClosingSetting::forBranch($branch->id)->week_starts_on,
             'access' => $this->branchBoxes->access($actor, $branch->id),
-            ...($actor->can('viewOwnCashBoxes', Subscription::class) ? $this->collectionCounts($actor) : ['pendingCount' => 0]),
-            'collectionUrls' => $this->collectionUrls(),
+            ...($actor->can('viewOwnCashBoxes', Subscription::class) ? CashBoxPresenter::collectionCounts($actor) : ['pendingCount' => 0]),
+            'collectionUrls' => CashBoxPresenter::collectionUrls(),
             'urls' => ['index' => route('payments.cash-boxes'), 'actions' => url('/payments/cash-boxes/actions'), 'auditPeriod' => route('payments.period-audits.store')],
         ]);
     }
@@ -324,12 +322,12 @@ class CashBoxController extends Controller
             return $this->exportCashBox($cashBox, $entryQuery->get());
         }
 
-        $entries = $entryQuery->paginate($this->dataTablePerPage($request, 25))->withQueryString()->through(fn (CashBoxPayment $entry): array => $this->cashBoxEntry($entry, $actor->can('viewAny', Subscription::class)));
+        $entries = $entryQuery->paginate(DataTableFilters::dataTablePerPage($request, 25))->withQueryString()->through(fn (CashBoxPayment $entry): array => CashBoxPresenter::cashBoxEntry($entry, $actor->can('viewAny', Subscription::class)));
 
         return Inertia::render('Payments/CashBoxShow', [
-            'box' => $this->cashBoxRow($cashBox), 'entries' => $entries,
-            ...$this->collectionCounts($actor),
-            'collectionUrls' => $this->collectionUrls(),
+            'box' => CashBoxPresenter::cashBoxRow($cashBox), 'entries' => $entries,
+            ...CashBoxPresenter::collectionCounts($actor),
+            'collectionUrls' => CashBoxPresenter::collectionUrls(),
         ]);
     }
 
@@ -340,7 +338,7 @@ class CashBoxController extends Controller
      */
     private function exportCashBox(CashBox $box, Collection $entries): StreamedResponse
     {
-        $row = $this->cashBoxRow($box);
+        $row = CashBoxPresenter::cashBoxRow($box);
         $local = fn (?CarbonInterface $time): string => $time ? $time->copy()->setTimezone(config('app.business_timezone'))->format('Y-m-d H:i') : '';
         $statuses = ['missing' => 'غير موجودة', 'rejected' => 'مرفوضة'];
         $types = ['cash' => 'نقدي', 'bank_transfer' => 'حوالات بنكية', 'clearing' => 'مقاصات'];
@@ -389,7 +387,7 @@ class CashBoxController extends Controller
         abort_unless($actor->workBranchId(), 403);
 
         $this->workflow->locked($actor->workBranchId(), function () use ($actor, $auditNote, $data): void {
-            $this->workflow->collectorReply($this->waitingAuditNotes($actor)->findOrFail($auditNote), $actor, $data['body']);
+            $this->workflow->collectorReply(CashBoxPresenter::waitingAuditNotes($actor)->findOrFail($auditNote), $actor, $data['body']);
         });
 
         return back()->with('status', 'audit-note-replied');

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Concerns;
+namespace App\Support\Closing;
 
+use App\Support\Queries\DataTableFilters;
 use App\Enums\CashBoxType;
 use App\Models\AuditNote;
 use App\Models\CashBox;
@@ -23,7 +24,7 @@ use Illuminate\Http\Request;
  * collector's own boxes and waiting audit notes. The using controller has
  * a BranchClosingWorkflow `$workflow` and uses FiltersDataTable.
  */
-trait PresentsCashBoxes
+class CashBoxPresenter
 {
     /**
      * One page of box entries, newest first, with how many sit in each type
@@ -33,13 +34,13 @@ trait PresentsCashBoxes
      * @param  callable(CashBox): string  $boxUrl
      * @return array{entries: LengthAwarePaginator<int, array<string, mixed>>, filters: array{filter: array{type: string}, search: string, per_page: int}, counts: array<string, int>}
      */
-    protected function entryList(Request $request, Builder $query, callable $boxUrl): array
+    public static function entryList(Request $request, Builder $query, callable $boxUrl): array
     {
         $query->visibleInBox();
         $types = array_column(CashBoxType::cases(), 'value');
         $filter = in_array($request->input('filter.type'), $types, true) ? $request->input('filter.type') : '';
         $search = trim((string) $request->query('search'));
-        $perPage = $this->dataTablePerPage($request);
+        $perPage = DataTableFilters::dataTablePerPage($request);
         $ofType = fn (Builder $entries, string $type) => $entries->whereHas('box', fn (Builder $box) => $box->where('type', $type));
         $linksStatement = $request->user()->can('viewAny', Subscription::class);
         $searched = (clone $query)->when($search !== '', fn (Builder $entries) => $entries->where(fn (Builder $matching) => $matching
@@ -52,7 +53,7 @@ trait PresentsCashBoxes
             ->orderByDesc('occurred_at')->orderByDesc('id')
             ->paginate($perPage)->withQueryString()
             ->through(fn (CashBoxPayment $entry): array => [
-                ...$this->cashBoxEntry($entry, $linksStatement),
+                ...self::cashBoxEntry($entry, $linksStatement),
                 'box' => ['id' => $entry->box->id, 'number' => $entry->box->number, 'type' => $entry->box->type->value, 'url' => $boxUrl($entry->box)],
                 'collector' => $entry->box->user?->name,
             ]);
@@ -72,7 +73,7 @@ trait PresentsCashBoxes
      *
      * @return array<string, mixed>
      */
-    protected function cashBoxEntry(CashBoxPayment $entry, bool $linksStatement = false): array
+    public static function cashBoxEntry(CashBoxPayment $entry, bool $linksStatement = false): array
     {
         return [
             'id' => $entry->id, 'occurredAt' => $entry->occurred_at, 'currency' => $entry->currency,
@@ -94,26 +95,26 @@ trait PresentsCashBoxes
      *
      * @return Builder<AuditNote>
      */
-    protected function waitingAuditNotes(User $actor): Builder
+    public static function waitingAuditNotes(User $actor): Builder
     {
         return AuditNote::query()->where('assigned_to', $actor->id)->where('status', 'with_collector')
             ->whereHas('closing', fn (Builder $query) => $query->where('branch_id', $actor->workBranchId()));
     }
 
-    protected function ownBoxQuery(User $actor): Builder
+    public static function ownBoxQuery(User $actor): Builder
     {
         return CashBox::query()->where('branch_id', $actor->workBranchId())->where('user_id', $actor->id)
             ->withCount(['payments' => fn ($entries) => $entries->visibleInBox()])->with(['payments.transaction:id,status', 'receivedBy:id,name', 'receivedIn:id,period_start,period_end'])->latest('id');
     }
 
     /** @return array{payments: string, summary: string, cashBoxes: string} */
-    protected function collectionUrls(): array
+    public static function collectionUrls(): array
     {
         return ['payments' => route('payments.index'), 'summary' => route('payments.summary'), 'cashBoxes' => route('payments.cash-boxes')];
     }
 
     /** Whether the actor's branch keeps collector boxes yet. */
-    protected function boxesStarted(User $actor): bool
+    public static function boxesStarted(User $actor): bool
     {
         return $actor->workBranchId() && ClosingSetting::ownFor($actor->workBranchId())?->workflow_started_at !== null;
     }
@@ -124,19 +125,19 @@ trait PresentsCashBoxes
      *
      * @return array{pendingCount: int}
      */
-    protected function collectionCounts(User $actor): array
+    public static function collectionCounts(User $actor): array
     {
-        if (! $this->boxesStarted($actor)) {
+        if (! self::boxesStarted($actor)) {
             return ['pendingCount' => 0];
         }
 
         return [
-            'pendingCount' => $this->ownBoxQuery($actor)->where('type', CashBoxType::Cash)->where('status', 'received')->whereNull('confirmed_at')->count() + $this->waitingAuditNotes($actor)->count(),
+            'pendingCount' => self::ownBoxQuery($actor)->where('type', CashBoxType::Cash)->where('status', 'received')->whereNull('confirmed_at')->count() + self::waitingAuditNotes($actor)->count(),
         ];
     }
 
     /** @return array<string, mixed> */
-    protected function cashBoxRow(CashBox $box): array
+    public static function cashBoxRow(CashBox $box): array
     {
         return [
             'id' => $box->id,
@@ -155,12 +156,12 @@ trait PresentsCashBoxes
             ...($box->received_at && $box->type->isCounted() && $box->head_counts ? [
                 'expectedCounts' => $box->expected_counts,
                 'receivedCounts' => $box->head_counts,
-                'differences' => $this->workflow->differences($box->head_counts, $box->expected_counts ?? []),
+                'differences' => app(BranchClosingWorkflow::class)->differences($box->head_counts, $box->expected_counts ?? []),
                 'decisions' => $box->decisions ?: null,
             ] : ['expectedCounts' => null, 'receivedCounts' => null, 'differences' => null, 'decisions' => null]),
             'reason' => $box->reason,
-            'receivedAmounts' => $this->receivedAmounts($box),
-            'closedBy' => $this->closedBy($box),
+            'receivedAmounts' => self::receivedAmounts($box),
+            'closedBy' => self::closedBy($box),
             'settledIn' => $box->receivedIn ? ['start' => $box->receivedIn->period_start->toDateString(), 'end' => $box->receivedIn->period_end->toDateString()] : null,
             'urls' => [
                 'show' => route('payments.cash-boxes.show', $box),
@@ -177,7 +178,7 @@ trait PresentsCashBoxes
      *
      * @return array<string, string>
      */
-    protected function receivedAmounts(CashBox $box): array
+    public static function receivedAmounts(CashBox $box): array
     {
         $none = array_fill_keys(BranchClosingWorkflow::CURRENCIES, '0.00');
 
@@ -199,7 +200,7 @@ trait PresentsCashBoxes
      * what closed it on its own (the weekly cut-off, the collector leaving,
      * a payment synced after its week). Null while it is open.
      */
-    protected function closedBy(CashBox $box): ?string
+    public static function closedBy(CashBox $box): ?string
     {
         if ($box->isEditable()) {
             return null;

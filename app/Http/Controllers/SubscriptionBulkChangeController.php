@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SubscriptionStatus;
-use App\Http\Concerns\FiltersDataTable;
-use App\Http\Concerns\FiltersSubscriptionList;
 use App\Http\Requests\ApplySubscriptionBulkChangeRequest;
 use App\Models\MeterBox;
 use App\Models\Subscription;
@@ -13,6 +11,8 @@ use App\Models\SubscriptionBulkChangeItem;
 use App\Models\User;
 use App\Notifications\ActionCompleted;
 use App\Support\Ledger\Money;
+use App\Support\Queries\DataTableFilters;
+use App\Support\Queries\SubscriptionListQuery;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,8 +33,6 @@ use Inertia\Response as InertiaResponse;
  */
 class SubscriptionBulkChangeController extends Controller
 {
-    use FiltersDataTable, FiltersSubscriptionList;
-
     /**
      * The bulk changes made so far, newest first, with one's subscriptions
      * loaded on request (`?change=` with `only: ['details']`).
@@ -49,7 +47,7 @@ class SubscriptionBulkChangeController extends Controller
             ->visibleTo($actor)
             ->with(['user', 'undoneBy', 'branch'])
             ->latest('id')
-            ->paginate($this->dataTablePerPage($request))
+            ->paginate(DataTableFilters::dataTablePerPage($request))
             ->withQueryString()
             ->through(fn (SubscriptionBulkChange $change) => [
                 'id' => $change->id,
@@ -67,7 +65,7 @@ class SubscriptionBulkChangeController extends Controller
 
         return Inertia::render('Subscriptions/BulkChanges', [
             'changes' => $changes,
-            'filters' => $this->dataTableState($request, 'created_at', 'desc'),
+            'filters' => DataTableFilters::dataTableState($request, 'created_at', 'desc'),
             'details' => Inertia::optional(fn () => $this->details($request, $actor)),
         ]);
     }
@@ -218,7 +216,7 @@ class SubscriptionBulkChangeController extends Controller
             ->visibleTo($actor);
 
         return $request->boolean('all')
-            ? $this->applySubscriptionListFilters($query, $request)
+            ? SubscriptionListQuery::applySubscriptionListFilters($query, $request)
             : $query->whereIn('subscriptions.id', $request->validated('ids'));
     }
 

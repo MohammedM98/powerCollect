@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Concerns;
+namespace App\Support\Disconnections;
 
 use App\Enums\SubscriptionStatus;
 use App\Models\DisconnectionListItem;
@@ -9,12 +9,12 @@ use App\Models\DisconnectionListItem;
  * A disconnection list item as the list's page and its action previews show
  * it. The subscription comes with its balance (`balance`) and meter box.
  */
-trait PresentsDisconnectionItems
+class DisconnectionItemPresenter
 {
     /**
      * @return array<string, mixed>
      */
-    protected function disconnectionItemRow(DisconnectionListItem $item, bool $withPhone): array
+    public static function disconnectionItemRow(DisconnectionListItem $item, bool $withPhone): array
     {
         $subscription = $item->subscription;
         $balance = round((float) $subscription->getAttribute('balance'), 2);
@@ -63,7 +63,7 @@ trait PresentsDisconnectionItems
      *
      * @return array<int|string, mixed>
      */
-    protected function disconnectionItemRelations(): array
+    public static function disconnectionItemRelations(): array
     {
         return [
             'subscription' => fn ($query) => $query->withSum('transactions as balance', 'amount')->with('meterBox.subArea'),

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Concerns\DeletesRecords;
 use App\Http\Requests\StoreAreaRequest;
 use App\Http\Requests\UpdateAreaRequest;
 use App\Models\Area;
 use App\Models\Governorate;
 use App\Notifications\ActionCompleted;
+use App\Support\RecordDeletion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,8 +15,6 @@ use Inertia\Response as InertiaResponse;
 
 class AreaController extends Controller
 {
-    use DeletesRecords;
-
     /**
      * Show the form for creating a new resource.
      */
@@ -75,7 +73,7 @@ class AreaController extends Controller
      */
     public function destroy(Request $request, Area $area): RedirectResponse
     {
-        return $this->deleteRecord($request, $area, 'area-deleted', $area->name);
+        return RecordDeletion::deleteRecord($request, $area, 'area-deleted', $area->name);
     }
 
     /**

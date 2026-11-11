@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SubscriptionStatus;
-use App\Http\Concerns\BuildsSubscriptionStatement;
-use App\Http\Concerns\FiltersDataTable;
 use App\Models\Branch;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Branches\BranchScope;
+use App\Support\Ledger\StatementBuilder;
+use App\Support\Queries\DataTableFilters;
 use App\Support\Reports\DailySeries;
 use App\Support\Reports\DebtAging;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,8 +27,6 @@ use Inertia\Response as InertiaResponse;
  */
 class ReceivableController extends Controller
 {
-    use BuildsSubscriptionStatement, FiltersDataTable;
-
     private const DEFAULT_PER_PAGE = 25;
 
     /**
@@ -48,7 +46,7 @@ class ReceivableController extends Controller
 
         $actor = $request->user();
         $debtors = $this->withAgeFilter((new DebtAging(DailySeries::today()))->debtors($this->filteredSubscriptions($request, $actor)), $request);
-        $perPage = $this->dataTablePerPage($request, self::DEFAULT_PER_PAGE);
+        $perPage = DataTableFilters::dataTablePerPage($request, self::DEFAULT_PER_PAGE);
         $page = max(1, (int) $request->input('page', 1));
         $sorted = $this->sortDebtors($debtors, $request);
 
@@ -68,10 +66,10 @@ class ReceivableController extends Controller
             'scopeLabel' => $this->scopeLabel($request, $actor),
             // The Super Admin reads, large above the report, which branch it holds.
             'branchScope' => fn () => BranchScope::shownTo($actor) ? BranchScope::forFilter($actor, $this->filterValue($request, 'branch_id')) : null,
-            'filters' => $this->dataTableState($request, 'balance', 'desc', self::DEFAULT_PER_PAGE),
+            'filters' => DataTableFilters::dataTableState($request, 'balance', 'desc', self::DEFAULT_PER_PAGE),
             'filterOptions' => $this->filterOptions($actor),
             // A debtor's statement, opened over the report.
-            'statement' => fn () => $this->requestedStatement($request, $actor),
+            'statement' => fn () => StatementBuilder::requestedStatement($request, $actor),
         ]);
     }
 
@@ -84,7 +82,7 @@ class ReceivableController extends Controller
      */
     private function filteredSubscriptions(Request $request, User $actor): Builder
     {
-        $search = $this->searchTerm($request);
+        $search = DataTableFilters::searchTerm($request);
         $branchId = $actor->isSuperAdmin() ? $this->filterValue($request, 'branch_id') : null;
         $status = SubscriptionStatus::tryFrom((string) $this->filterValue($request, 'status'));
 
@@ -129,7 +127,7 @@ class ReceivableController extends Controller
     {
         $sort = (string) $request->string('sort');
         $sort = in_array($sort, self::SORTS, true) ? $sort : 'balance';
-        $direction = $request->input('sort') !== null ? $this->sortDirection($request) : 'desc';
+        $direction = $request->input('sort') !== null ? DataTableFilters::sortDirection($request) : 'desc';
 
         $value = fn (array $debtor): int|string|null => match ($sort) {
             'balance' => $debtor['balance'],
@@ -229,10 +227,10 @@ class ReceivableController extends Controller
      */
     private function filterOptions(User $actor): array
     {
-        $groups = $actor->isSuperAdmin() ? [$this->branchFilterGroup()] : [];
+        $groups = $actor->isSuperAdmin() ? [DataTableFilters::branchFilterGroup()] : [];
 
-        $groups[] = $this->filterGroup('age', 'عمر الدين', collect(self::AGE_FILTERS)->map(fn (string $label, string $days): array => ['value' => $days, 'label' => $label])->values());
-        $groups[] = $this->filterGroup('status', 'حالة المشترك', SubscriptionStatus::options());
+        $groups[] = DataTableFilters::filterGroup('age', 'عمر الدين', collect(self::AGE_FILTERS)->map(fn (string $label, string $days): array => ['value' => $days, 'label' => $label])->values());
+        $groups[] = DataTableFilters::filterGroup('status', 'حالة المشترك', SubscriptionStatus::options());
 
         return $groups;
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Concerns;
+namespace App\Support\Queries;
 
 use App\Models\Area;
 use App\Models\Branch;
@@ -21,12 +21,12 @@ use Illuminate\Support\Collection;
  * query, plus helpers for building the Filter menu's dropdowns — shared
  * across every list page's controller.
  */
-trait FiltersDataTable
+class DataTableFilters
 {
     /**
      * The page sizes a visitor may pick from.
      */
-    private const PAGE_SIZES = [15, 25, 50, 100];
+    public const PAGE_SIZES = [15, 25, 50, 100];
 
     /**
      * The most rows a printout of every matching row holds.
@@ -42,7 +42,7 @@ trait FiltersDataTable
      * @param  array<int, string|Expression>  $searchableColumns
      * @param  array<int, string>  $sortableColumns
      */
-    protected function applyDataTableFilters(
+    public static function applyDataTableFilters(
         Builder $query,
         Request $request,
         array $searchableColumns,
@@ -50,7 +50,7 @@ trait FiltersDataTable
         string $defaultSort,
         string $defaultDirection = 'asc',
     ): Builder {
-        $search = $this->searchTerm($request);
+        $search = self::searchTerm($request);
 
         if ($search !== '' && $searchableColumns !== []) {
             $query->where(function (Builder $inner) use ($search, $searchableColumns) {
@@ -63,7 +63,7 @@ trait FiltersDataTable
         $sort = (string) $request->string('sort');
 
         if (in_array($sort, $sortableColumns, true)) {
-            $query->orderBy($sort, $this->sortDirection($request));
+            $query->orderBy($sort, self::sortDirection($request));
         } else {
             $query->orderBy($defaultSort, $defaultDirection);
         }
@@ -79,7 +79,7 @@ trait FiltersDataTable
      *
      * @param  array<int, string>  $allowedColumns
      */
-    protected function applyDataTableFilterSelects(Builder $query, Request $request, array $allowedColumns): Builder
+    public static function applyDataTableFilterSelects(Builder $query, Request $request, array $allowedColumns): Builder
     {
         $filters = (array) $request->input('filter', []);
 
@@ -99,7 +99,7 @@ trait FiltersDataTable
      * of every matching row (`?print_all=1`, see resources/js/lib/print.js)
      * gets them all on one page, up to PRINT_PAGE_SIZE.
      */
-    protected function dataTablePerPage(Request $request, int $default = 15): int
+    public static function dataTablePerPage(Request $request, int $default = 15): int
     {
         if ($request->boolean('print_all')) {
             return self::PRINT_PAGE_SIZE;
@@ -116,15 +116,15 @@ trait FiltersDataTable
      *
      * @return array{search: string, sort: string, direction: string, per_page: int, filter: array<string, string>}
      */
-    protected function dataTableState(Request $request, string $defaultSort, string $defaultDirection = 'asc', int $defaultPerPage = 15): array
+    public static function dataTableState(Request $request, string $defaultSort, string $defaultDirection = 'asc', int $defaultPerPage = 15): array
     {
         $sort = (string) $request->string('sort');
 
         return [
-            'search' => $this->searchTerm($request),
+            'search' => self::searchTerm($request),
             'sort' => $sort !== '' ? $sort : $defaultSort,
-            'direction' => $sort !== '' ? $this->sortDirection($request) : $defaultDirection,
-            'per_page' => $this->dataTablePerPage($request, $defaultPerPage),
+            'direction' => $sort !== '' ? self::sortDirection($request) : $defaultDirection,
+            'per_page' => self::dataTablePerPage($request, $defaultPerPage),
             'filter' => (array) $request->input('filter', []),
         ];
     }
@@ -136,7 +136,7 @@ trait FiltersDataTable
      * @param  iterable<int, array{value: string, label: string}>  $options
      * @return array{key: string, label: string, options: array<int, array{value: string, label: string}>}
      */
-    protected function filterGroup(string $key, string $label, iterable $options): array
+    public static function filterGroup(string $key, string $label, iterable $options): array
     {
         return [
             'key' => $key,
@@ -153,7 +153,7 @@ trait FiltersDataTable
      * @param  string|Closure(Model): string  $label
      * @return array<int, array{value: string, label: string}>
      */
-    protected function modelOptions(iterable $models, string|Closure $label = 'name'): array
+    public static function modelOptions(iterable $models, string|Closure $label = 'name'): array
     {
         return collect($models)
             ->map(fn (Model $model) => [
@@ -168,7 +168,7 @@ trait FiltersDataTable
      * Apply `?filter[meter_box_name]=…`: every subscription on a box with
      * that name, whatever the box's suffix or number.
      */
-    protected function applyMeterBoxNameFilter(Builder $query, Request $request): Builder
+    public static function applyMeterBoxNameFilter(Builder $query, Request $request): Builder
     {
         $name = ((array) $request->input('filter', []))['meter_box_name'] ?? null;
 
@@ -195,7 +195,7 @@ trait FiltersDataTable
      * @param  (Closure(MeterBox): string)|null  $context  extra text after a box, e.g. its branch
      * @return array<int, array{key: string, label: string, options: array<int, array{value: string, label: string, parent?: string, scope?: array<string, string|array<int, string>>}>, dependsOn?: string}>
      */
-    protected function meterBoxFilterGroups(iterable $boxes, ?Closure $context = null): array
+    public static function meterBoxFilterGroups(iterable $boxes, ?Closure $context = null): array
     {
         $boxes = (new EloquentCollection(collect($boxes)->all()))->loadMissing('subArea');
         // A box without a name has nothing to pick it by: listing it would add a blank option whose empty value is also "no filter", so it would show as ticked.
@@ -207,7 +207,7 @@ trait FiltersDataTable
                 'area_id' => $box->subArea?->area_id,
             ]);
 
-        return $this->linkedMeterBoxGroups($this->meterBoxNameOptions($placements), $this->meterBoxNumberOptions($boxes, $context));
+        return self::linkedMeterBoxGroups(self::meterBoxNameOptions($placements), self::meterBoxNumberOptions($boxes, $context));
     }
 
     /**
@@ -222,7 +222,7 @@ trait FiltersDataTable
      * @param  (Closure(MeterBox): string)|null  $context  extra text after a box, e.g. its branch
      * @return array<int, array{key: string, label: string, options: array<int, array<string, mixed>>, dependsOn?: string}>
      */
-    protected function meterBoxFilterGroupsFor(User $actor, Request $request, ?Closure $context = null): array
+    public static function meterBoxFilterGroupsFor(User $actor, Request $request, ?Closure $context = null): array
     {
         $context = filled($request->input('filter.branch_id')) ? null : $context;
 
@@ -234,19 +234,19 @@ trait FiltersDataTable
             ->distinct()
             ->toBase()
             ->get(['meter_boxes.name', 'meter_boxes.branch_id', 'meter_boxes.sub_area_id', 'sub_areas.area_id']);
-        $pickedName = $this->pickedMeterBoxName($actor, $request);
+        $pickedName = self::pickedMeterBoxName($actor, $request);
         $boxes = $pickedName === null
             ? new EloquentCollection
             : MeterBox::query()->visibleTo($actor)->with(['branch', 'subArea'])->where('name', $pickedName)->get();
 
-        return $this->linkedMeterBoxGroups($this->meterBoxNameOptions($placements), $this->meterBoxNumberOptions($boxes, $context));
+        return self::linkedMeterBoxGroups(self::meterBoxNameOptions($placements), self::meterBoxNumberOptions($boxes, $context));
     }
 
     /**
      * The box name the filter shows boxes of: `?filter[meter_box_name]`, or
      * else the name of the box `?filter[meter_box_id]` picks. Null for none.
      */
-    private function pickedMeterBoxName(User $actor, Request $request): ?string
+    public static function pickedMeterBoxName(User $actor, Request $request): ?string
     {
         $filter = (array) $request->input('filter', []);
         $name = $filter['meter_box_name'] ?? null;
@@ -273,11 +273,11 @@ trait FiltersDataTable
      * @param  Collection<int, array<string, mixed>>  $numbers
      * @return array<int, array{key: string, label: string, options: array<int, array<string, mixed>>, dependsOn?: string}>
      */
-    private function linkedMeterBoxGroups(Collection $names, Collection $numbers): array
+    public static function linkedMeterBoxGroups(Collection $names, Collection $numbers): array
     {
         return [
-            $this->filterGroup('meter_box_name', 'الطبلون', $names),
-            [...$this->filterGroup('meter_box_id', 'رقم الطبلون', $numbers), 'dependsOn' => 'meter_box_name'],
+            self::filterGroup('meter_box_name', 'الطبلون', $names),
+            [...self::filterGroup('meter_box_id', 'رقم الطبلون', $numbers), 'dependsOn' => 'meter_box_name'],
         ];
     }
 
@@ -288,7 +288,7 @@ trait FiltersDataTable
      * @param  Collection<int, object{name: string, branch_id: int|null, sub_area_id: int|null, area_id: int|null}>  $placements  where each box is
      * @return Collection<int, array<string, mixed>>
      */
-    private function meterBoxNameOptions(Collection $placements): Collection
+    public static function meterBoxNameOptions(Collection $placements): Collection
     {
         return $placements
             ->groupBy('name')
@@ -296,7 +296,7 @@ trait FiltersDataTable
             ->map(fn (Collection $named, int|string $name): array => [
                 'value' => (string) $name,
                 'label' => (string) $name,
-                'scope' => $this->filterScope([
+                'scope' => self::filterScope([
                     'branch_id' => $named->pluck('branch_id')->all(),
                     'sub_area_id' => $named->pluck('sub_area_id')->all(),
                     'area_id' => $named->pluck('area_id')->all(),
@@ -313,7 +313,7 @@ trait FiltersDataTable
      * @param  (Closure(MeterBox): string)|null  $context  extra text after a box, e.g. its branch
      * @return Collection<int, array<string, mixed>>
      */
-    private function meterBoxNumberOptions(iterable $boxes, ?Closure $context): Collection
+    public static function meterBoxNumberOptions(iterable $boxes, ?Closure $context): Collection
     {
         return collect($boxes)
             ->sortBy([['name_suffix', 'asc'], ['box_number', 'asc']], SORT_NATURAL)
@@ -321,7 +321,7 @@ trait FiltersDataTable
                 'value' => (string) $box->getKey(),
                 'label' => ltrim($box->name_suffix.' ('.$box->box_number.')').($context ? ' — '.$context($box) : ''),
                 'parent' => $box->name,
-                'scope' => $this->filterScope([
+                'scope' => self::filterScope([
                     'branch_id' => $box->branch_id,
                     'sub_area_id' => $box->sub_area_id,
                     'area_id' => $box->subArea?->area_id,
@@ -338,14 +338,14 @@ trait FiltersDataTable
      * @param  iterable<int, Area>  $areas
      * @return array{key: string, label: string, options: array<int, array{value: string, label: string, scope: array<string, string|array<int, string>>}>}
      */
-    protected function areaFilterGroup(iterable $areas): array
+    public static function areaFilterGroup(iterable $areas): array
     {
         $branchAreas = Branch::query()->pluck('area_id', 'id');
 
-        return $this->filterGroup('area_id', 'المنطقة', collect($areas)->map(fn (Area $area) => [
+        return self::filterGroup('area_id', 'المنطقة', collect($areas)->map(fn (Area $area) => [
             'value' => (string) $area->getKey(),
             'label' => $area->name,
-            'scope' => $this->filterScope([
+            'scope' => self::filterScope([
                 'governorate_id' => $area->governorate_id,
                 'branch_id' => $branchAreas->filter(fn ($areaId) => $areaId === $area->id)->keys()->all(),
             ]),
@@ -360,14 +360,14 @@ trait FiltersDataTable
      * @param  iterable<int, SubArea>  $subAreas
      * @return array{key: string, label: string, options: array<int, array{value: string, label: string, scope: array<string, string|array<int, string>>}>}
      */
-    protected function subAreaFilterGroup(iterable $subAreas): array
+    public static function subAreaFilterGroup(iterable $subAreas): array
     {
         $branchAreas = Branch::query()->pluck('area_id', 'id');
 
-        return $this->filterGroup('sub_area_id', 'منطقة 2', collect($subAreas)->map(fn (SubArea $subArea) => [
+        return self::filterGroup('sub_area_id', 'منطقة 2', collect($subAreas)->map(fn (SubArea $subArea) => [
             'value' => (string) $subArea->getKey(),
             'label' => $subArea->name,
-            'scope' => $this->filterScope([
+            'scope' => self::filterScope([
                 'area_id' => $subArea->area_id,
                 'branch_id' => $branchAreas->filter(fn ($areaId) => $areaId === $subArea->area_id)->keys()->all(),
             ]),
@@ -382,12 +382,12 @@ trait FiltersDataTable
      * @param  iterable<int, User>  $users
      * @return array<int, array{value: string, label: string, scope?: array<string, string>}>
      */
-    protected function staffOptions(iterable $users): array
+    public static function staffOptions(iterable $users): array
     {
         return collect($users)->map(fn (User $user) => [
             'value' => (string) $user->getKey(),
             'label' => $user->name,
-            ...($user->workBranchId() ? ['scope' => $this->filterScope(['branch_id' => $user->workBranchId()])] : []),
+            ...($user->workBranchId() ? ['scope' => self::filterScope(['branch_id' => $user->workBranchId()])] : []),
         ])->values()->all();
     }
 
@@ -401,7 +401,7 @@ trait FiltersDataTable
      * @param  array<string, int|string|null|array<int, int|string|null>>  $scope
      * @return array<string, string|array<int, string>>
      */
-    protected function filterScope(array $scope): array
+    public static function filterScope(array $scope): array
     {
         return collect($scope)
             ->map(fn ($ids) => is_array($ids)
@@ -415,7 +415,7 @@ trait FiltersDataTable
      * Apply `?filter[circuit_breaker_id]=…` to a subscriptions query: the
      * subscriptions on that circuit breaker, or with none for `none`.
      */
-    protected function applyCircuitBreakerFilter(Builder $query, Request $request): Builder
+    public static function applyCircuitBreakerFilter(Builder $query, Request $request): Builder
     {
         $value = ((array) $request->input('filter', []))['circuit_breaker_id'] ?? null;
         $column = $query->qualifyColumn('circuit_breaker_id');
@@ -435,11 +435,11 @@ trait FiltersDataTable
      *
      * @return array{key: string, label: string, options: array<int, array{value: string, label: string}>}
      */
-    protected function circuitBreakerFilterGroup(): array
+    public static function circuitBreakerFilterGroup(): array
     {
-        return $this->filterGroup('circuit_breaker_id', 'القاطع', [
+        return self::filterGroup('circuit_breaker_id', 'القاطع', [
             ['value' => 'none', 'label' => 'بدون قاطع'],
-            ...$this->modelOptions(CircuitBreaker::orderBy('ampere')->get(), fn (CircuitBreaker $breaker) => $breaker->ampere.' أمبير'),
+            ...self::modelOptions(CircuitBreaker::orderBy('ampere')->get(), fn (CircuitBreaker $breaker) => $breaker->ampere.' أمبير'),
         ]);
     }
 
@@ -448,14 +448,14 @@ trait FiltersDataTable
      *
      * @return array{key: string, label: string, options: array<int, array{value: string, label: string}>}
      */
-    protected function branchFilterGroup(?User $actor = null): array
+    public static function branchFilterGroup(?User $actor = null): array
     {
         $branches = Branch::query()->orderBy('name');
         if ($actor) {
             $actor->scopeAuditBranches($branches, 'branches.id');
         }
 
-        return $this->filterGroup('branch_id', 'الفرع', $this->modelOptions($branches->get()));
+        return self::filterGroup('branch_id', 'الفرع', self::modelOptions($branches->get()));
     }
 
     /**
@@ -463,20 +463,20 @@ trait FiltersDataTable
      *
      * @return array{key: string, label: string, options: array<int, array{value: string, label: string}>}
      */
-    protected function activeStatusFilterGroup(): array
+    public static function activeStatusFilterGroup(): array
     {
-        return $this->filterGroup('is_active', 'الحالة', [
+        return self::filterGroup('is_active', 'الحالة', [
             ['value' => '1', 'label' => 'نشط'],
             ['value' => '0', 'label' => 'متوقف'],
         ]);
     }
 
-    private function searchTerm(Request $request): string
+    public static function searchTerm(Request $request): string
     {
         return trim((string) $request->string('search'));
     }
 
-    private function sortDirection(Request $request): string
+    public static function sortDirection(Request $request): string
     {
         return $request->string('direction')->lower()->value() === 'desc' ? 'desc' : 'asc';
     }

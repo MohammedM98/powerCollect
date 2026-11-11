@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Concerns;
+namespace App\Support\Navigation;
 
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,14 +12,14 @@ use Illuminate\Http\Request;
  * `X-Return-To` header; only a dashboard address is accepted, so the header
  * can't send anyone elsewhere.
  */
-trait ReturnsToDashboard
+class DashboardReturn
 {
-    protected function redirectAfterSave(Request $request, string $route, string $status): RedirectResponse
+    public static function redirectAfterSave(Request $request, string $route, string $status): RedirectResponse
     {
-        return redirect($this->dashboardReturnUrl($request) ?? route($route))->with('status', $status);
+        return redirect(self::dashboardReturnUrl($request) ?? route($route))->with('status', $status);
     }
 
-    private function dashboardReturnUrl(Request $request): ?string
+    public static function dashboardReturnUrl(Request $request): ?string
     {
         $target = $request->header('X-Return-To');
 

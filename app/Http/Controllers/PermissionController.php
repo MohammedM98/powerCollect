@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\Enums\AuditAction;
 use App\Enums\PermissionKey;
 use App\Enums\UserRole;
-use App\Http\Concerns\FiltersDataTable;
 use App\Http\Requests\UpdatePermissionsRequest;
 use App\Models\Branch;
 use App\Models\Permission;
 use App\Models\User;
 use App\Models\UserType;
 use App\Notifications\ActionCompleted;
+use App\Support\Queries\DataTableFilters;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,8 +21,6 @@ use Inertia\Response as InertiaResponse;
 
 class PermissionController extends Controller
 {
-    use FiltersDataTable;
-
     private const SORTABLE = ['name', 'username'];
 
     /**
@@ -44,10 +42,10 @@ class PermissionController extends Controller
         $grantablePermissionIds = $this->grantablePermissionIds($actor);
 
         $query = $this->manageableUsers($actor)->with(['branch', 'permissions', 'userType']);
-        $this->applyDataTableFilters($query, $request, ['name', 'username'], self::SORTABLE, 'name');
-        $this->applyDataTableFilterSelects($query, $request, ['user_type_id', 'branch_id']);
+        DataTableFilters::applyDataTableFilters($query, $request, ['name', 'username'], self::SORTABLE, 'name');
+        DataTableFilters::applyDataTableFilterSelects($query, $request, ['user_type_id', 'branch_id']);
 
-        $page = $query->paginate($this->dataTablePerPage($request))->withQueryString();
+        $page = $query->paginate(DataTableFilters::dataTablePerPage($request))->withQueryString();
 
         $findManageable = fn (int $id) => $this->manageableUsers($actor)->with(['branch', 'permissions', 'userType'])->find($id);
         $selectedUser = $findManageable($request->integer('selected')) ?? $findManageable($page->first()?->id ?? 0);
@@ -78,7 +76,7 @@ class PermissionController extends Controller
                 'branches' => Branch::query()->orderBy('name')->get(['id', 'name']),
                 'actions' => array_map(fn (AuditAction $action): array => ['value' => $action->value, 'label' => $action->label(), 'hint' => $action->description()], AuditAction::cases()),
             ] : null,
-            'filters' => $this->dataTableState($request, 'name'),
+            'filters' => DataTableFilters::dataTableState($request, 'name'),
             'filterOptions' => $this->filterOptions($actor),
         ]);
     }
@@ -293,11 +291,11 @@ class PermissionController extends Controller
     private function filterOptions(User $actor): array
     {
         $groups = [
-            $this->filterGroup('user_type_id', 'نوع المستخدم', UserType::query()->orderBy('name')->get()->map(fn (UserType $type): array => ['value' => (string) $type->id, 'label' => $type->name])->all()),
+            DataTableFilters::filterGroup('user_type_id', 'نوع المستخدم', UserType::query()->orderBy('name')->get()->map(fn (UserType $type): array => ['value' => (string) $type->id, 'label' => $type->name])->all()),
         ];
 
         if ($actor->isSuperAdmin()) {
-            $groups[] = $this->branchFilterGroup();
+            $groups[] = DataTableFilters::branchFilterGroup();
         }
 
         return $groups;

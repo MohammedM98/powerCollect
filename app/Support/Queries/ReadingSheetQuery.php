@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Concerns;
+namespace App\Support\Queries;
 
 use App\Enums\MeterReadingStatus;
 use App\Enums\SubscriptionStatus;
@@ -21,14 +21,14 @@ use Illuminate\Support\Carbon;
  * pending readings among them, shared by the sheet and its "approve all"
  * so both mean exactly the rows shown. Needs FiltersDataTable.
  */
-trait FiltersReadingSheet
+class ReadingSheetQuery
 {
     /**
      * Pending readings in the actor's branch (every branch for the Super Admin).
      *
      * @return Builder<MeterReading>
      */
-    protected function pendingReadings(User $actor): Builder
+    public static function pendingReadings(User $actor): Builder
     {
         return MeterReading::query()
             ->visibleTo($actor)
@@ -42,15 +42,15 @@ trait FiltersReadingSheet
      *
      * @return Builder<MeterReading>
      */
-    protected function pendingInSheet(Request $request, User $actor, string $week): Builder
+    public static function pendingInSheet(Request $request, User $actor, string $week): Builder
     {
-        $subscriptions = $this->subscriptionsInScope($actor, $request);
-        $this->applyDataTableFilters($subscriptions, $request, ['full_name', 'subscription_name', 'account_number', 'phone', 'subscription_phone'], [], 'full_name');
-        $this->applyDataTableFilterSelects($subscriptions, $request, ['branch_id', 'meter_box_id', 'tariff_id']);
-        $this->applyMeterBoxNameFilter($subscriptions, $request);
-        $this->applySheetFilters($subscriptions, $request, $week);
+        $subscriptions = self::subscriptionsInScope($actor, $request);
+        DataTableFilters::applyDataTableFilters($subscriptions, $request, ['full_name', 'subscription_name', 'account_number', 'phone', 'subscription_phone'], [], 'full_name');
+        DataTableFilters::applyDataTableFilterSelects($subscriptions, $request, ['branch_id', 'meter_box_id', 'tariff_id']);
+        DataTableFilters::applyMeterBoxNameFilter($subscriptions, $request);
+        self::applySheetFilters($subscriptions, $request, $week);
 
-        return $this->pendingReadings($actor)
+        return self::pendingReadings($actor)
             ->whereDate('week_start', $week)
             ->whereIn('subscription_id', $subscriptions->reorder()->select('subscriptions.id'));
     }
@@ -60,7 +60,7 @@ trait FiltersReadingSheet
      *
      * @return Builder<Subscription>
      */
-    protected function subscriptionsInScope(User $actor, Request $request): Builder
+    public static function subscriptionsInScope(User $actor, Request $request): Builder
     {
         $status = (string) $request->input('filter.subscription_status', SubscriptionStatus::Active->value);
 
@@ -75,7 +75,7 @@ trait FiltersReadingSheet
      * starts from, and — once entered — the new reading, consumption and
      * amount to pay.
      */
-    protected function withSheetColumns(Builder $query, string $week): void
+    public static function withSheetColumns(Builder $query, string $week): void
     {
         $thisWeek = fn (string $column) => MeterReading::query()
             ->select($column)
@@ -111,7 +111,7 @@ trait FiltersReadingSheet
      * subscriptions without a box last. Applied before the table's own sort,
      * which then only breaks ties (by name).
      */
-    protected function applyMeterBoxSort(Builder $query, Request $request): void
+    public static function applyMeterBoxSort(Builder $query, Request $request): void
     {
         if ((string) $request->string('sort') !== 'meter_box') {
             return;
@@ -134,7 +134,7 @@ trait FiltersReadingSheet
      * the same weeks, the Super Admin's sheet is held to that branch — the
      * branch filter is set to it — instead of mixing the weeks.
      */
-    protected function sheetBranchId(Request $request, User $actor): ?int
+    public static function sheetBranchId(Request $request, User $actor): ?int
     {
         if (! $actor->isSuperAdmin()) {
             return $actor->workBranchId();
@@ -165,7 +165,7 @@ trait FiltersReadingSheet
      * week), defaulting to the latest week that has ended and never later
      * than it — always that week for someone who may not browse earlier ones.
      */
-    protected function selectedWeek(Request $request, ?int $branchId, bool $canBrowseWeeks): Carbon
+    public static function selectedWeek(Request $request, ?int $branchId, bool $canBrowseWeeks): Carbon
     {
         $latestWeek = ReadingWeeks::latestEndedWeekStart($branchId);
         $requested = $request->date('week');
@@ -181,7 +181,7 @@ trait FiltersReadingSheet
      * How many weeks the pickers offer: back to the week of the first
      * reading the actor may see, but at least 60 and at most 520 (ten years).
      */
-    protected function weeksToOffer(User $actor, ?int $branchId): int
+    public static function weeksToOffer(User $actor, ?int $branchId): int
     {
         $first = MeterReading::query()->visibleTo($actor)->min('week_start');
 
@@ -199,7 +199,7 @@ trait FiltersReadingSheet
      * area/sub-area a subscription's meter box sits in, whether this week's
      * reading has been entered yet, and whether it has been approved.
      */
-    protected function applySheetFilters(Builder $query, Request $request, string $week, bool $includeStatus = true): void
+    public static function applySheetFilters(Builder $query, Request $request, string $week, bool $includeStatus = true): void
     {
         $filters = (array) $request->input('filter', []);
 
@@ -211,14 +211,14 @@ trait FiltersReadingSheet
             $query->whereHas('meterBox', fn (Builder $q) => $q->where('sub_area_id', $filters['sub_area_id']));
         }
 
-        $this->applyCircuitBreakerFilter($query, $request);
+        DataTableFilters::applyCircuitBreakerFilter($query, $request);
 
         if ($includeStatus) {
-            $this->applySheetStatusFilters($query, $request, $week);
+            self::applySheetStatusFilters($query, $request, $week);
         }
     }
 
-    protected function applySheetStatusFilters(Builder $query, Request $request, string $week): void
+    public static function applySheetStatusFilters(Builder $query, Request $request, string $week): void
     {
         $filters = (array) $request->input('filter', []);
 

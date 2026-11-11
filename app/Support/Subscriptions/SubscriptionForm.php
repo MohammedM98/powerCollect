@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Concerns;
+namespace App\Support\Subscriptions;
 
 use App\Enums\PermissionKey;
 use App\Models\Branch;
@@ -18,13 +18,13 @@ use Illuminate\Support\Collection;
  * the dashboard's "new subscriber" and "edit" windows, so both are backed by
  * the same shape.
  */
-trait ProvidesSubscriptionForm
+class SubscriptionForm
 {
     /**
      * Whether the actor may set a subscription's minimum charge by hand
      * instead of taking the circuit breaker's.
      */
-    protected function canEditMinimumCharge(User $actor): bool
+    public static function canEditMinimumCharge(User $actor): bool
     {
         return $actor->hasPermission(PermissionKey::UpdateSubscriptionMinimumCharge);
     }
@@ -36,7 +36,7 @@ trait ProvidesSubscriptionForm
      *
      * @return array<string, mixed>
      */
-    protected function subscriptionEditableFields(Subscription $subscription): array
+    public static function subscriptionEditableFields(Subscription $subscription): array
     {
         return [
             'id' => $subscription->id,
@@ -86,7 +86,7 @@ trait ProvidesSubscriptionForm
      *
      * @return array{branches: Collection, tariffs: Collection, segments: Collection, subAreas: Collection, circuitBreakers: Collection, canChooseBranch: bool, currentBranchAreaId: ?int, currentBranchAreaName: ?string, canEditMinimumCharge: bool, canEditKilowattPrice: bool}
      */
-    protected function subscriptionFormOptions(): array
+    public static function subscriptionFormOptions(): array
     {
         $actor = auth()->user();
         $canChooseBranch = $actor->isSuperAdmin();
@@ -109,7 +109,7 @@ trait ProvidesSubscriptionForm
             'canChooseBranch' => $canChooseBranch,
             'currentBranchAreaId' => $canChooseBranch ? null : $actor->workBranch()?->area_id,
             'currentBranchAreaName' => $canChooseBranch ? null : $actor->workBranch()?->area?->name,
-            'canEditMinimumCharge' => $this->canEditMinimumCharge($actor),
+            'canEditMinimumCharge' => self::canEditMinimumCharge($actor),
             'canEditKilowattPrice' => $actor->hasPermission(PermissionKey::UpdateSubscriptionKilowattPrice),
         ];
     }

@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\TransactionAction;
-use App\Http\Concerns\BuildsSubscriptionStatement;
-use App\Http\Concerns\FiltersDataTable;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\TransactionAmendment;
@@ -12,6 +10,8 @@ use App\Models\TransactionDeletion;
 use App\Models\User;
 use App\Support\Ledger\LedgerAmounts;
 use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\StatementBuilder;
+use App\Support\Queries\DataTableFilters;
 use App\Support\Reports\DailySeries;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -30,8 +30,6 @@ use Inertia\Response as InertiaResponse;
  */
 class TransactionAuditController extends Controller
 {
-    use BuildsSubscriptionStatement, FiltersDataTable;
-
     /**
      * The period tabs, as the number of days each covers (null: since the
      * first change).
@@ -72,7 +70,7 @@ class TransactionAuditController extends Controller
             ->when(array_key_exists((string) $kind, self::KINDS), fn (QueryBuilder $query) => $query->where('kind', $kind))
             ->orderByDesc('happened_at')
             ->orderByDesc('event_id')
-            ->paginate($this->dataTablePerPage($request, self::DEFAULT_PER_PAGE))
+            ->paginate(DataTableFilters::dataTablePerPage($request, self::DEFAULT_PER_PAGE))
             ->withQueryString();
 
         $rows = $this->rows(collect($events->items()));
@@ -84,10 +82,10 @@ class TransactionAuditController extends Controller
             'counts' => $this->counts($inPeriod()),
             'today' => DailySeries::today()->toDateString(),
             'scopeLabel' => $actor->hasFinancialAuditAccess() ? ($actor->auditSettings()['scope'] === 'selected' ? 'الفروع المحددة للتدقيق' : 'كل الفروع') : ($actor->workBranch()?->name ?? '—'),
-            'filters' => $this->dataTableState($request, 'happened_at', 'desc', self::DEFAULT_PER_PAGE),
+            'filters' => DataTableFilters::dataTableState($request, 'happened_at', 'desc', self::DEFAULT_PER_PAGE),
             'filterOptions' => $this->filterOptions($actor),
             // A row's subscription's statement, opened over the log.
-            'statement' => fn () => $this->requestedStatement($request, $actor),
+            'statement' => fn () => StatementBuilder::requestedStatement($request, $actor),
         ]);
     }
 
@@ -99,7 +97,7 @@ class TransactionAuditController extends Controller
      */
     private function filteredEvents(Request $request, User $actor): QueryBuilder
     {
-        $search = $this->searchTerm($request);
+        $search = DataTableFilters::searchTerm($request);
         $branchId = $actor->hasFinancialAuditAccess() ? $this->filterValue($request, 'branch_id') : null;
         $userId = $this->filterValue($request, 'user_id');
         $narrowsSubscriptions = ($actor->hasFinancialAuditAccess() && $actor->auditSettings()['scope'] === 'selected') || ! $actor->hasFinancialAuditAccess() || $branchId !== null || $search !== '';
@@ -179,7 +177,7 @@ class TransactionAuditController extends Controller
             ...$this->eventBase('amendment', $amendment->id, $amendment->created_at, $amendment->user, $line->subscription),
             'lines' => [$this->lineSummary($line->type, $line->amount, LinePresenter::displayVoucherNumber($line))],
             'changes' => collect($amendment->changes)->map(fn (array $values, string $field): array => [
-                'label' => $this->amendmentFieldLabel($field),
+                'label' => StatementBuilder::amendmentFieldLabel($field),
                 'from' => $values[0] ?? null,
                 'to' => $values[1] ?? null,
             ])->values()->all(),
@@ -292,10 +290,10 @@ class TransactionAuditController extends Controller
      */
     private function filterOptions(User $actor): array
     {
-        $groups = $actor->hasFinancialAuditAccess() ? [$this->branchFilterGroup($actor)] : [];
+        $groups = $actor->hasFinancialAuditAccess() ? [DataTableFilters::branchFilterGroup($actor)] : [];
 
-        $groups[] = $this->filterGroup('kind', 'الإجراء', collect(self::KINDS)->map(fn (string $label, string $value): array => ['value' => $value, 'label' => $label])->values());
-        $groups[] = $this->filterGroup('user_id', 'بواسطة', $this->staffOptions(
+        $groups[] = DataTableFilters::filterGroup('kind', 'الإجراء', collect(self::KINDS)->map(fn (string $label, string $value): array => ['value' => $value, 'label' => $label])->values());
+        $groups[] = DataTableFilters::filterGroup('user_id', 'بواسطة', DataTableFilters::staffOptions(
             User::query()
                 ->when($actor->hasFinancialAuditAccess() && $actor->auditSettings()['scope'] === 'selected', fn (Builder $users) => $users->whereIn('id', $this->filteredEvents(new Request, $actor)->select('user_id')))
                 // Branch staff see their branch's staff and the Super Admins, who have no branch.

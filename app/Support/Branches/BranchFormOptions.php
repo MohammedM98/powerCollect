@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Concerns;
+namespace App\Support\Branches;
 
 use App\Models\Area;
 use App\Models\Branch;
@@ -13,7 +13,7 @@ use Illuminate\Support\Collection;
  * The dropdown options the branch and user forms need, shared by their own
  * pages and by the dashboard's quick "new …" buttons.
  */
-trait ProvidesFormOptions
+class BranchFormOptions
 {
     /**
      * The governorates and areas a branch can be placed in. Areas are sent
@@ -22,7 +22,7 @@ trait ProvidesFormOptions
      *
      * @return array{governorates: Collection, areas: Collection}
      */
-    protected function branchFormOptions(): array
+    public static function branchFormOptions(): array
     {
         return [
             'governorates' => Governorate::orderBy('name')->get(),
@@ -36,7 +36,7 @@ trait ProvidesFormOptions
      *
      * @return array{branches: Collection, canChooseBranch: bool, canCreateUserType: bool, userTypeOptions: Collection}
      */
-    protected function userBranchOptions(): array
+    public static function userBranchOptions(): array
     {
         $canChooseBranch = auth()->user()->isSuperAdmin();
 

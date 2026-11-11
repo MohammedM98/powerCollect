@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Concerns;
+namespace App\Support\Readings;
 
 use App\Models\MeterReading;
 use App\Models\User;
@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
  * Approving again a week that editing the last reading sent back to review,
  * shared by the reading's edit and the last reading's adjustment.
  */
-trait ApprovesCorrectedReadings
+class ApproveCorrectedReading
 {
     /**
      * Approve again a week sent back to review by editing the last reading,
@@ -20,7 +20,7 @@ trait ApprovesCorrectedReadings
      *
      * @throws ValidationException when the week is unusual and not confirmed
      */
-    protected function approveCorrectedLastReading(MeterReading $reading, User $actor, bool $confirmUnusual): bool
+    public static function approveCorrectedLastReading(MeterReading $reading, User $actor, bool $confirmUnusual): bool
     {
         if (! ApproveReading::handle($reading, $actor, $confirmUnusual)) {
             throw ValidationException::withMessages([

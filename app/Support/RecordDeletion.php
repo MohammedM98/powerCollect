@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Concerns;
+namespace App\Support;
 
+use Illuminate\Support\Facades\Gate;
 use App\Notifications\ActionCompleted;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
@@ -13,16 +14,16 @@ use Illuminate\Http\Request;
  * only once nothing uses it any more — otherwise the user is told what
  * still does (the model's deletionBlocker()), under the `delete` error.
  */
-trait DeletesRecords
+class RecordDeletion
 {
     /**
      * @param  string  $action  the flashed status, e.g. `branch-deleted`
      * @param  string  $subject  the record's name, for the activity list
      * @param  (Closure(): void)|null  $delete  how to delete it, when more than delete()
      */
-    protected function deleteRecord(Request $request, Model $record, string $action, string $subject, ?Closure $delete = null): RedirectResponse
+    public static function deleteRecord(Request $request, Model $record, string $action, string $subject, ?Closure $delete = null): RedirectResponse
     {
-        $this->authorize('delete', $record);
+        Gate::authorize('delete', $record);
 
         $blocker = $record->deletionBlocker();
 

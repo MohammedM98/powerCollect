@@ -4,12 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\PermissionKey;
 use App\Enums\SubscriptionStatus;
-use App\Http\Concerns\BuildsSubscriptionStatement;
-use App\Http\Concerns\DeletesRecords;
-use App\Http\Concerns\FiltersDataTable;
-use App\Http\Concerns\FiltersSubscriptionList;
-use App\Http\Concerns\ProvidesSubscriptionForm;
-use App\Http\Concerns\ReturnsToDashboard;
 use App\Http\Requests\StoreSubscriptionRequest;
 use App\Http\Requests\UpdateSubscriptionRequest;
 use App\Models\Branch;
@@ -27,9 +21,15 @@ use App\Notifications\ActionCompleted;
 use App\Support\Branches\BranchScope;
 use App\Support\Ledger\LedgerAmounts;
 use App\Support\Ledger\Money;
+use App\Support\Ledger\StatementBuilder;
+use App\Support\Navigation\DashboardReturn;
+use App\Support\Queries\DataTableFilters;
+use App\Support\Queries\SubscriptionListQuery;
 use App\Support\Readings\ReadingConsumption;
 use App\Support\Readings\ReadingWeeks;
+use App\Support\RecordDeletion;
 use App\Support\Reports\DailySeries;
+use App\Support\Subscriptions\SubscriptionForm;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,8 +41,6 @@ use Inertia\Response as InertiaResponse;
 
 class SubscriptionController extends Controller
 {
-    use BuildsSubscriptionStatement, DeletesRecords, FiltersDataTable, FiltersSubscriptionList, ProvidesSubscriptionForm, ReturnsToDashboard;
-
     /**
      * Display a listing of the resource.
      */
@@ -67,11 +65,11 @@ class SubscriptionController extends Controller
             ->withSum('transactions as outstanding_balance', 'amount')
             ->withExists(['transactions as has_subscription_fee' => fn (Builder $transactions) => $transactions->where('type', SubscriptionTransaction::TYPE_SUBSCRIPTION_FEE)]);
         $showArchived ? $query->whereNotNull('subscriptions.archived_at') : $query->whereNull('subscriptions.archived_at');
-        $this->applySubscriptionListFilters($query, $request, includeArchived: true);
+        SubscriptionListQuery::applySubscriptionListFilters($query, $request, includeArchived: true);
 
         $canRecordReadings = $actor->can('create', MeterReading::class);
 
-        $subscriptions = fn () => $query->paginate($this->dataTablePerPage($request))
+        $subscriptions = fn () => $query->paginate(DataTableFilters::dataTablePerPage($request))
             ->withQueryString()
             ->through(fn (Subscription $subscription) => $this->indexRow($subscription, $actor, $canRecordReadings));
 
@@ -89,14 +87,14 @@ class SubscriptionController extends Controller
                 'message' => $actor->can('create', MessageBatch::class),
             ],
             'statusOptions' => SubscriptionStatus::options(),
-            'filters' => $this->dataTableState($request, 'display_name'),
+            'filters' => DataTableFilters::dataTableState($request, 'display_name'),
             'filterOptions' => fn () => $this->filterOptions($actor, $request),
             // Whoever sees every branch's subscribers reads, large above the table, which branch the list holds.
             'branchScope' => fn () => BranchScope::shownTo($actor) ? BranchScope::forFilter($actor, $request->input('filter.branch_id')) : null,
             // New reading forms offer only the latest week of each branch.
             'readingWeekOptions' => fn () => ReadingWeeks::recentWeekOptionsFor($actor, 1),
-            'statement' => fn () => $this->requestedStatement($request, $actor),
-            ...$this->subscriptionFormOptions(),
+            'statement' => fn () => StatementBuilder::requestedStatement($request, $actor),
+            ...SubscriptionForm::subscriptionFormOptions(),
         ]);
     }
 
@@ -107,7 +105,7 @@ class SubscriptionController extends Controller
     {
         $this->authorize('create', Subscription::class);
 
-        return Inertia::render('Subscriptions/Create', $this->subscriptionFormOptions());
+        return Inertia::render('Subscriptions/Create', SubscriptionForm::subscriptionFormOptions());
     }
 
     /**
@@ -151,7 +149,7 @@ class SubscriptionController extends Controller
 
         $actor->notify(new ActionCompleted('subscription-created', $subscription->displayName()));
 
-        return $this->redirectAfterSave($request, 'subscriptions.index', 'subscription-created');
+        return DashboardReturn::redirectAfterSave($request, 'subscriptions.index', 'subscription-created');
     }
 
     /**
@@ -182,10 +180,10 @@ class SubscriptionController extends Controller
 
         return Inertia::render('Subscriptions/Edit', [
             'subscription' => [
-                ...$this->subscriptionEditableFields($subscription),
+                ...SubscriptionForm::subscriptionEditableFields($subscription),
                 'subscriptionCount' => $subscription->profile->subscriptions()->readableTo(auth()->user())->count(),
             ],
-            ...$this->subscriptionFormOptions(),
+            ...SubscriptionForm::subscriptionFormOptions(),
         ]);
     }
 
@@ -221,7 +219,7 @@ class SubscriptionController extends Controller
         });
         $request->user()->notify(new ActionCompleted('subscription-updated', $subscription->displayName()));
 
-        return $this->redirectAfterSave($request, 'subscriptions.index', 'subscription-updated');
+        return DashboardReturn::redirectAfterSave($request, 'subscriptions.index', 'subscription-updated');
     }
 
     /**
@@ -229,7 +227,7 @@ class SubscriptionController extends Controller
      */
     public function destroy(Request $request, Subscription $subscription): RedirectResponse
     {
-        return $this->deleteRecord($request, $subscription, 'subscription-deleted', $subscription->displayName(), fn () => $subscription->deleteWithSubscriptionFee());
+        return RecordDeletion::deleteRecord($request, $subscription, 'subscription-deleted', $subscription->displayName(), fn () => $subscription->deleteWithSubscriptionFee());
     }
 
     /**
@@ -248,7 +246,7 @@ class SubscriptionController extends Controller
         $hasLaterReading = $readings->contains(fn (MeterReading $reading): bool => $reading->week_start->greaterThan($entryWeek));
 
         return [
-            ...$this->subscriptionEditableFields($subscription),
+            ...SubscriptionForm::subscriptionEditableFields($subscription),
             'branchName' => $subscription->branch->name,
             'governorateName' => $subscription->branch->governorate?->name,
             'areaName' => $subscription->branch->area?->name,
@@ -368,7 +366,7 @@ class SubscriptionController extends Controller
      */
     private function enforceMinimumChargePermission(User $actor, array $data, ?Subscription $existing = null): array
     {
-        if ($this->canEditMinimumCharge($actor)) {
+        if (SubscriptionForm::canEditMinimumCharge($actor)) {
             return $data;
         }
 
@@ -422,7 +420,7 @@ class SubscriptionController extends Controller
      */
     private function minimumChargeFilterGroup(User $actor): array
     {
-        return $this->filterGroup('minimum_charge', 'الحد الأدنى', Subscription::query()
+        return DataTableFilters::filterGroup('minimum_charge', 'الحد الأدنى', Subscription::query()
             ->readableTo($actor)
             ->whereNotNull('minimum_charge')
             ->distinct()
@@ -441,24 +439,24 @@ class SubscriptionController extends Controller
     private function filterOptions(User $actor, Request $request): array
     {
         $groups = [
-            $this->filterGroup('status', 'الحالة', SubscriptionStatus::options()),
-            $this->filterGroup('tariff_id', 'نوع الاشتراك', $this->modelOptions(
+            DataTableFilters::filterGroup('status', 'الحالة', SubscriptionStatus::options()),
+            DataTableFilters::filterGroup('tariff_id', 'نوع الاشتراك', DataTableFilters::modelOptions(
                 Tariff::orderBy('category')->get(),
                 fn (Tariff $tariff) => __($tariff->category->label()),
             )),
-            $this->filterGroup('tariff_segment_id', 'تصنيف الزبائن', $this->modelOptions(TariffSegment::orderBy('name')->get(), 'name')),
-            $this->subAreaFilterGroup(SubArea::query()->visibleTo($actor)->orderBy('name')->get()),
-            ...$this->meterBoxFilterGroupsFor(
+            DataTableFilters::filterGroup('tariff_segment_id', 'تصنيف الزبائن', DataTableFilters::modelOptions(TariffSegment::orderBy('name')->get(), 'name')),
+            DataTableFilters::subAreaFilterGroup(SubArea::query()->visibleTo($actor)->orderBy('name')->get()),
+            ...DataTableFilters::meterBoxFilterGroupsFor(
                 $actor,
                 $request,
                 $actor->canViewAllSubscriberAccounts() ? fn (MeterBox $box) => $box->branch->name : null,
             ),
-            $this->circuitBreakerFilterGroup(),
+            DataTableFilters::circuitBreakerFilterGroup(),
             $this->minimumChargeFilterGroup($actor),
         ];
 
         if ($actor->canViewAllSubscriberAccounts()) {
-            $groups[] = $this->branchFilterGroup($actor);
+            $groups[] = DataTableFilters::branchFilterGroup($actor);
         }
 
         return $groups;

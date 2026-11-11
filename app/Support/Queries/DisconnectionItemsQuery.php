@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Concerns;
+namespace App\Support\Queries;
 
 use App\Enums\DisconnectionItemStatus;
 use App\Models\DisconnectionList;
@@ -14,15 +14,15 @@ use Illuminate\Http\Request;
  * by the preview its bulk actions start from, so "every matching item"
  * means exactly the rows the page shows. Needs FiltersDataTable.
  */
-trait FiltersDisconnectionItems
+class DisconnectionItemsQuery
 {
     /** Sortable columns of a disconnection list's items. */
-    private const DISCONNECTION_ITEM_SORTABLE = ['scheduled_for', 'created_at', 'status', 'warnings_count', 'extensions_count'];
+    public const DISCONNECTION_ITEM_SORTABLE = ['scheduled_for', 'created_at', 'status', 'warnings_count', 'extensions_count'];
 
     /**
      * The list's items matching the request's search and filters.
      */
-    protected function filteredDisconnectionItems(DisconnectionList $list, Request $request): Builder
+    public static function filteredDisconnectionItems(DisconnectionList $list, Request $request): Builder
     {
         $filter = (array) $request->input('filter', []);
         $today = DailySeries::today()->toDateString();

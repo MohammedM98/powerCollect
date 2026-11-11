@@ -9,9 +9,6 @@ use App\Enums\MessageChannel;
 use App\Enums\MessageKind;
 use App\Enums\PermissionKey;
 use App\Enums\SubscriptionStatus;
-use App\Http\Concerns\FiltersDataTable;
-use App\Http\Concerns\FiltersDisconnectionItems;
-use App\Http\Concerns\PresentsDisconnectionItems;
 use App\Http\Requests\StoreDisconnectionListRequest;
 use App\Http\Requests\UpdateDisconnectionListRequest;
 use App\Models\Branch;
@@ -25,8 +22,11 @@ use App\Models\Subscription;
 use App\Models\User;
 use App\Notifications\ActionCompleted;
 use App\Support\Branches\BranchScope;
+use App\Support\Disconnections\DisconnectionItemPresenter;
 use App\Support\Messaging\MessageComposer;
 use App\Support\Messaging\SmsGateway;
+use App\Support\Queries\DataTableFilters;
+use App\Support\Queries\DisconnectionItemsQuery;
 use App\Support\Reports\DailySeries;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -42,8 +42,6 @@ use Inertia\Response as InertiaResponse;
  */
 class DisconnectionListController extends Controller
 {
-    use FiltersDataTable, FiltersDisconnectionItems, PresentsDisconnectionItems;
-
     /** The warning offered when none of the saved wordings is picked. */
     public const DEFAULT_WARNING = 'عزيزنا المشترك {الاسم}، رقم الاشتراك {رقم_الاشتراك}: عليك رصيد مستحق قدره {الرصيد} شيكل. سيتم قطع الخدمة بتاريخ {موعد_القطع} ما لم يتم السداد. {الفرع}';
 
@@ -71,14 +69,14 @@ class DisconnectionListController extends Controller
             ])
             ->withSum('items as fees_total', 'fee_amount')
             ->withMin(['items as next_date' => $scheduled], 'scheduled_for');
-        $this->applyDataTableFilters($query, $request, ['title', 'notes'], ['created_at', 'title'], 'created_at', 'desc');
-        $this->applyDataTableFilterSelects($query, $request, ['branch_id']);
+        DataTableFilters::applyDataTableFilters($query, $request, ['title', 'notes'], ['created_at', 'title'], 'created_at', 'desc');
+        DataTableFilters::applyDataTableFilterSelects($query, $request, ['branch_id']);
 
         $state = ((array) $request->input('filter', []))['state'] ?? null;
         $query->when($state === 'open', fn (Builder $lists) => $lists->whereNull('closed_at'))
             ->when($state === 'closed', fn (Builder $lists) => $lists->whereNotNull('closed_at'));
 
-        $lists = $query->paginate($this->dataTablePerPage($request))
+        $lists = $query->paginate(DataTableFilters::dataTablePerPage($request))
             ->withQueryString()
             ->through(fn (DisconnectionList $list) => [
                 'id' => $list->id,
@@ -99,11 +97,11 @@ class DisconnectionListController extends Controller
             ]);
 
         $filterOptions = [
-            $this->filterGroup('state', 'الحالة', [['value' => 'open', 'label' => 'مفتوحة'], ['value' => 'closed', 'label' => 'مغلقة']]),
+            DataTableFilters::filterGroup('state', 'الحالة', [['value' => 'open', 'label' => 'مفتوحة'], ['value' => 'closed', 'label' => 'مغلقة']]),
         ];
 
         if ($actor->isSuperAdmin()) {
-            $filterOptions[] = $this->branchFilterGroup();
+            $filterOptions[] = DataTableFilters::branchFilterGroup();
         }
 
         // The Super Admin narrows the page to one branch in the banner: the figures above the lists follow it.
@@ -114,8 +112,8 @@ class DisconnectionListController extends Controller
             'summary' => $this->summary($actor, $branchId),
             'branchScope' => fn () => BranchScope::shownTo($actor) ? BranchScope::forFilter($actor, $branchId) : null,
             'canCreate' => $actor->can('create', DisconnectionList::class),
-            'branchOptions' => $actor->isSuperAdmin() ? $this->modelOptions(Branch::orderBy('name')->get()) : [],
-            'filters' => $this->dataTableState($request, 'created_at', 'desc'),
+            'branchOptions' => $actor->isSuperAdmin() ? DataTableFilters::modelOptions(Branch::orderBy('name')->get()) : [],
+            'filters' => DataTableFilters::dataTableState($request, 'created_at', 'desc'),
             'filterOptions' => $filterOptions,
         ]);
     }
@@ -152,11 +150,11 @@ class DisconnectionListController extends Controller
         $list = $disconnectionList->load(['branch', 'createdBy', 'closedBy']);
         $canWarn = $actor->can('warn', $list);
 
-        $items = $this->filteredDisconnectionItems($list, $request)
-            ->with($this->disconnectionItemRelations())
-            ->paginate($this->dataTablePerPage($request, 25))
+        $items = DisconnectionItemsQuery::filteredDisconnectionItems($list, $request)
+            ->with(DisconnectionItemPresenter::disconnectionItemRelations())
+            ->paginate(DataTableFilters::dataTablePerPage($request, 25))
             ->withQueryString()
-            ->through(fn (DisconnectionListItem $item) => $this->disconnectionItemRow($item, $canWarn));
+            ->through(fn (DisconnectionListItem $item) => DisconnectionItemPresenter::disconnectionItemRow($item, $canWarn));
 
         return Inertia::render('Disconnections/Show', [
             'list' => [
@@ -187,7 +185,7 @@ class DisconnectionListController extends Controller
             'placeholders' => MessageComposer::placeholdersFor(MessageKind::DisconnectionWarning),
             'today' => DailySeries::today()->toDateString(),
             'usualFee' => DisconnectionListItem::usualFee(),
-            'filters' => $this->dataTableState($request, 'scheduled_for', 'asc', 25),
+            'filters' => DataTableFilters::dataTableState($request, 'scheduled_for', 'asc', 25),
             'filterOptions' => $this->itemFilterOptions($actor, $request),
             'history' => Inertia::optional(fn () => $this->history($list, $request->integer('history'))),
         ]);
@@ -233,7 +231,7 @@ class DisconnectionListController extends Controller
 
         $subscriptions = $this->candidateQuery($list, $request)
             ->with(['meterBox.subArea', 'disconnectionItems' => fn ($items) => $items->where('status', DisconnectionItemStatus::Scheduled)->with('list:id,title')])
-            ->paginate($this->dataTablePerPage($request, 25))
+            ->paginate(DataTableFilters::dataTablePerPage($request, 25))
             ->withQueryString()
             ->through(function (Subscription $subscription) use ($list): array {
                 $waiting = $subscription->disconnectionItems->first();
@@ -255,18 +253,18 @@ class DisconnectionListController extends Controller
             'subscriptions' => $subscriptions,
             'reasonOptions' => DisconnectionReason::options(),
             'today' => DailySeries::today()->toDateString(),
-            'filters' => $this->dataTableState($request, 'display_name', 'asc', 25),
+            'filters' => DataTableFilters::dataTableState($request, 'display_name', 'asc', 25),
             'filterOptions' => [
-                $this->filterGroup('listed', 'قوائم القطع', [
+                DataTableFilters::filterGroup('listed', 'قوائم القطع', [
                     ['value' => 'none', 'label' => 'غير مدرج في قائمة'],
                     ['value' => 'listed', 'label' => 'مدرج في قائمة'],
                 ]),
-                $this->filterGroup('balance', 'الرصيد', [
+                DataTableFilters::filterGroup('balance', 'الرصيد', [
                     ['value' => 'owing', 'label' => 'عليه رصيد مستحق'],
                     ['value' => 'clear', 'label' => 'لا رصيد عليه'],
                 ]),
-                $this->subAreaFilterGroup(SubArea::query()->visibleTo($actor)->orderBy('name')->get()),
-                ...$this->meterBoxFilterGroupsFor($actor, $request),
+                DataTableFilters::subAreaFilterGroup(SubArea::query()->visibleTo($actor)->orderBy('name')->get()),
+                ...DataTableFilters::meterBoxFilterGroupsFor($actor, $request),
             ],
         ]);
     }
@@ -387,24 +385,24 @@ class DisconnectionListController extends Controller
     private function itemFilterOptions(User $actor, Request $request): array
     {
         return [
-            $this->filterGroup('status', 'الحالة', DisconnectionItemStatus::options()),
-            $this->filterGroup('timing', 'الموعد', [
+            DataTableFilters::filterGroup('status', 'الحالة', DisconnectionItemStatus::options()),
+            DataTableFilters::filterGroup('timing', 'الموعد', [
                 ['value' => 'overdue', 'label' => 'متأخر — بانتظار إجراء'],
                 ['value' => 'today', 'label' => 'موعده اليوم'],
                 ['value' => 'upcoming', 'label' => 'موعده لاحقًا'],
             ]),
-            $this->filterGroup('reason', 'سبب القطع', DisconnectionReason::options()),
-            $this->filterGroup('balance', 'الرصيد', [
+            DataTableFilters::filterGroup('reason', 'سبب القطع', DisconnectionReason::options()),
+            DataTableFilters::filterGroup('balance', 'الرصيد', [
                 ['value' => 'owing', 'label' => 'عليه رصيد مستحق'],
                 ['value' => 'paid', 'label' => 'سدّد كامل رصيده'],
                 ['value' => 'reduced', 'label' => 'قلّ رصيده منذ الإدراج'],
             ]),
-            $this->filterGroup('warned', 'الإنذارات', [
+            DataTableFilters::filterGroup('warned', 'الإنذارات', [
                 ['value' => '1', 'label' => 'أُرسل له إنذار'],
                 ['value' => '0', 'label' => 'لم يُنذر بعد'],
             ]),
-            $this->subAreaFilterGroup(SubArea::query()->visibleTo($actor)->orderBy('name')->get()),
-            ...$this->meterBoxFilterGroupsFor($actor, $request, $actor->isSuperAdmin() ? fn (MeterBox $box): string => $box->branch->name : null),
+            DataTableFilters::subAreaFilterGroup(SubArea::query()->visibleTo($actor)->orderBy('name')->get()),
+            ...DataTableFilters::meterBoxFilterGroupsFor($actor, $request, $actor->isSuperAdmin() ? fn (MeterBox $box): string => $box->branch->name : null),
         ];
     }
 

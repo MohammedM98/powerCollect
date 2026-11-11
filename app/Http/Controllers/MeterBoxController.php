@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SubscriptionStatus;
-use App\Http\Concerns\DeletesRecords;
-use App\Http\Concerns\FiltersDataTable;
 use App\Http\Requests\PrintMeterBoxSubscriptionsRequest;
 use App\Http\Requests\StoreMeterBoxRequest;
 use App\Http\Requests\UpdateMeterBoxRequest;
@@ -20,6 +18,8 @@ use App\Models\User;
 use App\Notifications\ActionCompleted;
 use App\Support\Branches\BranchDomainContext;
 use App\Support\Branches\BranchScope;
+use App\Support\Queries\DataTableFilters;
+use App\Support\RecordDeletion;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -30,8 +30,6 @@ use Inertia\Response as InertiaResponse;
 
 class MeterBoxController extends Controller
 {
-    use DeletesRecords, FiltersDataTable;
-
     private const SORTABLE = ['name', 'box_number', 'created_at', 'subscriptions_count'];
 
     /**
@@ -61,7 +59,7 @@ class MeterBoxController extends Controller
             ->selectRaw('COUNT(DISTINCT sub_area_id) AS regions, COALESCE(SUM(CASE WHEN sub_area_id IS NOT NULL THEN 1 ELSE 0 END), 0) AS located_boxes')
             ->first();
 
-        $meterBoxes = $query->paginate($this->dataTablePerPage($request))
+        $meterBoxes = $query->paginate(DataTableFilters::dataTablePerPage($request))
             ->withQueryString()
             ->through(fn (MeterBox $meterBox) => [
                 ...$this->editableFields($meterBox),
@@ -89,7 +87,7 @@ class MeterBoxController extends Controller
                 'regions' => (int) $summary->regions,
                 'located' => (int) $summary->located_boxes,
             ],
-            'filters' => $this->dataTableState($request, 'box_number'),
+            'filters' => DataTableFilters::dataTableState($request, 'box_number'),
             'filterOptions' => $this->filterOptions($actor, $request, $selectedBranch),
             'selectedBranch' => $selectedBranch?->only(['id', 'area_id']),
             'groupByRegion' => $request->input('group') === 'region',
@@ -232,7 +230,7 @@ class MeterBoxController extends Controller
      */
     public function destroy(Request $request, MeterBox $meterBox): RedirectResponse
     {
-        return $this->deleteRecord($request, $meterBox, 'meter-box-deleted', $meterBox->displayName());
+        return RecordDeletion::deleteRecord($request, $meterBox, 'meter-box-deleted', $meterBox->displayName());
     }
 
     /**
@@ -260,17 +258,17 @@ class MeterBoxController extends Controller
             ->selectRaw('COALESCE(subscription_totals.subscriptions_count, 0) AS subscriptions_count')
             ->selectRaw('COALESCE(subscription_totals.active_subscriptions_count, 0) AS active_subscriptions_count')
             ->with('branch.governorate', 'branch.area', 'subArea');
-        $query->matchingLabel($this->searchTerm($request));
+        $query->matchingLabel(DataTableFilters::searchTerm($request));
         if ($request->input('group') === 'region') {
             $query->orderByRaw('meter_boxes.sub_area_id IS NULL')
                 ->orderBy(SubArea::query()->select('name')->whereColumn('sub_areas.id', 'meter_boxes.sub_area_id'));
         }
-        $this->applyDataTableFilters($query, $request, [], self::SORTABLE, 'box_number');
+        DataTableFilters::applyDataTableFilters($query, $request, [], self::SORTABLE, 'box_number');
         if ($request->input('sort') === 'name') {
-            $query->orderBy('name_suffix', $this->sortDirection($request));
+            $query->orderBy('name_suffix', DataTableFilters::sortDirection($request));
         }
         $query->orderBy('meter_boxes.id');
-        $this->applyDataTableFilterSelects($query, $request, ['branch_id', 'sub_area_id']);
+        DataTableFilters::applyDataTableFilterSelects($query, $request, ['branch_id', 'sub_area_id']);
         $name = $request->input('filter.meter_box_name');
         if (is_string($name) && $name !== '') {
             $query->where('meter_boxes.name', $name);
@@ -341,14 +339,14 @@ class MeterBoxController extends Controller
     private function filterOptions(User $actor, Request $request, ?Branch $selectedBranch = null): array
     {
         $groups = [
-            $this->subAreaFilterGroup(SubArea::visibleTo($actor)
+            DataTableFilters::subAreaFilterGroup(SubArea::visibleTo($actor)
                 ->when($selectedBranch, fn (Builder $query): Builder => $query->where('area_id', $selectedBranch->area_id))
                 ->orderBy('name')->get()),
-            ...$this->meterBoxFilterGroupsFor($actor, $request, $actor->isSuperAdmin() ? fn (MeterBox $box): string => $box->branch->name : null),
+            ...DataTableFilters::meterBoxFilterGroupsFor($actor, $request, $actor->isSuperAdmin() ? fn (MeterBox $box): string => $box->branch->name : null),
         ];
 
         if ($actor->isSuperAdmin()) {
-            $groups[] = $this->branchFilterGroup();
+            $groups[] = DataTableFilters::branchFilterGroup();
         }
 
         return $groups;

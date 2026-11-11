@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ReadingSubmissionStatus;
-use App\Http\Concerns\FiltersDataTable;
 use App\Http\Requests\ReviewReadingSubmissionRequest;
 use App\Models\ReadingCycle;
 use App\Models\ReadingSubmission;
 use App\Notifications\ActionCompleted;
+use App\Support\Queries\DataTableFilters;
 use App\Support\Readings\FieldReadingSync;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,8 +20,6 @@ use Inertia\Response as InertiaResponse;
  */
 class ReadingSubmissionController extends Controller
 {
-    use FiltersDataTable;
-
     public function __construct(private FieldReadingSync $sync) {}
 
     public function index(Request $request, ReadingCycle $readingCycle): InertiaResponse
@@ -30,11 +28,11 @@ class ReadingSubmissionController extends Controller
 
         $cycle = $readingCycle->load('branch');
         $query = $cycle->submissions()->getQuery()->with(['subscription', 'user', 'assignment.meterBox', 'reviewedBy']);
-        $this->applyDataTableFilters($query, $request, [], ['received_at', 'captured_at'], 'received_at', 'desc');
-        $this->applyDataTableFilterSelects($query, $request, ['status']);
+        DataTableFilters::applyDataTableFilters($query, $request, [], ['received_at', 'captured_at'], 'received_at', 'desc');
+        DataTableFilters::applyDataTableFilterSelects($query, $request, ['status']);
         $timezone = config('app.business_timezone');
 
-        $submissions = $query->paginate($this->dataTablePerPage($request, 25))
+        $submissions = $query->paginate(DataTableFilters::dataTablePerPage($request, 25))
             ->withQueryString()
             ->through(fn (ReadingSubmission $submission) => [
                 'id' => $submission->id,
@@ -56,8 +54,8 @@ class ReadingSubmissionController extends Controller
             'cycle' => ['id' => $cycle->id, 'branchName' => $cycle->branch->name, 'readingDate' => $cycle->reading_date->toDateString(), 'weekEnd' => $cycle->week_end->toDateString()],
             'submissions' => $submissions,
             'canReview' => $request->user()->can('review', $cycle),
-            'filters' => $this->dataTableState($request, 'received_at', 'desc', 25),
-            'filterOptions' => [$this->filterGroup('status', 'الحالة', ReadingSubmissionStatus::options())],
+            'filters' => DataTableFilters::dataTableState($request, 'received_at', 'desc', 25),
+            'filterOptions' => [DataTableFilters::filterGroup('status', 'الحالة', ReadingSubmissionStatus::options())],
         ]);
     }
 

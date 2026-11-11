@@ -7,8 +7,6 @@ use App\Enums\DisconnectionReason;
 use App\Enums\MessageChannel;
 use App\Enums\MessageKind;
 use App\Enums\MessageStatus;
-use App\Http\Concerns\FiltersDisconnectionItems;
-use App\Http\Concerns\PresentsDisconnectionItems;
 use App\Http\Requests\AddDisconnectionItemsRequest;
 use App\Http\Requests\ConfirmDisconnectionItemsRequest;
 use App\Http\Requests\PreviewDisconnectionItemsRequest;
@@ -22,8 +20,10 @@ use App\Models\MessageBatch;
 use App\Models\Subscription;
 use App\Models\SubscriptionMessage;
 use App\Notifications\ActionCompleted;
+use App\Support\Disconnections\DisconnectionItemPresenter;
 use App\Support\Ledger\Money;
 use App\Support\Messaging\MessageComposer;
+use App\Support\Queries\DisconnectionItemsQuery;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -42,8 +42,6 @@ use Inertia\Inertia;
  */
 class DisconnectionItemController extends Controller
 {
-    use FiltersDisconnectionItems, PresentsDisconnectionItems;
-
     public function __construct(private MessageComposer $composer) {}
 
     /**
@@ -97,15 +95,15 @@ class DisconnectionItemController extends Controller
     {
 
         $query = $request->boolean('all')
-            ? $this->filteredDisconnectionItems($disconnectionList, $request)
+            ? DisconnectionItemsQuery::filteredDisconnectionItems($disconnectionList, $request)
             : $disconnectionList->items()->whereIn('id', array_map('intval', $request->input('ids')))->orderBy('id');
-        $items = $query->with($this->disconnectionItemRelations())->limit(RescheduleDisconnectionItemsRequest::MAX_ITEMS + 1)->get();
+        $items = $query->with(DisconnectionItemPresenter::disconnectionItemRelations())->limit(RescheduleDisconnectionItemsRequest::MAX_ITEMS + 1)->get();
         $withPhone = $request->user()->can('warn', $disconnectionList);
 
         return response()->json([
             'tooMany' => $items->count() > RescheduleDisconnectionItemsRequest::MAX_ITEMS,
             'max' => RescheduleDisconnectionItemsRequest::MAX_ITEMS,
-            'items' => $items->take(RescheduleDisconnectionItemsRequest::MAX_ITEMS)->map(fn (DisconnectionListItem $item) => $this->disconnectionItemRow($item, $withPhone))->values(),
+            'items' => $items->take(RescheduleDisconnectionItemsRequest::MAX_ITEMS)->map(fn (DisconnectionListItem $item) => DisconnectionItemPresenter::disconnectionItemRow($item, $withPhone))->values(),
         ]);
     }
 

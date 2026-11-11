@@ -6,8 +6,6 @@ use App\Enums\MessageChannel;
 use App\Enums\MessageKind;
 use App\Enums\MessageStatus;
 use App\Enums\SubscriptionStatus;
-use App\Http\Concerns\FiltersDataTable;
-use App\Http\Concerns\FiltersSubscriptionList;
 use App\Http\Requests\MessageRecipientsRequest;
 use App\Http\Requests\StoreMessageBatchRequest;
 use App\Jobs\SendSubscriptionMessage;
@@ -23,6 +21,8 @@ use App\Notifications\ActionCompleted;
 use App\Support\Messaging\MessageComposer;
 use App\Support\Messaging\PhoneNumber;
 use App\Support\Messaging\SmsGateway;
+use App\Support\Queries\DataTableFilters;
+use App\Support\Queries\SubscriptionListQuery;
 use App\Support\Readings\ReadingWeeks;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -43,8 +43,6 @@ use Inertia\Response as InertiaResponse;
  */
 class MessageController extends Controller
 {
-    use FiltersDataTable, FiltersSubscriptionList;
-
     /**
      * The most subscriptions a search in the quick message window lists.
      */
@@ -62,26 +60,26 @@ class MessageController extends Controller
         $actor = $request->user();
 
         $query = MessageBatch::query()->visibleTo($actor)->withStatusCounts()->with(['branch', 'createdBy']);
-        $this->applyDataTableFilters($query, $request, ['body'], ['created_at'], 'created_at', 'desc');
-        $this->applyDataTableFilterSelects($query, $request, ['kind', 'channel', 'branch_id']);
+        DataTableFilters::applyDataTableFilters($query, $request, ['body'], ['created_at'], 'created_at', 'desc');
+        DataTableFilters::applyDataTableFilterSelects($query, $request, ['kind', 'channel', 'branch_id']);
 
-        $batches = $query->paginate($this->dataTablePerPage($request))
+        $batches = $query->paginate(DataTableFilters::dataTablePerPage($request))
             ->withQueryString()
             ->through(fn (MessageBatch $batch) => $this->batchSummary($batch));
 
         $filterOptions = [
-            $this->filterGroup('kind', 'النوع', MessageKind::options()),
-            $this->filterGroup('channel', 'طريقة الإرسال', MessageChannel::options()),
+            DataTableFilters::filterGroup('kind', 'النوع', MessageKind::options()),
+            DataTableFilters::filterGroup('channel', 'طريقة الإرسال', MessageChannel::options()),
         ];
 
         if ($actor->isSuperAdmin()) {
-            $filterOptions[] = $this->branchFilterGroup();
+            $filterOptions[] = DataTableFilters::branchFilterGroup();
         }
 
         return Inertia::render('Messages/Index', [
             'batches' => $batches,
             'canSend' => $actor->can('create', MessageBatch::class),
-            'filters' => $this->dataTableState($request, 'created_at', 'desc'),
+            'filters' => DataTableFilters::dataTableState($request, 'created_at', 'desc'),
             'filterOptions' => $filterOptions,
         ]);
     }
@@ -103,12 +101,12 @@ class MessageController extends Controller
             ...$this->writingOptions($actor),
             'weekBranchId' => $this->readingBranchId($request),
             'statusOptions' => SubscriptionStatus::options(),
-            'branchOptions' => $actor->isSuperAdmin() ? $this->branchFilterGroup()['options'] : [],
-            'meterBoxGroups' => $this->meterBoxFilterGroups(
+            'branchOptions' => $actor->isSuperAdmin() ? DataTableFilters::branchFilterGroup()['options'] : [],
+            'meterBoxGroups' => DataTableFilters::meterBoxFilterGroups(
                 $meterBoxes,
                 $actor->isSuperAdmin() ? fn (MeterBox $box) => $box->branch->name : null,
             ),
-            'circuitBreakerOptions' => $this->circuitBreakerFilterGroup()['options'],
+            'circuitBreakerOptions' => DataTableFilters::circuitBreakerFilterGroup()['options'],
             'maxRecipients' => MessageComposer::MAX_RECIPIENTS,
             'criteria' => $this->criteria($request) + ['kind' => $this->requestedKind($request)->value],
             'recipients' => Inertia::optional(fn () => $this->recipientRows($request, $actor)),
@@ -150,7 +148,7 @@ class MessageController extends Controller
                 'filter' => $request->input('selection.filter', []),
             ]);
             $query = Subscription::query()->visibleTo($request->user());
-            $ids = $this->applySubscriptionListFilters($query, $selectionRequest)
+            $ids = SubscriptionListQuery::applySubscriptionListFilters($query, $selectionRequest)
                 ->reorder()->limit(MessageComposer::MAX_RECIPIENTS + 1)->pluck('subscriptions.id')->all();
 
             if (count($ids) > MessageComposer::MAX_RECIPIENTS) {
@@ -244,12 +242,12 @@ class MessageController extends Controller
         $batch = MessageBatch::query()->withStatusCounts()->with(['branch', 'createdBy'])->findOrFail($batch->id);
 
         $query = $batch->messages()->getQuery()->with(['subscription', 'sentBy']);
-        $this->applyDataTableFilters($query, $request, ['phone', 'body'], ['id', 'status', 'sent_at'], 'id');
-        $this->applyDataTableFilterSelects($query, $request, ['status']);
+        DataTableFilters::applyDataTableFilters($query, $request, ['phone', 'body'], ['id', 'status', 'sent_at'], 'id');
+        DataTableFilters::applyDataTableFilterSelects($query, $request, ['status']);
 
         $countryCode = SmsSetting::countryCode();
 
-        $messages = $query->paginate($this->dataTablePerPage($request, 25))
+        $messages = $query->paginate(DataTableFilters::dataTablePerPage($request, 25))
             ->withQueryString()
             ->through(fn (SubscriptionMessage $message) => [
                 'id' => $message->id,
@@ -271,8 +269,8 @@ class MessageController extends Controller
             'batch' => $this->batchSummary($batch) + ['body' => $batch->body],
             'messages' => $messages,
             'canUpdate' => $actor->can('update', $batch),
-            'filters' => $this->dataTableState($request, 'id', 'asc', 25),
-            'filterOptions' => [$this->filterGroup('status', 'الحالة', MessageStatus::options())],
+            'filters' => DataTableFilters::dataTableState($request, 'id', 'asc', 25),
+            'filterOptions' => [DataTableFilters::filterGroup('status', 'الحالة', MessageStatus::options())],
         ]);
     }
 

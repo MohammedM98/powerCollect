@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PaymentMethod;
-use App\Http\Concerns\BuildsSubscriptionStatement;
-use App\Http\Concerns\FiltersDataTable;
 use App\Http\Requests\ViewLedgerRequest;
 use App\Models\Branch;
 use App\Models\SubscriptionTransaction;
@@ -12,6 +10,8 @@ use App\Models\User;
 use App\Support\Branches\BranchScope;
 use App\Support\Ledger\LinePresenter;
 use App\Support\Ledger\Money;
+use App\Support\Ledger\StatementBuilder;
+use App\Support\Queries\DataTableFilters;
 use App\Support\Reports\DailySeries;
 use Brick\Math\RoundingMode;
 use Carbon\CarbonImmutable;
@@ -34,8 +34,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class LedgerController extends Controller
 {
-    use BuildsSubscriptionStatement, FiltersDataTable;
-
     /**
      * The period tabs, as the number of days each covers (null: since the
      * first entry).
@@ -79,7 +77,7 @@ class LedgerController extends Controller
         }
 
         $entries = $this->sortEntries($inPeriod()->with(['subscription.branch', 'recordedBy', 'splitPayment']), $request)
-            ->paginate($this->dataTablePerPage($request, self::DEFAULT_PER_PAGE))
+            ->paginate(DataTableFilters::dataTablePerPage($request, self::DEFAULT_PER_PAGE))
             ->withQueryString()
             ->through(fn (SubscriptionTransaction $transaction): array => $this->row($transaction));
 
@@ -108,10 +106,10 @@ class LedgerController extends Controller
             'scopeLabel' => $this->scopeLabel($request, $actor),
             // An auditor of several branches reads, large above the log, which branch it holds.
             'branchScope' => fn () => BranchScope::shownTo($actor) ? BranchScope::forFilter($actor, $this->filterValue($request, 'branch_id')) : null,
-            'filters' => $this->dataTableState($request, 'created_at', 'desc', self::DEFAULT_PER_PAGE),
+            'filters' => DataTableFilters::dataTableState($request, 'created_at', 'desc', self::DEFAULT_PER_PAGE),
             'filterOptions' => $this->filterOptions($actor),
             // A line's subscription's statement, opened over the log.
-            'statement' => fn () => $this->requestedStatement($request, $actor),
+            'statement' => fn () => StatementBuilder::requestedStatement($request, $actor),
         ]);
     }
 
@@ -124,7 +122,7 @@ class LedgerController extends Controller
      */
     private function filteredLedger(Request $request, User $actor): Builder
     {
-        $search = $this->searchTerm($request);
+        $search = DataTableFilters::searchTerm($request);
         $branchId = $actor->hasFinancialAuditAccess() ? $this->filterValue($request, 'branch_id') : null;
         $type = $this->filterValue($request, 'type');
         $recordedBy = $this->filterValue($request, 'recorded_by');
@@ -361,24 +359,24 @@ class LedgerController extends Controller
      */
     private function filterOptions(User $actor): array
     {
-        $groups = $actor->hasFinancialAuditAccess() ? [$this->branchFilterGroup($actor)] : [];
+        $groups = $actor->hasFinancialAuditAccess() ? [DataTableFilters::branchFilterGroup($actor)] : [];
 
-        $groups[] = $this->filterGroup('type', 'نوع القيد', [
+        $groups[] = DataTableFilters::filterGroup('type', 'نوع القيد', [
             ['value' => self::DEBIT, 'label' => 'كل ما عليه (تحميل)'],
             ['value' => self::CREDIT, 'label' => 'كل ما له (تسديد وخصم ومقاصة)'],
             ...collect(LinePresenter::typeLabels())->map(fn (string $label, string $type): array => ['value' => $type, 'label' => $label])->values(),
         ]);
 
-        $groups[] = $this->filterGroup('payment_method', 'طريقة الدفع', collect(PaymentMethod::cases())
+        $groups[] = DataTableFilters::filterGroup('payment_method', 'طريقة الدفع', collect(PaymentMethod::cases())
             ->map(fn (PaymentMethod $method): array => ['value' => $method->value, 'label' => __($method->label())])->all());
 
-        $groups[] = $this->filterGroup('bank_name', 'البنك', SubscriptionTransaction::query()
+        $groups[] = DataTableFilters::filterGroup('bank_name', 'البنك', SubscriptionTransaction::query()
             ->whereHas('subscription', fn (Builder $subscriptions) => $subscriptions->readableTo($actor, true))
             ->whereNotNull('bank_name')->where('bank_name', '!=', '')
             ->distinct()->orderBy('bank_name')->pluck('bank_name')
             ->map(fn (string $bank): array => ['value' => $bank, 'label' => $bank])->all());
 
-        $groups[] = $this->filterGroup('recorded_by', 'سجّله', $this->staffOptions(
+        $groups[] = DataTableFilters::filterGroup('recorded_by', 'سجّله', DataTableFilters::staffOptions(
             User::query()
                 ->whereIn('id', SubscriptionTransaction::query()
                     ->whereHas('subscription', fn (Builder $subscriptions) => $subscriptions->readableTo($actor, true))

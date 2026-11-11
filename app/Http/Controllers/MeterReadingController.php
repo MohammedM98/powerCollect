@@ -6,9 +6,6 @@ use App\Enums\MeterReadingStatus;
 use App\Enums\PermissionKey;
 use App\Enums\ReadingEntryMode;
 use App\Enums\SubscriptionStatus;
-use App\Http\Concerns\ApprovesCorrectedReadings;
-use App\Http\Concerns\FiltersDataTable;
-use App\Http\Concerns\FiltersReadingSheet;
 use App\Http\Requests\ApproveMeterReadingsRequest;
 use App\Http\Requests\ListMeterReadingsRequest;
 use App\Http\Requests\StoreMeterReadingRequest;
@@ -27,7 +24,10 @@ use App\Notifications\ActionCompleted;
 use App\Notifications\ReadingNeedsReapproval;
 use App\Support\Branches\BranchDomainContext;
 use App\Support\Branches\BranchScope;
+use App\Support\Queries\DataTableFilters;
+use App\Support\Queries\ReadingSheetQuery;
 use App\Support\Readings\AdjustLastReading;
+use App\Support\Readings\ApproveCorrectedReading;
 use App\Support\Readings\ApproveReading;
 use App\Support\Readings\PrintSelection;
 use App\Support\Readings\ReadingCharges;
@@ -47,8 +47,6 @@ use Inertia\Response as InertiaResponse;
 
 class MeterReadingController extends Controller
 {
-    use ApprovesCorrectedReadings, FiltersDataTable, FiltersReadingSheet;
-
     /**
      * Sortable sheet columns — the reading columns are computed per row for
      * the chosen week by withSheetColumns().
@@ -86,12 +84,12 @@ class MeterReadingController extends Controller
                 ]);
             }
         }
-        $weekBranchId = $this->sheetBranchId($request, $actor);
+        $weekBranchId = ReadingSheetQuery::sheetBranchId($request, $actor);
         $canBrowseWeeks = $actor->can('browseWeeks', MeterReading::class);
-        $weekStart = $this->selectedWeek($request, $weekBranchId, $canBrowseWeeks);
+        $weekStart = ReadingSheetQuery::selectedWeek($request, $weekBranchId, $canBrowseWeeks);
         $week = $weekStart->toDateString();
 
-        $query = $this->subscriptionsInScope($actor, $request)
+        $query = ReadingSheetQuery::subscriptionsInScope($actor, $request)
             ->with([
                 'tariff',
                 'circuitBreaker',
@@ -109,19 +107,19 @@ class MeterReadingController extends Controller
             }
         }
 
-        $this->withSheetColumns($query, $week);
-        $this->applyMeterBoxSort($query, $request);
-        $this->applyDataTableFilters($query, $request, ['full_name', 'subscription_name', 'account_number', 'phone', 'subscription_phone'], self::SORTABLE, 'full_name');
+        ReadingSheetQuery::withSheetColumns($query, $week);
+        ReadingSheetQuery::applyMeterBoxSort($query, $request);
+        DataTableFilters::applyDataTableFilters($query, $request, ['full_name', 'subscription_name', 'account_number', 'phone', 'subscription_phone'], self::SORTABLE, 'full_name');
         $query->orderBy('subscriptions.id');
-        $this->applyDataTableFilterSelects($query, $request, ['branch_id', 'meter_box_id', 'tariff_id']);
-        $this->applyMeterBoxNameFilter($query, $request);
-        $this->applySheetFilters($query, $request, $week, includeStatus: false);
+        DataTableFilters::applyDataTableFilterSelects($query, $request, ['branch_id', 'meter_box_id', 'tariff_id']);
+        DataTableFilters::applyMeterBoxNameFilter($query, $request);
+        ReadingSheetQuery::applySheetFilters($query, $request, $week, includeStatus: false);
         $summaryQuery = clone $query;
-        $this->applySheetStatusFilters($query, $request, $week);
+        ReadingSheetQuery::applySheetStatusFilters($query, $request, $week);
 
         $enteredThisWeek = fn (Builder $q) => $q->whereDate('week_start', $week);
 
-        $rows = fn () => $query->paginate($this->dataTablePerPage($request, 25))
+        $rows = fn () => $query->paginate(DataTableFilters::dataTablePerPage($request, 25))
             ->withQueryString()
             ->through(fn (Subscription $subscription) => $this->sheetRow($subscription, $weekStart, $actor, $request->boolean('print')));
 
@@ -141,7 +139,7 @@ class MeterReadingController extends Controller
             return Inertia::render('Print/ReadingReport', ['printData' => fn (): array => ReadingPrintData::sheet($rows(), $context, $this->seesWhoRecorded($actor))]);
         }
 
-        $scope = $this->subscriptionsInScope($actor, $request);
+        $scope = ReadingSheetQuery::subscriptionsInScope($actor, $request);
         $canApprove = $actor->can('approveAny', MeterReading::class);
 
         return Inertia::render('MeterReadings/Index', [
@@ -150,7 +148,7 @@ class MeterReadingController extends Controller
             'weekEnd' => ReadingWeeks::weekEndFor($weekStart, $weekBranchId)->toDateString(),
             // The weeks back to the first reading (at least fourteen months), for the year, month and week pickers;
             // only the latest one for someone who may not browse earlier weeks.
-            'weekOptions' => fn () => ReadingWeeks::recentWeekOptions($weekBranchId, $canBrowseWeeks ? $this->weeksToOffer($actor, $weekBranchId) : 1),
+            'weekOptions' => fn () => ReadingWeeks::recentWeekOptions($weekBranchId, $canBrowseWeeks ? ReadingSheetQuery::weeksToOffer($actor, $weekBranchId) : 1),
             'summary' => fn () => [
                 'total' => (clone $scope)->count(),
                 'entered' => (clone $scope)->whereHas('meterReadings', $enteredThisWeek)->count(),
@@ -169,7 +167,7 @@ class MeterReadingController extends Controller
             // The actor could record now, just not in this earlier week.
             'weekIsViewOnly' => $actor->can('create', MeterReading::class) && ! $actor->can('create', [MeterReading::class, $weekStart, $weekBranchId]),
             'entryWindow' => $this->entryWindow($actor),
-            'filters' => $this->dataTableState($request, 'full_name', 'asc', 25),
+            'filters' => DataTableFilters::dataTableState($request, 'full_name', 'asc', 25),
             'filterOptions' => fn () => $this->filterOptions($actor, $request),
         ]);
     }
@@ -252,9 +250,9 @@ class MeterReadingController extends Controller
             if ($confirmedAtOnce) {
                 return [
                     $wentBackToReview,
-                    $wentBackToReview && $this->approveCorrectedLastReading($meterReading, $actor, $request->boolean('confirm_unusual')),
+                    $wentBackToReview && ApproveCorrectedReading::approveCorrectedLastReading($meterReading, $actor, $request->boolean('confirm_unusual')),
                     $nextWentBackToReview,
-                    $nextWentBackToReview && $this->approveCorrectedLastReading($nextReading, $actor, $request->boolean('confirm_unusual')),
+                    $nextWentBackToReview && ApproveCorrectedReading::approveCorrectedLastReading($nextReading, $actor, $request->boolean('confirm_unusual')),
                 ];
             }
 
@@ -296,8 +294,8 @@ class MeterReadingController extends Controller
     {
         $actor = $request->user();
         $query = $request->boolean('all')
-            ? $this->pendingInSheet($request, $actor, ReadingWeeks::weekStartFor($request->date('week'), $this->sheetBranchId($request, $actor))->toDateString())
-            : $this->pendingReadings($actor)->whereKey($request->validated('reading_ids'));
+            ? ReadingSheetQuery::pendingInSheet($request, $actor, ReadingWeeks::weekStartFor($request->date('week'), ReadingSheetQuery::sheetBranchId($request, $actor))->toDateString())
+            : ReadingSheetQuery::pendingReadings($actor)->whereKey($request->validated('reading_ids'));
 
         // An unusual reading is only approved when ticked on its own and confirmed, never as part of "all".
         $confirmUnusual = ! $request->boolean('all') && $request->boolean('confirm_unusual');
@@ -331,7 +329,7 @@ class MeterReadingController extends Controller
      */
     private function pendingApprovalSummary(Request $request, User $actor, string $week): array
     {
-        $pending = $this->pendingInSheet($request, $actor, $week);
+        $pending = ReadingSheetQuery::pendingInSheet($request, $actor, $week);
 
         return [
             'count' => (clone $pending)->count(),
@@ -483,32 +481,32 @@ class MeterReadingController extends Controller
     {
         $groups = [];
 
-        $groups[] = $this->filterGroup('subscription_status', 'حالة المشترك (النشط افتراضيًا)', [
+        $groups[] = DataTableFilters::filterGroup('subscription_status', 'حالة المشترك (النشط افتراضيًا)', [
             ['value' => 'all', 'label' => 'كل الحالات'],
             ...SubscriptionStatus::options(),
         ]);
 
         if ($actor->isSuperAdmin()) {
-            $groups[] = $this->branchFilterGroup();
-            $groups[] = $this->areaFilterGroup(Area::orderBy('name')->get());
+            $groups[] = DataTableFilters::branchFilterGroup();
+            $groups[] = DataTableFilters::areaFilterGroup(Area::orderBy('name')->get());
         }
 
-        $groups[] = $this->subAreaFilterGroup(SubArea::visibleTo($actor)->orderBy('name')->get());
+        $groups[] = DataTableFilters::subAreaFilterGroup(SubArea::visibleTo($actor)->orderBy('name')->get());
 
-        array_push($groups, ...$this->meterBoxFilterGroupsFor($actor, $request));
-        $groups[] = $this->circuitBreakerFilterGroup();
+        array_push($groups, ...DataTableFilters::meterBoxFilterGroupsFor($actor, $request));
+        $groups[] = DataTableFilters::circuitBreakerFilterGroup();
 
-        $groups[] = $this->filterGroup('tariff_id', 'نوع الاشتراك', $this->modelOptions(
+        $groups[] = DataTableFilters::filterGroup('tariff_id', 'نوع الاشتراك', DataTableFilters::modelOptions(
             Tariff::orderBy('category')->get(),
             fn (Tariff $tariff) => __($tariff->category->label()),
         ));
 
-        $groups[] = $this->filterGroup('entry', 'حالة الإدخال', [
+        $groups[] = DataTableFilters::filterGroup('entry', 'حالة الإدخال', [
             ['value' => 'missing', 'label' => 'لم تُدخل بعد'],
             ['value' => 'entered', 'label' => 'تم الإدخال'],
         ]);
 
-        $groups[] = $this->filterGroup('approval', 'حالة الاعتماد', [
+        $groups[] = DataTableFilters::filterGroup('approval', 'حالة الاعتماد', [
             ['value' => MeterReadingStatus::Pending->value, 'label' => 'بانتظار الاعتماد'],
             ['value' => MeterReadingStatus::Approved->value, 'label' => 'معتمدة'],
         ]);
