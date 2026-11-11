@@ -20,6 +20,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
+use RuntimeException;
 use Tests\TestCase;
 
 class MessageTest extends TestCase
@@ -399,6 +400,32 @@ class MessageTest extends TestCase
         $message->refresh();
         $this->assertSame(MessageStatus::Failed, $message->status);
         $this->assertStringContainsString('503', $message->error);
+    }
+
+    public function test_a_message_whose_job_gives_up_is_marked_failed_and_its_batch_creator_is_told_once(): void
+    {
+        $creator = User::factory()->branchAdmin()->create();
+        $batch = MessageBatch::factory()->create(['created_by' => $creator->id]);
+        [$first, $second] = SubscriptionMessage::factory()->count(2)->for($batch, 'batch')->create();
+
+        (new SendSubscriptionMessage($first))->failed(new RuntimeException('Worker timed out'));
+        (new SendSubscriptionMessage($second))->failed(new RuntimeException('Worker timed out'));
+
+        $this->assertSame(MessageStatus::Failed, $first->refresh()->status);
+        $this->assertSame('Worker timed out', $first->error);
+        $this->assertSame(MessageStatus::Failed, $second->refresh()->status);
+        $this->assertSame(1, $creator->notifications()->count());
+        $this->assertSame('messages-failed', $creator->notifications()->first()->data['action']);
+    }
+
+    public function test_a_message_already_sent_is_left_alone_when_a_late_job_gives_up(): void
+    {
+        $message = SubscriptionMessage::factory()->create();
+        $message->markSent();
+
+        (new SendSubscriptionMessage($message))->failed(new RuntimeException('Worker timed out'));
+
+        $this->assertSame(MessageStatus::Sent, $message->refresh()->status);
     }
 
     public function test_retrying_a_send_queues_its_failed_messages_again(): void

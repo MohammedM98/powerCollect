@@ -12,9 +12,13 @@ use App\Support\Brand;
 use App\Support\Messaging\HttpSmsGateway;
 use App\Support\Messaging\LogSmsGateway;
 use App\Support\Messaging\SmsGateway;
+use App\Support\OperationsAlert;
+use Illuminate\Queue\Events\QueueBusy;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use RuntimeException;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -61,6 +65,10 @@ class AppServiceProvider extends ServiceProvider
         });
         SubscriptionTransaction::deleting(function (SubscriptionTransaction $payment): void {
             app(BranchClosingWorkflow::class)->releaseEditablePayment($payment);
+        });
+        Event::listen(function (QueueBusy $event): void {
+            report(new RuntimeException("The {$event->connectionName}:{$event->queue} queue has {$event->size} jobs waiting."));
+            OperationsAlert::notifySuperAdmins('queue-busy', (string) $event->size);
         });
         Password::defaults(fn (): Password => Password::min(8));
 
