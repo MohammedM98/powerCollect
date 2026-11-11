@@ -12,7 +12,6 @@ use App\Enums\PermissionKey;
 use App\Enums\TransactionAction;
 use App\Support\BranchClosingWorkflow;
 use App\Support\BranchDomainContext;
-use App\Support\BranchDomainScope;
 use App\Support\DailySeries;
 use App\Support\Money;
 use Brick\Math\RoundingMode;
@@ -654,11 +653,11 @@ class SubscriptionTransaction extends Model
             return null;
         }
 
-        return self::withoutGlobalScope(BranchDomainScope::class)
+        return self::query()->acrossBranches()
             ->where('active_reference', $normalized)
             ->when($ignoreTransactionId, fn (Builder $query): Builder => $query->whereKeyNot($ignoreTransactionId))
             ->when($ignoreSplitPaymentId, fn (Builder $query): Builder => $query->where(fn (Builder $other) => $other->whereNull('split_payment_id')->orWhere('split_payment_id', '!=', $ignoreSplitPaymentId)))
-            ->with(['subscription' => fn (BelongsTo $query) => $query->withoutGlobalScope(BranchDomainScope::class)])
+            ->with(['subscription' => fn (BelongsTo $query) => $query->acrossBranches()])
             ->first();
     }
 
@@ -905,7 +904,7 @@ class SubscriptionTransaction extends Model
      */
     private static function splitPartsAllow(int $splitPaymentId, User $actor, TransactionAction $action, bool $lockForUpdate): bool
     {
-        $parts = self::withoutGlobalScope(BranchDomainScope::class)
+        $parts = self::query()->acrossBranches()
             ->where('split_payment_id', $splitPaymentId)->where('type', self::TYPE_PAYMENT)->orderBy('id')
             ->when($lockForUpdate, fn (Builder $query): Builder => $query->lockForUpdate())->get();
         $standing = $parts->reject(fn (self $part): bool => $part->isCancelled());
@@ -939,7 +938,7 @@ class SubscriptionTransaction extends Model
      */
     private function splitPartsAreErasable(bool $lockForUpdate): bool
     {
-        $parts = self::withoutGlobalScope(BranchDomainScope::class)
+        $parts = self::query()->acrossBranches()
             ->where('split_payment_id', $this->split_payment_id)->where('type', self::TYPE_PAYMENT)->orderBy('id')
             ->when($lockForUpdate, fn (Builder $query): Builder => $query->lockForUpdate())->get();
 

@@ -52,7 +52,7 @@ class WebPaymentOperation
             throw ValidationException::withMessages(['payment_token' => 'تم استخدام طلب التسجيل هذا مسبقًا ببيانات مختلفة. أعد فتح النموذج لدفعة جديدة.']);
         }
 
-        return SubscriptionTransaction::withoutGlobalScopes()->findOrFail($existing->subscription_transaction_id);
+        return SubscriptionTransaction::query()->acrossBranches()->findOrFail($existing->subscription_transaction_id);
     }
 
     /** @param array<string, mixed> $payment */

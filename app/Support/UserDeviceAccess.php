@@ -17,7 +17,7 @@ class UserDeviceAccess
 
     public function prepareWebLogin(User $user): void
     {
-        $lockedUser = User::withoutGlobalScopes()->whereKey($user->id)->lockForUpdate()->firstOrFail();
+        $lockedUser = User::query()->acrossBranches()->whereKey($user->id)->lockForUpdate()->firstOrFail();
         $this->makeRoom($lockedUser);
         $user->setRememberToken($lockedUser->getRememberToken());
     }
@@ -25,7 +25,7 @@ class UserDeviceAccess
     public function claimWeb(Request $request, User $user, bool $newLogin = false): void
     {
         DB::transaction(function () use ($request, $user, $newLogin): void {
-            $user = User::withoutGlobalScopes()->whereKey($user->id)->lockForUpdate()->firstOrFail();
+            $user = User::query()->acrossBranches()->whereKey($user->id)->lockForUpdate()->firstOrFail();
             $identity = ['user_id' => $user->id, 'session_hash' => hash('sha256', $request->session()->getId())];
             $device = DB::table('user_login_devices')->where($identity)->first();
             if (! $newLogin && ! Auth::guard('web')->viaRemember() && $request->session()->get('device_access_user') === $user->id && $device === null) {
@@ -54,7 +54,7 @@ class UserDeviceAccess
     public function issueMobile(User $user, ?string $existingToken, bool $remember = false): string
     {
         return DB::transaction(function () use ($user, $existingToken, $remember): string {
-            $user = User::withoutGlobalScopes()->whereKey($user->id)->lockForUpdate()->firstOrFail();
+            $user = User::query()->acrossBranches()->whereKey($user->id)->lockForUpdate()->firstOrFail();
             $token = $existingToken === null ? null : MobileAccessToken::query()->where('user_id', $user->id)
                 ->where('token_hash', hash('sha256', $existingToken))->where('expires_at', '>', now())->first();
             if ($token !== null && $this->allowed($user, 'mobile:'.$token->id)) {
@@ -87,7 +87,7 @@ class UserDeviceAccess
     public function revokeAll(User $user): void
     {
         DB::transaction(function () use ($user): void {
-            User::withoutGlobalScopes()->whereKey($user->id)->lockForUpdate()->firstOrFail();
+            User::query()->acrossBranches()->whereKey($user->id)->lockForUpdate()->firstOrFail();
             DB::table('user_login_devices')->where('user_id', $user->id)->delete();
             MobileAccessToken::query()->where('user_id', $user->id)->delete();
             if (config('session.driver') === 'database') {

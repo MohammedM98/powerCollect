@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Support\BranchDomainContext;
-use App\Support\BranchDomainScope;
 use App\Support\Money;
 use Closure;
 use Database\Factories\SplitPaymentFactory;
@@ -59,15 +58,15 @@ class SplitPayment extends Model
     public function withPaymentsLocked(User $actor, Closure $operation): mixed
     {
         return DB::transaction(function () use ($actor, $operation): mixed {
-            $partsQuery = fn (): Builder => SubscriptionTransaction::withoutGlobalScope(BranchDomainScope::class)
+            $partsQuery = fn (): Builder => SubscriptionTransaction::query()->acrossBranches()
                 ->where('split_payment_id', $this->id)->where('type', SubscriptionTransaction::TYPE_PAYMENT)
-                ->with(['subscription' => fn (BelongsTo $subscription) => $subscription->withoutGlobalScope(BranchDomainScope::class)])
+                ->with(['subscription' => fn (BelongsTo $subscription) => $subscription->acrossBranches()])
                 ->orderBy('id');
             $parts = $partsQuery()->get();
             $this->requireAccessibleParts($actor, $parts);
             $branchIds = $parts->pluck('subscription.branch_id')->unique()->sort()->values()->all();
-            Branch::withoutGlobalScope(BranchDomainScope::class)->whereIn('id', $branchIds)->orderBy('id')->lockForUpdate()->get();
-            self::withoutGlobalScope(BranchDomainScope::class)->whereKey($this->id)->lockForUpdate()->firstOrFail();
+            Branch::query()->acrossBranches()->whereIn('id', $branchIds)->orderBy('id')->lockForUpdate()->get();
+            self::query()->acrossBranches()->whereKey($this->id)->lockForUpdate()->firstOrFail();
             $this->refresh();
             $parts = $partsQuery()->lockForUpdate()->get();
             $this->requireAccessibleParts($actor, $parts);

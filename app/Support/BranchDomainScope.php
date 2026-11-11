@@ -87,6 +87,20 @@ class BranchDomainScope implements Scope
         }
     }
 
+    /**
+     * Adds `acrossBranches()` to every query on a scoped model: the one way
+     * to read past the branch host or the selected branch view. Use it only
+     * for reads that must see every branch by design (company-wide unique
+     * numbers, a split payment's parts in several branches, the signed-in
+     * user's own row, the list of branches to choose from), and say why
+     * where it is called. A test keeps the raw `withoutGlobalScope` call
+     * out of the rest of the application.
+     */
+    public function extend(Builder $builder): void
+    {
+        $builder->macro('acrossBranches', fn (Builder $builder): Builder => $builder->withoutGlobalScope(self::class));
+    }
+
     private static function parentQuery(string $name): Builder
     {
         $class = 'App\\Models\\'.self::PARENTS[$name][1];

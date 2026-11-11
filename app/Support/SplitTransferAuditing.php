@@ -23,13 +23,13 @@ class SplitTransferAuditing
     /** @return Collection<int, SubscriptionTransaction> */
     private function parts(int $splitId, int $branchId, User $actor): Collection
     {
-        SplitPayment::withoutGlobalScope(BranchDomainScope::class)->whereKey($splitId)->lockForUpdate()->firstOrFail();
-        $parts = SubscriptionTransaction::withoutGlobalScope(BranchDomainScope::class)
+        SplitPayment::query()->acrossBranches()->whereKey($splitId)->lockForUpdate()->firstOrFail();
+        $parts = SubscriptionTransaction::query()->acrossBranches()
             ->where('split_payment_id', $splitId)->where('type', SubscriptionTransaction::TYPE_PAYMENT)
             ->with([
-                'subscription' => fn (BelongsTo $query) => $query->withoutGlobalScope(BranchDomainScope::class),
-                'boxEntry' => fn (HasOne $query) => $query->withoutGlobalScope(BranchDomainScope::class),
-                'boxEntry.box' => fn (BelongsTo $query) => $query->withoutGlobalScope(BranchDomainScope::class),
+                'subscription' => fn (BelongsTo $query) => $query->acrossBranches(),
+                'boxEntry' => fn (HasOne $query) => $query->acrossBranches(),
+                'boxEntry.box' => fn (BelongsTo $query) => $query->acrossBranches(),
                 'boxEntry.box.audit', 'boxEntry.audit',
             ])->orderBy('id')->lockForUpdate()->get();
         abort_if($parts->contains(fn (SubscriptionTransaction $part): bool => $part->subscription === null

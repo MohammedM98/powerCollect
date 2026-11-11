@@ -7,7 +7,6 @@ use App\Enums\MeterReadingStatus;
 use App\Enums\SubscriptionStatus;
 use App\Models\Concerns\BelongsToBranch;
 use App\Support\ArabicSearch;
-use App\Support\BranchDomainScope;
 use App\Support\DailySeries;
 use App\Support\DeletionBlocker;
 use App\Support\Money;
@@ -83,7 +82,7 @@ class Subscription extends Model
         static::deleted(function (Subscription $subscription): void {
             $profile = $subscription->profile;
 
-            if ($profile !== null && ! $profile->subscriptions()->withoutGlobalScope(BranchDomainScope::class)->exists()) {
+            if ($profile !== null && ! $profile->subscriptions()->acrossBranches()->exists()) {
                 $profile->delete();
             }
         });
@@ -156,7 +155,7 @@ class Subscription extends Model
     {
         $year = now()->format('Y');
 
-        $lastAccountNumber = static::withoutGlobalScope(BranchDomainScope::class)
+        $lastAccountNumber = static::query()->acrossBranches()
             ->where('account_number', 'like', $year.'%')
             ->orderByRaw('LENGTH(account_number) DESC')
             ->orderByDesc('account_number')
