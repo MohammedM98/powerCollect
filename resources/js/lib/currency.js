@@ -1,3 +1,5 @@
+
+
 /**
  * An amount with two decimal places, or none when it is a whole number:
  * 50 → '50', 617.5 → '617.50'.
@@ -27,4 +29,15 @@ export function formatCurrency(amount) {
     }
 
     return `${formatAmount(amount)} شيكل`;
+}
+
+/** An amount in whole agorot, so sums of cents never drift. */
+export function toCents(value) {
+    const cents = Math.round(Number(value || 0) * 100);
+
+    return Number.isFinite(cents) ? cents : 0;
+}
+
+export function fromCents(cents) {
+    return cents / 100;
 }
