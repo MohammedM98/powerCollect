@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'reading_assignments.dart';
+import 'trusted_clock.dart';
 
 /// The server the app talks to. A release build must be built with
 /// `--dart-define=API_BASE_URL=https://<domain>`; only a debug build falls back
@@ -206,6 +207,7 @@ class ApiClient {
       }
       final response =
           await request.close().timeout(const Duration(seconds: 18));
+      TrustedClock.observe(response.headers.value(HttpHeaders.dateHeader));
       return await _decodeResponse(response, requestToken)
           .timeout(const Duration(seconds: 18));
     } on SocketException {

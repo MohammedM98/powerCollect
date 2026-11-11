@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_identity.dart';
+import 'trusted_clock.dart';
 
 String bankReceivedDateValue(DateTime date) =>
     '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
@@ -29,7 +30,7 @@ class BankReceivedDateField extends StatelessWidget {
             onPressed: !enabled
                 ? null
                 : () async {
-                    final today = DateUtils.dateOnly(DateTime.now());
+                    final today = DateUtils.dateOnly(TrustedClock.now());
                     final date = await showDatePicker(
                       context: context,
                       initialDate: value ?? today,

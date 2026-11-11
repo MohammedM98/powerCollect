@@ -6,6 +6,7 @@ import 'app_identity.dart';
 import 'field_store.dart';
 import 'reading_assignments.dart';
 import 'search_text.dart';
+import 'trusted_clock.dart';
 
 Color get _background => AppIdentity.background;
 Color get _surface => AppIdentity.surface;
@@ -218,7 +219,7 @@ class _ReadingFlowState extends State<ReadingFlow> with WidgetsBindingObserver {
   bool _done(Map<String, dynamic> subscriber) =>
       subscriber['reading_status'] != null || _queued(subscriber) != null;
 
-  bool get _entryOpen => readingEntryIsOpen(widget.store.state, DateTime.now());
+  bool get _entryOpen => readingEntryIsOpen(widget.store.state, TrustedClock.now());
 
   bool _editable(Map<String, dynamic> subscriber) =>
       _entryOpen && !_done(subscriber);
@@ -509,7 +510,7 @@ class _ReadingFlowState extends State<ReadingFlow> with WidgetsBindingObserver {
               if (subscriber['assignment_id'] != null) ...{
                 'assignment_id': subscriber['assignment_id'],
                 'authorization': subscriber['authorization'],
-                'captured_at': DateTime.now().toUtc().toIso8601String(),
+                'captured_at': TrustedClock.now().toUtc().toIso8601String(),
               },
             })
         .toList();
@@ -749,12 +750,20 @@ class _ReadingFlowState extends State<ReadingFlow> with WidgetsBindingObserver {
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 20),
         children: [
-          if (readingScheduleMessage(widget.store.state, DateTime.now()) !=
+          if (TrustedClock.isOff)
+            Padding(
+                key: const ValueKey('reading-clock-warning'),
+                padding: const EdgeInsets.only(bottom: 12),
+                child: AppNotice(
+                    'ساعة الهاتف تختلف عن وقت الخادم بنحو ${TrustedClock.describeOffset()}. صحّح التاريخ والوقت في إعدادات الهاتف؛ تُسجَّل القراءات بوقت الخادم.',
+                    warning: true,
+                    icon: 'err')),
+          if (readingScheduleMessage(widget.store.state, TrustedClock.now()) !=
               null)
             Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: AppNotice(
-                    readingScheduleMessage(widget.store.state, DateTime.now())!,
+                    readingScheduleMessage(widget.store.state, TrustedClock.now())!,
                     warning: !_entryOpen)),
           if (query.isEmpty && total > 0) _progressCard(done, total),
           if (query.isEmpty && draftBox != null)
@@ -835,7 +844,7 @@ class _ReadingFlowState extends State<ReadingFlow> with WidgetsBindingObserver {
                 _subscriberResult(subscriber),
             ]),
           if (!_entryOpen &&
-              readingScheduleMessage(widget.store.state, DateTime.now()) ==
+              readingScheduleMessage(widget.store.state, TrustedClock.now()) ==
                   null)
             Padding(
               padding: const EdgeInsets.only(top: 12),
@@ -943,7 +952,7 @@ class _ReadingFlowState extends State<ReadingFlow> with WidgetsBindingObserver {
         padding: const EdgeInsets.all(16),
         children: [
           AppNotice(readingScheduleMessage(
-                  widget.store.state, DateTime.now()) ??
+                  widget.store.state, TrustedClock.now()) ??
               'المشتركون للعرض فقط. الإدخال متاح يوم القراءة بعد تحديث الطبلونات.'),
           const SizedBox(height: 12),
           AppRows(children: [

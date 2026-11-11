@@ -16,6 +16,7 @@ import 'weekly_readings_page.dart';
 import 'reading_distribution_page.dart';
 import 'reading_assignments.dart';
 import 'message_subscribers_page.dart';
+import 'trusted_clock.dart';
 
 enum FieldSection { home, readings, collections, sync, account }
 
@@ -542,7 +543,7 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
       return;
     }
     if (!canRead ||
-        !readingEntryIsOpen(widget.store.state, DateTime.now()) ||
+        !readingEntryIsOpen(widget.store.state, TrustedClock.now()) ||
         reading['week_start'] != widget.store.state['week_start'] ||
         !widget.store.subscribers.any(
             (subscriber) => subscriber['id'] == reading['subscription_id'])) {
@@ -878,14 +879,14 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
             ]),
           ),
           if (canRead &&
-              readingScheduleMessage(widget.store.state, DateTime.now()) !=
+              readingScheduleMessage(widget.store.state, TrustedClock.now()) !=
                   null)
             Padding(
                 padding: const EdgeInsets.only(top: 12),
                 child: AppNotice(
-                    readingScheduleMessage(widget.store.state, DateTime.now())!,
+                    readingScheduleMessage(widget.store.state, TrustedClock.now())!,
                     warning: !readingEntryIsOpen(
-                        widget.store.state, DateTime.now()))),
+                        widget.store.state, TrustedClock.now()))),
           if (queued.isNotEmpty)
             AppStrip(
                 key: const ValueKey('home-pending'),
@@ -1076,7 +1077,7 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
         canUpload: canRead,
         canEdit: (reading) =>
             canRead &&
-            readingEntryIsOpen(widget.store.state, DateTime.now()) &&
+            readingEntryIsOpen(widget.store.state, TrustedClock.now()) &&
             reading['week_start'] == widget.store.state['week_start'] &&
             widget.store.subscribers.any(
                 (subscriber) => subscriber['id'] == reading['subscription_id']),
