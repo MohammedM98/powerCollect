@@ -127,7 +127,7 @@ return [
     | the forms point out. One above `overpayment_multiplier` times what is
     | owed, and by at least `overpayment_confirmation_minimum` shekels, is
     | probably a slip (5000 for 50), so it is saved only once the collector
-    | confirms it. Keep the same two numbers in resources/js/lib/overpayment.js.
+    | confirms it. Keep the same two numbers in resources/js/lib/overpayment.ts.
     |
     */
 
