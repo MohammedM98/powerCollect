@@ -145,7 +145,8 @@ class CashBoxReportTest extends TestCase
             'page' => '/payments/cash-boxes/report', 'name' => 'تقرير الصندوق', 'layout' => $layout, 'is_default' => true,
         ])->assertSessionHasNoErrors();
         $template = PrintTemplate::query()->sole();
-        $this->assertSame($layout, $template->layout);
+        // A layout's keys carry no order, and MySQL's JSON type does not keep the order they were written in.
+        $this->assertEquals($layout, $template->layout);
         $owner = User::factory()->collector()->create();
         $this->actingAs($owner)->get(route('payments.cash-boxes.report', ['print' => 1]))->assertInertia(fn ($page) => $page
             ->where('report.boxId', null)->has('report.rows', 0)

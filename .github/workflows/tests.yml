@@ -162,6 +162,21 @@ jobs:
       - name: Exercise collector, permission, retry, search and layout workflows
         run: flutter test --reporter expanded
 
+      # Flutter's own Gradle tooling resolves its Kotlin libraries from the Gradle Plugin Portal only,
+      # which no longer serves Maven Central's artifacts: every build in the tree also looks in Maven Central.
+      - name: Let Gradle reach Maven Central from every build
+        run: |
+          mkdir -p ~/.gradle/init.d
+          cat > ~/.gradle/init.d/maven-central.gradle <<'GRADLE'
+          beforeSettings { settings ->
+              settings.pluginManagement.repositories {
+                  gradlePluginPortal()
+                  mavenCentral()
+                  google()
+              }
+          }
+          GRADLE
+
       # A broken Gradle, Kotlin or manifest change fails here, not at release time.
       # The debug build needs no release key; the address only satisfies the release guard.
       - name: Build the Android app

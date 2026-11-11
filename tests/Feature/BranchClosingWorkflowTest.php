@@ -20,6 +20,7 @@ use App\Support\Ledger\TransactionActions;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
@@ -502,5 +503,13 @@ class BranchClosingWorkflowTest extends TestCase
 
         $this->assertDatabaseHas('cash_box_syncs', ['user_id' => $collector->id, 'branch_id' => $branch->id, 'pending_payments' => 0]);
         $this->assertDatabaseMissing('cash_box_syncs', ['user_id' => $head->id]);
+    }
+
+    public function test_a_boxs_counts_read_back_in_currency_order_whatever_order_the_database_returns(): void
+    {
+        $box = CashBox::factory()->create();
+        DB::table('cash_boxes')->where('id', $box->id)->update(['expected_counts' => json_encode(['JOD' => '1.00', 'ILS' => '2.00', 'USD' => '3.00'])]);
+
+        $this->assertSame(['ILS' => '2.00', 'USD' => '3.00', 'JOD' => '1.00'], $box->fresh()->expected_counts);
     }
 }
