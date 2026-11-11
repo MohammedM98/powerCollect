@@ -76,7 +76,7 @@ class SplitPayment extends Model
             $parts = $partsQuery()->lockForUpdate()->get();
             $this->requireAccessibleParts($actor, $parts);
             if ($parts->pluck('subscription.branch_id')->diff($branchIds)->isNotEmpty()) {
-                throw ValidationException::withMessages(['action' => 'تغيّرت أجزاء الحوالة؛ حدّث الصفحة وأعد المحاولة.']);
+                throw ValidationException::withMessages(['action' => __('The transfer\'s parts changed; refresh the page and try again.')]);
             }
 
             return $operation($parts);
@@ -89,7 +89,7 @@ class SplitPayment extends Model
         if ($parts->isEmpty() || $parts->contains(fn (SubscriptionTransaction $part): bool => $part->subscription === null
             || (! $actor->isSuperAdmin() && $part->subscription->branch_id !== $actor->workBranchId())
             || (BranchDomainContext::id() !== null && $part->subscription->branch_id !== BranchDomainContext::id()))) {
-            throw ValidationException::withMessages(['action' => 'لا يمكن تنفيذ العملية دون صلاحية الوصول إلى جميع أجزاء الحوالة المقسّمة.']);
+            throw ValidationException::withMessages(['action' => __('The action cannot be taken without access to every part of the split transfer.')]);
         }
     }
 
@@ -122,13 +122,13 @@ class SplitPayment extends Model
         $this->withPaymentsLocked($actor, function (Collection $parts) use ($actor, $data): void {
             $active = $this->editableParts($actor, $parts);
             if (isset($data['revision']) && ! hash_equals($this->editingRevision($parts), $data['revision'])) {
-                throw ValidationException::withMessages(['action' => 'تغيّرت الحوالة منذ فتح النافذة؛ أغلقها وافتحها مجددًا لمراجعة أحدث البيانات.']);
+                throw ValidationException::withMessages(['action' => __('The transfer changed since the window was opened; close it and open it again to review the latest details.')]);
             }
             $fields = array_intersect_key($data, array_flip(SubscriptionTransaction::AMENDABLE_FIELDS));
             $reference = trim($data['reference_number'] ?? $this->reference_number);
             $referenceChanged = $active->contains(fn (SubscriptionTransaction $part): bool => $part->reference_number !== $reference);
             if ($referenceChanged && PaymentReferences::activeReferenceConflict($reference, null, $this->id) !== null) {
-                throw ValidationException::withMessages(['reference_number' => 'هذا الرقم المرجعي مسجّل مسبقًا على دفعة أخرى.']);
+                throw ValidationException::withMessages(['reference_number' => __('This reference number is already recorded on another payment.')]);
             }
             $reason = trim($data['amendment_reason']);
             $changed = false;
@@ -147,7 +147,7 @@ class SplitPayment extends Model
                 $changed = $changed || $changes !== [];
             }
             if (! $changed) {
-                throw ValidationException::withMessages(['details' => 'غيّر بيانًا واحدًا على الأقل قبل الحفظ.']);
+                throw ValidationException::withMessages(['details' => __('Change at least one detail before saving.')]);
             }
             $this->update($fields);
         });
@@ -159,7 +159,7 @@ class SplitPayment extends Model
         $active = $parts->reject(fn (SubscriptionTransaction $part): bool => $part->isCancelled());
         if ($active->isEmpty() || $parts->contains(fn (SubscriptionTransaction $part): bool => $part->isCancelled() && ! $parts->contains('corrects_id', $part->id))
             || $active->contains(fn (SubscriptionTransaction $part): bool => ! LineRules::isAmendable($part, lockForUpdate: true) || ! $actor->can('amend', $part))) {
-            throw ValidationException::withMessages(['action' => 'لا يمكن تعديل الحوالة كاملة: أحد أجزائها مغلق أو مُرجع أو غير مسموح بتعديله.']);
+            throw ValidationException::withMessages(['action' => __('The whole transfer cannot be edited: one of its parts is closed, refunded or may not be edited.')]);
         }
 
         return $active;

@@ -57,7 +57,7 @@ class BranchDomainScope implements Scope
                     ? (int) $model->getAttribute('branch_id') === $branchId
                     : self::parentQuery($name)->whereKey($model->getAttribute(self::PARENTS[$name][0]))->exists();
                 if (! $valid) {
-                    throw ValidationException::withMessages(['branch_id' => 'لا يمكن حفظ بيانات تخص فرعًا آخر من هذا الرابط.']);
+                    throw ValidationException::withMessages(['branch_id' => __('Data belonging to another branch cannot be saved from this address.')]);
                 }
             });
         }

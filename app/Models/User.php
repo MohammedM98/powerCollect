@@ -377,29 +377,29 @@ class User extends Authenticatable
             })
             ->count();
 
-        return DeletionBlocker::describe('المستخدم', [
-            'المشتركون المسجّلون' => $this->registeredSubscriptions()->count(),
-            'الحركات المالية' => $named(SubscriptionTransaction::class, 'recorded_by', 'employee_id', 'cancelled_by'),
-            'تعديلات الدفعات' => $named(TransactionAmendment::class, 'user_id'),
-            'الحذف النهائي' => $named(TransactionDeletion::class, 'user_id'),
-            'سجل تعديل البيانات الشخصية' => $named(SubscriberProfileChange::class, 'user_id'),
-            'القراءات' => $named(MeterReading::class, 'recorded_by', 'approved_by'),
-            'خصومات القراءات الأسبوعية' => $named(StandingDiscount::class, 'granted_by'),
-            'كشوف الإغلاق' => $named(Closing::class, 'prepared_by', 'reviewed_by'),
-            'سجل كشوف الإغلاق' => $named(ClosingEvent::class, 'user_id') + $named(ClosingPayment::class, 'matched_by'),
-            'تسليمات النقد' => $named(CashTransfer::class, 'sent_by', 'recipient_id', 'received_by'),
-            'التعديلات الجماعية' => $named(SubscriptionBulkChange::class, 'user_id', 'undone_by'),
-            'تغييرات الأسعار' => $named(TariffRateChange::class, 'changed_by'),
-            'الرسائل' => $named(MessageBatch::class, 'created_by') + $named(SubscriptionMessage::class, 'sent_by'),
-            'قوائم القطع' => $named(DisconnectionList::class, 'created_by', 'closed_by')
+        return DeletionBlocker::describe('user', [
+            'registered_subscriptions' => $this->registeredSubscriptions()->count(),
+            'transactions' => $named(SubscriptionTransaction::class, 'recorded_by', 'employee_id', 'cancelled_by'),
+            'payment_amendments' => $named(TransactionAmendment::class, 'user_id'),
+            'permanent_deletions' => $named(TransactionDeletion::class, 'user_id'),
+            'personal_detail_changes' => $named(SubscriberProfileChange::class, 'user_id'),
+            'readings' => $named(MeterReading::class, 'recorded_by', 'approved_by'),
+            'standing_discounts' => $named(StandingDiscount::class, 'granted_by'),
+            'closings' => $named(Closing::class, 'prepared_by', 'reviewed_by'),
+            'closing_history' => $named(ClosingEvent::class, 'user_id') + $named(ClosingPayment::class, 'matched_by'),
+            'cash_transfers' => $named(CashTransfer::class, 'sent_by', 'recipient_id', 'received_by'),
+            'bulk_changes' => $named(SubscriptionBulkChange::class, 'user_id', 'undone_by'),
+            'price_changes' => $named(TariffRateChange::class, 'changed_by'),
+            'messages' => $named(MessageBatch::class, 'created_by') + $named(SubscriptionMessage::class, 'sent_by'),
+            'disconnection_lists' => $named(DisconnectionList::class, 'created_by', 'closed_by')
                 + $named(DisconnectionListItem::class, 'added_by', 'removed_by', 'disconnected_by')
                 + $named(DisconnectionEvent::class, 'user_id'),
-            'توزيع القراءات' => $named(ReadingCycle::class, 'created_by', 'closed_by')
+            'reading_distribution' => $named(ReadingCycle::class, 'created_by', 'closed_by')
                 + $named(ReadingAssignment::class, 'user_id', 'assigned_by', 'approved_by')
                 + $named(ReadingAssignmentEvent::class, 'actor_id', 'from_user_id', 'to_user_id')
                 + $named(ReadingSubmission::class, 'user_id', 'reviewed_by')
                 + $named(PaperSheet::class, 'created_by', 'last_printed_by'),
-        ], 'يمكنك إيقاف حسابه بدلًا من حذفه.');
+        ], instead: true);
     }
 
     /**

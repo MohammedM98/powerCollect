@@ -37,12 +37,12 @@ class CancelLine
         return $split->withPaymentsLocked($actor, function (Collection $parts) use ($actor, $reason, $notes, $transaction): SubscriptionTransaction {
             $selected = $parts->find($transaction->id);
             if ($selected === null || $selected->isCancelled()) {
-                throw ValidationException::withMessages(['action' => 'أُلغيت هذه الدفعة أو أُرجعت من قبل.']);
+                throw ValidationException::withMessages(['action' => __('This payment was already cancelled or refunded.')]);
             }
             $active = $parts->reject(fn (SubscriptionTransaction $part): bool => $part->isCancelled());
             foreach ($active as $part) {
                 if (! $actor->can('delete', $part)) {
-                    throw ValidationException::withMessages(['action' => 'لا يمكن إلغاء الحوالة المقسّمة: أحد أجزائها مغلق أو غير مسموح بإلغائه.']);
+                    throw ValidationException::withMessages(['action' => __('The split transfer cannot be cancelled: one of its parts is closed or may not be cancelled.')]);
                 }
             }
             $result = null;
@@ -68,7 +68,7 @@ class CancelLine
     {
         return $transaction->withMutationLock(function () use ($actor, $reason, $notes, $reopenReading, $transaction): SubscriptionTransaction {
             if (LineHistory::isInClosedDay($transaction, lockForUpdate: true)) {
-                throw ValidationException::withMessages(['reason' => 'لا يمكن إلغاء دفعة ضمن صندوق مغلق أو كشف إغلاق أُرسل للتدقيق أو اعتُمد.']);
+                throw ValidationException::withMessages(['reason' => __('A payment in a closed box or in a closing sent for audit or approved cannot be cancelled.')]);
             }
 
             // Cancelling a weekly reading's bill waives it for good (the key it is billed by stays) unless the reading is sent back for review.
@@ -112,7 +112,7 @@ class CancelLine
             $line = SubscriptionTransaction::query()->lockForUpdate()->findOrFail($transaction->id);
 
             if (! $mayCancel($line)) {
-                throw ValidationException::withMessages(['reason' => 'هذه الحركة أُلغيت أو عُدّلت من قبل.']);
+                throw ValidationException::withMessages(['reason' => __('This transaction was already cancelled or changed.')]);
             }
 
             $line->update([

@@ -106,7 +106,7 @@ class BrandSettingController extends Controller
         }
 
         if (! is_array($data)) {
-            throw ValidationException::withMessages(['file' => 'الملف ليس ملف هوية بصيغة JSON.']);
+            throw ValidationException::withMessages(['file' => __('The file is not a brand identity JSON file.')]);
         }
 
         $brand->import($data);

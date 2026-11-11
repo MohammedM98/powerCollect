@@ -68,7 +68,7 @@ class PaymentReferences
     public static function referenceConflictException(SubscriptionTransaction $conflict): ValidationException
     {
         if (! PaymentReferences::mayDiscloseReferenceTo($conflict, request()->user())) {
-            return ValidationException::withMessages(['reference_number' => 'هذا الرقم المرجعي مسجّل مسبقًا على دفعة أخرى.']);
+            return ValidationException::withMessages(['reference_number' => __('This reference number is already recorded on another payment.')]);
         }
 
         return ValidationException::withMessages([

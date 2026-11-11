@@ -48,7 +48,7 @@ class SubscriptionArchiveController extends Controller
             $this->authorize('restore', $current);
 
             if ($current->archived_at === null) {
-                throw ValidationException::withMessages(['archive' => 'هذا الاشتراك غير مؤرشف.']);
+                throw ValidationException::withMessages(['archive' => __('This subscription is not archived.')]);
             }
 
             $current->archiveEvents()->create([

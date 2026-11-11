@@ -51,7 +51,7 @@ class MeterReadingAdjustmentController extends Controller
             $reading = MeterReading::query()->lockForUpdate()->findOrFail($meterReading->id);
             $this->authorize('adjustLastReading', $reading);
             if (round($reading->nextPreviousReading(), 2) !== round($request->float('expected_reading'), 2)) {
-                throw ValidationException::withMessages(['current_reading' => 'تغيّرت القراءة؛ حدّث الصفحة وراجع القيمة الجديدة قبل التعديل.']);
+                throw ValidationException::withMessages(['current_reading' => __('The reading changed; refresh the page and review the new value before editing.')]);
             }
 
             $newReading = $request->float('current_reading');

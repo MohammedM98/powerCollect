@@ -36,12 +36,12 @@ class SubscriptionReadingBaselineController extends Controller
             $this->authorize('adjustInitialReading', [$locked, $week]);
             $readings = $locked->meterReadings()->lockForUpdate()->get();
             if ($readings->contains(fn (MeterReading $reading): bool => ! $reading->week_start->equalTo($week))) {
-                throw ValidationException::withMessages(['current_reading' => 'توجد قراءات لأسابيع أخرى؛ لا يمكن تغيير قراءة بداية الاشتراك من هذا المسار.']);
+                throw ValidationException::withMessages(['current_reading' => __('There are readings for other weeks; the subscription\'s starting reading cannot be changed from here.')]);
             }
             $current = $readings->first();
             $before = (float) ($current?->previous_reading ?? $locked->initial_reading ?? 0);
             if (round($before, 2) !== round($request->float('expected_reading'), 2)) {
-                throw ValidationException::withMessages(['current_reading' => 'تغيّرت القراءة؛ حدّث الصفحة وراجع القيمة الجديدة قبل التعديل.']);
+                throw ValidationException::withMessages(['current_reading' => __('The reading changed; refresh the page and review the new value before editing.')]);
             }
             $after = $request->float('current_reading');
             $changed = round($before, 2) !== round($after, 2);

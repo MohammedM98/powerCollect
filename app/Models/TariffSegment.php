@@ -39,6 +39,6 @@ class TariffSegment extends Model
      */
     public function deletionBlocker(): ?string
     {
-        return DeletionBlocker::describe('التصنيف', ['المشتركون' => $this->subscriptions()->count()]);
+        return DeletionBlocker::describe('tariff_segment', ['subscriptions' => $this->subscriptions()->count()]);
     }
 }

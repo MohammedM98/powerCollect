@@ -78,7 +78,7 @@ class EraseLine
         $transaction->withMutationLock(function () use ($actor, $reason, $transaction): void {
             $line = SubscriptionTransaction::query()->lockForUpdate()->findOrFail($transaction->id);
             if (! EraseLine::isErasable($line, lockForUpdate: true, withSplitParts: false)) {
-                throw ValidationException::withMessages(['reason' => 'لا يمكن إلغاء هذه الحركة.']);
+                throw ValidationException::withMessages(['reason' => __('This transaction cannot be cancelled.')]);
             }
 
             TransactionActions::applyHardDelete($line, $actor, ['correction_notes' => $reason]);

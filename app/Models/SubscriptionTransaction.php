@@ -174,7 +174,7 @@ class SubscriptionTransaction extends Model
 
     public function delete(): ?bool
     {
-        throw ValidationException::withMessages(['action' => 'يجب حفظ السجل المالي؛ ألغِ الحركة أو أرجع الدفعة بدلًا من حذفها.']);
+        throw ValidationException::withMessages(['action' => __('The financial record must be kept; cancel the transaction or refund the payment instead of deleting it.')]);
     }
 
     public function withMutationLock(Closure $operation): mixed
@@ -189,7 +189,7 @@ class SubscriptionTransaction extends Model
         $stored = self::query()->lockForUpdate()->findOrFail($this->getKey());
 
         if ($stored->type === self::TYPE_BANK_AUDIT_ADJUSTMENT || LineHistory::isInClosedDay($stored, lockForUpdate: true)) {
-            throw ValidationException::withMessages(['action' => 'لا يمكن تغيير أو حذف حركة ضمن صندوق مغلق أو كشف إغلاق أُرسل للتدقيق أو اعتُمد.']);
+            throw ValidationException::withMessages(['action' => __('A transaction in a closed box or in a closing sent for audit or approved cannot be changed or deleted.')]);
         }
     }
 

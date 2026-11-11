@@ -56,10 +56,10 @@ class MobileSubscriberMessageController extends Controller
                 return $message;
             }
             if (blank($subscription->contactPhone())) {
-                throw ValidationException::withMessages(['phone' => 'لا يوجد رقم هاتف لهذا المشترك. حدّث بياناته أولاً.']);
+                throw ValidationException::withMessages(['phone' => __('This subscriber has no phone number. Update their details first.')]);
             }
             if (! $gateway->deliversMessages()) {
-                throw ValidationException::withMessages(['sms' => 'إرسال الرسائل النصية غير مفعّل. تواصل مع الإدارة لتفعيل خدمة SMS.']);
+                throw ValidationException::withMessages(['sms' => __('Sending text messages is not enabled. Ask the administration to enable the SMS service.')]);
             }
             $batch = MessageBatch::query()->firstOrCreate(['operation_id' => $validated['mobile_operation_id']], [
                 'branch_id' => $subscription->branch_id,

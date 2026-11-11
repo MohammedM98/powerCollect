@@ -76,7 +76,7 @@ class Subscription extends Model
 
         static::deleting(function (Subscription $subscription): void {
             if ($subscription->transactions()->exists()) {
-                throw ValidationException::withMessages(['deletion' => 'لا يمكن حذف اشتراك له سجل مالي؛ يمكنك أرشفته بعد فصل الخدمة.']);
+                throw ValidationException::withMessages(['deletion' => __('A subscription with a financial history cannot be deleted; you can archive it after ending its service.')]);
             }
         });
 
@@ -327,12 +327,12 @@ class Subscription extends Model
             return 'لا يمكن حذف اشتراك مؤرشف؛ يبقى ملفه وسجله المالي محفوظين في الأرشيف.';
         }
 
-        return DeletionBlocker::describe('المشترك', [
-            'القراءات' => $this->meterReadings()->count(),
-            'قوائم القطع' => $this->disconnectionItems()->count(),
-            'القراءات الميدانية' => ReadingSubmission::query()->where('subscription_id', $this->id)->count(),
-            'الحركات المالية' => $this->transactions()->count(),
-        ], 'يمكنك تغيير حالته إلى «مفصول» بدلًا من حذفه.');
+        return DeletionBlocker::describe('subscription', [
+            'readings' => $this->meterReadings()->count(),
+            'disconnection_lists' => $this->disconnectionItems()->count(),
+            'field_readings' => ReadingSubmission::query()->where('subscription_id', $this->id)->count(),
+            'transactions' => $this->transactions()->count(),
+        ], instead: true);
     }
 
     /** Archive eligibility is checked again under a row lock when saving. */
@@ -392,7 +392,7 @@ class Subscription extends Model
         DB::transaction(function (): void {
             $subscription = self::query()->lockForUpdate()->findOrFail($this->id);
             if ($subscription->transactions()->exists()) {
-                throw ValidationException::withMessages(['deletion' => 'لا يمكن حذف اشتراك له سجل مالي؛ يمكنك أرشفته بعد فصل الخدمة.']);
+                throw ValidationException::withMessages(['deletion' => __('A subscription with a financial history cannot be deleted; you can archive it after ending its service.')]);
             }
             $subscription->delete();
         });

@@ -111,7 +111,7 @@ class SubscriptionBulkChangeController extends Controller
         $bulkChange = DB::transaction(function () use ($actor, $field, $byCircuitBreaker, $request, $changes): SubscriptionBulkChange {
             $locked = Subscription::query()->whereKey($changes->pluck('subscription.id'))->orderBy('id')->lockForUpdate()->get();
             if ($locked->contains(fn (Subscription $subscription): bool => $subscription->archived_at !== null)) {
-                throw ValidationException::withMessages(['ids' => 'تمت أرشفة أحد الاشتراكات المختارة؛ حدّث القائمة قبل إعادة المحاولة.']);
+                throw ValidationException::withMessages(['ids' => __('One of the chosen subscriptions was archived; refresh the list before trying again.')]);
             }
 
             $branchIds = $changes->pluck('subscription.branch_id')->unique();

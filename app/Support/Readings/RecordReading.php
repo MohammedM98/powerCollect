@@ -28,7 +28,7 @@ class RecordReading
     {
         $weekStart = Carbon::instance($weekStart);
         if ($subscription->meterReadings()->where('week_start', '<', $weekStart)->where('requires_reentry', true)->exists()) {
-            throw ValidationException::withMessages(['current_reading' => 'أدخل القراءة الحالية المعلّقة أولًا قبل تسجيل أسبوع جديد.']);
+            throw ValidationException::withMessages(['current_reading' => __('Enter the pending current reading before recording a new week.')]);
         }
         $previousReading = $subscription->previousReadingBefore($weekStart);
         $consumption = ReadingConsumption::consumptionBetween($previousReading, $currentReading);

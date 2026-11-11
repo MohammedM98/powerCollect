@@ -101,7 +101,7 @@ class CompanyFormTemplateController extends Controller
             DB::transaction(function () use ($request, $companyForm, &$source): void {
                 $companyForm->refreshForUpdate();
                 if ($companyForm->version !== (int) $request->validated('version')) {
-                    throw ValidationException::withMessages(['version' => 'عدّل موظف آخر هذا النموذج. حدّث الصفحة قبل حفظ تغييراتك.']);
+                    throw ValidationException::withMessages(['version' => __('Another employee edited this form. Refresh the page before saving your changes.')]);
                 }
                 $source = $request->hasFile('source') ? CompanyForms::storeFile($request->file('source')) : null;
                 $companyForm->update([

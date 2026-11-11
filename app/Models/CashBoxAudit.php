@@ -22,8 +22,8 @@ class CashBoxAudit extends Model
 
     protected static function booted(): void
     {
-        static::updating(fn (): never => throw ValidationException::withMessages(['audit' => 'لا يمكن تغيير ختم التدقيق.']));
-        static::deleting(fn (): never => throw ValidationException::withMessages(['audit' => 'لا يمكن حذف ختم التدقيق.']));
+        static::updating(fn (): never => throw ValidationException::withMessages(['audit' => __('The audit stamp cannot be changed.')]));
+        static::deleting(fn (): never => throw ValidationException::withMessages(['audit' => __('The audit stamp cannot be deleted.')]));
     }
 
     public function box(): BelongsTo

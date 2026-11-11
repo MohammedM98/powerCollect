@@ -51,7 +51,7 @@ class RecordPayment
             if ($lateToken && $existing = SubscriptionTransaction::query()->where('late_payment_token', $lateToken)->first()) {
                 if ($existing->subscription_id !== $subscription->id || $existing->recorded_by !== $collector->id
                     || ! hash_equals($existing->late_payment_fingerprint, $lateFingerprint)) {
-                    throw ValidationException::withMessages(['late_payment_token' => 'تم استخدام طلب التسجيل هذا مسبقًا ببيانات مختلفة. أعد فتح النموذج لدفعة جديدة.']);
+                    throw ValidationException::withMessages(['late_payment_token' => __('This recording request was already used with different details. Reopen the form for a new payment.')]);
                 }
 
                 return $existing;

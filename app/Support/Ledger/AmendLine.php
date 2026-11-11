@@ -26,14 +26,14 @@ class AmendLine
         $unexpectedFields = array_diff(array_keys($fields), SubscriptionTransaction::AMENDABLE_FIELDS);
 
         if ($unexpectedFields !== []) {
-            throw ValidationException::withMessages(['details' => 'لا يمكن تعديل الحقول المالية أو هوية الحركة.']);
+            throw ValidationException::withMessages(['details' => __('The financial fields and the identity of the transaction cannot be changed.')]);
         }
 
         return $transaction->withMutationLock(function () use ($actor, $fields, $reason, $transaction): TransactionAmendment {
             $line = SubscriptionTransaction::query()->lockForUpdate()->findOrFail($transaction->id);
 
             if (! LineRules::isAmendable($line, lockForUpdate: true)) {
-                throw ValidationException::withMessages(['details' => 'لا يمكن تعديل بيانات هذه الحركة.']);
+                throw ValidationException::withMessages(['details' => __('This transaction\'s details cannot be edited.')]);
             }
 
             $changes = [];
@@ -55,16 +55,16 @@ class AmendLine
             }
 
             if ($changes === []) {
-                throw ValidationException::withMessages(['details' => 'غيّر بيانًا واحدًا على الأقل قبل الحفظ.']);
+                throw ValidationException::withMessages(['details' => __('Change at least one detail before saving.')]);
             }
 
             if (array_key_exists('reference_number', $updates)) {
                 $reference = PaymentReferences::normalizeReference($updates['reference_number']);
                 if ($reference === null) {
-                    throw ValidationException::withMessages(['reference_number' => 'أدخل رقمًا مرجعيًا صالحًا.']);
+                    throw ValidationException::withMessages(['reference_number' => __('Enter a valid reference number.')]);
                 }
                 if (PaymentReferences::activeReferenceConflict($reference, $line->id, $line->split_payment_id) !== null) {
-                    throw ValidationException::withMessages(['reference_number' => 'هذا الرقم المرجعي مسجّل مسبقًا على دفعة أخرى.']);
+                    throw ValidationException::withMessages(['reference_number' => __('This reference number is already recorded on another payment.')]);
                 }
                 $updates['active_reference'] = $reference;
             }

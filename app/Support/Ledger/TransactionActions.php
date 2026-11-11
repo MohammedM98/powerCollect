@@ -79,7 +79,7 @@ class TransactionActions
         $split = TransactionActions::mutationSplitPayment($transaction);
         if ($split !== null && $action === TransactionAction::EditMetadata) {
             if (! $transaction->isPayment() || $transaction->fresh()->isCancelled()) {
-                throw ValidationException::withMessages(['action' => 'هذه الدفعة ملغاة أو مُرجعة.']);
+                throw ValidationException::withMessages(['action' => __('This payment is cancelled or refunded.')]);
             }
             $split->revise($actor, [...array_intersect_key($data, array_flip(SubscriptionTransaction::AMENDABLE_FIELDS)), 'amendment_reason' => $data['amendment_reason']]);
 
@@ -92,7 +92,7 @@ class TransactionActions
         return $split->withPaymentsLocked($actor, function (Collection $parts) use ($actor, $action, $data, $transaction): ?SubscriptionTransaction {
             $selected = SubscriptionTransaction::query()->with('subscription')->lockForUpdate()->findOrFail($transaction->id);
             if (! in_array($action->value, TransactionActions::availableActions($selected, $actor, lockForUpdate: true), true)) {
-                throw ValidationException::withMessages(['action' => 'هذا الإجراء غير مسموح لهذه الحركة.']);
+                throw ValidationException::withMessages(['action' => __('This action is not allowed for this transaction.')]);
             }
             if (in_array($action, [TransactionAction::Delete, TransactionAction::DeleteTree], true)) {
                 TransactionActions::deleteSplitParts($transaction, $actor, $parts, $data);
@@ -114,12 +114,12 @@ class TransactionActions
                         ->where(fn (Builder $query): Builder => $query->where('reverses_id', $part->id)->orWhere('reference_transaction_id', $part->id))
                         ->whereIn('type', SubscriptionTransaction::REVERSAL_TYPES)->lockForUpdate()->get();
                     if ($linkedReversals->count() !== 1) {
-                        throw ValidationException::withMessages(['action' => 'لهذه الحوالة إرجاعات جزئية سابقة؛ لا يمكن حذف إرجاع واحد وإعادة الحوالة كاملة.']);
+                        throw ValidationException::withMessages(['action' => __('This transfer has earlier partial refunds; one refund cannot be deleted to bring back the whole transfer.')]);
                     }
                     $target = $linkedReversals->first();
                 }
                 if ($target === null || ! in_array($partAction->value, TransactionActions::availableActions($target, $actor, lockForUpdate: true), true)) {
-                    throw ValidationException::withMessages(['action' => 'لا يمكن تنفيذ العملية على جميع أجزاء الحوالة المقسّمة؛ تحقق من صلاحياتك وحالة الصناديق والحركات اللاحقة.']);
+                    throw ValidationException::withMessages(['action' => __('The action cannot be applied to every part of the split transfer; check your permissions and the state of the boxes and later transactions.')]);
                 }
                 $targets[] = [$target, $partAction];
             }
@@ -147,7 +147,7 @@ class TransactionActions
     {
         foreach ($parts as $part) {
             if (! $actor->hasPermission(PermissionKey::ForceDeleteTransactions) || ! TransactionActions::isDeletableSplitPart($part, $parts, $legacy, lockForUpdate: true)) {
-                throw ValidationException::withMessages(['action' => 'لا يمكن حذف الحوالة المقسّمة: أحد أجزائها مغلق أو غير مسموح بحذفه.']);
+                throw ValidationException::withMessages(['action' => __('The split transfer cannot be deleted: one of its parts is closed or may not be deleted.')]);
             }
         }
         foreach ($parts as $part) {
@@ -232,7 +232,7 @@ class TransactionActions
             $hasPayment = LineHistory::hasAppliedPayment($line, lockForUpdate: true);
 
             if (! in_array($action->value, TransactionActions::availableActions($line, $actor, $isLast, $hasPayment, lockForUpdate: true), true)) {
-                throw ValidationException::withMessages(['action' => 'هذا الإجراء غير مسموح لهذه الحركة.']);
+                throw ValidationException::withMessages(['action' => __('This action is not allowed for this transaction.')]);
             }
 
             $result = match ($action) {
@@ -350,7 +350,7 @@ class TransactionActions
     public static function applyHardDelete(SubscriptionTransaction $transaction, User $actor, array $data): ?SubscriptionTransaction
     {
         if ($transaction->isReversal() || $transaction->isCancelled()) {
-            throw ValidationException::withMessages(['action' => 'لا يمكن حذف السجل المالي أو حركات الإلغاء.']);
+            throw ValidationException::withMessages(['action' => __('The financial record and cancellation lines cannot be deleted.')]);
         }
 
         return $transaction->isPayment()
@@ -376,7 +376,7 @@ class TransactionActions
     /** @param array<string, mixed> $data */
     public static function applyTreeDelete(SubscriptionTransaction $transaction, User $actor, array $data): ?SubscriptionTransaction
     {
-        throw ValidationException::withMessages(['action' => 'لا يمكن حذف السجل المالي أو حركات الإلغاء.']);
+        throw ValidationException::withMessages(['action' => __('The financial record and cancellation lines cannot be deleted.')]);
     }
 
     /** @param array<string, mixed> $data */
@@ -433,7 +433,7 @@ class TransactionActions
     {
         $exchangeRate = Money::decimal($transaction->exchange_rate);
         if (! $exchangeRate->isPositive()) {
-            throw ValidationException::withMessages(['action' => 'سعر الصرف المسجّل لهذه الدفعة غير صالح؛ صحّح السجل قبل إرجاعها.']);
+            throw ValidationException::withMessages(['action' => __('The exchange rate recorded for this payment is invalid; correct the record before refunding it.')]);
         }
 
         $earlierRefunds = SubscriptionTransaction::query()
@@ -445,7 +445,7 @@ class TransactionActions
         $amount = Money::subtract(Money::amount(Money::decimal($transaction->amount)->abs()), $refunded);
 
         if ($amount <= 0) {
-            throw ValidationException::withMessages(['action' => 'أُرجعت هذه الدفعة بالكامل من قبل.']);
+            throw ValidationException::withMessages(['action' => __('This payment has already been fully refunded.')]);
         }
 
         $currencyAmount = $transaction->currency_amount === null

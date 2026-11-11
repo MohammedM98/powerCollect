@@ -46,7 +46,7 @@ class BulkChangePage
         $bulkChange = DB::transaction(function () use ($request, $actor): SubscriptionBulkChange {
             $target = MeterBox::query()->visibleTo($actor)->lockForUpdate()->find($request->validated('value'));
             if ($target === null) {
-                throw ValidationException::withMessages(['value' => 'اختر طبلونًا متاحًا ضمن فرع الاشتراكات المحددة.']);
+                throw ValidationException::withMessages(['value' => __('Choose an available meter box in the branch of the selected subscriptions.')]);
             }
 
             $subscriptions = self::chosenSubscriptions($request, $actor)
@@ -55,16 +55,16 @@ class BulkChangePage
             if ($subscriptions->isEmpty() || $subscriptions->count() > ApplySubscriptionBulkChangeRequest::MAX_SUBSCRIPTIONS
                 || $subscriptions->count() !== (int) $request->validated('expected_count')
                 || (! $request->boolean('all') && $subscriptions->count() !== count(array_unique($request->validated('ids'))))) {
-                throw ValidationException::withMessages(['ids' => 'تغيّرت الاشتراكات المحددة أو تعذّر الوصول إليها. حدّد من 1 إلى 5,000 اشتراك متاح وأعد المراجعة.']);
+                throw ValidationException::withMessages(['ids' => __('The selected subscriptions changed or cannot be reached. Select 1 to 5,000 available subscriptions and review again.')]);
             }
 
             if ($subscriptions->contains(fn (Subscription $subscription): bool => $subscription->branch_id !== $target->branch_id)) {
-                throw ValidationException::withMessages(['value' => 'النقل متاح داخل الفرع نفسه فقط. اختر اشتراكات وطبلونًا من الفرع نفسه.']);
+                throw ValidationException::withMessages(['value' => __('Moving is only possible within one branch. Choose subscriptions and a meter box from the same branch.')]);
             }
 
             $changes = $subscriptions->filter(fn (Subscription $subscription): bool => $subscription->meter_box_id !== $target->id);
             if ($changes->isEmpty()) {
-                throw ValidationException::withMessages(['ids' => 'كل الاشتراكات المحددة موجودة في هذا الطبلون بالفعل.']);
+                throw ValidationException::withMessages(['ids' => __('All the selected subscriptions are already in this meter box.')]);
             }
 
             $bulkChange = SubscriptionBulkChange::create([
@@ -99,7 +99,7 @@ class BulkChangePage
         DB::transaction(function () use ($change, $actor): void {
             $change->refreshForUpdate();
             if ($change->isUndone()) {
-                throw ValidationException::withMessages(['undo' => 'تم التراجع عن هذا التعديل من قبل.']);
+                throw ValidationException::withMessages(['undo' => __('This change was already undone.')]);
             }
 
             $items = $change->items()->get();

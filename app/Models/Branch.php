@@ -69,11 +69,11 @@ class Branch extends Model
      */
     public function deletionBlocker(): ?string
     {
-        return DeletionBlocker::describe('الفرع', [
-            'المشتركون' => $this->subscriptions()->count(),
-            'المستخدمون' => $this->users()->count(),
-            'الطبلونات' => $this->meterBoxes()->count(),
-            'القراءات' => $this->meterReadings()->count(),
+        return DeletionBlocker::describe('branch', [
+            'subscriptions' => $this->subscriptions()->count(),
+            'users' => $this->users()->count(),
+            'meter_boxes' => $this->meterBoxes()->count(),
+            'readings' => $this->meterReadings()->count(),
         ]);
     }
 }

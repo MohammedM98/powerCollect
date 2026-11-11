@@ -57,7 +57,7 @@ class CompanyDocumentController extends Controller
                     : null;
                 $template = $mode === 'archive' ? null : CompanyFormTemplate::query()->lockForUpdate()->findOrFail($request->validated('company_form_template_id'));
                 if ($template !== null && $template->version !== (int) $request->validated('template_version')) {
-                    throw ValidationException::withMessages(['template_version' => 'تغيّر النموذج منذ فتحه. افتحه مجددًا وراجع النسخة الجديدة قبل الإصدار.']);
+                    throw ValidationException::withMessages(['template_version' => __('The form changed since it was opened. Open it again and review the new version before issuing.')]);
                 }
                 $layout = $template?->layout ?? CompanyForms::defaultLayout();
                 $values = [];

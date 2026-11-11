@@ -2,8 +2,6 @@
 
 namespace App\Support\Closing;
 
-use App\Support\Ledger\Money;
-use App\Support\Branches\BranchDomainContext;
 use App\Enums\CashBoxType;
 use App\Enums\Currency;
 use App\Models\BankTransferAudit;
@@ -12,6 +10,8 @@ use App\Models\Closing;
 use App\Models\SplitPayment;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Branches\BranchDomainContext;
+use App\Support\Ledger\Money;
 use Closure;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -102,7 +102,7 @@ class SplitTransferAuditing
             sort($ids);
             if (count($allocations) !== $parts->count() || $ids !== $parts->pluck('id')->all()
                 || $amounts->sum(fn (array $part): int => Closing::cents($part['bank_amount'])) !== Closing::cents($total)) {
-                throw ValidationException::withMessages(['parts' => 'وزّع كامل المبلغ الواصل على جميع حصص الحوالة؛ يجب أن يساوي مجموع الحصص إجمالي الواصل.']);
+                throw ValidationException::withMessages(['parts' => __('Distribute the whole amount received over every share of the transfer; the shares must add up to the total received.')]);
             }
             $unchanged = $parts->every(fn (SubscriptionTransaction $part): bool => $part->boxEntry->audit !== null
                 && Closing::cents($part->boxEntry->audit->bank_amount) === Closing::cents($amounts[$part->id]['bank_amount'])
@@ -112,7 +112,7 @@ class SplitTransferAuditing
             }
             $this->requireEditable($parts);
             if ($revision === null || ! hash_equals($this->revision($parts), $revision)) {
-                throw ValidationException::withMessages(['revision' => 'تغيّرت الحوالة أو مراجعتها؛ أغلق النافذة وافتحها مجددًا قبل الحفظ.']);
+                throw ValidationException::withMessages(['revision' => __('The transfer or its review changed; close the window and open it again before saving.')]);
             }
             $selected = null;
             foreach ($parts as $part) {

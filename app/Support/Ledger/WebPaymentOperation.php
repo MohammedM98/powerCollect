@@ -2,11 +2,10 @@
 
 namespace App\Support\Ledger;
 
-use App\Support\Closing\BranchClosingWorkflow;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Ledger\RecordPayment;
+use App\Support\Closing\BranchClosingWorkflow;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -51,7 +50,7 @@ class WebPaymentOperation
         }
 
         if (! hash_equals($existing->fingerprint, $this->fingerprint($subscription, $actor, $payment)) || $existing->subscription_transaction_id === null) {
-            throw ValidationException::withMessages(['payment_token' => 'تم استخدام طلب التسجيل هذا مسبقًا ببيانات مختلفة. أعد فتح النموذج لدفعة جديدة.']);
+            throw ValidationException::withMessages(['payment_token' => __('This recording request was already used with different details. Reopen the form for a new payment.')]);
         }
 
         return SubscriptionTransaction::query()->acrossBranches()->findOrFail($existing->subscription_transaction_id);

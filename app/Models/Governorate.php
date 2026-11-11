@@ -26,9 +26,9 @@ class Governorate extends Model
      */
     public function deletionBlocker(): ?string
     {
-        return DeletionBlocker::describe('المحافظة', [
-            'المناطق' => $this->areas()->count(),
-            'الفروع' => Branch::query()->where('governorate_id', $this->id)->count(),
+        return DeletionBlocker::describe('governorate', [
+            'areas' => $this->areas()->count(),
+            'branches' => Branch::query()->where('governorate_id', $this->id)->count(),
         ]);
     }
 }

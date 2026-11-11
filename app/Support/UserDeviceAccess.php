@@ -29,7 +29,7 @@ class UserDeviceAccess
             $identity = ['user_id' => $user->id, 'session_hash' => hash('sha256', $request->session()->getId())];
             $device = DB::table('user_login_devices')->where($identity)->first();
             if (! $newLogin && ! Auth::guard('web')->viaRemember() && $request->session()->get('device_access_user') === $user->id && $device === null) {
-                throw ValidationException::withMessages(['username' => 'أُنهِيت جلسة هذا الجهاز. سجّل الدخول مجددًا.']);
+                throw ValidationException::withMessages(['username' => __('This device\'s session was ended. Sign in again.')]);
             }
             if ($device === null || CarbonImmutable::parse($device->expires_at)->lessThanOrEqualTo(now())) {
                 $this->assertCapacity($user);

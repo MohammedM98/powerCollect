@@ -73,7 +73,7 @@ class PermissionController extends Controller
             'auditOptions' => $actor->isSuperAdmin() ? [
                 'permissionId' => Permission::query()->where('key', PermissionKey::AuditClosings->value)->value('id'),
                 'branches' => Branch::query()->orderBy('name')->get(['id', 'name']),
-                'actions' => array_map(fn (AuditAction $action): array => ['value' => $action->value, 'label' => $action->label(), 'hint' => $action->description()], AuditAction::cases()),
+                'actions' => array_map(fn (AuditAction $action): array => ['value' => $action->value, 'label' => __($action->label()), 'hint' => __($action->description())], AuditAction::cases()),
             ] : null,
             'filters' => DataTableFilters::dataTableState($request, 'name'),
             'filterOptions' => PermissionPage::filterOptions($actor),

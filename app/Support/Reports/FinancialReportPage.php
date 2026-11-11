@@ -259,7 +259,7 @@ class FinancialReportPage
         }
 
         if ($from->greaterThan($to) || $from->diffInDays($to) >= self::MAX_DAYS) {
-            throw ValidationException::withMessages(['from' => 'اختر فترة صحيحة لا تزيد على ثلاثة أشهر ولا تتجاوز اليوم.']);
+            throw ValidationException::withMessages(['from' => __('Choose a valid period of no more than three months that does not go past today.')]);
         }
 
         return [
