@@ -154,11 +154,6 @@ class User extends Authenticatable
                 ->exists();
     }
 
-    public function isBranchAdmin(): bool
-    {
-        return $this->role === UserRole::BranchAdmin;
-    }
-
     /** Administrative membership stays unchanged when viewing another branch. */
     public function workBranchId(): ?int
     {
@@ -192,21 +187,6 @@ class User extends Authenticatable
     public function isProtectedFromBranchManagement(): bool
     {
         return $this->isSuperAdmin() || $this->hasAnyPermission(PermissionKey::ManagePermissions, PermissionKey::AuditClosings, PermissionKey::ManageBranchDomains);
-    }
-
-    public function isCollector(): bool
-    {
-        return $this->role === UserRole::Collector;
-    }
-
-    public function isDataEntry(): bool
-    {
-        return $this->role === UserRole::DataEntry;
-    }
-
-    public function isFinancialAuditor(): bool
-    {
-        return $this->role === UserRole::FinancialAuditor;
     }
 
     /** Read subscriber accounts across branches without granting branch administration. */

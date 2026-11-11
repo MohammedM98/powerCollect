@@ -64,13 +64,13 @@ class ReadingCycleController extends Controller
             ]);
         }
 
-        $canChooseBranch = $actor->isSuperAdmin() || $actor->isBranchAdmin();
+        // Only a Super Admin reaches here without a branch of their own, and chooses among the branches.
+        $canChooseBranch = $actor->isSuperAdmin();
 
         return Inertia::render('ReadingCycles/Index', [
             'branch' => null,
             'canCreate' => $actor->can('create', ReadingCycle::class),
-            'distributionBranches' => $canChooseBranch ? Branch::query()->where('is_active', true)
-                ->when(! $actor->isSuperAdmin(), fn ($query) => $query->whereKey($actor->workBranchId()))->orderBy('name')->get()
+            'distributionBranches' => $canChooseBranch ? Branch::query()->where('is_active', true)->orderBy('name')->get()
                 ->map(function (Branch $branch) use ($distribution): array {
                     $upcoming = $distribution->upcoming($branch);
 
