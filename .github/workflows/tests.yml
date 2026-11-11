@@ -56,8 +56,6 @@ jobs:
   tests-mysql:
     name: Money and reports on MySQL
     runs-on: ubuntu-latest
-    # Reported but not yet blocking: remove once the first runs show which SQLite-only behaviour needs fixing.
-    continue-on-error: true
 
     services:
       mysql:
