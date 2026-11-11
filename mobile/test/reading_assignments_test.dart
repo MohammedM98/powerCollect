@@ -40,7 +40,7 @@ void main() {
       'assignments': [work(1, '2026-10-22', open: true)],
     });
     expect(roster['data'], isEmpty);
-    expect(roster['next_reading']['boxes'], hasLength(1));
+    expect((roster['next_reading'] as Map)['boxes'], hasLength(1));
     expect(readingEntryIsOpen(roster, DateTime.parse('2026-10-29T09:00:00Z')),
         false);
     expect(
@@ -60,7 +60,7 @@ void main() {
       ],
     });
     expect(roster['reading_date'], '2026-10-22');
-    final subscriber = (roster['data'] as List).single;
+    final subscriber = (roster['data'] as List).single as Map;
     expect(subscriber['full_name'], 'Subscriber 2');
     expect(subscriber['meter_box_number'], 'B2');
     expect(subscriber['sub_area_name'], 'Area Seven');

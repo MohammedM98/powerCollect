@@ -28,8 +28,9 @@ class FieldStore {
     _directory ??= Directory(await const MethodChannel('powercollect.storage')
             .invokeMethod<String>('filesDirectory') ??
         '');
-    if (_directory!.path.isEmpty)
+    if (_directory!.path.isEmpty) {
       throw StateError('Local storage is unavailable');
+    }
     await _directory!.create(recursive: true);
     return File('${_directory!.path}${Platform.pathSeparator}field_state.json');
   }
@@ -151,8 +152,9 @@ class FieldStore {
   /// id, so leaving a box or closing the app loses none of them.
   Map<int, String> get readingDrafts {
     final drafts = state['reading_drafts'];
-    if (drafts is! Map || state['reading_drafts_week'] != state['week_start'])
+    if (drafts is! Map || state['reading_drafts_week'] != state['week_start']) {
       return {};
+    }
     return {
       for (final entry in drafts.entries)
         if (int.tryParse('${entry.key}') != null)

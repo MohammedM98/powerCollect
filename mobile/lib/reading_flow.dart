@@ -124,8 +124,10 @@ class _ReadingFlowState extends State<ReadingFlow> with WidgetsBindingObserver {
     final areas = {
       for (final subscriber in subscribers)
         '${subscriber['sub_area_id'] ?? 'none'}',
-      for (final box
-          in widget.store.state['next_reading']?['boxes'] as List? ?? [])
+      for (final box in ((widget.store.state['next_reading'] as Map?)?['boxes']
+                  as List? ??
+              [])
+          .cast<Map>())
         '${box['sub_area_id'] ?? 'none'}',
     };
     if (subArea != null && !areas.contains(subArea)) subArea = null;
@@ -138,10 +140,11 @@ class _ReadingFlowState extends State<ReadingFlow> with WidgetsBindingObserver {
       selectedId = null;
       keypadOpen = false;
       view = 'boxes';
-      if (wasFocused)
+      if (wasFocused) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) widget.onFocusChanged?.call(false);
         });
+      }
     } else if (!_entryOpen ||
         !subscribers.any((subscriber) => subscriber['id'] == selectedId)) {
       selectedId = null;
@@ -677,7 +680,7 @@ class _ReadingFlowState extends State<ReadingFlow> with WidgetsBindingObserver {
   Widget _boxesView() {
     final groups = _groups();
     final previews =
-        (widget.store.state['next_reading']?['boxes'] as List? ?? [])
+        ((widget.store.state['next_reading'] as Map?)?['boxes'] as List? ?? [])
             .map((item) => Map<String, dynamic>.from(item as Map))
             .where((box) => !groups.containsKey('${box['id']}'))
             .toList();
@@ -927,13 +930,14 @@ class _ReadingFlowState extends State<ReadingFlow> with WidgetsBindingObserver {
       });
 
   Map<String, dynamic>? get _previewBox =>
-      (widget.store.state['next_reading']?['boxes'] as List? ?? [])
-          .where((box) => '${box['id']}' == previewBoxId)
+      ((widget.store.state['next_reading'] as Map?)?['boxes'] as List? ?? [])
           .map((box) => Map<String, dynamic>.from(box as Map))
+          .where((box) => '${box['id']}' == previewBoxId)
           .firstOrNull;
 
   Widget _previewBoxView() {
-    final subscriptions = _previewBox?['subscriptions'] as List? ?? [];
+    final subscriptions =
+        (_previewBox?['subscriptions'] as List? ?? []).cast<Map>();
     return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(16),
@@ -1172,7 +1176,7 @@ class _ReadingFlowState extends State<ReadingFlow> with WidgetsBindingObserver {
         queued?['current_reading'] ?? subscriber['current_reading'];
     final rejected = queued?['sync_error'] != null;
     final verdict = _verdict(subscriber, value);
-    Widget? caret = selected ? const AppCaret() : null;
+    final Widget? caret = selected ? const AppCaret() : null;
 
     Widget cell;
     if (!finished && draft != null && draft.isNotEmpty) {

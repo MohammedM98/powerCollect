@@ -9,7 +9,9 @@ export 'app_visuals.dart';
 
 bool dismissAppKeyboard(BuildContext context) {
   if (MediaQuery.viewInsetsOf(context).bottom <= 0 &&
-      View.of(context).viewInsets.bottom <= 0) return false;
+      View.of(context).viewInsets.bottom <= 0) {
+    return false;
+  }
   FocusManager.instance.primaryFocus?.unfocus();
   return true;
 }

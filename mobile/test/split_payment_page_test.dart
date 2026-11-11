@@ -27,8 +27,9 @@ class SplitApi extends ApiClient {
   Future<Map<String, dynamic>> sendSplitPayment(
       Map<String, dynamic> payment) async {
     requests.add(Map<String, dynamic>.from(payment));
-    if (failFirst && requests.length == 1)
+    if (failFirst && requests.length == 1) {
       throw const ApiException('Timeout', 0);
+    }
     return {
       'id': 1,
       'total_amount': '100.00',

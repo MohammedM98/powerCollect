@@ -163,7 +163,7 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
         if (!mounted) return;
         setState(() {
           if (session['user'] is Map &&
-              session['user']['id'] == widget.user['id']) {
+              (session['user'] as Map)['id'] == widget.user['id']) {
             currentUser = Map<String, dynamic>.from(session['user'] as Map);
             widget.store.state['user'] = currentUser;
           }
@@ -185,11 +185,12 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
       } while (mounted && rosterRefreshRequested);
     } on ApiException catch (error) {
       if (error.statusCode == 401) {
-        if (mounted && widget.api.token == sessionToken)
+        if (mounted && widget.api.token == sessionToken) {
           widget.onReauthenticate();
+        }
         return;
       }
-      if (mounted)
+      if (mounted) {
         setState(() {
           online = false;
           requiresLogin = error.statusCode == 401;
@@ -197,6 +198,7 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
               ? 'انتهت جلسة الدخول. سجّل الدخول مجددًا لمتابعة العمل.'
               : error.message;
         });
+      }
     } finally {
       if (mounted) setState(() => syncing = false);
     }
@@ -251,7 +253,9 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
         if (!mounted) break;
         final id = reading['mobile_operation_id'] as String;
         if (!widget.store.queuedReadings
-            .any((item) => item['mobile_operation_id'] == id)) continue;
+            .any((item) => item['mobile_operation_id'] == id)) {
+          continue;
+        }
         final validation = readingValidation(reading);
         if (validation != null) {
           await widget.store.markReadingError(id, validation);
@@ -296,8 +300,9 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
             interruption = error.statusCode == 401
                 ? 'انتهت جلسة الدخول. سجّل الدخول مجددًا ثم راجع القراءات وارفعها.'
                 : 'لم يعد الرفع مسموحًا لحسابك. تواصل مع المسؤول.';
-            if (mounted)
+            if (mounted) {
               setState(() => requiresLogin = error.statusCode == 401);
+            }
             break;
           }
           if (error.statusCode == 426) {
@@ -333,10 +338,11 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
 
   Future<void> refreshCollections() async {
     final result = await widget.api.collectionsToday();
-    if (mounted)
+    if (mounted) {
       setState(() => today = (result['data'] as List)
           .map((item) => Map<String, dynamic>.from(item as Map))
           .toList());
+    }
   }
 
   void collectionSearchChanged() {
@@ -354,7 +360,9 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
   Future<void> searchCollections({bool loadMore = false}) async {
     if (!canBrowseSubscribers ||
         !mounted ||
-        section != FieldSection.collections) return;
+        section != FieldSection.collections) {
+      return;
+    }
     if (loadMore && (collectionBusy || collectionPage >= collectionLastPage)) {
       return;
     }
@@ -369,7 +377,7 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
     try {
       final result =
           await widget.api.findCollectionSubscribers(query, page: page);
-      if (mounted && request == collectionRequest)
+      if (mounted && request == collectionRequest) {
         setState(() {
           online = true;
           requiresLogin = false;
@@ -381,8 +389,9 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
           collectionPage = result['current_page'] as int? ?? page;
           collectionLastPage = result['last_page'] as int? ?? page;
         });
+      }
     } on ApiException catch (error) {
-      if (mounted && request == collectionRequest)
+      if (mounted && request == collectionRequest) {
         setState(() {
           if (!loadMore) {
             collectionResults = [];
@@ -392,6 +401,7 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
           if (error.statusCode == 401) requiresLogin = true;
           collectionError = error.message;
         });
+      }
     } finally {
       if (mounted && request == collectionRequest) {
         setState(() => collectionBusy = false);
@@ -535,8 +545,9 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
         !readingEntryIsOpen(widget.store.state, DateTime.now()) ||
         reading['week_start'] != widget.store.state['week_start'] ||
         !widget.store.subscribers.any(
-            (subscriber) => subscriber['id'] == reading['subscription_id']))
+            (subscriber) => subscriber['id'] == reading['subscription_id'])) {
       return;
+    }
     await widget.store.reopenReading(reading['mobile_operation_id'] as String);
     if (!mounted) return;
     setState(() {
@@ -898,7 +909,7 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
                 subtitle: 'قراءات عدادات الطبلونات',
                 summary: subscribers.isEmpty &&
                         widget.store.state['next_reading'] != null
-                    ? '${(widget.store.state['next_reading']['boxes'] as List? ?? []).length} طبلون موزع إليك'
+                    ? '${((widget.store.state['next_reading'] as Map)['boxes'] as List? ?? []).length} طبلون موزع إليك'
                     : 'قُرئت $done من ${subscribers.length}',
                 icon: 'bolt',
                 color: AppIdentity.brand,
@@ -1141,9 +1152,10 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
                     try {
                       await widget.onAppearanceChanged!(mode);
                     } catch (_) {
-                      if (mounted)
+                      if (mounted) {
                         showAppToast(context, 'تعذر حفظ المظهر. أعد المحاولة.',
                             icon: 'err');
+                      }
                     }
                   },
                 ),

@@ -67,18 +67,21 @@ class _ReceiptReaderPageState extends State<ReceiptReaderPage> {
       final path =
           await widget.scanner.prepare(widget.image, contrast: contrast);
       final found = await widget.reader.read(path);
-      if (mounted)
+      if (mounted) {
         setState(() {
           processedPath = path;
           lines = found;
         });
+      }
     } on MissingPluginException {
-      if (mounted)
+      if (mounted) {
         setState(() => error = 'قراءة الإيصالات متاحة في تطبيق Android فقط.');
+      }
     } on PlatformException catch (exception) {
-      if (mounted)
+      if (mounted) {
         setState(() => error = exception.message ??
             'تعذر قراءة الصورة. جرّب صورة أوضح أو أدخل البيانات يدويًا.');
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }

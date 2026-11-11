@@ -103,8 +103,9 @@ class AppKeypad extends StatelessWidget {
       onVerticalDragEnd: onClose == null
           ? null
           : (details) {
-              if (downwardDrag > 36 || (details.primaryVelocity ?? 0) > 250)
+              if (downwardDrag > 36 || (details.primaryVelocity ?? 0) > 250) {
                 onClose!();
+              }
             },
       child: Container(
         padding: EdgeInsets.fromLTRB(

@@ -43,9 +43,10 @@ class _SubscriberMessagePageState extends State<SubscriberMessagePage> {
       if (!mounted) return;
       setState(() {
         status = '${result['status']}';
-        if (status == 'failed')
+        if (status == 'failed') {
           error =
               '${result['error'] ?? 'تعذّر إرسال الرسالة. تواصل مع الإدارة.'}';
+        }
       });
     } on ApiException catch (exception) {
       if (!mounted) return;

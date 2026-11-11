@@ -78,7 +78,9 @@ class _SubscriberPageState extends State<SubscriberPage>
               WidgetsBinding.instance.lifecycleState ==
                   AppLifecycleState.resumed) &&
           ModalRoute.of(context)?.isCurrent == true &&
-          !loading) load();
+          !loading) {
+        load();
+      }
     });
     load();
   }
@@ -87,7 +89,9 @@ class _SubscriberPageState extends State<SubscriberPage>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed &&
         ModalRoute.of(context)?.isCurrent == true &&
-        !loading) load();
+        !loading) {
+      load();
+    }
   }
 
   @override
@@ -119,7 +123,7 @@ class _SubscriberPageState extends State<SubscriberPage>
                               Navigator.pop(sheetContext, {'action': 'split'})),
                     if (permissions['add_charge'] == true)
                       for (final type
-                          in (details?['charge_types'] as List? ?? const []))
+                          in (details?['charge_types'] as List? ?? const []).cast<Map>())
                         ListTile(
                             title: Text('تحميل ${type['label']}'),
                             onTap: () => Navigator.pop(sheetContext, {
@@ -388,13 +392,15 @@ class _SubscriberPageState extends State<SubscriberPage>
                   ? () async {
                       try {
                         await Clipboard.setData(ClipboardData(text: value));
-                        if (mounted)
+                        if (mounted) {
                           showAppToast(context, 'تم نسخ رقم الهاتف.');
+                        }
                       } on PlatformException {
-                        if (mounted)
+                        if (mounted) {
                           showAppToast(
                               context, 'تعذر نسخ رقم الهاتف. أعد المحاولة.',
                               icon: 'err');
+                        }
                       }
                     }
                   : null,

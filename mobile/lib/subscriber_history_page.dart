@@ -54,7 +54,7 @@ class _SubscriberHistoryPageState extends State<SubscriberHistoryPage> {
         total = result['total'] as int;
       });
     } on ApiException catch (exception) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           if ([401, 403, 404].contains(exception.statusCode)) {
             accessDenied = true;
@@ -67,6 +67,7 @@ class _SubscriberHistoryPageState extends State<SubscriberHistoryPage> {
           error = exception.message;
           refreshFailed = refresh;
         });
+      }
     } finally {
       if (mounted) setState(() => loading = false);
     }

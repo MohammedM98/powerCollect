@@ -6,7 +6,7 @@ Map<String, dynamic> assignedReadingRoster(Map<String, dynamic> response) {
       .toList();
   final today = '${response['business_date']}';
   final dates = assignments
-      .map((item) => '${item['cycle']['reading_date']}')
+      .map((item) => '${(item['cycle'] as Map)['reading_date']}')
       .toSet()
       .toList()
     ..sort();
@@ -15,7 +15,7 @@ Map<String, dynamic> assignedReadingRoster(Map<String, dynamic> response) {
       dates.where((date) => date.compareTo(today) >= 0).firstOrNull ??
       dates.lastOrNull;
   final work = assignments
-      .where((item) => item['cycle']['reading_date'] == date)
+      .where((item) => (item['cycle'] as Map)['reading_date'] == date)
       .toList();
   final cycle = work.isEmpty
       ? <String, dynamic>{}
@@ -70,7 +70,8 @@ String readingDayLabel(String value) {
 }
 
 String? readingScheduleMessage(Map<String, dynamic> state, DateTime now) {
-  final date = state['next_reading']?['reading_date'] ?? state['reading_date'];
+  final date = (state['next_reading'] as Map?)?['reading_date'] ??
+      state['reading_date'];
   if (date == null) return null;
   final label = readingDayLabel('$date');
   return readingEntryIsOpen(state, now)
@@ -82,7 +83,8 @@ String? readingScheduleMessage(Map<String, dynamic> state, DateTime now) {
 bool readingEntryIsOpen(Map<String, dynamic> state, DateTime now) {
   final starts = DateTime.tryParse('${state['entry_starts_at'] ?? ''}');
   final ends = DateTime.tryParse('${state['entry_ends_at'] ?? ''}');
-  if (starts != null && ends != null)
+  if (starts != null && ends != null) {
     return !now.isBefore(starts) && !now.isAfter(ends);
+  }
   return state['can_record_readings_now'] == true;
 }

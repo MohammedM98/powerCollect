@@ -206,7 +206,8 @@ void main() {
   testWidgets('area 2 filters the reader boxes and remains searchable offline',
       (tester) async {
     final store = readerStore();
-    final subscribers = store.state['subscribers'] as List;
+    final subscribers =
+        (store.state['subscribers'] as List).cast<Map<String, Object?>>();
     subscribers[0].addAll({'sub_area_id': 1, 'sub_area_name': 'North'});
     subscribers[1].addAll({
       'sub_area_id': 2,
@@ -372,7 +373,7 @@ void main() {
   testWidgets('offline search finds a name however its Arabic is spelled',
       (tester) async {
     final store = readerStore();
-    (store.state['subscribers'] as List)[0]['full_name'] = 'أحمد مصطفى';
+    ((store.state['subscribers'] as List)[0] as Map)['full_name'] = 'أحمد مصطفى';
     await tester.pumpWidget(
         PowerCollectApp(apiClient: OfflineApi(), fieldStore: store));
     await tester.pumpAndSettle();

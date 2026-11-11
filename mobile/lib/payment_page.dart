@@ -312,12 +312,14 @@ class _PaymentPageState extends State<PaymentPage> {
         }
       });
     } on PlatformException catch (exception) {
-      if (mounted)
+      if (mounted) {
         setState(() => error = exception.message ??
             'تعذر فتح صورة الإيصال. جرّب صورة أخرى أو أدخل البيانات يدويًا.');
+      }
     } on MissingPluginException {
-      if (mounted)
+      if (mounted) {
         setState(() => error = 'قراءة الإيصالات متاحة في تطبيق Android فقط.');
+      }
     } finally {
       if (image != null) {
         try {
@@ -333,8 +335,9 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
   String? get missingDetail {
-    if (!widget.paymentMethods.contains(method))
+    if (!widget.paymentMethods.contains(method)) {
       return 'لا تملك صلاحية تسجيل هذه الدفعة.';
+    }
     if (!(value > 0) || !value.isFinite) return 'أدخل مبلغًا أكبر من صفر.';
     if (inShekels == null) {
       return 'لم يُحدَّد سعر صرف ${currencyLook.$3} في إعدادات الموقع.';

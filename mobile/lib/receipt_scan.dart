@@ -97,8 +97,9 @@ String? receiptAmount(String input) {
   }
   if (!RegExp(r'^\d+(?:\.\d{1,2})?$').hasMatch(text)) return null;
   final value = double.tryParse(text);
-  if (value == null || !value.isFinite || value <= 0 || value > 1000000)
+  if (value == null || !value.isFinite || value <= 0 || value > 1000000) {
     return null;
+  }
   return value.toStringAsFixed(2);
 }
 

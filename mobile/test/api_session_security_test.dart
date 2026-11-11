@@ -105,13 +105,13 @@ void main() {
     final http = SessionHttpClient(request);
     final api = ApiClient(httpClient: http)..token = 'existing';
     await api.login('reader', 'password', remember: true);
-    expect(jsonDecode(request.body!)['remember'], true);
+    expect((jsonDecode(request.body!) as Map)['remember'], true);
     expect(request.headers.values[HttpHeaders.authorizationHeader],
         'Bearer existing');
     expect(request.followRedirects, false);
     expect(http.method, 'POST');
     expect(http.url!.path, '/api/mobile/login');
-    expect(jsonDecode(request.body!)['username'], 'reader');
+    expect((jsonDecode(request.body!) as Map)['username'], 'reader');
     expect(api.token, 'renewed');
   });
 

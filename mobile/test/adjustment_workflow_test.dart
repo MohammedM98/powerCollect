@@ -58,9 +58,10 @@ Future<void> review(WidgetTester tester,
     {String amount = '25', String? notes}) async {
   await tester.enterText(
       find.byKey(const ValueKey('adjustment-amount')), amount);
-  if (notes != null)
+  if (notes != null) {
     await tester.enterText(
         find.byKey(const ValueKey('adjustment-notes')), notes);
+  }
   await tester.tap(find.byKey(const ValueKey('adjustment-submit')));
   await tester.pumpAndSettle();
 }

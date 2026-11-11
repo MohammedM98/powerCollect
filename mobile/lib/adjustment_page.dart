@@ -110,7 +110,9 @@ class _AdjustmentPageState extends State<AdjustmentPage> {
     if (!await confirm(
         'تجاهل الحركة غير المؤكدة؟',
         'تحقق أولًا من السجل المالي: إن وصلت هذه الحركة للخادم فلا تسجلها مرة أخرى.',
-        'تجاهلها')) return;
+        'تجاهلها')) {
+      return;
+    }
     await forgetSubmission();
     if (!mounted) return;
     setState(() {
@@ -157,12 +159,16 @@ class _AdjustmentPageState extends State<AdjustmentPage> {
       if (!await confirm(
           'لم يصل تأكيد الحركة',
           'قد تكون الحركة سُجّلت. يمكنك إعادة المحاولة من هذه الشاشة بأمان. إذا غادرت، تحقق من السجل المالي قبل تسجيل حركة جديدة.',
-          'مغادرة')) return;
+          'مغادرة')) {
+        return;
+      }
     } else if (amount.text.isNotEmpty ||
         notes.text.isNotEmpty ||
         voucher.text.isNotEmpty) {
       if (!await confirm(
-          'مغادرة النموذج؟', 'لن تُحفظ البيانات المدخلة.', 'مغادرة')) return;
+          'مغادرة النموذج؟', 'لن تُحفظ البيانات المدخلة.', 'مغادرة')) {
+        return;
+      }
     }
     if (mounted) Navigator.pop(context, false);
   }
@@ -212,12 +218,13 @@ class _AdjustmentPageState extends State<AdjustmentPage> {
         submission = null;
       }
       unconfirmed = uncertain;
-      if (mounted)
+      if (mounted) {
         setState(() => error = accessDenied
             ? 'لم تعد هذه العملية متاحة لحسابك. ارجع إلى المشترك لتحديث الصلاحيات، أو سجّل الدخول مجددًا إذا انتهت الجلسة.'
             : exception.isNetwork || exception.statusCode >= 500
                 ? unconfirmedMessage
                 : exception.message);
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -257,10 +264,12 @@ class _AdjustmentPageState extends State<AdjustmentPage> {
                       validator: (_) {
                         if (!RegExp(r'^\d+(\.\d{1,2})?$')
                                 .hasMatch(enteredAmount) ||
-                            value <= 0)
+                            value <= 0) {
                           return 'أدخل مبلغًا موجبًا بمنزلتين عشريتين كحد أقصى.';
-                        if (widget.action == 'discount' && value > balance)
+                        }
+                        if (widget.action == 'discount' && value > balance) {
                           return 'لا يمكن أن يزيد الخصم عن الرصيد المستحق.';
+                        }
                         return null;
                       }),
                   const SizedBox(height: 16),

@@ -119,7 +119,7 @@ void main() {
     final api = ReviewApi();
     final reading = queued(1);
     reading['current_reading'] = '9999999999.99';
-    reading['review']['previous_reading'] = 9999999998;
+    (reading['review'] as Map)['previous_reading'] = 9999999998;
     await openReview(tester, api, queue: [reading]);
     await tester.binding.setSurfaceSize(const Size(320, 640));
     tester.platformDispatcher.textScaleFactorTestValue = 1.8;

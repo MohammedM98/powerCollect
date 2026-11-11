@@ -4,8 +4,9 @@ import 'search_text.dart';
 
 Map<String, dynamic> readingReviewData(
     Map<String, dynamic> reading, List<Map<String, dynamic>> subscribers) {
-  if (reading['review'] is Map)
+  if (reading['review'] is Map) {
     return Map<String, dynamic>.from(reading['review'] as Map);
+  }
   final subscriber = subscribers
       .where((item) => item['id'] == reading['subscription_id'])
       .firstOrNull;
@@ -18,15 +19,18 @@ Map<String, dynamic> readingReviewData(
 
 String? readingValidation(Map<String, dynamic> reading) {
   final value = double.tryParse('${reading['current_reading']}');
-  if (value == null || !value.isFinite || value < 0 || value > 9999999999.99)
+  if (value == null || !value.isFinite || value < 0 || value > 9999999999.99) {
     return 'أدخل قراءة صحيحة بين صفر و9,999,999,999.99.';
-  if (!RegExp(r'^\d+(\.\d{1,2})?$').hasMatch('${reading['current_reading']}'))
+  }
+  if (!RegExp(r'^\d+(\.\d{1,2})?$').hasMatch('${reading['current_reading']}')) {
     return 'القراءة تقبل منزلتين عشريتين كحد أقصى.';
+  }
   final review = reading['review'];
   final previous =
       review is Map ? double.tryParse('${review['previous_reading']}') : null;
-  if (previous != null && value < previous)
+  if (previous != null && value < previous) {
     return 'القراءة الحالية أقل من السابقة. صححها قبل الرفع.';
+  }
   return null;
 }
 
@@ -149,9 +153,10 @@ class _ReadingReviewState extends State<ReadingReview> {
       final result = await widget.onUpload(readings);
       if (mounted) {
         setState(() => report = result);
-        if (result.summary.isNotEmpty)
+        if (result.summary.isNotEmpty) {
           showAppToast(context, result.summary.split('\n').first,
               icon: result.warning ? 'info' : 'check');
+        }
       }
     } finally {
       if (mounted) setState(() => confirming = false);

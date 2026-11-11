@@ -49,8 +49,9 @@ class ApiClient {
   Future<Map<String, dynamic>> rosterPage(int page) async =>
       assignedReadingRoster(await readingAssignments());
   Future<Map<String, dynamic>> sendReading(Map<String, dynamic> reading) async {
-    if (reading['assignment_id'] == null)
+    if (reading['assignment_id'] == null) {
       return _request('POST', '/api/mobile/readings', body: reading);
+    }
     final response =
         await _request('POST', '/api/mobile/reading-assignments/sync', body: {
       'readings': [
@@ -67,8 +68,9 @@ class ApiClient {
     });
     final result =
         Map<String, dynamic>.from((response['results'] as List).single as Map);
-    if (result['status'] == 'rejected')
+    if (result['status'] == 'rejected') {
       throw ApiException('${result['message'] ?? 'رفض الخادم القراءة.'}', 422);
+    }
     return {
       ...result,
       'status': result['status'] == 'accepted' ? 'pending' : result['status']
@@ -190,9 +192,10 @@ class ApiClient {
       request.followRedirects = false;
       request.headers.set(HttpHeaders.acceptHeader, 'application/json');
       request.headers.set('X-App-Build', '$appBuildNumber');
-      if (requestToken != null)
+      if (requestToken != null) {
         request.headers
             .set(HttpHeaders.authorizationHeader, 'Bearer $requestToken');
+      }
       final encodedBody = body == null ? null : utf8.encode(jsonEncode(body));
       // The production Apache/PHP host misroutes chunked POSTs as GETs.
       // Send the UTF-8 byte length for login, payments and readings alike.

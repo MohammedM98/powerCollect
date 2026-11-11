@@ -101,7 +101,7 @@ void main() {
     final file =
         await File('${directory.path}/field_state.json').readAsString();
     expect(file, isNot(contains('secret-token')));
-    expect(jsonDecode(file).containsKey('token'), false);
+    expect((jsonDecode(file) as Map).containsKey('token'), false);
     final restored = FieldStore(directory: directory);
     await restored.load();
     expect(restored.token, 'secret-token');

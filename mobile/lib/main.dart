@@ -66,9 +66,10 @@ class _PowerCollectAppState extends State<PowerCollectApp>
           (mode) => mode.name == store.state['appearance'],
           orElse: () => ThemeMode.system);
       api.token = store.token;
-      if (mounted)
+      if (mounted) {
         setState(() => user =
             store.remembersSession && store.token != null ? store.user : null);
+      }
     } catch (_) {
       startupError = 'تعذر فتح التخزين المحلي. أعد تشغيل التطبيق.';
     } finally {

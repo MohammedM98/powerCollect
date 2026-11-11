@@ -32,6 +32,10 @@ class SubscriberMessageActions extends StatelessWidget {
         Expanded(
             child: InkWell(
           key: ValueKey(key),
+          onTap: enabled
+              ? () => Navigator.push(
+                  context, MaterialPageRoute<void>(builder: (_) => page))
+              : null,
           child: Padding(
               padding: const EdgeInsets.all(14),
               child: Column(
@@ -55,10 +59,6 @@ class SubscriberMessageActions extends StatelessWidget {
                     Text(note,
                         style: AppIdentity.body(12, color: AppIdentity.muted)),
                   ])),
-          onTap: enabled
-              ? () => Navigator.push(
-                  context, MaterialPageRoute<void>(builder: (_) => page))
-              : null,
         ));
     return AppRows(
         key: const ValueKey('subscriber-message-actions'),

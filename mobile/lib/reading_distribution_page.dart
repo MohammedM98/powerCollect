@@ -22,8 +22,8 @@ class _ReadingDistributionPageState extends State<ReadingDistributionPage> {
   int? branchId;
   int requestId = 0;
   bool busy = true;
-  bool get canManage => data['abilities']?['manage'] == true;
-  bool get canApprove => data['abilities']?['approve'] == true;
+  bool get canManage => (data['abilities'] as Map?)?['manage'] == true;
+  bool get canApprove => (data['abilities'] as Map?)?['approve'] == true;
   List<Map<String, dynamic>> rows(String key) => (data[key] as List? ?? [])
       .map((item) => Map<String, dynamic>.from(item as Map))
       .toList();
@@ -154,15 +154,16 @@ class _ReadingDistributionPageState extends State<ReadingDistributionPage> {
                             {'target': target, 'recurring': recurring})),
                   ]))),
     );
-    if (choice != null && mounted)
+    if (choice != null && mounted) {
       await assign(selected.toList(), '${choice['target']}',
           choice['recurring'] == true);
+    }
   }
 
   Future<void> assign(List<int> ids, String target, bool recurring,
       {bool confirmDownloaded = false}) async {
     if (ids.isEmpty || !canManage) return;
-    final cycleId = data['cycle']['id'] as int;
+    final cycleId = (data['cycle'] as Map)['id'] as int;
     final versions = {
       for (final box in rows('boxes').where((box) => ids.contains(box['id'])))
         '${box['id']}': box['version']
@@ -198,11 +199,13 @@ class _ReadingDistributionPageState extends State<ReadingDistributionPage> {
           !confirmDownloaded &&
           await confirm('نقل طبلونات نزّلها القارئ؟',
               'قد توجد قراءات لم تُرفع بعد. هل تؤكد نقل هذه الطبلونات؟')) {
-        if (mounted)
+        if (mounted) {
           await assign(confirmationIds, target, recurring,
               confirmDownloaded: true);
+        }
         return;
       }
+      if (!mounted) return;
       if (conflicts.isNotEmpty) {
         setState(() => error = conflicts
             .map((item) => '${item['label']}: ${item['reason']}')
@@ -219,16 +222,18 @@ class _ReadingDistributionPageState extends State<ReadingDistributionPage> {
 
   Future<void> approve() async {
     if (!await confirm('اعتماد توزيع القراءات؟',
-        'سيتمكن القرّاء من تنزيل الطبلونات الموزعة عند حلول موعد إتاحتها.'))
+        'سيتمكن القرّاء من تنزيل الطبلونات الموزعة عند حلول موعد إتاحتها.')) {
       return;
+    }
     if (!mounted) return;
     setState(() => busy = true);
     try {
       final result = await widget.api
-          .approveReadingDistribution(data['cycle']['id'] as int);
+          .approveReadingDistribution((data['cycle'] as Map)['id'] as int);
       await load();
-      if (mounted)
+      if (mounted) {
         showAppToast(context, 'تم اعتماد ${result['approved']} طبلون.');
+      }
     } on ApiException catch (exception) {
       if (mounted) setState(() => error = exception.message);
     } finally {
@@ -266,7 +271,7 @@ class _ReadingDistributionPageState extends State<ReadingDistributionPage> {
           child: Column(children: [
         AppHeader(
             title: 'توزيع القراءات',
-            subtitle: data['branch']?['name'] as String?,
+            subtitle: (data['branch'] as Map?)?['name'] as String?,
             onBack: () => Navigator.pop(context)),
         Expanded(
             child: RefreshIndicator(
@@ -326,12 +331,13 @@ class _ReadingDistributionPageState extends State<ReadingDistributionPage> {
                           for (final area in areaNames.entries)
                             AppChip(area.value,
                                 selected: areas.contains(area.key), onTap: () {
-                              if (!busy)
+                              if (!busy) {
                                 setState(() {
                                   areas.contains(area.key)
                                       ? areas.remove(area.key)
                                       : areas.add(area.key);
                                 });
+                              }
                             }),
                         ]),
                         AppSection('الطبلونات',

@@ -245,11 +245,13 @@ class _SplitPaymentPageState extends State<SplitPaymentPage> {
               .toList();
         });
       } on ApiException catch (exception) {
-        if (mounted && version == searchVersion)
+        if (mounted && version == searchVersion) {
           setState(() => searchError = exception.message);
+        }
       } finally {
-        if (mounted && version == searchVersion)
+        if (mounted && version == searchVersion) {
           setState(() => searching = false);
+        }
       }
     });
   }
@@ -295,7 +297,7 @@ class _SplitPaymentPageState extends State<SplitPaymentPage> {
         submission = null;
       }
       unconfirmed = uncertain;
-      if (mounted)
+      if (mounted) {
         setState(() {
           needsOverpayment = needsOverpayment ||
               exception.errors.containsKey('confirm_overpayment');
@@ -304,6 +306,7 @@ class _SplitPaymentPageState extends State<SplitPaymentPage> {
                   exception.message.contains('مسبق'));
           error = uncertain ? unconfirmedMessage : exception.message;
         });
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }
@@ -582,7 +585,7 @@ class _SplitPaymentPageState extends State<SplitPaymentPage> {
               'وصول الحوالة إلى البنك: ${'${receipt!['bank_received_on']}'.split('-').reversed.join('/')}',
               style: AppIdentity.body(14)),
         const AppSection('الاشتراكات والأرصدة بعد التسجيل'),
-        ...((receipt!['parts'] as List?) ?? []).map((part) => ListTile(
+        ...((receipt!['parts'] as List?) ?? []).cast<Map>().map((part) => ListTile(
             title: Text('${part['subscription']}'),
             subtitle: Text('الرصيد بعد الدفعة: ${part['balance_after']}'),
             trailing: Text('${part['amount']} ₪'))),
