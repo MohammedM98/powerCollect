@@ -25,6 +25,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import SearchableSelect from '@/Components/SearchableSelect';
 import { readingPrintUrl } from '@/Components/PrintButton';
 import { secondaryButtonClass } from '@/Components/SecondaryButton';
+import { queryString } from '@/lib/pageUrl';
 
 const SUBSCRIPTION_DIRECTION_KEY = 'meter-box-subscription-direction';
 const SUBSCRIPTION_SORT_KEY = 'meter-box-subscription-sort';
@@ -124,8 +125,9 @@ export default function Index({
     // Grouped by region, the server lists each region's boxes together so a region doesn't split across pages.
     const groupParams = groupByRegion ? { group: 'region' } : {};
     const { search, setSearch, sort, sortBy, setPerPage, filterValues, setFilter, setFilters, clearFilters } = useDataTable('/meter-boxes', filters, groupParams);
-    const canPrint = usePage().props.can?.printAuditReports !== false;
-    const subscriptionsPrintHref = () => readingPrintUrl('الطبلونات ومشتركوها', `/meter-boxes/subscriptions-print${window.location.search}`, { subscription_sort: subscriptionOrder.sort, subscription_direction: subscriptionOrder.direction });
+    const { props: { can }, url: pageUrl } = usePage();
+    const canPrint = can?.printAuditReports !== false;
+    const subscriptionsPrintHref = () => readingPrintUrl('الطبلونات ومشتركوها', `/meter-boxes/subscriptions-print${queryString(pageUrl)}`, { subscription_sort: subscriptionOrder.sort, subscription_direction: subscriptionOrder.direction });
 
     function toggleGroupByRegion() {
         router.get('/meter-boxes', { search, sort: filters.sort, direction: filters.direction, per_page: filters.per_page, filter: filterValues, group: groupByRegion ? undefined : 'region' }, { preserveState: true, preserveScroll: true, replace: true });

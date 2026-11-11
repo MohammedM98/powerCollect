@@ -1,5 +1,6 @@
 import { lazy, Suspense, useState } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { urlWithout } from '@/lib/pageUrl';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useBranchView } from '@/hooks/useBranchView';
 import Icon from '@/Components/Icon';
@@ -24,14 +25,6 @@ const UserModal = lazy(() => import('@/Pages/Users/UserModal'));
 const SubscriptionModal = lazy(() => import('@/Pages/Subscriptions/SubscriptionModal'));
 const StatementModal = lazy(() => import('@/Pages/Subscriptions/StatementModal'));
 const QuickPaymentSearch = lazy(() => import('./Dashboard/QuickPaymentSearch'));
-
-/** The current address without `?edit=` (the subscriber being edited in a window). */
-function urlWithoutEdit() {
-    const url = new URL(window.location.href);
-    url.searchParams.delete('edit');
-
-    return `${url.pathname}${url.search}`;
-}
 
 /** The period's name on the tabs and in sentences. */
 const periodLabel = (days) => (days === 7 ? '7 أيام' : `${days} يومًا`);
@@ -72,7 +65,9 @@ export default function Dashboard({
     const [editing, setEditing] = useState(false);
     const statementWindow = useStatementWindow(statement);
     // A save from one of the dashboard's windows comes back here (with any open statement), not to the record's list page.
-    const returnHere = { preserveState: true, headers: { 'X-Return-To': urlWithoutEdit() } };
+    // The address without `?edit=` (the subscriber being edited in a window).
+    const addressWithoutEdit = urlWithout(usePage().url, 'edit');
+    const returnHere = { preserveState: true, headers: { 'X-Return-To': addressWithoutEdit } };
     const [search, setSearch] = useState(filters.search ?? '');
     const { collections, subscriptions, meterBoxes, readings, disconnections, boxes } = sections;
     const hasAnyData = Object.keys(sections).length > 0 || Boolean(latestPayments);
@@ -131,7 +126,7 @@ export default function Dashboard({
 
     function closeEdit() {
         setEditing(false);
-        router.replace({ url: urlWithoutEdit(), props: (props) => ({ ...props, subscriptionEdit: null }), preserveScroll: true, preserveState: true });
+        router.replace({ url: addressWithoutEdit, props: (props) => ({ ...props, subscriptionEdit: null }), preserveScroll: true, preserveState: true });
     }
 
     const scopeLine = scope.company
