@@ -252,6 +252,37 @@ class MobileApiTest extends TestCase
         $this->assertDatabaseCount('mobile_access_tokens', 0);
     }
 
+    public function test_version_one_serves_every_mobile_route_under_the_same_names(): void
+    {
+        $routes = collect(app('router')->getRoutes()->getRoutesByName());
+        $unversioned = $routes->keys()->filter(fn (string $name): bool => str_starts_with($name, 'mobile.') && ! str_starts_with($name, 'mobile.v1.'))->values();
+
+        $this->assertNotEmpty($unversioned);
+
+        foreach ($unversioned as $name) {
+            $versioned = $routes->get('mobile.v1.'.substr($name, strlen('mobile.')));
+
+            $this->assertNotNull($versioned, "{$name} has no v1 route.");
+            $this->assertSame('api/mobile/v1/'.substr($routes->get($name)->uri(), strlen('api/mobile/')), $versioned->uri());
+            $this->assertSame($routes->get($name)->methods(), $versioned->methods());
+            $this->assertSame($routes->get($name)->gatherMiddleware(), $versioned->gatherMiddleware());
+        }
+    }
+
+    public function test_a_version_one_session_signs_in_and_out_and_an_old_build_can_still_sign_out(): void
+    {
+        $user = User::factory()->branchAdmin()->create();
+        $token = $this->postJson(route('mobile.v1.login'), ['username' => $user->username, 'password' => 'password'])
+            ->assertOk()->json('token');
+
+        config(['powercollect.mobile_app_min_build' => 9]);
+        $this->withHeaders(['Authorization' => 'Bearer '.$token, 'X-App-Build' => '8']);
+
+        $this->getJson(route('mobile.v1.me'))->assertStatus(426);
+        $this->postJson(route('mobile.v1.logout'))->assertOk();
+        $this->assertDatabaseCount('mobile_access_tokens', 0);
+    }
+
     public function test_every_app_build_is_served_while_no_minimum_build_is_set(): void
     {
         $user = User::factory()->branchAdmin()->create();

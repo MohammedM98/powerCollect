@@ -28,7 +28,7 @@ class AuthenticateMobileToken
         }
 
         abort_if($token->user->isAuditOnly(), 403);
-        if (! $request->routeIs('mobile.logout') && ! app(UserDeviceAccess::class)->allowed($token->user, 'mobile:'.$token->id)) {
+        if (! $request->routeIs('mobile.logout', 'mobile.v1.logout') && ! app(UserDeviceAccess::class)->allowed($token->user, 'mobile:'.$token->id)) {
             $token->delete();
 
             return response()->json(['message' => UserDeviceAccess::LIMIT_MESSAGE], 401);
