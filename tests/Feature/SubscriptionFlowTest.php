@@ -109,7 +109,7 @@ class SubscriptionFlowTest extends TestCase
         $manager = User::factory()->branchAdmin()->create(['branch_id' => $branch->id]);
         Tariff::factory()->residential()->create();
         $file = tempnam(sys_get_temp_dir(), 'flow');
-        file_put_contents($file, "subscription_number,name,phone_number,balance,subscription_type,minimum_limit,area\n129600,اسامة فضل,0599013094,123.05,منزلي - أسبوعي,20,حميدة\n");
+        file_put_contents($file, "subscription_number,name,phone_number,balance,subscription_type,minimum_limit,area\n129600,سامي أحمد,0599000000,123.05,منزلي - أسبوعي,20,حميدة\n");
 
         $this->artisan('subscriptions:import', ['file' => $file, '--user' => $manager->username])->assertSuccessful();
 
