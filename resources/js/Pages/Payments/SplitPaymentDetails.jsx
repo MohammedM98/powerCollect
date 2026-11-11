@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useHttp } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
+import AsyncState from '@/Components/AsyncState';
+import { useJsonResource } from '@/hooks/useJsonResource';
 import Modal from '@/Components/Modal';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { formatMoney, formatDate } from '@/lib/format';
@@ -23,22 +23,7 @@ function Detail({ label, children, ltr = false }) {
  * make up the transfer (a cancelled or refunded part leaves it incomplete).
  */
 export default function SplitPaymentDetails({ id, onClose }) {
-    const http = useHttp();
-    const [split, setSplit] = useState(null);
-    const [failed, setFailed] = useState(false);
-
-    useEffect(() => {
-        let current = true;
-
-        http.get(`/split-payments/${id}`)
-            .then((loaded) => current && setSplit(loaded))
-            .catch(() => current && setFailed(true));
-
-        return () => {
-            current = false;
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
+    const { data: split, error, loading, retry } = useJsonResource(`/split-payments/${id}`, 'تعذّر تحميل تفاصيل الدفعة.');
 
     return (
         <Modal show onClose={onClose} maxWidth="2xl">
@@ -59,8 +44,7 @@ export default function SplitPaymentDetails({ id, onClose }) {
                 </div>
 
                 <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-6 sm:px-7">
-                    {failed && <p className="py-8 text-center text-sm text-brand-600">تعذّر تحميل تفاصيل الدفعة.</p>}
-                    {!split && !failed && <p className="py-8 text-center text-sm text-gray-500">جارٍ التحميل…</p>}
+                    {!split && <AsyncState loading={loading} error={error} onRetry={retry} loadingLabel="جارٍ تحميل تفاصيل الدفعة…" />}
 
                     {split && (
                         <>

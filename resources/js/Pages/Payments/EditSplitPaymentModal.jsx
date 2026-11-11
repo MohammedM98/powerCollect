@@ -1,7 +1,8 @@
 import { BankReceivedDateField } from '@/Components/BankReceivedDate';
-import { useEffect, useState } from 'react';
-import { useForm, useHttp } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
+import AsyncState from '@/Components/AsyncState';
 import FormModal from '@/Components/FormModal';
+import { useJsonResource } from '@/hooks/useJsonResource';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
 import InputLabel from '@/Components/InputLabel';
@@ -128,15 +129,10 @@ export function SplitPaymentEditor({ split, onClose, transferBanks = [], senderB
 }
 
 export default function EditSplitPaymentModal({ id, onClose, transferBanks, senderBanks }) {
-    const http = useHttp();
-    const [split, setSplit] = useState(null);
-    const [failed, setFailed] = useState(false);
-    useEffect(() => {
-        let current = true;
-        http.get(`/split-payments/${id}/edit`).then((loaded) => current && setSplit(loaded)).catch(() => current && setFailed(true));
-        return () => { current = false; };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
+    const { data: split, error, loading, retry } = useJsonResource(
+        `/split-payments/${id}/edit`,
+        'تعذّر فتح التعديل. تأكد أن جميع حصص الحوالة سارية وفي صناديق مفتوحة وأن لديك الصلاحية.',
+    );
     if (split) {
         return <SplitPaymentEditor split={split} onClose={onClose} transferBanks={transferBanks} senderBanks={senderBanks} />;
     }
@@ -144,15 +140,7 @@ export default function EditSplitPaymentModal({ id, onClose, transferBanks, send
         <Modal show onClose={onClose} maxWidth="3xl">
             <div className="space-y-5 p-7">
                 <h3 className="text-xl font-bold text-gray-900">تعديل الحوالة المقسّمة</h3>
-                {failed ? (
-                    <p role="alert" className="text-base leading-8 text-red-700">تعذّر فتح التعديل. تأكد أن جميع حصص الحوالة سارية وفي صناديق مفتوحة وأن لديك الصلاحية.</p>
-                ) : (
-                    <div role="status" className="animate-pulse space-y-4">
-                        <p className="text-gray-600">جارٍ تحميل بيانات الحوالة وحصص المشتركين…</p>
-                        <div className="h-24 rounded-xl bg-gray-100" />
-                        <div className="h-32 rounded-xl bg-gray-100" />
-                    </div>
-                )}
+                <AsyncState loading={loading} error={error} onRetry={retry} loadingLabel="جارٍ تحميل بيانات الحوالة وحصص المشتركين…" />
                 <SecondaryButton onClick={onClose}>إغلاق</SecondaryButton>
             </div>
         </Modal>

@@ -11,17 +11,11 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { formatMoney } from '@/lib/format';
 import { bankAuditReasonChoice, bankAuditReasonPresets, splitAuditTotal } from '@/lib/bankAudit';
+import { httpErrorMessage } from '@/lib/httpError';
 import { ledgerOf } from './LedgerColumns';
 
 const loadFailed = 'تعذر تحميل مراجعة الحوالة. حدّث الصفحة وأعد فتح النافذة.';
 
-/** The server's first validation message, a connection message, or the general one. */
-function auditLoadError(error) {
-    if (error?.name === 'HttpNetworkError') return 'تعذر الاتصال بالخادم. أعد فتح النافذة للمحاولة مجددًا.';
-    const body = error?.response?.data;
-    const parsed = typeof body === 'string' ? (() => { try { return JSON.parse(body); } catch { return {}; } })() : body || {};
-    return Object.values(parsed.errors || {}).flat()[0] || loadFailed;
-}
 
 /** A saved bank review, posted only when the box receives final approval. */
 export default function BankTransferAuditForm({ entry, onClose }) {
@@ -46,7 +40,7 @@ export default function BankTransferAuditForm({ entry, onClose }) {
                 if (loaded) setData((form) => ({ ...form, bank_amount: loaded.bank_amount, reason: loaded.reason, revision: loaded.revision, parts: loaded.parts.map((part) => ({ transaction_id: part.transaction_id, bank_amount: part.bank_amount })) }));
                 setReview({ loading: false, split: loaded, error: '' });
             })
-            .catch((error) => { if (current) setReview({ loading: false, split: null, error: auditLoadError(error) }); });
+            .catch((error) => { if (current) setReview({ loading: false, split: null, error: httpErrorMessage(error, loadFailed) }); });
         return () => { current = false; };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [entry.audit_url]);

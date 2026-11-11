@@ -21,6 +21,11 @@ export function respondTo(prefix, body) {
     responses.push({ prefix, body });
 }
 
+/** Fail the next useHttp request whose URL starts with `prefix`, as the server would with `status` and `data`. */
+export function failNext(prefix, status = 500, data = {}) {
+    responses.unshift({ prefix, once: true, error: Object.assign(new Error('Request failed'), { name: 'HttpResponseError', response: { status, data: JSON.stringify(data) } }) });
+}
+
 /** Set the shared page props the next render reads through usePage(). */
 export function setPage(next) {
     page = { props: {}, url: '/', ...next };
@@ -78,7 +83,11 @@ export function useHttp(initial = {}) {
     const form = useForm(initial);
     const request = (method) => async (url, options = {}) => {
         submissions.push({ method, url, data: form.data, options, http: true });
-        return responses.find((response) => url.startsWith(response.prefix))?.body ?? {};
+        const index = responses.findIndex((response) => url.startsWith(response.prefix));
+        const response = responses[index];
+        if (response?.once) responses.splice(index, 1);
+        if (response?.error) throw response.error;
+        return response?.body ?? {};
     };
 
     return { ...form, get: request('get'), post: request('post'), put: request('put'), patch: request('patch'), delete: request('delete') };
