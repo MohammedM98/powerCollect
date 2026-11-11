@@ -448,7 +448,7 @@ class ReadingCycleTest extends TestCase
         $held = ReadingSubmission::query()->sole();
 
         $this->actingAs(User::factory()->superAdmin()->create())->post(route('reading-submissions.review', $held), ['decision' => 'accept'])
-            ->assertSessionHasErrors(['decision' => ReadingSubmission::ISSUES['week_locked']]);
+            ->assertSessionHasErrors(['decision' => __(ReadingSubmission::ISSUES['week_locked'])]);
 
         $this->assertSame(ReadingSubmissionStatus::NeedsReview, $held->fresh()->status);
         $this->assertDatabaseCount('meter_readings', 0);

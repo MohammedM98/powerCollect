@@ -68,7 +68,7 @@ class ReadingAssignmentController extends Controller
         $result = $this->allocation->approve($readingCycle, $reader, $request->boolean('paper'), $request->user());
 
         Inertia::flash('allocationResult', ['action' => 'approve', 'moved' => $result['approved'], 'conflicts' => $result['skipped'] > 0
-            ? [['boxId' => null, 'label' => $result['skipped'].' طبلون', 'reason' => ReadingAllocation::CONFLICTS['reader_not_eligible']]]
+            ? [['boxId' => null, 'label' => $result['skipped'].' طبلون', 'reason' => __(ReadingAllocation::CONFLICTS['reader_not_eligible'])]]
             : []]);
 
         if ($result['approved'] === 0) {

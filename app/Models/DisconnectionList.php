@@ -32,9 +32,9 @@ class DisconnectionList extends Model
 
     /** Why a subscription could not be added, keyed by its code. */
     public const SKIP_REASONS = [
-        'other_branch' => 'من فرع آخر',
-        'not_active' => 'خدمته غير فعّالة (مفصول أو قيد الانتظار)',
-        'already_listed' => 'مدرج في قائمة قطع أخرى بانتظار القطع',
+        'other_branch' => 'From another branch',
+        'not_active' => 'Service not active (disconnected or pending)',
+        'already_listed' => 'Already on another disconnection list awaiting disconnection',
     ];
 
     protected function casts(): array
@@ -88,7 +88,7 @@ class DisconnectionList extends Model
                     'subscriptionId' => $subscription->id,
                     'name' => $subscription->displayName(),
                     'accountNumber' => $subscription->account_number,
-                    'reason' => self::SKIP_REASONS[$why],
+                    'reason' => __(self::SKIP_REASONS[$why]),
                 ];
             }
         }

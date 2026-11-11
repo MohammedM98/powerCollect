@@ -32,7 +32,7 @@ class User extends Authenticatable
     use BelongsToBranch, HasFactory, Notifiable;
 
     /** Why the last active Super Admin cannot be deactivated, demoted or deleted. */
-    public const LAST_SUPER_ADMIN_MESSAGE = 'لا يمكن إيقاف آخر مدير نظام فعّال أو تغيير دوره أو حذفه؛ أضف مدير نظام آخر أولًا.';
+    public const LAST_SUPER_ADMIN_MESSAGE = 'The last active system administrator cannot be deactivated, change role or be deleted; add another system administrator first.';
 
     /** Keep administrator lockout protections independent of employee job titles. */
     protected static function booted(): void
@@ -45,13 +45,13 @@ class User extends Authenticatable
             $losesAccess = $user->isDirty('is_active') && ! $user->is_active;
 
             if (($losesTheRole || $losesAccess) && $user->isOnlyActiveSuperAdmin()) {
-                throw ValidationException::withMessages(['is_active' => self::LAST_SUPER_ADMIN_MESSAGE]);
+                throw ValidationException::withMessages(['is_active' => __(self::LAST_SUPER_ADMIN_MESSAGE)]);
             }
         });
 
         static::deleting(function (User $user): void {
             if ($user->isOnlyActiveSuperAdmin()) {
-                throw ValidationException::withMessages(['delete' => self::LAST_SUPER_ADMIN_MESSAGE]);
+                throw ValidationException::withMessages(['delete' => __(self::LAST_SUPER_ADMIN_MESSAGE)]);
             }
         });
     }

@@ -31,7 +31,7 @@ class AuthenticateMobileToken
         if (! $request->routeIs('mobile.logout', 'mobile.v1.logout') && ! app(UserDeviceAccess::class)->allowed($token->user, 'mobile:'.$token->id)) {
             $token->delete();
 
-            return response()->json(['message' => UserDeviceAccess::LIMIT_MESSAGE], 401);
+            return response()->json(['message' => __(UserDeviceAccess::LIMIT_MESSAGE)], 401);
         }
 
         Auth::setUser($token->user);

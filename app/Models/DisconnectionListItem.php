@@ -41,11 +41,11 @@ class DisconnectionListItem extends Model
 
     /** What a confirmation can come to for one item, and how it reads. */
     public const OUTCOMES = [
-        'disconnected' => 'تم تأكيد القطع',
-        'already_disconnected' => 'سبق تأكيد قطعه؛ لم يُحمَّل مرة أخرى',
-        'removed' => 'أُزيل من القائمة',
-        'service_not_active' => 'خدمته ليست فعّالة الآن؛ راجع حالته قبل التأكيد',
-        'list_closed' => 'القائمة مغلقة',
+        'disconnected' => 'Disconnection confirmed',
+        'already_disconnected' => 'Already confirmed as disconnected; not charged again',
+        'removed' => 'Removed from the list',
+        'service_not_active' => 'Service is not active now; check its status before confirming',
+        'list_closed' => 'The list is closed',
     ];
 
     protected function casts(): array

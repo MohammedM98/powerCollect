@@ -27,7 +27,7 @@ class CompanyForms
             'pages' => [['id' => 'page_1', 'blocks' => [
                 $block('title_1', 'heading', __('New subscription request')),
                 $block('intro_1', 'paragraph', __('Please approve the request to subscribe to the electricity service with the following details:')),
-                $block('fields_1', 'fields', '', collect(['subscriber_name', 'national_id', 'phone', 'address', 'branch', 'meter_box', 'meter_box_number', 'tariff', 'breaker', 'subscription_fee', 'today', 'employee'])->map(fn (string $key): array => ['key' => $key, 'label' => self::FIELDS[$key]])->all()),
+                $block('fields_1', 'fields', '', collect(['subscriber_name', 'national_id', 'phone', 'address', 'branch', 'meter_box', 'meter_box_number', 'tariff', 'breaker', 'subscription_fee', 'today', 'employee'])->map(fn (string $key): array => ['key' => $key, 'label' => __(self::FIELDS[$key])])->all()),
                 $block('terms_1', 'paragraph', __('I confirm that the details above are correct and I agree to follow the company\'s instructions and service terms.')),
                 $block('signatures_1', 'signatures', __('Applicant\'s signature|Employee\'s signature|Company stamp')),
             ]]],
@@ -36,16 +36,26 @@ class CompanyForms
     }
 
     public const FIELDS = [
-        'subscriber_name' => 'اسم المشترك', 'subscription_name' => 'اسم الاشتراك',
-        'subscriber_number' => 'رقم المشترك', 'account_number' => 'رقم الاشتراك',
-        'national_id' => 'رقم الهوية', 'phone' => 'رقم الهاتف', 'address' => 'العنوان',
-        'branch' => 'الفرع', 'area' => 'المنطقة', 'sub_area' => 'منطقة 2',
-        'meter_box' => 'اسم الطبلون واللاحقة', 'meter_box_number' => 'رقم الطبلون',
-        'tariff' => 'نوع الاشتراك', 'breaker' => 'القاطع',
-        'minimum_charge' => 'الحد الأدنى', 'kilo_price' => 'سعر الكيلو',
-        'subscription_fee' => 'رسوم الاشتراك', 'subscription_date' => 'تاريخ الاشتراك',
-        'previous_reading' => 'القراءة السابقة', 'today' => 'التاريخ', 'employee' => 'اسم الموظف',
+        'subscriber_name' => 'Subscriber\'s name', 'subscription_name' => 'Subscription name',
+        'subscriber_number' => 'Subscriber number', 'account_number' => 'Subscription number',
+        'national_id' => 'ID number', 'phone' => 'Phone number', 'address' => 'Address',
+        'branch' => 'Branch', 'area' => 'Area', 'sub_area' => 'Second area',
+        'meter_box' => 'Meter box name and suffix', 'meter_box_number' => 'Meter box number',
+        'tariff' => 'Subscription type', 'breaker' => 'Circuit breaker',
+        'minimum_charge' => 'Minimum charge', 'kilo_price' => 'kWh price',
+        'subscription_fee' => 'The subscription fee', 'subscription_date' => 'Subscription date',
+        'previous_reading' => 'Previous reading', 'today' => 'Date', 'employee' => 'Employee\'s name',
     ];
+
+    /**
+     * The fields a form may print, each with its label in the current language.
+     *
+     * @return array<string, string>
+     */
+    public static function fieldLabels(): array
+    {
+        return array_map(fn (string $label): string => __($label), self::FIELDS);
+    }
 
     /** @param array<string, mixed> $layout
      * @return array<string, mixed>
@@ -130,7 +140,7 @@ class CompanyForms
                 }
                 preg_match_all('/\{([a-z][a-z0-9_]*)\}/', $block['text'] ?? '', $matches);
                 foreach ($matches[1] as $key) {
-                    $fields[$key] ??= self::FIELDS[$key] ?? $key;
+                    $fields[$key] ??= isset(self::FIELDS[$key]) ? __(self::FIELDS[$key]) : $key;
                 }
             }
         }

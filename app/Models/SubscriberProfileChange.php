@@ -19,10 +19,10 @@ class SubscriberProfileChange extends Model
 
     /** The personal fields as people read them. */
     public const LABELS = [
-        'full_name' => 'الاسم الكامل',
-        'national_id' => 'رقم الهوية',
-        'phone' => 'رقم الجوال',
-        'address' => 'العنوان',
+        'full_name' => 'Full name',
+        'national_id' => 'ID number',
+        'phone' => 'Mobile number',
+        'address' => 'Address',
     ];
 
     protected function casts(): array

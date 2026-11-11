@@ -154,8 +154,8 @@ class DisconnectionListTest extends TestCase
             ->assertSessionHas('status', 'disconnection-items-added')
             ->assertSessionHas('inertia.flash_data.disconnectionResult', fn (array $result): bool => $result['succeeded'] === 1
                 && collect($result['failed'])->pluck('reason', 'subscriptionId')->all() === [
-                    $disconnected->id => DisconnectionList::SKIP_REASONS['not_active'],
-                    $alreadyListed->id => DisconnectionList::SKIP_REASONS['already_listed'],
+                    $disconnected->id => __(DisconnectionList::SKIP_REASONS['not_active']),
+                    $alreadyListed->id => __(DisconnectionList::SKIP_REASONS['already_listed']),
                 ]);
 
         $this->assertSame([$eligible->id], $this->list->items()->pluck('subscription_id')->all());
@@ -284,7 +284,7 @@ class DisconnectionListTest extends TestCase
         $this->actingAs($this->branchAdmin)
             ->post(route('disconnection-lists.items.confirm', $this->list), $payload)
             ->assertSessionHasErrors('ids')
-            ->assertSessionHas('inertia.flash_data.disconnectionResult', fn (array $result): bool => $result['failed'][0]['reason'] === DisconnectionListItem::OUTCOMES['already_disconnected']);
+            ->assertSessionHas('inertia.flash_data.disconnectionResult', fn (array $result): bool => $result['failed'][0]['reason'] === __(DisconnectionListItem::OUTCOMES['already_disconnected']));
 
         $item->refresh();
         $fee = SubscriptionTransaction::query()->sole();

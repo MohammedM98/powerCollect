@@ -23,11 +23,11 @@ class ReadingAllocation
 {
     /** Why a box was not moved, and how it reads. */
     public const CONFLICTS = [
-        'not_eligible' => 'الطبلون ليس من طبلونات الفرع المفعّلة',
-        'changed' => 'غيّر توزيعَه مستخدمٌ آخر للتو؛ حدّث الصفحة وأعد المحاولة',
-        'downloaded' => 'نزّله القارئ على جهازه وقد تكون لديه قراءات لم تُرفع؛ أكّد النقل لنقله',
-        'reader_not_eligible' => 'القارئ غير فعّال أو لا يملك صلاحية تسجيل القراءات',
-        'closed' => 'دورة القراءة مغلقة',
+        'not_eligible' => 'The meter box is not one of the branch\'s active boxes',
+        'changed' => 'Another user just changed its distribution; refresh the page and try again',
+        'downloaded' => 'The reader downloaded it and may have readings not yet uploaded; confirm the move to move it',
+        'reader_not_eligible' => 'The reader is not active or cannot record readings',
+        'closed' => 'The reading cycle is closed',
     ];
 
     /**
@@ -89,7 +89,7 @@ class ReadingAllocation
             if ($why === null) {
                 $moved++;
             } else {
-                $conflicts[] = ['boxId' => (int) $boxId, 'label' => $box?->label() ?? '#'.$boxId, 'reason' => self::CONFLICTS[$why]];
+                $conflicts[] = ['boxId' => (int) $boxId, 'label' => $box?->label() ?? '#'.$boxId, 'reason' => __(self::CONFLICTS[$why])];
             }
         }
 

@@ -48,7 +48,7 @@ class ReceivableController extends Controller
         return Inertia::render('Receivables/Index', [
             'debtors' => $rows,
             'summary' => ReceivablesPage::summary($debtors),
-            'buckets' => collect(DebtAging::BUCKET_LABELS)->map(fn (string $label, string $key): array => ['key' => $key, 'label' => $label])->values(),
+            'buckets' => collect(DebtAging::BUCKET_LABELS)->map(fn (string $label, string $key): array => ['key' => $key, 'label' => __($label)])->values(),
             'today' => DailySeries::today()->toDateString(),
             'scopeLabel' => ReceivablesPage::scopeLabel($request, $actor),
             // The Super Admin reads, large above the report, which branch it holds.

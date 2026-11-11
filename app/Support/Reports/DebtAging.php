@@ -38,10 +38,10 @@ class DebtAging
      * @var array<string, string>
      */
     public const BUCKET_LABELS = [
-        'current' => 'حتى 30 يومًا',
-        'days_60' => '31–60 يومًا',
-        'days_90' => '61–90 يومًا',
-        'older' => 'أكثر من 90 يومًا',
+        'current' => 'Up to 30 days',
+        'days_60' => '31–60 days',
+        'days_90' => '61–90 days',
+        'older' => 'Over 90 days',
     ];
 
     /**

@@ -53,7 +53,7 @@ class FinancialReportPage
         $options = collect($allowedFilters)->map(function (string $key) use ($rows): array {
             $values = match ($key) {
                 'side' => [['value' => 'debit', 'label' => __('Debit (owed)')], ['value' => 'credit', 'label' => __('Credit (in favour)')]],
-                'age' => collect(DebtAging::BUCKET_LABELS)->map(fn (string $label, string $value): array => compact('value', 'label'))->values()->all(),
+                'age' => collect(DebtAging::BUCKET_LABELS)->map(fn (string $label, string $value): array => ['value' => $value, 'label' => __($label)])->values()->all(),
                 default => $rows->unique($key)->filter(fn (array $row): bool => filled($row[$key] ?? null))->map(fn (array $row): array => ['value' => (string) $row[$key], 'label' => $key === 'type' ? ($row['typeLabel'] ?? $row[$key]) : $row[$key]])->values()->all(),
             };
             $labels = ['side' => __('Entry side'), 'type' => __('Transaction type'), 'age' => __('Debt age'), 'branchName' => __('Branch'), 'status' => __('Status'), 'collector' => __('The collector'), 'currency' => __('Currency')];

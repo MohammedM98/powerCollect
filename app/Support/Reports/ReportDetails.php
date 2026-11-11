@@ -73,10 +73,10 @@ class ReportDetails
         $rows = $rows->sortByDesc(fn (array $row): int => Closing::cents($row['balance']))->values();
 
         return [
-            'rows' => $rows, 'asOf' => $this->to->toDateString(), 'count' => $rows->count(), 'bucketLabels' => DebtAging::BUCKET_LABELS,
+            'rows' => $rows, 'asOf' => $this->to->toDateString(), 'count' => $rows->count(), 'bucketLabels' => array_map(fn (string $label): string => __($label), DebtAging::BUCKET_LABELS),
             'total' => Closing::money($rows->sum(fn (array $row): int => Closing::cents($row['balance']))),
             'credit' => Closing::money($credit), 'creditCount' => $creditCount,
-            'buckets' => collect(DebtAging::BUCKET_LABELS)->map(fn (string $label, string $key): array => ['key' => $key, 'label' => $label, 'total' => Closing::money($rows->sum(fn (array $row): int => Closing::cents($row['buckets'][$key])))])->values(),
+            'buckets' => collect(DebtAging::BUCKET_LABELS)->map(fn (string $label, string $key): array => ['key' => $key, 'label' => __($label), 'total' => Closing::money($rows->sum(fn (array $row): int => Closing::cents($row['buckets'][$key])))])->values(),
         ];
     }
 

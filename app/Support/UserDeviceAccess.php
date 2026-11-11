@@ -13,7 +13,7 @@ use Illuminate\Validation\ValidationException;
 
 class UserDeviceAccess
 {
-    public const LIMIT_MESSAGE = 'انتهت جلسة هذا الجهاز بعد تسجيل الدخول من جهاز آخر. سجّل الدخول مجددًا للمتابعة.';
+    public const LIMIT_MESSAGE = 'This device\'s session ended after a sign-in from another device. Sign in again to continue.';
 
     public function prepareWebLogin(User $user): void
     {
@@ -45,7 +45,7 @@ class UserDeviceAccess
                 DB::table('user_login_devices')->where($identity)->update($timestamps);
             }
             if (! $this->allowed($user, 'web:'.$id)) {
-                throw ValidationException::withMessages(['username' => self::LIMIT_MESSAGE]);
+                throw ValidationException::withMessages(['username' => __(self::LIMIT_MESSAGE)]);
             }
             $request->session()->put('device_access_user', $user->id);
         });
@@ -100,7 +100,7 @@ class UserDeviceAccess
     private function assertCapacity(User $user): void
     {
         if ($this->activeCount($user) >= ($user->max_devices ?? 1)) {
-            throw ValidationException::withMessages(['username' => self::LIMIT_MESSAGE]);
+            throw ValidationException::withMessages(['username' => __(self::LIMIT_MESSAGE)]);
         }
     }
 

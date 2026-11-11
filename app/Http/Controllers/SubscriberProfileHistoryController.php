@@ -29,7 +29,7 @@ class SubscriberProfileHistoryController extends Controller
                 'branchName' => $change->branch?->name,
                 'changes' => collect($change->changes)->map(fn (array $values, string $field): array => [
                     'field' => $field,
-                    'label' => SubscriberProfileChange::LABELS[$field] ?? $field,
+                    'label' => isset(SubscriberProfileChange::LABELS[$field]) ? __(SubscriberProfileChange::LABELS[$field]) : $field,
                     'from' => $values['from'],
                     'to' => $values['to'],
                 ])->values()->all(),

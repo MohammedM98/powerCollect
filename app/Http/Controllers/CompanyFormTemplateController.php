@@ -56,7 +56,7 @@ class CompanyFormTemplateController extends Controller
     {
         $this->authorize('create', CompanyFormTemplate::class);
 
-        return Inertia::render('CompanyForms/Editor', ['template' => null, 'defaultLayout' => CompanyForms::defaultLayout(), 'fields' => CompanyForms::FIELDS]);
+        return Inertia::render('CompanyForms/Editor', ['template' => null, 'defaultLayout' => CompanyForms::defaultLayout(), 'fields' => CompanyForms::fieldLabels()]);
     }
 
     public function edit(CompanyFormTemplate $companyForm): Response
@@ -64,7 +64,7 @@ class CompanyFormTemplateController extends Controller
         $this->authorize('update', $companyForm);
         $companyForm->load('updatedBy');
 
-        return Inertia::render('CompanyForms/Editor', ['template' => $companyForm->toEditor(), 'defaultLayout' => CompanyForms::defaultLayout(), 'fields' => CompanyForms::FIELDS]);
+        return Inertia::render('CompanyForms/Editor', ['template' => $companyForm->toEditor(), 'defaultLayout' => CompanyForms::defaultLayout(), 'fields' => CompanyForms::fieldLabels()]);
     }
 
     public function show(Request $request, CompanyFormTemplate $companyForm): JsonResponse

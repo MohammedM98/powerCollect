@@ -159,7 +159,7 @@ class DisconnectionItemController extends Controller
                 $succeeded++;
                 $feesTotal = Money::add($feesTotal, $item->fee_amount);
             } else {
-                $failed[] = DisconnectionItemPage::failure($item, DisconnectionListItem::OUTCOMES[$outcome]);
+                $failed[] = DisconnectionItemPage::failure($item, __(DisconnectionListItem::OUTCOMES[$outcome]));
             }
         }
 

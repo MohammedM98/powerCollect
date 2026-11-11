@@ -25,7 +25,7 @@ class ReceivablesPage
     /**
      * The "age" filter: debtors owing something older than this many days.
      */
-    public const AGE_FILTERS = ['30' => 'دين أقدم من 30 يومًا', '60' => 'دين أقدم من 60 يومًا', '90' => 'دين أقدم من 90 يومًا'];
+    public const AGE_FILTERS = ['30' => 'Debt older than 30 days', '60' => 'Debt older than 60 days', '90' => 'Debt older than 90 days'];
 
     /**
      * The subscriptions the user may see — in their own branch (any branch
@@ -183,7 +183,7 @@ class ReceivablesPage
     {
         $groups = $actor->isSuperAdmin() ? [DataTableFilters::branchFilterGroup()] : [];
 
-        $groups[] = DataTableFilters::filterGroup('age', __('Debt age'), collect(self::AGE_FILTERS)->map(fn (string $label, string $days): array => ['value' => $days, 'label' => $label])->values());
+        $groups[] = DataTableFilters::filterGroup('age', __('Debt age'), collect(self::AGE_FILTERS)->map(fn (string $label, string $days): array => ['value' => $days, 'label' => __($label)])->values());
         $groups[] = DataTableFilters::filterGroup('status', __('Subscriber status'), SubscriptionStatus::options());
 
         return $groups;

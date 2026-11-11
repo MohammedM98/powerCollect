@@ -41,7 +41,7 @@ class FieldReadingSync
     {
         if ($existing = ReadingSubmission::query()->where('operation_id', $reading['operation_id'])->first()) {
             return $existing->user_id === $reader->id ? $this->result($existing)
-                : ['operation_id' => $reading['operation_id'], 'status' => ReadingSubmissionStatus::Rejected->value, 'issue' => 'not_your_assignment', 'message' => ReadingSubmission::ISSUES['not_your_assignment'], 'meter_reading_id' => null];
+                : ['operation_id' => $reading['operation_id'], 'status' => ReadingSubmissionStatus::Rejected->value, 'issue' => 'not_your_assignment', 'message' => __(ReadingSubmission::ISSUES['not_your_assignment']), 'meter_reading_id' => null];
         }
 
         try {
@@ -50,13 +50,13 @@ class FieldReadingSync
             // The same upload arrived twice at once: answer with what the other one decided.
             $submission = ReadingSubmission::query()->where('operation_id', $reading['operation_id'])->firstOrFail();
             if ($submission->user_id !== $reader->id) {
-                return ['operation_id' => $reading['operation_id'], 'status' => ReadingSubmissionStatus::Rejected->value, 'issue' => 'not_your_assignment', 'message' => ReadingSubmission::ISSUES['not_your_assignment'], 'meter_reading_id' => null];
+                return ['operation_id' => $reading['operation_id'], 'status' => ReadingSubmissionStatus::Rejected->value, 'issue' => 'not_your_assignment', 'message' => __(ReadingSubmission::ISSUES['not_your_assignment']), 'meter_reading_id' => null];
             }
         }
 
         // One that names no assignment of the reader's branch or no subscription is refused without being kept.
         return $submission === null
-            ? ['operation_id' => $reading['operation_id'], 'status' => ReadingSubmissionStatus::Rejected->value, 'issue' => 'not_your_assignment', 'message' => ReadingSubmission::ISSUES['not_your_assignment'], 'meter_reading_id' => null]
+            ? ['operation_id' => $reading['operation_id'], 'status' => ReadingSubmissionStatus::Rejected->value, 'issue' => 'not_your_assignment', 'message' => __(ReadingSubmission::ISSUES['not_your_assignment']), 'meter_reading_id' => null]
             : $this->result($submission);
     }
 
@@ -174,11 +174,11 @@ class FieldReadingSync
             $weekStart = $held->cycle->week_start;
             $previous = $subscription->previousReadingBefore($weekStart);
             $why = match (true) {
-                ! $weekStart->equalTo(ReadingWeeks::latestEndedWeekStart($subscription->branch_id)) => ReadingSubmission::ISSUES['week_locked'],
-                $subscription->status !== SubscriptionStatus::Active => ReadingSubmission::ISSUES['not_on_box'],
-                $subscription->meterReadings()->whereDate('week_start', '>=', $weekStart->toDateString())->exists() => ReadingSubmission::ISSUES['already_read'],
-                $held->current_reading < $previous => ReadingSubmission::ISSUES['below_previous'],
-                ReadingConsumption::isImpossibleConsumption(ReadingConsumption::consumptionBetween($previous, $held->current_reading)) => ReadingSubmission::ISSUES['impossible_consumption'],
+                ! $weekStart->equalTo(ReadingWeeks::latestEndedWeekStart($subscription->branch_id)) => __(ReadingSubmission::ISSUES['week_locked']),
+                $subscription->status !== SubscriptionStatus::Active => __(ReadingSubmission::ISSUES['not_on_box']),
+                $subscription->meterReadings()->whereDate('week_start', '>=', $weekStart->toDateString())->exists() => __(ReadingSubmission::ISSUES['already_read']),
+                $held->current_reading < $previous => __(ReadingSubmission::ISSUES['below_previous']),
+                ReadingConsumption::isImpossibleConsumption(ReadingConsumption::consumptionBetween($previous, $held->current_reading)) => __(ReadingSubmission::ISSUES['impossible_consumption']),
                 default => null,
             };
 

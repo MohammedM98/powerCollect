@@ -26,7 +26,7 @@ class HttpSmsGateway implements SmsGateway
     public function send(string $phone, string $body): void
     {
         if (blank($this->config['url'])) {
-            throw new SmsDeliveryFailed('لم يُضبط رابط إرسال بوابة الرسائل.');
+            throw new SmsDeliveryFailed(__('The SMS gateway\'s sending address is not set.'));
         }
 
         parse_str((string) $this->config['extra_params'], $extra);

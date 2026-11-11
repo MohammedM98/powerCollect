@@ -79,7 +79,7 @@ class MobileReadingDistributionController extends Controller
             $request->boolean('recurring'), $request->boolean('publish') || $request->boolean('recurring'));
 
         return response()->json($result + ['confirmation_box_ids' => array_values(array_map(fn (array $conflict): int => $conflict['boxId'],
-            array_filter($result['conflicts'], fn (array $conflict): bool => $conflict['reason'] === ReadingAllocation::CONFLICTS['downloaded'])))]);
+            array_filter($result['conflicts'], fn (array $conflict): bool => $conflict['reason'] === __(ReadingAllocation::CONFLICTS['downloaded']))))]);
     }
 
     public function approve(Request $request, ReadingCycle $readingCycle, ReadingAllocation $allocation): JsonResponse
