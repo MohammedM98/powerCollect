@@ -1,4 +1,4 @@
-package com.example.power_collect
+package com.abuzayed.powercollect
 
 import android.app.Activity
 import android.content.ClipData

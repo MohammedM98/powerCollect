@@ -161,3 +161,8 @@ jobs:
 
       - name: Exercise collector, permission, retry, search and layout workflows
         run: flutter test --reporter expanded
+
+      # A broken Gradle, Kotlin or manifest change fails here, not at release time.
+      # The debug build needs no release key; the address only satisfies the release guard.
+      - name: Build the Android app
+        run: flutter build apk --debug --dart-define=API_BASE_URL=https://example.invalid

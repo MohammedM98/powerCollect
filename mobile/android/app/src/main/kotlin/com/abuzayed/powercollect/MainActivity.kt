@@ -1,4 +1,4 @@
-package com.example.power_collect
+package com.abuzayed.powercollect
 
 import android.content.Intent
 import io.flutter.embedding.android.FlutterActivity

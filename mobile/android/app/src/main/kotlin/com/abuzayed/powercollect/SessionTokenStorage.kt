@@ -1,4 +1,4 @@
-package com.example.power_collect
+package com.abuzayed.powercollect
 
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
