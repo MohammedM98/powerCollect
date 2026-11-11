@@ -127,6 +127,9 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Lint the website code
+        run: npm run lint
+
       - name: Test frontend behavior
         run: npm test
 

@@ -150,7 +150,6 @@ export default function Create({
         setRecipients(loadedRecipients);
         setSelected(new Set(loadedRecipients.filter((recipient) => recipient.phone).map((recipient) => recipient.id)));
         setPreviewId(loadedRecipients.find((recipient) => recipient.phone)?.id ?? null);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loadedRecipients]);
 
     // A subscription or weekly-reading shortcut opens its recipients straight away.

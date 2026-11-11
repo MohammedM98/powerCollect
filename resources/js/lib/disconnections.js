@@ -5,7 +5,6 @@
 
 /** How long the confirm button must be held, in milliseconds. */
 export { HOLD_DURATION, holdProgress, typedCountMatches, westernDigits } from './holdConfirmation.js';
-import { westernDigits } from './holdConfirmation.js';
 
 /**
  * How many SMS one text takes: an Arabic text fits 70 characters in one

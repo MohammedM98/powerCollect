@@ -691,7 +691,7 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
                 {layout.group.key !== '' && (
                     <div className="grid grid-cols-1 gap-3">
                         {(layout.group.then ?? []).map((key, index) => <div key={index} className="flex items-center gap-2">
-                            <label className="text-xs text-gray-600">ثم حسب</label>
+                            <span className="text-xs text-gray-600">ثم حسب</span>
                             <select aria-label={`التجميع الإضافي ${index + 1}`} value={key} onChange={(event) => setIn('group', 'then', layout.group.then.map((value, position) => position === index ? event.target.value : value))} className="min-w-0 flex-1 text-sm">
                                 {layout.columns.filter((column) => column.key !== layout.group.key && !(layout.group.then ?? []).some((value, position) => value === column.key && position !== index) && !column.key.startsWith('blank:')).map((column) => <option key={column.key} value={column.key}>{column.label}</option>)}
                             </select>

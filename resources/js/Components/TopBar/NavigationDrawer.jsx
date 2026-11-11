@@ -102,7 +102,7 @@ export default function NavigationDrawer({ open, groups, badges, onClose, onOpen
 
     return createPortal(
         <div className={`tn-drawer ${closing ? 'is-closing' : ''}`} dir="rtl">
-            <div className="tn-scrim" onClick={onClose} />
+            <div className="tn-scrim" role="presentation" onClick={onClose} />
             <aside ref={panelRef} className="tn-drawer-panel text-gray-900" role="dialog" aria-modal="true" data-top-bar-layer aria-label="قائمة التنقل">
                 <div className="flex items-center gap-2 border-b border-gray-200/70 p-3">
                     <BrandLogo alt={appName} className="h-9 w-auto" markSize={36} />

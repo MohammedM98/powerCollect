@@ -1,7 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
-import { formatMoney } from '@/lib/format';
 import { balanceInText, balanceTone } from '@/lib/balance';
 
 const SEARCH_DELAY = 200;
@@ -180,7 +179,9 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
     let position = 0;
 
     return (
-        <div className="tn-scrim flex items-start justify-center px-4 pt-[11vh]" dir="rtl" onClick={(event) => event.target === event.currentTarget && onOpenChange(false)}>
+        <div className="tn-scrim flex items-start justify-center px-4 pt-[11vh]" dir="rtl" role="presentation" onClick={(event) => event.target === event.currentTarget && onOpenChange(false)}>
+            {/* The dialog takes its own keys: the arrows move through results, Escape closes. */}
+            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
             <div
                 ref={dialogRef}
                 className="tn-palette flex max-h-[min(580px,80dvh)] w-full max-w-[660px] flex-col overflow-hidden rounded-[26px] border border-gray-200/70 bg-surface text-gray-900 tn-lift"

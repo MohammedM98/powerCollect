@@ -455,6 +455,8 @@ function StatementRow({
             </td>
             <td data-label="الرقم المرجعي" className="tabular-nums text-gray-700">
                 <div className="flex min-w-0 flex-col items-start gap-1">
+                    {/* A cut-short reference shows in full when focused. */}
+                    {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
                     {entry.referenceNumber ? <bdi dir="ltr" className="statement-reference" title={entry.referenceNumber} tabIndex={0}>{entry.referenceNumber}</bdi> : <Dash />}
                     {entry.splitPayment && <SplitPaymentBadge split={entry.splitPayment} compact />}
                 </div>

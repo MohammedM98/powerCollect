@@ -20,22 +20,22 @@ function Result({ entry, branchName, onEdit, disabled }) {
     const { ledger, audit } = entry;
     const [label, tone] = outcomes[audit?.outcome] ?? ['لم تُراجع', 'gray'];
     const fields = [
-        ['المشترك', <span className="font-semibold text-gray-900">{entry.transaction.subscription.subscription_name || entry.transaction.subscription.full_name}</span>],
-        ['تاريخ الحركة', ledger.paidOn ? <LatePaymentDetails paidOn={ledger.paidOn} recordedAt={ledger.date} reason={ledger.lateReason} /> : <bdi dir="ltr" className="font-display text-sm">{ledger.date}</bdi>],
-        ['تاريخ وصول البنك', ledger.bankReceivedOn ? <BankReceivedDate value={ledger.bankReceivedOn} /> : '—'],
-        ['رقم السند', <bdi dir="ltr" className="font-display font-semibold">{ledger.voucherNumber || '—'}</bdi>],
-        ['الرقم المرجعي', <span className="break-all"><bdi dir="ltr" className="font-display font-semibold">{ledger.referenceNumber || '—'}</bdi><span className="mt-1 block text-sm text-gray-500">{ledger.bankName}</span></span>],
-        ['مبلغ الدفعة', <Amount value={ledger.paidAmount} currency={ledger.currencyLabel} />],
-        ['وصل البنك', audit ? <Amount value={audit.bank_amount} currency={ledger.currencyLabel} /> : <span className="text-sm text-gray-500">لم يُسجّل بعد</span>],
-        ['الفرق', audit ? <span className={Number(audit.difference) > 0 ? 'text-red-700 dark:text-red-300' : Number(audit.difference) < 0 ? 'text-emerald-700 dark:text-emerald-300' : 'text-gray-700'}><Amount value={audit.difference} currency="شيكل" /></span> : '—'],
-        ['الصندوق والمحصل', <span><span className="block font-semibold text-gray-900">صندوق {entry.box.number}</span><span className="mt-1 block text-sm text-gray-500">{entry.box.collector || '—'} · {branchName}</span></span>],
-        ['حالة التدقيق', <div className="space-y-2"><StatusPill label={label} tone={tone} /><p className="text-sm text-gray-500">{entry.finalized ? 'معتمدة نهائيًا' : audit ? 'مسودة محفوظة' : 'بانتظار المراجعة'}</p>{audit?.reason && <p className="break-words text-sm leading-6 text-gray-600">{audit.reason}</p>}</div>],
+        { name: 'المشترك', content: <span className="font-semibold text-gray-900">{entry.transaction.subscription.subscription_name || entry.transaction.subscription.full_name}</span> },
+        { name: 'تاريخ الحركة', content: ledger.paidOn ? <LatePaymentDetails paidOn={ledger.paidOn} recordedAt={ledger.date} reason={ledger.lateReason} /> : <bdi dir="ltr" className="font-display text-sm">{ledger.date}</bdi> },
+        { name: 'تاريخ وصول البنك', content: ledger.bankReceivedOn ? <BankReceivedDate value={ledger.bankReceivedOn} /> : '—' },
+        { name: 'رقم السند', content: <bdi dir="ltr" className="font-display font-semibold">{ledger.voucherNumber || '—'}</bdi> },
+        { name: 'الرقم المرجعي', content: <span className="break-all"><bdi dir="ltr" className="font-display font-semibold">{ledger.referenceNumber || '—'}</bdi><span className="mt-1 block text-sm text-gray-500">{ledger.bankName}</span></span> },
+        { name: 'مبلغ الدفعة', content: <Amount value={ledger.paidAmount} currency={ledger.currencyLabel} /> },
+        { name: 'وصل البنك', content: audit ? <Amount value={audit.bank_amount} currency={ledger.currencyLabel} /> : <span className="text-sm text-gray-500">لم يُسجّل بعد</span> },
+        { name: 'الفرق', content: audit ? <span className={Number(audit.difference) > 0 ? 'text-red-700 dark:text-red-300' : Number(audit.difference) < 0 ? 'text-emerald-700 dark:text-emerald-300' : 'text-gray-700'}><Amount value={audit.difference} currency="شيكل" /></span> : '—' },
+        { name: 'الصندوق والمحصل', content: <span><span className="block font-semibold text-gray-900">صندوق {entry.box.number}</span><span className="mt-1 block text-sm text-gray-500">{entry.box.collector || '—'} · {branchName}</span></span> },
+        { name: 'حالة التدقيق', content: <div className="space-y-2"><StatusPill label={label} tone={tone} /><p className="text-sm text-gray-500">{entry.finalized ? 'معتمدة نهائيًا' : audit ? 'مسودة محفوظة' : 'بانتظار المراجعة'}</p>{audit?.reason && <p className="break-words text-sm leading-6 text-gray-600">{audit.reason}</p>}</div> },
     ];
     const action = entry.canReview ? <button type="button" disabled={disabled} onClick={() => onEdit(entry)} className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-control border border-brand-500/25 bg-brand-500/5 px-3 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500 disabled:cursor-wait disabled:opacity-50 dark:text-brand-300"><Icon name="pencil" className="h-4 w-4" />تعديل الحوالة</button> : <span className="inline-flex items-center gap-1 text-sm text-gray-500"><Icon name="lock" className="h-4 w-4" />{entry.finalized ? 'مقفلة' : 'عرض فقط'}</span>;
 
     return <>
-        <tr className="hidden align-top md:table-row">{fields.map(([name, content]) => <td key={name} className="!whitespace-normal !px-4 !py-5">{content}</td>)}<td className="!px-4 !py-5">{action}</td></tr>
-        <tr className="md:hidden"><td colSpan="10" className="!whitespace-normal !p-4"><dl className="grid grid-cols-2 gap-x-4 gap-y-4">{fields.map(([name, content]) => <div key={name} className={['المشترك', 'حالة التدقيق'].includes(name) ? 'col-span-2' : 'min-w-0'}><dt className="mb-1 text-sm text-gray-500">{name}</dt><dd className="text-base">{content}</dd></div>)}</dl><div className="mt-5 border-t border-gray-100 pt-4">{action}</div></td></tr>
+        <tr className="hidden align-top md:table-row">{fields.map(({ name, content }) => <td key={name} className="!whitespace-normal !px-4 !py-5">{content}</td>)}<td className="!px-4 !py-5">{action}</td></tr>
+        <tr className="md:hidden"><td colSpan="10" className="!whitespace-normal !p-4"><dl className="grid grid-cols-2 gap-x-4 gap-y-4">{fields.map(({ name, content }) => <div key={name} className={['المشترك', 'حالة التدقيق'].includes(name) ? 'col-span-2' : 'min-w-0'}><dt className="mb-1 text-sm text-gray-500">{name}</dt><dd className="text-base">{content}</dd></div>)}</dl><div className="mt-5 border-t border-gray-100 pt-4">{action}</div></td></tr>
     </>;
 }
 

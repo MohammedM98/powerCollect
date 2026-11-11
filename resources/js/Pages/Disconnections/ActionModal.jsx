@@ -57,7 +57,7 @@ function placeholderValues(item, list) {
  * and why, then asks for what the action needs and sends it once for the
  * subscribers listed.
  */
-export default function ActionModal({ action, list, selection, count, reasonOptions, channelOptions, smsDeliversMessages, warningTemplates, defaultWarning, placeholders, today, usualFee, canChangeFee = false, onClose, onDone }) {
+export default function ActionModal({ action, list, selection, count, channelOptions, smsDeliversMessages, warningTemplates, defaultWarning, placeholders, today, usualFee, canChangeFee = false, onClose, onDone }) {
     const id = useId();
     const http = useHttp({});
     const [preview, setPreview] = useState(null);

@@ -21,6 +21,8 @@ export async function downloadCompanyFormOffline(root, title, css, pageRules) {
     }));
     const blob = new Blob([companyFormOfflineHtml(title, clones.join(''), css, pageRules)], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
+    // Control characters are not allowed in file names, so they are replaced with the rest.
+    // eslint-disable-next-line no-control-regex
     const link = document.createElement('a'); link.href = url; link.download = `${title.replace(/[<>:"/\\|?*\u0000-\u001f]/g, '-')}.html`;
     document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

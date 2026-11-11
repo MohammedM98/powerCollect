@@ -597,6 +597,8 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                 </div>
             </header>
 
+            {/* The mega menu opens on hover and takes the arrow keys and Escape. */}
+            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
             <div
                 id="tn-mega"
                 ref={megaRef}

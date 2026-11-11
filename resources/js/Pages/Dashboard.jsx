@@ -201,7 +201,6 @@ export default function Dashboard({
     ].filter(Boolean);
 
     const rankList = collections?.byBranch ?? collections?.byCollector ?? null;
-    const rankMax = Math.max(0, ...(rankList ?? []).map((item) => item.total));
     const topBreaker = subscriptions?.byBreaker?.[0] ?? null;
     const hasBreakers = subscriptions?.byBreaker.length > 0;
     const breakerMax = Math.max(0, ...(subscriptions?.byBreaker ?? []).map((breaker) => breaker.count));

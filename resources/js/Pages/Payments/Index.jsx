@@ -18,7 +18,6 @@ import { useRowClick } from '@/hooks/useRowClick';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
 import { describeBalance } from '@/lib/accountStatement';
 import { isFarBehind } from '@/lib/balance';
-import { formatMoney } from '@/lib/format';
 import { balanceText, BALANCE_CHIPS } from '@/Pages/Subscriptions/AccountFormParts';
 import ChargeModal from '@/Pages/Subscriptions/ChargeModal';
 import ClearingModal from '@/Pages/Subscriptions/ClearingModal';

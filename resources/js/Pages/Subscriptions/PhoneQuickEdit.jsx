@@ -85,7 +85,7 @@ export default function PhoneQuickEdit({ subscription }) {
     }
 
     return (
-        <span className="block whitespace-normal" onClick={(event) => event.stopPropagation()}>
+        <span className="block whitespace-normal" role="presentation" onClick={(event) => event.stopPropagation()}>
             <span className="flex items-center gap-1">
                 <label htmlFor={id} className="sr-only">
                     رقم جوال {subscription.display_name}

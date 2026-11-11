@@ -242,12 +242,12 @@ export default function DateInput({
                         </div>
 
                         {view === 'days' ? (
-                            <div ref={gridRef} role="grid" aria-label={`${formatMonthName(shownMonth)} ${year}`} onKeyDown={onGridKeyDown}>
+                            <div ref={gridRef} role="grid" tabIndex={-1} aria-label={`${formatMonthName(shownMonth)} ${year}`} onKeyDown={onGridKeyDown}>
                                 <div role="row" className="grid grid-cols-7 pb-1">
                                     {WEEKDAY_INITIALS.map((day) => (
-                                        <abbr key={day.label} role="columnheader" title={day.label} className="py-1 text-center text-xs font-semibold text-gray-500 no-underline">
-                                            {day.initial}
-                                        </abbr>
+                                        <span key={day.label} role="columnheader" className="py-1 text-center text-xs font-semibold text-gray-500">
+                                            <abbr title={day.label} className="no-underline">{day.initial}</abbr>
+                                        </span>
                                     ))}
                                 </div>
                                 {monthGrid(shownMonth).map((week) => (

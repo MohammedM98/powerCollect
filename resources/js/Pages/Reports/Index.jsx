@@ -351,37 +351,6 @@ function Figures({ flow, collections }) {
     );
 }
 
-/** The reports of the period: a list beside them on a wide screen, a row of tabs on a phone. */
-function SectionNav({ sections, current, onChange }) {
-    return (
-        <nav aria-label="التقارير" className="min-w-0 lg:sticky lg:top-24 lg:self-start">
-            <h2 className="mb-2 hidden px-1 text-xs font-bold text-gray-500 lg:block">التقارير</h2>
-            <ul className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
-                {sections.map((item) => (
-                    <li key={item.key} className="shrink-0">
-                        <button
-                            type="button"
-                            aria-current={item.key === current ? 'page' : undefined}
-                            onClick={() => onChange(item.key)}
-                            className={`flex w-full items-center gap-3 rounded-card border px-3 py-2.5 text-start transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 ${
-                                item.key === current ? 'border-transparent bg-brand-gradient text-white shadow-card' : 'border-gray-100 bg-surface text-gray-700 hover:border-gray-200'
-                            }`}
-                        >
-                            <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${item.key === current ? 'bg-white/10' : 'bg-gray-50 text-gray-500'}`}>
-                                <Icon name={item.icon} className="h-[18px] w-[18px]" />
-                            </span>
-                            <span className="min-w-0">
-                                <b className="block whitespace-nowrap text-sm">{item.title}</b>
-                                <small className={`block whitespace-nowrap text-xs ${item.key === current ? 'text-white/60' : 'text-gray-500'}`}>{item.hint}</small>
-                            </span>
-                        </button>
-                    </li>
-                ))}
-            </ul>
-        </nav>
-    );
-}
-
 /** What the subscribers owed at the start, plus what was charged, less what was paid and discounted, ± the cancellations: what they owe at the end. */
 function FlowStatement({ flow }) {
     const row = 'border-t border-gray-100';
