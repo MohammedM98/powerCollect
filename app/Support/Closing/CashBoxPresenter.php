@@ -206,11 +206,11 @@ class CashBoxPresenter
         }
 
         return $box->receivedBy?->name ?? match ($box->close_reason) {
-            CashBox::CLOSE_REASON_PERIOD_END => 'النظام · إغلاق تلقائي',
-            'cutoff' => 'تلقائي عند القطع الأسبوعي',
-            'departure' => 'تلقائي عند مغادرة المحصّل',
-            'late_sync' => 'تلقائي لدفعة متأخرة',
-            default => 'الفرع',
+            CashBox::CLOSE_REASON_PERIOD_END => __('System · automatic closing'),
+            'cutoff' => __('Automatic at the weekly cut-off'),
+            'departure' => __('Automatic when the collector left'),
+            'late_sync' => __('Automatic for a late payment'),
+            default => __('Branch'),
         };
     }
 }

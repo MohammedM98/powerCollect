@@ -97,8 +97,8 @@ class MobileCollectionData
                 'status_label' => __($subscription->status->label()),
                 'accounting_type' => $subscription->accounting_type->value,
                 'accounting_type_label' => match ($subscription->accounting_type) {
-                    AccountingType::Weekly => 'أسبوعي',
-                    AccountingType::Monthly => 'شهري',
+                    AccountingType::Weekly => __('Weekly', locale: 'ar'),
+                    AccountingType::Monthly => __('Monthly', locale: 'ar'),
                 },
                 'subscription_date' => $subscription->subscription_date?->toDateString(),
                 'tariff_name' => __($subscription->tariff->category->label()),

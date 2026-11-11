@@ -193,8 +193,8 @@ class MeterReadingPage
     {
         $groups = [];
 
-        $groups[] = DataTableFilters::filterGroup('subscription_status', 'حالة المشترك (النشط افتراضيًا)', [
-            ['value' => 'all', 'label' => 'كل الحالات'],
+        $groups[] = DataTableFilters::filterGroup('subscription_status', __('Subscriber status (active by default)'), [
+            ['value' => 'all', 'label' => __('All statuses')],
             ...SubscriptionStatus::options(),
         ]);
 
@@ -213,14 +213,14 @@ class MeterReadingPage
             fn (Tariff $tariff) => __($tariff->category->label()),
         ));
 
-        $groups[] = DataTableFilters::filterGroup('entry', 'حالة الإدخال', [
-            ['value' => 'missing', 'label' => 'لم تُدخل بعد'],
-            ['value' => 'entered', 'label' => 'تم الإدخال'],
+        $groups[] = DataTableFilters::filterGroup('entry', __('Entry status'), [
+            ['value' => 'missing', 'label' => __('Not entered yet')],
+            ['value' => 'entered', 'label' => __('Entered')],
         ]);
 
-        $groups[] = DataTableFilters::filterGroup('approval', 'حالة الاعتماد', [
-            ['value' => MeterReadingStatus::Pending->value, 'label' => 'بانتظار الاعتماد'],
-            ['value' => MeterReadingStatus::Approved->value, 'label' => 'معتمدة'],
+        $groups[] = DataTableFilters::filterGroup('approval', __('Approval status'), [
+            ['value' => MeterReadingStatus::Pending->value, 'label' => __('Awaiting approval')],
+            ['value' => MeterReadingStatus::Approved->value, 'label' => __('Approved')],
         ]);
 
         return $groups;
@@ -296,7 +296,7 @@ class MeterReadingPage
             $context = [
                 'templatePage' => '/meter-readings',
                 'title' => 'القراءات الأسبوعية',
-                'branchName' => $actor->workBranch()?->name ?? 'كل الفروع',
+                'branchName' => $actor->workBranch()?->name ?? __('All branches'),
                 'readingDate' => $weekEnd->toDateString(),
                 'readingDayName' => $weekEnd->locale('ar')->dayName,
                 'weekStart' => $week,

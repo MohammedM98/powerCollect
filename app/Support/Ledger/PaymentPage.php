@@ -142,7 +142,7 @@ class PaymentPage
     {
         $groups = [
             DataTableFilters::filterGroup('balance', 'الرصيد', collect(self::BALANCE_FILTERS)->map(fn (array $filter, string $value): array => ['value' => $value, 'label' => $filter[1]])),
-            DataTableFilters::filterGroup('status', 'الحالة', SubscriptionStatus::options()),
+            DataTableFilters::filterGroup('status', __('Status'), SubscriptionStatus::options()),
             DataTableFilters::filterGroup('tariff_id', 'نوع الاشتراك', DataTableFilters::modelOptions(Tariff::orderBy('category')->get(), fn (Tariff $tariff): string => __($tariff->category->label()))),
             DataTableFilters::subAreaFilterGroup(SubArea::query()->visibleTo($actor)->orderBy('name')->get()),
             ...DataTableFilters::meterBoxFilterGroupsFor($actor, $request, $actor->isSuperAdmin() ? fn (MeterBox $box): string => $box->branch->name : null),

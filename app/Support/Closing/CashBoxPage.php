@@ -40,15 +40,15 @@ class CashBoxPage
         $counts = app(BranchBoxes::class)->counts($branchIds);
         $openBranchIds = $branches->whereIn('id', $branchIds)->reject(fn (Branch $item): bool => BranchClosingAccess::closedOnly($actor, $item->id))->modelKeys();
 
-        $closedTab = ['key' => 'closed', 'label' => 'الصناديق المغلقة', 'count' => $counts['closed'], 'url' => route('payments.cash-boxes', [...$query, 'place' => 'closed'])];
+        $closedTab = ['key' => 'closed', 'label' => __('Closed boxes'), 'count' => $counts['closed'], 'url' => route('payments.cash-boxes', [...$query, 'place' => 'closed'])];
         if ($openBranchIds === []) {
             return [$closedTab];
         }
         $openCount = $openBranchIds === $branchIds ? $counts['open'] : app(BranchBoxes::class)->counts($openBranchIds)['open'];
 
         return [
-            ['key' => 'entries', 'label' => 'الحركات', 'count' => CashBoxPayment::query()->visibleInBox()->whereHas('box', fn (Builder $box) => $box->whereIn('branch_id', $openBranchIds)->whereIn('status', ['open', 'pending']))->count(), 'url' => route('payments.cash-boxes.entries', $query)],
-            ['key' => 'open', 'label' => 'الصناديق المفتوحة', 'count' => $openCount, 'url' => route('payments.cash-boxes', [...$query, 'place' => 'open'])],
+            ['key' => 'entries', 'label' => __('Transactions'), 'count' => CashBoxPayment::query()->visibleInBox()->whereHas('box', fn (Builder $box) => $box->whereIn('branch_id', $openBranchIds)->whereIn('status', ['open', 'pending']))->count(), 'url' => route('payments.cash-boxes.entries', $query)],
+            ['key' => 'open', 'label' => __('Open boxes'), 'count' => $openCount, 'url' => route('payments.cash-boxes', [...$query, 'place' => 'open'])],
             $closedTab,
         ];
     }
@@ -231,36 +231,36 @@ class CashBoxPage
     {
         $row = CashBoxPresenter::cashBoxRow($box);
         $local = fn (?CarbonInterface $time): string => $time ? $time->copy()->setTimezone(config('app.business_timezone'))->format('Y-m-d H:i') : '';
-        $statuses = ['missing' => 'غير موجودة', 'rejected' => 'مرفوضة'];
-        $types = ['cash' => 'نقدي', 'bank_transfer' => 'حوالات بنكية', 'clearing' => 'مقاصات'];
-        $stages = ['open' => 'مفتوح', 'awaiting_confirmation' => 'مُغلق', 'completed' => 'مُغلق'];
+        $statuses = ['missing' => __('Missing'), 'rejected' => __('Rejected')];
+        $types = ['cash' => __('In cash'), 'bank_transfer' => __('Bank transfers'), 'clearing' => __('Clearings')];
+        $stages = ['open' => __('Open'), 'awaiting_confirmation' => __('Closed box'), 'completed' => __('Closed box')];
         $safe = fn (array $cells): array => array_map(fn ($cell) => is_string($cell) && preg_match('/^[=+@\-\t\r]/u', $cell) ? "'".$cell : $cell, $cells);
 
         return response()->streamDownload(function () use ($box, $row, $entries, $local, $statuses, $types, $stages, $safe): void {
             $file = fopen('php://output', 'w');
             fwrite($file, "\xEF\xBB\xBF");
             foreach ([
-                ['رقم الصندوق', $box->number],
-                ['النوع', $types[$box->type->value]],
-                ['المحصّل', $box->user?->name ?? ''],
-                ['الحالة', $stages[$row['stage']]],
-                ['تاريخ الفتح', $local($box->opened_at)],
-                ['تاريخ الإغلاق', $local($box->closed_at)],
-                ['أغلقه', $row['closedBy'] ?? ''],
-                ['الإجمالي ₪', (float) $row['totals']['ILS']],
-                ['المبلغ المستلم ₪', (float) $row['receivedAmounts']['ILS']],
+                [__('Box number'), $box->number],
+                [__('Type'), $types[$box->type->value]],
+                [__('The collector'), $box->user?->name ?? ''],
+                [__('Status'), $stages[$row['stage']]],
+                [__('Opened on'), $local($box->opened_at)],
+                [__('Closed on'), $local($box->closed_at)],
+                [__('Closed by'), $row['closedBy'] ?? ''],
+                [__('Total ₪'), (float) $row['totals']['ILS']],
+                [__('Amount received ₪'), (float) $row['receivedAmounts']['ILS']],
                 [],
             ] as $cells) {
                 fputcsv($file, $safe($cells));
             }
-            fputcsv($file, ['#', 'التاريخ والوقت', 'المشترك', 'رقم الحساب', 'رقم السند', 'البنك المستلم', 'البنك المرسل', 'رقم الحوالة', 'الخدمة', 'العملة', 'المبلغ', 'الحالة', 'تاريخ وصول الحوالة إلى البنك']);
+            fputcsv($file, ['#', __('Date and time'), __('Subscriber'), __('Account number'), __('Voucher number'), __('Receiving bank'), __('Sending bank'), __('Transfer number'), __('Service'), __('Currency'), __('Amount'), __('Status'), __('Date the transfer reached the bank')]);
             foreach ($entries->values() as $index => $entry) {
                 $cancelled = $entry->transaction->status !== SubscriptionTransaction::STATUS_ACTIVE;
                 fputcsv($file, $safe([
                     $index + 1, $local($entry->occurred_at), $entry->transaction->subscription->displayName(), $entry->transaction->subscription->account_number,
                     $entry->transaction->manual_voucher_number ?? $entry->transaction->voucher_number ?? '', $entry->transaction->bank_name ?? '', $entry->transaction->sender_bank_name ?? '',
                     $entry->transaction->reference_number ?? '', $entry->method === 'clearing' ? ($entry->transaction->notes ?? '') : '', $entry->currency, (float) $entry->amount,
-                    $cancelled ? 'ملغاة' : ($statuses[$entry->status] ?? 'سارية'),
+                    $cancelled ? __('Cancelled') : ($statuses[$entry->status] ?? __('Standing')),
                     $entry->transaction->bank_received_on?->toDateString() ?? '',
                 ]));
             }

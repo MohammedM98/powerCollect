@@ -70,7 +70,7 @@ class BulkChangePage
             $bulkChange = SubscriptionBulkChange::create([
                 'field' => 'meter_box_id',
                 'value' => (string) $target->id,
-                'description' => 'نقل إلى الطبلون ← '.$target->label(),
+                'description' => __('Move to meter box ← ').$target->label(),
                 'branch_id' => $target->branch_id,
                 'user_id' => $actor->id,
                 'changed_count' => $changes->count(),
@@ -152,7 +152,7 @@ class BulkChangePage
             'field' => $change->field,
             'items' => $items->map(fn (SubscriptionBulkChangeItem $item) => [
                 'id' => $item->id,
-                'name' => $item->subscription?->displayName() ?? 'مشترك محذوف',
+                'name' => $item->subscription?->displayName() ?? __('Deleted subscriber'),
                 'accountNumber' => $item->subscription?->account_number,
                 'old' => self::display($change->field, $item->old_value, $meterBoxLabels),
                 'new' => self::display($change->field, $item->new_value, $meterBoxLabels),
@@ -239,7 +239,7 @@ class BulkChangePage
     public static function display(string $field, ?string $value, array $meterBoxLabels = []): string
     {
         if ($field === 'meter_box_id') {
-            return $value === null ? 'بدون طبلون' : ($meterBoxLabels[$value] ?? 'طبلون غير متاح (#'.$value.')');
+            return $value === null ? __('No meter box') : ($meterBoxLabels[$value] ?? __('Meter box unavailable (#').$value.')');
         }
         if ($value === null) {
             return '—';
@@ -247,15 +247,15 @@ class BulkChangePage
 
         return $field === 'status'
             ? __(SubscriptionStatus::from($value)->label())
-            : rtrim(rtrim($value, '0'), '.').' شيكل';
+            : rtrim(rtrim($value, '0'), '.').__(' shekels');
     }
 
     public static function describe(string $field, bool $byCircuitBreaker, mixed $value): string
     {
         return match (true) {
-            $field === 'status' => 'الحالة ← '.self::display('status', (string) $value),
-            $byCircuitBreaker => 'الحد الأدنى ← حد القاطع لكل مشترك',
-            default => 'الحد الأدنى ← '.self::display('minimum_charge', self::normalize('minimum_charge', $value)),
+            $field === 'status' => __('Status ← ').self::display('status', (string) $value),
+            $byCircuitBreaker => __('Minimum charge ← each subscriber\'s breaker minimum'),
+            default => __('Minimum charge ← ').self::display('minimum_charge', self::normalize('minimum_charge', $value)),
         };
     }
 }

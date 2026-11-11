@@ -75,7 +75,7 @@ class MessagePage
             'channelLabel' => __($batch->channel->label()),
             'excerpt' => Str::limit($batch->body, 90),
             'weekStart' => $batch->week_start?->toDateString(),
-            'branchName' => $batch->branch?->name ?? 'كل الفروع',
+            'branchName' => $batch->branch?->name ?? __('All branches'),
             'createdBy' => $batch->createdBy?->name,
             'createdAt' => $batch->created_at->toIso8601String(),
             'total' => (int) $batch->messages_count,
@@ -168,7 +168,7 @@ class MessagePage
             ->filter(fn (Subscription $subscription): bool => filled($subscription->contactPhone()));
 
         if ($recipients->isEmpty()) {
-            return back()->withErrors(['subscription_ids' => 'لا يوجد بين المختارين من لديه رقم هاتف ويطابق شروط الرسالة.']);
+            return back()->withErrors(['subscription_ids' => __('None of the chosen subscribers has a phone number and matches the message\'s conditions.')]);
         }
 
         $branchIds = $recipients->pluck('branch_id')->unique();
@@ -246,7 +246,7 @@ class MessagePage
             'messages' => $messages,
             'canUpdate' => $actor->can('update', $batch),
             'filters' => DataTableFilters::dataTableState($request, 'id', 'asc', 25),
-            'filterOptions' => [DataTableFilters::filterGroup('status', 'الحالة', MessageStatus::options())],
+            'filterOptions' => [DataTableFilters::filterGroup('status', __('Status'), MessageStatus::options())],
         ]);
     }
 }

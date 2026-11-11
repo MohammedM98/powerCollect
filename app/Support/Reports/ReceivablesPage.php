@@ -169,7 +169,7 @@ class ReceivablesPage
 
         $branchId = self::filterValue($request, 'branch_id');
 
-        return ($branchId ? Branch::query()->find($branchId)?->name : null) ?? 'كل الفروع';
+        return ($branchId ? Branch::query()->find($branchId)?->name : null) ?? __('All branches');
     }
 
     /**
@@ -183,8 +183,8 @@ class ReceivablesPage
     {
         $groups = $actor->isSuperAdmin() ? [DataTableFilters::branchFilterGroup()] : [];
 
-        $groups[] = DataTableFilters::filterGroup('age', 'عمر الدين', collect(self::AGE_FILTERS)->map(fn (string $label, string $days): array => ['value' => $days, 'label' => $label])->values());
-        $groups[] = DataTableFilters::filterGroup('status', 'حالة المشترك', SubscriptionStatus::options());
+        $groups[] = DataTableFilters::filterGroup('age', __('Debt age'), collect(self::AGE_FILTERS)->map(fn (string $label, string $days): array => ['value' => $days, 'label' => $label])->values());
+        $groups[] = DataTableFilters::filterGroup('status', __('Subscriber status'), SubscriptionStatus::options());
 
         return $groups;
     }

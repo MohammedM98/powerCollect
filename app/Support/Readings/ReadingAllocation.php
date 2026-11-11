@@ -238,14 +238,14 @@ class ReadingAllocation
 
         foreach ($previous->activeAssignments()->with(['meterBox', 'user'])->get() as $earlier) {
             $why = match (true) {
-                ! $eligibleBoxes->has($earlier->meter_box_id) => 'الطبلون لم يعد فيه مشتركون فعّالون',
-                $earlier->channel === ReadingAssignmentChannel::Mobile && ! $eligibleReaderIds->contains($earlier->user_id) => 'القارئ لم يعد فعّالًا أو لا يملك صلاحية القراءات',
-                $allocatedHere->has($earlier->meter_box_id) => 'موزّع في هذه الدورة مسبقًا',
+                ! $eligibleBoxes->has($earlier->meter_box_id) => __('The meter box no longer has active subscribers'),
+                $earlier->channel === ReadingAssignmentChannel::Mobile && ! $eligibleReaderIds->contains($earlier->user_id) => __('The reader is no longer active or cannot record readings'),
+                $allocatedHere->has($earlier->meter_box_id) => __('Already distributed in this cycle'),
                 default => null,
             };
 
             if ($why === null && $this->move($cycle, $earlier->meterBox, $earlier->channel, $earlier->user, null, false, $actor) !== null) {
-                $why = 'موزّع في هذه الدورة مسبقًا';
+                $why = __('Already distributed in this cycle');
             }
 
             if ($why === null) {

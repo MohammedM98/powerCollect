@@ -32,7 +32,7 @@ class PermissionPage
             'name' => $user->name,
             'username' => $user->username,
             'role' => $user->role->value,
-            'roleLabel' => $user->userType?->name ?? 'غير محدد',
+            'roleLabel' => $user->userType?->name ?? __('Not set'),
             'userTypeName' => $user->userType?->name,
             'branchName' => $user->branch?->name,
             'branchId' => $user->branch_id,
@@ -150,7 +150,7 @@ class PermissionPage
     public static function filterOptions(User $actor): array
     {
         $groups = [
-            DataTableFilters::filterGroup('user_type_id', 'نوع المستخدم', UserType::query()->orderBy('name')->get()->map(fn (UserType $type): array => ['value' => (string) $type->id, 'label' => $type->name])->all()),
+            DataTableFilters::filterGroup('user_type_id', __('User type'), UserType::query()->orderBy('name')->get()->map(fn (UserType $type): array => ['value' => (string) $type->id, 'label' => $type->name])->all()),
         ];
 
         if ($actor->isSuperAdmin()) {

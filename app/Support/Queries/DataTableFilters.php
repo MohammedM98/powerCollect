@@ -438,8 +438,8 @@ class DataTableFilters
     public static function circuitBreakerFilterGroup(): array
     {
         return self::filterGroup('circuit_breaker_id', 'القاطع', [
-            ['value' => 'none', 'label' => 'بدون قاطع'],
-            ...self::modelOptions(CircuitBreaker::orderBy('ampere')->get(), fn (CircuitBreaker $breaker) => $breaker->ampere.' أمبير'),
+            ['value' => 'none', 'label' => __('No breaker')],
+            ...self::modelOptions(CircuitBreaker::orderBy('ampere')->get(), fn (CircuitBreaker $breaker) => $breaker->ampere.__(' amps')),
         ]);
     }
 
@@ -455,7 +455,7 @@ class DataTableFilters
             $actor->scopeAuditBranches($branches, 'branches.id');
         }
 
-        return self::filterGroup('branch_id', 'الفرع', self::modelOptions($branches->get()));
+        return self::filterGroup('branch_id', __('Branch'), self::modelOptions($branches->get()));
     }
 
     /**
@@ -465,9 +465,9 @@ class DataTableFilters
      */
     public static function activeStatusFilterGroup(): array
     {
-        return self::filterGroup('is_active', 'الحالة', [
-            ['value' => '1', 'label' => 'نشط'],
-            ['value' => '0', 'label' => 'متوقف'],
+        return self::filterGroup('is_active', __('Status'), [
+            ['value' => '1', 'label' => __('Active')],
+            ['value' => '0', 'label' => __('Stopped')],
         ]);
     }
 

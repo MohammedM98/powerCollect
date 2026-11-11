@@ -30,9 +30,9 @@ class LinePresenter
     public static function amendmentUnavailableReason(SubscriptionTransaction $transaction): ?string
     {
         return match (true) {
-            ! $transaction->isPayment() => 'متاح للدفعات فقط',
-            $transaction->isCancelled() => 'الحركة ملغاة',
-            LineHistory::isInClosedDay($transaction) => 'بعد إغلاق اليوم',
+            ! $transaction->isPayment() => __('Payments only'),
+            $transaction->isCancelled() => __('The transaction is cancelled'),
+            LineHistory::isInClosedDay($transaction) => __('After the day was closed'),
             default => null,
         };
     }
@@ -43,44 +43,44 @@ class LinePresenter
     public static function description(SubscriptionTransaction $transaction): string
     {
         return match ($transaction->type) {
-            SubscriptionTransaction::TYPE_SUBSCRIPTION_FEE => 'رسوم اشتراك جديد',
+            SubscriptionTransaction::TYPE_SUBSCRIPTION_FEE => __('New subscription fee'),
             SubscriptionTransaction::TYPE_METER_READING => $transaction->meterReading
                 ? implode(' · ', array_filter([
-                    sprintf('قراءة أسبوعية من %s إلى %s', $transaction->meterReading->week_start->format('d/m/Y'), $transaction->meterReading->week_end->format('d/m/Y')),
-                    self::billedConsumption($transaction) === null ? null : self::billedConsumption($transaction).' كيلو',
+                    sprintf(__('Weekly reading from %s to %s'), $transaction->meterReading->week_start->format('d/m/Y'), $transaction->meterReading->week_end->format('d/m/Y')),
+                    self::billedConsumption($transaction) === null ? null : self::billedConsumption($transaction).__(' kWh'),
                 ]))
-                : 'قراءة أسبوعية',
+                : __('Weekly reading'),
             SubscriptionTransaction::TYPE_PAYMENT => match ($transaction->payment_method) {
-                PaymentMethod::Cash => 'دفعة نقدية',
-                PaymentMethod::BankTransfer => $transaction->sender_name ? 'دفعة بتحويل بنكي من '.$transaction->sender_name : 'دفعة بتحويل بنكي',
-                PaymentMethod::Cheque => 'دفعة بشيك',
-                PaymentMethod::EWallet => 'دفعة بمحفظة إلكترونية',
-                default => 'دفعة',
+                PaymentMethod::Cash => __('Cash payment'),
+                PaymentMethod::BankTransfer => $transaction->sender_name ? __('Bank transfer payment from ').$transaction->sender_name : __('Bank transfer payment'),
+                PaymentMethod::Cheque => __('Cheque payment'),
+                PaymentMethod::EWallet => __('E-wallet payment'),
+                default => __('Payment'),
             },
-            SubscriptionTransaction::TYPE_DISCOUNT => 'خصم لمرة واحدة · '.match ($transaction->discount_method) {
-                DiscountMethod::Percentage => sprintf('نسبة %s%% من الرصيد المستحق (%s شيكل)', LedgerAmounts::formatAmount($transaction->discount_value), LedgerAmounts::formatAmount($transaction->discount_base)),
-                DiscountMethod::Kilowatt => sprintf('%s كيلو × %s شيكل', LedgerAmounts::formatAmount($transaction->discount_value), LedgerAmounts::formatAmount($transaction->discount_base)),
-                default => 'مبلغ ثابت',
+            SubscriptionTransaction::TYPE_DISCOUNT => __('One-off discount · ').match ($transaction->discount_method) {
+                DiscountMethod::Percentage => sprintf(__('%s%% of the balance owed (%s shekels)'), LedgerAmounts::formatAmount($transaction->discount_value), LedgerAmounts::formatAmount($transaction->discount_base)),
+                DiscountMethod::Kilowatt => sprintf(__('%s kWh × %s shekels'), LedgerAmounts::formatAmount($transaction->discount_value), LedgerAmounts::formatAmount($transaction->discount_base)),
+                default => __('Fixed amount'),
             },
-            SubscriptionTransaction::TYPE_CLEARING => 'مقاصة مقابل خدمة للشركة',
+            SubscriptionTransaction::TYPE_CLEARING => __('Clearing for a service to the company'),
             SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT => self::bankAuditDescription($transaction),
-            SubscriptionTransaction::TYPE_INVOICE => 'فاتورة',
-            SubscriptionTransaction::TYPE_CREDIT => 'رصيد دائن',
+            SubscriptionTransaction::TYPE_INVOICE => __('Invoice'),
+            SubscriptionTransaction::TYPE_CREDIT => __('Credit balance'),
             SubscriptionTransaction::TYPE_READING_DISCOUNT => implode(' · ', array_filter([
-                'خصم القراءة الأسبوعية',
+                __('Weekly reading discount'),
                 match ($transaction->discount_method) {
-                    DiscountMethod::Percentage => 'نسبة '.LedgerAmounts::formatAmount($transaction->discount_value).'%',
-                    DiscountMethod::Kilowatt => LedgerAmounts::formatAmount($transaction->discount_value).' كيلو مجاني',
-                    default => LedgerAmounts::formatAmount($transaction->discount_value).' شيكل من سعر الكيلو',
+                    DiscountMethod::Percentage => __('Rate ').LedgerAmounts::formatAmount($transaction->discount_value).'%',
+                    DiscountMethod::Kilowatt => LedgerAmounts::formatAmount($transaction->discount_value).__(' free kWh'),
+                    default => LedgerAmounts::formatAmount($transaction->discount_value).__(' shekels off the kWh price'),
                 },
                 self::readingDiscountSegment($transaction),
             ])),
             SubscriptionTransaction::TYPE_REVERSAL, SubscriptionTransaction::TYPE_CANCELLATION => $transaction->referenceTransaction
-                ? 'إلغاء: '.self::description($transaction->referenceTransaction).($transaction->referenceTransaction->voucher_number ? ' · سند '.self::printedVoucherNumber($transaction->referenceTransaction) : '')
-                : 'قيد عكسي',
+                ? __('Cancellation: ').self::description($transaction->referenceTransaction).($transaction->referenceTransaction->voucher_number ? __(' · voucher ').self::printedVoucherNumber($transaction->referenceTransaction) : '')
+                : __('Reversing entry'),
             SubscriptionTransaction::TYPE_REFUND => $transaction->referenceTransaction
-                ? 'إرجاع: '.self::description($transaction->referenceTransaction).($transaction->referenceTransaction->voucher_number ? ' · سند '.self::printedVoucherNumber($transaction->referenceTransaction) : '')
-                : 'إرجاع دفعة',
+                ? __('Refund: ').self::description($transaction->referenceTransaction).($transaction->referenceTransaction->voucher_number ? __(' · voucher ').self::printedVoucherNumber($transaction->referenceTransaction) : '')
+                : __('Payment refund'),
             default => self::typeLabel($transaction),
         };
     }
@@ -89,28 +89,28 @@ class LinePresenter
     {
         $audit = $transaction->bankTransferAudit;
         if ($audit === null) {
-            return 'تصحيح ناتج عن التدقيق المالي';
+            return __('Correction from the financial audit');
         }
 
         $original = $transaction->referenceTransaction;
         $context = implode(' · ', array_filter([
-            'تصحيح ناتج عن التدقيق المالي لحوالة سابقة',
-            $original?->reference_number ? 'مرجع الحوالة '.$original->reference_number : null,
-            $original !== null && self::printedVoucherNumber($original) ? 'سند '.self::printedVoucherNumber($original) : null,
-            $original?->created_at ? 'تاريخ تسجيل الحوالة '.CarbonImmutable::parse(DailySeries::localDate($original->created_at))->format('d/m/Y') : null,
-            'تاريخ اعتماد التصحيح '.CarbonImmutable::parse(DailySeries::localDate($audit->posted_at ?? $transaction->created_at))->format('d/m/Y'),
+            __('Correction from the financial audit of an earlier transfer'),
+            $original?->reference_number ? __('Transfer reference ').$original->reference_number : null,
+            $original !== null && self::printedVoucherNumber($original) ? __('Voucher ').self::printedVoucherNumber($original) : null,
+            $original?->created_at ? __('Transfer recorded on ').CarbonImmutable::parse(DailySeries::localDate($original->created_at))->format('d/m/Y') : null,
+            __('Correction approved on ').CarbonImmutable::parse(DailySeries::localDate($audit->posted_at ?? $transaction->created_at))->format('d/m/Y'),
         ]));
 
         $difference = LedgerAmounts::formatAmount(Money::amount(Money::decimal($audit->difference)->abs()));
         if ($audit->outcome === 'missing') {
-            return $context.' · '.sprintf('حوالة لم تصل للبنك؛ تحميل %s شيكل على المشترك.', $difference);
+            return $context.' · '.sprintf(__('Transfer never reached the bank; %s shekels charged to the subscriber.'), $difference);
         }
 
         $effect = Money::decimal($audit->difference)->isPositive()
-            ? sprintf('تحميل فرق %s شيكل.', $difference)
-            : sprintf('إضافة فرق %s شيكل لصالح المشترك.', $difference);
+            ? sprintf(__('Difference of %s shekels charged.'), $difference)
+            : sprintf(__('Difference of %s shekels credited to the subscriber.'), $difference);
 
-        return $context.' · '.sprintf('حوالة وصلت %s بدل %s %s؛ %s',
+        return $context.' · '.sprintf(__('Transfer arrived as %s instead of %s %s; %s'),
             LedgerAmounts::formatAmount($audit->bank_amount),
             LedgerAmounts::formatAmount($audit->recorded_amount),
             __($transaction->currency->label()),
@@ -179,7 +179,7 @@ class LinePresenter
      */
     public static function typeLabel(SubscriptionTransaction $transaction): string
     {
-        return self::typeLabels()[$transaction->type] ?? 'حركة';
+        return self::typeLabels()[$transaction->type] ?? __('Transaction');
     }
 
     /**
@@ -190,19 +190,19 @@ class LinePresenter
     public static function typeLabels(): array
     {
         return [
-            SubscriptionTransaction::TYPE_INVOICE => 'فاتورة',
-            SubscriptionTransaction::TYPE_METER_READING => 'قراءة أسبوعية',
-            SubscriptionTransaction::TYPE_SUBSCRIPTION_FEE => 'رسوم اشتراك',
+            SubscriptionTransaction::TYPE_INVOICE => __('Invoice'),
+            SubscriptionTransaction::TYPE_METER_READING => __('Weekly reading'),
+            SubscriptionTransaction::TYPE_SUBSCRIPTION_FEE => __('Subscription fee'),
             ...collect(ChargeType::cases())->mapWithKeys(fn (ChargeType $type) => [$type->value => __($type->label())])->all(),
-            SubscriptionTransaction::TYPE_PAYMENT => 'دفعة',
-            SubscriptionTransaction::TYPE_CREDIT => 'رصيد دائن',
-            SubscriptionTransaction::TYPE_DISCOUNT => 'خصم',
-            SubscriptionTransaction::TYPE_READING_DISCOUNT => 'خصم القراءة الأسبوعية',
-            SubscriptionTransaction::TYPE_CLEARING => 'مقاصة',
-            SubscriptionTransaction::TYPE_REVERSAL => 'قيد عكسي',
-            SubscriptionTransaction::TYPE_CANCELLATION => 'إلغاء',
-            SubscriptionTransaction::TYPE_REFUND => 'إرجاع',
-            SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT => 'حركة تصحيح',
+            SubscriptionTransaction::TYPE_PAYMENT => __('Payment'),
+            SubscriptionTransaction::TYPE_CREDIT => __('Credit balance'),
+            SubscriptionTransaction::TYPE_DISCOUNT => __('Discount'),
+            SubscriptionTransaction::TYPE_READING_DISCOUNT => __('Weekly reading discount'),
+            SubscriptionTransaction::TYPE_CLEARING => __('Clearing'),
+            SubscriptionTransaction::TYPE_REVERSAL => __('Reversing entry'),
+            SubscriptionTransaction::TYPE_CANCELLATION => __('Cancellation'),
+            SubscriptionTransaction::TYPE_REFUND => __('Refund'),
+            SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT => __('Correction entry'),
         ];
     }
 

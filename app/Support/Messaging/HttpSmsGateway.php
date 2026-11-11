@@ -60,14 +60,14 @@ class HttpSmsGateway implements SmsGateway
                 ? $request->get($this->config['url'], $fields)
                 : $request->asForm()->post($this->config['url'], $fields);
         } catch (ConnectionException $exception) {
-            throw new SmsDeliveryFailed('تعذّر الاتصال ببوابة الرسائل: '.$exception->getMessage(), isTemporary: true, previous: $exception);
+            throw new SmsDeliveryFailed(__('Could not reach the SMS gateway: ').$exception->getMessage(), isTemporary: true, previous: $exception);
         }
 
         $successMatch = $this->config['success_match'];
 
         if (! $response->successful() || (filled($successMatch) && ! str_contains($response->body(), $successMatch))) {
             throw new SmsDeliveryFailed(
-                'رفضت بوابة الرسائل الإرسال ('.$response->status().'): '.Str::limit($response->body(), 150),
+                __('The SMS gateway refused to send (').$response->status().'): '.Str::limit($response->body(), 150),
                 isTemporary: $response->tooManyRequests() || $response->serverError(),
             );
         }

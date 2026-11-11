@@ -52,11 +52,11 @@ class FinancialReportPage
         $state['search'] = $validated['search'] ?? '';
         $options = collect($allowedFilters)->map(function (string $key) use ($rows): array {
             $values = match ($key) {
-                'side' => [['value' => 'debit', 'label' => 'عليه (مدين)'], ['value' => 'credit', 'label' => 'له (دائن)']],
+                'side' => [['value' => 'debit', 'label' => __('Debit (owed)')], ['value' => 'credit', 'label' => __('Credit (in favour)')]],
                 'age' => collect(DebtAging::BUCKET_LABELS)->map(fn (string $label, string $value): array => compact('value', 'label'))->values()->all(),
                 default => $rows->unique($key)->filter(fn (array $row): bool => filled($row[$key] ?? null))->map(fn (array $row): array => ['value' => (string) $row[$key], 'label' => $key === 'type' ? ($row['typeLabel'] ?? $row[$key]) : $row[$key]])->values()->all(),
             };
-            $labels = ['side' => 'جهة الحركة', 'type' => 'نوع الحركة', 'age' => 'عمر الدين', 'branchName' => 'الفرع', 'status' => 'الحالة', 'collector' => 'المحصّل', 'currency' => 'العملة'];
+            $labels = ['side' => __('Entry side'), 'type' => __('Transaction type'), 'age' => __('Debt age'), 'branchName' => __('Branch'), 'status' => __('Status'), 'collector' => __('The collector'), 'currency' => __('Currency')];
 
             return DataTableFilters::filterGroup($key, $labels[$key], $values);
         })->all();
@@ -194,25 +194,25 @@ class FinancialReportPage
     public static function summaryPrintRows(array $flow, array $collections, Collection $branches, ?array $comparison): array
     {
         return [
-            ['الرصيد الافتتاحي لذمم المشتركين', '', $flow['opening']],
+            [__('Opening balance of subscriber accounts'), '', $flow['opening']],
             ...array_map(fn (array $line): array => ['+ '.$line['label'], $line['count'], $line['total']], $flow['charges']),
-            ['مجموع التحميلات (عليه)', '', $flow['chargesTotal']],
+            [__('Total charges (debit)'), '', $flow['chargesTotal']],
             ...array_map(fn (array $line): array => ['− '.$line['label'], $line['count'], $line['total']], $flow['credits']),
-            ['مجموع الدفعات والخصومات (له)', '', $flow['creditsTotal']],
-            ['الإلغاءات والقيود العكسية', $flow['corrections']['count'], $flow['corrections']['total']],
-            ['الرصيد الختامي لذمم المشتركين', '', $flow['closing']],
-            ['إجمالي المقبوضات المسجّلة', $collections['count'], $collections['total']],
-            ['التحصيل النقدي', '', $collections['cash']],
-            ['التحويلات والشيكات', '', $collections['nonCash']],
+            [__('Total payments and discounts (credit)'), '', $flow['creditsTotal']],
+            [__('Cancellations and reversing entries'), $flow['corrections']['count'], $flow['corrections']['total']],
+            [__('Closing balance of subscriber accounts'), '', $flow['closing']],
+            [__('Total receipts recorded'), $collections['count'], $collections['total']],
+            [__('Cash collection'), '', $collections['cash']],
+            [__('Transfers and cheques'), '', $collections['nonCash']],
             [$collections['receipts']['basis'], '', ''],
             ...array_map(fn (array $row): array => [$row['label'], '', $row['amount']], $collections['receipts']['rows']),
             ...($comparison === null ? [] : [
-                ['المحصّل سابقًا ('.$comparison['from'].' – '.$comparison['to'].')', '', $comparison['total']],
-                ['فرق التحصيل عن الفترة السابقة', '', $comparison['difference']],
+                [__('Collected before (').$comparison['from'].' – '.$comparison['to'].')', '', $comparison['total']],
+                [__('Collection difference from the previous period'), '', $comparison['difference']],
             ]),
-            ...array_map(fn (array $account): array => ['حساب: '.$account['label'], $account['count'], $account['total']], $collections['accounts']),
-            ...array_map(fn (array $collector): array => ['محصّل: '.$collector['name'], $collector['count'], $collector['total']], $collections['collectors']),
-            ...$branches->map(fn (array $branch): array => ['تحصيل: '.$branch['name'], $branch['collections']['count'], $branch['collections']['total']])->all(),
+            ...array_map(fn (array $account): array => [__('Account: ').$account['label'], $account['count'], $account['total']], $collections['accounts']),
+            ...array_map(fn (array $collector): array => [__('Collector: ').$collector['name'], $collector['count'], $collector['total']], $collections['collectors']),
+            ...$branches->map(fn (array $branch): array => [__('Collection: ').$branch['name'], $branch['collections']['count'], $branch['collections']['total']])->all(),
         ];
     }
 
@@ -284,13 +284,13 @@ class FinancialReportPage
         [$lastMonthStart, $lastMonthEnd] = ClosingPeriods::month($today->startOfMonth()->subDay());
 
         return array_map(fn (array $preset): array => [...$preset, 'from' => $preset['from']->toDateString(), 'to' => $preset['to']->toDateString()], [
-            ['key' => 'today', 'label' => 'اليوم', 'from' => $today, 'to' => $today],
-            ['key' => 'yesterday', 'label' => 'أمس', 'from' => $today->subDay(), 'to' => $today->subDay()],
-            ['key' => 'week', 'label' => 'هذا الأسبوع', 'from' => $weekStart, 'to' => $today],
-            ['key' => 'last-week', 'label' => 'الأسبوع الماضي', 'from' => $weekStart->subWeek(), 'to' => $weekStart->subDay()],
-            ['key' => 'month', 'label' => 'هذا الشهر', 'from' => $today->startOfMonth(), 'to' => $today],
-            ['key' => 'last-month', 'label' => 'الشهر الماضي', 'from' => $lastMonthStart, 'to' => $lastMonthEnd],
-            ['key' => 'quarter', 'label' => 'آخر 90 يومًا', 'from' => $today->subDays(89), 'to' => $today],
+            ['key' => 'today', 'label' => __('Today'), 'from' => $today, 'to' => $today],
+            ['key' => 'yesterday', 'label' => __('Yesterday'), 'from' => $today->subDay(), 'to' => $today->subDay()],
+            ['key' => 'week', 'label' => __('This week'), 'from' => $weekStart, 'to' => $today],
+            ['key' => 'last-week', 'label' => __('Last week'), 'from' => $weekStart->subWeek(), 'to' => $weekStart->subDay()],
+            ['key' => 'month', 'label' => __('This month'), 'from' => $today->startOfMonth(), 'to' => $today],
+            ['key' => 'last-month', 'label' => __('Last month'), 'from' => $lastMonthStart, 'to' => $lastMonthEnd],
+            ['key' => 'quarter', 'label' => __('Last 90 days'), 'from' => $today->subDays(89), 'to' => $today],
         ]);
     }
 
@@ -315,7 +315,7 @@ class FinancialReportPage
             'typeLabel' => LinePresenter::typeLabel($line),
             'description' => LinePresenter::description($line),
             'methodLabel' => $isPayment && $line->payment_method ? __($line->payment_method->label()) : null,
-            'account' => $isPayment ? ($line->bank_name ?? 'الصندوق النقدي') : null,
+            'account' => $isPayment ? ($line->bank_name ?? __('Cash box')) : null,
             'currency' => $isPayment ? $line->currency?->value : null,
             'currencyAmount' => $isPayment && $line->currency_amount !== null ? LedgerAmounts::formatAmount($line->currency_amount) : null,
             'isCredit' => $line->isCredit(),

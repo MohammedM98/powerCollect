@@ -110,7 +110,7 @@ class ReadingCyclePage
                 'notes' => $cycle->notes,
                 'isClosed' => $cycle->isClosed(),
                 'hasPrevious' => $previous !== null,
-                'previousLabel' => $previous ? 'الأسبوع المنتهي '.$previous->week_end->toDateString() : null,
+                'previousLabel' => $previous ? __('Week ended ').$previous->week_end->toDateString() : null,
             ],
             'showBranchSelector' => BranchDomainContext::id() === null && $actor->isSuperAdmin(),
             'boards' => $boards,

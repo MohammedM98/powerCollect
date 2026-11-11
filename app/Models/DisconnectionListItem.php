@@ -245,7 +245,7 @@ class DisconnectionListItem extends Model
                     'source_key' => 'disconnection:'.$item->id,
                     'amount' => $fee,
                     'currency_amount' => $fee,
-                    'notes' => 'قطع الخدمة — '.$item->list->title,
+                    'notes' => __('Service disconnection — ').$item->list->title,
                 ])
                 : null;
 

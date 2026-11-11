@@ -134,12 +134,12 @@ class TransactionAuditPage
 
         return [
             ...self::eventBase($kind, $reversal->id, $reversal->created_at, $reversal->recordedBy, $reversal->subscription),
-            'kindNote' => $kind === 'refund' ? ($isFullRefund ? 'كامل' : 'جزئي') : null,
+            'kindNote' => $kind === 'refund' ? ($isFullRefund ? __('Full') : __('Partial')) : null,
             'lines' => [
                 $original
                     ? self::lineSummary($original->type, $original->amount, LinePresenter::displayVoucherNumber($original))
                     : self::lineSummary($reversal->type, $reversal->amount, null),
-                ...($kind === 'refund' ? [['label' => 'المبلغ المُرجع', 'amount' => LedgerAmounts::formatAmount(abs((float) $reversal->amount)), 'voucherNumber' => null]] : []),
+                ...($kind === 'refund' ? [['label' => __('Amount refunded'), 'amount' => LedgerAmounts::formatAmount(abs((float) $reversal->amount)), 'voucherNumber' => null]] : []),
             ],
             'changes' => [],
             // A partial refund leaves the payment standing, without a reason of its own.
@@ -156,8 +156,8 @@ class TransactionAuditPage
         return [
             ...self::eventBase('deletion', $deletion->id, $deletion->created_at, $deletion->user, $deletion->subscription),
             'kindNote' => match ($deletion->action) {
-                TransactionAction::DeleteReversal->value => 'الإلغاء فقط، وعادت الحركة الأصلية',
-                TransactionAction::DeleteTree->value => 'الحركة وكل ما ارتبط بها',
+                TransactionAction::DeleteReversal->value => __('Only the cancellation; the original transaction came back'),
+                TransactionAction::DeleteTree->value => __('The transaction and everything linked to it'),
                 default => null,
             },
             'lines' => collect($deletion->transactions)
@@ -211,7 +211,7 @@ class TransactionAuditPage
     public static function lineSummary(string $type, string $amount, ?string $voucherNumber): array
     {
         return [
-            'label' => LinePresenter::typeLabels()[$type] ?? 'حركة',
+            'label' => LinePresenter::typeLabels()[$type] ?? __('Transaction'),
             'amount' => LedgerAmounts::formatAmount(abs((float) $amount)),
             'voucherNumber' => $voucherNumber,
         ];
@@ -227,8 +227,8 @@ class TransactionAuditPage
     {
         $groups = $actor->hasFinancialAuditAccess() ? [DataTableFilters::branchFilterGroup($actor)] : [];
 
-        $groups[] = DataTableFilters::filterGroup('kind', 'الإجراء', collect(TransactionAuditController::KINDS)->map(fn (string $label, string $value): array => ['value' => $value, 'label' => $label])->values());
-        $groups[] = DataTableFilters::filterGroup('user_id', 'بواسطة', DataTableFilters::staffOptions(
+        $groups[] = DataTableFilters::filterGroup('kind', __('Action'), collect(TransactionAuditController::KINDS)->map(fn (string $label, string $value): array => ['value' => $value, 'label' => $label])->values());
+        $groups[] = DataTableFilters::filterGroup('user_id', __('By'), DataTableFilters::staffOptions(
             User::query()
                 ->when($actor->hasFinancialAuditAccess() && $actor->auditSettings()['scope'] === 'selected', fn (Builder $users) => $users->whereIn('id', self::filteredEvents(new Request, $actor)->select('user_id')))
                 // Branch staff see their branch's staff and the Super Admins, who have no branch.

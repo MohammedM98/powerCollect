@@ -30,7 +30,7 @@ class BankTransferAuditing
         abort_unless($actor->auditIncludesBranch($entry->box->branch_id), 404);
 
         if ($entry->transaction->split_payment_id !== null) {
-            $this->workflow->require($entry->transaction->isPayment() && ! $entry->transaction->isCancelled(), 'لا يمكن تدقيق حركة ملغاة أو غير مالية.');
+            $this->workflow->require($entry->transaction->isPayment() && ! $entry->transaction->isCancelled(), __('A cancelled or non-financial transaction cannot be audited.'));
 
             return $this->splits->record($entry, $actor, $bankAmount, $reason, $parts, $revision, $this->recordSingle(...));
         }
@@ -53,22 +53,22 @@ class BankTransferAuditing
             $current = CashBoxPayment::query()->with(['box', 'transaction'])->lockForUpdate()->findOrFail($entry->id);
             $box = $current->box;
             $payment = $current->transaction;
-            $this->workflow->require($box->status === 'received' && $box->type === CashBoxType::BankTransfer, 'التدقيق المالي متاح لحوالات الصناديق المغلقة فقط.');
-            $this->workflow->require($payment->isPayment() && ! $payment->isCancelled(), 'لا يمكن تدقيق حركة ملغاة أو غير مالية.');
+            $this->workflow->require($box->status === 'received' && $box->type === CashBoxType::BankTransfer, __('The financial audit is only available for transfers in closed boxes.'));
+            $this->workflow->require($payment->isPayment() && ! $payment->isCancelled(), __('A cancelled or non-financial transaction cannot be audited.'));
             $amountInCents = Closing::cents($bankAmount);
-            $this->workflow->require($amountInCents >= 0 && $amountInCents <= 100000000, 'أدخل مبلغًا صحيحًا وصل البنك.');
+            $this->workflow->require($amountInCents >= 0 && $amountInCents <= 100000000, __('Enter a valid amount received by the bank.'));
             $existing = $current->audit()->first();
             if ($existing?->isPosted()) {
-                $this->workflow->require(Closing::cents($existing->bank_amount) === $amountInCents, 'دُقّقت هذه الحوالة مسبقًا؛ لا يمكن تغيير القرار.');
+                $this->workflow->require(Closing::cents($existing->bank_amount) === $amountInCents, __('This transfer was already audited; the decision cannot be changed.'));
 
                 return $existing;
             }
-            $this->workflow->require(! $box->audit()->exists(), 'اكتمل تدقيق هذا الصندوق.');
+            $this->workflow->require(! $box->audit()->exists(), __('This box\'s audit is complete.'));
             $recorded = abs(Closing::cents($payment->currency_amount ?? $payment->amount));
             $rate = $payment->exchange_rate ?? '1.0000';
-            $this->workflow->require(Money::decimal($rate)->isPositive(), 'سعر صرف الدفعة غير صالح للتدقيق.');
+            $this->workflow->require(Money::decimal($rate)->isPositive(), __('The payment\'s exchange rate is not valid for the audit.'));
             $difference = abs(Closing::cents($payment->amount)) - Closing::cents(Money::multiply(Closing::money($amountInCents), $rate));
-            $this->workflow->require($difference === 0 || filled($reason), 'اكتب سبب فرق التدقيق.');
+            $this->workflow->require($difference === 0 || filled($reason), __('Write the reason for the audit difference.'));
             $values = [
                 'cash_box_payment_id' => $current->id, 'audited_by' => $actor->id,
                 'currency' => $payment->currency->value, 'recorded_amount' => Closing::money($recorded),
@@ -99,7 +99,7 @@ class BankTransferAuditing
 
         return $this->workflow->locked($box->branch_id, function () use ($box, $actor): CashBoxAudit {
             $current = CashBox::query()->lockForUpdate()->findOrFail($box->id);
-            $this->workflow->require($current->status === 'received', 'يمكن اعتماد تدقيق صندوق مغلق فقط.');
+            $this->workflow->require($current->status === 'received', __('Only a closed box\'s audit can be approved.'));
             if ($existing = $current->audit()->first()) {
                 return $existing;
             }
@@ -159,15 +159,15 @@ class BankTransferAuditing
         abort_unless($actor->auditIncludesBranch($branchId), 404);
 
         $this->workflow->locked($branchId, function () use ($branchId, $week, $actor, $expectedBoxIds, $snapshot): void {
-            $this->workflow->require($this->boxes->weekOf(ClosingPeriods::date($week), $branchId) === $week, 'تغيرت حدود الفترة؛ حدّث الصفحة وراجع الفترة مجددًا.');
+            $this->workflow->require($this->boxes->weekOf(ClosingPeriods::date($week), $branchId) === $week, __('The period\'s boundaries changed; refresh the page and review the period again.'));
             $rows = $this->boxes->rows($branchId, $actor, 'closed', week: $week);
-            $this->workflow->require($rows->isNotEmpty() && array_diff($expectedBoxIds, $rows->pluck('id')->all()) === [], 'الصناديق المحددة ليست ضمن هذه الفترة والفرع.');
+            $this->workflow->require($rows->isNotEmpty() && array_diff($expectedBoxIds, $rows->pluck('id')->all()) === [], __('The selected boxes are not in this period and branch.'));
             $current = $this->boxes->periodAudit($rows, $branchId, $week);
             if ($current['boxes'] === 0) {
                 return;
             }
             sort($expectedBoxIds);
-            $this->workflow->require($expectedBoxIds === $current['box_ids'] && hash_equals($current['snapshot'], $snapshot), 'تغيرت صناديق الفترة أو مراجعاتها منذ المعاينة؛ حدّث الصفحة وراجع الملخص قبل الاعتماد.');
+            $this->workflow->require($expectedBoxIds === $current['box_ids'] && hash_equals($current['snapshot'], $snapshot), __('The period\'s boxes or their reviews changed since the preview; refresh the page and review the summary before approving.'));
             foreach ($current['box_ids'] as $boxId) {
                 $this->complete(CashBox::query()->findOrFail($boxId), $actor);
             }

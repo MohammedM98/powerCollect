@@ -98,7 +98,7 @@ class MessageComposer
             'الاسم' => $subscription->displayName(),
             'رقم_الاشتراك' => (string) $subscription->account_number,
             'الطبلون' => $subscription->meterBox?->displayName() ?? '',
-            'الفرع' => $subscription->branch?->name ?? '',
+            __('Branch') => $subscription->branch?->name ?? '',
             'الرصيد' => self::money($subscription->balance ?? $subscription->balance()),
         ];
 

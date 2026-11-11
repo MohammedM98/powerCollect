@@ -23,13 +23,13 @@ class CompanyForms
             'paper' => 'A4', 'orientation' => 'portrait', 'margin' => 16, 'fontSize' => 15,
             'header' => ['company' => $brand['name'], 'subtitle' => $brand['tagline'] ?? '', 'logo' => true, 'enabled' => true],
             'watermark' => ['enabled' => true, 'text' => $brand['shortName'], 'logo' => true, 'opacity' => 0.06],
-            'footer' => 'يُعبّأ هذا الطلب وتُراجع بياناته قبل اعتماده.',
+            'footer' => __('This request is filled in and its details reviewed before it is approved.'),
             'pages' => [['id' => 'page_1', 'blocks' => [
-                $block('title_1', 'heading', 'طلب اشتراك جديد'),
-                $block('intro_1', 'paragraph', 'أرجو الموافقة على طلب الاشتراك بخدمة الكهرباء وفق البيانات التالية:'),
+                $block('title_1', 'heading', __('New subscription request')),
+                $block('intro_1', 'paragraph', __('Please approve the request to subscribe to the electricity service with the following details:')),
                 $block('fields_1', 'fields', '', collect(['subscriber_name', 'national_id', 'phone', 'address', 'branch', 'meter_box', 'meter_box_number', 'tariff', 'breaker', 'subscription_fee', 'today', 'employee'])->map(fn (string $key): array => ['key' => $key, 'label' => self::FIELDS[$key]])->all()),
-                $block('terms_1', 'paragraph', 'أقرّ بصحة البيانات المدونة أعلاه، وألتزم بتعليمات الشركة وشروط تقديم الخدمة.'),
-                $block('signatures_1', 'signatures', 'توقيع مقدم الطلب|توقيع الموظف|ختم الشركة'),
+                $block('terms_1', 'paragraph', __('I confirm that the details above are correct and I agree to follow the company\'s instructions and service terms.')),
+                $block('signatures_1', 'signatures', __('Applicant\'s signature|Employee\'s signature|Company stamp')),
             ]]],
             'overlays' => [],
         ];
@@ -149,7 +149,7 @@ class CompanyForms
         $disk = config('filesystems.default') === 'public' ? 'local' : config('filesystems.default');
         $path = $file->store('company-forms', ['disk' => $disk, 'visibility' => 'private']);
         if (! is_string($path) || $path === '') {
-            throw new RuntimeException('تعذّر حفظ الملف.');
+            throw new RuntimeException(__('The file could not be saved.'));
         }
 
         return ['disk' => $disk, 'path' => $path, 'name' => mb_substr($file->getClientOriginalName(), 0, 200), 'mime' => $file->getMimeType()];

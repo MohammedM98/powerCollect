@@ -67,7 +67,7 @@ class BranchClosingWorkflow
         $this->locked($branchId, function () use ($branchId, $actor, $startedAt): void {
             $startedAt ??= CarbonImmutable::now()->utc();
             $setting = ClosingSetting::ownFor($branchId);
-            $this->require(! $setting?->workflow_started_at, 'تم بدء إغلاق الفرع بالفعل.');
+            $this->require(! $setting?->workflow_started_at, __('The branch closing has already started.'));
             $defaults = ClosingSetting::forBranch($branchId);
             $setting ??= new ClosingSetting(['branch_id' => $branchId]);
             $setting->fill(['week_starts_on' => $defaults->week_starts_on, 'cutoff_time' => $defaults->cutoff_time, 'auto_open' => true, 'frequency' => 'weekly', 'arrangement' => 'combined', 'workflow_started_at' => $startedAt, 'updated_by' => $actor->id]);
@@ -243,7 +243,7 @@ class BranchClosingWorkflow
         }
         $this->locked($payment->branch_id, function () use ($payment, $occurred): void {
             $entry = CashBoxPayment::query()->where('subscription_transaction_id', $payment->id)->first();
-            $this->require($entry && $entry->box->status === 'open' && $entry->status !== 'confirmed', 'لا يمكن إعادة توزيع دفعة بعد إغلاق صندوقها أو تأكيدها.');
+            $this->require($entry && $entry->box->status === 'open' && $entry->status !== 'confirmed', __('A payment cannot be redistributed after its box was closed or confirmed.'));
             $entry->delete();
             $this->attachEntry($payment, $occurred);
         });
@@ -290,7 +290,7 @@ class BranchClosingWorkflow
         }
         $this->require($originalEntry->box->isEditable() && $replacementEntry->box->isEditable()
             && $originalEntry->box->branch_id === $replacementEntry->box->branch_id
-            && $originalEntry->box->type === $replacementEntry->box->type, 'لا يمكن نقل حصة الحوالة المصححة خارج صندوق الحوالة الأصلي.');
+            && $originalEntry->box->type === $replacementEntry->box->type, __('A corrected transfer share cannot be moved out of the original transfer\'s box.'));
         $replacementEntry->update([
             'cash_box_id' => $originalEntry->cash_box_id,
             'occurred_at' => $originalEntry->occurred_at,
@@ -305,7 +305,7 @@ class BranchClosingWorkflow
         $entry = CashBoxPayment::query()->where('subscription_transaction_id', $payment->id)->first();
         if ($entry) {
             $box = $entry->box;
-            $this->require($box->isEditable(), 'لا يمكن حذف دفعة مرتبطة بصندوق مغلق.');
+            $this->require($box->isEditable(), __('A payment linked to a closed box cannot be deleted.'));
             $entry->delete();
             $this->recountClosed($box);
         }
@@ -359,7 +359,7 @@ class BranchClosingWorkflow
                         'status' => 'received', 'closed_at' => $box->closing->coverage_until,
                         'close_reason' => CashBox::CLOSE_REASON_PERIOD_END, 'open_key' => null,
                         'expected_counts' => $this->expected($box),
-                        'reason' => trim(($box->reason ? $box->reason."\n" : '').'أُغلق تلقائيًا لانتهاء الفترة الأسبوعية.'),
+                        'reason' => trim(($box->reason ? $box->reason."\n" : '').__('Closed automatically when the weekly period ended.')),
                     ]);
                 }
             });
@@ -377,7 +377,7 @@ class BranchClosingWorkflow
     {
         $this->locked($box->branch_id, function () use ($box, $actor): void {
             $current = CashBox::query()->lockForUpdate()->findOrFail($box->id);
-            $this->require($current->isEditable() && $this->mayReceive($current, $actor), 'لا يمكنك تأكيد إغلاق هذا الصندوق.');
+            $this->require($current->isEditable() && $this->mayReceive($current, $actor), __('You cannot confirm closing this box.'));
             $this->accept($current, $actor);
             $box->refresh();
         });
@@ -390,7 +390,7 @@ class BranchClosingWorkflow
      */
     private function accept(CashBox $box, User $actor): void
     {
-        $this->require($box->payments()->exists(), 'لا يمكن إغلاق صندوق فارغ.');
+        $this->require($box->payments()->exists(), __('An empty box cannot be closed.'));
         $settling = $this->settlingClosing($box);
         $box->payments()->where('status', 'pending')->whereHas('transaction', fn ($query) => $query->where('status', SubscriptionTransaction::STATUS_ACTIVE))
             ->update(['status' => 'confirmed', 'confirmed_by' => $actor->id, 'confirmed_at' => now(), 'confirmed_in_closing_id' => $settling->id]);
@@ -401,7 +401,7 @@ class BranchClosingWorkflow
             'expected_counts' => $expected,
             ...($box->type->isCounted() ? ['head_counts' => $expected, 'decisions' => []] : []),
         ]);
-        $box->user?->notify(new BranchClosingNotification('أكّد الفرع إغلاق صندوقك.', $box->number));
+        $box->user?->notify(new BranchClosingNotification(__('The branch confirmed closing your box.'), $box->number));
     }
 
     /**
@@ -431,7 +431,7 @@ class BranchClosingWorkflow
     public function receiveType(int $branchId, User $actor, CashBoxType $type, array $boxIds): void
     {
         $boxes = $this->closableBoxes($branchId, $actor, $type)->whereIn('id', $boxIds);
-        $this->require($boxIds !== [] && $boxes->count() === count(array_unique($boxIds)), 'بعض الصناديق المختارة لم تعد مفتوحة أو لا يمكنك إغلاقها.');
+        $this->require($boxIds !== [] && $boxes->count() === count(array_unique($boxIds)), __('Some of the chosen boxes are no longer open or you cannot close them.'));
         foreach ($boxes as $box) {
             $this->receive($box, $actor);
         }
@@ -456,7 +456,7 @@ class BranchClosingWorkflow
 
     public function confirmBox(CashBox $box, User $actor): void
     {
-        $this->require($box->type->isCounted() && $actor->id === $box->user_id && $box->status === 'received' && $box->close_reason !== CashBox::CLOSE_REASON_PERIOD_END && ! $box->confirmed_at, 'التأكيد متاح لصاحب الصندوق بعد الاستلام فقط.');
+        $this->require($box->type->isCounted() && $actor->id === $box->user_id && $box->status === 'received' && $box->close_reason !== CashBox::CLOSE_REASON_PERIOD_END && ! $box->confirmed_at, __('Only the box owner can confirm, after it is received.'));
         $box->update(['confirmed_at' => now()]);
     }
 
@@ -464,17 +464,17 @@ class BranchClosingWorkflow
     {
         $this->locked($payment->box->branch_id, function () use ($payment, $actor, $status): void {
             $payment->refresh()->load('box');
-            $this->require($payment->box->isEditable(), 'لا يمكن تغيير حركة ضمن صندوق مغلق.');
+            $this->require($payment->box->isEditable(), __('A transaction in a closed box cannot be changed.'));
             $allowed = $payment->method === 'clearing' ? ['confirmed', 'rejected'] : ['confirmed', 'missing'];
-            $this->require($payment->method !== 'cash' && in_array($status, $allowed, true) && $payment->status !== 'confirmed', 'لا يمكن تغيير دفعة مؤكدة.');
-            $this->require($this->mayReceive($payment->box, $actor), 'لا يمكنك مراجعة حركات هذا الصندوق.');
-            $this->require($payment->transaction->status === SubscriptionTransaction::STATUS_ACTIVE, 'الدفعة ملغاة أو مُرجعة.');
+            $this->require($payment->method !== 'cash' && in_array($status, $allowed, true) && $payment->status !== 'confirmed', __('A confirmed payment cannot be changed.'));
+            $this->require($this->mayReceive($payment->box, $actor), __('You cannot review this box\'s transactions.'));
+            $this->require($payment->transaction->status === SubscriptionTransaction::STATUS_ACTIVE, __('The payment is cancelled or refunded.'));
             $closing = $this->settlingClosing($payment->box);
             $payment->update(['status' => $status, 'confirmed_by' => $actor->id, 'confirmed_at' => $status === 'confirmed' ? now() : null, 'confirmed_in_closing_id' => $status === 'confirmed' ? $closing->id : null]);
             $box = $payment->box;
             if (in_array($status, ['missing', 'rejected'], true)) {
                 foreach (User::query()->where('is_active', true)->get()->filter(fn (User $user): bool => BranchClosingAccess::manage($user, $box->branch_id)) as $admin) {
-                    $admin->notify(new BranchClosingNotification('حركة مرفوضة تحتاج مراجعة الفرع.', $box->number, ['entry_id' => $payment->id, 'status' => $status]));
+                    $admin->notify(new BranchClosingNotification(__('A rejected transaction needs the branch\'s review.'), $box->number, ['entry_id' => $payment->id, 'status' => $status]));
                 }
             }
         });
@@ -486,7 +486,7 @@ class BranchClosingWorkflow
      */
     public function collectorReply(AuditNote $note, User $actor, string $body): void
     {
-        $this->require($note->assigned_to === $actor->id && $note->status === 'with_collector', 'الملاحظة لا تنتظر ردّك.');
+        $this->require($note->assigned_to === $actor->id && $note->status === 'with_collector', __('The note is not waiting for your reply.'));
         $note->replies()->create(['user_id' => $actor->id, 'kind' => 'collector_response', 'body' => $body]);
         $note->update(['status' => 'collector_replied']);
     }

@@ -268,7 +268,7 @@ class LedgerPage
 
         $branchId = self::filterValue($request, 'branch_id');
 
-        return ($branchId ? $actor->scopeAuditBranches(Branch::query(), 'branches.id')->find($branchId)?->name : null) ?? ($actor->auditSettings()['scope'] === 'selected' ? 'الفروع المحددة للتدقيق' : 'كل الفروع');
+        return ($branchId ? $actor->scopeAuditBranches(Branch::query(), 'branches.id')->find($branchId)?->name : null) ?? ($actor->auditSettings()['scope'] === 'selected' ? __('Branches selected for audit') : __('All branches'));
     }
 
     /**
@@ -282,22 +282,22 @@ class LedgerPage
     {
         $groups = $actor->hasFinancialAuditAccess() ? [DataTableFilters::branchFilterGroup($actor)] : [];
 
-        $groups[] = DataTableFilters::filterGroup('type', 'نوع القيد', [
-            ['value' => self::DEBIT, 'label' => 'كل ما عليه (تحميل)'],
-            ['value' => LedgerController::CREDIT, 'label' => 'كل ما له (تسديد وخصم ومقاصة)'],
+        $groups[] = DataTableFilters::filterGroup('type', __('Entry type'), [
+            ['value' => self::DEBIT, 'label' => __('Everything charged (debit)')],
+            ['value' => LedgerController::CREDIT, 'label' => __('Everything credited (payments, discounts and clearings)')],
             ...collect(LinePresenter::typeLabels())->map(fn (string $label, string $type): array => ['value' => $type, 'label' => $label])->values(),
         ]);
 
-        $groups[] = DataTableFilters::filterGroup('payment_method', 'طريقة الدفع', collect(PaymentMethod::cases())
+        $groups[] = DataTableFilters::filterGroup('payment_method', __('Payment method'), collect(PaymentMethod::cases())
             ->map(fn (PaymentMethod $method): array => ['value' => $method->value, 'label' => __($method->label())])->all());
 
-        $groups[] = DataTableFilters::filterGroup('bank_name', 'البنك', SubscriptionTransaction::query()
+        $groups[] = DataTableFilters::filterGroup('bank_name', __('Bank'), SubscriptionTransaction::query()
             ->whereHas('subscription', fn (Builder $subscriptions) => $subscriptions->readableTo($actor, true))
             ->whereNotNull('bank_name')->where('bank_name', '!=', '')
             ->distinct()->orderBy('bank_name')->pluck('bank_name')
             ->map(fn (string $bank): array => ['value' => $bank, 'label' => $bank])->all());
 
-        $groups[] = DataTableFilters::filterGroup('recorded_by', 'سجّله', DataTableFilters::staffOptions(
+        $groups[] = DataTableFilters::filterGroup('recorded_by', __('Recorded by'), DataTableFilters::staffOptions(
             User::query()
                 ->whereIn('id', SubscriptionTransaction::query()
                     ->whereHas('subscription', fn (Builder $subscriptions) => $subscriptions->readableTo($actor, true))
@@ -382,11 +382,11 @@ class LedgerPage
         return response()->streamDownload(function () use ($lines): void {
             $file = fopen('php://output', 'w');
             fwrite($file, "\xEF\xBB\xBF");
-            fputcsv($file, ['التاريخ', 'الوقت', 'المشترك', 'الحساب', 'الفرع', 'النوع', 'السند', 'الطريقة', 'البنك', 'المرجع', 'سجّله', 'عليه', 'له', 'الرصيد بعده', 'حالة الرصيد', 'ملغاة', 'تاريخ الدفع الفعلي', 'سبب تأخر التسجيل', 'تاريخ وصول الحوالة إلى البنك']);
+            fputcsv($file, [__('Date'), __('Time'), __('Subscriber'), __('Account'), __('Branch'), __('Type'), __('Voucher'), __('Method'), __('Bank'), __('Reference'), __('Recorded by'), __('Debit'), __('Credit'), __('Balance after'), __('Balance status'), __('Cancelled'), __('Actual payment date'), __('Reason for late recording'), __('Date the transfer reached the bank')]);
 
             foreach ($lines->lazy(500) as $transaction) {
                 $row = self::row($transaction);
-                $cells = [$row['day'], $row['time'], $row['subscriptionName'], $row['subscriptionAccountNumber'], $row['branchName'], $row['typeLabel'], $row['voucherNumber'], $row['paymentMethodLabel'], $row['bankName'], $row['referenceNumber'], $row['recordedByName'], $row['isCredit'] ? '' : Money::amount($row['amount']), $row['isCredit'] ? Money::amount($row['amount']) : '', $row['balanceAfter'] === null ? '' : Money::amount($row['balanceAfter']), self::balanceWord($row['balanceAfter']), $row['isCancelled'] ? 'نعم' : 'لا'];
+                $cells = [$row['day'], $row['time'], $row['subscriptionName'], $row['subscriptionAccountNumber'], $row['branchName'], $row['typeLabel'], $row['voucherNumber'], $row['paymentMethodLabel'], $row['bankName'], $row['referenceNumber'], $row['recordedByName'], $row['isCredit'] ? '' : Money::amount($row['amount']), $row['isCredit'] ? Money::amount($row['amount']) : '', $row['balanceAfter'] === null ? '' : Money::amount($row['balanceAfter']), self::balanceWord($row['balanceAfter']), $row['isCancelled'] ? __('Yes') : __('No')];
                 $cells[] = $row['paidOn'];
                 $cells[] = $row['lateReason'];
                 $cells[] = $row['bankReceivedOn'];
@@ -409,7 +409,7 @@ class LedgerPage
 
         $cents = Money::decimal($balance)->multipliedBy('100')->toInt();
 
-        return $cents > 0 ? 'عليه' : ($cents < 0 ? 'له' : 'مسدّد');
+        return $cents > 0 ? __('Debit') : ($cents < 0 ? __('Credit') : __('Settled'));
     }
 
     /**

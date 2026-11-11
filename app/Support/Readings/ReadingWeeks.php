@@ -59,7 +59,7 @@ class ReadingWeeks
             $weekEnd = ReadingWeeks::weekEndFor($weekStart, $branch);
             $options[] = [
                 'value' => $weekStart->toDateString(),
-                'label' => 'الأسبوع المنتهي في '.$weekEnd->locale('ar')->dayName.' '.$weekEnd->format('d/m/Y'),
+                'label' => __('Week ending ').$weekEnd->locale('ar')->dayName.' '.$weekEnd->format('d/m/Y'),
                 'end' => $weekEnd->toDateString(),
             ];
             $weekStart = ReadingWeeks::weekStartFor($weekStart->copy()->subDay(), $branch);

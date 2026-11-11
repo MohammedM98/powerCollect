@@ -160,7 +160,7 @@ class StatementBuilder
                 'lastConsumption' => $subscription->latestMeterReading?->consumption,
                 'standingDiscount' => self::statementStandingDiscount($subscription->standingDiscount),
                 'status' => $subscription->status->value,
-                'statusLabel' => $subscription->archived_at !== null ? 'مؤرشف' : __($subscription->status->label()),
+                'statusLabel' => $subscription->archived_at !== null ? __('Archived') : __($subscription->status->label()),
                 'archivedAt' => $subscription->archived_at?->toIso8601String(),
                 'serviceEndedOn' => $subscription->service_ended_on?->format('Y-m-d'),
                 'archiveReason' => $subscription->archive_reason,
@@ -241,7 +241,7 @@ class StatementBuilder
                 'areaName' => $sibling->branch->area?->name,
                 'subAreaName' => $sibling->meterBox?->subArea?->name,
                 'status' => $sibling->status->value,
-                'statusLabel' => $sibling->archived_at !== null ? 'مؤرشف' : __($sibling->status->label()),
+                'statusLabel' => $sibling->archived_at !== null ? __('Archived') : __($sibling->status->label()),
                 'balance' => self::money(self::cents((string) ($sibling->balance ?? '0'))),
             ])
             ->all();
@@ -425,7 +425,7 @@ class StatementBuilder
                 'wasCorrected' => $transaction->correction !== null,
                 'correctionId' => $transaction->correction?->id,
                 'correctionLineNumber' => $transaction->correction ? ($lineNumbers[$transaction->correction->id] ?? null) : null,
-                'reasonLabel' => $transaction->cancellation_reason ? __($transaction->cancellation_reason->label()) : 'تصحيح الحركة',
+                'reasonLabel' => $transaction->cancellation_reason ? __($transaction->cancellation_reason->label()) : __('Correct the transaction'),
                 'notes' => $transaction->cancellation_notes,
                 'byName' => $transaction->cancelledBy?->name,
                 'at' => self::businessTime($transaction->cancelled_at),
@@ -447,26 +447,26 @@ class StatementBuilder
             'canCorrect' => $canCorrect,
             'canDelete' => $canDelete,
             'canForceDelete' => $canForceDelete,
-            'amendUnavailableReason' => $hasAmendPermission && ! $canAmend ? (LinePresenter::amendmentUnavailableReason($transaction) ?? 'غير متاح الآن') : null,
+            'amendUnavailableReason' => $hasAmendPermission && ! $canAmend ? (LinePresenter::amendmentUnavailableReason($transaction) ?? __('Not available now')) : null,
             'correctUnavailableReason' => $hasEditPermission && ! $canCorrect
                 ? match (true) {
-                    $transaction->isCancelled() || $transaction->isReversal() => 'الحركة ملغاة',
-                    $transaction->isPayment() && LineHistory::isInClosedDay($transaction) => 'بعد إغلاق اليوم',
-                    default => 'لا ينطبق على هذه الحركة',
+                    $transaction->isCancelled() || $transaction->isReversal() => __('The transaction is cancelled'),
+                    $transaction->isPayment() && LineHistory::isInClosedDay($transaction) => __('After the day was closed'),
+                    default => __('Does not apply to this transaction'),
                 }
                 : null,
             'deleteUnavailableReason' => $mayCancel && ! $canDelete
                 ? match (true) {
-                    $transaction->isCancelled() || $transaction->isReversal() => 'الحركة ملغاة',
-                    $transaction->isPayment() && LineHistory::isInClosedDay($transaction) => 'بعد إغلاق اليوم',
-                    default => 'لا يمكن إلغاؤها الآن',
+                    $transaction->isCancelled() || $transaction->isReversal() => __('The transaction is cancelled'),
+                    $transaction->isPayment() && LineHistory::isInClosedDay($transaction) => __('After the day was closed'),
+                    default => __('It cannot be cancelled now'),
                 }
                 : null,
             'forceDeleteUnavailableReason' => $hasForceDeletePermission && ! $canForceDelete
                 ? match (true) {
-                    ! $isLastLegacyLine => 'ليست آخر حركة',
-                    $eraseTarget?->closingLine !== null => 'ضمن إغلاق مالي',
-                    default => 'لا يمكن حذفها نهائيًا',
+                    ! $isLastLegacyLine => __('Not the last transaction'),
+                    $eraseTarget?->closingLine !== null => __('Within a financial closing'),
+                    default => __('It cannot be permanently deleted'),
                 }
                 : null,
             // What erasing it takes off the balance: nothing for a reversal or a cancelled line, which go together.
@@ -517,8 +517,8 @@ class StatementBuilder
             'canApprove' => $actor->can('approveAny', MeterReading::class) && ($actor->isSuperAdmin() || $reading->branch_id === $actor->workBranchId()),
             'correctUnavailableReason' => match (true) {
                 $canCorrect => null,
-                ! $isLatest => 'توجد قراءة لأسبوع لاحق',
-                default => 'انتهت فترة تعديل قراءة هذا الأسبوع',
+                ! $isLatest => __('There is a reading for a later week'),
+                default => __('The editing period for this week\'s reading has ended'),
             },
         ];
     }
@@ -526,13 +526,13 @@ class StatementBuilder
     public static function amendmentFieldLabel(string $field): string
     {
         return match ($field) {
-            'amount' => 'المبلغ',
-            'bank_name' => 'البنك المستلم',
-            'bank_received_on' => 'تاريخ وصول الحوالة إلى البنك',
-            'sender_bank_name' => 'البنك المرسل',
-            'sender_name' => 'اسم المرسل',
-            'reference_number' => 'الرقم المرجعي',
-            'notes' => 'الملاحظات',
+            'amount' => __('Amount'),
+            'bank_name' => __('Receiving bank'),
+            'bank_received_on' => __('Date the transfer reached the bank'),
+            'sender_bank_name' => __('Sending bank'),
+            'sender_name' => __('Sender name'),
+            'reference_number' => __('Reference number'),
+            'notes' => __('Notes'),
             default => $field,
         };
     }

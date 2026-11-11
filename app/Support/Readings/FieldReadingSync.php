@@ -167,7 +167,7 @@ class FieldReadingSync
             $held = ReadingSubmission::query()->with('cycle')->lockForUpdate()->findOrFail($submission->id);
 
             if ($held->status !== ReadingSubmissionStatus::NeedsReview) {
-                return 'تمت مراجعة هذه القراءة من قبل.';
+                return __('This reading was already reviewed.');
             }
 
             $subscription = Subscription::query()->with(['tariff', 'circuitBreaker', 'standingDiscount'])->lockForUpdate()->findOrFail($held->subscription_id);

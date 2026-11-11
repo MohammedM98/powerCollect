@@ -73,8 +73,8 @@ class PaymentReferences
 
         return ValidationException::withMessages([
             'reference_number' => sprintf(
-                'هذا الرقم المرجعي مسجَّل مسبقًا على دفعة أخرى%s للمشترك %s.',
-                LinePresenter::displayVoucherNumber($conflict) ? ' — السند '.LinePresenter::displayVoucherNumber($conflict) : '',
+                __('This reference number is already recorded on another payment%s for subscriber %s.'),
+                LinePresenter::displayVoucherNumber($conflict) ? __(' — voucher ').LinePresenter::displayVoucherNumber($conflict) : '',
                 $conflict->subscription->displayName(),
             ),
         ]);

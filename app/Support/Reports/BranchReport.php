@@ -92,11 +92,11 @@ class BranchReport
     public static function kinds(): array
     {
         return [
-            ['value' => 'all', 'label' => 'كل الحركات'],
-            ['value' => 'payments', 'label' => 'الدفعات'],
-            ['value' => 'charges', 'label' => 'التحميلات'],
-            ['value' => 'discounts', 'label' => 'الخصومات والمقاصات'],
-            ['value' => 'corrections', 'label' => 'الإلغاءات'],
+            ['value' => 'all', 'label' => __('All transactions')],
+            ['value' => 'payments', 'label' => __('Payments')],
+            ['value' => 'charges', 'label' => __('Charges')],
+            ['value' => 'discounts', 'label' => __('Discounts and clearings')],
+            ['value' => 'corrections', 'label' => __('Cancellations')],
         ];
     }
 
@@ -177,7 +177,7 @@ class BranchReport
             'nonCash' => Closing::money($payments->where('isCash', false)->sum('cents')),
             'accounts' => $payments
                 ->groupBy(fn (object $payment): string => $payment->isCash ? 'cash' : ($payment->bank_name ?: $this->methodLabel($payment->payment_method)))
-                ->map(fn (Collection $rows, string $account): array => ['key' => $account, 'label' => $account === 'cash' ? 'الصندوق النقدي' : $account, ...$group($rows)])
+                ->map(fn (Collection $rows, string $account): array => ['key' => $account, 'label' => $account === 'cash' ? __('Cash box') : $account, ...$group($rows)])
                 ->sortByDesc(fn (array $account): array => [$account['key'] === 'cash', Closing::cents($account['total'])])
                 ->values()
                 ->all(),
@@ -195,7 +195,7 @@ class BranchReport
             'collectors' => $payments
                 ->groupBy(fn (object $payment): string => (string) $payment->recorded_by)
                 ->map(fn (Collection $rows, string $userId): array => [
-                    'name' => $collectors[$userId] ?? 'غير معروف',
+                    'name' => $collectors[$userId] ?? __('Unknown'),
                     ...$group($rows),
                     'cash' => Closing::money($rows->where('isCash', true)->sum('cents')),
                 ])
@@ -237,22 +237,22 @@ class BranchReport
         $totals['confirmed'] = $totals['cashConfirmed'] + $totals['bankVerified'];
         $totals['adjusted'] = $totals['confirmed'] + $totals['cashPending'] + $totals['bankPending'];
         $labels = [
-            'cashConfirmed' => 'المقبوضات النقدية المؤكدة',
-            'cashPending' => 'نقد في صناديق لم يُؤكد إغلاقها',
-            'bankRecorded' => 'الحوالات البنكية المسجّلة',
-            'bankPending' => 'مبالغ بنكية قيد التدقيق',
-            'shortage' => 'فروق نقص بنكي معتمدة',
-            'excess' => 'فروق زيادة بنكية معتمدة',
-            'bankVerified' => 'المبالغ البنكية المثبتة',
-            'confirmed' => 'صافي المقبوضات المؤكدة',
-            'adjusted' => 'صافي المسجّل بعد التصحيحات — يشمل غير المؤكد',
+            'cashConfirmed' => __('Confirmed cash receipts'),
+            'cashPending' => __('Cash in boxes not yet confirmed as closed'),
+            'bankRecorded' => __('Bank transfers recorded'),
+            'bankPending' => __('Bank amounts under audit'),
+            'shortage' => __('Approved bank shortfalls'),
+            'excess' => __('Approved bank surpluses'),
+            'bankVerified' => __('Confirmed bank amounts'),
+            'confirmed' => __('Net confirmed receipts'),
+            'adjusted' => __('Net recorded after corrections — includes unconfirmed'),
         ];
 
         return [
             ...array_map(fn (int $amount): string => Closing::money($amount), $totals),
             'rows' => collect($labels)->map(fn (string $label, string $key): array => ['key' => $key, 'label' => $label, 'amount' => Closing::money($totals[$key])])->values()->all(),
             'asOf' => now()->toIso8601String(),
-            'basis' => 'دفعات الفترة السارية وفق آخر نتائج التدقيق حتى وقت إعداد التقرير؛ تشمل التصحيحات اللاحقة ولا تشمل المقاصات. حركة الذمم التاريخية تبقى بتاريخ تسجيل كل حركة.',
+            'basis' => __('The period\'s standing payments as of the latest audit results when the report was prepared; includes later corrections and excludes clearings. Historical account movement stays on the date each transaction was recorded.'),
         ];
     }
 
@@ -426,6 +426,6 @@ class BranchReport
     {
         $method = $method === null ? null : PaymentMethod::tryFrom($method);
 
-        return $method === null ? 'أخرى' : __($method->label());
+        return $method === null ? __('Other') : __($method->label());
     }
 }

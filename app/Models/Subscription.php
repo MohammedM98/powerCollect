@@ -324,7 +324,7 @@ class Subscription extends Model
     public function deletionBlocker(): ?string
     {
         if ($this->archived_at !== null || $this->archiveEvents()->exists()) {
-            return 'لا يمكن حذف اشتراك مؤرشف؛ يبقى ملفه وسجله المالي محفوظين في الأرشيف.';
+            return __('An archived subscription cannot be deleted; its file and financial record stay in the archive.');
         }
 
         return DeletionBlocker::describe('subscription', [
@@ -339,9 +339,9 @@ class Subscription extends Model
     public function archiveBlocker(): ?string
     {
         return match (true) {
-            $this->archived_at !== null => 'هذا الاشتراك مؤرشف بالفعل.',
-            $this->status !== SubscriptionStatus::Disconnected => 'الأرشفة متاحة فقط للاشتراك المفصول بعد إنهاء خدمته.',
-            $this->hasUnfinishedReadings() => 'أكمل القراءات المعلّقة وإعادة إدخال القراءات المطلوبة قبل الأرشفة.',
+            $this->archived_at !== null => __('This subscription is already archived.'),
+            $this->status !== SubscriptionStatus::Disconnected => __('Archiving is only available for a disconnected subscription whose service has ended.'),
+            $this->hasUnfinishedReadings() => __('Complete the pending readings and re-enter the requested readings before archiving.'),
             default => null,
         };
     }

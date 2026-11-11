@@ -103,21 +103,21 @@ class DisconnectionListPage
     public static function itemFilterOptions(User $actor, Request $request): array
     {
         return [
-            DataTableFilters::filterGroup('status', 'الحالة', DisconnectionItemStatus::options()),
-            DataTableFilters::filterGroup('timing', 'الموعد', [
-                ['value' => 'overdue', 'label' => 'متأخر — بانتظار إجراء'],
-                ['value' => 'today', 'label' => 'موعده اليوم'],
-                ['value' => 'upcoming', 'label' => 'موعده لاحقًا'],
+            DataTableFilters::filterGroup('status', __('Status'), DisconnectionItemStatus::options()),
+            DataTableFilters::filterGroup('timing', __('Due date'), [
+                ['value' => 'overdue', 'label' => __('Overdue — awaiting action')],
+                ['value' => 'today', 'label' => __('Due today')],
+                ['value' => 'upcoming', 'label' => __('Due later')],
             ]),
-            DataTableFilters::filterGroup('reason', 'سبب القطع', DisconnectionReason::options()),
+            DataTableFilters::filterGroup('reason', __('Disconnection reason'), DisconnectionReason::options()),
             DataTableFilters::filterGroup('balance', 'الرصيد', [
-                ['value' => 'owing', 'label' => 'عليه رصيد مستحق'],
-                ['value' => 'paid', 'label' => 'سدّد كامل رصيده'],
-                ['value' => 'reduced', 'label' => 'قلّ رصيده منذ الإدراج'],
+                ['value' => 'owing', 'label' => __('Has a balance owed')],
+                ['value' => 'paid', 'label' => __('Paid the full balance')],
+                ['value' => 'reduced', 'label' => __('Balance went down since listing')],
             ]),
-            DataTableFilters::filterGroup('warned', 'الإنذارات', [
-                ['value' => '1', 'label' => 'أُرسل له إنذار'],
-                ['value' => '0', 'label' => 'لم يُنذر بعد'],
+            DataTableFilters::filterGroup('warned', __('Warnings'), [
+                ['value' => '1', 'label' => __('Was sent a warning')],
+                ['value' => '0', 'label' => __('Not warned yet')],
             ]),
             DataTableFilters::subAreaFilterGroup(SubArea::query()->visibleTo($actor)->orderBy('name')->get()),
             ...DataTableFilters::meterBoxFilterGroupsFor($actor, $request, $actor->isSuperAdmin() ? fn (MeterBox $box): string => $box->branch->name : null),
@@ -210,7 +210,7 @@ class DisconnectionListPage
             ]);
 
         $filterOptions = [
-            DataTableFilters::filterGroup('state', 'الحالة', [['value' => 'open', 'label' => 'مفتوحة'], ['value' => 'closed', 'label' => 'مغلقة']]),
+            DataTableFilters::filterGroup('state', __('Status'), [['value' => 'open', 'label' => __('Open list')], ['value' => 'closed', 'label' => __('Closed list')]]),
         ];
 
         if ($actor->isSuperAdmin()) {

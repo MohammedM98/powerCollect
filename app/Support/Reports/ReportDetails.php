@@ -109,7 +109,7 @@ class ReportDetails
                         'id' => $box->id.'-'.$currency, 'boxId' => $box->id, 'number' => $box->number, 'collector' => $box->user?->name,
                         'branchName' => $branch->name, 'type' => __($box->type->label()), 'currency' => $currency, 'count' => $entries->count(),
                         'amount' => Closing::money($entries->sum(fn (CashBoxPayment $entry): int => Closing::cents($entry->amount))),
-                        'status' => $received ? 'مستلم' : ($closed ? 'مغلق' : 'مفتوح'), 'openedAt' => DailySeries::localDate($box->opened_at),
+                        'status' => $received ? __('Received box') : ($closed ? __('Closed') : __('Open')), 'openedAt' => DailySeries::localDate($box->opened_at),
                     ]);
                 }
             }
@@ -118,7 +118,7 @@ class ReportDetails
         return [
             'asOf' => $this->to->toDateString(),
             'rows' => $rows->values(),
-            'byStatus' => collect(['مفتوح', 'مغلق', 'مستلم'])->map(fn (string $status): array => [
+            'byStatus' => collect([__('Open'), __('Closed'), __('Received box')])->map(fn (string $status): array => [
                 'status' => $status,
                 'boxes' => $rows->where('status', $status)->unique('boxId')->count(),
                 'currencies' => $rows->where('status', $status)->groupBy('currency')

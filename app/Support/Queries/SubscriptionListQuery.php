@@ -63,10 +63,10 @@ class SubscriptionListQuery
             'filter.balance_amount' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:9999999999'],
             'filter.balance_to' => ['required_if:filter.balance_operator,between', 'nullable', 'numeric', 'decimal:0,2', 'gte:filter.balance_amount', 'max:9999999999'],
         ], [], [
-            'filter.balance_side' => 'جهة الرصيد',
-            'filter.balance_operator' => 'شرط الرصيد',
-            'filter.balance_amount' => 'مبلغ الرصيد',
-            'filter.balance_to' => 'المبلغ الأعلى',
+            'filter.balance_side' => __('Balance side'),
+            'filter.balance_operator' => __('Balance condition'),
+            'filter.balance_amount' => __('Balance amount'),
+            'filter.balance_to' => __('Upper amount'),
         ])->validate()['filter'];
 
         $balance = '(select coalesce(round(sum(amount), 2), 0) from subscription_transactions where subscription_transactions.subscription_id = subscriptions.id)';

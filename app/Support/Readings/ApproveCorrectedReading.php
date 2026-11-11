@@ -23,7 +23,7 @@ class ApproveCorrectedReading
     {
         if (! ApproveReading::handle($reading, $actor, $confirmUnusual)) {
             throw ValidationException::withMessages([
-                'confirm_unusual' => 'استهلاك أسبوع '.$reading->week_start->format('d/m').' بعد التعديل ('.rtrim(rtrim(number_format((float) $reading->consumption, 2, '.', ''), '0'), '.').' كيلو) أعلى بكثير من المعتاد؛ أكّد أنه صحيح ليُعتمد.',
+                'confirm_unusual' => __('Consumption for the week of ').$reading->week_start->format('d/m').__(' after the edit (').rtrim(rtrim(number_format((float) $reading->consumption, 2, '.', ''), '0'), '.').__(' kWh) is far above usual; confirm it is correct so it can be approved.'),
             ]);
         }
 

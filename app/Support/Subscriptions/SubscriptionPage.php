@@ -81,7 +81,7 @@ class SubscriptionPage
             'circuitBreakerAmpere' => $subscription->circuitBreaker?->ampere,
             'standingDiscountSummary' => $subscription->standingDiscount?->summary(),
             'standingDiscount' => $subscription->standingDiscount ? ['method' => $subscription->standingDiscount->method->value, 'value' => $subscription->standingDiscount->value] : null,
-            'statusLabel' => $subscription->archived_at !== null ? 'مؤرشف' : __($subscription->status->label()),
+            'statusLabel' => $subscription->archived_at !== null ? __('Archived') : __($subscription->status->label()),
             'archivedAt' => $subscription->archived_at?->toIso8601String(),
             'serviceEndedOn' => $subscription->service_ended_on?->format('Y-m-d'),
             'archiveReason' => $subscription->archive_reason,
@@ -244,7 +244,7 @@ class SubscriptionPage
             ->distinct()
             ->orderBy('minimum_charge')
             ->pluck('minimum_charge')
-            ->map(fn ($charge) => ['value' => (string) (float) $charge, 'label' => LedgerAmounts::formatAmount($charge).' شيكل']));
+            ->map(fn ($charge) => ['value' => (string) (float) $charge, 'label' => LedgerAmounts::formatAmount($charge).__(' shekels')]));
     }
 
     /**
@@ -257,12 +257,12 @@ class SubscriptionPage
     public static function filterOptions(User $actor, Request $request): array
     {
         $groups = [
-            DataTableFilters::filterGroup('status', 'الحالة', SubscriptionStatus::options()),
+            DataTableFilters::filterGroup('status', __('Status'), SubscriptionStatus::options()),
             DataTableFilters::filterGroup('tariff_id', 'نوع الاشتراك', DataTableFilters::modelOptions(
                 Tariff::orderBy('category')->get(),
                 fn (Tariff $tariff) => __($tariff->category->label()),
             )),
-            DataTableFilters::filterGroup('tariff_segment_id', 'تصنيف الزبائن', DataTableFilters::modelOptions(TariffSegment::orderBy('name')->get(), 'name')),
+            DataTableFilters::filterGroup('tariff_segment_id', __('Customer segment'), DataTableFilters::modelOptions(TariffSegment::orderBy('name')->get(), 'name')),
             DataTableFilters::subAreaFilterGroup(SubArea::query()->visibleTo($actor)->orderBy('name')->get()),
             ...DataTableFilters::meterBoxFilterGroupsFor(
                 $actor,

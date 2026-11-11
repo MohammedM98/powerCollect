@@ -52,7 +52,7 @@ class DisconnectionItemPage
         Inertia::flash('disconnectionResult', ['action' => $action, 'succeeded' => $succeeded, 'failed' => $failed]);
 
         if ($succeeded === 0) {
-            return back()->withErrors(['ids' => 'لم يُطبَّق الإجراء على أي مشترك؛ راجع الأسباب في التقرير.']);
+            return back()->withErrors(['ids' => __('The action was not applied to any subscriber; see the reasons in the report.')]);
         }
 
         $request->user()->notify(new ActionCompleted($status, $list->title.' — '.$succeeded));
@@ -85,7 +85,7 @@ class DisconnectionItemPage
         }
 
         if ($disconnectionList->isClosed()) {
-            return back()->withErrors(['ids' => 'القائمة مغلقة.']);
+            return back()->withErrors(['ids' => __('The list is closed.')]);
         }
 
         $channel = MessageChannel::from($request->validated('channel'));
@@ -97,9 +97,9 @@ class DisconnectionItemPage
             $phone = $item->subscription->contactPhone();
 
             if (! $item->isScheduled()) {
-                $failed[] = DisconnectionItemPage::failure($item, 'لم يعد بانتظار القطع');
+                $failed[] = DisconnectionItemPage::failure($item, __('No longer awaiting disconnection'));
             } elseif (! filled($phone)) {
-                $failed[] = DisconnectionItemPage::failure($item, 'لا يوجد رقم هاتف');
+                $failed[] = DisconnectionItemPage::failure($item, __('No phone number'));
             } else {
                 $recipients[] = $item;
             }
@@ -108,7 +108,7 @@ class DisconnectionItemPage
         if ($recipients === []) {
             Inertia::flash('disconnectionResult', ['action' => 'warn', 'succeeded' => 0, 'failed' => $failed]);
 
-            return back()->withErrors(['ids' => 'لا يوجد بين المختارين من ينتظر القطع ولديه رقم هاتف.']);
+            return back()->withErrors(['ids' => __('None of the chosen subscribers awaits disconnection and has a phone number.')]);
         }
 
         try {

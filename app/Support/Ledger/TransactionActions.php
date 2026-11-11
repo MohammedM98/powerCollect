@@ -341,7 +341,7 @@ class TransactionActions
     public static function applyMetadataEdit(SubscriptionTransaction $transaction, User $actor, array $data): SubscriptionTransaction
     {
         $fields = array_intersect_key($data, array_flip(SubscriptionTransaction::AMENDABLE_FIELDS));
-        AmendLine::amend($transaction, $actor, $fields, filled($data['amendment_reason'] ?? null) ? trim((string) $data['amendment_reason']) : 'تعديل بيانات الحركة');
+        AmendLine::amend($transaction, $actor, $fields, filled($data['amendment_reason'] ?? null) ? trim((string) $data['amendment_reason']) : __('Edit transaction details'));
 
         return $transaction;
     }

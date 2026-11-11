@@ -39,7 +39,7 @@ class BranchScope
     {
         $visible = Branch::query()->orderBy('name')->tap(fn (Builder $branches) => $actor->scopeAuditBranches($branches, 'branches.id'))->get(['id', 'name']);
         $chosen = is_scalar($branchId) && (string) $branchId !== '' ? $visible->where('id', (int) $branchId)->values() : collect();
-        $allName = $visible->count() === 1 ? $visible->first()->name : 'جميع الفروع';
+        $allName = $visible->count() === 1 ? $visible->first()->name : __('Every branch');
 
         $scope = self::describe($chosen->isNotEmpty() ? $chosen : $visible);
 
@@ -66,7 +66,7 @@ class BranchScope
             'all' => $level !== 'branch',
             'name' => match ($level) {
                 'governorate' => $governorate,
-                'all' => 'جميع الفروع',
+                'all' => __('Every branch'),
                 default => $branch?->name ?? '',
             },
             'place' => $branch ? (collect([$branch->governorate?->name, $branch->area?->name])->filter()->implode(' · ') ?: $branch->location) : null,

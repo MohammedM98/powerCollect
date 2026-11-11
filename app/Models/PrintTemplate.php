@@ -81,10 +81,10 @@ class PrintTemplate extends Model
      */
     public function copyName(): string
     {
-        $name = $this->name.' (نسخة)';
+        $name = $this->name.__(' (copy)');
 
         for ($number = 2; static::query()->where('page', $this->page)->where('name', $name)->exists(); $number++) {
-            $name = $this->name.' (نسخة '.$number.')';
+            $name = $this->name.__(' (copy ').$number.')';
         }
 
         return $name;

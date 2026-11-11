@@ -131,7 +131,7 @@ class BranchPerformancePage
                     'id' => $member->id,
                     'name' => $member->name,
                     'username' => $member->username,
-                    'roleLabel' => $member->isSuperAdmin() ? __($member->role->label()) : ($member->userType?->name ?? 'موظف'),
+                    'roleLabel' => $member->isSuperAdmin() ? __($member->role->label()) : ($member->userType?->name ?? __('Employee')),
                     'isActive' => $member->is_active,
                     'entries' => (int) ($registered?->entries ?? 0) + (int) ($read?->entries ?? 0),
                     'weekEntries' => (int) ($registered?->week_entries ?? 0) + (int) ($read?->week_entries ?? 0),
