@@ -2,8 +2,6 @@
 
 namespace App\Support\Reports;
 
-use App\Support\Ledger\Money;
-use App\Support\Closing\ClosingPeriods;
 use App\Enums\Currency;
 use App\Enums\MeterReadingStatus;
 use App\Enums\PaymentMethod;
@@ -13,7 +11,9 @@ use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Closing\ClosingPeriods;
 use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\Money;
 use Carbon\CarbonImmutable;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
@@ -315,15 +315,21 @@ class BranchReport
     /**
      * What the branches' subscriptions owed when the period started: every
      * line recorded before it, cancelled or not, since a cancellation's
-     * reversal takes its amount back off when it is recorded.
+     * reversal takes its amount back off when it is recorded. Kept in the
+     * cache until a line before the period changes (ReportCache::HISTORY).
      */
     private function openingBalance(): int
     {
         return array_sum(array_map(
-            fn (array $window): int => Closing::cents((string) SubscriptionTransaction::query()
-                ->whereHas('subscription', fn (Builder $subscription) => $subscription->whereIn('branch_id', $window['branchIds']))
-                ->where('subscription_transactions.created_at', '<', $window['start'])
-                ->sum('amount')),
+            fn (array $window): int => ReportCache::remember(
+                ReportCache::HISTORY,
+                'opening:'.implode(',', $window['branchIds']).':'.$window['start']->toIso8601String(),
+                null,
+                fn (): int => Closing::cents((string) SubscriptionTransaction::query()
+                    ->whereHas('subscription', fn (Builder $subscription) => $subscription->whereIn('branch_id', $window['branchIds']))
+                    ->where('subscription_transactions.created_at', '<', $window['start'])
+                    ->sum('amount')),
+            ),
             $this->windows(),
         ));
     }

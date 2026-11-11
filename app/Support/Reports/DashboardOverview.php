@@ -2,9 +2,6 @@
 
 namespace App\Support\Reports;
 
-use App\Support\Ledger\Money;
-use App\Support\Closing\ClosingPeriods;
-use App\Support\Closing\BranchClosingAccess;
 use App\Enums\DisconnectionItemStatus;
 use App\Enums\MeterReadingStatus;
 use App\Enums\PaymentMethod;
@@ -19,10 +16,14 @@ use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Closing\BranchClosingAccess;
+use App\Support\Closing\ClosingPeriods;
 use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\Money;
 use App\Support\Readings\ReadingWeeks;
 use Brick\Math\RoundingMode;
 use Carbon\CarbonImmutable;
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -66,6 +67,61 @@ class DashboardOverview
         $this->from = $this->today->subDays($days - 1);
     }
 
+    public function collections(): ?array
+    {
+        return $this->cached('collections', fn (): ?array => $this->computeCollections());
+    }
+
+    public function subscriptions(): ?array
+    {
+        return $this->cached('subscriptions', fn (): ?array => $this->computeSubscriptions());
+    }
+
+    public function meterBoxes(): ?array
+    {
+        return $this->cached('meterBoxes', fn (): ?array => $this->computeMeterBoxes());
+    }
+
+    public function readings(): ?array
+    {
+        return $this->cached('readings', fn (): ?array => $this->computeReadings());
+    }
+
+    public function debts(): ?array
+    {
+        return $this->cached('debts', fn (): ?array => $this->computeDebts());
+    }
+
+    public function disconnections(): ?array
+    {
+        return $this->cached('disconnections', fn (): ?array => $this->computeDisconnections());
+    }
+
+    public function boxes(): ?array
+    {
+        return $this->cached('boxes', fn (): ?array => $this->computeBoxes());
+    }
+
+    /**
+     * A section as this user sees it, kept for a minute and dropped as soon
+     * as anything it shows changes (ReportCache::ACTIVITY).
+     *
+     * @param  Closure(): (array<string, mixed>|null)  $compute
+     * @return array<string, mixed>|null
+     */
+    private function cached(string $section, Closure $compute): ?array
+    {
+        return ReportCache::remember(ReportCache::ACTIVITY, implode(':', ['dashboard', $section, $this->actor->id, $this->accessFingerprint(), implode(',', $this->branchIds()), $this->days, $this->today->toDateString()]), 60, $compute);
+    }
+
+    /** What decides which sections and figures this user sees, so a change of access is never served from the cache. */
+    private function accessFingerprint(): string
+    {
+        $permissions = $this->actor->loadMissing('permissions')->permissions->pluck('key')->sort()->implode(',');
+
+        return md5(implode('|', [$this->actor->role->value, (int) $this->actor->is_active, $this->actor->branch_id, $permissions, json_encode($this->actor->auditSettings())]));
+    }
+
     /**
      * @return array<int, int>
      */
@@ -82,7 +138,7 @@ class DashboardOverview
      *
      * @return array<string, mixed>|null
      */
-    public function collections(): ?array
+    private function computeCollections(): ?array
     {
         if (! $this->actor->can('viewAny', SubscriptionTransaction::class) || $this->branches->isEmpty()) {
             return null;
@@ -149,7 +205,7 @@ class DashboardOverview
      *
      * @return array<string, mixed>|null
      */
-    public function subscriptions(): ?array
+    private function computeSubscriptions(): ?array
     {
         if (! $this->actor->can('viewAny', Subscription::class)) {
             return null;
@@ -195,7 +251,7 @@ class DashboardOverview
      *
      * @return array{total: int, empty: int}|null
      */
-    public function meterBoxes(): ?array
+    private function computeMeterBoxes(): ?array
     {
         if (! $this->actor->can('viewAny', MeterBox::class)) {
             return null;
@@ -216,7 +272,7 @@ class DashboardOverview
      *
      * @return array{week: ?string, total: int, approved: int, pending: int, missing: int, canApprove: bool}|null
      */
-    public function readings(): ?array
+    private function computeReadings(): ?array
     {
         if (! $this->actor->can('viewAny', MeterReading::class) || $this->branches->isEmpty()) {
             return null;
@@ -257,7 +313,7 @@ class DashboardOverview
      *
      * @return array{total: string, count: int, older: string, olderShare: int, top: array<int, array{subscriptionId: int, name: string, accountNumber: ?string, balance: string, oldestDays: int, lastPaymentDays: ?int}>}|null
      */
-    public function debts(): ?array
+    private function computeDebts(): ?array
     {
         if (! $this->actor->can('viewDebtAging', SubscriptionTransaction::class)) {
             return null;
@@ -289,7 +345,7 @@ class DashboardOverview
      *
      * @return array{overdue: int, upcoming: int, openLists: int}|null
      */
-    public function disconnections(): ?array
+    private function computeDisconnections(): ?array
     {
         if (! $this->actor->can('viewAny', DisconnectionList::class)) {
             return null;
@@ -311,7 +367,7 @@ class DashboardOverview
      *
      * @return array{open: int}|null
      */
-    public function boxes(): ?array
+    private function computeBoxes(): ?array
     {
         if (! BranchClosingAccess::view($this->actor)) {
             return null;
