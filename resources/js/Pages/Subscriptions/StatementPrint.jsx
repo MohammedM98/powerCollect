@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import AccountStatement, { STATEMENT_COLUMNS } from './AccountStatement';
+import AccountStatement from './AccountStatement';
+import { STATEMENT_COLUMNS } from '@/lib/accountStatement';
 import PageHeader from '@/Components/PageHeader';
 
 export default function StatementPrint(statement) {

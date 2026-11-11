@@ -396,3 +396,74 @@ export function discountAmount(method, value, owed, kiloPrice) {
 
     return amount === undefined ? null : roundToCents(amount);
 }
+
+/** Whether a line has a menu: actions the user may take on it, its reading to correct, or a receipt to print. */
+export function hasLineMenu(entry) {
+    return entry.available_actions?.length > 0 || Boolean(entry.reading) || Boolean(entry.receiptUrl);
+}
+
+export function transactionNoun(entry) {
+    return {
+        payment: 'الدفعة',
+        discount: 'الخصم',
+        reading_discount: 'خصم القراءة الأسبوعية',
+        credit: 'الرصيد الدائن',
+        clearing: 'المقاصة',
+    }[entry.type] ?? 'الحركة';
+}
+
+/** What the printed statement says about the filters it was printed with, or '' when none is set. */
+export function filtersCaption(filters, transactionTypes, paymentMethods) {
+    const typeLabel =
+        { debit: 'كل ما عليه (تحميل)', credit: 'كل ما له (تسديد وخصم)' }[filters.type] ??
+        transactionTypes.find((type) => type.value === filters.type)?.label;
+    const methodLabel = paymentMethods.find((method) => method.value === filters.method)?.label;
+
+    return [
+        filters.type && `نوع الحركة: ${typeLabel ?? filters.type}`,
+        filters.method && `طريقة الدفع: ${methodLabel ?? filters.method}`,
+        filters.sort && `الترتيب: ${STATEMENT_SORT_OPTIONS.find((option) => option.value === filters.sort)?.label ?? ''}`,
+        filters.dateFrom && `من ${filters.dateFrom}`,
+        filters.dateTo && `إلى ${filters.dateTo}`,
+        filters.search.trim() && `بحث: «${filters.search.trim()}»`,
+    ]
+        .filter(Boolean)
+        .join(' · ');
+}
+
+/** Whether a reversal immediately follows the original line in chronological order. */
+export function followsLineAbove(entry) {
+    return entry.isFollowUp && entry.reverses?.lineNumber === entry.lineNumber - 1;
+}
+
+/** The row's look: a cancelled line greyed, a reversal or replacement marked as following the line above, a folded one faded. */
+export function rowClass(entry, highlighted, isHistory, isRelated, focused) {
+    return [
+        entry.cancellation && 'ledger-cancelled',
+        focused && 'ledger-focused',
+        isRelated && 'ledger-related',
+        isHistory ? 'ledger-history' : followsLineAbove(entry) && 'ledger-follow-up',
+        highlighted && 'outline outline-2 outline-offset-[-2px] outline-amber-400',
+    ]
+        .filter(Boolean)
+        .join(' ') || undefined;
+}
+
+export const STATEMENT_COLUMNS = [
+    '#',
+    'رقم الصندوق',
+    'رقم السند',
+    'الرقم المرجعي',
+    'البنك',
+    'تاريخ الحركة',
+    'البيان',
+    'المبلغ',
+    'العملة',
+    'نوع الحركة',
+    'طريقة الدفع',
+    'سعر الصرف',
+    'الرصيد (شيكل)',
+    'اسم المستخدم',
+];
+
+export const COLUMN_WIDTHS = [52, 72, 88, 180, 116, 150, 220, 130, 76, 104, 116, 88, 148, 136];
