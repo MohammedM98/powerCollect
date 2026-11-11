@@ -133,6 +133,9 @@ jobs:
       - name: Test frontend behavior
         run: npm test
 
+      - name: Use the money dialogs as a person would
+        run: npm run test:components
+
       - name: Build production assets
         run: npm run build
 
