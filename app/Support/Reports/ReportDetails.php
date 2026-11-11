@@ -2,13 +2,13 @@
 
 namespace App\Support\Reports;
 
-use App\Support\Closing\ClosingPeriods;
 use App\Models\Branch;
 use App\Models\CashBox;
 use App\Models\CashBoxPayment;
 use App\Models\Closing;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
+use App\Support\Closing\ClosingPeriods;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;

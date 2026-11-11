@@ -2,7 +2,6 @@
 
 namespace App\Support\Closing;
 
-use App\Support\Ledger\Money;
 use App\Enums\AuditAction;
 use App\Enums\CashBoxType;
 use App\Models\BankTransferAudit;
@@ -12,6 +11,7 @@ use App\Models\CashBoxPayment;
 use App\Models\Closing;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\Money;
 use Illuminate\Database\Eloquent\Builder;
 
 class BankTransferAuditing

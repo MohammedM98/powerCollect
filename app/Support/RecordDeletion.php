@@ -2,12 +2,12 @@
 
 namespace App\Support;
 
-use Illuminate\Support\Facades\Gate;
 use App\Notifications\ActionCompleted;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Deleting a record from its list: allowed by its policy's `delete`, and

@@ -2,7 +2,6 @@
 
 namespace App\Support\Readings;
 
-use App\Support\Reports\DailySeries;
 use App\Enums\ReadingAssignmentChannel;
 use App\Enums\ReadingAssignmentStatus;
 use App\Models\Branch;
@@ -11,6 +10,7 @@ use App\Models\ReadingCycle;
 use App\Models\ReadingDistribution;
 use App\Models\ReadingEntrySetting;
 use App\Models\User;
+use App\Support\Reports\DailySeries;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 

@@ -4,7 +4,6 @@ namespace App\Support\Readings;
 
 use App\Models\MeterReading;
 use App\Models\User;
-use App\Support\Readings\ApproveReading;
 use Illuminate\Validation\ValidationException;
 
 /**
