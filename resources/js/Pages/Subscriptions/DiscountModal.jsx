@@ -1,92 +1,22 @@
 import { useId, useRef, useState } from 'react';
 import { router } from '@inertiajs/react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
-import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import Modal from '@/Components/Modal';
 import { useResourceForm } from '@/hooks/useResourceForm';
-import { describeBalance, discountAmount } from '@/lib/accountStatement';
+import { describeBalance } from '@/lib/accountStatement';
 import { formatAmount } from '@/lib/currency';
-import { formatMoney, normalizeDecimalInput } from '@/lib/format';
+import { formatMoney } from '@/lib/format';
 import { clearErrorOnInput, submitOnCtrlEnter, validateFormFields } from '@/lib/formValidation';
-import { weeklyCharges } from '@/lib/readings';
-import {
-    AmountBox,
-    balanceCells,
-    balanceText,
-    ChoiceTile,
-    DoneScreen,
-    FieldWarning,
-    FormFooter,
-    FormHeader,
-    FormStep,
-    MovementCard,
-    MOVEMENT_TONES,
-    QuickPick,
-    SheetBody,
-    SHEET_FORM_CLASS,
-} from './AccountFormParts';
+import { balanceCells, balanceText, DoneScreen, FormFooter, FormHeader, FormStep, MovementCard, MOVEMENT_TONES, SheetBody, SHEET_FORM_CLASS } from './AccountFormParts';
 import { CorrectionReasonFields, EMPTY_CORRECTION, OriginalLine } from './CorrectionFields';
-
-/** A discount comes off the balance once, in shekels, or off every weekly reading from now on. */
-const KINDS = [
-    { value: 'once', icon: 'tag', title: 'لمرة واحدة', hint: 'مبلغ بالشيكل يُخصم الآن من الرصيد المستحق' },
-    { value: 'standing', icon: 'repeat', title: 'خصم القراءات الأسبوعية', hint: 'من كل قراءة أسبوعية حتى تُوقفه' },
-];
-
-const METHOD_ICONS = { percentage: 'percent', kilowatt: 'bolt', shekel: 'currency' };
-const METHOD_ORDER = ['percentage', 'kilowatt', 'shekel'];
-
-/** The quick values under the amount, by kind and method; a one-off discount is in shekels only. */
-const QUICK_VALUES = {
-    once: { shekel: [10, 20, 50] },
-    standing: { percentage: [5, 10, 20], kilowatt: [5, 10, 20], shekel: [0.5, 1] },
-};
-
-/** Roughly how many weeks a month has, for the monthly saving. */
-const WEEKS_PER_MONTH = 4.3;
-
-const inputClass =
-    'block h-[50px] w-full rounded-[14px] border-[1.5px] border-gray-200 bg-surface px-4 text-base text-gray-900 transition placeholder:text-gray-400 hover:border-brand-500/45 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15';
-
-/** What the value field asks for: shekels off the balance once, or by method for the weekly readings discount. */
-function fieldFor(kind, method, kiloPrice) {
-    if (kind === 'once') {
-        return { label: 'المبلغ', hint: 'بالشيكل', unit: '₪', suffix: ' ₪' };
-    }
-
-    return {
-        percentage: { title: 'نسبة', tileHint: 'من قيمة كل قراءة', label: 'النسبة من كل قراءة', hint: 'من 1 إلى 100', unit: '%', suffix: '%' },
-        kilowatt: {
-            title: 'كيلوات',
-            tileHint: 'كيلوات مجانية كل أسبوع',
-            label: 'الكيلوات المجانية كل أسبوع',
-            hint: `الكيلو بـ ${formatMoney(kiloPrice)} ₪`,
-            unit: 'كيلو',
-            suffix: ' كيلو',
-        },
-        shekel: {
-            title: 'شيكل من سعر الكيلو',
-            tileHint: 'يُنزل من سعر الكيلو',
-            label: 'الخصم من سعر الكيلو',
-            hint: `سعر الكيلو ${formatMoney(kiloPrice)} ₪`,
-            unit: '₪',
-            suffix: ' ₪',
-        },
-    }[method];
-}
-
-/** How a standing discount reads: "10%", "3 كيلو" or "5 شيكل من سعر الكيلو". Mirrors StandingDiscount::termsFor(). */
-function standingTerms(method, value) {
-    const amount = formatAmount(value);
-
-    return { percentage: `${amount}%`, kilowatt: `${amount} كيلو`, shekel: `${amount} شيكل من سعر الكيلو` }[method];
-}
-
-/** A standing discount's terms with the customer segment it is given to: "3 كيلو · موظفو أبو زايد". */
-function withSegment(terms, segment) {
-    return segment ? `${terms} · ${segment}` : terms;
-}
+import { discountPreview, standingTerms, withSegment } from '@/lib/discountTerms';
+import DiscountSegmentStep from './DiscountSegmentStep';
+import DiscountValueStep from './DiscountValueStep';
+import DiscountMethodStep from './DiscountMethodStep';
+import DiscountKindStep from './DiscountKindStep';
+import DiscountNotesStep from './DiscountNotesStep';
+import StandingDiscountCard from './StandingDiscountCard';
 
 /**
  * Give a subscription a discount (خصم). Once: shekels taken off what they
@@ -138,52 +68,8 @@ export default function DiscountModal({
     const [stopping, setStopping] = useState(false);
     const [receipt, setReceipt] = useState(null);
 
-    const isStanding = data.kind === 'standing';
-    const kiloPrice = Number(subscription.kiloPrice);
-    const owed = Math.max(Number(balance), 0);
-    const value = Number(data.value) > 0 ? Number(data.value) : 0;
-    const field = fieldFor(data.kind, data.method, kiloPrice);
-    const methods = isStanding ? METHOD_ORDER.filter((method) => discountMethods.some((option) => option.value === method)) : [];
-
-    // What makes the value unusable, said under it.
-    let invalid = null;
-
-    if (data.method === 'percentage' && value > 100) {
-        invalid = 'النسبة لا تزيد عن 100%.';
-    } else if (isStanding && data.method === 'shekel' && value > kiloPrice) {
-        invalid = `الخصم لا يزيد عن سعر الكيلو (${formatMoney(kiloPrice)} ₪).`;
-    }
-
-    // Once: what comes off the balance now; it may not take the balance below zero.
-    const discount = isStanding || invalid ? null : discountAmount(data.method, data.value, owed, subscription.kiloPrice);
-
-    if (!isStanding && value > 0 && !invalid) {
-        if (owed <= 0) {
-            invalid = 'لا يوجد رصيد مستحق على المشترك ليُخصم منه.';
-        } else if (discount > owed) {
-            invalid = `لا يمكن أن يزيد الخصم (${formatMoney(discount)} ₪) عن الرصيد المستحق (${formatMoney(owed)} ₪).`;
-        }
-    }
-
-    const balanceAfter = discount === null || invalid ? null : Number(balance) - discount;
-
-    // Standing: the last week read, or 10 kilos, at the subscription's prices, billed without and with it.
-    const hasLastReading = Number(subscription.lastConsumption) > 0;
-    const example = {
-        kilos: hasLastReading ? Number(subscription.lastConsumption) : 10,
-        unitPrice: subscription.kiloPrice,
-        minimumPayment: subscription.minimumPayment,
-        label: hasLastReading ? 'يدفع عن آخر قراءة' : 'يدفع عن 10 كيلو (مثال)',
-    };
-    const exampleBill = weeklyCharges(example.kilos, example.unitPrice, example.minimumPayment);
-    const exampleWithDiscount =
-        isStanding && value > 0 && !invalid ? weeklyCharges(example.kilos, example.unitPrice, example.minimumPayment, data) : exampleBill;
-    const weeklySaving = Math.max(0, exampleBill.amountDue - exampleWithDiscount.amountDue);
+    const { isStanding, kiloPrice, owed, value, field, methods, invalid, discount, balanceAfter, example, exampleBill, exampleWithDiscount, weeklySaving, steps } = discountPreview(data, subscription, balance, discountMethods, correcting);
     const tone = correcting ? 'correction' : 'credit';
-
-    // The steps are numbered in the order they show: the kind (not when correcting), the weekly method and segment only for a standing discount.
-    const stepNumbers = [!correcting && 'kind', isStanding && 'method', 'value', isStanding && 'segment', 'notes'].filter(Boolean);
-    const steps = Object.fromEntries(stepNumbers.map((step, index) => [step, index + 1]));
 
     function close() {
         setDiscarding(false);
@@ -354,22 +240,17 @@ export default function DiscountModal({
                         />
 
                         {isStanding ? (
-                            <MovementCard
+                            <StandingDiscountCard
+                                data={data}
+                                example={example}
+                                exampleBill={exampleBill}
+                                exampleWithDiscount={exampleWithDiscount}
+                                invalid={invalid}
                                 subscription={subscription}
                                 tone={tone}
-                                tag="كل أسبوع"
-                                ops={['−', '=']}
-                                cells={[
-                                    { label: 'فاتورة الأسبوع المعتادة', value: `${formatMoney(exampleBill.amountDue)} ₪`, note: `${formatAmount(example.kilos)} كيلو × ${formatMoney(example.unitPrice)} ₪` },
-                                    { label: 'الخصم', value: value > 0 && !invalid ? standingTerms(data.method, data.value) : '—', note: data.segment.trim(), move: true },
-                                    { label: example.label, value: `${formatMoney(exampleWithDiscount.amountDue)} ₪`, note: 'يبدأ من القراءة القادمة', color: 'var(--gl-ok)', result: true },
-                                ]}
-                            >
-                                <div className="gl-kv">
-                                    <span>توفير في الأسبوع <b className="gl-num" style={{ color: 'var(--gl-ok)' }}>{formatMoney(weeklySaving)} ₪</b></span>
-                                    <span>في الشهر تقريبًا <b className="gl-num" style={{ color: 'var(--gl-ok)' }}>{formatMoney(weeklySaving * WEEKS_PER_MONTH)} ₪</b></span>
-                                </div>
-                            </MovementCard>
+                                value={value}
+                                weeklySaving={weeklySaving}
+                            />
                         ) : (
                             <MovementCard
                                 subscription={subscription}
@@ -391,177 +272,57 @@ export default function DiscountModal({
                             {correcting && <OriginalLine entry={correcting} />}
 
                             {!correcting && (
-                                <FormStep number={steps.kind} title="نوع الخصم" done>
-                                    <fieldset>
-                                        <legend className="sr-only">نوع الخصم</legend>
-                                        <div className="grid gap-3 sm:grid-cols-2">
-                                            {KINDS.map((kind) => (
-                                                <ChoiceTile
-                                                    key={kind.value}
-                                                    name="kind"
-                                                    value={kind.value}
-                                                    checked={data.kind === kind.value}
-                                                    onChange={changeKind}
-                                                    icon={kind.icon}
-                                                    title={kind.title}
-                                                    hint={kind.hint}
-                                                    tone="green"
-                                                />
-                                            ))}
-                                        </div>
-                                    </fieldset>
-                                {isStanding && standingDiscount && (
-                                    <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-emerald-600/45 bg-emerald-500/10 px-3.5 py-3 text-sm">
-                                        <Icon name="repeat" className="h-[18px] w-[18px] shrink-0 text-emerald-700 dark:text-emerald-400" />
-                                        <div className="min-w-0 flex-1">
-                                            <b className="font-bold text-gray-900">
-                                                لديه خصم على القراءات الأسبوعية: {withSegment(standingDiscount.terms, standingDiscount.segment)}
-                                            </b>
-                                            <small className="block text-[12.5px] text-gray-500">
-                                                منذ <bdi dir="ltr">{standingDiscount.grantedAt}</bdi>
-                                                {standingDiscount.grantedByName && ` · أعطاه ${standingDiscount.grantedByName}`}. الخصم الجديد يحلّ
-                                                محلّه.
-                                            </small>
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => setConfirmingStop(true)}
-                                            disabled={stopping}
-                                            className="h-9 shrink-0 rounded-xl border border-gray-200 bg-surface px-3 text-[13.5px] font-bold text-brand-600 transition hover:bg-gray-50 disabled:opacity-50"
-                                        >
-                                            {stopping ? 'جارٍ الإيقاف...' : 'إيقاف'}
-                                        </button>
-                                    </div>
-                                )}
-                                </FormStep>
+                                <DiscountKindStep
+                                    changeKind={changeKind}
+                                    data={data}
+                                    isStanding={isStanding}
+                                    setConfirmingStop={setConfirmingStop}
+                                    standingDiscount={standingDiscount}
+                                    steps={steps}
+                                    stopping={stopping}
+                                />
                             )}
 
                             {isStanding && (
-                                <FormStep number={steps.method} title="طريقة الخصم" hint="بالأرقام 1 · 2 · 3" done={Boolean(data.method)}>
-                                    <fieldset>
-                                        <legend className="sr-only">طريقة الخصم</legend>
-                                        <div className="grid gap-3 sm:grid-cols-3">
-                                            {methods.map((method, index) => {
-                                                const look = fieldFor(data.kind, method, kiloPrice);
-
-                                                return (
-                                                    <ChoiceTile
-                                                        key={method}
-                                                        name="method"
-                                                        value={method}
-                                                        checked={data.method === method}
-                                                        onChange={changeMethod}
-                                                        icon={METHOD_ICONS[method]}
-                                                        title={look.title}
-                                                        hint={look.tileHint}
-                                                        tone="green"
-                                                        stacked
-                                                        shortcut={index + 1}
-                                                    />
-                                                );
-                                            })}
-                                        </div>
-                                        <InputError message={errors.method} className="mt-2" />
-                                    </fieldset>
-                                </FormStep>
+                                <DiscountMethodStep
+                                    changeMethod={changeMethod}
+                                    data={data}
+                                    errors={errors}
+                                    kiloPrice={kiloPrice}
+                                    methods={methods}
+                                    steps={steps}
+                                />
                             )}
                             {!isStanding && <InputError message={errors.method} />}
 
-                            <FormStep number={steps.value} title={field.label} hint={field.hint} done={value > 0 && !invalid}>
-                                <div>
-                                    <AmountBox
-                                        id="value"
-                                        inputRef={valueInput}
-                                        value={data.value}
-                                        onChange={(e) => setData('value', normalizeDecimalInput(e.target.value))}
-                                        unit={field.unit}
-                                        label="قيمة الخصم"
-                                        autoFocus
-                                        error={Boolean(errors.value || invalid)}
-                                    >
-                                        {QUICK_VALUES[data.kind][data.method].map((quick) => (
-                                            <QuickPick key={quick} onClick={() => setValue(quick)}>
-                                                {quick}
-                                                {field.suffix}
-                                            </QuickPick>
-                                        ))}
-                                        {!isStanding && owed > 0 && (
-                                            <QuickPick tone="green" onClick={() => setValue(owed)}>
-                                                كل ما عليه
-                                            </QuickPick>
-                                        )}
-                                        {isStanding && value > 0 && !invalid && (
-                                            <span className="ms-auto text-[13.5px] text-gray-500">
-                                                يوفّر{' '}
-                                                <b className="font-display text-emerald-700 dark:text-emerald-400">{formatMoney(weeklySaving)} ₪</b>{' '}
-                                                في الأسبوع
-                                            </span>
-                                        )}
-                                    </AmountBox>
-                                    <InputError message={errors.value ?? invalid} className="mt-2" />
-                                    {isStanding && value > 0 && !invalid && exampleWithDiscount.amountDue < Number(example.minimumPayment) && (
-                                        <FieldWarning>
-                                            مع خصم القراءات الأسبوعية لا يُطبَّق الحد الأدنى للأسبوع ({formatMoney(example.minimumPayment)} ₪): يدفع
-                                            المشترك ثمن الكيلوات بعد الخصم فقط.
-                                        </FieldWarning>
-                                    )}
-                                </div>
-                            </FormStep>
+                            <DiscountValueStep
+                                data={data}
+                                errors={errors}
+                                example={example}
+                                exampleWithDiscount={exampleWithDiscount}
+                                field={field}
+                                invalid={invalid}
+                                isStanding={isStanding}
+                                owed={owed}
+                                setData={setData}
+                                setValue={setValue}
+                                steps={steps}
+                                value={value}
+                                valueInput={valueInput}
+                                weeklySaving={weeklySaving}
+                            />
 
                             {isStanding && (
-                                <FormStep number={steps.segment} title="تصنيف الزبون" hint="اختياري: لمن هذا الخصم؟ يفيد في التقارير" done={Boolean(data.segment.trim())}>
-                                    <div>
-                                        <label htmlFor="discount_segment" className="sr-only">تصنيف الزبون</label>
-                                        <input
-                                            id="discount_segment"
-                                            name="segment"
-                                            maxLength={100}
-                                            autoComplete="off"
-                                            placeholder="مثال: موظفو أبو زايد"
-                                            value={data.segment}
-                                            onChange={(e) => setData('segment', e.target.value)}
-                                            className={inputClass}
-                                        />
-                                        {discountSegments.length > 0 && (
-                                            <div className="mt-2.5 flex flex-wrap gap-2">
-                                                {discountSegments.map((segment) => (
-                                                    <button
-                                                        key={segment}
-                                                        type="button"
-                                                        aria-pressed={data.segment === segment}
-                                                        onClick={() => setData('segment', data.segment === segment ? '' : segment)}
-                                                        className={`rounded-full border px-3 py-1 text-[13.5px] font-semibold transition ${
-                                                            data.segment === segment
-                                                                ? 'border-gray-900 bg-gray-900 text-surface'
-                                                                : 'border-gray-100 bg-gray-50 text-gray-700 hover:border-gray-200 hover:text-gray-900'
-                                                        }`}
-                                                    >
-                                                        {segment}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        )}
-                                        <InputError message={errors.segment} className="mt-2" />
-                                    </div>
-                                </FormStep>
+                                <DiscountSegmentStep
+                                    data={data}
+                                    discountSegments={discountSegments}
+                                    errors={errors}
+                                    setData={setData}
+                                    steps={steps}
+                                />
                             )}
 
-                            <FormStep number={steps.notes} title="ملاحظات" hint="اختياري" done={Boolean(data.notes.trim())}>
-                                <div>
-                                    <label htmlFor="discount_notes" className="sr-only">ملاحظات</label>
-                                    <textarea
-                                        id="discount_notes"
-                                        name="notes"
-                                        rows={2}
-                                        maxLength={1000}
-                                        placeholder="مثال: خصم بموافقة المدير"
-                                        value={data.notes}
-                                        onChange={(e) => setData('notes', e.target.value)}
-                                        className={`${inputClass} h-auto min-h-[76px] resize-y py-3 leading-relaxed`}
-                                    />
-                                    <InputError message={errors.notes} className="mt-2" />
-                                </div>
-                            </FormStep>
+                            <DiscountNotesStep data={data} errors={errors} setData={setData} steps={steps} />
 
                             {correcting && (
                                 <FormStep number={steps.notes + 1} title="سبب التصحيح">
