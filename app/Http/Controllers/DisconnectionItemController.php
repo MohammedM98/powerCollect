@@ -20,6 +20,7 @@ use App\Models\MessageBatch;
 use App\Models\Subscription;
 use App\Models\SubscriptionMessage;
 use App\Notifications\ActionCompleted;
+use App\Support\Disconnections\DisconnectionItemPage;
 use App\Support\Disconnections\DisconnectionItemPresenter;
 use App\Support\Ledger\Money;
 use App\Support\Messaging\MessageComposer;
@@ -119,7 +120,7 @@ class DisconnectionItemController extends Controller
         $date = Carbon::parse($request->validated('scheduled_for'));
         $reason = $request->validated('reason');
 
-        return $this->eachItem($request, $disconnectionList, 'reschedule', 'disconnection-items-rescheduled', fn (DisconnectionListItem $item): ?string => $item->reschedule($date, $request->user(), $reason) ? null : 'لم يعد بانتظار القطع');
+        return DisconnectionItemPage::eachItem($request, $disconnectionList, 'reschedule', 'disconnection-items-rescheduled', fn (DisconnectionListItem $item): ?string => $item->reschedule($date, $request->user(), $reason) ? null : 'لم يعد بانتظار القطع');
     }
 
     /**
@@ -133,7 +134,7 @@ class DisconnectionItemController extends Controller
 
         $reason = $request->validated('reason');
 
-        return $this->eachItem($request, $disconnectionList, 'remove', 'disconnection-items-removed', fn (DisconnectionListItem $item): ?string => $item->remove($request->user(), $reason) ? null : 'لم يعد بانتظار القطع');
+        return DisconnectionItemPage::eachItem($request, $disconnectionList, 'remove', 'disconnection-items-removed', fn (DisconnectionListItem $item): ?string => $item->remove($request->user(), $reason) ? null : 'لم يعد بانتظار القطع');
     }
 
     /**
@@ -165,9 +166,9 @@ class DisconnectionItemController extends Controller
             $phone = $item->subscription->contactPhone();
 
             if (! $item->isScheduled()) {
-                $failed[] = $this->failure($item, 'لم يعد بانتظار القطع');
+                $failed[] = DisconnectionItemPage::failure($item, 'لم يعد بانتظار القطع');
             } elseif (! filled($phone)) {
-                $failed[] = $this->failure($item, 'لا يوجد رقم هاتف');
+                $failed[] = DisconnectionItemPage::failure($item, 'لا يوجد رقم هاتف');
             } else {
                 $recipients[] = $item;
             }
@@ -255,7 +256,7 @@ class DisconnectionItemController extends Controller
                 $succeeded++;
                 $feesTotal = Money::add($feesTotal, $item->fee_amount);
             } else {
-                $failed[] = $this->failure($item, DisconnectionListItem::OUTCOMES[$outcome]);
+                $failed[] = DisconnectionItemPage::failure($item, DisconnectionListItem::OUTCOMES[$outcome]);
             }
         }
 
@@ -287,52 +288,5 @@ class DisconnectionItemController extends Controller
         $actor->notify(new ActionCompleted('disconnections-confirmed', $disconnectionList->title.' — '.$succeeded));
 
         return back()->with('status', $failed === [] ? 'disconnections-confirmed' : 'disconnections-confirmed-partly');
-    }
-
-    /**
-     * Apply the action to each chosen item on its own and report the items
-     * it could not be applied to.
-     *
-     * @param  callable(DisconnectionListItem): ?string  $apply  returns why it failed, or null
-     */
-    private function eachItem(RescheduleDisconnectionItemsRequest|RemoveDisconnectionItemsRequest $request, DisconnectionList $list, string $action, string $status, callable $apply): RedirectResponse
-    {
-        $succeeded = 0;
-        $failed = [];
-
-        foreach ($request->items() as $item) {
-            $why = $apply($item);
-
-            if ($why === null) {
-                $succeeded++;
-            } else {
-                $failed[] = $this->failure($item, $why);
-            }
-        }
-
-        Inertia::flash('disconnectionResult', ['action' => $action, 'succeeded' => $succeeded, 'failed' => $failed]);
-
-        if ($succeeded === 0) {
-            return back()->withErrors(['ids' => 'لم يُطبَّق الإجراء على أي مشترك؛ راجع الأسباب في التقرير.']);
-        }
-
-        $request->user()->notify(new ActionCompleted($status, $list->title.' — '.$succeeded));
-
-        return back()->with('status', $status);
-    }
-
-    /**
-     * An item an action could not be applied to, and why.
-     *
-     * @return array{id: int, name: string, accountNumber: ?string, reason: string}
-     */
-    private function failure(DisconnectionListItem $item, string $reason): array
-    {
-        return [
-            'id' => $item->id,
-            'name' => $item->subscription->displayName(),
-            'accountNumber' => $item->subscription->account_number,
-            'reason' => $reason,
-        ];
     }
 }

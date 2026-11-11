@@ -8,19 +8,15 @@ use App\Enums\MessageStatus;
 use App\Enums\SubscriptionStatus;
 use App\Http\Requests\MessageRecipientsRequest;
 use App\Http\Requests\StoreMessageBatchRequest;
-use App\Jobs\SendSubscriptionMessage;
-use App\Models\Branch;
 use App\Models\MessageBatch;
-use App\Models\MessageTemplate;
 use App\Models\MeterBox;
 use App\Models\SmsSetting;
 use App\Models\Subscription;
 use App\Models\SubscriptionMessage;
-use App\Models\User;
 use App\Notifications\ActionCompleted;
 use App\Support\Messaging\MessageComposer;
+use App\Support\Messaging\MessagePage;
 use App\Support\Messaging\PhoneNumber;
-use App\Support\Messaging\SmsGateway;
 use App\Support\Queries\DataTableFilters;
 use App\Support\Queries\SubscriptionListQuery;
 use App\Support\Readings\ReadingWeeks;
@@ -28,7 +24,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -46,7 +41,7 @@ class MessageController extends Controller
     /**
      * The most subscriptions a search in the quick message window lists.
      */
-    private const SEARCH_RESULTS = 8;
+    public const SEARCH_RESULTS = 8;
 
     public function __construct(private MessageComposer $composer) {}
 
@@ -65,7 +60,7 @@ class MessageController extends Controller
 
         $batches = $query->paginate(DataTableFilters::dataTablePerPage($request))
             ->withQueryString()
-            ->through(fn (MessageBatch $batch) => $this->batchSummary($batch));
+            ->through(fn (MessageBatch $batch) => MessagePage::batchSummary($batch));
 
         $filterOptions = [
             DataTableFilters::filterGroup('kind', 'النوع', MessageKind::options()),
@@ -98,8 +93,8 @@ class MessageController extends Controller
         $meterBoxes = MeterBox::query()->visibleTo($actor)->with(['branch', 'subArea'])->orderBy('box_number')->get();
 
         return Inertia::render('Messages/Create', [
-            ...$this->writingOptions($actor),
-            'weekBranchId' => $this->readingBranchId($request),
+            ...MessagePage::writingOptions($actor),
+            'weekBranchId' => MessagePage::readingBranchId($request),
             'statusOptions' => SubscriptionStatus::options(),
             'branchOptions' => $actor->isSuperAdmin() ? DataTableFilters::branchFilterGroup()['options'] : [],
             'meterBoxGroups' => DataTableFilters::meterBoxFilterGroups(
@@ -108,8 +103,8 @@ class MessageController extends Controller
             ),
             'circuitBreakerOptions' => DataTableFilters::circuitBreakerFilterGroup()['options'],
             'maxRecipients' => MessageComposer::MAX_RECIPIENTS,
-            'criteria' => $this->criteria($request) + ['kind' => $this->requestedKind($request)->value],
-            'recipients' => Inertia::optional(fn () => $this->recipientRows($request, $actor)),
+            'criteria' => MessagePage::criteria($request) + ['kind' => MessagePage::requestedKind($request)->value],
+            'recipients' => Inertia::optional(fn () => MessagePage::recipientRows($request, $actor)),
         ]);
     }
 
@@ -122,10 +117,10 @@ class MessageController extends Controller
     {
         $this->authorize('create', MessageBatch::class);
 
-        $weekBranchId = $this->readingBranchId($request);
+        $weekBranchId = MessagePage::readingBranchId($request);
 
         return response()->json([
-            ...$this->writingOptions($request->user()),
+            ...MessagePage::writingOptions($request->user()),
             'weekBranchId' => $weekBranchId,
             'weekStart' => ReadingWeeks::latestEndedWeekStart($weekBranchId)->toDateString(),
             'maxRecipients' => MessageComposer::MAX_RECIPIENTS,
@@ -157,7 +152,7 @@ class MessageController extends Controller
 
             $request->merge(['subscription_ids' => $ids, 'status' => '', 'search' => '']);
 
-            return response()->json(['recipients' => $ids === [] ? [] : $this->recipientRows($request, $request->user())]);
+            return response()->json(['recipients' => $ids === [] ? [] : MessagePage::recipientRows($request, $request->user())]);
         }
 
         $searching = $request->filled('search');
@@ -167,7 +162,7 @@ class MessageController extends Controller
         }
 
         return response()->json([
-            'recipients' => $this->recipientRows($request, $request->user(), $searching ? self::SEARCH_RESULTS : MessageComposer::MAX_RECIPIENTS),
+            'recipients' => MessagePage::recipientRows($request, $request->user(), $searching ? self::SEARCH_RESULTS : MessageComposer::MAX_RECIPIENTS),
         ]);
     }
 
@@ -184,7 +179,7 @@ class MessageController extends Controller
         $body = $request->validated('body');
 
         $recipients = $this->composer
-            ->recipients($kind, $actor, [...$this->criteria($request), 'subscription_ids' => $request->validated('subscription_ids')])
+            ->recipients($kind, $actor, [...MessagePage::criteria($request), 'subscription_ids' => $request->validated('subscription_ids')])
             ->filter(fn (Subscription $subscription): bool => filled($subscription->contactPhone()));
 
         if ($recipients->isEmpty()) {
@@ -217,7 +212,7 @@ class MessageController extends Controller
         });
 
         if ($channel === MessageChannel::Sms) {
-            $this->dispatchPending($batch);
+            MessagePage::dispatchPending($batch);
         }
 
         $actor->notify(new ActionCompleted('messages-created', __($kind->label()).' — '.$recipients->count()));
@@ -266,7 +261,7 @@ class MessageController extends Controller
             ]);
 
         return Inertia::render('Messages/Show', [
-            'batch' => $this->batchSummary($batch) + ['body' => $batch->body],
+            'batch' => MessagePage::batchSummary($batch) + ['body' => $batch->body],
             'messages' => $messages,
             'canUpdate' => $actor->can('update', $batch),
             'filters' => DataTableFilters::dataTableState($request, 'id', 'asc', 25),
@@ -286,7 +281,7 @@ class MessageController extends Controller
         }
 
         $batch->messages()->where('status', MessageStatus::Failed)->update(['status' => MessageStatus::Pending, 'error' => null]);
-        $this->dispatchPending($batch);
+        MessagePage::dispatchPending($batch);
 
         return back()->with('status', 'messages-retried');
     }
@@ -305,131 +300,5 @@ class MessageController extends Controller
         $message->markSent($request->user());
 
         return back();
-    }
-
-    /**
-     * The choices for writing a message: its kinds, the ways of sending, the
-     * saved templates, the placeholders of each kind, and each branch's
-     * recent reading weeks (each branch reads on its own weeks).
-     *
-     * @return array<string, mixed>
-     */
-    private function writingOptions(User $actor): array
-    {
-        return [
-            'kinds' => MessageKind::options(MessageKind::composable()),
-            'channels' => MessageChannel::options(),
-            'smsDeliversMessages' => app(SmsGateway::class)->deliversMessages(),
-            'templates' => MessageTemplate::query()->orderBy('name')->get(['id', 'name', 'kind', 'body']),
-            'placeholders' => collect(MessageKind::composable())
-                ->mapWithKeys(fn (MessageKind $kind) => [$kind->value => MessageComposer::placeholdersFor($kind)]),
-            'weekOptions' => ReadingWeeks::recentWeekOptionsFor($actor),
-        ];
-    }
-
-    /**
-     * Queue every message of the send that is still waiting.
-     */
-    private function dispatchPending(MessageBatch $batch): void
-    {
-        $batch->messages()
-            ->where('status', MessageStatus::Pending)
-            ->each(fn (SubscriptionMessage $message) => SendSubscriptionMessage::dispatch($message));
-    }
-
-    /**
-     * What a list or a send's page shows about a send.
-     *
-     * @return array<string, mixed>
-     */
-    private function batchSummary(MessageBatch $batch): array
-    {
-        return [
-            'id' => $batch->id,
-            'kind' => $batch->kind->value,
-            'kindLabel' => __($batch->kind->label()),
-            'channel' => $batch->channel->value,
-            'channelLabel' => __($batch->channel->label()),
-            'excerpt' => Str::limit($batch->body, 90),
-            'weekStart' => $batch->week_start?->toDateString(),
-            'branchName' => $batch->branch?->name ?? 'كل الفروع',
-            'createdBy' => $batch->createdBy?->name,
-            'createdAt' => $batch->created_at->toIso8601String(),
-            'total' => (int) $batch->messages_count,
-            'pending' => (int) $batch->pending_count,
-            'sent' => (int) $batch->sent_count,
-            'failed' => (int) $batch->failed_count,
-        ];
-    }
-
-    /**
-     * The kind of message asked for in the address, a custom one by default.
-     */
-    private function requestedKind(Request $request): MessageKind
-    {
-        return MessageKind::tryFrom((string) $request->input('kind')) ?? MessageKind::Custom;
-    }
-
-    /**
-     * Who the message goes to, as asked for in the request: for a weekly
-     * reading the week (the latest ended one by default) and whether only
-     * approved readings count, for a balance reminder the least balance,
-     * and the subscription filters — active subscriptions by default.
-     *
-     * @return array{week_start: string, approved_only: bool, min_balance: float, branch_id: ?string, status: ?string, meter_box_name: ?string, meter_box_id: ?string, circuit_breaker_id: ?string, search: string, subscription_ids: array<int, int>}
-     */
-    private function criteria(Request $request): array
-    {
-        return [
-            'week_start' => (string) ($request->input('week_start') ?: ReadingWeeks::latestEndedWeekStart($this->readingBranchId($request))->toDateString()),
-            'approved_only' => $request->boolean('approved_only', true),
-            'min_balance' => (float) $request->input('min_balance', 0),
-            'branch_id' => $request->filled('branch_id') ? (string) $request->input('branch_id') : null,
-            'status' => $request->has('status') ? ((string) $request->input('status') ?: null) : SubscriptionStatus::Active->value,
-            'meter_box_name' => $request->filled('meter_box_name') ? (string) $request->input('meter_box_name') : null,
-            'meter_box_id' => $request->filled('meter_box_id') ? (string) $request->input('meter_box_id') : null,
-            'circuit_breaker_id' => $request->filled('circuit_breaker_id') ? (string) $request->input('circuit_breaker_id') : null,
-            'search' => trim((string) $request->input('search')),
-            'subscription_ids' => array_map('intval', (array) $request->input('subscription_ids', [])),
-        ];
-    }
-
-    /**
-     * The branch whose reading weeks the message follows: the user's own, or
-     * for the Super Admin the one asked for, else the first branch, as the
-     * page lists the weeks.
-     */
-    private function readingBranchId(Request $request): ?int
-    {
-        $user = $request->user();
-
-        if (! $user->isSuperAdmin()) {
-            return $user->workBranchId();
-        }
-
-        return $request->filled('branch_id') ? (int) $request->input('branch_id') : Branch::query()->orderBy('name')->value('id');
-    }
-
-    /**
-     * The recipients for the compose page's preview, at most `$limit` of them.
-     *
-     * @return array<int, array{id: int, name: string, accountNumber: ?string, phone: ?string, branchId: int, branchName: ?string, variables: array<string, string>}>
-     */
-    private function recipientRows(Request $request, User $actor, int $limit = MessageComposer::MAX_RECIPIENTS): array
-    {
-        $kind = $this->requestedKind($request);
-
-        return $this->composer->recipients($kind, $actor, $this->criteria($request), $limit)
-            ->map(fn (Subscription $subscription) => [
-                'id' => $subscription->id,
-                'name' => $subscription->displayName(),
-                'accountNumber' => $subscription->account_number,
-                'phone' => $subscription->contactPhone(),
-                'branchId' => $subscription->branch_id,
-                'branchName' => $subscription->branch?->name,
-                'variables' => $this->composer->variables($subscription, $kind),
-            ])
-            ->values()
-            ->all();
     }
 }

@@ -19,14 +19,13 @@ use App\Models\User;
 use App\Notifications\ActionCompleted;
 use App\Support\Branches\BranchDomainContext;
 use App\Support\Readings\ReadingAllocation;
+use App\Support\Readings\ReadingCyclePage;
 use App\Support\Readings\ReadingWeeks;
 use App\Support\Readings\RecurringReadingDistribution;
 use App\Support\Reports\DailySeries;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
@@ -129,7 +128,7 @@ class ReadingCycleController extends Controller
         $cycle = $readingCycle->load('branch');
         $boxes = $cycle->eligibleMeterBoxes();
         $assignments = $cycle->assignments()->with(['user', 'approvedBy:id,name'])->get()->keyBy('meter_box_id');
-        $readCounts = $this->readCounts($cycle, $boxes->pluck('id'));
+        $readCounts = ReadingCyclePage::readCounts($cycle, $boxes->pluck('id'));
         $readers = $cycle->eligibleReaders();
         $previous = $cycle->previous();
         $defaults = ReadingDistribution::query()->where('branch_id', $cycle->branch_id)->get()->keyBy('meter_box_id');
@@ -252,23 +251,5 @@ class ReadingCycleController extends Controller
         Inertia::flash('allocationResult', ['action' => 'copy', 'moved' => $result['copied'], 'conflicts' => $result['skipped']]);
 
         return back()->with('status', 'reading-cycle-copied');
-    }
-
-    /**
-     * How many of each box's subscriptions have the cycle week's reading.
-     *
-     * @param  Collection<int, int>  $boxIds
-     * @return array<int, int>
-     */
-    private function readCounts(ReadingCycle $cycle, Collection $boxIds): array
-    {
-        return DB::table('meter_readings')
-            ->join('subscriptions', 'subscriptions.id', '=', 'meter_readings.subscription_id')
-            ->whereIn('subscriptions.meter_box_id', $boxIds)
-            ->whereDate('meter_readings.week_start', $cycle->week_start->toDateString())
-            ->groupBy('subscriptions.meter_box_id')
-            ->pluck(DB::raw('count(*)'), 'subscriptions.meter_box_id')
-            ->map(fn ($count) => (int) $count)
-            ->all();
     }
 }

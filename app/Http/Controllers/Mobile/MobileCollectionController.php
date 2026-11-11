@@ -19,6 +19,7 @@ use App\Support\ArabicSearch;
 use App\Support\Closing\BranchClosingWorkflow;
 use App\Support\Closing\ClosingPeriods;
 use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\MobileCollectionData;
 use App\Support\Ledger\Money;
 use App\Support\Ledger\PaymentReferences;
 use App\Support\Ledger\RecordPayment;
@@ -32,7 +33,7 @@ use Illuminate\Support\Facades\DB;
 class MobileCollectionController extends Controller
 {
     /** How many of the latest statement lines the subscription page shows. */
-    private const RECENT_TRANSACTIONS = 10;
+    public const RECENT_TRANSACTIONS = 10;
 
     public function subscriptions(ListMobileSubscriptionsRequest $request): JsonResponse
     {
@@ -103,7 +104,7 @@ class MobileCollectionController extends Controller
         // Walk back from the current balance, so each line shows the balance it left.
         $balanceAfterInCents = $balanceInCents;
         $transactions = $recentTransactions->map(function (SubscriptionTransaction $transaction) use (&$balanceAfterInCents): array {
-            return $this->statementLine($transaction, $balanceAfterInCents);
+            return MobileCollectionData::statementLine($transaction, $balanceAfterInCents);
         });
 
         return response()->json([
@@ -147,7 +148,7 @@ class MobileCollectionController extends Controller
                 'status' => $lastReading->status->value,
                 'status_label' => __($lastReading->status->label()),
             ] : null,
-            'last_payment' => $lastPayment ? $this->collectionData($lastPayment->setRelation('subscription', $subscription)) : null,
+            'last_payment' => $lastPayment ? MobileCollectionData::collectionData($lastPayment->setRelation('subscription', $subscription)) : null,
             'transactions' => $transactions->all(),
             'permissions' => [
                 'view_history' => $canViewHistory,
@@ -180,7 +181,7 @@ class MobileCollectionController extends Controller
                 ->orWhere(fn ($sameTime) => $sameTime->where('created_at', $first->created_at)->where('id', '<=', $first->id)))
             ->sum('amount')) : 0;
         $lines = $transactions->getCollection()->map(function (SubscriptionTransaction $transaction) use (&$balanceAfterInCents): array {
-            return $this->statementLine($transaction, $balanceAfterInCents);
+            return MobileCollectionData::statementLine($transaction, $balanceAfterInCents);
         });
 
         return response()->json([
@@ -190,30 +191,6 @@ class MobileCollectionController extends Controller
             'last_page' => $transactions->lastPage(),
             'total' => $transactions->total(),
         ]);
-    }
-
-    /** @return array<string, mixed> */
-    private function statementLine(SubscriptionTransaction $transaction, int &$balanceAfterInCents): array
-    {
-        $entry = [
-            'id' => $transaction->id,
-            'date' => $transaction->created_at->copy()->setTimezone(config('app.business_timezone'))->toDateString(),
-            'recorded_at' => $transaction->created_at->copy()->setTimezone(config('app.business_timezone'))->format('Y-m-d H:i'),
-            'bank_received_on' => $transaction->bank_received_on?->toDateString(),
-            'type' => $transaction->type,
-            'type_label' => LinePresenter::typeLabel($transaction),
-            'description' => LinePresenter::description($transaction),
-            'notes' => $transaction->notes,
-            'voucher_number' => LinePresenter::displayVoucherNumber($transaction),
-            'reference_number' => $transaction->reference_number,
-            'amount' => Closing::money(abs(Closing::cents($transaction->amount))),
-            'is_credit' => (float) $transaction->amount < 0,
-            'is_cancelled' => $transaction->isCancelled(),
-            'balance_after' => Closing::money($balanceAfterInCents),
-        ];
-        $balanceAfterInCents -= Closing::cents($transaction->amount);
-
-        return $entry;
     }
 
     public function index(Request $request): JsonResponse
@@ -244,7 +221,7 @@ class MobileCollectionController extends Controller
             'payment_methods' => array_map(fn (PaymentMethod $method): string => $method->value, $methods),
             ...(in_array(PaymentMethod::Cash, $methods, true) ? ['cash_total' => Money::negate(Money::sum($collections->filter(fn (SubscriptionTransaction $transaction): bool => $transaction->payment_method === PaymentMethod::Cash)->pluck('amount')))] : []),
             ...(in_array(PaymentMethod::BankTransfer, $methods, true) ? ['bank_transfer_total' => Money::negate(Money::sum($collections->filter(fn (SubscriptionTransaction $transaction): bool => $transaction->payment_method === PaymentMethod::BankTransfer)->pluck('amount')))] : []),
-            'data' => $collections->map(fn (SubscriptionTransaction $transaction): array => $this->collectionData($transaction))->all(),
+            'data' => $collections->map(fn (SubscriptionTransaction $transaction): array => MobileCollectionData::collectionData($transaction))->all(),
         ]);
     }
 
@@ -273,7 +250,7 @@ class MobileCollectionController extends Controller
     public function store(StoreMobileCollectionRequest $request): JsonResponse
     {
         if ($existingTransaction = $request->existingTransaction()) {
-            return response()->json($this->recordedCollectionData($existingTransaction), 201);
+            return response()->json(MobileCollectionData::recordedCollectionData($existingTransaction), 201);
         }
 
         $subscription = Subscription::query()->visibleTo($request->user())->findOrFail($request->integer('subscription_id'));
@@ -314,50 +291,6 @@ class MobileCollectionController extends Controller
             abort_unless($transaction->recorded_by === $request->user()->id, 403);
         }
 
-        return response()->json($this->recordedCollectionData($transaction), 201);
-    }
-
-    /**
-     * A payment just recorded, with the subscription's balance after it, as
-     * the website's receipt shows it.
-     *
-     * @return array<string, mixed>
-     */
-    private function recordedCollectionData(SubscriptionTransaction $transaction): array
-    {
-        $transaction->load('subscription');
-
-        return [
-            ...$this->collectionData($transaction),
-            'balance_after' => $transaction->subscription->balance(),
-        ];
-    }
-
-    /**
-     * The amount is in the currency it was paid in; `amount_in_shekels` is
-     * what it took off the balance.
-     *
-     * @return array{id: int, subscription: string, amount: string, currency: string, exchange_rate: ?string, amount_in_shekels: string, payment_method: string, bank_name: ?string, bank_received_on: ?string, sender_bank_name: ?string, status: string, recorded_at: string, voucher_number: ?string, reference_number: ?string, sender_name: ?string, notes: ?string}
-     */
-    private function collectionData(SubscriptionTransaction $transaction): array
-    {
-        return [
-            'id' => $transaction->id,
-            'subscription' => $transaction->subscription->displayName(),
-            'amount' => $transaction->currency_amount,
-            'currency' => $transaction->currency->value,
-            'exchange_rate' => $transaction->exchange_rate,
-            'amount_in_shekels' => number_format(-(float) $transaction->amount, 2, '.', ''),
-            'payment_method' => $transaction->payment_method->value,
-            'bank_name' => $transaction->bank_name,
-            'bank_received_on' => $transaction->bank_received_on?->toDateString(),
-            'sender_bank_name' => $transaction->sender_bank_name,
-            'status' => 'recorded',
-            'recorded_at' => $transaction->created_at->toIso8601String(),
-            'voucher_number' => LinePresenter::printedVoucherNumber($transaction),
-            'reference_number' => $transaction->reference_number,
-            'sender_name' => $transaction->sender_name,
-            'notes' => $transaction->notes,
-        ];
+        return response()->json(MobileCollectionData::recordedCollectionData($transaction), 201);
     }
 }
