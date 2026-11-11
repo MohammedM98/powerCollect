@@ -5,6 +5,12 @@ import path from 'node:path';
 import fs from 'node:fs';
 
 /** PDF fonts and decoders stay on the application's own origin in development and production. */
+/**
+ * Serves and copies the files pdf.js loads at run time (character maps,
+ * standard fonts, the WebAssembly decoders) from node_modules/pdfjs-dist.
+ * When upgrading pdfjs-dist, check these folders still exist under the same
+ * names, and open a company form PDF before releasing.
+ */
 function pdfAssets() {
     const root = path.resolve(import.meta.dirname, 'node_modules/pdfjs-dist');
     const directories = ['cmaps', 'standard_fonts', 'wasm'];
@@ -34,7 +40,7 @@ function pdfAssets() {
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/app.jsx'],
+            input: ['resources/css/app.css', 'resources/js/app.jsx'],
             refresh: true,
         }),
         react(),
