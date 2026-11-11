@@ -40,8 +40,8 @@ class BrandSettingController extends Controller
                 'ownLogos' => array_keys(array_filter($profile['logos'])),
             ],
             'isImported' => $brand->isImported(),
-            'options' => BrandDesign::OPTIONS,
-            'presets' => BrandDesign::PRESETS,
+            'options' => BrandDesign::translatedOptions(),
+            'presets' => BrandDesign::translatedPresets(),
             'themePrimary' => Brand::THEME_PRIMARY,
         ]);
     }

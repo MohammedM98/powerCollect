@@ -23,160 +23,160 @@ class BrandDesign
      * @var array<string, array{label: string, options: array<string, string>}>
      */
     public const OPTIONS = [
-        'tableVariant' => ['label' => 'نمط مكوّن الجدول', 'options' => [
-            'default' => 'النمط الحالي',
-            'ledger' => 'سجل محاسبي',
-            'striped' => 'صفوف متناوبة',
-            'bordered' => 'شبكة بحدود',
+        'tableVariant' => ['label' => 'Table component style', 'options' => [
+            'default' => 'Current style',
+            'ledger' => 'Accounting ledger',
+            'striped' => 'Alternating rows',
+            'bordered' => 'Bordered grid',
         ]],
-        'motionStyle' => ['label' => 'حركة ظهور المحتوى', 'options' => [
-            'standard' => 'الحركة الحالية',
-            'fade' => 'ظهور تدريجي',
-            'slide' => 'انزلاق خفيف',
-            'none' => 'بدون حركة',
+        'motionStyle' => ['label' => 'Content entrance motion', 'options' => [
+            'standard' => 'Current motion',
+            'fade' => 'Gradual fade-in',
+            'slide' => 'Gentle slide',
+            'none' => 'No motion',
         ]],
-        'details' => ['label' => 'عرض التفاصيل', 'options' => [
-            'modal' => 'نافذة منبثقة وسط الشاشة',
+        'details' => ['label' => 'Details view', 'options' => [
+            'modal' => 'Centred pop-up window',
         ]],
-        'footerStyle' => ['label' => 'تذييل الصفحة', 'options' => [
-            'full' => 'كامل',
-            'compact' => 'مختصر',
+        'footerStyle' => ['label' => 'Page footer', 'options' => [
+            'full' => 'Full',
+            'compact' => 'Compact',
         ]],
-        'navigation' => ['label' => 'التنقل', 'options' => [
-            'sidebar' => 'شريط أقسام عائم',
+        'navigation' => ['label' => 'Navigation', 'options' => [
+            'sidebar' => 'Floating section bar',
         ]],
-        'navStyle' => ['label' => 'شكل الشريط والقائمة', 'options' => [
-            'glass' => 'زجاجي شفاف',
-            'solid' => 'مصمت فاتح',
-            'dark' => 'داكن',
-            'brand' => 'بلون الشركة',
+        'navStyle' => ['label' => 'Bar and menu style', 'options' => [
+            'glass' => 'Transparent glass',
+            'solid' => 'Solid light',
+            'dark' => 'Dark',
+            'brand' => 'Company colour',
         ]],
-        'width' => ['label' => 'عرض الصفحة', 'options' => [
-            'wide' => 'عريض',
-            'contained' => 'متوسط',
-            'full' => 'كامل الشاشة',
+        'width' => ['label' => 'Page width', 'options' => [
+            'wide' => 'Wide',
+            'contained' => 'Medium',
+            'full' => 'Full screen',
         ]],
-        'background' => ['label' => 'خلفية الصفحات', 'options' => [
-            'glow' => 'توهج خفيف بلون الشركة',
-            'plain' => 'سادة',
-            'gradient' => 'تدرّج من الأعلى',
-            'dots' => 'نقاط',
-            'grid' => 'شبكة خطوط',
-            'navy' => 'كحلي بإضاءة زرقاء',
-            'midnight' => 'أزرق ليلي',
-            'graphite' => 'فحمي',
+        'background' => ['label' => 'Page background', 'options' => [
+            'glow' => 'Soft glow in the company colour',
+            'plain' => 'Plain',
+            'gradient' => 'Gradient from the top',
+            'dots' => 'Dots',
+            'grid' => 'Line grid',
+            'navy' => 'Navy with blue light',
+            'midnight' => 'Night blue',
+            'graphite' => 'Charcoal',
         ]],
-        'neutral' => ['label' => 'درجة الرمادي', 'options' => [
-            'graphite' => 'جرافيت',
-            'slate' => 'رمادي مزرق',
-            'zinc' => 'رمادي بارد',
-            'neutral' => 'رمادي محايد',
-            'stone' => 'رمادي دافئ',
-            'sage' => 'رمادي مخضر',
-            'navy' => 'كحلي',
+        'neutral' => ['label' => 'Grey tone', 'options' => [
+            'graphite' => 'Graphite',
+            'slate' => 'Bluish grey',
+            'zinc' => 'Cool grey',
+            'neutral' => 'Neutral grey',
+            'stone' => 'Warm grey',
+            'sage' => 'Greenish grey',
+            'navy' => 'Navy',
         ]],
-        'radius' => ['label' => 'الزوايا', 'options' => [
-            'rounded' => 'مستديرة',
-            'soft' => 'خفيفة',
-            'sharp' => 'حادة',
-            'round' => 'مستديرة جداً',
+        'radius' => ['label' => 'Corners', 'options' => [
+            'rounded' => 'Rounded',
+            'soft' => 'Slight',
+            'sharp' => 'Sharp',
+            'round' => 'Very rounded',
         ]],
-        'buttons' => ['label' => 'الأزرار', 'options' => [
-            'gradient' => 'متدرّجة لامعة',
-            'solid' => 'مصمتة',
-            'soft' => 'ناعمة',
-            'outline' => 'محدّدة بإطار',
-            'raised' => 'بارزة ثلاثية الأبعاد',
-            'pill' => 'كبسولة مستديرة',
+        'buttons' => ['label' => 'Buttons', 'options' => [
+            'gradient' => 'Glossy gradient',
+            'solid' => 'Solid',
+            'soft' => 'Soft',
+            'outline' => 'Outlined',
+            'raised' => 'Raised 3D',
+            'pill' => 'Rounded pill',
         ]],
-        'cards' => ['label' => 'البطاقات', 'options' => [
-            'elevated' => 'بظل خفيف',
-            'outlined' => 'بإطار',
-            'flat' => 'مسطحة',
-            'floating' => 'عائمة بظل عميق',
-            'glass' => 'زجاجية',
-            'accent' => 'بخط علوي بلون الشركة',
+        'cards' => ['label' => 'Cards', 'options' => [
+            'elevated' => 'With a light shadow',
+            'outlined' => 'With a border',
+            'flat' => 'Flat',
+            'floating' => 'Floating with a deep shadow',
+            'glass' => 'Glass',
+            'accent' => 'With a top line in the company colour',
         ]],
-        'tables' => ['label' => 'الجداول', 'options' => [
-            'cards' => 'صفوف كبطاقات',
-            'striped' => 'صفوف متناوبة',
-            'bordered' => 'شبكة بحدود',
-            'minimal' => 'خطوط فاصلة فقط',
-            'boxed' => 'بطاقة واحدة بفواصل',
-            'spreadsheet' => 'جدول بيانات كثيف',
-            'elevated' => 'صفوف عائمة بظل عميق',
+        'tables' => ['label' => 'Tables', 'options' => [
+            'cards' => 'Rows as cards',
+            'striped' => 'Alternating rows',
+            'bordered' => 'Bordered grid',
+            'minimal' => 'Dividing lines only',
+            'boxed' => 'One card with dividers',
+            'spreadsheet' => 'Dense data table',
+            'elevated' => 'Floating rows with a deep shadow',
         ]],
-        'tableHeader' => ['label' => 'رأس الجداول', 'options' => [
-            'plain' => 'بلا خلفية',
-            'tinted' => 'رمادي فاتح',
-            'dark' => 'داكن',
-            'brand' => 'بلون الشركة',
+        'tableHeader' => ['label' => 'Table header', 'options' => [
+            'plain' => 'No background',
+            'tinted' => 'Light grey',
+            'dark' => 'Dark',
+            'brand' => 'Company colour',
         ]],
-        'density' => ['label' => 'كثافة الجداول', 'options' => [
-            'comfortable' => 'مريحة',
-            'compact' => 'مضغوطة',
-            'spacious' => 'واسعة',
+        'density' => ['label' => 'Table density', 'options' => [
+            'comfortable' => 'Comfortable',
+            'compact' => 'Condensed',
+            'spacious' => 'Spacious',
         ]],
-        'tableToolbar' => ['label' => 'شريط أدوات الجداول', 'options' => [
-            'card' => 'بطاقة بخط علوي',
-            'plain' => 'بلا خلفية',
-            'tinted' => 'خلفية ملوّنة خفيفة',
+        'tableToolbar' => ['label' => 'Table toolbar', 'options' => [
+            'card' => 'Card with a top line',
+            'plain' => 'No background',
+            'tinted' => 'Light coloured background',
         ]],
-        'searchStyle' => ['label' => 'البحث والفلاتر', 'options' => [
-            'default' => 'بإطار',
-            'pill' => 'كبسولة مستديرة',
-            'filled' => 'معبأة بخلفية',
-            'underline' => 'خط سفلي',
-            'panel' => 'داخل لوحة ملوّنة',
+        'searchStyle' => ['label' => 'Search and filters', 'options' => [
+            'default' => 'With a border',
+            'pill' => 'Rounded pill',
+            'filled' => 'Filled with a background',
+            'underline' => 'Underline',
+            'panel' => 'Inside a coloured panel',
         ]],
-        'inputs' => ['label' => 'حقول الإدخال', 'options' => [
-            'outlined' => 'بإطار',
-            'filled' => 'معبأة بخلفية',
-            'underline' => 'خط سفلي فقط',
-            'pill' => 'كبسولة مستديرة',
-            'inset' => 'غائرة بظل داخلي',
-            'thick' => 'بإطار سميك',
+        'inputs' => ['label' => 'Input fields', 'options' => [
+            'outlined' => 'With a border',
+            'filled' => 'Filled with a background',
+            'underline' => 'Underline only',
+            'pill' => 'Rounded pill',
+            'inset' => 'Inset with an inner shadow',
+            'thick' => 'With a thick border',
         ]],
-        'inputFocus' => ['label' => 'الحقل عند الكتابة فيه', 'options' => [
-            'ring' => 'حلقة خفيفة',
-            'glow' => 'هالة بلون الشركة',
-            'border' => 'إطار ملوّن فقط',
+        'inputFocus' => ['label' => 'Field while typing', 'options' => [
+            'ring' => 'Light ring',
+            'glow' => 'Glow in the company colour',
+            'border' => 'Coloured border only',
         ]],
-        'checkboxes' => ['label' => 'مربعات الاختيار', 'options' => [
-            'square' => 'مربعة',
-            'rounded' => 'مستديرة الزوايا',
-            'circle' => 'دائرية',
-            'large' => 'كبيرة',
+        'checkboxes' => ['label' => 'Checkboxes', 'options' => [
+            'square' => 'Square',
+            'rounded' => 'Rounded corners',
+            'circle' => 'Circular',
+            'large' => 'Large (checkbox)',
         ]],
-        'switches' => ['label' => 'مفاتيح التشغيل والإيقاف', 'options' => [
-            'pill' => 'خضراء كبسولة',
-            'brand' => 'بلون الشركة',
-            'square' => 'مربعة',
-            'slim' => 'نحيفة بمقبض كبير',
+        'switches' => ['label' => 'On/off switches', 'options' => [
+            'pill' => 'Green pill',
+            'brand' => 'Company colour',
+            'square' => 'Square',
+            'slim' => 'Thin with a large knob',
         ]],
-        'badges' => ['label' => 'شارات الحالة', 'options' => [
-            'soft' => 'ناعمة',
-            'solid' => 'مصمتة',
-            'outline' => 'بإطار',
+        'badges' => ['label' => 'Status badges', 'options' => [
+            'soft' => 'Soft',
+            'solid' => 'Solid',
+            'outline' => 'With a border',
         ]],
-        'pageTitle' => ['label' => 'عناوين الصفحات', 'options' => [
-            'plain' => 'نص فقط',
-            'bar' => 'بشريط جانبي ملوّن',
-            'underline' => 'بخط سفلي ملوّن',
+        'pageTitle' => ['label' => 'Page titles', 'options' => [
+            'plain' => 'Text only',
+            'bar' => 'With a coloured side bar',
+            'underline' => 'With a coloured underline',
         ]],
-        'textSize' => ['label' => 'حجم الخط', 'options' => [
-            'normal' => 'عادي',
-            'small' => 'أصغر',
-            'large' => 'أكبر',
+        'textSize' => ['label' => 'Font size', 'options' => [
+            'normal' => 'Normal',
+            'small' => 'Smaller',
+            'large' => 'Larger',
         ]],
-        'bodyFont' => ['label' => 'خط النصوص', 'options' => [
+        'bodyFont' => ['label' => 'Body font', 'options' => [
             'plex' => 'IBM Plex Sans Arabic',
             'alexandria' => 'Alexandria',
             'cairo' => 'Cairo',
             'tajawal' => 'Tajawal',
             'kufi' => 'Noto Kufi Arabic',
         ]],
-        'headingFont' => ['label' => 'خط العناوين', 'options' => [
+        'headingFont' => ['label' => 'Heading font', 'options' => [
             'messiri' => 'El Messiri',
             'alexandria' => 'Alexandria',
             'plex' => 'IBM Plex Sans Arabic',
@@ -184,51 +184,51 @@ class BrandDesign
             'tajawal' => 'Tajawal',
             'kufi' => 'Noto Kufi Arabic',
         ]],
-        'motion' => ['label' => 'الحركة', 'options' => [
-            'full' => 'حركة كاملة',
-            'reduced' => 'بلا حركة',
+        'motion' => ['label' => 'Motion', 'options' => [
+            'full' => 'Full motion',
+            'reduced' => 'No animation',
         ]],
-        'buttonHover' => ['label' => 'الأزرار عند المرور', 'options' => [
-            'brighten' => 'تفتيح',
-            'lift' => 'ارتفاع مع ظل',
-            'glow' => 'هالة ملوّنة',
-            'darken' => 'تغميق',
-            'scale' => 'تكبير خفيف',
-            'none' => 'بلا تغيير',
+        'buttonHover' => ['label' => 'Buttons on hover', 'options' => [
+            'brighten' => 'Lighten',
+            'lift' => 'Lift with a shadow',
+            'glow' => 'Coloured glow',
+            'darken' => 'Darken',
+            'scale' => 'Slight zoom',
+            'none' => 'No change',
         ]],
-        'buttonPress' => ['label' => 'الأزرار عند الضغط', 'options' => [
-            'sink' => 'نزول خفيف',
-            'shrink' => 'انكماش',
-            'none' => 'بلا حركة',
+        'buttonPress' => ['label' => 'Buttons when pressed', 'options' => [
+            'sink' => 'Slight press down',
+            'shrink' => 'Shrink',
+            'none' => 'No animation',
         ]],
-        'buttonSize' => ['label' => 'حجم الأزرار', 'options' => [
-            'regular' => 'عادي',
-            'compact' => 'صغير',
-            'large' => 'كبير',
+        'buttonSize' => ['label' => 'Button size', 'options' => [
+            'regular' => 'Normal',
+            'compact' => 'Small (size)',
+            'large' => 'Large (size)',
         ]],
-        'cardHover' => ['label' => 'البطاقات عند المرور', 'options' => [
-            'none' => 'ثابتة',
-            'lift' => 'ترتفع',
-            'glow' => 'هالة بلون الشركة',
-            'outline' => 'إطار بلون الشركة',
+        'cardHover' => ['label' => 'Cards on hover', 'options' => [
+            'none' => 'Static',
+            'lift' => 'Lift',
+            'glow' => 'Glow in the company colour',
+            'outline' => 'Border in the company colour',
         ]],
-        'rowHover' => ['label' => 'صفوف الجداول عند المرور', 'options' => [
-            'lift' => 'ترتفع كبطاقة',
-            'tint' => 'تتلون بلون خفيف',
-            'edge' => 'خط جانبي فقط',
-            'none' => 'بلا تغيير',
+        'rowHover' => ['label' => 'Table rows on hover', 'options' => [
+            'lift' => 'Lift like a card',
+            'tint' => 'Light colour tint',
+            'edge' => 'Side line only',
+            'none' => 'No change',
         ]],
-        'focusRing' => ['label' => 'إطار التركيز (لوحة المفاتيح)', 'options' => [
-            'dark' => 'داكن',
-            'brand' => 'بلون الشركة',
-            'halo' => 'هالة ناعمة',
+        'focusRing' => ['label' => 'Focus ring (keyboard)', 'options' => [
+            'dark' => 'Dark',
+            'brand' => 'Company colour',
+            'halo' => 'Soft glow',
         ]],
-        'navHighlight' => ['label' => 'تمييز القسم الحالي', 'options' => [
-            'pill' => 'كبسولة داكنة',
-            'brand' => 'كبسولة بلون الشركة',
-            'underline' => 'خط سفلي',
-            'secondary' => 'كبسولة باللون الثانوي',
-            'accent' => 'كبسولة بلون الإبراز',
+        'navHighlight' => ['label' => 'Current section highlight', 'options' => [
+            'pill' => 'Dark pill',
+            'brand' => 'Pill in the company colour',
+            'underline' => 'Underline',
+            'secondary' => 'Pill in the secondary colour',
+            'accent' => 'Pill in the accent colour',
         ]],
     ];
 
@@ -240,18 +240,18 @@ class BrandDesign
      * @var array<string, array{label: string, min: float, max: float, step: float, unit: string}>
      */
     public const TOKENS = [
-        'radiusScale' => ['label' => 'مقياس الزوايا', 'min' => 0, 'max' => 2, 'step' => 0.05, 'unit' => '×'],
-        'fontScale' => ['label' => 'مقياس الخط', 'min' => 0.85, 'max' => 1.25, 'step' => 0.01, 'unit' => '×'],
-        'contentWidth' => ['label' => 'أقصى عرض للمحتوى', 'min' => 960, 'max' => 2400, 'step' => 20, 'unit' => 'px'],
-        'buttonRadius' => ['label' => 'استدارة الأزرار', 'min' => 0, 'max' => 40, 'step' => 1, 'unit' => 'px'],
-        'buttonHeight' => ['label' => 'ارتفاع الأزرار', 'min' => 30, 'max' => 60, 'step' => 1, 'unit' => 'px'],
-        'buttonPaddingX' => ['label' => 'الحشو الأفقي للأزرار', 'min' => 6, 'max' => 40, 'step' => 1, 'unit' => 'px'],
-        'buttonFontWeight' => ['label' => 'سماكة خط الأزرار', 'min' => 400, 'max' => 800, 'step' => 100, 'unit' => ''],
-        'hoverLift' => ['label' => 'مقدار الارتفاع عند المرور', 'min' => 0, 'max' => 8, 'step' => 1, 'unit' => 'px'],
-        'shadowStrength' => ['label' => 'قوة الظلال', 'min' => 0, 'max' => 2, 'step' => 0.05, 'unit' => '×'],
-        'transitionMs' => ['label' => 'سرعة الحركة', 'min' => 0, 'max' => 800, 'step' => 20, 'unit' => 'ms'],
-        'glassAlpha' => ['label' => 'شفافية الزجاج', 'min' => 0.2, 'max' => 0.9, 'step' => 0.05, 'unit' => ''],
-        'glassBlur' => ['label' => 'قوة تمويه الزجاج', 'min' => 0, 'max' => 40, 'step' => 2, 'unit' => 'px'],
+        'radiusScale' => ['label' => 'Corner scale', 'min' => 0, 'max' => 2, 'step' => 0.05, 'unit' => '×'],
+        'fontScale' => ['label' => 'Font scale', 'min' => 0.85, 'max' => 1.25, 'step' => 0.01, 'unit' => '×'],
+        'contentWidth' => ['label' => 'Maximum content width', 'min' => 960, 'max' => 2400, 'step' => 20, 'unit' => 'px'],
+        'buttonRadius' => ['label' => 'Button rounding', 'min' => 0, 'max' => 40, 'step' => 1, 'unit' => 'px'],
+        'buttonHeight' => ['label' => 'Button height', 'min' => 30, 'max' => 60, 'step' => 1, 'unit' => 'px'],
+        'buttonPaddingX' => ['label' => 'Button horizontal padding', 'min' => 6, 'max' => 40, 'step' => 1, 'unit' => 'px'],
+        'buttonFontWeight' => ['label' => 'Button font weight', 'min' => 400, 'max' => 800, 'step' => 100, 'unit' => ''],
+        'hoverLift' => ['label' => 'Lift amount on hover', 'min' => 0, 'max' => 8, 'step' => 1, 'unit' => 'px'],
+        'shadowStrength' => ['label' => 'Shadow strength', 'min' => 0, 'max' => 2, 'step' => 0.05, 'unit' => '×'],
+        'transitionMs' => ['label' => 'Motion speed', 'min' => 0, 'max' => 800, 'step' => 20, 'unit' => 'ms'],
+        'glassAlpha' => ['label' => 'Glass transparency', 'min' => 0.2, 'max' => 0.9, 'step' => 0.05, 'unit' => ''],
+        'glassBlur' => ['label' => 'Glass blur strength', 'min' => 0, 'max' => 40, 'step' => 2, 'unit' => 'px'],
     ];
 
     /**
@@ -262,61 +262,87 @@ class BrandDesign
      */
     public const PRESETS = [
         'superpower' => [
-            'label' => 'سوبر باور زجاجي كحلي',
-            'description' => 'بطاقات زجاجية كحلية فوق خلفية بإضاءة زرقاء، شريط أقسام عائم، جداول داخل لوحات زجاجية، أزرار متدرجة وحقول معبأة.',
+            'label' => 'Navy glass super power',
+            'description' => 'Navy glass cards over a blue-lit background, a floating section bar, tables inside glass panels, gradient buttons and filled fields.',
             'design' => ['background' => 'navy', 'neutral' => 'navy', 'cards' => 'glass', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand', 'navHighlight' => 'brand'],
         ],
         'classic' => [
-            'label' => 'كلاسيكي فاخر',
-            'description' => 'الشكل الكلاسيكي: أزرار لامعة وصفوف كبطاقات.',
+            'label' => 'Classic premium',
+            'description' => 'The classic look: glossy buttons and rows as cards.',
             'design' => [],
         ],
         'corporate' => [
-            'label' => 'مؤسسي',
-            'description' => 'شريط أقسام فاتح وجداول بشبكة ورأس رمادي، كأنظمة المؤسسات والبنوك.',
+            'label' => 'Corporate',
+            'description' => 'A light section bar and grid tables with a grey header, like corporate and bank systems.',
             'design' => ['navStyle' => 'solid', 'width' => 'full', 'background' => 'plain', 'neutral' => 'slate', 'radius' => 'soft', 'buttons' => 'solid', 'cards' => 'outlined', 'tables' => 'bordered', 'tableHeader' => 'tinted', 'density' => 'compact', 'headingFont' => 'plex', 'pageTitle' => 'bar', 'searchStyle' => 'filled', 'focusRing' => 'brand', 'checkboxes' => 'rounded'],
         ],
         'minimal' => [
-            'label' => 'بسيط وهادئ',
-            'description' => 'مساحات بيضاء، أزرار بإطار وجداول بخطوط فاصلة فقط.',
+            'label' => 'Simple and calm',
+            'description' => 'White space, outlined buttons and tables with dividing lines only.',
             'design' => ['navStyle' => 'solid', 'width' => 'contained', 'background' => 'plain', 'neutral' => 'zinc', 'radius' => 'soft', 'buttons' => 'outline', 'cards' => 'flat', 'tables' => 'minimal', 'inputs' => 'underline', 'badges' => 'outline', 'headingFont' => 'alexandria', 'rowHover' => 'tint', 'focusRing' => 'halo', 'searchStyle' => 'underline', 'tableToolbar' => 'plain'],
         ],
         'soft' => [
-            'label' => 'ناعم عصري',
-            'description' => 'قائمة مصغّرة، زوايا مستديرة جداً وبطاقات عائمة وحقول معبأة.',
+            'label' => 'Soft modern',
+            'description' => 'A compact menu, very rounded corners, floating cards and filled fields.',
             'design' => ['background' => 'gradient', 'radius' => 'round', 'buttons' => 'soft', 'cards' => 'floating', 'tables' => 'striped', 'inputs' => 'filled', 'bodyFont' => 'alexandria', 'headingFont' => 'alexandria', 'buttonHover' => 'glow', 'cardHover' => 'glow', 'searchStyle' => 'pill', 'switches' => 'brand', 'checkboxes' => 'circle'],
         ],
         'operations' => [
-            'label' => 'تشغيلي كثيف',
-            'description' => 'أكبر قدر من البيانات: قائمة داكنة، صفوف متناوبة مضغوطة، خط أصغر وزوايا حادة.',
+            'label' => 'Dense operational',
+            'description' => 'The most data: a dark menu, condensed alternating rows, a smaller font and sharp corners.',
             'design' => ['navStyle' => 'dark', 'width' => 'full', 'background' => 'plain', 'neutral' => 'neutral', 'radius' => 'sharp', 'buttons' => 'solid', 'cards' => 'outlined', 'tableHeader' => 'dark', 'density' => 'compact', 'textSize' => 'small', 'headingFont' => 'plex', 'motion' => 'reduced', 'tables' => 'spreadsheet', 'searchStyle' => 'filled', 'buttonHover' => 'darken', 'buttonSize' => 'compact', 'rowHover' => 'tint'],
         ],
         'executive' => [
-            'label' => 'تنفيذي داكن',
-            'description' => 'شريط أقسام داكن، بطاقات بخط علوي ملوّن وأزرار بارزة ورأس جداول بلون الشركة.',
+            'label' => 'Dark executive',
+            'description' => 'A dark section bar, cards with a coloured top line, raised buttons and a table header in the company colour.',
             'design' => ['navStyle' => 'dark', 'background' => 'glow', 'neutral' => 'stone', 'buttons' => 'raised', 'cards' => 'accent', 'tableHeader' => 'brand', 'badges' => 'solid', 'pageTitle' => 'underline', 'headingFont' => 'messiri', 'buttonHover' => 'lift', 'cardHover' => 'lift', 'navHighlight' => 'brand', 'switches' => 'brand', 'inputFocus' => 'glow'],
         ],
         'glass' => [
-            'label' => 'زجاجي حديث',
-            'description' => 'بطاقات زجاجية فوق خلفية متدرجة، أزرار كبسولة وزوايا مستديرة جداً.',
+            'label' => 'Modern glass',
+            'description' => 'Glass cards over a gradient background, pill buttons and very rounded corners.',
             'design' => ['navStyle' => 'glass', 'background' => 'gradient', 'radius' => 'round', 'buttons' => 'pill', 'cards' => 'glass', 'tables' => 'cards', 'inputs' => 'filled', 'bodyFont' => 'cairo', 'headingFont' => 'cairo', 'searchStyle' => 'pill', 'buttonHover' => 'scale', 'buttonPress' => 'shrink', 'cardHover' => 'glow', 'switches' => 'brand', 'inputFocus' => 'glow'],
         ],
         'official' => [
-            'label' => 'رسمي حكومي',
-            'description' => 'شريط أقسام بلون الشركة، جداول بشبكة ورأس ملوّن وعناوين بخط سفلي.',
+            'label' => 'Formal government',
+            'description' => 'A section bar in the company colour, grid tables with a coloured header and underlined titles.',
             'design' => ['navStyle' => 'brand', 'width' => 'contained', 'background' => 'grid', 'neutral' => 'neutral', 'radius' => 'soft', 'buttons' => 'solid', 'cards' => 'outlined', 'tableHeader' => 'brand', 'pageTitle' => 'underline', 'bodyFont' => 'kufi', 'headingFont' => 'kufi', 'tables' => 'boxed', 'tableToolbar' => 'tinted', 'searchStyle' => 'panel', 'checkboxes' => 'large', 'navHighlight' => 'underline'],
         ],
         'friendly' => [
-            'label' => 'ودود ومريح',
-            'description' => 'خط Tajawal بحجم أكبر، أزرار كبسولة، خلفية نقاط وشارات مصمتة.',
+            'label' => 'Friendly and comfortable',
+            'description' => 'Tajawal font at a larger size, pill buttons, a dotted background and solid badges.',
             'design' => ['navStyle' => 'solid', 'background' => 'dots', 'neutral' => 'sage', 'radius' => 'round', 'buttons' => 'pill', 'cards' => 'elevated', 'tables' => 'striped', 'badges' => 'solid', 'textSize' => 'large', 'bodyFont' => 'tajawal', 'headingFont' => 'tajawal', 'inputs' => 'pill', 'checkboxes' => 'circle', 'switches' => 'brand', 'buttonHover' => 'lift', 'buttonSize' => 'large', 'density' => 'spacious'],
         ],
         'paper' => [
-            'label' => 'ورقي هادئ',
-            'description' => 'كالورق المطبوع: زوايا حادة، بطاقات مسطحة بإطار وجداول بخطوط فقط وخط كوفي للعناوين.',
+            'label' => 'Calm paper',
+            'description' => 'Like printed paper: sharp corners, flat bordered cards, tables with lines only and a Kufi font for headings.',
             'design' => ['navStyle' => 'solid', 'width' => 'contained', 'background' => 'plain', 'neutral' => 'stone', 'radius' => 'sharp', 'buttons' => 'outline', 'cards' => 'outlined', 'tables' => 'minimal', 'tableHeader' => 'plain', 'inputs' => 'underline', 'badges' => 'outline', 'pageTitle' => 'underline', 'headingFont' => 'kufi', 'motion' => 'reduced', 'switches' => 'square', 'searchStyle' => 'underline', 'tableToolbar' => 'plain', 'buttonHover' => 'none', 'buttonPress' => 'none'],
         ],
     ];
+
+    /**
+     * The design choices with their labels in the current language, for
+     * the brand page.
+     *
+     * @return array<string, array{label: string, options: array<string, string>}>
+     */
+    public static function translatedOptions(): array
+    {
+        return array_map(fn (array $choice): array => [
+            ...$choice,
+            'label' => __($choice['label']),
+            'options' => array_map(fn (string $label): string => __($label), $choice['options']),
+        ], self::OPTIONS);
+    }
+
+    /**
+     * The complete looks with their names and descriptions in the current
+     * language, for the brand page.
+     *
+     * @return array<string, array{label: string, description: string, design: array<string, string>}>
+     */
+    public static function translatedPresets(): array
+    {
+        return array_map(fn (array $preset): array => [...$preset, 'label' => __($preset['label']), 'description' => __($preset['description'])], self::PRESETS);
+    }
 
     /**
      * Today's look: each choice's first option.

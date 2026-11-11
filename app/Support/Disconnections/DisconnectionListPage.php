@@ -110,7 +110,7 @@ class DisconnectionListPage
                 ['value' => 'upcoming', 'label' => __('Due later')],
             ]),
             DataTableFilters::filterGroup('reason', __('Disconnection reason'), DisconnectionReason::options()),
-            DataTableFilters::filterGroup('balance', 'الرصيد', [
+            DataTableFilters::filterGroup('balance', __('Balance'), [
                 ['value' => 'owing', 'label' => __('Has a balance owed')],
                 ['value' => 'paid', 'label' => __('Paid the full balance')],
                 ['value' => 'reduced', 'label' => __('Balance went down since listing')],

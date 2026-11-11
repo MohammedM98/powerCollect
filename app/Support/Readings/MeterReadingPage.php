@@ -208,7 +208,7 @@ class MeterReadingPage
         array_push($groups, ...DataTableFilters::meterBoxFilterGroupsFor($actor, $request));
         $groups[] = DataTableFilters::circuitBreakerFilterGroup();
 
-        $groups[] = DataTableFilters::filterGroup('tariff_id', 'نوع الاشتراك', DataTableFilters::modelOptions(
+        $groups[] = DataTableFilters::filterGroup('tariff_id', __('Subscription type'), DataTableFilters::modelOptions(
             Tariff::orderBy('category')->get(),
             fn (Tariff $tariff) => __($tariff->category->label()),
         ));
@@ -295,7 +295,7 @@ class MeterReadingPage
             $weekEnd = ReadingWeeks::weekEndFor($weekStart, $weekBranchId);
             $context = [
                 'templatePage' => '/meter-readings',
-                'title' => 'القراءات الأسبوعية',
+                'title' => __('Weekly readings'),
                 'branchName' => $actor->workBranch()?->name ?? __('All branches'),
                 'readingDate' => $weekEnd->toDateString(),
                 'readingDayName' => $weekEnd->locale('ar')->dayName,

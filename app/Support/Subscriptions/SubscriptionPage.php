@@ -238,7 +238,7 @@ class SubscriptionPage
      */
     public static function minimumChargeFilterGroup(User $actor): array
     {
-        return DataTableFilters::filterGroup('minimum_charge', 'الحد الأدنى', Subscription::query()
+        return DataTableFilters::filterGroup('minimum_charge', __('Minimum charge'), Subscription::query()
             ->readableTo($actor)
             ->whereNotNull('minimum_charge')
             ->distinct()
@@ -258,7 +258,7 @@ class SubscriptionPage
     {
         $groups = [
             DataTableFilters::filterGroup('status', __('Status'), SubscriptionStatus::options()),
-            DataTableFilters::filterGroup('tariff_id', 'نوع الاشتراك', DataTableFilters::modelOptions(
+            DataTableFilters::filterGroup('tariff_id', __('Subscription type'), DataTableFilters::modelOptions(
                 Tariff::orderBy('category')->get(),
                 fn (Tariff $tariff) => __($tariff->category->label()),
             )),

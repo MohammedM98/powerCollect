@@ -276,8 +276,8 @@ class DataTableFilters
     public static function linkedMeterBoxGroups(Collection $names, Collection $numbers): array
     {
         return [
-            self::filterGroup('meter_box_name', 'الطبلون', $names),
-            [...self::filterGroup('meter_box_id', 'رقم الطبلون', $numbers), 'dependsOn' => 'meter_box_name'],
+            self::filterGroup('meter_box_name', __('Meter box'), $names),
+            [...self::filterGroup('meter_box_id', __('Meter box number'), $numbers), 'dependsOn' => 'meter_box_name'],
         ];
     }
 
@@ -342,7 +342,7 @@ class DataTableFilters
     {
         $branchAreas = Branch::query()->pluck('area_id', 'id');
 
-        return self::filterGroup('area_id', 'المنطقة', collect($areas)->map(fn (Area $area) => [
+        return self::filterGroup('area_id', __('Area'), collect($areas)->map(fn (Area $area) => [
             'value' => (string) $area->getKey(),
             'label' => $area->name,
             'scope' => self::filterScope([
@@ -364,7 +364,7 @@ class DataTableFilters
     {
         $branchAreas = Branch::query()->pluck('area_id', 'id');
 
-        return self::filterGroup('sub_area_id', 'منطقة 2', collect($subAreas)->map(fn (SubArea $subArea) => [
+        return self::filterGroup('sub_area_id', __('Second area'), collect($subAreas)->map(fn (SubArea $subArea) => [
             'value' => (string) $subArea->getKey(),
             'label' => $subArea->name,
             'scope' => self::filterScope([
@@ -437,7 +437,7 @@ class DataTableFilters
      */
     public static function circuitBreakerFilterGroup(): array
     {
-        return self::filterGroup('circuit_breaker_id', 'القاطع', [
+        return self::filterGroup('circuit_breaker_id', __('Circuit breaker'), [
             ['value' => 'none', 'label' => __('No breaker')],
             ...self::modelOptions(CircuitBreaker::orderBy('ampere')->get(), fn (CircuitBreaker $breaker) => $breaker->ampere.__(' amps')),
         ]);
