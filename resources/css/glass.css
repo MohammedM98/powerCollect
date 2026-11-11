@@ -401,11 +401,6 @@
     background: var(--gl-fill-2);
 }
 
-:is(.gl-btn, .gl-ib, .gl-seg button, .gl-tog, .gl-chip, .gl-tabs button, .gl-qbtn):focus-visible {
-    outline: 2px solid rgb(var(--gl-brand));
-    outline-offset: 2px;
-}
-
 /* ── Segmented, toggles, chips, tabs ──────────────────────────────────── */
 .gl-seg {
     display: inline-flex;
@@ -928,11 +923,6 @@
     animation: gl-land 0.5s cubic-bezier(0.2, 1.4, 0.4, 1);
 }
 
-.gl-mb:focus-visible {
-    outline: 2px solid rgb(var(--gl-brand));
-    outline-offset: 2px;
-}
-
 /* Picked up from the keyboard: lifted in the company's colour until it is put down. */
 .gl-mb.is-held {
     border-color: rgb(var(--gl-brand));
@@ -1336,11 +1326,6 @@
 
 .gl-switch:disabled {
     cursor: not-allowed;
-}
-
-.gl-switch:focus-visible {
-    outline: 2px solid rgb(var(--gl-brand));
-    outline-offset: 2px;
 }
 
 .gl-switch-knob {
@@ -2053,11 +2038,6 @@
 .gl-tabs .gl-tab[aria-current='page'] {
     color: var(--gl-ink);
     border-color: rgb(var(--gl-brand));
-}
-
-.gl-tabs .gl-tab:focus-visible {
-    outline: 2px solid rgb(var(--gl-brand));
-    outline-offset: 2px;
 }
 
 /*

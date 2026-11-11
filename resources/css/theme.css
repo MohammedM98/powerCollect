@@ -482,3 +482,15 @@
     --ui-pop: var(--glass-shadow);
     --ui-hero: linear-gradient(135deg, rgb(var(--brand-lo)), rgb(var(--brand-deep)) 60%, rgb(var(--brand-deep)));
 }
+
+/*
+ * Keyboard focus: one ring, in the company's colour, for every control the
+ * glass design system draws (buttons, icon buttons, segments, toggles, chips,
+ * tabs, menu buttons and switches), so the keyboard's place looks the same
+ * everywhere. Fields show theirs on the frame (.gl-field:focus-within); the
+ * appearance setting data-ui-focus-ring recolours or softens it (app.css).
+ */
+:is(.gl-btn, .gl-ib, .gl-seg button, .gl-tog, .gl-chip, .gl-tabs button, .gl-tabs .gl-tab, .gl-qbtn, .gl-mb, .gl-switch):focus-visible {
+    outline: 2px solid rgb(var(--gl-brand));
+    outline-offset: 2px;
+}
