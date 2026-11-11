@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { cents, periodLabel } from '../../resources/js/lib/reportFormatting.js';
+import { cents, periodLabel } from '../../resources/js/lib/reportFormatting.ts';
 
 test('amounts compare in whole cents, a missing one as zero', () => {
     assert.equal(cents('12.345'), 1235);

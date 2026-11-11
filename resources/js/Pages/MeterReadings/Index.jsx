@@ -54,6 +54,9 @@ const STATUS_TABS = [
 
 const fullDate = (date) => date.split('-').reverse().join('/');
 
+/**
+ * @param {import('@/types/pages').MeterReadingsIndexProps} props
+ */
 export default function Index({
     rows,
     week,

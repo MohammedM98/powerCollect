@@ -130,6 +130,9 @@ jobs:
       - name: Lint the website code
         run: npm run lint
 
+      - name: Check the TypeScript types
+        run: npm run typecheck
+
       - name: Test frontend behavior
         run: npm test
 

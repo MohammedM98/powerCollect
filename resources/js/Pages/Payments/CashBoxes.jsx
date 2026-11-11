@@ -19,6 +19,8 @@ const stateFilters = [{ value: '', label: 'الكل' }, { value: 'open', label: 
  * dates, where and by whom it was closed, its stage, its details and its
  * report to print or download. What is open now and what waits on the
  * collector are on the summary page.
+ *
+ * @param {import('@/types/pages').CashBoxesProps} props
  */
 export default function CashBoxes({ started, branchName, boxes, filters, pendingCount, collectionUrls }) {
     const { auth } = usePage().props;

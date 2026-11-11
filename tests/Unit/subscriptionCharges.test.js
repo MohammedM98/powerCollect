@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { amountForChargeType } from '../../resources/js/lib/subscriptionCharges.js';
+import { amountForChargeType } from '../../resources/js/lib/subscriptionCharges.ts';
 
 const subscriber = { minimumPayment: '12.50', subscriptionFee: '100.00' };
 const types = [{ value: 'penalty', usualAmount: null }, { value: 'disconnection_fee', usualAmount: 20 }];

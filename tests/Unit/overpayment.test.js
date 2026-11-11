@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { overpaymentLevel } from '../../resources/js/lib/overpayment.js';
+import { overpaymentLevel } from '../../resources/js/lib/overpayment.ts';
 
 test('a payment within what is owed is not an overpayment', () => {
     assert.equal(overpaymentLevel('100', 250), 'none');

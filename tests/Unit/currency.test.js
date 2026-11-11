@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { fromCents, toCents } from '../../resources/js/lib/currency.js';
+import { fromCents, toCents } from '../../resources/js/lib/currency.ts';
 
 test('amounts become whole cents, with empty or unreadable input as zero', () => {
     assert.equal(toCents('12.345'), 1235);

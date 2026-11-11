@@ -1,4 +1,4 @@
-import { formatAmount } from './currency.js';
+import { formatAmount } from './currency.ts';
 import { formatMoney } from './format.js';
 import { discountAmount } from './accountStatement.js';
 import { weeklyCharges } from './readings.js';

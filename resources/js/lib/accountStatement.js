@@ -1,5 +1,5 @@
-import { csvText } from './csv.js';
-import { formatAmount, roundToCents } from './currency.js';
+import { csvText } from './csv.ts';
+import { formatAmount, roundToCents } from './currency.ts';
 import { balanceInText, signedBalance } from './balance.js';
 import { formatDate } from './format.js';
 

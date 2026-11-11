@@ -1,4 +1,4 @@
-import { roundToCents } from './currency.js';
+import { roundToCents } from './currency.ts';
 
 /** A price change this big (in percent, either way) is flagged before saving. */
 export const LARGE_RATE_CHANGE = 20;

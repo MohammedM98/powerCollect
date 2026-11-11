@@ -25,6 +25,9 @@ import { useSubscriptionSelection } from './useSubscriptionSelection';
 import { needsPermission } from '@/lib/permissions';
 import { statementHeader } from '@/lib/accountStatement';
 
+/**
+ * @param {import('@/types/pages').SubscriptionsIndexProps} props
+ */
 export default function Index({
     subscriptions,
     canCreate,

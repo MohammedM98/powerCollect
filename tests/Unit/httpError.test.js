@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { httpErrorMessage } from '../../resources/js/lib/httpError.js';
+import { httpErrorMessage } from '../../resources/js/lib/httpError.ts';
 
 test('a request that never reached the server asks to check the connection', () => {
     assert.match(httpErrorMessage({ name: 'HttpNetworkError' }), /تعذّر الاتصال بالخادم/);

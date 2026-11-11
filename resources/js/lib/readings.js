@@ -1,4 +1,4 @@
-import { roundToCents } from './currency.js';
+import { roundToCents } from './currency.ts';
 
 /**
  * The kWh used between two meter readings, rounded to the two decimal places

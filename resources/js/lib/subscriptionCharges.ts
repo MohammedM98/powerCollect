@@ -1,5 +1,22 @@
+import type { Amount } from './types.ts';
+
+interface ChargeDraft {
+    type: string;
+    amount: string;
+}
+
+interface ChargeSubscription {
+    minimumPayment?: Amount;
+    subscriptionFee?: Amount;
+}
+
+interface ChargeType {
+    value: string;
+    usualAmount?: Amount;
+}
+
 /** Selecting minimum charge fills the configured amount; other charges retain typed amounts. */
-export function amountForChargeType(current, type, subscription, chargeTypes) {
+export function amountForChargeType(current: ChargeDraft, type: string, subscription: ChargeSubscription, chargeTypes: ChargeType[]): string {
     if (type === 'minimum_charge') {
         return String(subscription.minimumPayment ?? '0');
     }

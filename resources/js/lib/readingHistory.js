@@ -1,5 +1,5 @@
-import { csvText } from './csv.js';
-import { roundToCents } from './currency.js';
+import { csvText } from './csv.ts';
+import { roundToCents } from './currency.ts';
 
 /** Periods are measured back from the subscription's latest recorded week. */
 export function readingsInPeriod(readings, period) {

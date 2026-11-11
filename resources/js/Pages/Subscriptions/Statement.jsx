@@ -12,6 +12,8 @@ import { BackLink } from '@/Components/PageHeader';
 /**
  * A subscription's account statement: every charge (عليه), payment and
  * discount (له), oldest first, with the balance after each line.
+ *
+ * @param {import('@/types/pages').StatementProps} props
  */
 export default function Statement(statement) {
     const { subscription, subscriptions, entries, summary, canRecordPayment, canAddCharge, canAddDiscount, canAddClearing, paymentMethods, transactionTypes } = statement;

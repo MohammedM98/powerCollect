@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { balanceFilterLabel, subscriptionFilterKey } from '../../resources/js/lib/subscriptionBalance.js';
+import { balanceFilterLabel, subscriptionFilterKey } from '../../resources/js/lib/subscriptionBalance.ts';
 import { openQuickMessage, QUICK_MESSAGE_EVENT } from '../../resources/js/lib/quickMessage.js';
 
 test('balance descriptions express debt and credit as positive amounts', () => {

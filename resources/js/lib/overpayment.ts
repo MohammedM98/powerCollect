@@ -6,12 +6,14 @@
 export const OVERPAYMENT_MULTIPLIER = 2;
 export const OVERPAYMENT_CONFIRMATION_MINIMUM = 500;
 
+export type OverpaymentLevel = 'none' | 'above' | 'confirm';
+
 /**
  * 'none' while the payment is within what is owed, 'above' once it leaves
  * the subscription in credit, and 'confirm' when it is so far above that it
  * is probably a slip (5000 for 50) and must be confirmed to be saved.
  */
-export function overpaymentLevel(amount, owed) {
+export function overpaymentLevel(amount: number | string, owed: number): OverpaymentLevel {
     const paid = Number(amount);
 
     if (!(paid > owed)) {

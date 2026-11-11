@@ -26,6 +26,8 @@ const periodLabel = (days) => (days === 7 ? '7 أيام' : `${days} يومًا`)
  * latest payments. The head of the company sees every branch and can
  * narrow to a governorate or a branch; everyone else sees their own
  * branch. Each part shows only to those who may open its page.
+ *
+ * @param {import('@/types/pages').DashboardProps} props
  */
 export default function Dashboard({
     greeting,
