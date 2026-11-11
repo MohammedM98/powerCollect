@@ -152,7 +152,14 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
 
             <PrintHeaderSection layout={layout} setIn={setIn} />
 
-            <PrintColumnsSection columnSearch={columnSearch} layout={layout} set={set} setColumn={setColumn} setColumnSearch={setColumnSearch} shownCount={shownCount} />
+            <PrintColumnsSection
+                columnSearch={columnSearch}
+                layout={layout}
+                set={set}
+                setColumn={setColumn}
+                setColumnSearch={setColumnSearch}
+                shownCount={shownCount}
+            />
 
             <PrintSortSection fieldOptions={fieldOptions} layout={layout} onChange={onChange} set={set} setIn={setIn} setSortLevel={setSortLevel} />
 
