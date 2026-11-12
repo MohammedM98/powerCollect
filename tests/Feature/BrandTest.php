@@ -70,21 +70,22 @@ class BrandTest extends TestCase
         $response->assertSee('<link rel="icon" href="/favicon.svg">', false);
     }
 
-    public function test_pages_start_in_the_superpower_navy_look_in_its_blue(): void
+    public function test_pages_start_in_the_superpower_charcoal_glass_look_in_charcoal(): void
     {
         $response = $this->get(route('login'));
 
         $response->assertInertia(fn ($page) => $page
-            ->where('brand.primaryColor', '#2F6BFF')
+            ->where('brand.primaryColor', '#2B3138')
             ->where('brand.design.preset', 'superpower')
             ->where('brand.design.navigation', 'sidebar')
             ->where('brand.design.cards', 'glass')
             ->where('brand.design.details', 'modal'));
-        $response->assertSee('data-ui-background="navy"', false);
-        $response->assertSee('data-ui-neutral="navy"', false);
+        $response->assertSee('data-ui-background="graphite"', false);
+        $response->assertSee('data-ui-neutral="graphite"', false);
         $response->assertSee(':root{--brand-50:', false);
         $response->assertSee('.dark{--brand-50:', false);
-        $response->assertSee('--gray-50:', false);
+        // The charcoal look keeps theme.css's own neutral greys: no tinted grey scale is drawn over them.
+        $response->assertDontSee('--gray-50:', false);
     }
 
     public function test_an_imported_identity_reaches_every_page_with_its_logo_and_colours(): void
@@ -280,6 +281,20 @@ class BrandTest extends TestCase
 
         $this->assertSame('modal', $design['details']);
         $this->assertSame('superpower', $design['preset']);
+    }
+
+    public function test_a_look_saved_in_the_retired_navy_or_night_blue_shows_in_charcoal(): void
+    {
+        foreach (['superpower', 'custom'] as $preset) {
+            foreach (['navy', 'midnight'] as $background) {
+                $design = BrandDesign::normalize(['preset' => $preset, 'background' => $background, 'neutral' => 'navy']);
+
+                $this->assertSame('graphite', $design['background'], "{$preset} saved with {$background}");
+                $this->assertSame('graphite', $design['neutral'], "{$preset} saved with {$background}");
+            }
+        }
+
+        $this->assertSame('superpower', BrandDesign::normalize(['preset' => 'superpower', 'background' => 'navy', 'neutral' => 'navy'])['preset']);
     }
 
     public function test_import_rejects_invalid_palette_roles_and_component_choices_without_saving(): void

@@ -201,7 +201,7 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
                     <Icon name={CATEGORY_ICONS[tariff.category] ?? 'currency'} className="h-6 w-6" />
                 </span>
                 <div className="min-w-0">
-                    <h3 className="font-luxe text-[22px] font-bold">{tariff.categoryLabel}</h3>
+                    <h2 className="font-luxe text-[22px] font-bold">{tariff.categoryLabel}</h2>
                     <small className={`block text-[13.5px] ${muted}`}>{formatNumber(tariff.subscriptionsCount)} مشترك على هذه التعرفة</small>
                 </div>
                 <div className="ms-auto flex items-center gap-2">
@@ -299,7 +299,7 @@ function QuickCalculator({ tariffs }) {
             className="mt-4 flex flex-wrap items-center gap-4 rounded-card border border-gray-100 bg-surface px-5 py-4 shadow-card sm:px-6"
         >
             <div>
-                <h3 className="font-luxe text-lg font-bold text-gray-900">حاسبة سريعة</h3>
+                <h2 className="font-luxe text-lg font-bold text-gray-900">حاسبة سريعة</h2>
                 <p className="text-[13.5px] text-gray-500">كم يدفع المشترك عن استهلاك معيّن؟</p>
             </div>
             <label className="flex items-center gap-2 rounded-[14px] border-[1.5px] border-gray-200 bg-surface px-3 py-1 focus-within:border-brand-500">

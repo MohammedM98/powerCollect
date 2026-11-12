@@ -41,7 +41,7 @@ export default function Index({
         <AuthenticatedLayout
             header={
                 <>
-                    <h2 className="text-3xl font-bold text-gray-900">المستخدمون</h2>
+                    <h1 className="text-3xl font-bold text-gray-900">المستخدمون</h1>
                     <div className="flex shrink-0 flex-wrap items-center gap-2 [&>button]:h-11">
                         {userTypeItems && <BlueActionButton onClick={() => setManagingTypes(true)} aria-haspopup="dialog" aria-expanded={managingTypes}><Icon name={canCreateUserType ? 'plus' : 'tag'} className="h-4 w-4" />أنواع المستخدمين</BlueActionButton>}
                         {canCreate && <AddButton onClick={() => setCreating(true)}>مستخدم جديد</AddButton>}

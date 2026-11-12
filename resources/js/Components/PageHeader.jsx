@@ -15,7 +15,7 @@ export default function PageHeader({ title, eyebrow = null, info = null, meta = 
             <div className="min-w-0">
                 {eyebrow && <div className="mb-1 text-sm font-semibold text-gray-500">{eyebrow}</div>}
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                    <h2 className="ui-page-title text-3xl font-bold text-gray-900">{title}</h2>
+                    <h1 className="ui-page-title text-3xl font-bold text-gray-900">{title}</h1>
                     {info && <InfoTip label={`عن صفحة ${typeof title === 'string' ? title : ''}`.trim()}>{info}</InfoTip>}
                     {titleAddon}
                 </div>

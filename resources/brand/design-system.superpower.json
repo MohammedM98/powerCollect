@@ -1,80 +1,62 @@
 {
   "name": "superpower-glass",
   "version": 1,
-  "title": "سوبر باور · زجاجي كحلي",
-  "purpose": "المصدر الواحد لتصميم سوبر باور الزجاجي الكحلي: الرموز (tokens)، المكوّنات المعاد استخدامها، قوالب الصفحات، وأين تُستخدم كل صفحة. الواجهة تُنفَّذ من هذا الملف، وأي تغيير في التصميم يبدأ منه.",
+  "title": "سوبر باور · زجاجي فحمي",
+  "purpose": "المصدر الواحد لتصميم سوبر باور الزجاجي الفحمي: الرموز (tokens)، المكوّنات المعاد استخدامها، قوالب الصفحات، وأين تُستخدم كل صفحة. الواجهة تُنفَّذ من هذا الملف، وأي تغيير في التصميم يبدأ منه.",
   "reference": {
     "prototype": "resources/brand/reference/superpower-glass-prototype.html",
     "note": "النموذج الأولي المعتمد بصريًا. عند أي اختلاف بين الكود والنموذج فالنموذج هو المرجع، إلا في الصفحات المستثناة في exclusions."
   },
   "tokens": {
-    "format": "قيم الألوان مثلثات RGB (مثل: 5 12 31) كما في resources/css/theme.css، وما له شفافية مكتوب 'R G B / alpha'. الألوان تُعرَّف في theme.css فقط.",
+    "format": "قيم الألوان مثلثات RGB (مثل: 10 11 13) كما في resources/css/theme.css، وما له شفافية مكتوب 'R G B / alpha'. الألوان تُعرَّف في theme.css فقط.",
     "dark": {
-      "bg": "5 12 31",
-      "ink": "234 240 255",
-      "muted": "157 176 211",
-      "faint": "111 130 168",
-      "glass": "15 30 66 / 0.60",
-      "line": "140 170 255 / 0.14",
-      "lineHighlight": "175 200 255 / 0.24",
-      "fill": "120 160 255 / 0.07",
-      "fillStrong": "120 160 255 / 0.14",
+      "bg": "10 11 13",
+      "ink": "238 240 243",
+      "muted": "165 170 178",
+      "faint": "138 144 152",
+      "glass": "24 26 30 / 0.60",
+      "line": "255 255 255 / 0.09",
+      "lineHighlight": "255 255 255 / 0.16",
+      "fill": "255 255 255 / 0.05",
+      "fillStrong": "255 255 255 / 0.09",
       "ambient": [
-        "radial-gradient(1300px 720px at 85% -12%, rgb(37 78 170 / .34), transparent 62%)",
-        "radial-gradient(1000px 640px at 0% 112%, rgb(24 58 140 / .28), transparent 62%)"
+        "radial-gradient(1300px 720px at 85% -12%, rgb(255 255 255 / .05), transparent 62%)"
       ],
-      "sidebarGradient": "linear-gradient(180deg, rgb(34 72 165 / .5), glass 55%)",
       "semantic": {
         "success": "60 207 145",
         "warning": "234 168 66",
         "danger": "242 100 111",
         "info": "106 165 255"
       },
-      "brandOnDark": "91 146 255",
-      "brandButton": "47 107 255"
+      "brandOnDark": "135 141 150",
+      "brandButton": "43 49 56"
     },
     "light": {
-      "bg": "227 233 245",
-      "ink": "15 26 51",
-      "muted": "71 90 126",
-      "faint": "113 132 168",
+      "bg": "236 238 241",
+      "ink": "17 20 25",
+      "muted": "72 79 90",
+      "faint": "84 91 102",
       "glass": "255 255 255 / 0.60",
-      "line": "30 60 120 / 0.12",
+      "line": "20 25 35 / 0.12",
       "lineHighlight": "255 255 255 / 0.90",
-      "fill": "30 60 130 / 0.05",
-      "fillStrong": "30 60 130 / 0.09",
+      "fill": "20 25 35 / 0.05",
+      "fillStrong": "20 25 35 / 0.09",
       "ambient": [
-        "radial-gradient(1200px 640px at 85% -12%, rgb(120 160 240 / .38), transparent 62%)",
-        "radial-gradient(900px 600px at 0% 112%, rgb(150 180 240 / .32), transparent 62%)"
+        "radial-gradient(1200px 640px at 85% -12%, rgb(255 255 255 / .75), transparent 62%)",
+        "radial-gradient(900px 600px at 0% 112%, rgb(20 25 35 / .04), transparent 62%)"
       ],
       "semantic": {
-        "success": "11 143 90",
-        "warning": "169 106 6",
-        "danger": "198 42 58",
-        "info": "31 95 220"
+        "success": "8 105 66",
+        "warning": "146 86 4",
+        "danger": "180 32 48",
+        "info": "28 84 196"
       },
-      "brandOnLight": "37 99 235",
-      "brandButton": "37 99 235"
+      "brandOnLight": "43 49 56",
+      "brandButton": "43 49 56"
     },
     "variants": {
-      "navy": "الافتراضي: القيم أعلاه",
-      "midnight": {
-        "bg": "4 12 39",
-        "glass": "14 38 98 / 0.60",
-        "muted": "159 182 230",
-        "faint": "112 136 184"
-      },
-      "graphite": {
-        "bg": "6 8 12",
-        "ink": "238 241 246",
-        "muted": "163 172 188",
-        "faint": "110 120 137",
-        "glass": "20 25 34 / 0.60",
-        "line": "255 255 255 / 0.09",
-        "fill": "255 255 255 / 0.05",
-        "fillStrong": "255 255 255 / 0.09"
-      },
-      "note": "تُطبَّق المتغيرات على الوضع الداكن فقط. الوضع الفاتح واحد."
+      "graphite": "الوحيد: فحمي في الداكن ورمادي فاتح في الفاتح، بالقيم أعلاه. أُلغي الكحلي والأزرق الليلي.",
+      "note": "كل نص يقرأ بتباين 4.5:1 على الأقل (WCAG AA) على الصفحة وعلى اللوحة الزجاجية."
     },
     "glass": {
       "alphaDefault": 0.6,
@@ -126,13 +108,13 @@
       ]
     },
     "accent": {
-      "default": "azure",
-      "azure": {
-        "dark": "91 146 255",
-        "light": "37 99 235",
-        "button": "47 107 255",
-        "hex": "#2F6BFF",
-        "note": "أزرق الفيديو: الأزرار، العنصر النشط في التنقل، خط المخطط، حلقة الهدف، تمييز عمود الإفلات"
+      "default": "charcoal",
+      "charcoal": {
+        "dark": "135 141 150",
+        "light": "43 49 56",
+        "button": "43 49 56",
+        "hex": "#2B3138",
+        "note": "فحمي: الأزرار، العنصر النشط في التنقل، خط المخطط، حلقة الهدف. أُلغي الأزرق."
       },
       "alternatives": {
         "burgundy": {
@@ -156,13 +138,13 @@
   },
   "brandPreset": {
     "id": "superpower",
-    "label": "سوبر باور زجاجي كحلي",
-    "description": "بطاقات زجاجية كحلية فوق خلفية متدرجة، شريط جانبي أو علوي، جداول داخل لوحات زجاجية، أزرار متدرجة وحقول معبأة.",
+    "label": "سوبر باور زجاجي فحمي",
+    "description": "بطاقات زجاجية فوق خلفية فحمية في الداكن ورمادية فاتحة في الفاتح، شريط جانبي أو علوي، جداول داخل لوحات زجاجية، أزرار متدرجة وحقول معبأة.",
     "design": {
       "navigation": "sidebar",
       "navStyle": "glass",
-      "background": "navy",
-      "neutral": "navy",
+      "background": "graphite",
+      "neutral": "graphite",
       "radius": "rounded",
       "buttons": "gradient",
       "cards": "glass",
@@ -184,13 +166,8 @@
       "focusRing": "brand",
       "navHighlight": "brand"
     },
-    "newOptionsNeeded": {
-      "background.navy": "خلفية كحلية بإضاءة زرقاء واسعة وخافتة (وليست كرات). الأقرب الموجود glow (توهج بلون الشركة) وgradient (تدرّج من الأعلى)، ولا يعطي أيٌّ منهما الإضاءتين المتقابلتين في ambient.",
-      "neutral.navy": "تدرج رماديات مزرقة كحلية يرسمه Brand::stylesheet(). الأقرب الموجود slate (hue 257، tint 2.0) لكن لونيته في الداكن (~0.014) بعيدة عن bg 5 12 31 (~0.05)، فلا يصل إلى الكحلي."
-    },
-    "verify": "تُحقِّق في المرحلة 0 من BrandDesign::OPTIONS: كل القيم أعلاه موجودة عدا background.navy وneutral.navy. لون الهوية ليس خيارًا في design بل colors.primary في ملف الهوية، ويُشتق منه سلّم brand-* بـ BrandPalette::fromHex. الشريط المصغّر rail خيار مستقل في navigation وليس زر طيّ داخل sidebar كما في النموذج.",
     "colors": {
-      "primary": "#2F6BFF"
+      "primary": "#2B3138"
     }
   },
   "components": [

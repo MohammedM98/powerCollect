@@ -102,7 +102,7 @@
 .profile-page .pp-device .pp-device-icon{width:40px;height:40px;border-radius:calc(12px * var(--radius-scale, 1));display:grid;place-items:center;background:var(--pp-sunken);color:var(--pp-ink2);flex:none}
 .profile-page .pp-device .pp-device-icon svg{width:19px;height:19px}
 .profile-page .pp-device b{display:flex;align-items:center;gap:8px;font-size:14.5px;flex-wrap:wrap}
-.profile-page .pp-device b em{font-style:normal;font-size:11.5px;font-weight:700;border-radius:calc(8px * var(--radius-scale, 1));padding:0 7px;background:var(--pp-success-t);color:var(--pp-success)}
+.profile-page .pp-device b em{font-style:normal;font-size:12px;font-weight:700;border-radius:calc(8px * var(--radius-scale, 1));padding:0 7px;background:var(--pp-success-t);color:var(--pp-success)}
 .profile-page .pp-device small{display:block;font-size:12.5px;color:var(--pp-faint)}
 .profile-page .pp-device .pp-logout{margin-inline-start:auto;height:32px;border-radius:calc(12px * var(--radius-scale, 1));border:1px solid var(--pp-line);background:var(--pp-surface);padding:0 10px;font-weight:700;font-size:12.5px;cursor:pointer;color:var(--pp-ink2);flex:none}
 .profile-page .pp-device .pp-logout:hover{border-color:color-mix(in srgb,var(--pp-danger) 40%,var(--pp-line));color:var(--pp-danger);background:var(--pp-danger-t)}

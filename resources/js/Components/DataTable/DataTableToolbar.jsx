@@ -91,7 +91,7 @@ export default function DataTableToolbar({
                             aria-pressed={perPage === size}
                             onClick={() => onPerPageChange(size)}
                             className={`rounded-lg px-2.5 py-1 font-display text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 ${
-                                perPage === size ? 'bg-surface text-gray-900 shadow-sm' : 'text-gray-400 hover:text-gray-900'
+                                perPage === size ? 'bg-surface text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'
                             }`}
                         >
                             {size}

@@ -69,7 +69,7 @@
 .sp-tabs { display: flex; gap: 4px; }
 .sp-tabs button { display: inline-flex; align-items: center; gap: 7px; border: 0; border-radius: calc(12px * var(--radius-scale, 1)) calc(12px * var(--radius-scale, 1)) 0 0; background: transparent; color: var(--gl-muted); padding: 12px 14px; font-size: 14.5px; font-weight: 700; }
 .sp-tabs button[aria-selected=true] { background: none; color: var(--gl-ink); box-shadow: inset 0 -2px 0 rgb(var(--gl-brand)); }
-.sp-tabs button span { background: var(--gl-fill-2); color: var(--gl-muted); border-radius: 99px; padding: 0 6px; font: 700 11px/1.6 var(--font-body, 'IBM Plex Sans Arabic'), sans-serif; font-variant-numeric: tabular-nums; }
+.sp-tabs button span { background: var(--gl-fill-2); color: var(--gl-muted); border-radius: 99px; padding: 0 6px; font: 700 12px/1.6 var(--font-body, 'IBM Plex Sans Arabic'), sans-serif; font-variant-numeric: tabular-nums; }
 .sp-tabs button[aria-selected=true] span { background: rgb(var(--gl-brand) / 0.2); color: var(--gl-ink); }
 .sp-quick-actions { display: flex; gap: 6px; margin: 0 0 8px auto; }
 .sp-quick-actions button { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 10px; border: 1px solid var(--gl-line); border-radius: calc(11px * var(--radius-scale, 1)); color: var(--gl-ink); background: var(--gl-fill); font-weight: 700; font-size: 14px; }
@@ -95,7 +95,7 @@
 .sp-field:hover .sp-copy, .sp-copy:focus-visible { opacity: 1; }
 .sp-copy:hover { background: var(--sp-sunken); color: var(--sp-ink); }
 .sp-copy svg { width: 14px; height: 14px; }
-.sp-copy-status { font: 500 11px var(--font-body, 'IBM Plex Sans Arabic'), sans-serif; color: var(--sp-muted); }
+.sp-copy-status { font: 500 12px var(--font-body, 'IBM Plex Sans Arabic'), sans-serif; color: var(--sp-muted); }
 .sp-chip { display: inline-flex; align-items: center; gap: 6px; border-radius: calc(9px * var(--radius-scale, 1)); padding: 2px 9px; background: var(--sp-sunken); color: var(--sp-ink-secondary); font-size: 13px; }
 .sp-chip svg { width: 14px; height: 14px; }
 .sp-notice { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid color-mix(in srgb, var(--sp-warn) 25%, transparent); border-radius: calc(16px * var(--radius-scale, 1)); background: color-mix(in srgb, var(--sp-warn) 10%, transparent); color: var(--sp-ink-secondary); font-size: 14px; }
@@ -103,7 +103,7 @@
 .sp-notice b { display: block; }
 .sp-footer { display: flex; align-items: center; gap: 10px; flex: none; padding: 12px 22px; border-top: 1px solid var(--sp-line-soft); background: var(--sp-raised); }
 .sp-shortcuts { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12.5px; color: var(--sp-muted); }
-.sp-shortcuts kbd { font: 600 11.5px Alexandria, sans-serif; border: 1px solid var(--sp-line); border-bottom-width: 2px; border-radius: calc(6px * var(--radius-scale, 1)); padding: 0 6px; background: var(--sp-surface); }
+.sp-shortcuts kbd { font: 600 12px Alexandria, sans-serif; border: 1px solid var(--sp-line); border-bottom-width: 2px; border-radius: calc(6px * var(--radius-scale, 1)); padding: 0 6px; background: var(--sp-surface); }
 .sp-footer-actions { margin-inline-start: auto; display: flex; gap: 8px; flex: none; }
 .sp-button { height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 16px; border: 1px solid var(--sp-line); border-radius: calc(13px * var(--radius-scale, 1)); background: var(--sp-surface); color: var(--sp-ink-secondary); font: 700 15px var(--font-body, 'IBM Plex Sans Arabic'), sans-serif; }
 .sp-button:hover { background: var(--sp-sunken); }
@@ -128,13 +128,13 @@
 .sp-statement .sp-amount-column { text-align: left; white-space: nowrap; }
 .sp-statement .sp-number { display: inline-block; font-size: 13.5px; }
 .sp-date { display: block; direction: ltr; font: 600 12px/1.6 Alexandria, sans-serif; white-space: nowrap; }
-.sp-date small, .sp-cancellation { display: block; color: var(--sp-muted); font-size: 11.5px; }
+.sp-date small, .sp-cancellation { display: block; color: var(--sp-muted); font-size: 12px; }
 /* Lines that belong together (a line, its cancellation, its correction, a reading's discount) share a colour, lit together on hover. */
 .sp-statement tr[data-chain] td { background: rgb(var(--sp-chain) / 0.05); }
 .sp-statement tr[data-chain] td:first-child { box-shadow: inset -3px 0 rgb(var(--sp-chain)); }
 .sp-statement tr.sp-related[data-chain] td { background: rgb(var(--sp-chain) / 0.12); }
 .sp-chain-dot { display: inline-block; width: 8px; height: 8px; margin-inline-end: 6px; border-radius: 50%; background: rgb(var(--sp-chain)); vertical-align: middle; }
-.sp-history-link { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; border: 0; padding: 0; background: transparent; color: var(--sp-warn); font-size: 11.5px; font-weight: 600; }
+.sp-history-link { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; border: 0; padding: 0; background: transparent; color: var(--sp-warn); font-size: 12px; font-weight: 600; }
 .sp-history-link:hover { text-decoration: underline; }
 .sp-history-link svg { width: 13px; height: 13px; }
 .sp-hidden-note { margin-top: 10px; color: var(--sp-muted); font-size: 12.5px; }
@@ -152,8 +152,8 @@
 .sp-chart > div { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
 .sp-chart i { display: block; width: 100%; max-width: 34px; border-radius: calc(7px * var(--radius-scale, 1)) calc(7px * var(--radius-scale, 1)) calc(3px * var(--radius-scale, 1)) calc(3px * var(--radius-scale, 1)); background: linear-gradient(180deg, rgb(var(--brand-bright)), rgb(var(--brand-lo))); opacity: .6; }
 .sp-chart > div:last-child i { opacity: 1; }
-.sp-chart small { font-size: 11px; color: var(--sp-muted); }
-.sp-chart b { font: 700 11.5px Alexandria, sans-serif; color: var(--sp-ink-secondary); }
+.sp-chart small { font-size: 12px; color: var(--sp-muted); }
+.sp-chart b { font: 700 12px Alexandria, sans-serif; color: var(--sp-ink-secondary); }
 .sp-reading-footer { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--sp-muted); font-size: 12.5px; }
 @media (max-width: 1000px) { .sp-tools { margin-inline-start: auto; } .sp-balance > b { font-size: 20px; } }
 @media (max-width: 860px) { .sp-columns { grid-template-columns: 1fr; } .sp-account-summary { grid-template-columns: 1fr 1fr; } .sp-shortcuts { display: none; } .sp-top { gap: 10px; } .sp-identity { flex-basis: calc(100% - 70px); } }

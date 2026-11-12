@@ -573,7 +573,7 @@
 .gl-ringbox small {
     display: block;
     margin-top: 4px;
-    font: 500 10px var(--font-body, 'IBM Plex Sans Arabic');
+    font: 500 12px var(--font-body, 'IBM Plex Sans Arabic');
     color: var(--gl-muted);
 }
 
@@ -756,6 +756,12 @@
     border-radius: 14px;
 }
 
+/* A table wide enough to scroll takes keyboard focus (tabIndex 0); show where it is. */
+.gl-tblw:focus-visible {
+    outline: 2px solid rgb(var(--gl-brand));
+    outline-offset: 2px;
+}
+
 .gl-table {
     width: 100%;
     min-width: 640px;
@@ -870,7 +876,7 @@
 .gl-lane h3 em {
     padding: 0 8px;
     border-radius: 99px;
-    font: 600 11px var(--font-body, 'IBM Plex Sans Arabic');
+    font: 600 12px var(--font-body, 'IBM Plex Sans Arabic');
     font-style: normal;
     background: var(--gl-fill-2);
     color: var(--gl-muted);
@@ -959,7 +965,7 @@
 .gl-mb .gl-oh {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
+    font-size: 12px;
     color: var(--gl-muted);
 }
 
@@ -978,7 +984,7 @@
 .gl-mb .gl-who .gl-av {
     width: 26px;
     height: 26px;
-    font-size: 10.5px;
+    font-size: 12px;
 }
 
 .gl-mb .gl-items {
@@ -996,7 +1002,7 @@
 .gl-tag {
     padding: 1px 8px;
     border-radius: 7px;
-    font-size: 10.5px;
+    font-size: 12px;
     font-weight: 600;
     background: var(--gl-fill-2);
     color: var(--gl-muted);
@@ -1253,7 +1259,7 @@
 }
 
 .gl-auth-head .gl-en {
-    font: 700 11px var(--font-body, 'IBM Plex Sans Arabic');
+    font: 700 12px var(--font-body, 'IBM Plex Sans Arabic');
     letter-spacing: 0.32em;
     color: var(--gl-muted);
 }
@@ -1436,8 +1442,8 @@
     width: 44px;
     height: 44px;
     border-radius: 13px;
-    background: linear-gradient(140deg, #2a3a5e, #101a34);
-    color: #eaf0ff;
+    background: linear-gradient(140deg, rgb(var(--graphite-500)), rgb(var(--graphite-900)));
+    color: rgb(var(--silver-50));
     font: 700 15px var(--gl-head);
 }
 
@@ -1612,8 +1618,8 @@
     width: 40px;
     height: 40px;
     border-radius: 12px;
-    background: linear-gradient(140deg, #2a3a5e, #101a34);
-    color: #eaf0ff;
+    background: linear-gradient(140deg, rgb(var(--graphite-500)), rgb(var(--graphite-900)));
+    color: rgb(var(--silver-50));
     font: 700 14px var(--gl-head);
 }
 
@@ -1673,7 +1679,7 @@
 
 .gl-mv-cell em {
     color: var(--gl-muted);
-    font-size: 11.5px;
+    font-size: 12px;
     font-style: normal;
     font-weight: 600;
 }
@@ -2092,8 +2098,9 @@
     transform: translateY(1px);
 }
 
+/* Dimmed, not faded out: its words still read (about 3:1), so the user sees what it would do. */
 .gl-btn:disabled {
-    opacity: 0.45;
+    opacity: 0.6;
     cursor: not-allowed;
 }
 
@@ -2185,7 +2192,7 @@
 }
 
 .gl-btn-part:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
 }
 
 .gl-btn-part:focus-visible {

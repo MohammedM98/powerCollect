@@ -34,10 +34,12 @@ function TodaysSummary({ today }) {
                 <dl className="mt-5 grid gap-3 border-t border-white/10 pt-4 sm:grid-cols-2">
                     {parts.map((part) => (
                         <div key={part.label} className="flex items-center gap-3">
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white/80">
-                                <Icon name={part.icon} className="h-[18px] w-[18px]" />
-                            </span>
-                            <dt className="text-sm text-white/70">{part.label}</dt>
+                            <dt className="flex items-center gap-3 text-sm text-white/70">
+                                <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white/80">
+                                    <Icon name={part.icon} className="h-[18px] w-[18px]" />
+                                </span>
+                                {part.label}
+                            </dt>
                             <dd className="ms-auto flex items-baseline gap-1.5 sm:ms-0">
                                 <span className="font-display text-2xl font-bold">{formatMoney(part.value)}</span>
                                 <span className="text-xs text-white/60">₪</span>
@@ -54,9 +56,9 @@ function TodaysSummary({ today }) {
 function TodaysPayments({ today }) {
     return (
         <section aria-labelledby="todays-payments" className="mt-8 space-y-4">
-            <h3 id="todays-payments" className="text-lg font-bold text-gray-900">
+            <h2 id="todays-payments" className="font-sans text-lg font-bold text-gray-900">
                 آخر دفعاتك اليوم
-            </h3>
+            </h2>
 
             {today.payments.length > 0 ? (
                 <ul className="divide-y divide-gray-100 overflow-hidden rounded-panel border border-gray-100 bg-surface shadow-card">

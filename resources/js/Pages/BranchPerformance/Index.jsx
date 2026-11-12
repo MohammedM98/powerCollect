@@ -40,11 +40,11 @@ function BranchCard({ branch, style }) {
             <header className="flex items-start gap-3.5">
                 <BranchMark isActive={branch.isActive} />
                 <div className="min-w-0 flex-1">
-                    <h3 className="truncate text-xl font-bold text-gray-900">
+                    <h2 className="font-sans truncate text-xl font-bold text-gray-900">
                         <Link href={`/branch-performance/${branch.id}`} className="outline-none after:absolute after:inset-0 after:rounded-panel">
                             {branch.name}
                         </Link>
-                    </h3>
+                    </h2>
                     <p className="truncate text-xs text-gray-500">
                         {branchPlace(branch) || '—'}
                         {!branch.isActive && ' · فرع متوقف'}

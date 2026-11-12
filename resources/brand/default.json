@@ -13,7 +13,7 @@
         "print": null
     },
     "colors": {
-        "primary": "#2F6BFF",
+        "primary": "#2B3138",
         "secondary": null,
         "accent": null,
         "background": null,
@@ -33,8 +33,8 @@
         "navigation": "sidebar",
         "navStyle": "glass",
         "width": "wide",
-        "background": "navy",
-        "neutral": "navy",
+        "background": "graphite",
+        "neutral": "graphite",
         "radius": "rounded",
         "buttons": "gradient",
         "cards": "glass",

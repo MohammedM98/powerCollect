@@ -5,7 +5,6 @@ import { EMPTY_LOOK, isCustomLook, lookStylesheet, normalizeLook } from '../../r
 test('a stored look keeps only choices the interface can draw', () => {
     assert.deepEqual(normalizeLook(null), EMPTY_LOOK);
     assert.deepEqual(normalizeLook({ background: 'midnight', glass: 0.43, blur: 13, color: '#7c3aed', motion: 'off' }), {
-        background: 'midnight',
         glass: 0.45,
         blur: 14,
         color: '#7C3AED',

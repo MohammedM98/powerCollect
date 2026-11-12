@@ -2,8 +2,7 @@ import { brandStylesheet, isHex } from './brandPalette.js';
 
 /**
  * Each person's own look over the company's (the component gallery's look
- * studio): the background in the dark theme, how see-through the glass is
- * and how much it blurs, the main colour and whether things move. Kept in
+ * studio): how see-through the glass is and how much it blurs, the main colour and whether things move. Kept in
  * this browser only; a choice left empty (null) keeps the company's.
  */
 
@@ -13,18 +12,11 @@ export const LOOK_EVENT = 'personal-look-change';
 
 /** The main colours offered, each as the company colour it replaces. */
 export const LOOK_COLORS = [
-    { key: 'azure', label: 'أزرق سوبر باور', hex: '#2F6BFF' },
+    { key: 'charcoal', label: 'فحمي سوبر باور', hex: '#2B3138' },
     { key: 'burgundy', label: 'عنابي', hex: '#B0202C' },
     { key: 'emerald', label: 'أخضر', hex: '#047857' },
     { key: 'amber', label: 'كهرماني', hex: '#A16207' },
     { key: 'violet', label: 'بنفسجي', hex: '#7C3AED' },
-];
-
-/** The dark theme's backgrounds (theme.css `data-ui-background`). */
-export const LOOK_BACKGROUNDS = [
-    ['navy', 'كحلي'],
-    ['midnight', 'أزرق ليلي'],
-    ['graphite', 'فحمي'],
 ];
 
 /** The glass sliders' ranges, as the company's own tokens allow (BrandDesign TOKENS glassAlpha, glassBlur). */
@@ -32,7 +24,7 @@ export const GLASS_RANGE = { min: 0.2, max: 0.9, step: 0.05 };
 export const BLUR_RANGE = { min: 0, max: 40, step: 2 };
 
 /** The company's look everywhere. */
-export const EMPTY_LOOK = { background: null, glass: null, blur: null, color: null, motion: null };
+export const EMPTY_LOOK = { glass: null, blur: null, color: null, motion: null };
 
 function clamp(value, { min, max, step }) {
     const number = Number(value);
@@ -47,18 +39,17 @@ function clamp(value, { min, max, step }) {
 }
 
 /**
- * A stored look made safe to apply: an unknown background, a colour that
+ * A stored look made safe to apply: a colour that
  * is not `#RRGGBB` or a figure that is not a number becomes the company's
  * (null), and the glass and blur are kept inside their ranges.
  *
  * @param {unknown} raw
- * @returns {{ background: string|null, glass: number|null, blur: number|null, color: string|null, motion: 'off'|null }}
+ * @returns {{ glass: number|null, blur: number|null, color: string|null, motion: 'off'|null }}
  */
 export function normalizeLook(raw) {
     const look = raw && typeof raw === 'object' ? raw : {};
 
     return {
-        background: LOOK_BACKGROUNDS.some(([value]) => value === look.background) ? look.background : null,
         glass: clamp(look.glass, GLASS_RANGE),
         blur: clamp(look.blur, BLUR_RANGE),
         color: isHex(look.color) ? look.color.toUpperCase() : null,
@@ -108,17 +99,12 @@ export function lookStylesheet(look) {
 
 /**
  * Draws the document in the look, over the company's identity just
- * applied (lib/brandPreview.js applyBrandToDocument): the background
- * attribute, the glass tokens, the colour's shades in a stylesheet after
+ * applied (lib/brandPreview.js applyBrandToDocument): the glass tokens, the colour's shades in a stylesheet after
  * the company's, and no motion when it is switched off.
  */
 export function applyLook(look, doc = document) {
     const root = doc.documentElement;
-    const { background, glass, blur, motion } = normalizeLook(look);
-
-    if (background) {
-        root.dataset.uiBackground = background;
-    }
+    const { glass, blur, motion } = normalizeLook(look);
 
     if (motion === 'off') {
         root.dataset.uiMotionStyle = 'none';

@@ -26,9 +26,9 @@ export function Card({ icon, title, description, children, actions = null }) {
                     <Icon name={icon} className="h-5 w-5" />
                 </span>
                 <div className="min-w-0 flex-1">
-                    <h3 id={titleId} className="font-bold text-gray-900">
+                    <h2 id={titleId} className="font-sans font-bold text-gray-900">
                         {title}
-                    </h3>
+                    </h2>
                     {description && <p className="text-xs text-gray-500">{description}</p>}
                 </div>
                 {actions}

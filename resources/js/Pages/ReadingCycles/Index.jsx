@@ -36,7 +36,7 @@ function BranchOverview({ branches, canCreate }) {
                         <Icon name="office" className="h-6 w-6" />
                     </span>
                     <div>
-                        <h3 className="text-lg font-bold text-gray-900">متابعة قراءات الفروع</h3>
+                        <h2 className="font-sans text-lg font-bold text-gray-900">متابعة قراءات الفروع</h2>
                         <p className="mt-1 text-sm text-gray-500">اختر الفرع لمراجعة توزيعه أو تجهيز قراءته القادمة.</p>
                     </div>
                 </div>

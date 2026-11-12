@@ -57,7 +57,7 @@ export default function ClassificationChips({ title, description, items, baseUrl
 
     return <section aria-label={title} className={`overflow-hidden rounded-card border border-gray-100 bg-surface shadow-card ${className}`}>
         {showHeader && <div className="border-b border-gray-100 px-5 py-4 sm:px-6">
-            <h3 className="font-luxe text-lg font-bold text-gray-900">{title}</h3>
+            <h2 className="font-luxe text-lg font-bold text-gray-900">{title}</h2>
             <p className="text-[13.5px] text-gray-500">{description}</p>
         </div>}
         <div className="flex flex-wrap items-center gap-2 px-5 py-4 sm:px-6">

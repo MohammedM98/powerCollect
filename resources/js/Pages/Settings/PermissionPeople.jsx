@@ -60,10 +60,10 @@ export default function EmployeeList({
     return (
         <aside className="pm-people rise-in" aria-label="الموظفون">
             <div className="pm-people-head">
-                <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+                <h2 className="font-sans flex items-center gap-2 text-lg font-bold text-gray-900">
                     الموظفون
                     <span className="ms-auto font-display text-sm font-semibold text-gray-500">{users.total.toLocaleString('en')} موظف</span>
-                </h3>
+                </h2>
                 <div className="relative mt-3">
                     <Icon name="search" className="pointer-events-none absolute inset-y-0 start-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
                     <input

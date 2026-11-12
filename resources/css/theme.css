@@ -17,7 +17,7 @@
  *   5. Accents          extra colours for charts, tags and roles
  *   6. Named colours    what the pages with a stylesheet of their own read
  *   7. Dark navigation  the greys inside a dark or coloured navigation
- *   8. Glass            the Superpower navy look: glass panels and the page's light
+ *   8. Glass            the Superpower glass look: glass panels and the page's light
  *
  * Colours that change with the theme are set twice: in `:root` for the light
  * theme and in `.dark` for the dark one. Those set once look the same in both.
@@ -372,54 +372,56 @@
 /*
  * ── 8. Glass ─────────────────────────────────────────────────────────────
  *
- * The Superpower navy look (resources/brand/design-system.superpower.json):
- * the page's own colour, the two wide lights over it, and the frosted
- * panels on it, drawn by app.css when a company's background is navy,
- * midnight or graphite (BrandDesign `background`). Values with their own
- * transparency are written `R G B / alpha` and read `rgb(var(--glass-line))`.
+ * The Superpower glass look (resources/brand/design-system.superpower.json):
+ * the page's own colour, the soft light over it, and the frosted panels on
+ * it, drawn by app.css when a company's background is graphite (BrandDesign
+ * `background`). Neutral greys in both themes, with no tint and no coloured
+ * light: the only colour on the page is the company's buttons and links. Values with their own transparency are written
+ * `R G B / alpha` and read `rgb(var(--glass-line))`.
+ *
+ * Every text colour here reads at 4.5:1 or more (WCAG AA) on the page, on a
+ * panel and on its own 14% tint: faint text 5.9:1 light, 5.7:1 dark.
+ *
  * The panel's transparency and blur are company tokens (BrandDesign TOKENS:
- * glassAlpha, glassBlur). Midnight and graphite change the dark theme only.
+ * glassAlpha, glassBlur).
  */
 :root {
-    --glass-page: 227 233 245;
-    --glass-ink: 15 26 51;
-    --glass-muted: 71 90 126;
-    --glass-faint: 113 132 168;
+    --glass-page: 236 238 241;
+    --glass-ink: 17 20 25;
+    --glass-muted: 72 79 90;
+    --glass-faint: 84 91 102;
     --glass-panel: 255 255 255;
     --glass-alpha: 0.6;
     --glass-blur: 18px;
-    --glass-line: 30 60 120 / 0.12;
+    --glass-line: 20 25 35 / 0.12;
     --glass-line-hi: 255 255 255 / 0.9;
-    --glass-fill: 30 60 130 / 0.05;
-    --glass-fill-strong: 30 60 130 / 0.09;
-    --glass-shadow: 0 24px 40px -28px rgb(30 40 70 / 0.5);
+    --glass-fill: 20 25 35 / 0.05;
+    --glass-fill-strong: 20 25 35 / 0.09;
+    --glass-shadow: 0 24px 40px -28px rgb(20 24 30 / 0.45);
     --glass-ambient:
-        radial-gradient(1200px 640px at 85% -12%, rgb(120 160 240 / 0.38), transparent 62%),
-        radial-gradient(900px 600px at 0% 112%, rgb(150 180 240 / 0.32), transparent 62%);
+        radial-gradient(1200px 640px at 85% -12%, rgb(255 255 255 / 0.75), transparent 62%),
+        radial-gradient(900px 600px at 0% 112%, rgb(20 25 35 / 0.04), transparent 62%);
     --glass-nav: none;
 
-    --glass-success: 11 143 90;
-    --glass-warning: 169 106 6;
-    --glass-danger: 198 42 58;
-    --glass-info: 31 95 220;
+    --glass-success: 8 105 66;
+    --glass-warning: 146 86 4;
+    --glass-danger: 180 32 48;
+    --glass-info: 28 84 196;
 }
 
 .dark {
-    --glass-page: 5 12 31;
-    --glass-ink: 234 240 255;
-    --glass-muted: 157 176 211;
-    --glass-faint: 111 130 168;
-    --glass-panel: 15 30 66;
-    --glass-line: 140 170 255 / 0.14;
-    --glass-line-hi: 175 200 255 / 0.24;
-    --glass-fill: 120 160 255 / 0.07;
-    --glass-fill-strong: 120 160 255 / 0.14;
+    --glass-page: 10 11 13;
+    --glass-ink: 238 240 243;
+    --glass-muted: 165 170 178;
+    --glass-faint: 138 144 152;
+    --glass-panel: 24 26 30;
+    --glass-line: 255 255 255 / 0.09;
+    --glass-line-hi: 255 255 255 / 0.16;
+    --glass-fill: 255 255 255 / 0.05;
+    --glass-fill-strong: 255 255 255 / 0.09;
     --glass-shadow: 0 26px 50px -30px rgb(0 0 0 / 0.95);
-    --glass-ambient:
-        radial-gradient(1300px 720px at 85% -12%, rgb(37 78 170 / 0.34), transparent 62%),
-        radial-gradient(1000px 640px at 0% 112%, rgb(24 58 140 / 0.28), transparent 62%);
-    /* The side menu's blue light at its top, fading into the glass. */
-    --glass-nav: linear-gradient(180deg, rgb(34 72 165 / 0.5), rgb(var(--glass-panel) / var(--glass-alpha)) 55%);
+    --glass-ambient: radial-gradient(1300px 720px at 85% -12%, rgb(255 255 255 / 0.05), transparent 62%);
+    --glass-nav: none;
 
     --glass-success: 60 207 145;
     --glass-warning: 234 168 66;
@@ -427,38 +429,14 @@
     --glass-info: 106 165 255;
 }
 
-.dark:root[data-ui-background='midnight'] {
-    --glass-page: 4 12 39;
-    --glass-panel: 14 38 98;
-    --glass-muted: 159 182 230;
-    --glass-faint: 112 136 184;
-    --glass-ambient:
-        radial-gradient(1300px 720px at 85% -12%, rgb(40 95 235 / 0.38), transparent 62%),
-        radial-gradient(1000px 640px at 0% 112%, rgb(30 80 200 / 0.3), transparent 62%);
-}
-
-.dark:root[data-ui-background='graphite'] {
-    --glass-page: 6 8 12;
-    --glass-ink: 238 241 246;
-    --glass-muted: 163 172 188;
-    --glass-faint: 110 120 137;
-    --glass-panel: 20 25 34;
-    --glass-line: 255 255 255 / 0.09;
-    --glass-line-hi: 255 255 255 / 0.16;
-    --glass-fill: 255 255 255 / 0.05;
-    --glass-fill-strong: 255 255 255 / 0.09;
-    --glass-ambient: radial-gradient(1300px 720px at 85% -12%, rgb(var(--brand-500) / 0.22), transparent 62%);
-    --glass-nav: none;
-}
-
 /*
- * The named colours (section 6) in the navy look: the pages that keep a
+ * The named colours (section 6) in the glass look: the pages that keep a
  * stylesheet of their own (the ledger, reading entry, the profile, reading
  * schedule, SMS settings) draw on the glass: panels, lines, text and the
  * company's colour from the tokens above. Their hero cards keep white text
  * on a deep blue in the company's colour.
  */
-:root:is([data-ui-background='navy'], [data-ui-background='midnight'], [data-ui-background='graphite']) {
+:root[data-ui-background='graphite'] {
     --ui-page: rgb(var(--glass-page));
     --ui-surface: rgb(var(--glass-panel) / 0.86);
     --ui-raised: rgb(var(--glass-fill));

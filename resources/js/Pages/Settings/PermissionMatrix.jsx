@@ -236,7 +236,7 @@ export function SectionRow({
                     className={`pm-more ${heldOptions > 0 ? 'has-held' : ''}`}
                     aria-expanded={open}
                     aria-controls={bodyId}
-                    aria-label={`خيارات ${section.label}`}
+                    aria-label={options.length > 0 ? `${heldOptions}/${options.length} خيارات ${section.label}` : `${children ? 'إعداد' : 'شرح'} ${section.label}`}
                     onClick={() => onToggle?.(!open)}
                 >
                     {options.length > 0 ? (

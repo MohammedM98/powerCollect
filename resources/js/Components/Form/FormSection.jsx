@@ -20,7 +20,7 @@ export default function FormSection({ icon, title, info, columns = 3, children, 
                 <span className="gl-section-ico" aria-hidden="true">
                     <Icon name={icon} className="h-[17px] w-[17px]" />
                 </span>
-                <h4 className="text-base font-bold !font-[family-name:var(--gl-head)]">{title}</h4>
+                <h2 className="text-base font-bold !font-[family-name:var(--gl-head)]">{title}</h2>
                 {info && <InfoTip label={`عن ${title}`}>{info}</InfoTip>}
             </div>
             <div className={`grid gap-x-6 gap-y-4 ${COLUMNS[columns]}`}>{children}</div>

@@ -105,6 +105,40 @@ class BrandPalette
     }
 
     /**
+     * A main colour this close to grey (charcoal, slate) has almost no hue
+     * (OKLCH chroma below this), so on the dark theme's charcoal page its own
+     * shade would sink into the background.
+     */
+    public const NEUTRAL_CHROMA = 0.03;
+
+    /**
+     * The dark theme's button shades for such a colour, as OKLCH lightness:
+     * a lighter graphite that stands out on the charcoal page and still
+     * carries white text at 4.5:1 or more.
+     *
+     * @var array<int|string, float>
+     */
+    private const DARK_NEUTRAL_BUTTONS = [500 => 0.47, 'hi' => 0.5, 'solid' => 0.47, 'lo' => 0.41];
+
+    /**
+     * The dark theme's button shades for a near-grey main colour, keyed like
+     * fromHex()'s (500, hi, solid, lo); empty for a colour with a real hue,
+     * whose own shades already stand out.
+     *
+     * @return array<int|string, string>
+     */
+    public static function darkButtons(string $hex): array
+    {
+        [, $chroma, $hue] = self::readableMain(self::hexToOklch($hex));
+
+        if ($chroma >= self::NEUTRAL_CHROMA) {
+            return [];
+        }
+
+        return array_map(fn (float $lightness): string => self::triple(self::oklchToRgb($lightness, $chroma, $hue)), self::DARK_NEUTRAL_BUTTONS);
+    }
+
+    /**
      * The neutral tones a company may draw its pages, lines and text in, as a
      * hue and how strongly it tints the greys (1 = theme.css's own graphite).
      * A strong tint may cap its chroma (`maxChroma`), so its mid greys, the
@@ -118,8 +152,6 @@ class BrandPalette
         'neutral' => ['hue' => 0, 'tint' => 0.0],
         'stone' => ['hue' => 70, 'tint' => 0.7],
         'sage' => ['hue' => 150, 'tint' => 0.9],
-        // The Superpower navy (theme.css, section 8): its dark page is 5 12 31.
-        'navy' => ['hue' => 264, 'tint' => 5.8, 'maxChroma' => 0.06],
     ];
 
     /**

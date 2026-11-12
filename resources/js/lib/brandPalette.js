@@ -144,13 +144,30 @@ export function brandPalette(hex) {
     return { light: map(LIGHT), dark: map(DARK), fixed: map(FIXED) };
 }
 
+/** A main colour with less hue than this (charcoal, slate) sinks into the dark theme's charcoal page (BrandPalette::NEUTRAL_CHROMA). */
+export const NEUTRAL_CHROMA = 0.03;
+
+/** Its dark-theme buttons instead: a lighter graphite that still carries white text (BrandPalette::DARK_NEUTRAL_BUTTONS). */
+const DARK_NEUTRAL_BUTTONS = { 500: 0.47, hi: 0.5, solid: 0.47, lo: 0.41 };
+
+/** The dark theme's button shades for a near-grey main colour, as BrandPalette::darkButtons(); empty for a real colour. */
+export function darkButtons(hex) {
+    const [, chroma, hue] = readableMain(hexToOklch(hex));
+
+    if (chroma >= NEUTRAL_CHROMA) {
+        return {};
+    }
+
+    return Object.fromEntries(Object.entries(DARK_NEUTRAL_BUTTONS).map(([key, lightness]) => [key, oklchToRgb(lightness, chroma, hue).join(' ')]));
+}
+
 /** The stylesheet that draws the interface in the colour, as Brand::stylesheet() does. */
 export function brandStylesheet(hex) {
     const palette = brandPalette(hex);
     const declare = (shades) => Object.entries(shades).map(([step, rgb]) => `--brand-${step}:${rgb};`).join('');
 
     return `:root{${declare(palette.light)}${declare(palette.fixed)}--ui-danger:rgb(var(--danger-600));--ui-danger-t:rgb(var(--danger-600) / 0.08);}`
-        + `.dark{${declare(palette.dark)}--ui-danger:rgb(var(--danger-400));--ui-danger-t:rgb(var(--danger-400) / 0.12);}`;
+        + `.dark{${declare(palette.dark)}${declare(darkButtons(hex))}--ui-danger:rgb(var(--danger-400));--ui-danger-t:rgb(var(--danger-400) / 0.12);}`;
 }
 
 /** Semantic company colours, matching Brand::stylesheet in both themes. */

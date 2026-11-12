@@ -45,6 +45,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
     const current = currentGroup(groups, url);
     const currentScope = props.branchView?.current ? branchLabel : where?.scope;
     const pageLabel = where ? (currentScope ? [where.page, currentScope] : [where.section, where.page]).filter(Boolean).join(' · ') : null;
+    const searchText = props.can?.recordPayments && props.can?.viewSubscriptions ? 'ابحث عن صفحة أو مشترك…' : 'ابحث عن صفحة أو أمر…';
 
     const { scrolled, barRef, clearTimers, closeMega, currentKey, geometry, highlightRef, hoverItem, itemRefs, leaveZone, litKey, megaRef, navRef, onMegaKeyDown, onSectionClick, onSectionKeyDown, openGroup, openId, panelRef, panels, pointerType, popover, setGeometry, setHoverKey, setPopover, state, still, syncHighlight, togglePopover } = useMegaMenu({ current, groups, items, layerOpen, url });
 
@@ -170,9 +171,10 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                     <div className="tn-tools flex items-center gap-1">
                         {trail && <div className="tn-bar-trail">{trail}</div>}
                         {branchChip}
-                        <button type="button" className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label="بحث وأوامر (Ctrl K)" title="بحث وأوامر · Ctrl K">
+                        {/* Named by the words it shows, so a voice command that says them reaches it, even when the narrow bar hides them. */}
+                        <button type="button" className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label={`${searchText} Ctrl K`} aria-keyshortcuts="Control+K" title="بحث وأوامر · Ctrl K">
                             <Icon name="search" />
-                            <span className="tn-search-text flex-1 text-start">{props.can?.recordPayments && props.can?.viewSubscriptions ? 'ابحث عن صفحة أو مشترك…' : 'ابحث عن صفحة أو أمر…'}</span>
+                            <span className="tn-search-text flex-1 text-start">{searchText}</span>
                             <span className="tn-kbd" dir="ltr">Ctrl K</span>
                         </button>
                         <button type="button" className="tn-tool" onClick={() => changePreference(dark ? 'light' : 'dark')} aria-label={dark ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
