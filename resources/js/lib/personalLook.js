@@ -12,7 +12,7 @@ export const LOOK_EVENT = 'personal-look-change';
 
 /** The main colours offered, each as the company colour it replaces. */
 export const LOOK_COLORS = [
-    { key: 'azure', label: 'أزرق سوبر باور', hex: '#2F6BFF' },
+    { key: 'charcoal', label: 'فحمي سوبر باور', hex: '#2B3138' },
     { key: 'burgundy', label: 'عنابي', hex: '#B0202C' },
     { key: 'emerald', label: 'أخضر', hex: '#047857' },
     { key: 'amber', label: 'كهرماني', hex: '#A16207' },

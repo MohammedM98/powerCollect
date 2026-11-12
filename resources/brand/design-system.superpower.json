@@ -28,8 +28,8 @@
         "danger": "242 100 111",
         "info": "106 165 255"
       },
-      "brandOnDark": "91 146 255",
-      "brandButton": "47 107 255"
+      "brandOnDark": "135 141 150",
+      "brandButton": "43 49 56"
     },
     "light": {
       "bg": "236 238 241",
@@ -51,8 +51,8 @@
         "danger": "180 32 48",
         "info": "28 84 196"
       },
-      "brandOnLight": "37 99 235",
-      "brandButton": "37 99 235"
+      "brandOnLight": "43 49 56",
+      "brandButton": "43 49 56"
     },
     "variants": {
       "graphite": "الوحيد: فحمي في الداكن ورمادي فاتح في الفاتح، بالقيم أعلاه. أُلغي الكحلي والأزرق الليلي.",
@@ -108,13 +108,13 @@
       ]
     },
     "accent": {
-      "default": "azure",
-      "azure": {
-        "dark": "91 146 255",
-        "light": "37 99 235",
-        "button": "47 107 255",
-        "hex": "#2F6BFF",
-        "note": "أزرق الفيديو: الأزرار، العنصر النشط في التنقل، خط المخطط، حلقة الهدف، تمييز عمود الإفلات"
+      "default": "charcoal",
+      "charcoal": {
+        "dark": "135 141 150",
+        "light": "43 49 56",
+        "button": "43 49 56",
+        "hex": "#2B3138",
+        "note": "فحمي: الأزرار، العنصر النشط في التنقل، خط المخطط، حلقة الهدف. أُلغي الأزرق."
       },
       "alternatives": {
         "burgundy": {
@@ -167,7 +167,7 @@
       "navHighlight": "brand"
     },
     "colors": {
-      "primary": "#2F6BFF"
+      "primary": "#2B3138"
     }
   },
   "components": [

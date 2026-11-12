@@ -72,6 +72,20 @@ class BrandPaletteTest extends TestCase
         }
     }
 
+    public function test_a_near_grey_main_colour_gets_lighter_buttons_in_the_dark_theme_that_still_carry_white_text(): void
+    {
+        $buttons = BrandPalette::darkButtons('#2B3138');
+        $page = BrandPalette::contrastWithWhite('#0A0B0D');
+
+        $this->assertSame([500, 'hi', 'solid', 'lo'], array_keys($buttons));
+        foreach ($buttons as $step => $rgb) {
+            $this->assertGreaterThanOrEqual(BrandPalette::MIN_CONTRAST, BrandPalette::contrastWithWhite($this->hex($rgb)), "White text on the {$step} button: {$rgb}");
+            $this->assertGreaterThan(2.0, $page / BrandPalette::contrastWithWhite($this->hex($rgb)), "The {$step} button stands out on the charcoal page: {$rgb}");
+        }
+        $this->assertSame([], BrandPalette::darkButtons('#A51D26'));
+        $this->assertSame([], BrandPalette::darkButtons('#2F6BFF'));
+    }
+
     public function test_a_status_colour_is_kept_as_its_500(): void
     {
         $this->assertSame('5 150 105', BrandPalette::statusScale('#059669')[500]);

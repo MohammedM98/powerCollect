@@ -160,7 +160,7 @@ class Brand
         if ($colors['primary'] !== null && strcasecmp($colors['primary'], self::THEME_PRIMARY) !== 0) {
             $palette = BrandPalette::fromHex($colors['primary']);
             $root .= $declare($palette['light'], 'brand').$declare($palette['fixed'], 'brand').'--ui-danger:rgb(var(--danger-600));--ui-danger-t:rgb(var(--danger-600) / 0.08);';
-            $dark .= $declare($palette['dark'], 'brand').'--ui-danger:rgb(var(--danger-400));--ui-danger-t:rgb(var(--danger-400) / 0.12);';
+            $dark .= $declare($palette['dark'], 'brand').$declare(BrandPalette::darkButtons($colors['primary']), 'brand').'--ui-danger:rgb(var(--danger-400));--ui-danger-t:rgb(var(--danger-400) / 0.12);';
         }
 
         foreach (self::STATUSES as $status) {

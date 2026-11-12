@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { brandPalette, brandStylesheet, brandRoleStylesheet, contrastWithWhite, dominantColors, MIN_CONTRAST } from '../../resources/js/lib/brandPalette.js';
+import { brandPalette, brandStylesheet, brandRoleStylesheet, contrastWithWhite, darkButtons, dominantColors, MIN_CONTRAST } from '../../resources/js/lib/brandPalette.js';
 
 test('semantic palette roles preview in light and dark without accepting CSS input', () => {
     const css = brandRoleStylesheet({ secondary: '#0F766E', accent: '#B45309', background: '#F3F6FB', surface: '#FFFFFF' });
@@ -52,4 +52,12 @@ test('a logo\'s colours come most used first, without white, black, grey or see-
     ]);
 
     assert.deepEqual(dominantColors(pixels), ['#0F766E', '#EAB308']);
+});
+
+test('a near-grey main colour gets the same lighter dark-theme buttons as Brand::stylesheet', () => {
+    // BrandPalette::darkButtons('#2B3138') in PHP.
+    assert.deepEqual(darkButtons('#2B3138'), { 500: '85 92 99', hi: '93 100 108', solid: '85 92 99', lo: '69 75 83' });
+    assert.deepEqual(darkButtons('#A51D26'), {});
+    assert.match(brandStylesheet('#2B3138'), /\.dark\{[^}]*--brand-solid:85 92 99;/);
+    assert.doesNotMatch(brandStylesheet('#A51D26'), /\.dark\{[^}]*--brand-solid:/);
 });

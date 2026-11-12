@@ -70,12 +70,12 @@ class BrandTest extends TestCase
         $response->assertSee('<link rel="icon" href="/favicon.svg">', false);
     }
 
-    public function test_pages_start_in_the_superpower_charcoal_glass_look_in_its_blue(): void
+    public function test_pages_start_in_the_superpower_charcoal_glass_look_in_charcoal(): void
     {
         $response = $this->get(route('login'));
 
         $response->assertInertia(fn ($page) => $page
-            ->where('brand.primaryColor', '#2F6BFF')
+            ->where('brand.primaryColor', '#2B3138')
             ->where('brand.design.preset', 'superpower')
             ->where('brand.design.navigation', 'sidebar')
             ->where('brand.design.cards', 'glass')
