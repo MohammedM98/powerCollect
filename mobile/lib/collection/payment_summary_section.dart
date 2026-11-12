@@ -174,11 +174,11 @@ extension _SummarySection on _PaymentPageState {
 
   Widget success() {
     final recordedInShekels =
-        double.tryParse('${receipt?['amount_in_shekels']}') ?? inShekels ?? 0;
+        double.tryParse('${receipt?.amountInShekels}') ?? inShekels ?? 0;
     final newBalance = balanceAfter(recordedInShekels);
-    final recordedAmount = receipt?['amount'] ?? amount.text;
-    final recordedReference = receipt?['reference_number'] ?? reference.text;
-    final recordedVoucher = receipt?['voucher_number'] ?? '—';
+    final recordedAmount = receipt?.amount ?? amount.text;
+    final recordedReference = receipt?.referenceNumber ?? reference.text;
+    final recordedVoucher = receipt?.voucherNumber ?? '—';
     return AppSuccess(
       title: 'تم تسجيل الدفعة',
       message:
@@ -186,7 +186,7 @@ extension _SummarySection on _PaymentPageState {
       facts: [
         (
           throughBank ? 'رقم المرجع' : 'رقم السند',
-          AppFact('${throughBank ? recordedReference : recordedVoucher}',
+          AppFact(throughBank ? recordedReference : recordedVoucher,
               number: true)
         ),
         (
@@ -201,21 +201,21 @@ extension _SummarySection on _PaymentPageState {
           ),
         ('الطريقة', AppFact(methodText)),
         if (throughBank) ...[
-          ('البنك المستلم', AppFact('${receipt?['bank_name'] ?? bank ?? '—'}')),
-          if ((receipt?['sender_bank_name'] ?? senderBank) != null)
+          ('البنك المستلم', AppFact(receipt?.bankName ?? bank ?? '—')),
+          if ((receipt?.senderBankName ?? senderBank) != null)
             (
               'البنك المرسل',
-              AppFact('${receipt?['sender_bank_name'] ?? senderBank}')
+              AppFact('${receipt?.senderBankName ?? senderBank}')
             ),
-          ('اسم المحوّل', AppFact('${receipt?['sender_name'] ?? sender.text}')),
+          ('اسم المحوّل', AppFact(receipt?.senderName ?? sender.text)),
         ],
-        if ('${receipt?['notes'] ?? notes.text}'.trim().isNotEmpty)
-          ('ملاحظات', AppFact('${receipt?['notes'] ?? notes.text}')),
-        if (receipt?['bank_received_on'] != null)
+        if ((receipt?.notes ?? notes.text).trim().isNotEmpty)
+          ('ملاحظات', AppFact(receipt?.notes ?? notes.text)),
+        if (receipt?.bankReceivedOn != null)
           (
             'وصول البنك',
             AppFact(
-                '${receipt!['bank_received_on']}'.split('-').reversed.join('/'),
+                receipt!.bankReceivedOn!.split('-').reversed.join('/'),
                 number: true)
           ),
         (

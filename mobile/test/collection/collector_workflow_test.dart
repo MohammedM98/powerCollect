@@ -7,6 +7,7 @@ import 'package:power_collect/main.dart';
 import 'package:power_collect/collection/payment_page.dart';
 
 import '../shell/field_app_test.dart' show MemoryStore;
+import '../support/fixtures.dart';
 
 class CollectorWorkflowApi extends ApiClient {
   final firstAttempt = Completer<void>();
@@ -69,6 +70,7 @@ class CollectorWorkflowApi extends ApiClient {
       Map<String, dynamic> collection) async {
     paymentRequests.add(Map.from(collection));
     recordedPayment ??= {
+      ...recordedCollection(),
       ...collection,
       'id': 1,
       'subscription': subscriber['full_name'],

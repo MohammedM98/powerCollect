@@ -5,6 +5,7 @@ import 'package:power_collect/design/app_identity.dart';
 import 'package:power_collect/collection/payment_page.dart';
 import 'package:power_collect/collection/subscriber_page.dart';
 import 'package:power_collect/collection/split_payment_page.dart';
+import '../support/fixtures.dart';
 
 const listed = {
   'id': 42,
@@ -81,14 +82,14 @@ class SubscriberApi extends ApiClient {
       Map<String, dynamic> collection) async {
     payments++;
     balance = '95.00';
-    return {
+    return recordedCollection({
       'id': 77,
       'status': 'recorded',
       'amount': collection['amount'],
       'currency': collection['currency'],
       'voucher_number': 'P-77',
       'balance_after': balance,
-    };
+    });
   }
 }
 

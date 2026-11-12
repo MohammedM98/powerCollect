@@ -7,6 +7,7 @@ import '../core/api_client.dart';
 import 'bank_received_date_field.dart';
 import '../core/field_store.dart';
 import '../core/diagnostics.dart';
+import '../models/collection_receipt.dart';
 
 /// The banks and e-wallets a transfer can go to, used until the server
 /// sends its own list with the signed-in user.
@@ -93,7 +94,7 @@ class PaymentForm extends ChangeNotifier {
   late double balance = double.tryParse('${subscriber['balance']}') ?? 0;
   String? error;
   Map<String, dynamic>? submission;
-  Map<String, dynamic>? receipt;
+  CollectionReceipt? receipt;
 
   /// The payment on screen was sent earlier without an answer, and is kept
   /// on the phone until it is sent again or discarded.
@@ -188,8 +189,7 @@ class PaymentForm extends ChangeNotifier {
   /// The balance the server reports after the payment; the app's own sum
   /// when an older server sends none.
   double balanceAfter(double recordedInShekels) =>
-      double.tryParse('${receipt?['balance_after']}') ??
-      balance - recordedInShekels;
+      receipt?.balanceAfter ?? balance - recordedInShekels;
 
   /// Back to an empty form for another payment from the same subscriber,
   /// starting from the balance the last one left, as the website's
@@ -288,11 +288,18 @@ class PaymentForm extends ChangeNotifier {
     try {
       submission ??= _newSubmission();
       await _rememberSubmission();
-      final result = await api.sendCollection(submission!);
+      final result =
+          CollectionReceipt.fromJson(await api.sendCollection(submission!));
       await _forgetSubmission();
       recordedAny = true;
       unconfirmed = false;
       receipt = result;
+    } on FormatException catch (problem, stack) {
+      // An answer the app cannot read: the payment may be recorded, so it
+      // stays on the phone to send again with the same operation id.
+      unawaited(Diagnostics.record(problem, stack, where: 'payment_form'));
+      unconfirmed = true;
+      error = unconfirmedMessage;
     } on ApiException catch (exception) {
       final uncertain = exception.isNetwork || exception.statusCode >= 500;
       if (!uncertain) {

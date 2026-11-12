@@ -1,0 +1,19 @@
+{
+  "id": 77,
+  "subscription": "Subscriber",
+  "amount": "25.00",
+  "currency": "ILS",
+  "exchange_rate": null,
+  "amount_in_shekels": "25.00",
+  "payment_method": "cash",
+  "bank_name": null,
+  "bank_received_on": null,
+  "sender_bank_name": null,
+  "status": "recorded",
+  "recorded_at": "2026-11-12T08:30:00+02:00",
+  "voucher_number": "P-77",
+  "reference_number": null,
+  "sender_name": null,
+  "notes": null,
+  "balance_after": "75.00"
+}

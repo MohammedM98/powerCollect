@@ -11,6 +11,7 @@ import '../core/field_store.dart';
 import 'payment_form.dart';
 import 'receipt_reader_page.dart';
 import 'receipt_scan.dart';
+import '../models/collection_receipt.dart';
 
 export 'payment_form.dart'
     show bankLogoAsset, defaultTransferBanks, exchangeRatesFrom;
@@ -95,7 +96,7 @@ class _PaymentPageState extends State<PaymentPage> {
   double get balance => form.balance;
   String? get error => form.error;
   set error(String? value) => form.error = value;
-  Map<String, dynamic>? get receipt => form.receipt;
+  CollectionReceipt? get receipt => form.receipt;
   bool get unconfirmed => form.unconfirmed;
   String get subscriberName => form.subscriberName;
   bool get editable => form.editable;

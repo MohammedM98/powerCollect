@@ -7,6 +7,7 @@ import 'package:power_collect/design/app_identity.dart';
 import 'package:power_collect/core/field_store.dart';
 import 'package:power_collect/collection/payment_page.dart';
 import 'package:power_collect/collection/split_payment_page.dart';
+import '../support/fixtures.dart';
 
 /// Keeps its state in memory: a "restart" copies it through JSON, as the
 /// file on the phone would.
@@ -26,13 +27,12 @@ class TimingOutApi extends ApiClient {
       Map<String, dynamic> collection) async {
     requests.add(Map<String, dynamic>.from(collection));
     if (timeOut) throw const ApiException('Timeout', 0);
-    return {
+    return recordedCollection({
       'id': 9,
-      'status': 'recorded',
       'amount': collection['amount'],
       'currency': collection['currency'],
       'voucher_number': 'P-9',
-    };
+    });
   }
 }
 

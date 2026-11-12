@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:power_collect/core/api_client.dart';
 import 'package:power_collect/core/field_store.dart';
 import 'package:power_collect/collection/payment_form.dart';
+import '../support/fixtures.dart';
 
 class MemoryStore extends FieldStore {
   @override
@@ -23,7 +24,7 @@ class ScriptedApi extends ApiClient {
     sent.add(Map<String, dynamic>.from(collection));
     final answer = answers.removeAt(0);
     if (answer is ApiException) throw answer;
-    return answer as Map<String, dynamic>;
+    return recordedCollection(answer as Map<String, dynamic>);
   }
 }
 

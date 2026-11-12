@@ -8,6 +8,7 @@ import 'package:power_collect/design/app_identity.dart';
 import 'package:power_collect/core/field_store.dart';
 import 'package:power_collect/main.dart';
 import 'package:power_collect/collection/payment_page.dart';
+import '../support/fixtures.dart';
 
 class OfflineApi extends ApiClient {
   @override
@@ -69,7 +70,7 @@ class CollectorApi extends ApiClient {
     expect(collection['payment_method'], 'cash');
     expect(collection['amount'], '25');
     expect(collection['collector_confirmed'], true);
-    return {'id': 1, 'status': 'recorded'};
+    return recordedCollection({'id': 1});
   }
 }
 

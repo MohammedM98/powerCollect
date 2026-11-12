@@ -4,6 +4,7 @@ import 'package:power_collect/core/api_client.dart';
 import 'package:power_collect/design/app_identity.dart';
 import 'package:power_collect/collection/payment_page.dart';
 import 'package:power_collect/collection/bank_received_date_field.dart';
+import '../support/fixtures.dart';
 
 class RecordingApi extends ApiClient {
   RecordingApi({this.failFirst = false, this.balanceAfter});
@@ -17,19 +18,20 @@ class RecordingApi extends ApiClient {
     if (failFirst && requests.length == 1) {
       throw const ApiException('Timeout', 0);
     }
-    return {
+    return recordedCollection({
       'id': 77,
-      'status': 'recorded',
       'amount': collection['amount'],
       'currency': collection['currency'],
-      'amount_in_shekels': collection['currency'] == 'USD' ? '74.00' : null,
+      'payment_method': collection['payment_method'],
+      'amount_in_shekels':
+          collection['currency'] == 'USD' ? '74.00' : '${collection['amount']}',
       'voucher_number': 'P-77',
       'reference_number': collection['reference_number'],
       'bank_name': collection['bank_name'],
       'sender_name': collection['sender_name'],
       'bank_received_on': collection['bank_received_on'],
       if (balanceAfter != null) 'balance_after': balanceAfter,
-    };
+    });
   }
 }
 
