@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+export 'app_choices.dart';
 export 'app_controls.dart';
+export 'app_feedback.dart';
 export 'app_icons.dart';
 export 'app_keypad.dart';
+export 'app_labels.dart';
 export 'app_navigation.dart';
 export 'app_surfaces.dart';
 export 'app_visuals.dart';
@@ -242,7 +245,8 @@ abstract final class AppIdentity {
   /// A date the server sent, day first: '2026-10-01 12:30' -> '01/10/2026 12:30'.
   /// Anything that does not start with a year-first date stays as it is.
   static String dayFirst(dynamic value) {
-    final match = RegExp(r'^(\d{4})-(\d{2})-(\d{2})((?: .*)?)$').firstMatch('$value');
+    final match =
+        RegExp(r'^(\d{4})-(\d{2})-(\d{2})((?: .*)?)$').firstMatch('$value');
     return match == null
         ? '$value'
         : '${match[3]}/${match[2]}/${match[1]}${match[4]}';
