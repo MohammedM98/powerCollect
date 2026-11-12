@@ -1,11 +1,15 @@
-/** What is wrong with a field, under it, in the glass look's red. */
-export default function InputError({ message, className = '' }) {
+/**
+ * What is wrong with a field, under it, in the glass look's red. Announced
+ * as it appears (role="alert"); give it an `id` and point the field's
+ * aria-describedby at it so the error is read with the field too.
+ */
+export default function InputError({ message, id, className = '' }) {
     if (!message) {
         return null;
     }
 
     return (
-        <p data-input-error className={`gl-error ${className}`}>
+        <p id={id} role="alert" data-input-error className={`gl-error ${className}`}>
             {message}
         </p>
     );

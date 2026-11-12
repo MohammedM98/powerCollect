@@ -375,12 +375,12 @@
  * The Superpower glass look (resources/brand/design-system.superpower.json):
  * the page's own colour, the soft light over it, and the frosted panels on
  * it, drawn by app.css when a company's background is graphite (BrandDesign
- * `background`). Neutral greys in both themes: the only colour on the page
- * is the company's own. Values with their own transparency are written
+ * `background`). Neutral greys in both themes, with no tint and no coloured
+ * light: the only colour on the page is the company's buttons and links. Values with their own transparency are written
  * `R G B / alpha` and read `rgb(var(--glass-line))`.
  *
  * Every text colour here reads at 4.5:1 or more (WCAG AA) on the page, on a
- * panel and on its own 14% tint: faint text 5.9:1 light, 6.0:1 dark.
+ * panel and on its own 14% tint: faint text 5.9:1 light, 5.7:1 dark.
  *
  * The panel's transparency and blur are company tokens (BrandDesign TOKENS:
  * glassAlpha, glassBlur).
@@ -400,7 +400,7 @@
     --glass-shadow: 0 24px 40px -28px rgb(20 24 30 / 0.45);
     --glass-ambient:
         radial-gradient(1200px 640px at 85% -12%, rgb(255 255 255 / 0.75), transparent 62%),
-        radial-gradient(900px 600px at 0% 112%, rgb(var(--brand-500) / 0.06), transparent 62%);
+        radial-gradient(900px 600px at 0% 112%, rgb(20 25 35 / 0.04), transparent 62%);
     --glass-nav: none;
 
     --glass-success: 8 105 66;
@@ -410,17 +410,17 @@
 }
 
 .dark {
-    --glass-page: 6 8 12;
-    --glass-ink: 238 241 246;
-    --glass-muted: 163 172 188;
-    --glass-faint: 136 146 163;
-    --glass-panel: 20 25 34;
+    --glass-page: 10 11 13;
+    --glass-ink: 238 240 243;
+    --glass-muted: 165 170 178;
+    --glass-faint: 138 144 152;
+    --glass-panel: 24 26 30;
     --glass-line: 255 255 255 / 0.09;
     --glass-line-hi: 255 255 255 / 0.16;
     --glass-fill: 255 255 255 / 0.05;
     --glass-fill-strong: 255 255 255 / 0.09;
     --glass-shadow: 0 26px 50px -30px rgb(0 0 0 / 0.95);
-    --glass-ambient: radial-gradient(1300px 720px at 85% -12%, rgb(var(--brand-500) / 0.22), transparent 62%);
+    --glass-ambient: radial-gradient(1300px 720px at 85% -12%, rgb(255 255 255 / 0.05), transparent 62%);
     --glass-nav: none;
 
     --glass-success: 60 207 145;

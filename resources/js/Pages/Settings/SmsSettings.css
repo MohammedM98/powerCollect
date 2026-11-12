@@ -34,10 +34,9 @@ textarea.sm-input { resize: vertical; min-height: 84px; line-height: 1.7; }
 
 .sm-segments { display: inline-flex; gap: 2px; padding: 3px; border-radius: calc(12px * var(--radius-scale, 1)); background: var(--rs-surface); border: 1px solid var(--rs-line2); width: fit-content; max-width: 100%; flex-wrap: wrap; }
 .sm-segments button { border: 0; background: transparent; color: var(--rs-faint); min-height: 36px; padding: 4px 14px; border-radius: calc(8px * var(--radius-scale, 1)); font-weight: 600; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
-.sm-segments button small { font: 500 12px Alexandria, sans-serif; color: inherit; opacity: .85; direction: ltr; }
+.sm-segments button small { font: 500 12px Alexandria, sans-serif; color: inherit; direction: ltr; }
 .sm-segments button:hover { color: var(--rs-ink); }
 .sm-segments button[aria-pressed=true] { background: var(--rs-ink); color: var(--rs-surface); }
-.sm-segments button[aria-pressed=true] small { color: inherit; opacity: .7; }
 
 .sm-section { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--rs-line2); }
 .sm-section h3 { display: flex; align-items: center; gap: 8px; margin: 0; font: 700 17px var(--font-heading, 'El Messiri'), serif; }
@@ -51,7 +50,7 @@ textarea.sm-input { resize: vertical; min-height: 84px; line-height: 1.7; }
 
 .sm-request { margin-top: 14px; border-radius: calc(18px * var(--radius-scale, 1)); overflow: hidden; border: 1px solid var(--rs-line2); background: rgb(var(--graphite-900)); color: rgb(var(--silver-100)); direction: ltr; text-align: left; font: 13px/1.7 'IBM Plex Mono', ui-monospace, Menlo, monospace; }
 .sm-request-line { display: flex; gap: 10px; align-items: center; padding: 10px 14px; background: #ffffff0d; border-bottom: 1px solid #ffffff14; overflow-x: auto; white-space: nowrap; }
-.sm-method { flex: none; padding: 1px 8px; border-radius: calc(8px * var(--radius-scale, 1)); font-weight: 700; font-size: 12px; background: var(--ui-brand); color: #fff; }
+.sm-method { flex: none; padding: 1px 8px; border-radius: calc(8px * var(--radius-scale, 1)); font-weight: 700; font-size: 12px; background: rgb(var(--brand-lo)); color: #fff; }
 .sm-request ul { list-style: none; margin: 0; padding: 10px 14px 12px; display: grid; gap: 2px; }
 .sm-request li { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); gap: 10px; }
 .sm-request li span:first-child { color: rgb(var(--silver-500)); }

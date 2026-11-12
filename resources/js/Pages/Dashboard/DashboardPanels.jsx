@@ -28,7 +28,8 @@ export function LatestPayments({ payments, latestPayments, period, search, onSea
                     ))}
                 </div>
             </div>
-            <div className="gl-tblw">
+            {/* Scrolls sideways on a narrow screen, so it takes keyboard focus and arrow keys reach every column. */}
+            <div className="gl-tblw" tabIndex={0} role="region" aria-label="جدول أحدث الدفعات">
                 <table className="gl-table">
                     <thead>
                         <tr>

@@ -140,7 +140,7 @@ test('the grid shows each action as its own check, the options behind «خيار
     assert.match(html, /role="checkbox" aria-checked="false" aria-label="المشتركون: عرض المشتركين"/);
     assert.match(html, /role="checkbox" aria-checked="true" aria-label="المشتركون: تعديل المشتركين"/);
     assert.match(html, /role="checkbox" aria-checked="true" aria-label="المشتركون: الحذف"/);
-    assert.match(html, /aria-expanded="false"[^>]*aria-label="خيارات المشتركون"/);
+    assert.match(html, /aria-expanded="false"[^>]*aria-label="\d+\/\d+ خيارات المشتركون"/);
     assert.match(html, />1<\/b> خطيرة/);
     assert.doesNotMatch(html, /aria-expanded="true"/);
 });

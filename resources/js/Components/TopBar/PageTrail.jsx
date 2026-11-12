@@ -13,7 +13,7 @@ export function Breadcrumb({ trail, inBar = false }) {
 
     return (
         <nav className={`tn-trail flex items-center gap-1.5 text-[13.5px] text-gray-500 ${inBar ? 'whitespace-nowrap' : 'tn-rise mb-3'}`} aria-label="مسار الصفحة">
-            <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="hover:text-gray-900">{HOME_LINK.label}</Link>
+            <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="inline-flex min-h-6 items-center hover:text-gray-900">{HOME_LINK.label}</Link>
             {group && (
                 <>
                     <Icon name="chevron-left" className="h-3.5 w-3.5" />
@@ -23,7 +23,7 @@ export function Breadcrumb({ trail, inBar = false }) {
             <Icon name="chevron-left" className="h-3.5 w-3.5" />
             {exact
                 ? <span className="font-semibold text-gray-800" aria-current="page">{link.label}</span>
-                : <Link href={link.href} prefetch={shouldPrefetchPage(link.href)} className="font-semibold text-gray-800 hover:text-gray-900">{link.label}</Link>}
+                : <Link href={link.href} prefetch={shouldPrefetchPage(link.href)} className="inline-flex min-h-6 items-center font-semibold text-gray-800 hover:text-gray-900">{link.label}</Link>}
         </nav>
     );
 }

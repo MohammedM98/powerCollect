@@ -61,7 +61,7 @@ export default function HierarchyColumn({
                         <Icon name="chevron-right" className="h-4 w-4" strokeWidth={2} />
                     </button>
                 )}
-                <h3 className="font-luxe text-lg font-bold text-gray-900">{title}</h3>
+                <h2 className="font-luxe text-lg font-bold text-gray-900">{title}</h2>
                 {items && <small className="font-display text-xs font-semibold text-gray-500">{count}</small>}
                 {items && canAdd && (
                     <button
@@ -142,34 +142,41 @@ export default function HierarchyColumn({
     );
 }
 
+/**
+ * One place in the column. The name is the button that opens it, stretched
+ * across the row, so the edit and delete buttons sit beside it rather than
+ * inside it.
+ */
 function Row({ item, selected, onPick, subtitle, onEdit, onDelete }) {
     const pickable = Boolean(onPick);
     const pick = () => onPick?.(item);
+    const name = (
+        <>
+            <b className={`block truncate text-sm font-bold ${selected ? 'text-brand-600' : 'text-gray-900'} ${pickable ? 'group-hover:text-brand-600' : ''}`}>{item.name}</b>
+            {subtitle && <small className="block text-xs text-gray-500">{subtitle}</small>}
+        </>
+    );
 
     return (
         <div
-            role={pickable ? 'button' : undefined}
-            tabIndex={pickable ? 0 : undefined}
-            onClick={pick}
-            onKeyDown={(event) => {
-                if (pickable && event.key === 'Enter' && event.target === event.currentTarget) {
-                    pick();
-                }
-            }}
             className={`group flex w-full items-center gap-2.5 rounded-control border px-2.5 py-2 text-start transition ${
                 selected
                     ? 'border-brand-500/40 bg-brand-500/10 shadow-[inset_-3px_0_0_rgb(var(--brand-500))]'
                     : `border-transparent ${pickable ? 'cursor-pointer hover:border-brand-500/20 hover:bg-brand-500/5' : ''}`
             }`}
         >
-            <span className="min-w-0">
-                <b
-                    className={`block truncate text-sm font-bold ${selected ? 'text-brand-600' : 'text-gray-900'} ${pickable ? 'group-hover:text-brand-600' : ''}`}
+            {pickable ? (
+                <button
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={pick}
+                    className="min-w-0 flex-1 self-stretch rounded text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                 >
-                    {item.name}
-                </b>
-                {subtitle && <small className="block text-xs text-gray-500">{subtitle}</small>}
-            </span>
+                    {name}
+                </button>
+            ) : (
+                <span className="min-w-0">{name}</span>
+            )}
             <span className="ms-auto flex items-center gap-1">
                 {item.canUpdate && <RowIconButton label={`تعديل ${item.name}`} icon="pencil" visible={selected} onClick={onEdit} />}
                 {item.canDelete && onDelete && (

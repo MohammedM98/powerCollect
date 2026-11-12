@@ -498,7 +498,7 @@ html.tn-locked {
     border-radius: calc(6px * var(--radius-scale, 1));
     border: 1px solid rgb(var(--gray-200));
     background: rgb(var(--surface));
-    font: 600 11.5px Alexandria, sans-serif;
+    font: 600 12px Alexandria, sans-serif;
     color: rgb(var(--gray-500));
     white-space: nowrap;
 }
@@ -1375,5 +1375,17 @@ html.tn-locked {
     .tn-where {
         animation: none !important;
         transition: none !important;
+    }
+}
+
+/* On a touch screen the bar's tools are a full finger's target (44px), not just the 24px minimum. */
+@media (pointer: coarse) {
+    .tn-tool {
+        width: 44px;
+        height: 44px;
+    }
+
+    .tn-search {
+        min-height: 44px;
     }
 }

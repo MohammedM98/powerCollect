@@ -202,7 +202,7 @@ export default function SearchableSelect({
                           }`
                 }
             >
-                <span className={`flex min-w-0 gap-2 ${selected?.icon ? 'items-center' : 'items-baseline'} ${onDark ? (selected ? 'font-bold text-white' : 'text-white/70') : selected ? 'text-gray-900' : 'text-gray-400/60'}`}>
+                <span className={`flex min-w-0 gap-2 ${selected?.icon ? 'items-center' : 'items-baseline'} ${onDark ? (selected ? 'font-bold text-white' : 'text-white/70') : selected ? 'text-gray-900' : 'text-gray-500'}`}>
                     {selected?.icon && <span aria-hidden="true" className="inline-flex shrink-0">{selected.icon}</span>}
                     <span className="truncate">{selected ? selected.label : placeholder}</span>
                     {selected?.hint && <span className={`shrink-0 text-sm ${onDark ? 'text-white/60' : 'text-gray-500'}`}>{selected.hint}</span>}

@@ -59,10 +59,10 @@ function RenameModal({ template, onClose }) {
         <Modal show onClose={onClose} maxWidth="md">
             <form onSubmit={save} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`}>
                 <div className="px-7 pb-4 pt-7">
-                    <h3 id={`${id}-title`} className="flex items-center gap-2 text-lg font-bold text-gray-900">
+                    <h2 id={`${id}-title`} className="font-sans flex items-center gap-2 text-lg font-bold text-gray-900">
                         <Icon name="pencil" className="h-5 w-5" />
                         إعادة تسمية القالب
-                    </h3>
+                    </h2>
                     <label htmlFor={`${id}-name`} className="mb-1.5 mt-5 block text-sm font-semibold text-gray-700">
                         الاسم الجديد
                     </label>
@@ -89,10 +89,10 @@ function NewTemplateModal({ pages, onClose }) {
         <Modal show onClose={onClose} maxWidth="lg">
             <div role="dialog" aria-modal="true" aria-labelledby={`${id}-title`}>
                 <div className="px-7 pb-4 pt-7">
-                    <h3 id={`${id}-title`} className="flex items-center gap-2 text-lg font-bold text-gray-900">
+                    <h2 id={`${id}-title`} className="font-sans flex items-center gap-2 text-lg font-bold text-gray-900">
                         <Icon name="plus" className="h-5 w-5" />
                         قالب طباعة جديد
-                    </h3>
+                    </h2>
                     <p className="mt-1.5 text-sm text-gray-600">اختر القائمة، فيُفتح مصمم الطباعة على بياناتها. صمّم كما تريد ثم احفظه كقالب.</p>
                     <fieldset className="mt-5">
                         <legend className="mb-2 text-sm font-semibold text-gray-700">القائمة</legend>
@@ -185,9 +185,9 @@ export default function PrintTemplates({ pages }) {
                                 <Icon name={page.icon} className="h-5 w-5" />
                             </span>
                             <div className="min-w-0 flex-1">
-                                <h3 id={`list-${page.path}`} className="font-bold text-gray-900">
+                                <h2 id={`list-${page.path}`} className="font-sans font-bold text-gray-900">
                                     {page.label}
-                                </h3>
+                                </h2>
                                 <p className="text-xs text-gray-500">{page.templates.length === 0 ? 'لا توجد قوالب بعد' : `${page.templates.length} قالب`}</p>
                             </div>
                             <ActionButton icon="plus" label="قالب جديد لها" srLabel={`قالب طباعة جديد لـ«${page.label}»`} onClick={() => openDesigner(page, 'new')} />

@@ -958,7 +958,7 @@
         width: 30px;
         height: 30px;
         border-radius: calc(10px * var(--radius-scale, 1));
-        font-size: 11.5px;
+        font-size: 12px;
     }
 
     :root[data-table-density='compact'] .row-identity-text {

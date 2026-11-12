@@ -229,7 +229,7 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                         <section className="rs-panel">
                             <PanelTitle icon="eye">معاينة الأسبوع الحالي</PanelTitle>
                             <p>من {weekDayName(currentWeek.start)} {shortDate(currentWeek.start)} إلى {weekDayName(currentWeek.end)} {shortDate(currentWeek.end)}{days.length !== 7 ? ` · أسبوع انتقالي (${dayCount(days.length)})` : ''}{isDirty ? ' · حسب الإعدادات الجديدة' : ''}</p>
-                            <div className="rs-week" style={{ '--week-days': days.length }}>
+                            <div className="rs-week" style={{ '--week-days': days.length }} tabIndex={0} role="region" aria-label="أيام الأسبوع الحالي">
                                 {days.map((day) => {
                                     const open = data.mode === 'open' || (automatic && validEntryHours(data) && data.open_days.includes(day.weekday));
                                     const today = day.date === clock.date;

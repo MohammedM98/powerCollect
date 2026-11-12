@@ -5,10 +5,12 @@ const BOLT = 'M37.5 9.5H24.8a2 2 0 0 0-1.86 1.27l-6.1 15.6A1.5 1.5 0 0 0 18.24 2
  * The Super Power mark: a rounded square in the company's colour holding the
  * white bolt and its spark. One colour, no gradient or shadow, readable from
  * 16px. `draw` traces the bolt in when it appears (still when motion is off).
+ * An empty `label` marks it decorative, hidden from screen readers, for a
+ * mark beside text that already names the company.
  */
 export function SuperPowerMark({ size = 36, draw = false, label = 'شعار سوبر باور' }) {
     return (
-        <svg className={`gl-mark ${draw ? 'is-drawing' : ''}`} width={size} height={size} viewBox="0 0 56 56" role="img" aria-label={label}>
+        <svg className={`gl-mark ${draw ? 'is-drawing' : ''}`} width={size} height={size} viewBox="0 0 56 56" {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}>
             <rect className="gl-mark-tile" width="56" height="56" rx="16" />
             <path className="gl-mark-bolt" d={BOLT} />
             {draw && <path className="gl-mark-line" d={BOLT} pathLength="1" />}

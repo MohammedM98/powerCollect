@@ -71,7 +71,7 @@ export default function BranchViewSwitcher() {
                 </div>
                 <label className="flex w-full flex-col gap-1.5 sm:w-60">
                     <span className="gl-label">تغيير فرع العمل</span>
-                    <select aria-label="تغيير فرع العمل" value={branchView.current?.id ?? ''} onChange={changeBranch} disabled={switching} className="h-10 w-full font-bold">
+                    <select aria-label="تغيير فرع العمل" value={branchView.current?.id ?? ''} onChange={changeBranch} disabled={switching} className="h-11 w-full font-bold">
                         <option value="">جميع الفروع</option>
                         {branchView.options.map((branch) => <option key={branch.id} value={branch.id}>{branch.name}</option>)}
                     </select>

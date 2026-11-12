@@ -12,7 +12,7 @@ export default function MobileApp({ release }) {
                 <div className="flex items-start gap-4">
                     <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-brand-700"><Icon name="phone" className="h-7 w-7" /></span>
                     <div className="min-w-0 space-y-2">
-                        <h3 className="text-xl font-bold text-gray-900">تطبيق سوبر باور</h3>
+                        <h2 className="font-sans text-xl font-bold text-gray-900">تطبيق سوبر باور</h2>
                         <p className="text-sm leading-7 text-gray-600">اطّلع على الطبلونات المخصصة لك، وسجّل القراءات والتحصيل حسب صلاحيات حسابك. يتصل التطبيق بنفس بيانات الموقع عند توفر الإنترنت.</p>
                         <p className="text-sm text-gray-500">Android 7.0 أو أحدث</p>
                     </div>

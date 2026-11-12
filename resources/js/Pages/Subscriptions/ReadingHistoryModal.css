@@ -100,8 +100,8 @@
 .rh-bar { fill: color-mix(in srgb, var(--rh-brand) 30%, var(--rh-sunken)); transition: fill .15s; }
 .rh-bar.is-latest { fill: var(--rh-brand); }
 .rh-chart-point:hover .rh-bar, .rh-chart-point:focus .rh-bar { fill: color-mix(in srgb, var(--rh-brand) 60%, var(--rh-sunken)); }
-.rh-chart-label { font: 600 11px Alexandria, sans-serif; fill: var(--rh-faint); }
-.rh-chart-value { font: 700 11.5px Alexandria, sans-serif; fill: var(--rh-ink); }
+.rh-chart-label { font: 600 12px Alexandria, sans-serif; fill: var(--rh-faint); }
+.rh-chart-value { font: 700 12px Alexandria, sans-serif; fill: var(--rh-ink); }
 .rh-average-line { stroke: var(--rh-faint); stroke-dasharray: 4 4; stroke-width: 1.5; pointer-events: none; }
 .rh-baseline { stroke: var(--rh-line); stroke-width: 1; }
 .rh-hatch-background { fill: color-mix(in srgb, var(--rh-warn) 25%, var(--rh-sunken)); }
@@ -114,7 +114,7 @@
 .rh-segments button { border: 0; background: transparent; height: 34px; padding: 0 12px; border-radius: calc(9px * var(--radius-scale, 1)); font-size: 13.5px; font-weight: 700; color: var(--rh-muted); white-space: nowrap; }
 .rh-segments button:hover { color: var(--rh-brand); }
 .rh-segments button[aria-pressed=true] { background: var(--rh-ink); color: var(--rh-surface); }
-.rh-segments button span { font: 600 11.5px Alexandria, sans-serif; opacity: .7; margin-inline-start: 4px; }
+.rh-segments button span { font: 600 12px Alexandria, sans-serif; margin-inline-start: 4px; }
 .rh-count { margin-inline-start: auto; font-size: 13px; color: var(--rh-faint); }
 .rh-table-wrap { margin-top: 10px; background: var(--rh-surface); border: 1px solid var(--rh-line2); border-radius: calc(20px * var(--radius-scale, 1)); overflow-x: auto; box-shadow: var(--rh-shadow); }
 .rh-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14.5px; text-align: start; }
@@ -133,12 +133,12 @@
 .rh-consumption b { font: 700 15px Alexandria, sans-serif; min-width: 34px; }
 .rh-meter { flex: 1; height: 6px; border-radius: calc(99px * var(--radius-scale, 1)); background: var(--rh-sunken); overflow: hidden; max-width: 90px; }
 .rh-meter i { display: block; height: 100%; border-radius: calc(99px * var(--radius-scale, 1)); background: color-mix(in srgb, var(--rh-brand) 55%, var(--rh-sunken)); }
-.rh-delta { font: 700 11.5px Alexandria, sans-serif; border-radius: calc(6px * var(--radius-scale, 1)); padding: 0 5px; color: var(--rh-faint); }
+.rh-delta { font: 700 12px Alexandria, sans-serif; border-radius: calc(6px * var(--radius-scale, 1)); padding: 0 5px; color: var(--rh-faint); }
 .rh-delta.rh-up { color: var(--rh-warn); background: color-mix(in srgb, var(--rh-warn) 10%, transparent); }
 .rh-delta.rh-down { color: var(--rh-success); background: color-mix(in srgb, var(--rh-success) 10%, transparent); }
 .rh-due b { display: block; font: 700 15px Alexandria, sans-serif; text-align: right; white-space: nowrap; }
 .rh-due em { font-style: normal; font-size: 12.5px; color: var(--rh-faint); }
-.rh-due small { display: block; font: 500 11.5px var(--font-body, 'IBM Plex Sans Arabic'), sans-serif; color: var(--rh-faint); text-align: right; }
+.rh-due small { display: block; font: 500 12px var(--font-body, 'IBM Plex Sans Arabic'), sans-serif; color: var(--rh-faint); text-align: right; }
 .rh-discount-value { display: inline-block; font: 700 14px Alexandria, sans-serif; color: var(--rh-success); white-space: nowrap; }
 .rh-muted { color: var(--rh-faint); }
 .rh-pill { display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 700; border-radius: calc(99px * var(--radius-scale, 1)); padding: 3px 11px; border: 1px solid; white-space: nowrap; }
@@ -154,7 +154,7 @@
 .rh-header .rh-pill.is-approved { color: rgb(var(--success-400)); background: rgb(var(--success-400) / 0.102); border-color: rgb(var(--success-400) / 0.267); }
 .rh-header .rh-pill.is-pending { color: rgb(var(--warning-400)); }
 .rh-recorder { font-size: 14px; }
-.rh-recorder small { display: flex; align-items: center; gap: 5px; font: 500 11px Alexandria, sans-serif; color: var(--rh-faint); }
+.rh-recorder small { display: flex; align-items: center; gap: 5px; font: 500 12px Alexandria, sans-serif; color: var(--rh-faint); }
 .rh-recorder small svg { width: 13px; height: 13px; }
 .rh-table tfoot td { background: var(--rh-raised); font-weight: 700; border-bottom: 0; border-top: 1.5px solid var(--rh-line); }
 .rh-table tfoot td:first-child { font-size: 13.5px; color: var(--rh-faint); font-weight: 600; }
@@ -184,7 +184,7 @@
     .rh-figure b { font-size: 21px; overflow-wrap: anywhere; }
     .rh-plot { height: 140px; }
     .rh-chart-heading { gap: 4px 10px; }
-    .rh-chart-heading > span:not(.rh-average) { font-size: 11px; }
+    .rh-chart-heading > span:not(.rh-average) { font-size: 12px; }
     .rh-table thead { display: none; }
     .rh-table, .rh-table tbody, .rh-table tr, .rh-table td { display: block; }
     .rh-table tbody tr:not(.rh-month) { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; padding: 11px 12px; border-bottom: 1px solid var(--rh-line2); }
@@ -249,7 +249,7 @@
     .rh-table tr, .rh-table tbody tr:not(.rh-month), .rh-table tfoot tr { display: table-row; break-inside: avoid; }
     .rh-table td, .rh-table .rh-previous, .rh-table .rh-current, .rh-table .rh-price, .rh-table .rh-minimum, .rh-table .rh-discount, .rh-table .rh-recorder, .rh-table td.rh-previous, .rh-table tfoot .rh-hide-mobile { display: table-cell; }
     .rh-table .rh-month th { display: table-cell; }
-    .rh-table th, .rh-table td { padding: 7px; font-size: 11px; white-space: normal; overflow-wrap: anywhere; }
+    .rh-table th, .rh-table td { padding: 7px; font-size: 12px; white-space: normal; overflow-wrap: anywhere; }
     .rh-table thead th:first-child { width: 18%; }
     .rh-table thead th:last-child { width: 20%; }
     .rh-table tfoot td { border-top: 1.5px solid var(--rh-line); }
@@ -257,5 +257,5 @@
     .rh-consumption > div { min-width: 0; }
     .rh-meter, .rh-delta { display: none; }
     .rh-recorder small { flex-wrap: wrap; }
-    .rh-pill { padding: 2px 5px; font-size: 10px; white-space: normal; }
+    .rh-pill { padding: 2px 5px; font-size: 12px; white-space: normal; }
 }

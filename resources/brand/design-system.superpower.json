@@ -8,19 +8,19 @@
     "note": "النموذج الأولي المعتمد بصريًا. عند أي اختلاف بين الكود والنموذج فالنموذج هو المرجع، إلا في الصفحات المستثناة في exclusions."
   },
   "tokens": {
-    "format": "قيم الألوان مثلثات RGB (مثل: 6 8 12) كما في resources/css/theme.css، وما له شفافية مكتوب 'R G B / alpha'. الألوان تُعرَّف في theme.css فقط.",
+    "format": "قيم الألوان مثلثات RGB (مثل: 10 11 13) كما في resources/css/theme.css، وما له شفافية مكتوب 'R G B / alpha'. الألوان تُعرَّف في theme.css فقط.",
     "dark": {
-      "bg": "6 8 12",
-      "ink": "238 241 246",
-      "muted": "163 172 188",
-      "faint": "136 146 163",
-      "glass": "20 25 34 / 0.60",
+      "bg": "10 11 13",
+      "ink": "238 240 243",
+      "muted": "165 170 178",
+      "faint": "138 144 152",
+      "glass": "24 26 30 / 0.60",
       "line": "255 255 255 / 0.09",
       "lineHighlight": "255 255 255 / 0.16",
       "fill": "255 255 255 / 0.05",
       "fillStrong": "255 255 255 / 0.09",
       "ambient": [
-        "radial-gradient(1300px 720px at 85% -12%, rgb(var(--brand-500) / .22), transparent 62%)"
+        "radial-gradient(1300px 720px at 85% -12%, rgb(255 255 255 / .05), transparent 62%)"
       ],
       "semantic": {
         "success": "60 207 145",
@@ -43,7 +43,7 @@
       "fillStrong": "20 25 35 / 0.09",
       "ambient": [
         "radial-gradient(1200px 640px at 85% -12%, rgb(255 255 255 / .75), transparent 62%)",
-        "radial-gradient(900px 600px at 0% 112%, rgb(var(--brand-500) / .06), transparent 62%)"
+        "radial-gradient(900px 600px at 0% 112%, rgb(20 25 35 / .04), transparent 62%)"
       ],
       "semantic": {
         "success": "8 105 66",
