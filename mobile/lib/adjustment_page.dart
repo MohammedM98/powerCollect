@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'api_client.dart';
@@ -5,6 +6,7 @@ import 'app_balance.dart';
 import 'app_identity.dart';
 import 'field_store.dart';
 import 'search_text.dart';
+import 'diagnostics.dart';
 
 class AdjustmentPage extends StatefulWidget {
   const AdjustmentPage(
@@ -88,7 +90,8 @@ class _AdjustmentPageState extends State<AdjustmentPage> {
           submission: submission!,
           summary:
               '${widget.title} ${submission!['amount'] ?? submission!['value']} ₪ على ${widget.subscriber['full_name']}');
-    } catch (_) {
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'adjustment_page'));
       // The movement is still sent; only its copy on the phone is missing.
     }
   }
@@ -99,7 +102,8 @@ class _AdjustmentPageState extends State<AdjustmentPage> {
     if (store == null || operationId == null) return;
     try {
       await store.forgetCollection(operationId);
-    } catch (_) {
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'adjustment_page'));
       // Kept on the phone; sending it again is answered with the same movement.
     }
   }

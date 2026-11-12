@@ -3,6 +3,7 @@
 use App\Http\Controllers\Mobile\MobileAdjustmentController;
 use App\Http\Controllers\Mobile\MobileCashBoxController;
 use App\Http\Controllers\Mobile\MobileCollectionController;
+use App\Http\Controllers\Mobile\MobileDiagnosticsController;
 use App\Http\Controllers\Mobile\MobileReadingAssignmentController;
 use App\Http\Controllers\Mobile\MobileReadingController;
 use App\Http\Controllers\Mobile\MobileReadingDistributionController;
@@ -24,6 +25,7 @@ $mobileRoutes = function (): void {
     Route::middleware('mobile.auth')->group(function (): void {
         Route::get('/me', [MobileSessionController::class, 'show'])->name('me');
         Route::post('/logout', [MobileSessionController::class, 'destroy'])->name('logout');
+        Route::post('/diagnostics', [MobileDiagnosticsController::class, 'store'])->middleware('throttle:6,1')->name('diagnostics.store');
         Route::get('/messages/subscriptions', [MobileSubscriberMessageController::class, 'index'])->name('messages.subscriptions');
         Route::get('/subscriptions', [MobileSubscriptionController::class, 'index'])->name('subscriptions.index');
         Route::post('/readings', [MobileReadingController::class, 'store'])->name('readings.store');

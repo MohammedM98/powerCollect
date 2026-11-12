@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'api_client.dart';
 import 'bank_received_date_field.dart';
 import 'field_store.dart';
+import 'diagnostics.dart';
 
 /// The banks and e-wallets a transfer can go to, used until the server
 /// sends its own list with the signed-in user.
@@ -314,7 +316,8 @@ class PaymentForm extends ChangeNotifier {
           submission: submission!,
           summary:
               'دفعة ${submission!['amount']} ${submission!['currency']} من $subscriberName');
-    } catch (_) {
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'payment_form'));
       // The payment is still sent; only its copy on the phone is missing.
     }
   }
@@ -325,7 +328,8 @@ class PaymentForm extends ChangeNotifier {
     if (store == null || operationId == null) return;
     try {
       await store.forgetCollection(operationId);
-    } catch (_) {
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'payment_form'));
       // Kept on the phone; sending it again is answered with the same payment.
     }
   }

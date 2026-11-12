@@ -17,6 +17,7 @@ import 'reading_distribution_page.dart';
 import 'reading_assignments.dart';
 import 'message_subscribers_page.dart';
 import 'trusted_clock.dart';
+import 'diagnostics.dart';
 
 enum FieldSection { home, readings, collections, sync, account }
 
@@ -108,33 +109,57 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
       widget.store.state.remove('subscribers');
       widget.store.state.remove('roster_updated_at');
     }
-    timer = Timer.periodic(const Duration(seconds: 30), (_) {
-      if ((WidgetsBinding.instance.lifecycleState == null ||
-          WidgetsBinding.instance.lifecycleState ==
-              AppLifecycleState.resumed)) {
-        if (ModalRoute.of(context)?.isCurrent == true) {
-          synchronize(forceRoster: section == FieldSection.readings);
-        } else {
-          final sessionToken = widget.api.token;
-          unawaited(widget.api.me().catchError((Object error) {
-            if (error is ApiException &&
-                error.statusCode == 401 &&
-                mounted &&
-                widget.api.token == sessionToken) {
-              widget.onReauthenticate();
-            }
-            return <String, dynamic>{};
-          }));
-        }
-      }
-    });
+    scheduleSync();
     WidgetsBinding.instance
         .addPostFrameCallback((_) => synchronize(forceRoster: true));
   }
 
+  /// Checks in a row that found no connection; each one doubles the wait.
+  int offlineChecks = 0;
+
+  /// The next check with the server: 30 seconds after the last, doubling
+  /// while offline up to four minutes. None runs while the app is in the
+  /// background; coming back checks at once and starts the clock again.
+  void scheduleSync() {
+    timer?.cancel();
+    timer = Timer(Duration(seconds: 30 << offlineChecks.clamp(0, 3)), checkIn);
+  }
+
+  Future<void> checkIn() async {
+    if (!mounted) return;
+    final lifecycle = WidgetsBinding.instance.lifecycleState;
+    if (lifecycle != null && lifecycle != AppLifecycleState.resumed) return;
+    if (ModalRoute.of(context)?.isCurrent == true) {
+      await synchronize(forceRoster: section == FieldSection.readings);
+    } else {
+      final sessionToken = widget.api.token;
+      try {
+        await widget.api.me();
+      } on ApiException catch (error) {
+        if (error.statusCode == 401 &&
+            mounted &&
+            widget.api.token == sessionToken) {
+          widget.onReauthenticate();
+        }
+      } catch (error, stack) {
+        unawaited(Diagnostics.record(error, stack, where: 'field_shell'));
+      }
+    }
+    if (!mounted) return;
+    offlineChecks = online ? 0 : offlineChecks + 1;
+    scheduleSync();
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) synchronize(forceRoster: true);
+    if (state == AppLifecycleState.resumed) {
+      offlineChecks = 0;
+      synchronize(forceRoster: true);
+      scheduleSync();
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      timer?.cancel();
+    }
   }
 
   @override
@@ -322,7 +347,8 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
           failed++;
         }
       }
-    } catch (_) {
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'field_shell'));
       interruption =
           'تعذّر حفظ حالة الرفع على الجهاز. احتفظ بالقراءات وأعد المحاولة بنفسها.';
     } finally {
@@ -445,8 +471,26 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
     try {
       if (recorded == true && canCollect) await refreshCollections();
       if (mounted && recorded == true) await searchCollections();
-    } on ApiException catch (_) {
+    } on ApiException catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'field_shell'));
       // The payment is already recorded; a failed refresh must not obscure it.
+    }
+  }
+
+  /// Send the app's error log to the server for support, then start it afresh.
+  Future<void> sendDiagnostics() async {
+    final log = await Diagnostics.read();
+    if (!mounted) return;
+    if (log.trim().isEmpty) {
+      showAppToast(context, 'لا توجد أخطاء مسجلة في التطبيق.');
+      return;
+    }
+    try {
+      await widget.api.sendDiagnostics(log);
+      await Diagnostics.clear();
+      if (mounted) showAppToast(context, 'أُرسل سجل الأخطاء إلى الدعم.');
+    } on ApiException catch (exception) {
+      if (mounted) showAppToast(context, exception.message, icon: 'err');
     }
   }
 
@@ -1152,7 +1196,8 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
                   onTap: () async {
                     try {
                       await widget.onAppearanceChanged!(mode);
-                    } catch (_) {
+                    } catch (error, stack) {
+                      unawaited(Diagnostics.record(error, stack, where: 'field_shell'));
                       if (mounted) {
                         showAppToast(context, 'تعذر حفظ المظهر. أعد المحاولة.',
                             icon: 'err');
@@ -1210,6 +1255,12 @@ class _FieldShellState extends State<FieldShell> with WidgetsBindingObserver {
                 child: AppNotice(
                     '${AppIdentity.readingsCount(widget.store.queuedReadings.length)} لم تُرسل بعد. زامنها قبل تسجيل الخروج.',
                     warning: true)),
+          Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton(
+                  key: const ValueKey('send-diagnostics'),
+                  onPressed: sendDiagnostics,
+                  child: const Text('إرسال سجل أخطاء التطبيق إلى الدعم'))),
           const SizedBox(height: 16),
           AppAction(
               label: 'تسجيل الخروج',

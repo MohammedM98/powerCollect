@@ -45,6 +45,10 @@ class ApiClient {
   }
 
   Future<Map<String, dynamic>> me() => _request('GET', '/api/mobile/me');
+
+  /// Send the app's error log (see Diagnostics) to the server's log.
+  Future<Map<String, dynamic>> sendDiagnostics(String log) =>
+      _request('POST', '/api/mobile/diagnostics', body: {'log': log});
   Future<Map<String, dynamic>> readingAssignments() =>
       _request('GET', '/api/mobile/reading-assignments');
   Future<Map<String, dynamic>> rosterPage(int page) async =>

@@ -6,6 +6,7 @@ import 'bank_received_date_field.dart';
 import 'app_balance.dart';
 import 'app_identity.dart';
 import 'field_store.dart';
+import 'diagnostics.dart';
 
 int? splitAmountCents(String value) {
   final match = RegExp(r'^(\d+)(?:\.(\d{1,2}))?$').firstMatch(value.trim());
@@ -154,7 +155,8 @@ class _SplitPaymentPageState extends State<SplitPaymentPage> {
                 }
             ],
           });
-    } catch (_) {
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'split_payment_page'));
       // The transfer is still sent; only its copy on the phone is missing.
     }
   }
@@ -165,7 +167,8 @@ class _SplitPaymentPageState extends State<SplitPaymentPage> {
     if (store == null || operationId == null) return;
     try {
       await store.forgetCollection(operationId);
-    } catch (_) {
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'split_payment_page'));
       // Kept on the phone; sending it again is answered with the same transfer.
     }
   }

@@ -7,6 +7,7 @@ import 'field_store.dart';
 import 'reading_assignments.dart';
 import 'search_text.dart';
 import 'trusted_clock.dart';
+import 'diagnostics.dart';
 
 Color get _background => AppIdentity.background;
 Color get _surface => AppIdentity.surface;
@@ -536,7 +537,8 @@ class _ReadingFlowState extends State<ReadingFlow> with WidgetsBindingObserver {
         keypadOpen = false;
       });
       _setView('done');
-    } catch (_) {
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'reading_flow'));
       if (mounted) {
         setState(() {
           saving = false;

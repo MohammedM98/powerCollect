@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/services.dart';
+import 'diagnostics.dart';
 
 String newOperationId() {
   final bytes = List<int>.generate(16, (_) => Random.secure().nextInt(256));
@@ -70,7 +72,8 @@ class FieldStore {
         await temporary.writeAsString(snapshot, flush: true);
         await temporary.rename(file.path);
         _persistedToken = nextToken;
-      } catch (_) {
+      } catch (error, stack) {
+        unawaited(Diagnostics.record(error, stack, where: 'field_store'));
         if (changedToken) {
           await _session.invokeMethod<void>(
               _persistedToken == null ? 'clear' : 'write', _persistedToken);
@@ -302,7 +305,8 @@ class FieldStore {
       try {
         change();
         await save();
-      } catch (_) {
+      } catch (error, stack) {
+        unawaited(Diagnostics.record(error, stack, where: 'field_store'));
         state = jsonDecode(previous) as Map<String, dynamic>;
         rethrow;
       }
