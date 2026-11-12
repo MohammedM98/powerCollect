@@ -56,7 +56,7 @@ extension _AmountSection on _PaymentPageState {
           child: Row(children: [
             Expanded(
                 child: Container(
-              constraints: const BoxConstraints(minHeight: 44),
+              constraints: const BoxConstraints(minHeight: 48),
               alignment: Alignment.centerRight,
               child: FittedBox(
                   fit: BoxFit.scaleDown,
@@ -105,7 +105,7 @@ extension _AmountSection on _PaymentPageState {
                         ? () => change(() => currency = code)
                         : null,
                     child: Container(
-                      height: 38,
+                      height: 48,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           color: currency == code
@@ -175,33 +175,38 @@ extension _AmountSection on _PaymentPageState {
   Widget _quickChip(String label, VoidCallback? onTap,
       {bool full = false, Key? key}) {
     final enabled = onTap != null && editable;
+    // Drawn 34 high, touched 48 high (see AppChip).
     return Opacity(
       opacity: enabled ? 1 : .5,
       child: Material(
         key: key,
-        color: full ? AppIdentity.brandSoft : AppIdentity.raised,
-        borderRadius: BorderRadius.circular(11),
+        type: MaterialType.transparency,
         child: InkWell(
           borderRadius: BorderRadius.circular(11),
           onTap: enabled ? onTap : null,
-          child: Container(
-            height: 34,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-                border: Border.all(
-                    color: full
-                        ? Color.alphaBlend(
-                            AppIdentity.brand.withValues(alpha: .35),
-                            AppIdentity.line)
-                        : AppIdentity.line),
-                borderRadius: BorderRadius.circular(11)),
-            child: Center(
-                widthFactor: 1,
-                child: Text(label,
-                    style: full
-                        ? AppIdentity.body(13,
-                            weight: FontWeight.w700, color: AppIdentity.brand)
-                        : AppIdentity.number(13, color: AppIdentity.ink2))),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 7),
+            child: Ink(
+              height: 34,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                  color: full ? AppIdentity.brandSoft : AppIdentity.raised,
+                  border: Border.all(
+                      color: full
+                          ? Color.alphaBlend(
+                              AppIdentity.brand.withValues(alpha: .35),
+                              AppIdentity.line)
+                          : AppIdentity.line),
+                  borderRadius: BorderRadius.circular(11)),
+              child: Center(
+                  widthFactor: 1,
+                  child: Text(label,
+                      style: full
+                          ? AppIdentity.body(13,
+                              weight: FontWeight.w700,
+                              color: AppIdentity.brand)
+                          : AppIdentity.number(13, color: AppIdentity.ink2))),
+            ),
           ),
         ),
       ),

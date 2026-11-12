@@ -83,7 +83,9 @@ void main() {
       ..state = {'token': 'test-token', 'user': user, 'appearance': 'dark'};
     await openAccount(tester, store);
     final logout = find.text('تسجيل الخروج');
-    await tester.ensureVisible(logout);
+    // Mid-screen, clear of the floating bottom bar.
+    await Scrollable.ensureVisible(tester.element(logout), alignment: .5);
+    await tester.pumpAndSettle();
     await tester.tap(logout);
     await tester.pumpAndSettle();
     await tester.tap(find.text('تسجيل الخروج').last);
@@ -106,7 +108,9 @@ void main() {
     await tester.tap(find.text('حسابي'));
     await tester.pumpAndSettle();
     final logout = find.text('تسجيل الخروج');
-    await tester.ensureVisible(logout);
+    // Mid-screen, clear of the floating bottom bar.
+    await Scrollable.ensureVisible(tester.element(logout), alignment: .5);
+    await tester.pumpAndSettle();
     await tester.tap(logout);
     await tester.pumpAndSettle();
     await tester.tap(find.text('تسجيل الخروج').last);

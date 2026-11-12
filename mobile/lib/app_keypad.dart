@@ -199,7 +199,11 @@ class AppKeypad extends StatelessWidget {
                   enabled && key == 'delete' ? () => onKey('clear') : null,
               child: Center(
                   child: key == 'delete'
-                      ? AppIcon('del', size: 22, color: AppIdentity.muted)
+                      ? Semantics(
+                          label: 'حذف رقم',
+                          hint: 'اضغط مطولًا لمسح المبلغ',
+                          child: AppIcon('del',
+                              size: 22, color: AppIdentity.muted))
                       : key == '.'
                           ? Padding(
                               padding: const EdgeInsets.only(bottom: 10),

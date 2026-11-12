@@ -107,17 +107,15 @@ class _LoginPageState extends State<LoginPage> {
                               suffix: Padding(
                                   padding: const EdgeInsetsDirectional.only(
                                       start: 10, end: 14),
-                                  child: GestureDetector(
-                                      behavior: HitTestBehavior.opaque,
-                                      onTap: () => setState(
+                                  child: IconButton(
+                                      tooltip: showPassword
+                                          ? 'إخفاء كلمة المرور'
+                                          : 'إظهار كلمة المرور',
+                                      onPressed: () => setState(
                                           () => showPassword = !showPassword),
-                                      child: Tooltip(
-                                          message: showPassword
-                                              ? 'إخفاء كلمة المرور'
-                                              : 'إظهار كلمة المرور',
-                                          child: AppIcon(
-                                              showPassword ? 'eyeoff' : 'eye',
-                                              color: AppIdentity.faint)))))),
+                                      icon: AppIcon(
+                                          showPassword ? 'eyeoff' : 'eye',
+                                          color: AppIdentity.faint))))),
                       const SizedBox(height: 12),
                       CheckboxListTile(
                           value: remember,

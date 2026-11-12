@@ -266,6 +266,10 @@ void main() {
     expect(find.text('تسجيل الدفعات'), findsNothing);
     await tester.tap(find.text('إدخال القراءات').last);
     await tester.pumpAndSettle();
+    await Scrollable.ensureVisible(
+        tester.element(find.byKey(const ValueKey('box-B1'))),
+        alignment: .5);
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('box-B1')));
     await tester.pumpAndSettle();
     expect(find.text('Subscriber One'), findsOneWidget);
@@ -316,6 +320,10 @@ void main() {
         PowerCollectApp(apiClient: OfflineApi(), fieldStore: store));
     await tester.pumpAndSettle();
     await tester.tap(find.text('إدخال القراءات').last);
+    await tester.pumpAndSettle();
+    await Scrollable.ensureVisible(
+        tester.element(find.byKey(const ValueKey('box-B1'))),
+        alignment: .5);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('box-B1')));
     await tester.pumpAndSettle();

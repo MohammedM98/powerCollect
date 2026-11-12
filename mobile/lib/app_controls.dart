@@ -15,7 +15,7 @@ class AppIconButton extends StatelessWidget {
       this.spinning = false,
       this.badge = 0,
       this.dot,
-      this.size = 44,
+      this.size = 48,
       this.iconSize = 20,
       this.flat = false,
       this.color,
@@ -420,7 +420,8 @@ class AppSegment extends StatelessWidget {
   final ValueChanged<int> onChanged;
   @override
   Widget build(BuildContext context) => Container(
-        height: 50 + (MediaQuery.textScalerOf(context).scale(14.5) - 14.5) * 2,
+        // Each choice is 48 high inside the 4-pixel track, a full finger's target.
+        height: 56 + (MediaQuery.textScalerOf(context).scale(14.5) - 14.5) * 2,
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
             color: AppIdentity.sunken, borderRadius: BorderRadius.circular(16)),
@@ -468,33 +469,41 @@ class AppChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = selected ? AppIdentity.selectedInk : AppIdentity.muted;
+    // Drawn 36 high, touched 48 high: the band above and below is part of
+    // the chip for the finger and for TalkBack, as Material's padded chips.
     return Material(
-      color: selected ? AppIdentity.selected : AppIdentity.surface,
-      shape: StadiumBorder(
-          side: BorderSide(
-              color: selected ? AppIdentity.selected : AppIdentity.line,
-              width: 1.5)),
+      type: MaterialType.transparency,
       child: InkWell(
         customBorder: const StadiumBorder(),
         onTap: onTap,
-        child: Container(
-          height: 36,
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Flexible(
-                child: Text(label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppIdentity.body(13,
-                        weight: FontWeight.w700, color: color))),
-            if (count != null) ...[
-              const SizedBox(width: 6),
-              Opacity(
-                  opacity: .65,
-                  child: Text('$count',
-                      style: AppIdentity.number(11, color: color))),
-            ],
-          ]),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Ink(
+            height: 36,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: ShapeDecoration(
+                color: selected ? AppIdentity.selected : AppIdentity.surface,
+                shape: StadiumBorder(
+                    side: BorderSide(
+                        color:
+                            selected ? AppIdentity.selected : AppIdentity.line,
+                        width: 1.5))),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Flexible(
+                  child: Text(label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppIdentity.body(13,
+                          weight: FontWeight.w700, color: color))),
+              if (count != null) ...[
+                const SizedBox(width: 6),
+                Opacity(
+                    opacity: .65,
+                    child: Text('$count',
+                        style: AppIdentity.number(11, color: color))),
+              ],
+            ]),
+          ),
         ),
       ),
     );
