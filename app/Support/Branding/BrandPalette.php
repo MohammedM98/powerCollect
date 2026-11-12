@@ -118,8 +118,6 @@ class BrandPalette
         'neutral' => ['hue' => 0, 'tint' => 0.0],
         'stone' => ['hue' => 70, 'tint' => 0.7],
         'sage' => ['hue' => 150, 'tint' => 0.9],
-        // The Superpower navy (theme.css, section 8): its dark page is 5 12 31.
-        'navy' => ['hue' => 264, 'tint' => 5.8, 'maxChroma' => 0.06],
     ];
 
     /**

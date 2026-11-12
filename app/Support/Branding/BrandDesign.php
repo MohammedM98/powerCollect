@@ -62,9 +62,7 @@ class BrandDesign
             'gradient' => 'Gradient from the top',
             'dots' => 'Dots',
             'grid' => 'Line grid',
-            'navy' => 'Navy with blue light',
-            'midnight' => 'Night blue',
-            'graphite' => 'Charcoal',
+            'graphite' => 'Charcoal glass',
         ]],
         'neutral' => ['label' => 'Grey tone', 'options' => [
             'graphite' => 'Graphite',
@@ -73,7 +71,6 @@ class BrandDesign
             'neutral' => 'Neutral grey',
             'stone' => 'Warm grey',
             'sage' => 'Greenish grey',
-            'navy' => 'Navy',
         ]],
         'radius' => ['label' => 'Corners', 'options' => [
             'rounded' => 'Rounded',
@@ -233,6 +230,17 @@ class BrandDesign
     ];
 
     /**
+     * Options that were withdrawn, and the option a design saved with one
+     * now shows: the navy and night-blue looks became the charcoal one.
+     *
+     * @var array<string, array<string, string>>
+     */
+    private const RETIRED = [
+        'background' => ['navy' => 'graphite', 'midnight' => 'graphite'],
+        'neutral' => ['navy' => 'graphite'],
+    ];
+
+    /**
      * Exact values a company may set beyond the choices (`tokens` in the
      * file), each within its range: the unit it is written in and what it
      * changes. Left out, the choices above decide.
@@ -262,9 +270,9 @@ class BrandDesign
      */
     public const PRESETS = [
         'superpower' => [
-            'label' => 'Navy glass super power',
-            'description' => 'Navy glass cards over a blue-lit background, a floating section bar, tables inside glass panels, gradient buttons and filled fields.',
-            'design' => ['background' => 'navy', 'neutral' => 'navy', 'cards' => 'glass', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand', 'navHighlight' => 'brand'],
+            'label' => 'Charcoal glass super power',
+            'description' => 'Glass cards over a charcoal background, light grey in the light theme, a floating section bar, tables inside glass panels, gradient buttons and filled fields.',
+            'design' => ['background' => 'graphite', 'neutral' => 'graphite', 'cards' => 'glass', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand', 'navHighlight' => 'brand'],
         ],
         'classic' => [
             'label' => 'Classic premium',
@@ -380,6 +388,7 @@ class BrandDesign
 
         foreach (self::OPTIONS as $key => $choice) {
             $value = $design[$key] ?? null;
+            $value = is_string($value) ? (self::RETIRED[$key][$value] ?? $value) : $value;
             $chosen[$key] = is_string($value) && isset($choice['options'][$value]) ? $value : $base[$key];
         }
 
@@ -397,7 +406,8 @@ class BrandDesign
         $rules = [$prefix => ['nullable', 'array'], "{$prefix}.preset" => ['nullable', 'string', 'in:custom,'.implode(',', array_keys(self::PRESETS))]];
 
         foreach (self::OPTIONS as $key => $choice) {
-            $rules["{$prefix}.{$key}"] = ['nullable', 'string', 'in:'.implode(',', array_keys($choice['options']))];
+            $accepted = [...array_keys($choice['options']), ...array_keys(self::RETIRED[$key] ?? [])];
+            $rules["{$prefix}.{$key}"] = ['nullable', 'string', 'in:'.implode(',', $accepted)];
         }
 
         return $rules;

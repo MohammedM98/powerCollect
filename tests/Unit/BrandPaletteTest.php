@@ -72,19 +72,6 @@ class BrandPaletteTest extends TestCase
         }
     }
 
-    public function test_the_navy_neutral_reaches_the_superpower_page_and_keeps_quiet_text_readable(): void
-    {
-        $navy = BrandPalette::neutral('navy');
-        $contrast = fn (string $text, string $page): float => max(BrandPalette::contrastWithWhite($this->hex($text)), BrandPalette::contrastWithWhite($this->hex($page)))
-            / min(BrandPalette::contrastWithWhite($this->hex($text)), BrandPalette::contrastWithWhite($this->hex($page)));
-
-        foreach (array_map('intval', explode(' ', $navy['dark'][50])) as $channel => $value) {
-            $this->assertEqualsWithDelta([5, 12, 31][$channel], $value, 4, "The dark page is the design's navy: {$navy['dark'][50]}");
-        }
-        $this->assertGreaterThanOrEqual(4.5, $contrast($navy['light'][400], $navy['light'][50]));
-        $this->assertGreaterThanOrEqual(4.5, $contrast($navy['dark'][400], $navy['dark'][50]));
-    }
-
     public function test_a_status_colour_is_kept_as_its_500(): void
     {
         $this->assertSame('5 150 105', BrandPalette::statusScale('#059669')[500]);

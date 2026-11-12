@@ -1436,8 +1436,8 @@
     width: 44px;
     height: 44px;
     border-radius: 13px;
-    background: linear-gradient(140deg, #2a3a5e, #101a34);
-    color: #eaf0ff;
+    background: linear-gradient(140deg, rgb(var(--graphite-500)), rgb(var(--graphite-900)));
+    color: rgb(var(--silver-50));
     font: 700 15px var(--gl-head);
 }
 
@@ -1612,8 +1612,8 @@
     width: 40px;
     height: 40px;
     border-radius: 12px;
-    background: linear-gradient(140deg, #2a3a5e, #101a34);
-    color: #eaf0ff;
+    background: linear-gradient(140deg, rgb(var(--graphite-500)), rgb(var(--graphite-900)));
+    color: rgb(var(--silver-50));
     font: 700 14px var(--gl-head);
 }
 

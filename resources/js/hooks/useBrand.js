@@ -46,7 +46,7 @@ export function useBrand() {
 
 /**
  * Keeps the document (design attributes, colours, icon) drawn in the
- * current identity, with this person's own look over it (their background,
+ * current identity, with this person's own look over it (their
  * glass, colour and motion, lib/personalLook.js); for the page layouts.
  */
 export function useBrandDocument() {

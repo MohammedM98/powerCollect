@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import Icon from '@/Components/Icon';
 import ThemeSegments from './ThemeSegments';
 import { usePersonalLook } from '@/hooks/usePersonalLook';
-import { BLUR_RANGE, GLASS_RANGE, LOOK_BACKGROUNDS, LOOK_COLORS, isCustomLook } from '@/lib/personalLook';
+import { BLUR_RANGE, GLASS_RANGE, LOOK_COLORS, isCustomLook } from '@/lib/personalLook';
 
 /** A token's value as the company draws it, read from the page, for a slider left on the company's choice. */
 function companyToken(name, fallback) {
@@ -44,7 +44,7 @@ function Choices({ label, options, value, onChange }) {
 
 /**
  * The look studio's panel, loaded the first time it opens:
- * light or dark, the dark background, how see-through and blurred the
+ * light or dark, how see-through and blurred the
  * glass is, the main colour (a ready one or any other) and motion. Every
  * change shows at once and is kept in this browser for this person only;
  * "شكل الشركة" puts the company's look back.
@@ -78,15 +78,6 @@ export default function LookStudioPanel({ popoverRef, onShown }) {
 
                 <Row label="الوضع">
                     <ThemeSegments />
-                </Row>
-
-                <Row label="الخلفية في الوضع الداكن">
-                    <Choices
-                        label="الخلفية في الوضع الداكن"
-                        options={[[null, 'الشركة'], ...LOOK_BACKGROUNDS]}
-                        value={look.background}
-                        onChange={(background) => change({ background })}
-                    />
                 </Row>
 
                 <Row label="شفافية الزجاج" value={`${Math.round(glass * 100)}%`}>
