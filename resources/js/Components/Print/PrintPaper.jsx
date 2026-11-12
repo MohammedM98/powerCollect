@@ -99,7 +99,7 @@ export default function PrintPaper({ layout, table, summary, context, zoom }) {
                         .join(' ')}
                 >
                     <colgroup>
-                        {style.rowNumbers && <col style={{ width: '8mm' }} />}
+                        {style.rowNumbers && <col className="!w-[8mm]" />}
                         {columns.map((column) => <col key={column.key} style={Number(column.width) > 0 && Number(column.width) <= 120 ? { width: `${Number(column.width)}mm` } : undefined} />)}
                     </colgroup>
                     {!titlesPerGroup && <thead>{columnTitles(undefined)}</thead>}

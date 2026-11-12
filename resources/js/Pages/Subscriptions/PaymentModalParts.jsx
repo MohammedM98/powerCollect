@@ -44,7 +44,7 @@ export function PaymentReceipt({ receipt, subscriptionName, title, onAnother, on
             <span className="gl-tone mx-auto mb-3.5 flex h-[76px] w-[76px] items-center justify-center rounded-3xl" style={{ '--gl-c': 'var(--gl-ok)' }}>
                 <Icon name="check" className="h-10 w-10" strokeWidth={2.2} />
             </span>
-            <h3 className="text-[24px] font-extrabold" style={{ fontFamily: 'var(--gl-head)' }}>{title}</h3>
+            <h3 className="text-[24px] font-extrabold !font-[family-name:var(--gl-head)]">{title}</h3>
             <p className="gl-sub mt-1.5 !text-sm">
                 {formatMoney(receipt.currency === 'ILS' ? receipt.amount : receipt.inShekels)} شيكل من {subscriptionName} · الرصيد الجديد {balanceText(after)}
             </p>
@@ -52,7 +52,7 @@ export function PaymentReceipt({ receipt, subscriptionName, title, onAnother, on
                 {rows.map(([label, value]) => (
                     <div key={label} className="gl-kv">
                         <dt>{label}</dt>
-                        <dd className="gl-num font-semibold" style={{ color: 'var(--gl-ink)' }}>{value}</dd>
+                        <dd className="gl-num font-semibold !text-[color:var(--gl-ink)]">{value}</dd>
                     </div>
                 ))}
             </dl>

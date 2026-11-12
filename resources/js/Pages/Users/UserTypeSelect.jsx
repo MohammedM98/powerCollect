@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import FormField from '@/Components/Form/FormField';
 import SearchableSelect from '@/Components/SearchableSelect';
@@ -12,9 +12,11 @@ export default function UserTypeSelect({ value, options, onChange, onCreated, ca
     const [failed, setFailed] = useState(false);
     const current = useRef(true);
 
+    const cancelSaving = useEffectEvent(() => http.cancel());
+
     useEffect(() => {
         current.current = true;
-        return () => { current.current = false; http.cancel(); };
+        return () => { current.current = false; cancelSaving(); };
     }, []);
 
     function startAdding(name) {

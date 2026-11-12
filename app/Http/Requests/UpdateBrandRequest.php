@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Support\Brand;
-use App\Support\BrandDesign;
+use App\Support\Branding\Brand;
+use App\Support\Branding\BrandDesign;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

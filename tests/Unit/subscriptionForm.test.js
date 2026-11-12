@@ -1,3 +1,4 @@
+import { subscriptionFormData } from '../../resources/js/lib/subscriptionForm.js';
 import { before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
@@ -6,7 +7,6 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { rolldown } from 'rolldown';
 
 let SubscriptionForm;
-let subscriptionFormData;
 
 before(async () => {
     const bundle = await rolldown({
@@ -28,7 +28,6 @@ before(async () => {
         const { output } = await bundle.generate({ format: 'esm' });
         const component = await import(`data:text/javascript;base64,${Buffer.from(output[0].code).toString('base64')}`);
         SubscriptionForm = component.default;
-        subscriptionFormData = component.subscriptionFormData;
     } finally {
         await bundle.close();
     }

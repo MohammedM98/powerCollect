@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\CompanyFormTemplate;
-use App\Support\CompanyForms;
+use App\Support\Branding\CompanyForms;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /** @extends Factory<CompanyFormTemplate> */

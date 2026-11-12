@@ -47,8 +47,67 @@ jobs:
       - name: Generate app key
         run: php artisan key:generate
 
+      - name: Check code style
+        run: vendor/bin/pint --test
+
       - name: Execute tests
         run: php artisan test
+
+  tests-mysql:
+    name: Money and reports on MySQL
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: powercollect_testing
+          MYSQL_ROOT_PASSWORD: password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -ppassword"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: powercollect_testing
+      DB_USERNAME: root
+      DB_PASSWORD: password
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
+        with:
+          php-version: 8.3
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pdo_mysql
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Copy environment file
+        run: cp .env.example .env
+
+      - name: Generate app key
+        run: php artisan key:generate
+
+      # phpunit.xml points at in-memory SQLite; these variables override it for this job only.
+      - name: Execute money and report tests on MySQL
+        run: >-
+          vendor/bin/phpunit
+          --filter '/(Ledger|Lifecycle|Journey|BranchReport|CashBox|Closing|ClosedDay|ExactMoney|Backup|SplitPayment|WebPaymentIdempotency)/'
+        env:
+          DB_URL: mysql://root:password@127.0.0.1:3306/powercollect_testing
 
   frontend:
     name: Frontend tests and production build
@@ -68,8 +127,17 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Lint the website code
+        run: npm run lint
+
+      - name: Check the TypeScript types
+        run: npm run typecheck
+
       - name: Test frontend behavior
         run: npm test
+
+      - name: Use the money dialogs as a person would
+        run: npm run test:components
 
       - name: Build production assets
         run: npm run build
@@ -100,3 +168,23 @@ jobs:
 
       - name: Exercise collector, permission, retry, search and layout workflows
         run: flutter test --reporter expanded
+
+      # Flutter's own Gradle tooling resolves its Kotlin libraries from the Gradle Plugin Portal only,
+      # which no longer serves Maven Central's artifacts: every build in the tree also looks in Maven Central.
+      - name: Let Gradle reach Maven Central from every build
+        run: |
+          mkdir -p ~/.gradle/init.d
+          cat > ~/.gradle/init.d/maven-central.gradle <<'GRADLE'
+          beforeSettings { settings ->
+              settings.pluginManagement.repositories {
+                  gradlePluginPortal()
+                  mavenCentral()
+                  google()
+              }
+          }
+          GRADLE
+
+      # A broken Gradle, Kotlin or manifest change fails here, not at release time.
+      # The debug build needs no release key; the address only satisfies the release guard.
+      - name: Build the Android app
+        run: flutter build apk --debug --dart-define=API_BASE_URL=https://example.invalid

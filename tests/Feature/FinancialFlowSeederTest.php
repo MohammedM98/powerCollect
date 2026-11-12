@@ -6,7 +6,7 @@ use App\Models\CashBox;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Money;
+use App\Support\Ledger\Money;
 use Database\Seeders\FinancialFlowSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;

@@ -8,9 +8,10 @@ use App\Models\CashBox;
 use App\Models\CashBoxPayment;
 use App\Models\Permission;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\BranchClosingWorkflow;
+use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
@@ -33,7 +34,7 @@ class CashBoxEntriesTest extends TestCase
 
     private function entry(Branch $branch, User $collector, string $amount = '100', string $method = 'cash'): CashBoxPayment
     {
-        $payment = SubscriptionTransaction::recordPayment(Subscription::factory()->for($branch)->create(), $collector, [
+        $payment = RecordPayment::handle(Subscription::factory()->for($branch)->create(), $collector, [
             'amount' => $amount, 'currency' => 'ILS', 'payment_method' => $method,
             ...($method === 'bank_transfer' ? ['bank_name' => 'بنك فلسطين', 'sender_bank_name' => 'جوال باي', 'reference_number' => 'TRX-77'] : []),
         ]);
@@ -55,7 +56,7 @@ class CashBoxEntriesTest extends TestCase
             ->where('entries.data.1.id', $cash->id)
             ->where('entries.data.1.box.number', $cash->box->number)
             ->where('entries.data.1.box.url', route('payments.cash-boxes.show', $cash->box))
-            ->where('entries.data.1.ledger.voucherNumber', $cash->transaction->displayVoucherNumber())
+            ->where('entries.data.1.ledger.voucherNumber', LinePresenter::displayVoucherNumber($cash->transaction))
             ->where('entries.data.1.ledger.description', 'دفعة نقدية')
             ->where('entries.data.1.ledger.recordedByName', 'سامي')
             // A collector who may not open subscribers gets no link to the statement.

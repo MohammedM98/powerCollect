@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Subscription;
-use App\Support\BranchClosingAccess;
+use App\Support\Closing\BranchClosingAccess;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

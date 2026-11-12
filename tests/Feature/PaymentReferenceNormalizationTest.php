@@ -3,8 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\PaymentReferences;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -26,14 +27,14 @@ class PaymentReferenceNormalizationTest extends TestCase
     #[TestWith([null, null])]
     public function test_a_reference_is_compared_without_case_spaces_dashes_slashes_or_dots(?string $typed, ?string $normalized): void
     {
-        $this->assertSame($normalized, SubscriptionTransaction::normalizeReference($typed));
+        $this->assertSame($normalized, PaymentReferences::normalizeReference($typed));
     }
 
     public function test_the_same_transfer_written_differently_is_caught_as_a_duplicate(): void
     {
         $collector = User::factory()->branchAdmin()->create();
         $subscription = Subscription::factory()->create(['branch_id' => $collector->branch_id]);
-        $transfer = fn (string $reference) => SubscriptionTransaction::recordPayment($subscription, $collector, [
+        $transfer = fn (string $reference) => RecordPayment::handle($subscription, $collector, [
             'amount' => '10', 'currency' => 'ILS', 'payment_method' => 'bank_transfer',
             'bank_name' => 'بنك فلسطين', 'sender_name' => 'Ahmad', 'reference_number' => $reference,
         ]);
@@ -58,13 +59,13 @@ class PaymentReferenceNormalizationTest extends TestCase
     {
         $collector = User::factory()->branchAdmin()->create();
         $subscription = Subscription::factory()->create(['branch_id' => $collector->branch_id]);
-        $transfer = SubscriptionTransaction::recordPayment($subscription, $collector, [
+        $transfer = RecordPayment::handle($subscription, $collector, [
             'amount' => '10', 'currency' => 'ILS', 'payment_method' => 'bank_transfer',
             'bank_name' => 'بنك فلسطين', 'sender_name' => 'Ahmad', 'reference_number' => 'FT-100',
         ]);
         // As an older version stored it.
         DB::table('subscription_transactions')->where('id', $transfer->id)->update(['active_reference' => 'FT-100']);
-        $cancelled = SubscriptionTransaction::recordPayment($subscription, $collector, [
+        $cancelled = RecordPayment::handle($subscription, $collector, [
             'amount' => '10', 'currency' => 'ILS', 'payment_method' => 'bank_transfer',
             'bank_name' => 'بنك فلسطين', 'sender_name' => 'Ahmad', 'reference_number' => 'FT-200',
         ]);

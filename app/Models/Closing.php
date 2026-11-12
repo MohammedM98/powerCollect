@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Enums\ClosingDifferenceReason;
 use App\Enums\ClosingStatus;
 use App\Enums\ClosingType;
-use App\Support\Money;
+use App\Support\Ledger\Money;
 use Database\Factories\ClosingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /** Historical closing records retained for transaction protection and audit references. */
 #[Fillable([
-    'number', 'type', 'branch_id', 'period_start', 'period_end', 'status', 'opening_cash', 'counted_cash', 'denominations',
+    'number', 'type', 'branch_id', 'period_start', 'period_end', 'status', 'opening_cash',
     'difference_reason', 'difference_notes', 'prepared_by', 'submitted_at', 'reviewed_by', 'reviewed_at', 'return_reason',
     'book', 'is_manual', 'coverage_from', 'coverage_until', 'branch_approved_by', 'branch_approved_at', 'branch_notes', 'submitted_snapshot', 'workflow_settings', 'scheduled_until',
 ])]
@@ -32,8 +32,6 @@ class Closing extends Model
             'period_start' => 'date',
             'period_end' => 'date',
             'opening_cash' => 'decimal:2',
-            'counted_cash' => 'decimal:2',
-            'denominations' => 'array',
             'difference_reason' => ClosingDifferenceReason::class,
             'submitted_at' => 'datetime',
             'reviewed_at' => 'datetime',

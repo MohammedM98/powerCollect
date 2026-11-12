@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Bank;
 use App\Models\Closing;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
+use App\Support\Ledger\LedgerAmounts;
 use Brick\Math\BigDecimal;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -98,8 +98,8 @@ class StoreSplitPaymentRequest extends FormRequest
                 if ($partsInCents !== Closing::cents($this->input('total_amount'))) {
                     $validator->errors()->add('parts', sprintf(
                         'مجموع المبالغ الموزَّعة (%s ₪) لا يساوي المبلغ المحوَّل (%s ₪).',
-                        SubscriptionTransaction::formatAmount(Closing::money($partsInCents)),
-                        SubscriptionTransaction::formatAmount($this->input('total_amount')),
+                        LedgerAmounts::formatAmount(Closing::money($partsInCents)),
+                        LedgerAmounts::formatAmount($this->input('total_amount')),
                     ));
 
                     return;
@@ -115,9 +115,9 @@ class StoreSplitPaymentRequest extends FormRequest
                     if (Subscription::overpaymentNeedsConfirmation($part['amount'], $owed)) {
                         $validator->errors()->add('confirm_overpayment', sprintf(
                             'المبلغ %s ₪ أكبر بكثير من المستحق على %s (%s ₪)، وسيبقى له رصيد دائن؛ تأكد من التوزيع ثم أكّد أنه صحيح.',
-                            SubscriptionTransaction::formatAmount($part['amount']),
+                            LedgerAmounts::formatAmount($part['amount']),
                             $part['subscription']->displayName(),
-                            SubscriptionTransaction::formatAmount($owed),
+                            LedgerAmounts::formatAmount($owed),
                         ));
                     }
                 }

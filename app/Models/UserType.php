@@ -22,6 +22,6 @@ class UserType extends Model
 
     public function deletionBlocker(): ?string
     {
-        return DeletionBlocker::describe('نوع المستخدم', ['المستخدمون' => $this->users()->count()]);
+        return DeletionBlocker::describe('user_type', ['users' => $this->users()->count()]);
     }
 }

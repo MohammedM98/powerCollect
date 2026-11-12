@@ -1,37 +1,20 @@
-import { lazy, Suspense, useState } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
+import { useState } from 'react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { urlWithout } from '@/lib/pageUrl';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useBranchView } from '@/hooks/useBranchView';
 import Icon from '@/Components/Icon';
-import ChartStudio from '@/Components/ChartStudio';
-import KpiTile from '@/Components/KpiTile';
 import LiveBars from '@/Components/LiveBars';
 import Panel from '@/Components/Panel';
-import SearchableSelect from '@/Components/SearchableSelect';
-import SplitBar from '@/Components/SplitBar';
-import StatStrip, { ChangePill, Spark, Stat } from '@/Components/StatStrip';
 import { GoalRing } from '@/Components/StatRing';
-import WordReveal from '@/Components/WordReveal';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
-import { formatMoney, formatNumber, formatShortDay, percentOf } from '@/lib/format';
+import { formatNumber, percentOf } from '@/lib/format';
 import { shouldPrefetchPage } from '@/lib/navigation';
 import { formatWeekDay } from '@/lib/weekDays';
-import { TileLink } from './Dashboard/DashboardParts';
 import { LatestPayments } from './Dashboard/DashboardPanels';
-
-const BranchModal = lazy(() => import('@/Pages/Branches/BranchModal'));
-const UserModal = lazy(() => import('@/Pages/Users/UserModal'));
-const SubscriptionModal = lazy(() => import('@/Pages/Subscriptions/SubscriptionModal'));
-const StatementModal = lazy(() => import('@/Pages/Subscriptions/StatementModal'));
-const QuickPaymentSearch = lazy(() => import('./Dashboard/QuickPaymentSearch'));
-
-/** The current address without `?edit=` (the subscriber being edited in a window). */
-function urlWithoutEdit() {
-    const url = new URL(window.location.href);
-    url.searchParams.delete('edit');
-
-    return `${url.pathname}${url.search}`;
-}
+import DashboardWindows from './Dashboard/DashboardWindows';
+import DashboardHeader from './Dashboard/DashboardHeader';
+import DashboardFiguresColumn from './Dashboard/DashboardFiguresColumn';
 
 /** The period's name on the tabs and in sentences. */
 const periodLabel = (days) => (days === 7 ? '7 أيام' : `${days} يومًا`);
@@ -43,6 +26,8 @@ const periodLabel = (days) => (days === 7 ? '7 أيام' : `${days} يومًا`)
  * latest payments. The head of the company sees every branch and can
  * narrow to a governorate or a branch; everyone else sees their own
  * branch. Each part shows only to those who may open its page.
+ *
+ * @param {import('@/types/pages').DashboardProps} props
  */
 export default function Dashboard({
     greeting,
@@ -72,7 +57,9 @@ export default function Dashboard({
     const [editing, setEditing] = useState(false);
     const statementWindow = useStatementWindow(statement);
     // A save from one of the dashboard's windows comes back here (with any open statement), not to the record's list page.
-    const returnHere = { preserveState: true, headers: { 'X-Return-To': urlWithoutEdit() } };
+    // The address without `?edit=` (the subscriber being edited in a window).
+    const addressWithoutEdit = urlWithout(usePage().url, 'edit');
+    const returnHere = { preserveState: true, headers: { 'X-Return-To': addressWithoutEdit } };
     const [search, setSearch] = useState(filters.search ?? '');
     const { collections, subscriptions, meterBoxes, readings, disconnections, boxes } = sections;
     const hasAnyData = Object.keys(sections).length > 0 || Boolean(latestPayments);
@@ -131,7 +118,7 @@ export default function Dashboard({
 
     function closeEdit() {
         setEditing(false);
-        router.replace({ url: urlWithoutEdit(), props: (props) => ({ ...props, subscriptionEdit: null }), preserveScroll: true, preserveState: true });
+        router.replace({ url: addressWithoutEdit, props: (props) => ({ ...props, subscriptionEdit: null }), preserveScroll: true, preserveState: true });
     }
 
     const scopeLine = scope.company
@@ -201,7 +188,6 @@ export default function Dashboard({
     ].filter(Boolean);
 
     const rankList = collections?.byBranch ?? collections?.byCollector ?? null;
-    const rankMax = Math.max(0, ...(rankList ?? []).map((item) => item.total));
     const topBreaker = subscriptions?.byBreaker?.[0] ?? null;
     const hasBreakers = subscriptions?.byBreaker.length > 0;
     const breakerMax = Math.max(0, ...(subscriptions?.byBreaker ?? []).map((breaker) => breaker.count));
@@ -221,60 +207,29 @@ export default function Dashboard({
             <Head title="لوحة التحكم" />
 
             <div className="gl-page">
-                <div className="gl-phead gl-rise">
-                    <div className="min-w-0">
-                        <h1>
-                            <WordReveal text={greet}>
-                                <span style={{ color: 'rgb(var(--gl-brand))' }}>{auth.user.name}</span>
-                            </WordReveal>
-                        </h1>
-                        <p>{[scopeLine, formatWeekDay(scope.today)].filter(Boolean).join(' · ')}</p>
-                    </div>
-                    <div className="gl-phead-actions">
-                        {branchScope && governorateOptions.length > 0 && (
-                            <div className="w-full sm:w-52">
-                                <SearchableSelect
-                                    value={filters.governorate ?? ''}
-                                    onChange={(value) => visit({ governorate: value || null, branch: null })}
-                                    options={governorateOptions}
-                                    placeholder="كل المحافظات"
-                                    searchable={governorateOptions.length > 6}
-                                    active={Boolean(filters.governorate)}
-                                    portal
-                                />
-                            </div>
-                        )}
-                        {branchScope && (
-                            <div className="w-full sm:w-52">
-                                <SearchableSelect
-                                    value={branchView.available ? String(branchView.value) : filters.branch ?? ''}
-                                    onChange={branchView.available ? branchView.changeBranch : (value) => visit({ branch: value || null })}
-                                    options={branchView.available ? branchView.options : branchOptions.filter((branch) => !filters.governorate || String(branch.governorate) === String(filters.governorate))}
-                                    disabled={branchView.switching}
-                                    placeholder="كل الفروع"
-                                    searchPlaceholder="ابحث عن فرع..."
-                                    active={Boolean(filters.branch)}
-                                    portal
-                                />
-                            </div>
-                        )}
-                        {!scope.company && scope.label && <span className="gl-pill gl-info self-center"><Icon name="lock" className="h-3.5 w-3.5" />فرعك: {scope.label}</span>}
-                        {canCreateBranch ? (
-                            <button type="button" className="gl-btn gl-sec" onClick={() => openCreateForm('branch')}><Icon name="plus" className="h-4 w-4" />فرع جديد</button>
-                        ) : canCreateUser ? (
-                            <button type="button" className="gl-btn gl-sec" onClick={() => openCreateForm('user')}><Icon name="plus" className="h-4 w-4" />مستخدم جديد</button>
-                        ) : null}
-                        {can?.recordPayments && (can?.viewSubscriptions
-                            ? <button type="button" className="gl-btn" onClick={() => setFindingPayer(true)} aria-haspopup="dialog"><Icon name="plus" className="h-4 w-4" />تسجيل دفعة</button>
-                            : <Link href="/payments" className="gl-btn"><Icon name="plus" className="h-4 w-4" />تسجيل دفعة</Link>)}
-                    </div>
-                </div>
+                <DashboardHeader
+                    auth={auth}
+                    branchOptions={branchOptions}
+                    branchScope={branchScope}
+                    branchView={branchView}
+                    can={can}
+                    canCreateBranch={canCreateBranch}
+                    canCreateUser={canCreateUser}
+                    filters={filters}
+                    governorateOptions={governorateOptions}
+                    greet={greet}
+                    openCreateForm={openCreateForm}
+                    scope={scope}
+                    scopeLine={scopeLine}
+                    setFindingPayer={setFindingPayer}
+                    visit={visit}
+                />
 
                 {!hasAnyData ? (
                     <Panel index={1} className="py-14 text-center">
                         {fieldApp ? (
                             <>
-                                <span className="gl-ico mx-auto" style={{ width: 56, height: 56, color: 'rgb(var(--gl-brand))' }}><Icon name="phone" className="h-7 w-7" /></span>
+                                <span className="gl-ico mx-auto !w-[56px] !h-[56px] !text-[rgb(var(--gl-brand))]"><Icon name="phone" className="h-7 w-7" /></span>
                                 <h2 className="mt-4">حسابك للعمل الميداني</h2>
                                 <p className="gl-sub mx-auto mt-2 max-w-md leading-7">
                                     تُسجَّل الدفعات والقراءات من تطبيق التحصيل على الهاتف، وتدخل إليه بنفس اسم المستخدم وكلمة المرور. لا تظهر لك بيانات في الموقع.
@@ -288,99 +243,23 @@ export default function Dashboard({
                 ) : (
                     <>
                         <div className="gl-dash">
-                            <div className="gl-col">
-                                {collections && (
-                                    <section className="gl-glass gl-panel gl-rise" style={{ '--i': 1 }} aria-label="التحصيل">
-                                        <StatStrip>
-                                            <Stat label="المحصّل اليوم" value={collections.today.total} unit="₪" format={formatMoney} hint={`${formatNumber(collections.today.count)} دفعة حتى الآن`} />
-                                            <Stat label={`آخر ${period}`} value={collections.total} unit="₪" format={formatMoney} badge={<ChangePill change={collections.change} />} hint={`الفترة السابقة ${formatMoney(collections.previousTotal)} ₪`} />
-                                            <Stat label="دفعات الفترة" value={collections.count} hint={`نقدي ${formatMoney(collections.cash)} · حوالات ${formatMoney(collections.transfers)} ₪`}>
-                                                <Spark values={collections.series.map((day) => Number(day.value) || 0)} />
-                                            </Stat>
-                                        </StatStrip>
-                                        <ChartStudio
-                                            title="استوديو التحصيل"
-                                            total={collections.total}
-                                            change={collections.change}
-                                            formatTotal={formatMoney}
-                                            series={collections.series}
-                                            dayLabel={formatShortDay}
-                                            periods={periodOptions}
-                                            period={filters.days}
-                                            onPeriodChange={(days) => visit({ days })}
-                                        />
-                                    </section>
-                                )}
-                                {!collections && (
-                                    <div className="gl-seg self-start" role="group" aria-label="الفترة">
-                                        {periodOptions.map((option) => <button key={option.value} type="button" aria-pressed={filters.days === option.value} onClick={() => visit({ days: option.value })}>{option.label}</button>)}
-                                    </div>
-                                )}
-
-                                {(attention.length > 0 || debts !== null || collections) && (
-                                    <div className="gl-grid gl-g3">
-                                        {attention.length > 0 && (
-                                            <Panel index={2} title="بانتظارك" sub="ما يحتاج متابعة اليوم">
-                                                {attention.map(({ key, icon, title, subtitle, count, href, tone }) => (
-                                                    <Link key={key} href={href} prefetch={false} className="gl-attn">
-                                                        <span className="gl-dot" style={{ '--gl-c': tone === 'red' ? 'var(--gl-bad)' : 'var(--gl-warn)' }} />
-                                                        <span className="min-w-0 flex-1"><b className="block truncate font-semibold">{title}</b><small className="gl-sub">{subtitle}</small></span>
-                                                        <b className="gl-num">{formatNumber(count)}</b>
-                                                        <span style={{ color: 'var(--gl-faint)' }}><Icon name={icon} className="h-4 w-4" /></span>
-                                                    </Link>
-                                                ))}
-                                            </Panel>
-                                        )}
-                                        {debts === undefined ? (
-                                            <Panel index={3} title="أكبر المدينين"><div className="space-y-3 py-2"><div className="gl-skel" /><div className="gl-skel w-2/3" /><div className="gl-skel w-1/2" /></div></Panel>
-                                        ) : debts && (
-                                            <Panel index={3} title="أكبر المدينين" sub={`${formatNumber(debts.count)} مدين · ₪ ${formatMoney(debts.total)}`} right={<Link href="/receivables" className="gl-btn gl-sec gl-sm">الكل</Link>}>
-                                                {debts.top.length === 0 ? <p className="gl-empty-line">لا ديون مستحقة.</p> : debts.top.map((debtor) => (
-                                                    <div key={debtor.subscriptionId} className="gl-row">
-                                                        <div className="gl-av" style={{ color: 'var(--gl-bad)' }}>{(debtor.name ?? '').slice(0, 1)}</div>
-                                                        <div className="gl-t"><b>{debtor.name}</b><small className="gl-num">₪ {formatMoney(debtor.balance)} · منذ {formatNumber(debtor.oldestDays)} يومًا</small></div>
-                                                        {can?.viewSubscriptions && <button type="button" className="gl-btn gl-sec gl-sm" onClick={() => openStatement(debtor)} aria-haspopup="dialog" aria-label={`كشف حساب ${debtor.name}`}>كشف</button>}
-                                                    </div>
-                                                ))}
-                                            </Panel>
-                                        )}
-                                        {collections && (
-                                            <Panel index={4} title="طرق الدفع" sub={`آخر ${period} · ₪ ${formatMoney(collections.total)}`}>
-                                                <SplitBar parts={methodParts} label="النقد والحوالات" formatValue={(value) => `₪ ${formatMoney(value)}`} />
-                                            </Panel>
-                                        )}
-                                    </div>
-                                )}
-
-                                {tiles > 0 && (
-                                    <div className="gl-grid gl-g4">
-                                        {subscriptions && (
-                                            <TileLink href="/subscriptions">
-                                                <KpiTile hero index={5} icon="users" label="المشتركون النشطون" value={subscriptions.active} hint={`من ${formatNumber(subscriptions.total)} · ${formatNumber(subscriptions.newInPeriod)} جديد في آخر ${period}`}>
-                                                    <div className="gl-split" role="img" aria-label="حالات المشتركين">
-                                                        {[[subscriptions.active, 'var(--gl-ok)'], [subscriptions.suspended, 'var(--gl-warn)'], [subscriptions.disconnected, 'var(--gl-faint)']].map(([count, color], index) => subscriptions.total > 0 && count > 0 && (
-                                                            <i key={color} style={{ '--i': index, width: `${(count / subscriptions.total) * 100}%`, background: color }} />
-                                                        ))}
-                                                    </div>
-                                                </KpiTile>
-                                            </TileLink>
-                                        )}
-                                        {meterBoxes && (
-                                            <TileLink href="/meter-boxes">
-                                                <KpiTile index={6} icon="table" label="الطبلونات" value={meterBoxes.total} hint={readings ? `قُرئ ${percentOf(readings.approved + readings.pending, readings.total)}% من العدادات هذا الأسبوع` : `${formatNumber(meterBoxes.empty)} بلا مشتركين نشطين`} />
-                                            </TileLink>
-                                        )}
-                                        {subscriptions && (
-                                            <KpiTile index={7} icon="bolt" label="الأمبير المتعاقد عليه" value={subscriptions.contractedAmperes} unit="أمبير" hint={topBreaker ? `الأكثر: قاطع ${topBreaker.ampere} أمبير (${topBreaker.share}%)` : 'لا قواطع للمشتركين النشطين'} />
-                                        )}
-                                        {debts === undefined ? <div className="gl-glass gl-kpi"><div className="gl-skel w-1/2" /><div className="gl-skel mt-6 h-8 w-2/3" /></div> : debts && (
-                                            <TileLink href="/receivables">
-                                                <KpiTile index={8} icon="clock" label="الديون المستحقة" value={formatMoney(debts.total)} unit="₪" hint={`${formatNumber(debts.count)} مدين · أكثر من 90 يومًا ${debts.olderShare}%`} />
-                                            </TileLink>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
+                            <DashboardFiguresColumn
+                                attention={attention}
+                                can={can}
+                                collections={collections}
+                                debts={debts}
+                                filters={filters}
+                                meterBoxes={meterBoxes}
+                                methodParts={methodParts}
+                                openStatement={openStatement}
+                                period={period}
+                                periodOptions={periodOptions}
+                                readings={readings}
+                                subscriptions={subscriptions}
+                                tiles={tiles}
+                                topBreaker={topBreaker}
+                                visit={visit}
+                            />
 
                             <div className="gl-col">
                                 {readings && (
@@ -425,63 +304,40 @@ export default function Dashboard({
                         </div>
 
                         {payments && (
-                            <LatestPayments payments={payments} latestPayments={latestPayments} period={period} search={search} onSearchChange={setSearch} onVisit={visit} filters={filters} scope={scope} can={can} canOpenReceipts={canOpenReceipts} onOpenStatement={openStatement} />
+                            <LatestPayments
+                                payments={payments}
+                                latestPayments={latestPayments}
+                                period={period}
+                                search={search}
+                                onSearchChange={setSearch}
+                                onVisit={visit}
+                                filters={filters}
+                                scope={scope}
+                                can={can}
+                                canOpenReceipts={canOpenReceipts}
+                                onOpenStatement={openStatement}
+                            />
                         )}
                     </>
                 )}
             </div>
 
-            <Suspense fallback={<p role="status" className="fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 rounded-control border border-gray-200 bg-surface px-4 py-3 text-sm text-gray-600 shadow-card">جارٍ تحميل النافذة…</p>}>
-                {branchForm && creating === 'branch' && (
-                    <BranchModal
-                        show
-                        onClose={() => setCreating(null)}
-                        branch={null}
-                        governorates={branchForm.governorates}
-                        areas={branchForm.areas}
-                        visitOptions={returnHere}
-                    />
-                )}
-                {subscriptionForm && creating === 'subscription' && (
-                    <SubscriptionModal show onClose={() => setCreating(null)} subscription={null} visitOptions={returnHere} {...subscriptionForm} />
-                )}
-                {subscriptionForm && subscriptionEdit && editing && (
-                    <SubscriptionModal key={`edit-${subscriptionEdit.id}`} show onClose={closeEdit} subscription={subscriptionEdit} visitOptions={returnHere} {...subscriptionForm} />
-                )}
-                {findingPayer && (
-                    <QuickPaymentSearch
-                        show
-                        onClose={() => setFindingPayer(false)}
-                        onPick={(subscriber) => {
-                            setFindingPayer(false);
-                            openStatement(subscriber, 'payment');
-                        }}
-                    />
-                )}
-                {statementWindow.subscription && (
-                    <StatementModal
-                        key={statementWindow.subscription.id}
-                        subscription={statementWindow.subscription}
-                        statement={statementWindow.statement}
-                        initialForm={statementWindow.form}
-                        onSwitch={(header) => statementWindow.open(header)}
-                        onClose={statementWindow.close}
-                        onEdit={openEdit}
-                    />
-                )}
-                {userForm && creating === 'user' && (
-                    <UserModal
-                        show
-                        onClose={() => setCreating(null)}
-                        user={null}
-                        branches={userForm.branches}
-                        canChooseBranch={userForm.canChooseBranch}
-                        userTypeOptions={userForm.userTypeOptions}
-                        canCreateUserType={userForm.canCreateUserType}
-                        visitOptions={returnHere}
-                    />
-                )}
-            </Suspense>
+            <DashboardWindows
+                branchForm={branchForm}
+                closeEdit={closeEdit}
+                creating={creating}
+                editing={editing}
+                findingPayer={findingPayer}
+                openEdit={openEdit}
+                openStatement={openStatement}
+                returnHere={returnHere}
+                setCreating={setCreating}
+                setFindingPayer={setFindingPayer}
+                statementWindow={statementWindow}
+                subscriptionEdit={subscriptionEdit}
+                subscriptionForm={subscriptionForm}
+                userForm={userForm}
+            />
         </AuthenticatedLayout>
     );
 }

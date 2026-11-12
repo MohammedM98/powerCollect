@@ -26,12 +26,11 @@ use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\User;
 use App\Models\UserType;
-use App\Support\BranchClosingAccess;
-use App\Support\BranchDomainContext;
-use App\Support\BranchDomainScope;
-use App\Support\BranchViewContext;
-use App\Support\Brand;
-use App\Support\FinancialReportAccess;
+use App\Support\Branches\BranchDomainContext;
+use App\Support\Branches\BranchViewContext;
+use App\Support\Branding\Brand;
+use App\Support\Closing\BranchClosingAccess;
+use App\Support\Reports\FinancialReportAccess;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 use Inertia\Inertia;
@@ -75,7 +74,7 @@ class HandleInertiaRequests extends Middleware
             'brand' => fn (): array => app(Brand::class)->forPage(),
             'branchView' => Inertia::always(fn (): ?array => BranchViewContext::available($request) ? [
                 'current' => BranchViewContext::branch()?->only(['id', 'name']),
-                'options' => Branch::withoutGlobalScope(BranchDomainScope::class)->orderBy('name')->get(['id', 'name'])->toArray(),
+                'options' => Branch::query()->acrossBranches()->orderBy('name')->get(['id', 'name'])->toArray(),
             ] : null),
             'branchContext' => [
                 'current' => BranchDomainContext::branch()?->only(['id', 'name', 'domain']),

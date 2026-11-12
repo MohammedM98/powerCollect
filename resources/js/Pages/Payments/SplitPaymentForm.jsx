@@ -1,105 +1,19 @@
-import { BankReceivedDateField } from '@/Components/BankReceivedDate';
 import { useEffect, useRef, useState } from 'react';
 import { useForm, useHttp } from '@inertiajs/react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { describeBalance } from '@/lib/accountStatement';
-import { formatMoney, initials, normalizeDecimalInput } from '@/lib/format';
-import { balanceText, BALANCE_CHIPS, FieldLabel } from '@/Pages/Subscriptions/AccountFormParts';
-import { BankDropdown, BankRow } from '@/Components/Banks';
+import { formatMoney, normalizeDecimalInput } from '@/lib/format';
+import { balanceText, FieldLabel } from '@/Pages/Subscriptions/AccountFormParts';
 import { inputClass } from '@/Pages/Subscriptions/PaymentModal';
+import { toCents, fromCents } from '@/lib/currency';
+import SplitAllocationMeter from './SplitAllocationMeter';
+import SplitRecipientsSection, { MAX_PARTS } from './SplitRecipientsSection';
+import SplitTransferDetails from './SplitTransferDetails';
 
-/** The most subscriptions one transfer is divided between (the server's limit). */
-const MAX_PARTS = 20;
 const SEARCH_DELAY = 300;
-
-const STATUS_DOTS = { active: 'bg-emerald-500', suspended: 'bg-amber-500', disconnected: 'bg-gray-400' };
-
-/** An amount in whole agorot, so sums of cents never drift. */
-function toCents(value) {
-    const cents = Math.round(Number(value || 0) * 100);
-
-    return Number.isFinite(cents) ? cents : 0;
-}
-
-function fromCents(cents) {
-    return cents / 100;
-}
-
-/** One subscription of the split, laid out like the subscription strip of the payment form, with the share it pays. */
-function PartRow({ part, onAmount, onRemove, error }) {
-    const after = describeBalance(Number(part.subscription.balance) - Number(part.amount || 0));
-
-    return (
-        <li className="grid gap-2">
-            <div className="flex flex-wrap items-center gap-x-3.5 gap-y-3 rounded-[18px] border border-gray-100 bg-gray-50 px-3.5 py-3">
-                <div className="flex min-w-0 flex-1 basis-52 items-center gap-3.5">
-                    <span className="relative flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[14px] bg-graphite-gradient font-display text-[15px] font-bold text-white">
-                        {initials(part.subscription.fullName)}
-                        <span className={`absolute -bottom-0.5 -start-0.5 h-[13px] w-[13px] rounded-full border-[2.5px] border-gray-50 ${STATUS_DOTS[part.subscription.status] ?? 'bg-gray-400'}`} aria-hidden="true" />
-                    </span>
-                    <div className="min-w-0">
-                        <p className="break-words text-[16.5px] font-bold text-gray-900">{part.subscription.fullName}</p>
-                        <p className="text-[13.5px] text-gray-500">
-                            حساب{' '}
-                            <span dir="ltr" className="font-display">
-                                {part.subscription.accountNumber}
-                            </span>
-                            {part.subscription.meterBoxNumber && ` · طبلون ${part.subscription.meterBoxNumber}`}
-                        </p>
-                    </div>
-                </div>
-
-                <div className="flex flex-col items-end gap-0.5">
-                    <span className="text-[12.5px] text-gray-500">الرصيد الحالي</span>
-                    <span className={`whitespace-nowrap rounded-[10px] px-2.5 py-0.5 font-display text-[15px] font-bold ${BALANCE_CHIPS[describeBalance(part.subscription.balance).tone]}`}>
-                        {balanceText(describeBalance(part.subscription.balance))}
-                    </span>
-                </div>
-
-                <div className="w-36">
-                    <label htmlFor={`part-${part.subscription.id}`} className="sr-only">
-                        {`مبلغ ${part.subscription.fullName}`}
-                    </label>
-                    <div className="relative">
-                        <input
-                            id={`part-${part.subscription.id}`}
-                            inputMode="decimal"
-                            autoComplete="off"
-                            dir="ltr"
-                            placeholder="0.00"
-                            aria-label={`مبلغ ${part.subscription.fullName}`}
-                            value={part.amount}
-                            onChange={(event) => onAmount(normalizeDecimalInput(event.target.value))}
-                            className={`${inputClass} pe-9 text-end font-display text-lg font-bold`}
-                        />
-                        <span className="pointer-events-none absolute inset-y-0 end-3.5 flex items-center font-display text-base font-bold text-gray-400" aria-hidden="true">
-                            ₪
-                        </span>
-                    </div>
-                </div>
-
-                <div className="flex w-28 flex-col items-end gap-0.5">
-                    <span className="text-[12.5px] text-gray-500">بعد الدفعة</span>
-                    <span className={`whitespace-nowrap rounded-[10px] px-2.5 py-0.5 font-display text-[15px] font-bold ${BALANCE_CHIPS[after.tone]}`}>{balanceText(after)}</span>
-                </div>
-
-                <button
-                    type="button"
-                    onClick={onRemove}
-                    aria-label={`إزالة ${part.subscription.fullName}`}
-                    className="rounded-xl p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900"
-                >
-                    <Icon name="close" className="h-[18px] w-[18px]" />
-                </button>
-            </div>
-            {error && <InputError message={error} />}
-        </li>
-    );
-}
 
 /** The panel shown once the split is recorded: what was saved, and each part's receipt. */
 function RecordedSplit({ recorded, onAnother }) {
@@ -356,213 +270,40 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, bare = fa
                 )}
             </div>
 
-            <div className="grid gap-4 rounded-[20px] border border-gray-100 bg-gray-50 p-4">
-                <fieldset>
-                    <legend className="mb-2 text-[14.5px] font-semibold text-gray-700">
-                        البنك المستلم <span className="text-brand-600">*</span>
-                    </legend>
-                    <div className="grid gap-2">
-                        {transferBanks.map((bank) => (
-                            <BankRow key={bank} bank={bank} checked={data.bank_name === bank} name="bank_name" onChange={(value) => setData('bank_name', value)} />
-                        ))}
-                    </div>
-                    <InputError message={errors.bank_name} className="mt-2" />
-                </fieldset>
+            <SplitTransferDetails
+                currentStatus={currentStatus}
+                data={data}
+                duplicateReference={duplicateReference}
+                errors={errors}
+                form={form}
+                referenceCheck={referenceCheck}
+                senderBanks={senderBanks}
+                setData={setData}
+                transferBanks={transferBanks}
+            />
 
-                <div>
-                    <FieldLabel htmlFor="sender_bank_name">
-                        البنك المرسل
-                    </FieldLabel>
-                    <BankDropdown banks={senderBanks} id="sender_bank_name" name="sender_bank_name" value={data.sender_bank_name} onChange={(value) => setData('sender_bank_name', value)} />
-                    <InputError message={errors.sender_bank_name} className="mt-2" />
-                </div>
-                <BankReceivedDateField value={data.bank_received_on} onChange={(value) => setData('bank_received_on', value)} error={errors.bank_received_on} />
+            <SplitRecipientsSection
+                addIdentitySiblings={addIdentitySiblings}
+                addSubscription={addSubscription}
+                errors={errors}
+                found={found}
+                identityNote={identityNote}
+                parts={parts}
+                removePart={removePart}
+                setAmount={setAmount}
+                setTerm={setTerm}
+                term={term}
+            />
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                        <FieldLabel htmlFor="split_sender" required>
-                            اسم المحوِّل
-                        </FieldLabel>
-                        <input
-                            id="split_sender"
-                            maxLength={255}
-                            placeholder="اسم صاحب الحساب الذي حُوّل منه المبلغ"
-                            value={data.sender_name}
-                            onChange={(event) => setData('sender_name', event.target.value)}
-                            className={inputClass}
-                        />
-                        <InputError message={errors.sender_name} className="mt-2" />
-                    </div>
-                    <div>
-                        <FieldLabel htmlFor="split_reference" required hint="من إشعار الحوالة">
-                            الرقم المرجعي
-                        </FieldLabel>
-                        <input
-                            id="split_reference"
-                            dir="ltr"
-                            autoComplete="off"
-                            maxLength={100}
-                            placeholder="مثال: TRX-48213"
-                            value={data.reference_number}
-                            onChange={(event) => {
-                                setData((current) => ({ ...current, reference_number: event.target.value, confirm_duplicate_reference: false }));
-                                form.clearErrors('reference_number');
-                            }}
-                            className={`${inputClass} text-end font-display placeholder:font-sans placeholder:font-normal`}
-                        />
-                        <InputError message={currentStatus?.conflict ? null : errors.reference_number} className="mt-2" />
-                        {referenceCheck.processing && <p className="mt-2 text-xs text-gray-500">جارٍ التحقق من الرقم المرجعي...</p>}
-                        {currentStatus?.available && !referenceCheck.processing && <p className="mt-2 text-xs font-medium text-emerald-600">الرقم المرجعي متاح.</p>}
-                    </div>
-                </div>
-
-                {duplicateReference && (
-                    <div role="alert" className="rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-gray-900">
-                        <p className="mb-2 font-medium text-amber-900 dark:text-amber-200">
-                            الرقم المرجعي مكرر: مسجَّل مسبقًا
-                            {currentStatus?.conflict ? (
-                                <>
-                                    {' في '}
-                                    <a href={currentStatus.conflict.url} className="underline">
-                                        {currentStatus.conflict.voucherNumber ? `السند ${currentStatus.conflict.voucherNumber} — ` : 'دفعة '}
-                                        {currentStatus.conflict.subscriptionName}
-                                    </a>
-                                </>
-                            ) : (
-                                ' على دفعة أخرى'
-                            )}
-                            . يمكنك المتابعة بعد التأكيد.
-                        </p>
-                        <label className="flex cursor-pointer items-center gap-2 font-semibold">
-                            <input
-                                type="checkbox"
-                                className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
-                                checked={data.confirm_duplicate_reference}
-                                onChange={(event) => setData('confirm_duplicate_reference', event.target.checked)}
-                            />
-                            أؤكد أن هذا الرقم المرجعي مسجَّل على دفعة أخرى وأريد المتابعة
-                        </label>
-                    </div>
-                )}
-
-                <p className="flex items-center gap-2 text-[13.5px] text-gray-500">
-                    <Icon name="info" className="h-4 w-4 shrink-0" />
-                    تُكتب بيانات التحويل مرة واحدة، وتُحفظ كما هي على دفعة كل مشترك.
-                </p>
-            </div>
-
-            <div>
-                <FieldLabel htmlFor="split_search" required hint="أي مشتركين تختارهم، ولو بهويات مختلفة">
-                    توزيع المبلغ على المشتركين
-                </FieldLabel>
-
-                {parts.length > 0 && (
-                    <ul className="mb-3 grid gap-2.5">
-                        {parts.map((part, index) => (
-                            <PartRow
-                                key={part.subscription.id}
-                                part={part}
-                                onAmount={(amount) => setAmount(index, amount)}
-                                onRemove={() => removePart(index)}
-                                error={errors[`parts.${index}.amount`] ?? errors[`parts.${index}.subscription_id`]}
-                            />
-                        ))}
-                    </ul>
-                )}
-
-                <div className="flex flex-wrap items-start gap-3">
-                    <div className="relative min-w-0 flex-1 basis-72">
-                        <Icon name="search" className="pointer-events-none absolute inset-y-0 start-4 my-auto h-[18px] w-[18px] text-gray-400" />
-                        <input
-                            id="split_search"
-                            type="search"
-                            aria-label="إضافة مشترك إلى هذه الدفعة"
-                            autoComplete="off"
-                            value={term}
-                            onChange={(event) => setTerm(event.target.value)}
-                            placeholder={parts.length === 0 ? 'ابحث عن مشترك بالاسم أو رقم الحساب أو الجوال…' : 'إضافة مشترك آخر إلى هذه الدفعة…'}
-                            disabled={parts.length >= MAX_PARTS}
-                            className={`${inputClass} ps-11`}
-                        />
-                        {found.searched && (
-                            <ul className="animate-modal-panel absolute inset-x-0 z-30 mt-2 max-h-80 overflow-y-auto rounded-2xl border border-gray-100 bg-surface p-1.5 shadow-lift">
-                                {found.subscriptions.length === 0 && <li className="px-3 py-3 text-center text-sm text-gray-500">لا يوجد مشترك يطابق بحثك.</li>}
-                                {found.subscriptions.map((subscription) => {
-                                    const added = parts.some((part) => part.subscription.id === subscription.id);
-
-                                    return (
-                                        <li key={subscription.id}>
-                                            <button
-                                                type="button"
-                                                disabled={added}
-                                                onClick={() => addSubscription(subscription)}
-                                                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition hover:bg-gray-50 disabled:opacity-40"
-                                            >
-                                                <span className="min-w-0 flex-1">
-                                                    <b className="block truncate text-[14.5px] text-gray-900">{subscription.fullName}</b>
-                                                    <small className="block text-xs font-medium text-gray-500">
-                                                        <span dir="ltr" className="font-display">
-                                                            {subscription.accountNumber}
-                                                        </span>
-                                                        {subscription.meterBoxNumber && ` · طبلون ${subscription.meterBoxNumber}`}
-                                                    </small>
-                                                </span>
-                                                <span className={`whitespace-nowrap rounded-[10px] px-2 py-0.5 font-display text-[13px] font-bold ${added ? 'bg-gray-100 text-gray-700' : BALANCE_CHIPS[describeBalance(subscription.balance).tone]}`}>
-                                                    {added ? 'مُضاف' : balanceText(describeBalance(subscription.balance))}
-                                                </span>
-                                            </button>
-                                        </li>
-                                    );
-                                })}
-                                {found.hasMore && <li className="px-3 py-2 text-center text-xs text-gray-500">هناك نتائج أخرى؛ أضف إلى البحث ما يضيّقه.</li>}
-                            </ul>
-                        )}
-                    </div>
-                    {parts.length > 0 && (
-                        <SecondaryButton onClick={addIdentitySiblings} className="h-[50px]">
-                            <Icon name="users" className="h-4 w-4" />
-                            كل اشتراكات هذه الهوية
-                        </SecondaryButton>
-                    )}
-                </div>
-                {identityNote && <p className="mt-2 text-[13.5px] text-gray-600">{identityNote}</p>}
-                <InputError message={errors.parts} className="mt-2" />
-            </div>
-
-            <div className={`rounded-xl border px-4 py-3 text-sm ${meterTone}`} role="status">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="flex items-center gap-2 font-semibold">
-                        <Icon name={distributed ? 'check' : 'alert'} className="h-[18px] w-[18px] shrink-0" />
-                        {distributed
-                            ? 'وُزّع المبلغ كاملًا'
-                            : totalCents === 0
-                              ? 'أدخل المبلغ المحوَّل ثم وزّعه على المشتركين'
-                              : parts.length < 2
-                                ? 'أضف مشتركَين على الأقل'
-                                : remainingCents > 0
-                                  ? `بقي ${formatMoney(fromCents(remainingCents))} ₪ لم يُوزَّع`
-                                  : remainingCents < 0
-                                    ? `الموزَّع يزيد ${formatMoney(fromCents(-remainingCents))} ₪ على المحوَّل`
-                                    : 'أدخل مبلغ كل مشترك'}
-                    </p>
-                    <div className="flex items-center gap-3">
-                        {parts.length > 0 && remainingCents > 0 && (
-                            <button type="button" onClick={putRemainderOnLast} className="text-[13.5px] font-semibold text-brand-600 hover:underline">
-                                ضع الباقي على آخر مشترك
-                            </button>
-                        )}
-                        <span className="font-display font-bold text-gray-900">
-                            {formatMoney(fromCents(allocatedCents))} <span className="font-sans text-[13px] font-medium text-gray-500">من</span> {formatMoney(fromCents(totalCents))} ₪
-                        </span>
-                    </div>
-                </div>
-                <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-gray-100">
-                    <div
-                        className={`h-full rounded-full transition-all ${distributed ? 'bg-emerald-500' : 'bg-amber-500'}`}
-                        style={{ width: `${totalCents > 0 ? Math.min(100, (allocatedCents / totalCents) * 100) : 0}%` }}
-                    />
-                </div>
-            </div>
+            <SplitAllocationMeter
+                allocatedCents={allocatedCents}
+                distributed={distributed}
+                meterTone={meterTone}
+                parts={parts}
+                putRemainderOnLast={putRemainderOnLast}
+                remainingCents={remainingCents}
+                totalCents={totalCents}
+            />
 
             {errors.confirm_overpayment && (
                 <div role="alert" className="rounded-xl border border-brand-500/40 bg-brand-500/[0.07] px-4 py-3 text-sm text-gray-900">

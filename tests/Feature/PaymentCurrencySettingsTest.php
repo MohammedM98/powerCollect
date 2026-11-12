@@ -9,6 +9,7 @@ use App\Models\MobileAccessToken;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +27,7 @@ class PaymentCurrencySettingsTest extends TestCase
         $admin = User::factory()->superAdmin()->create();
         $rate = CurrencyRate::query()->where('currency', 'EUR')->sole();
         $subscription = Subscription::factory()->create();
-        $payment = SubscriptionTransaction::recordPayment($subscription, $admin, ['amount' => '20', 'currency' => 'EUR', 'exchange_rate' => '4.1', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($subscription, $admin, ['amount' => '20', 'currency' => 'EUR', 'exchange_rate' => '4.1', 'payment_method' => 'cash']);
 
         $this->actingAs($admin)->put(route('settings.currencies.update', $rate), ['rate' => '4.2500'])->assertSessionHasNoErrors()->assertRedirect(route('settings.payments.index'));
 

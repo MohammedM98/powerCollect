@@ -10,6 +10,8 @@ use App\Models\SplitPayment;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia;
@@ -60,7 +62,7 @@ class BankReceivedDateTest extends TestCase
         $this->assertTrue($payment->boxEntry->occurred_at->equalTo(now()));
         $this->assertSame('900.00', $subscription->fresh()->balance());
         $this->assertSame($oldLine, SubscriptionTransaction::findOrFail($oldLine['id'])->getAttributes());
-        $this->assertSame($date, $payment->ledgerDetails()['bankReceivedOn']);
+        $this->assertSame($date, LinePresenter::ledgerDetails($payment)['bankReceivedOn']);
         $this->get(route('subscriptions.statement', $subscription))->assertInertia(fn (AssertableInertia $page) => $page
             ->where('canRecordLatePayment', false)->where('entries.1.bankReceivedOn', $date));
         $this->get(route('subscriptions.payments.receipt', [$subscription, $payment]))->assertInertia(fn (AssertableInertia $page) => $page
@@ -103,7 +105,7 @@ class BankReceivedDateTest extends TestCase
     public function test_bank_date_can_be_amended_and_cleared_with_an_audit_trail_without_changing_money(): void
     {
         [$collector, $subscription] = $this->account();
-        $payment = SubscriptionTransaction::recordPayment($subscription, $collector, [...$this->payment(), 'bank_received_on' => '2026-10-23']);
+        $payment = RecordPayment::handle($subscription, $collector, [...$this->payment(), 'bank_received_on' => '2026-10-23']);
         $head = User::factory()->branchAdmin()->for($collector->branch)->create();
         $originalTime = $payment->created_at->toDateTimeString();
         $boxEntry = $payment->boxEntry->getAttributes();
@@ -144,7 +146,7 @@ class BankReceivedDateTest extends TestCase
     public function test_amount_correction_keeps_the_bank_date_when_omitted_and_allows_explicit_clearing(): void
     {
         [$collector, $subscription] = $this->account();
-        $payment = SubscriptionTransaction::recordPayment($subscription, $collector, [...$this->payment(), 'bank_received_on' => '2026-10-23']);
+        $payment = RecordPayment::handle($subscription, $collector, [...$this->payment(), 'bank_received_on' => '2026-10-23']);
         $head = User::factory()->branchAdmin()->for($collector->branch)->create();
         $correction = [...$this->payment(), 'amount' => '110', 'correction_reason' => 'wrong_amount', 'correction_notes' => 'تصحيح قيمة الدفعة'];
         $this->actingAs($head)->put(route('subscriptions.transactions.update', [$subscription, $payment]), $correction)->assertSessionHasNoErrors();

@@ -7,10 +7,10 @@ use App\Enums\PaymentMethod;
 use App\Models\Bank;
 use App\Models\CurrencyRate;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Money;
-use App\Support\WebPaymentOperation;
+use App\Support\Ledger\LedgerAmounts;
+use App\Support\Ledger\Money;
+use App\Support\Ledger\WebPaymentOperation;
 use Brick\Math\BigDecimal;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -109,9 +109,9 @@ class StoreSubscriptionPaymentRequest extends FormRequest
 
         $validator->errors()->add('confirm_overpayment', sprintf(
             'المبلغ %s ₪ أكبر بكثير من المستحق على المشترك (%s ₪)، وسيبقى له رصيد دائن قدره %s ₪؛ تأكد من المبلغ ثم أكّد أنه صحيح.',
-            SubscriptionTransaction::formatAmount($amount),
-            SubscriptionTransaction::formatAmount($owed),
-            SubscriptionTransaction::formatAmount(Money::subtract($amount, $owed)),
+            LedgerAmounts::formatAmount($amount),
+            LedgerAmounts::formatAmount($owed),
+            LedgerAmounts::formatAmount(Money::subtract($amount, $owed)),
         ));
     }
 

@@ -18,9 +18,9 @@ class SubscriptionImportSeederTest extends TestCase
         // 160 rows; the second use of 133163 and of 133168 is left out.
         $this->assertSame(158, Subscription::query()->count());
         $first = Subscription::query()->where('legacy_number', '129600')->sole();
-        $this->assertSame('اسامة فضل العثماني', $first->full_name);
+        $this->assertSame('سامي أحمد النجار', $first->full_name);
         $this->assertSame('123.05', $first->balance());
-        $this->assertSame('رشدي عليان سالم خطاب', Subscription::query()->where('legacy_number', '133163')->sole()->full_name);
+        $this->assertSame('زياد إبراهيم الصباغ', Subscription::query()->where('legacy_number', '133163')->sole()->full_name);
         $this->assertSame('monthly', Subscription::query()->where('legacy_number', '140332')->sole()->accounting_type->value);
         $this->assertSame(1, Subscription::query()->distinct()->count('branch_id'));
 

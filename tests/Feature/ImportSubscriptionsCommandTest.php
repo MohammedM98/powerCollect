@@ -62,13 +62,13 @@ class ImportSubscriptionsCommandTest extends TestCase
 
     public function test_it_imports_subscriptions_into_the_users_branch_with_their_balance(): void
     {
-        $this->import("129600,اسامة فضل,0599013094,123.05,منزلي - أسبوعي,20,شواقفة حارة الشافعي\n129608,جهاد رائد,0599833619,-0.10,منزلي - أسبوعي,20,\n129620,وديع احمد,0592015201,0,منزلي - أسبوعي,60,شواقفة حارة الشافعي\n")
+        $this->import("129600,نادر عادل,0599000000,123.05,منزلي - أسبوعي,20,شواقفة حارة الشافعي\n129608,باسل أحمد,0599000008,-0.10,منزلي - أسبوعي,20,\n129620,سامي محمود,0599000016,0,منزلي - أسبوعي,60,شواقفة حارة الشافعي\n")
             ->assertSuccessful();
 
         $first = Subscription::query()->where('legacy_number', '129600')->sole();
         $this->assertSame($this->user->branch_id, $first->branch_id);
         $this->assertSame($this->user->id, $first->registered_by);
-        $this->assertSame('0599013094', $first->phone);
+        $this->assertSame('0599000000', $first->phone);
         $this->assertEquals(20, $first->minimum_charge);
         $this->assertSame('123.05', $first->balance());
         $this->assertSame(AccountingType::Weekly, $first->accounting_type);
@@ -81,7 +81,7 @@ class ImportSubscriptionsCommandTest extends TestCase
 
     public function test_it_never_creates_meter_boxes_or_sub_areas(): void
     {
-        $this->import("129600,اسامة فضل,0599013094,10,منزلي - أسبوعي,20,درويش\n129601,محمد يوسف,0592674067,5,منزلي - أسبوعي,20,درويش\n129602,عماد نويجع,0594106569,5,منزلي - أسبوعي,20,\n")
+        $this->import("129600,نادر عادل,0599000000,10,منزلي - أسبوعي,20,درويش\n129601,خالد أحمد,0599000001,5,منزلي - أسبوعي,20,درويش\n129602,عماد نويجع,0599000002,5,منزلي - أسبوعي,20,\n")
             ->assertSuccessful();
 
         $this->assertSame(3, Subscription::query()->count());
@@ -92,7 +92,7 @@ class ImportSubscriptionsCommandTest extends TestCase
 
     public function test_the_old_systems_area_is_kept_in_the_notes(): void
     {
-        $this->import("129600,اسامة فضل,0599013094,10,منزلي - أسبوعي,20,شواقفة حارة الشافعي\n129602,عماد نويجع,0594106569,5,منزلي - أسبوعي,20,\n")
+        $this->import("129600,نادر عادل,0599000000,10,منزلي - أسبوعي,20,شواقفة حارة الشافعي\n129602,عماد نويجع,0599000002,5,منزلي - أسبوعي,20,\n")
             ->assertSuccessful();
 
         $this->assertSame('المنطقة في النظام القديم: شواقفة حارة الشافعي', Subscription::query()->where('legacy_number', '129600')->sole()->notes);
@@ -103,7 +103,7 @@ class ImportSubscriptionsCommandTest extends TestCase
     {
         $box = $this->realBox('129600');
 
-        $this->import("129600,اسامة فضل,0599013094,10,منزلي - أسبوعي,20,درويش\n")->assertSuccessful();
+        $this->import("129600,نادر عادل,0599000000,10,منزلي - أسبوعي,20,درويش\n")->assertSuccessful();
 
         $this->assertNull(Subscription::query()->sole()->meter_box_id);
         $this->assertSame(1, MeterBox::query()->count());
@@ -114,7 +114,7 @@ class ImportSubscriptionsCommandTest extends TestCase
     {
         $box = $this->realBox('208360');
 
-        $this->import("129600,اسامة فضل,0599013094,10,منزلي - أسبوعي,20,درويش,208360\n129601,محمد يوسف,0592674067,5,منزلي - أسبوعي,20,درويش,\n", header: self::HEADER_WITH_BOX)
+        $this->import("129600,نادر عادل,0599000000,10,منزلي - أسبوعي,20,درويش,208360\n129601,خالد أحمد,0599000001,5,منزلي - أسبوعي,20,درويش,\n", header: self::HEADER_WITH_BOX)
             ->assertSuccessful();
 
         $this->assertSame($box->id, Subscription::query()->where('legacy_number', '129600')->sole()->meter_box_id);
@@ -126,7 +126,7 @@ class ImportSubscriptionsCommandTest extends TestCase
     {
         $this->realBox('208361', Branch::factory()->create());
 
-        $this->import("129600,اسامة,0599013094,10,منزلي - أسبوعي,20,,999999\n129601,محمد,0592674067,5,منزلي - أسبوعي,20,,208361\n129602,عماد,0594106569,5,منزلي - أسبوعي,20,,\n", header: self::HEADER_WITH_BOX)
+        $this->import("129600,اسامة,0599000000,10,منزلي - أسبوعي,20,,999999\n129601,محمد,0599000001,5,منزلي - أسبوعي,20,,208361\n129602,عماد,0599000002,5,منزلي - أسبوعي,20,,\n", header: self::HEADER_WITH_BOX)
             ->expectsOutputToContain('Line 2 (129600): There is no meter box numbered «999999».')
             ->expectsOutputToContain('Line 3 (129601): The meter box «208361» belongs to another branch.')
             ->assertFailed();
@@ -136,20 +136,20 @@ class ImportSubscriptionsCommandTest extends TestCase
 
     public function test_phone_numbers_are_checked_like_the_subscription_form_and_tidied_first(): void
     {
-        $this->import("1,اسامة,٠٥٩٩٠١٣٠٩٤,0,منزلي - أسبوعي,20,\n2,محمد,592 674-067,0,منزلي - أسبوعي,20,\n3,عماد,+970594106569,0,منزلي - أسبوعي,20,\n4,علي,,0,منزلي - أسبوعي,20,\n5,خالد,0591234,0,منزلي - أسبوعي,20,\n6,سامي,0589123456,0,منزلي - أسبوعي,20,\n")
+        $this->import("1,اسامة,٠٥٩٩٠٠٠٠٠٠,0,منزلي - أسبوعي,20,\n2,محمد,599 000-001,0,منزلي - أسبوعي,20,\n3,عماد,+970599000002,0,منزلي - أسبوعي,20,\n4,علي,,0,منزلي - أسبوعي,20,\n5,خالد,0591234,0,منزلي - أسبوعي,20,\n6,سامي,0589123456,0,منزلي - أسبوعي,20,\n")
             ->expectsOutputToContain('Line 6 (5): The phone number «0591234» is not a mobile number')
             ->expectsOutputToContain('Line 7 (6): The phone number «0589123456» is not a mobile number')
             ->assertFailed();
 
         $this->assertSame(
-            ['1' => '0599013094', '2' => '0592674067', '3' => '0594106569', '4' => null],
+            ['1' => '0599000000', '2' => '0599000001', '3' => '0599000002', '4' => null],
             Subscription::query()->orderBy('id')->pluck('phone', 'legacy_number')->all(),
         );
     }
 
     public function test_a_number_or_name_that_does_not_fit_fails_the_row_instead_of_the_database(): void
     {
-        $this->import(str_repeat('9', 21).",اسامة,0599013094,10,منزلي - أسبوعي,20,\n129601,".str_repeat('م', 256).",0592674067,5,منزلي - أسبوعي,20,\n129602,,0594106569,5,منزلي - أسبوعي,20,\n")
+        $this->import(str_repeat('9', 21).",اسامة,0599000000,10,منزلي - أسبوعي,20,\n129601,".str_repeat('م', 256).",0599000001,5,منزلي - أسبوعي,20,\n129602,,0599000002,5,منزلي - أسبوعي,20,\n")
             ->expectsOutputToContain('The subscription number is longer than 20 characters.')
             ->expectsOutputToContain('The name is longer than 255 characters.')
             ->expectsOutputToContain('The subscription number and the name are required.')
@@ -160,7 +160,7 @@ class ImportSubscriptionsCommandTest extends TestCase
 
     public function test_a_monthly_subscription_type_sets_the_accounting_type_and_weekly_is_the_default(): void
     {
-        $this->import("129600,اسامة,0599013094,10,منزلي - شهري,20,\n129601,محمد,0592674067,5,منزلي,20,\n")->assertSuccessful();
+        $this->import("129600,اسامة,0599000000,10,منزلي - شهري,20,\n129601,محمد,0599000001,5,منزلي,20,\n")->assertSuccessful();
 
         $this->assertSame(AccountingType::Monthly, Subscription::query()->where('legacy_number', '129600')->sole()->accounting_type);
         $this->assertSame(AccountingType::Weekly, Subscription::query()->where('legacy_number', '129601')->sole()->accounting_type);
@@ -168,7 +168,7 @@ class ImportSubscriptionsCommandTest extends TestCase
 
     public function test_running_the_same_file_again_does_not_duplicate_anything(): void
     {
-        $rows = "129600,اسامة فضل,0599013094,123.05,منزلي - أسبوعي,20,درويش\n";
+        $rows = "129600,نادر عادل,0599000000,123.05,منزلي - أسبوعي,20,درويش\n";
         $this->import($rows)->assertSuccessful();
 
         $this->import($rows)->expectsOutputToContain('already imported 1')->assertSuccessful();
@@ -179,7 +179,7 @@ class ImportSubscriptionsCommandTest extends TestCase
 
     public function test_a_bad_row_is_reported_and_the_others_are_still_imported(): void
     {
-        $this->import("129600,اسامة,0599013094,10,نوع غريب,20,درويش\n129601,محمد,0592674067,5,منزلي - أسبوعي,20,درويش\n")
+        $this->import("129600,اسامة,0599000000,10,نوع غريب,20,درويش\n129601,محمد,0599000001,5,منزلي - أسبوعي,20,درويش\n")
             ->expectsOutputToContain('Line 2 (129600)')
             ->assertFailed();
 
@@ -188,7 +188,7 @@ class ImportSubscriptionsCommandTest extends TestCase
 
     public function test_a_number_used_twice_in_the_file_fails_the_second_row_only(): void
     {
-        $this->import("129600,اسامة,0599013094,10,منزلي - أسبوعي,20,\n129600,محمد,0592674067,5,منزلي - أسبوعي,20,\n")
+        $this->import("129600,اسامة,0599000000,10,منزلي - أسبوعي,20,\n129600,محمد,0599000001,5,منزلي - أسبوعي,20,\n")
             ->expectsOutputToContain('Line 3 (129600): The subscription number is already used on line 2.')
             ->assertFailed();
 
@@ -197,7 +197,7 @@ class ImportSubscriptionsCommandTest extends TestCase
 
     public function test_a_dry_run_saves_nothing(): void
     {
-        $this->import("129600,اسامة,0599013094,10,منزلي - أسبوعي,20,درويش\n", ['--dry-run' => true])
+        $this->import("129600,اسامة,0599000000,10,منزلي - أسبوعي,20,درويش\n", ['--dry-run' => true])
             ->expectsOutputToContain('Checked 1')
             ->assertSuccessful();
 
@@ -210,15 +210,15 @@ class ImportSubscriptionsCommandTest extends TestCase
     {
         $this->realBox('208362', Branch::factory()->create());
         $rows = implode('', [
-            "100,سليم,0599013094,10,منزلي - أسبوعي,20,,\n",
-            "101,,0599013094,10,منزلي - أسبوعي,20,,\n",
-            "102,منى,0599013094,10,نوع غريب,20,,\n",
-            "103,ليث,0599013094,abc,منزلي - أسبوعي,20,,\n",
+            "100,سليم,0599000000,10,منزلي - أسبوعي,20,,\n",
+            "101,,0599000000,10,منزلي - أسبوعي,20,,\n",
+            "102,منى,0599000000,10,نوع غريب,20,,\n",
+            "103,ليث,0599000000,abc,منزلي - أسبوعي,20,,\n",
             "104,هدى,12345,10,منزلي - أسبوعي,20,,\n",
-            "105,رائد,0599013094,10,منزلي - أسبوعي,20,,208362\n",
-            "106,نور,0599013094,10,منزلي - أسبوعي,20,,777777\n",
-            "100,سليم مرة ثانية,0599013094,10,منزلي - أسبوعي,20,,\n",
-            "107,سعيد,0599013094,10,منزلي - أسبوعي,20,,\n",
+            "105,رائد,0599000000,10,منزلي - أسبوعي,20,,208362\n",
+            "106,نور,0599000000,10,منزلي - أسبوعي,20,,777777\n",
+            "100,سليم مرة ثانية,0599000000,10,منزلي - أسبوعي,20,,\n",
+            "107,سعيد,0599000000,10,منزلي - أسبوعي,20,,\n",
         ]);
 
         $outputs = [];
@@ -237,9 +237,9 @@ class ImportSubscriptionsCommandTest extends TestCase
 
     public function test_a_dry_run_counts_rows_already_imported_as_skipped(): void
     {
-        $this->import("129600,اسامة,0599013094,10,منزلي - أسبوعي,20,\n")->assertSuccessful();
+        $this->import("129600,اسامة,0599000000,10,منزلي - أسبوعي,20,\n")->assertSuccessful();
 
-        $this->import("129600,اسامة,0599013094,10,منزلي - أسبوعي,20,\n129601,محمد,0592674067,5,منزلي - أسبوعي,20,\n", ['--dry-run' => true])
+        $this->import("129600,اسامة,0599000000,10,منزلي - أسبوعي,20,\n129601,محمد,0599000001,5,منزلي - أسبوعي,20,\n", ['--dry-run' => true])
             ->expectsOutputToContain('Checked 1 · already imported 1 · failed 0')
             ->assertSuccessful();
 
@@ -250,7 +250,7 @@ class ImportSubscriptionsCommandTest extends TestCase
     {
         $this->user->update(['branch_id' => null]);
 
-        $this->import("129600,اسامة,0599013094,10,منزلي - أسبوعي,20,درويش\n")->assertFailed();
+        $this->import("129600,اسامة,0599000000,10,منزلي - أسبوعي,20,درويش\n")->assertFailed();
 
         $this->assertSame(0, Subscription::query()->count());
     }

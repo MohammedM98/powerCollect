@@ -7,6 +7,7 @@ use App\Models\Branch;
 use App\Models\MeterReading;
 use App\Models\ReadingEntrySetting;
 use App\Models\User;
+use App\Support\Readings\ReadingWeeks;
 use Carbon\CarbonInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -110,10 +111,10 @@ class ReadingScheduleTest extends TestCase
         }
 
         $this->assertFalse($staff->can('create', MeterReading::class));
-        $this->assertSame('2026-09-24', MeterReading::weekEndFor(now()->parse('2026-09-18'), $following)->toDateString());
-        $this->assertSame('2026-09-26', MeterReading::weekEndFor(now()->parse('2026-09-20'), $custom)->toDateString());
-        $this->assertSame('2026-09-25', MeterReading::latestEndedWeekStart($following)->toDateString());
-        $this->assertSame('2026-09-27', MeterReading::latestEndedWeekStart($custom)->toDateString());
+        $this->assertSame('2026-09-24', ReadingWeeks::weekEndFor(now()->parse('2026-09-18'), $following)->toDateString());
+        $this->assertSame('2026-09-26', ReadingWeeks::weekEndFor(now()->parse('2026-09-20'), $custom)->toDateString());
+        $this->assertSame('2026-09-25', ReadingWeeks::latestEndedWeekStart($following)->toDateString());
+        $this->assertSame('2026-09-27', ReadingWeeks::latestEndedWeekStart($custom)->toDateString());
         $this->assertSame($own->id, ReadingEntrySetting::ownFor($custom)->id);
         $this->assertDatabaseCount('reading_entry_settings', 2);
     }
@@ -306,10 +307,10 @@ class ReadingScheduleTest extends TestCase
         $own = Branch::factory()->create();
         ReadingEntrySetting::factory()->forBranch($own)->create(['reading_day' => CarbonInterface::SATURDAY]);
 
-        $this->assertSame('2026-09-24', MeterReading::latestEndedWeekStart($following)->addDays(6)->toDateString());
+        $this->assertSame('2026-09-24', ReadingWeeks::latestEndedWeekStart($following)->addDays(6)->toDateString());
         // The week containing Friday 25 Sep ends on the next Thursday for the company's schedule, on Saturday for the branch's own.
-        $this->assertSame('2026-10-01', MeterReading::weekEndFor(now(), $following)->toDateString());
-        $this->assertSame('2026-09-26', MeterReading::weekEndFor(now(), $own)->toDateString());
+        $this->assertSame('2026-10-01', ReadingWeeks::weekEndFor(now(), $following)->toDateString());
+        $this->assertSame('2026-09-26', ReadingWeeks::weekEndFor(now(), $own)->toDateString());
 
         ReadingEntrySetting::company()->update(['reading_day' => CarbonInterface::WEDNESDAY]);
 
@@ -324,11 +325,11 @@ class ReadingScheduleTest extends TestCase
         $saturdays = Branch::factory()->create(['name' => 'Beta']);
         ReadingEntrySetting::factory()->forBranch($saturdays)->create(['reading_day' => CarbonInterface::SATURDAY]);
 
-        $this->assertSame('2026-09-18', MeterReading::latestEndedWeekStart($thursdays)->toDateString());
-        $this->assertSame('2026-09-13', MeterReading::latestEndedWeekStart($saturdays)->toDateString());
-        $this->assertSame('2026-09-18', MeterReading::recentWeekOptions($thursdays, 1)[0]['value']);
-        $this->assertSame('2026-09-13', MeterReading::recentWeekOptions($saturdays, 1)[0]['value']);
-        $this->assertSame([$thursdays->id, $saturdays->id], array_keys(MeterReading::recentWeekOptionsFor(User::factory()->superAdmin()->create(), 1)));
+        $this->assertSame('2026-09-18', ReadingWeeks::latestEndedWeekStart($thursdays)->toDateString());
+        $this->assertSame('2026-09-13', ReadingWeeks::latestEndedWeekStart($saturdays)->toDateString());
+        $this->assertSame('2026-09-18', ReadingWeeks::recentWeekOptions($thursdays, 1)[0]['value']);
+        $this->assertSame('2026-09-13', ReadingWeeks::recentWeekOptions($saturdays, 1)[0]['value']);
+        $this->assertSame([$thursdays->id, $saturdays->id], array_keys(ReadingWeeks::recentWeekOptionsFor(User::factory()->superAdmin()->create(), 1)));
     }
 
     public function test_a_branchs_entry_window_does_not_close_the_other_branches(): void

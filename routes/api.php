@@ -3,6 +3,7 @@
 use App\Http\Controllers\Mobile\MobileAdjustmentController;
 use App\Http\Controllers\Mobile\MobileCashBoxController;
 use App\Http\Controllers\Mobile\MobileCollectionController;
+use App\Http\Controllers\Mobile\MobileDiagnosticsController;
 use App\Http\Controllers\Mobile\MobileReadingAssignmentController;
 use App\Http\Controllers\Mobile\MobileReadingController;
 use App\Http\Controllers\Mobile\MobileReadingDistributionController;
@@ -13,12 +14,18 @@ use App\Http\Controllers\Mobile\MobileSubscriptionController;
 use App\Http\Controllers\SubscriptionMessageController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('mobile')->name('mobile.')->middleware('mobile.supported')->group(function (): void {
+/**
+ * The field app's API. Version 1 is served under /api/mobile/v1; the same
+ * routes stay under /api/mobile, unversioned, for the builds released before
+ * it, until MOBILE_APP_MIN_BUILD passes the first build that calls v1.
+ */
+$mobileRoutes = function (): void {
     Route::post('/login', [MobileSessionController::class, 'store'])->name('login');
 
     Route::middleware('mobile.auth')->group(function (): void {
         Route::get('/me', [MobileSessionController::class, 'show'])->name('me');
         Route::post('/logout', [MobileSessionController::class, 'destroy'])->name('logout');
+        Route::post('/diagnostics', [MobileDiagnosticsController::class, 'store'])->middleware('throttle:6,1')->name('diagnostics.store');
         Route::get('/messages/subscriptions', [MobileSubscriberMessageController::class, 'index'])->name('messages.subscriptions');
         Route::get('/subscriptions', [MobileSubscriptionController::class, 'index'])->name('subscriptions.index');
         Route::post('/readings', [MobileReadingController::class, 'store'])->name('readings.store');
@@ -43,4 +50,7 @@ Route::prefix('mobile')->name('mobile.')->middleware('mobile.supported')->group(
         Route::post('/collections', [MobileCollectionController::class, 'store'])->name('collections.store');
         Route::post('/split-payments', [MobileSplitPaymentController::class, 'store'])->name('split-payments.store');
     });
-});
+};
+
+Route::prefix('mobile/v1')->name('mobile.v1.')->middleware('mobile.supported')->group($mobileRoutes);
+Route::prefix('mobile')->name('mobile.')->middleware('mobile.supported')->group($mobileRoutes);

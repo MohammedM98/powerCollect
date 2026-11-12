@@ -4,6 +4,7 @@ namespace App\Enums;
 
 use App\Enums\Concerns\HasOptions;
 use App\Models\SubscriptionTransaction;
+use App\Support\Ledger\LineRules;
 
 /**
  * Why a line of a subscription's account was corrected (cancelled and
@@ -92,7 +93,7 @@ enum CorrectionReason: string
         return match (true) {
             $line->isPayment() => [self::WrongSubscription, self::Duplicate, self::NotReceived, self::PaymentRefunded, self::Other],
             in_array($line->type, [SubscriptionTransaction::TYPE_METER_READING, SubscriptionTransaction::TYPE_READING_DISCOUNT], true) => [self::WrongReading, self::WrongSubscription, self::Duplicate, self::Other],
-            $line->isRegistrationFee() => [self::FeeCancelled, self::WrongAmount, self::WrongSubscription, self::Duplicate, self::Other],
+            LineRules::isRegistrationFee($line) => [self::FeeCancelled, self::WrongAmount, self::WrongSubscription, self::Duplicate, self::Other],
             default => [self::WrongSubscription, self::Duplicate, self::Other],
         };
     }

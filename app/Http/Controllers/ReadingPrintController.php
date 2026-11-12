@@ -4,27 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Enums\ReadingAssignmentChannel;
 use App\Enums\ReadingAssignmentStatus;
+use App\Http\Requests\ViewReadingPrintRequest;
 use App\Models\MeterBox;
 use App\Models\ReadingCycle;
 use App\Support\ArabicSearch;
-use App\Support\PrintSelection;
-use App\Support\ReadingPrintData;
+use App\Support\Readings\PrintSelection;
+use App\Support\Readings\ReadingPrintData;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ReadingPrintController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(ViewReadingPrintRequest $request): Response
     {
-        $this->authorize('viewAny', ReadingCycle::class);
-        $validated = $request->validate([
-            'cycle' => ['nullable', 'integer', 'min:1'], 'search' => ['nullable', 'string', 'max:100'],
-            'area_ids' => ['nullable', 'array', 'max:200'], 'area_ids.*' => ['string', 'regex:/^(none|[0-9]+)$/'],
-            'box_id' => ['nullable', 'integer', 'min:1'], 'assignment' => ['nullable', 'string', 'regex:/^(assigned|available|paper|reader:[0-9]+)$/'],
-            'print_page' => ['nullable', 'integer', 'min:1'], 'per_page' => ['nullable', 'integer', 'in:15,25,50,100'],
-            'page' => ['nullable', 'integer', 'min:1'],
-        ]);
+        $validated = $request->validated();
         $cycles = ReadingCycle::query()->visibleTo($request->user())->with('branch');
         $cycle = isset($validated['cycle']) ? $cycles->findOrFail($validated['cycle']) : $cycles->latest('week_start')->first();
         if ($cycle !== null) {

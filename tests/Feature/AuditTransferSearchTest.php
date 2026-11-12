@@ -10,7 +10,7 @@ use App\Models\ClosingSetting;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\BankTransferAuditing;
+use App\Support\Closing\BankTransferAuditing;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Mockery\MockInterface;

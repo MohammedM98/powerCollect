@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 
 /**
  * A small menu hanging under its button in the top bar: placed just below the
@@ -12,11 +12,12 @@ export function usePopover(open, onClose) {
     const onCloseRef = useRef(onClose);
     onCloseRef.current = onClose;
 
-    useLayoutEffect(() => {
+    // Placed under its button and its first item focused; a panel that loads after opening calls place() once it is drawn.
+    const place = useCallback(() => {
         const anchor = anchorRef.current;
         const popover = popoverRef.current;
 
-        if (!open || !anchor || !popover) {
+        if (!anchor || !popover) {
             return;
         }
 
@@ -25,7 +26,13 @@ export function usePopover(open, onClose) {
         popover.style.top = `${box.bottom + 12}px`;
         popover.style.left = `${Math.max(12, Math.min(viewport - popover.offsetWidth - 12, box.left))}px`;
         requestAnimationFrame(() => popover.querySelector('button:not([disabled]), a')?.focus());
-    }, [open]);
+    }, []);
+
+    useLayoutEffect(() => {
+        if (open) {
+            place();
+        }
+    }, [open, place]);
 
     useEffect(() => {
         if (!open) {
@@ -59,5 +66,5 @@ export function usePopover(open, onClose) {
         };
     }, [open]);
 
-    return { anchorRef, popoverRef };
+    return { anchorRef, popoverRef, place };
 }

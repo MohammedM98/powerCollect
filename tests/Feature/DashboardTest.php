@@ -10,6 +10,8 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordPayment;
+use App\Support\Readings\ReadingWeeks;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -145,7 +147,7 @@ class DashboardTest extends TestCase
         $branch = Branch::factory()->create();
         $manager = User::factory()->branchAdmin()->create(['branch_id' => $branch->id]);
         [$read, $waiting] = Subscription::factory()->count(3)->create(['branch_id' => $branch->id, 'status' => 'active']);
-        $week = MeterReading::latestEndedWeekStart($branch);
+        $week = ReadingWeeks::latestEndedWeekStart($branch);
         MeterReading::factory()->approved()->create(['subscription_id' => $read->id, 'week_start' => $week]);
         MeterReading::factory()->create(['subscription_id' => $waiting->id, 'week_start' => $week]);
 
@@ -201,7 +203,7 @@ class DashboardTest extends TestCase
     private function pay(Branch $branch, float $amount, array $subscription = []): void
     {
         $recorder = User::factory()->collector()->create(['branch_id' => $branch->id]);
-        SubscriptionTransaction::recordPayment(
+        RecordPayment::handle(
             Subscription::factory()->create(['branch_id' => $branch->id, 'status' => 'active', ...$subscription]),
             $recorder,
             ['amount' => (string) $amount, 'currency' => 'ILS', 'payment_method' => 'cash'],

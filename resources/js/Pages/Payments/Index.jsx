@@ -18,7 +18,6 @@ import { useRowClick } from '@/hooks/useRowClick';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
 import { describeBalance } from '@/lib/accountStatement';
 import { isFarBehind } from '@/lib/balance';
-import { formatMoney } from '@/lib/format';
 import { balanceText, BALANCE_CHIPS } from '@/Pages/Subscriptions/AccountFormParts';
 import ChargeModal from '@/Pages/Subscriptions/ChargeModal';
 import ClearingModal from '@/Pages/Subscriptions/ClearingModal';
@@ -27,13 +26,11 @@ import PaymentModal from '@/Pages/Subscriptions/PaymentModal';
 import StatementModal from '@/Pages/Subscriptions/StatementModal';
 import SplitPaymentModal from './SplitPaymentModal';
 import PageHeader from '@/Components/PageHeader';
+import { needsPermission } from '@/lib/permissions';
 
 const STATUS_TONES = { active: 'green', suspended: 'amber', disconnected: 'gray' };
 
 /** Why a menu action is locked: the permission it needs and who grants it. */
-function needsPermission(permission) {
-    return `تحتاج صلاحية «${permission}» — يمنحها مدير الفرع أو مدير النظام.`;
-}
 
 /**
  * The quick payments page: the subscribers in a table to search and filter, each with a button to record

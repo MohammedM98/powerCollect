@@ -6,6 +6,7 @@ use App\Enums\MeterReadingStatus;
 use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Support\Readings\ReadingWeeks;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
@@ -27,8 +28,8 @@ class MeterReadingFactory extends Factory
         return [
             'subscription_id' => Subscription::factory(),
             'branch_id' => fn (array $attributes) => Subscription::find($attributes['subscription_id'])->branch_id,
-            'week_start' => fn (array $attributes) => MeterReading::weekStartFor(now(), $attributes['branch_id']),
-            'week_end' => fn (array $attributes) => MeterReading::weekEndFor(Carbon::parse($attributes['week_start']), $attributes['branch_id']),
+            'week_start' => fn (array $attributes) => ReadingWeeks::weekStartFor(now(), $attributes['branch_id']),
+            'week_end' => fn (array $attributes) => ReadingWeeks::weekEndFor(Carbon::parse($attributes['week_start']), $attributes['branch_id']),
             'previous_reading' => $previousReading,
             'current_reading' => $previousReading + $consumption,
             'consumption' => $consumption,

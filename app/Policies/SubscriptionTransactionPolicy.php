@@ -7,6 +7,9 @@ use App\Enums\PermissionKey;
 use App\Models\Branch;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\EraseLine;
+use App\Support\Ledger\LineHistory;
+use App\Support\Ledger\LineRules;
 
 /**
  * Access to the subscriptions' account lines as a whole — the financial log
@@ -91,7 +94,7 @@ class SubscriptionTransactionPolicy
     public function amend(User $user, SubscriptionTransaction $subscriptionTransaction): bool
     {
         return $user->hasPermission(PermissionKey::AmendTransactionDetails)
-            && $subscriptionTransaction->isAmendable()
+            && LineRules::isAmendable($subscriptionTransaction)
             && $this->inBranchOf($user, $subscriptionTransaction);
     }
 
@@ -107,15 +110,15 @@ class SubscriptionTransactionPolicy
             : PermissionKey::DeleteTransactions);
 
         return $canDelete
-            && $subscriptionTransaction->isCancellable()
-            && ! $subscriptionTransaction->isInClosedDay()
+            && LineRules::isCancellable($subscriptionTransaction)
+            && ! LineHistory::isInClosedDay($subscriptionTransaction)
             && $this->inBranchOf($user, $subscriptionTransaction);
     }
 
     private function mayChange(User $user, SubscriptionTransaction $subscriptionTransaction): bool
     {
-        return $subscriptionTransaction->isCorrectable()
-            && ! $subscriptionTransaction->isInClosedDay()
+        return LineRules::isCorrectable($subscriptionTransaction)
+            && ! LineHistory::isInClosedDay($subscriptionTransaction)
             && $this->inBranchOf($user, $subscriptionTransaction);
     }
 
@@ -141,7 +144,7 @@ class SubscriptionTransactionPolicy
     public function forceDelete(User $user, SubscriptionTransaction $subscriptionTransaction): bool
     {
         return $user->hasPermission(PermissionKey::ForceDeleteTransactions)
-            && $subscriptionTransaction->isErasable()
+            && EraseLine::isErasable($subscriptionTransaction)
             && $this->inBranchOf($user, $subscriptionTransaction);
     }
 }

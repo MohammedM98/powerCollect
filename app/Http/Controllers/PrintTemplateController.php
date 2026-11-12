@@ -30,7 +30,7 @@ class PrintTemplateController extends Controller
             'pages' => collect(PrintTemplate::PAGES)
                 ->map(fn (array $page, string $path) => [
                     'path' => $path,
-                    'label' => $page['label'],
+                    'label' => __($page['label']),
                     'icon' => $page['icon'],
                     'templates' => ($templates[$path] ?? collect())->map(fn (PrintTemplate $template) => [
                         ...$template->toDesigner(),

@@ -11,6 +11,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\User;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -239,7 +240,7 @@ class BranchDomainsTest extends TestCase
         $employee = User::factory()->collector()->create(['branch_id' => $this->north->id]);
         $own = Subscription::factory()->create(['branch_id' => $this->north->id]);
         $foreign = Subscription::factory()->create(['branch_id' => $this->south->id]);
-        $foreignPayment = SubscriptionTransaction::recordPayment($foreign, $employee, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $foreignPayment = RecordPayment::handle($foreign, $employee, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $this->actingAs($employee)->post('https://north.company.test/subscriptions/'.$own->id.'/payments', ['payment_token' => (string) Str::uuid(), 'amount' => '25', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
         $this->assertDatabaseHas('subscription_transactions', ['subscription_id' => $own->id, 'recorded_by' => $employee->id, 'amount' => '-25.00']);
@@ -250,7 +251,7 @@ class BranchDomainsTest extends TestCase
     {
         $own = Subscription::factory()->create(['branch_id' => $this->north->id]);
         $foreign = Subscription::factory()->create(['branch_id' => $this->south->id, 'full_name' => 'Private Foreign Subscriber']);
-        SubscriptionTransaction::recordPayment($foreign, $this->admin, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Sender', 'reference_number' => 'GLOBAL-123']);
+        RecordPayment::handle($foreign, $this->admin, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Sender', 'reference_number' => 'GLOBAL-123']);
 
         $this->actingAs($this->admin)->getJson('https://north.company.test/subscriptions/'.$own->id.'/payments/reference-status?reference_number=GLOBAL-123')
             ->assertOk()->assertJsonPath('available', false)->assertJsonPath('conflict.id', null)->assertJsonPath('conflict.url', null)->assertDontSee('Private Foreign Subscriber');

@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use App\Enums\PermissionKey;
 use App\Models\CompanyFormTemplate;
 use App\Models\Permission;
-use App\Support\CompanyForms;
+use App\Support\Branding\CompanyForms;
 use Illuminate\Database\Seeder;
 
 class CompanyFormTemplateSeeder extends Seeder

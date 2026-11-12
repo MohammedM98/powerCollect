@@ -3,17 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Enums\UserRole;
-use App\Http\Concerns\DeletesRecords;
-use App\Http\Concerns\FiltersDataTable;
-use App\Http\Concerns\ProvidesFormOptions;
-use App\Http\Concerns\ReturnsToDashboard;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Branch;
 use App\Models\User;
 use App\Models\UserType;
 use App\Notifications\ActionCompleted;
-use App\Support\BranchDomainContext;
+use App\Support\Branches\BranchDomainContext;
+use App\Support\Branches\BranchFormOptions;
+use App\Support\Navigation\DashboardReturn;
+use App\Support\Queries\DataTableFilters;
+use App\Support\RecordDeletion;
 use App\Support\UserDeviceAccess;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -25,8 +25,6 @@ use Inertia\Response as InertiaResponse;
 
 class UserController extends Controller
 {
-    use DeletesRecords, FiltersDataTable, ProvidesFormOptions, ReturnsToDashboard;
-
     private const SORTABLE = ['name', 'username', 'role', 'is_active', 'created_at'];
 
     /**
@@ -39,10 +37,10 @@ class UserController extends Controller
         $actor = auth()->user();
 
         $query = User::query()->visibleTo($actor)->with(['branch', 'userType']);
-        $this->applyDataTableFilters($query, $request, ['name', 'username'], self::SORTABLE, 'name');
-        $this->applyDataTableFilterSelects($query, $request, ['user_type_id', 'is_active', 'branch_id']);
+        DataTableFilters::applyDataTableFilters($query, $request, ['name', 'username'], self::SORTABLE, 'name');
+        DataTableFilters::applyDataTableFilterSelects($query, $request, ['user_type_id', 'is_active', 'branch_id']);
 
-        $users = $query->paginate($this->dataTablePerPage($request))
+        $users = $query->paginate(DataTableFilters::dataTablePerPage($request))
             ->withQueryString()
             ->through(fn (User $user) => [
                 ...$this->editableFields($user),
@@ -57,9 +55,9 @@ class UserController extends Controller
             'users' => $users,
             'canCreate' => $actor->can('create', User::class),
             'userTypeItems' => fn (): ?array => $this->userTypeItems($actor),
-            'filters' => $this->dataTableState($request, 'name'),
+            'filters' => DataTableFilters::dataTableState($request, 'name'),
             'filterOptions' => $this->filterOptions($actor),
-            ...$this->userBranchOptions(),
+            ...BranchFormOptions::userBranchOptions(),
         ]);
     }
 
@@ -71,7 +69,7 @@ class UserController extends Controller
         $this->authorize('create', User::class);
 
         return Inertia::render('Users/Create', [
-            ...$this->userBranchOptions(),
+            ...BranchFormOptions::userBranchOptions(),
         ]);
     }
 
@@ -93,7 +91,7 @@ class UserController extends Controller
         $user = User::create($data);
         $request->user()->notify(new ActionCompleted('user-created', $user->name));
 
-        return $this->redirectAfterSave($request, 'users.index', 'user-created');
+        return DashboardReturn::redirectAfterSave($request, 'users.index', 'user-created');
     }
 
     /**
@@ -105,7 +103,7 @@ class UserController extends Controller
 
         return Inertia::render('Users/Edit', [
             'user' => $this->editableFields($user),
-            ...$this->userBranchOptions(),
+            ...BranchFormOptions::userBranchOptions(),
         ]);
     }
 
@@ -148,7 +146,7 @@ class UserController extends Controller
      */
     public function destroy(Request $request, User $user): RedirectResponse
     {
-        return $this->deleteRecord($request, $user, 'user-deleted', $user->name, fn () => $user->deleteAccount());
+        return RecordDeletion::deleteRecord($request, $user, 'user-deleted', $user->name, fn () => $user->deleteAccount());
     }
 
     /**
@@ -202,12 +200,12 @@ class UserController extends Controller
     private function filterOptions(User $actor): array
     {
         $groups = [
-            $this->filterGroup('user_type_id', 'نوع المستخدم', UserType::query()->orderBy('name')->get()->map(fn (UserType $type): array => ['value' => (string) $type->id, 'label' => $type->name])->all()),
-            $this->activeStatusFilterGroup(),
+            DataTableFilters::filterGroup('user_type_id', 'نوع المستخدم', UserType::query()->orderBy('name')->get()->map(fn (UserType $type): array => ['value' => (string) $type->id, 'label' => $type->name])->all()),
+            DataTableFilters::activeStatusFilterGroup(),
         ];
 
         if ($actor->isSuperAdmin()) {
-            $groups[] = $this->branchFilterGroup();
+            $groups[] = DataTableFilters::branchFilterGroup();
         }
 
         return $groups;

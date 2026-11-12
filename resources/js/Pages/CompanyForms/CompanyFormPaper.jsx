@@ -64,6 +64,8 @@ export default function CompanyFormPaper({ layout, page, pageIndex = 0, sourcePa
 
     return <div ref={wrapper} className="cf-paper-container">
         <div className="cf-page-shell" style={{ height: `${height * 96 / 25.4 * scale}px`, page: `cf_page_${pageIndex}` }}>
+            {/* Clicking the paper places the chosen field there; the side panel places fields from the keyboard. */}
+            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
             <article ref={paper} className={`cf-paper ${onPlace ? 'cf-placing' : ''}`} data-form-paper data-page-width={width} data-page-height={height} style={{ width: `${width}mm`, height: `${height}mm`, transform: `scale(${scale})`, fontSize: `${layout.fontSize}px`, padding: `${sourcePage ? 0 : layout.margin}mm` }} onClick={place} dir="rtl">
                 {sourcePage && <img className="cf-source" src={sourcePage.image} alt="النموذج الأصلي" />}
                 {layout.watermark.enabled && <div className="cf-watermark" style={{ opacity: layout.watermark.opacity }} aria-hidden="true">{layout.watermark.logo && <img src={brand.logos.print} alt="" />}<b>{layout.watermark.text}</b></div>}
@@ -79,6 +81,8 @@ export default function CompanyFormPaper({ layout, page, pageIndex = 0, sourcePa
                     </div>
                     {layout.footer && <footer className="cf-footer">{layout.footer}<span>{pageIndex + 1}</span></footer>}
                 </div>
+                {/* An overlay is picked with the mouse here; the side panel selects it from the keyboard. */}
+                {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                 {(layout.overlays ?? []).filter((overlay) => Number(overlay.page) === pageIndex + 1).map((overlay) => <span key={overlay.id} data-form-overlay className={`cf-overlay ${selectedOverlay === overlay.id ? 'is-selected' : ''} ${onSelectOverlay ? 'is-editable' : ''}`} title={onSelectOverlay ? overlay.label : undefined} onClick={() => onSelectOverlay?.(overlay.id)} style={{ left: `${overlay.x}%`, top: `${overlay.y}%`, width: `${overlay.width}%`, fontSize: `${overlay.fontSize}px`, textAlign: overlay.align }}>{blank ? (onSelectOverlay ? overlay.label : '') : values[overlay.key] || (onSelectOverlay ? overlay.label : '')}</span>)}
             </article>
         </div>

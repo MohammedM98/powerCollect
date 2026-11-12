@@ -4,30 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Enums\MessageKind;
 use App\Enums\MessageStatus;
-use App\Models\MessageBatch;
+use App\Http\Requests\ListSubscriptionMessagesRequest;
 use App\Models\Subscription;
 use App\Models\SubscriptionMessage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class SubscriptionMessageController extends Controller
 {
-    public function index(Request $request, Subscription $subscription): JsonResponse
+    public function index(ListSubscriptionMessagesRequest $request, Subscription $subscription): JsonResponse
     {
-        $this->authorize('viewAny', MessageBatch::class);
         $actor = $request->user();
-        abort_unless(Subscription::query()->visibleTo($actor)->whereKey($subscription->id)->exists(), 404);
-        if ($subscription->archived_at !== null) {
-            $this->authorize('view', $subscription);
-        }
 
-        $filters = $request->validate([
-            'kind' => ['nullable', Rule::enum(MessageKind::class)],
-            'status' => ['nullable', Rule::enum(MessageStatus::class)],
-            'page' => ['nullable', 'integer', 'min:1'],
-        ]);
+        $filters = $request->validated();
 
         $messages = SubscriptionMessage::query()->visibleTo($actor)
             ->where('subscription_id', $subscription->id)

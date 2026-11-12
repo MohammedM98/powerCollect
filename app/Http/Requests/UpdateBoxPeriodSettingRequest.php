@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Branch;
 use App\Models\ClosingSetting;
-use App\Support\BranchDomainContext;
+use App\Support\Branches\BranchDomainContext;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Http\FormRequest;

@@ -7,6 +7,7 @@ use App\Http\Requests\StoreMobileSplitPaymentRequest;
 use App\Models\Branch;
 use App\Models\SplitPayment;
 use App\Models\SubscriptionTransaction;
+use App\Support\Ledger\LinePresenter;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -62,7 +63,7 @@ class MobileSplitPaymentController extends Controller
                 'subscription' => $payment->subscription->displayName(),
                 'amount' => $payment->currency_amount,
                 'balance_after' => $payment->subscription->balance(),
-                'voucher_number' => $payment->printedVoucherNumber(),
+                'voucher_number' => LinePresenter::printedVoucherNumber($payment),
             ]),
         ], 201);
     }

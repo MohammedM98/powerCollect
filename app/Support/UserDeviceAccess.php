@@ -13,11 +13,11 @@ use Illuminate\Validation\ValidationException;
 
 class UserDeviceAccess
 {
-    public const LIMIT_MESSAGE = 'انتهت جلسة هذا الجهاز بعد تسجيل الدخول من جهاز آخر. سجّل الدخول مجددًا للمتابعة.';
+    public const LIMIT_MESSAGE = 'This device\'s session ended after a sign-in from another device. Sign in again to continue.';
 
     public function prepareWebLogin(User $user): void
     {
-        $lockedUser = User::withoutGlobalScopes()->whereKey($user->id)->lockForUpdate()->firstOrFail();
+        $lockedUser = User::query()->acrossBranches()->whereKey($user->id)->lockForUpdate()->firstOrFail();
         $this->makeRoom($lockedUser);
         $user->setRememberToken($lockedUser->getRememberToken());
     }
@@ -25,11 +25,11 @@ class UserDeviceAccess
     public function claimWeb(Request $request, User $user, bool $newLogin = false): void
     {
         DB::transaction(function () use ($request, $user, $newLogin): void {
-            $user = User::withoutGlobalScopes()->whereKey($user->id)->lockForUpdate()->firstOrFail();
+            $user = User::query()->acrossBranches()->whereKey($user->id)->lockForUpdate()->firstOrFail();
             $identity = ['user_id' => $user->id, 'session_hash' => hash('sha256', $request->session()->getId())];
             $device = DB::table('user_login_devices')->where($identity)->first();
             if (! $newLogin && ! Auth::guard('web')->viaRemember() && $request->session()->get('device_access_user') === $user->id && $device === null) {
-                throw ValidationException::withMessages(['username' => 'أُنهِيت جلسة هذا الجهاز. سجّل الدخول مجددًا.']);
+                throw ValidationException::withMessages(['username' => __('This device\'s session was ended. Sign in again.')]);
             }
             if ($device === null || CarbonImmutable::parse($device->expires_at)->lessThanOrEqualTo(now())) {
                 $this->assertCapacity($user);
@@ -45,7 +45,7 @@ class UserDeviceAccess
                 DB::table('user_login_devices')->where($identity)->update($timestamps);
             }
             if (! $this->allowed($user, 'web:'.$id)) {
-                throw ValidationException::withMessages(['username' => self::LIMIT_MESSAGE]);
+                throw ValidationException::withMessages(['username' => __(self::LIMIT_MESSAGE)]);
             }
             $request->session()->put('device_access_user', $user->id);
         });
@@ -54,7 +54,7 @@ class UserDeviceAccess
     public function issueMobile(User $user, ?string $existingToken, bool $remember = false): string
     {
         return DB::transaction(function () use ($user, $existingToken, $remember): string {
-            $user = User::withoutGlobalScopes()->whereKey($user->id)->lockForUpdate()->firstOrFail();
+            $user = User::query()->acrossBranches()->whereKey($user->id)->lockForUpdate()->firstOrFail();
             $token = $existingToken === null ? null : MobileAccessToken::query()->where('user_id', $user->id)
                 ->where('token_hash', hash('sha256', $existingToken))->where('expires_at', '>', now())->first();
             if ($token !== null && $this->allowed($user, 'mobile:'.$token->id)) {
@@ -87,7 +87,7 @@ class UserDeviceAccess
     public function revokeAll(User $user): void
     {
         DB::transaction(function () use ($user): void {
-            User::withoutGlobalScopes()->whereKey($user->id)->lockForUpdate()->firstOrFail();
+            User::query()->acrossBranches()->whereKey($user->id)->lockForUpdate()->firstOrFail();
             DB::table('user_login_devices')->where('user_id', $user->id)->delete();
             MobileAccessToken::query()->where('user_id', $user->id)->delete();
             if (config('session.driver') === 'database') {
@@ -100,7 +100,7 @@ class UserDeviceAccess
     private function assertCapacity(User $user): void
     {
         if ($this->activeCount($user) >= ($user->max_devices ?? 1)) {
-            throw ValidationException::withMessages(['username' => self::LIMIT_MESSAGE]);
+            throw ValidationException::withMessages(['username' => __(self::LIMIT_MESSAGE)]);
         }
     }
 

@@ -10,7 +10,10 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Money;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\Money;
+use App\Support\Readings\ApproveReading;
+use App\Support\Readings\ReadingCharges;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -65,8 +68,8 @@ class LastReadingTest extends TestCase
     {
         $lastWeek = $this->reading('2026-09-11', 1200, 1250);
         $thisWeek = $this->reading('2026-09-18', 1250, 1300);
-        $lastWeek->approve($this->accountant);
-        $thisWeek->approve($this->accountant);
+        ApproveReading::handle($lastWeek, $this->accountant);
+        ApproveReading::handle($thisWeek, $this->accountant);
         $this->assertSame('50.00', $this->subscription->balance());
 
         $this->actingAs($this->dataEntry)
@@ -84,8 +87,8 @@ class LastReadingTest extends TestCase
         );
 
         // Approved again, the two weeks are billed at the corrected amounts: 30 and 20 kWh.
-        $lastWeek->approve($this->accountant);
-        $thisWeek->approve($this->accountant);
+        ApproveReading::handle($lastWeek, $this->accountant);
+        ApproveReading::handle($thisWeek, $this->accountant);
         $this->assertSame(['30.00', '20.00'], [$lastWeek->amount_due, $thisWeek->amount_due]);
         $this->assertSame('50.00', $this->subscription->balance());
     }
@@ -94,8 +97,8 @@ class LastReadingTest extends TestCase
     {
         $lastWeek = $this->reading('2026-09-11', 1200, 1250);
         $thisWeek = $this->reading('2026-09-18', 1250, 1300);
-        $lastWeek->approve($this->accountant);
-        $thisWeek->approve($this->accountant);
+        ApproveReading::handle($lastWeek, $this->accountant);
+        ApproveReading::handle($thisWeek, $this->accountant);
 
         $this->actingAs($this->dataEntry)
             ->put(route('meter-readings.update', $lastWeek), ['current_reading' => 1240, 'next_current_reading' => 1300, 'as_last_reading' => true])
@@ -116,15 +119,15 @@ class LastReadingTest extends TestCase
             $lines->map(fn (SubscriptionTransaction $line): array => [$line->type, $line->meter_reading_id, $line->isCancelled()])->all(),
         );
         // A cancelled charge still says the consumption it was billed for, not the corrected one.
-        $this->assertSame(['50 كيلو', '40 كيلو'], [str($lines[0]->description())->afterLast('· ')->value(), str($lines[4]->description())->afterLast('· ')->value()]);
+        $this->assertSame(['50 كيلو', '40 كيلو'], [str(LinePresenter::description($lines[0]))->afterLast('· ')->value(), str(LinePresenter::description($lines[4]))->afterLast('· ')->value()]);
     }
 
     public function test_an_edit_that_makes_an_approved_week_unusual_saves_nothing_until_it_is_confirmed(): void
     {
         $lastWeek = $this->reading('2026-09-11', 1200, 1250);
         $thisWeek = $this->reading('2026-09-18', 1250, 3400);
-        $lastWeek->approve($this->accountant);
-        $thisWeek->approve($this->accountant, confirmUnusual: true);
+        ApproveReading::handle($lastWeek, $this->accountant);
+        ApproveReading::handle($thisWeek, $this->accountant, confirmUnusual: true);
         $balance = $this->subscription->balance();
 
         $this->actingAs($this->dataEntry)
@@ -147,7 +150,7 @@ class LastReadingTest extends TestCase
     {
         $lastWeek = $this->reading('2026-09-11', 1200, 1250);
         $thisWeek = $this->reading('2026-09-18', 1250, 1300);
-        $lastWeek->approve($this->accountant);
+        ApproveReading::handle($lastWeek, $this->accountant);
 
         $this->actingAs($this->dataEntry)
             ->put(route('meter-readings.update', $lastWeek), ['current_reading' => 1240, 'next_current_reading' => 1300, 'as_last_reading' => true])
@@ -161,8 +164,8 @@ class LastReadingTest extends TestCase
     {
         $lastWeek = $this->reading('2026-09-11', 1200, 1250);
         $thisWeek = $this->reading('2026-09-18', 1250, 1300);
-        $lastWeek->approve($this->accountant);
-        $thisWeek->approve($this->accountant);
+        ApproveReading::handle($lastWeek, $this->accountant);
+        ApproveReading::handle($thisWeek, $this->accountant);
 
         $this->actingAs($this->dataEntry)
             ->put(route('meter-readings.update', $lastWeek), ['current_reading' => 1240, 'as_last_reading' => true])
@@ -186,7 +189,7 @@ class LastReadingTest extends TestCase
     {
         $lastWeek = $this->reading('2026-09-11', 1200, 1250);
         $thisWeek = $this->reading('2026-09-18', 1250, 1300);
-        $lastWeek->approve($this->accountant);
+        ApproveReading::handle($lastWeek, $this->accountant);
 
         $this->actingAs($this->dataEntry)
             ->postJson(route('meter-readings.last-reading-preview', $lastWeek), ['current_reading' => 1240])
@@ -341,7 +344,7 @@ class LastReadingTest extends TestCase
             'consumption' => $current - $previous,
             'unit_price' => '0.50',
             'minimum_payment' => '0.00',
-            ...MeterReading::chargesFor($current - $previous, '0.50', '0.00'),
+            ...ReadingCharges::chargesFor($current - $previous, '0.50', '0.00'),
         ]);
     }
 }

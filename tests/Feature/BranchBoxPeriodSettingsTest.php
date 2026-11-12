@@ -11,8 +11,8 @@ use App\Models\ClosingSetting;
 use App\Models\CurrencyRate;
 use App\Models\Permission;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -169,7 +169,7 @@ class BranchBoxPeriodSettingsTest extends TestCase
         $manager = User::factory()->branchAdmin()->withPermissions([PermissionKey::ManageBoxPeriods])->create();
         $this->actingAs($manager)->put(route('settings.payments.update'), ['week_starts_on' => 1])->assertSessionHasNoErrors();
 
-        SubscriptionTransaction::recordPayment(Subscription::factory()->for($manager->branch)->create(), $manager, ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        RecordPayment::handle(Subscription::factory()->for($manager->branch)->create(), $manager, ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $this->assertDatabaseHas('closing_settings', ['branch_id' => $manager->branch_id, 'week_starts_on' => 1]);
         $this->assertNotNull(ClosingSetting::ownFor($manager->branch_id)->workflow_started_at);

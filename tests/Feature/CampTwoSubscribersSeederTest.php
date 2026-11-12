@@ -43,7 +43,7 @@ class CampTwoSubscribersSeederTest extends TestCase
         $this->assertDatabaseCount('subscriptions', 20);
         $this->assertDatabaseCount('subscriber_profiles', 20);
         $this->assertDatabaseHas('subscriptions', [
-            'legacy_number' => 'SAMPLE-C2-129600', 'full_name' => 'اسامة فضل العثماني',
+            'legacy_number' => 'SAMPLE-C2-129600', 'full_name' => 'سامي أحمد النجار',
             'branch_id' => $branch->id, 'status' => 'active', 'minimum_charge' => 20,
         ]);
         $this->assertDatabaseHas('subscriptions', ['legacy_number' => 'SAMPLE-C2-129601', 'minimum_charge' => 160]);

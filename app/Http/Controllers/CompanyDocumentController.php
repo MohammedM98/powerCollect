@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SearchCompanyDocumentSubscriptionsRequest;
 use App\Http\Requests\StoreCompanyDocumentRequest;
 use App\Models\CompanyDocument;
 use App\Models\CompanyFormTemplate;
 use App\Models\Subscription;
 use App\Models\User;
-use App\Support\CompanyForms;
+use App\Support\Branding\CompanyForms;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -22,10 +23,9 @@ use Throwable;
 
 class CompanyDocumentController extends Controller
 {
-    public function subscriptions(Request $request): JsonResponse
+    public function subscriptions(SearchCompanyDocumentSubscriptionsRequest $request): JsonResponse
     {
-        $this->authorize('create', CompanyDocument::class);
-        $data = $request->validate(['search' => ['nullable', 'string', 'max:100'], 'id' => ['nullable', 'integer']]);
+        $data = $request->validated();
         $query = Subscription::query()->visibleTo($request->user());
         if (! empty($data['id'])) {
             $subscription = $query->findOrFail($data['id']);
@@ -57,7 +57,7 @@ class CompanyDocumentController extends Controller
                     : null;
                 $template = $mode === 'archive' ? null : CompanyFormTemplate::query()->lockForUpdate()->findOrFail($request->validated('company_form_template_id'));
                 if ($template !== null && $template->version !== (int) $request->validated('template_version')) {
-                    throw ValidationException::withMessages(['template_version' => 'تغيّر النموذج منذ فتحه. افتحه مجددًا وراجع النسخة الجديدة قبل الإصدار.']);
+                    throw ValidationException::withMessages(['template_version' => __('The form changed since it was opened. Open it again and review the new version before issuing.')]);
                 }
                 $layout = $template?->layout ?? CompanyForms::defaultLayout();
                 $values = [];

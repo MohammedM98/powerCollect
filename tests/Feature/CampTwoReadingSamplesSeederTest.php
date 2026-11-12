@@ -4,10 +4,10 @@ namespace Tests\Feature;
 
 use App\Enums\MeterReadingStatus;
 use App\Models\Branch;
-use App\Models\MeterReading;
 use App\Models\ReadingEntrySetting;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Support\Readings\RecordReading;
 use Database\Seeders\CampTwoReadingSamplesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use RuntimeException;
@@ -24,7 +24,7 @@ class CampTwoReadingSamplesSeederTest extends TestCase
         ReadingEntrySetting::factory()->forBranch($branch)->create(['reading_day' => 5, 'open_days' => [5]]);
         $recorder = User::factory()->superAdmin()->create();
         $subscription = Subscription::factory()->for($branch)->create(['account_number' => '202600021', 'initial_reading' => 400]);
-        $older = MeterReading::recordFor($subscription, now()->parse('2026-10-03'), 407, $recorder, 'Keep this reading');
+        $older = RecordReading::handle($subscription, now()->parse('2026-10-03'), 407, $recorder, 'Keep this reading');
         $initial = Subscription::factory()->for($branch)->create(['account_number' => '202600022', 'initial_reading' => 33]);
         $foreign = Subscription::factory()->create(['account_number' => '202600012']);
         $archived = Subscription::factory()->for($branch)->create(['account_number' => '202600015', 'archived_at' => now()]);

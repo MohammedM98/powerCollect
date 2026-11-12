@@ -1,0 +1,363 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
+
+import 'package:flutter/services.dart';
+import 'diagnostics.dart';
+
+String newOperationId() {
+  final bytes = List<int>.generate(16, (_) => Random.secure().nextInt(256));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  final hex =
+      bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
+  return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20)}';
+}
+
+class PendingReadingsAccountSwitch implements Exception {}
+
+class FieldStore {
+  FieldStore({Directory? directory}) : _directory = directory;
+  Directory? _directory;
+  Map<String, dynamic> state = {};
+  Future<void> _lastWrite = Future<void>.value();
+  Future<void> _lastMutation = Future<void>.value();
+  static const _session = MethodChannel('powercollect.session');
+  String? _persistedToken;
+
+  Future<File> _file() async {
+    _directory ??= Directory(await const MethodChannel('powercollect.storage')
+            .invokeMethod<String>('filesDirectory') ??
+        '');
+    if (_directory!.path.isEmpty) {
+      throw StateError('Local storage is unavailable');
+    }
+    await _directory!.create(recursive: true);
+    return File('${_directory!.path}${Platform.pathSeparator}field_state.json');
+  }
+
+  /// The prefix of a state file sealed with the phone's Keystore key.
+  static const _sealed = 'pcs1.';
+
+  /// The state file's JSON, sealed with the phone's Keystore key so the
+  /// roster, the user and queued readings are not readable as text. Should
+  /// sealing fail, the JSON is written as it is: unsent readings and
+  /// payments matter more than hiding them.
+  Future<String> _seal(String json) async {
+    try {
+      return await _session.invokeMethod<String>('seal', json) ?? json;
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'field_store'));
+      return json;
+    }
+  }
+
+  /// The JSON in the state file: opened when sealed, as it is when written
+  /// before sealing (it is sealed on the next save). A sealed file whose key
+  /// is gone (the app's data was restored to another phone) reads as empty.
+  Future<String?> _open(String text) async {
+    if (!text.startsWith(_sealed)) return text;
+    try {
+      return await _session.invokeMethod<String>('open', text);
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'field_store'));
+      return null;
+    }
+  }
+
+  Future<void> load() async {
+    final file = await _file();
+    if (!await file.exists()) return;
+    final text = await file.readAsString();
+    final json = await _open(text);
+    if (json == null) return;
+    final decoded = jsonDecode(json);
+    if (decoded is Map<String, dynamic>) state = decoded;
+    if (!text.startsWith(_sealed)) {
+      await save();
+    }
+    final legacyToken = token;
+    if (legacyToken != null) {
+      await _session.invokeMethod<void>('write', legacyToken);
+      _persistedToken = legacyToken;
+      state['remember_session'] ??= true;
+      await save();
+    } else if (state['secure_token'] == true) {
+      state['token'] = await _session.invokeMethod<String>('read');
+      _persistedToken = token;
+    }
+  }
+
+  Future<void> save() {
+    final nextToken = token;
+    final persisted = Map<String, dynamic>.from(state)..remove('token');
+    persisted['secure_token'] = nextToken != null;
+    final snapshot = jsonEncode(persisted);
+    final write = _lastWrite.then<void>((_) async {
+      var changedToken = false;
+      try {
+        if (nextToken != _persistedToken) {
+          await _session.invokeMethod<void>(
+              nextToken == null ? 'clear' : 'write', nextToken);
+          changedToken = true;
+        }
+        final file = await _file();
+        final temporary = File('${file.path}.tmp');
+        await temporary.writeAsString(await _seal(snapshot), flush: true);
+        await temporary.rename(file.path);
+        _persistedToken = nextToken;
+      } catch (error, stack) {
+        unawaited(Diagnostics.record(error, stack, where: 'field_store'));
+        if (changedToken) {
+          await _session.invokeMethod<void>(
+              _persistedToken == null ? 'clear' : 'write', _persistedToken);
+        }
+        rethrow;
+      }
+    });
+    _lastWrite =
+        write.then<void>((_) {}, onError: (Object _, StackTrace __) {});
+
+    return write;
+  }
+
+  Future<void> saveSession(Map<String, dynamic> nextUser, String nextToken,
+          {bool remember = false}) =>
+      _mutate(() {
+        if (user?['id'] != nextUser['id']) {
+          if (queuedReadings.isNotEmpty) {
+            throw PendingReadingsAccountSwitch();
+          }
+          for (final key in [
+            'subscribers',
+            'week_start',
+            'week_end',
+            'can_record_readings_now',
+            'roster_updated_at',
+            'assignment_roster_version',
+            'next_reading',
+            'entry_starts_at',
+            'entry_ends_at',
+            'reading_date',
+            'queued_readings',
+            'reading_drafts',
+            'reading_drafts_week',
+          ]) {
+            state.remove(key);
+          }
+        }
+        state['user'] = nextUser;
+        state['token'] = nextToken;
+        state['remember_session'] = remember;
+      });
+
+  bool get remembersSession => state['remember_session'] != false;
+
+  /// When the session ends without signing out (it expired): the subscriber
+  /// roster leaves the phone; the readings waiting to upload stay, being the
+  /// collector's unsent work, and the roster comes back at the next sign-in.
+  void clearRoster() {
+    for (final key in ['subscribers', 'next_reading', 'roster_updated_at']) {
+      state.remove(key);
+    }
+  }
+
+  List<Map<String, dynamic>> get queuedReadings =>
+      (state['queued_readings'] as List<dynamic>? ?? [])
+          .map((item) => Map<String, dynamic>.from(item as Map))
+          .toList();
+
+  List<Map<String, dynamic>> get subscribers =>
+      (state['subscribers'] as List<dynamic>? ?? [])
+          .map((item) => Map<String, dynamic>.from(item as Map))
+          .toList();
+
+  Map<String, dynamic>? get user => state['user'] is Map
+      ? Map<String, dynamic>.from(state['user'] as Map)
+      : null;
+
+  String? get token => state['token'] as String?;
+
+  Future<void> queueReading(Map<String, dynamic> reading) =>
+      queueReadings([reading]);
+
+  Future<void> queueReadings(List<Map<String, dynamic>> readings) async {
+    await _mutate(() {
+      final queue = queuedReadings;
+      queue.addAll(readings);
+      state['queued_readings'] = queue;
+      final drafts = readingDrafts;
+      for (final reading in readings) {
+        drafts.remove(reading['subscription_id']);
+      }
+      _putDrafts(drafts);
+    });
+  }
+
+  /// Readings typed for this week's roster but not saved yet, by subscriber
+  /// id, so leaving a box or closing the app loses none of them.
+  Map<int, String> get readingDrafts {
+    final drafts = state['reading_drafts'];
+    if (drafts is! Map || state['reading_drafts_week'] != state['week_start']) {
+      return {};
+    }
+    return {
+      for (final entry in drafts.entries)
+        if (int.tryParse('${entry.key}') != null)
+          int.parse('${entry.key}'): '${entry.value}',
+    };
+  }
+
+  Future<void> saveReadingDrafts(Map<int, String> drafts,
+          {String? weekStart}) =>
+      _mutate(() {
+        if (weekStart != null && weekStart != state['week_start']) return;
+        _putDrafts(drafts);
+      });
+
+  /// Take a reading that has not reached the server off the queue and put
+  /// its number back as a draft, to be corrected and saved again.
+  Future<void> reopenReading(String operationId) async {
+    await _mutate(() {
+      final queue = queuedReadings;
+      final reading = queue
+          .where((item) => item['mobile_operation_id'] == operationId)
+          .firstOrNull;
+      if (reading == null || reading['upload_uncertain'] == true) return;
+      queue.remove(reading);
+      state['queued_readings'] = queue;
+      _putDrafts({
+        ...readingDrafts,
+        reading['subscription_id'] as int: '${reading['current_reading']}',
+      });
+    });
+  }
+
+  void _putDrafts(Map<int, String> drafts) {
+    state['reading_drafts'] = {
+      for (final entry in drafts.entries)
+        if (entry.value.isNotEmpty) '${entry.key}': entry.value,
+    };
+    state['reading_drafts_week'] = state['week_start'];
+  }
+
+  Future<void> removeReading(String operationId) async {
+    await _mutate(() {
+      state['queued_readings'] = queuedReadings
+          .where((reading) => reading['mobile_operation_id'] != operationId)
+          .toList();
+    });
+  }
+
+  Future<void> markReadingError(String operationId, String error) async {
+    await _mutate(() {
+      state['queued_readings'] = queuedReadings.map((reading) {
+        if (reading['mobile_operation_id'] == operationId) {
+          reading['sync_error'] = error;
+          reading.remove('upload_uncertain');
+        }
+        return reading;
+      }).toList();
+    });
+  }
+
+  Future<void> markReadingUncertain(String operationId,
+          {bool uncertain = true}) =>
+      _mutate(() {
+        state['queued_readings'] = queuedReadings.map((reading) {
+          if (reading['mobile_operation_id'] == operationId) {
+            if (uncertain) {
+              reading['upload_uncertain'] = true;
+            } else {
+              reading.remove('upload_uncertain');
+            }
+          }
+          return reading;
+        }).toList();
+      });
+
+  /// Money submissions sent to the server without an answer that settled
+  /// them (a timeout, a dropped connection, a server error), kept so a
+  /// closed or killed app can send the same one again with the same
+  /// mobile_operation_id, or the collector can discard it after checking
+  /// today's payments. Only the collector who sent one sees it.
+  List<Map<String, dynamic>> get pendingCollections =>
+      (state['pending_collections'] as List<dynamic>? ?? [])
+          .map((item) => Map<String, dynamic>.from(item as Map))
+          .where((item) => item['user_id'] == user?['id'])
+          .toList();
+
+  /// The unconfirmed submission of [kind] ('payment', 'split' or
+  /// 'adjustment') for the subscription, if there is one.
+  Map<String, dynamic>? pendingCollection(String kind, Object? subscriptionId) =>
+      pendingCollections
+          .where((item) =>
+              item['kind'] == kind && item['subscription_id'] == subscriptionId)
+          .firstOrNull;
+
+  /// Keep [submission] until the server settles it; [summary] says what it
+  /// is in the collector's words, [subscriber] reopens its page, and
+  /// [context] holds what the page needs to show it again.
+  Future<void> rememberCollection(
+          {required String kind,
+          required Map<String, dynamic> subscriber,
+          required Map<String, dynamic> submission,
+          required String summary,
+          Map<String, dynamic> context = const {}}) =>
+      _mutate(() {
+        final operationId = submission['mobile_operation_id'];
+        final kept = (state['pending_collections'] as List<dynamic>? ?? [])
+            .map((item) => Map<String, dynamic>.from(item as Map))
+            .where((item) =>
+                Map<String, dynamic>.from(item['submission'] as Map)[
+                    'mobile_operation_id'] !=
+                operationId)
+            .toList();
+        kept.add({
+          'kind': kind,
+          'user_id': user?['id'],
+          'subscription_id': subscriber['id'],
+          'subscriber': {
+            for (final key in ['id', 'full_name', 'account_number', 'balance'])
+              key: subscriber[key],
+          },
+          'summary': summary,
+          'saved_at': DateTime.now().toIso8601String(),
+          'submission': submission,
+          if (context.isNotEmpty) 'context': context,
+        });
+        state['pending_collections'] = kept;
+      });
+
+  /// The server settled the submission (recorded it, or refused it for
+  /// good), or the collector discarded it.
+  Future<void> forgetCollection(Object? operationId) => _mutate(() {
+        state['pending_collections'] =
+            (state['pending_collections'] as List<dynamic>? ?? [])
+                .map((item) => Map<String, dynamic>.from(item as Map))
+                .where((item) =>
+                    Map<String, dynamic>.from(item['submission'] as Map)[
+                        'mobile_operation_id'] !=
+                    operationId)
+                .toList();
+      });
+
+  Future<void> _mutate(void Function() change) {
+    final mutation = _lastMutation.then<void>((_) async {
+      final previous = jsonEncode(state);
+      try {
+        change();
+        await save();
+      } catch (error, stack) {
+        unawaited(Diagnostics.record(error, stack, where: 'field_store'));
+        state = jsonDecode(previous) as Map<String, dynamic>;
+        rethrow;
+      }
+    });
+    _lastMutation =
+        mutation.then<void>((_) {}, onError: (Object _, StackTrace __) {});
+
+    return mutation;
+  }
+}

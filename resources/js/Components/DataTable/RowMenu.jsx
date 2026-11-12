@@ -240,7 +240,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
                     <b className={`block text-sm text-gray-900 ${menu.description ? 'whitespace-normal break-words' : 'truncate'}`}>{menu.title}</b>
                     {menu.description && <span className="mt-1 block whitespace-pre-wrap break-words text-sm leading-relaxed text-gray-700">{menu.description}</span>}
                     {menu.subtitle && (
-                        <span className="block truncate text-xs text-gray-500" dir="ltr" style={{ textAlign: 'right' }}>
+                        <span className="block truncate text-xs text-gray-500 !text-right" dir="ltr">
                             {menu.subtitle}
                         </span>
                     )}

@@ -3,6 +3,7 @@ import { createInertiaApp, router } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import FlashNotifications from '@/Components/FlashNotifications';
 import NavigationProgress from '@/Components/TopBar/NavigationProgress';
+import { notify } from '@/lib/notify';
 
 // Pages load ahead of time when a link is hovered. A save can change any
 // list or count, so forget those early copies once it finishes.
@@ -10,6 +11,13 @@ router.on('finish', (event) => {
     if (event.detail.visit.method !== 'get') {
         router.flushAll();
     }
+});
+
+// A visit that never reached the server (no connection, a dropped request)
+// would otherwise end silently; say so, and keep the page as it was.
+router.on('networkError', (event) => {
+    event.preventDefault();
+    notify('تعذّر الاتصال بالخادم. تحقق من الاتصال ثم أعد المحاولة.', 'error');
 });
 
 createInertiaApp({

@@ -233,8 +233,11 @@ export default function MoveBoard({ lanes, items, laneOf, itemKey, itemLabel, re
                                 const key = itemKey(item);
 
                                 return (
+                                    // A card the keyboard moves: Space picks it up, the arrows carry it, aria-pressed says it is held.
+                                    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/role-supports-aria-props
                                     <article
                                         key={key}
+                                        // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
                                         tabIndex={0}
                                         aria-roledescription="بطاقة قابلة للنقل"
                                         aria-describedby="move-board-help"

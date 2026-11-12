@@ -15,6 +15,12 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\CancelLine;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordDiscount;
+use App\Support\Ledger\RecordPayment;
+use App\Support\Ledger\TransactionActions;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -45,13 +51,13 @@ class BranchReportTest extends TestCase
 
     public function test_the_days_flow_adds_up_from_what_was_owed_to_what_is_owed(): void
     {
-        $this->at('2026-09-30 09:00', fn () => SubscriptionTransaction::recordCharge($this->subscription, $this->collector, ChargeType::Penalty, '100', 'late'));
-        $this->at('2026-10-01 08:00', fn () => SubscriptionTransaction::recordCharge($this->subscription, $this->collector, ChargeType::DisconnectionFee, '30', null));
+        $this->at('2026-09-30 09:00', fn () => RecordCharge::handle($this->subscription, $this->collector, ChargeType::Penalty, '100', 'late'));
+        $this->at('2026-10-01 08:00', fn () => RecordCharge::handle($this->subscription, $this->collector, ChargeType::DisconnectionFee, '30', null));
         $this->at('2026-10-01 08:10', fn () => $this->pay('40'));
         $this->at('2026-10-01 08:20', fn () => $this->pay('25', ['payment_method' => 'bank_transfer', 'bank_name' => 'Bank of Palestine', 'reference_number' => 'T-1']));
-        $this->at('2026-10-01 08:30', fn () => SubscriptionTransaction::recordDiscount($this->subscription, $this->collector, DiscountMethod::Shekel, '5', null));
+        $this->at('2026-10-01 08:30', fn () => RecordDiscount::handle($this->subscription, $this->collector, DiscountMethod::Shekel, '5', null));
         $mistake = $this->at('2026-10-01 08:40', fn () => $this->pay('15'));
-        $this->at('2026-10-01 08:45', fn () => $mistake->cancel($this->collector, CorrectionReason::Duplicate, null));
+        $this->at('2026-10-01 08:45', fn () => CancelLine::cancel($mistake, $this->collector, CorrectionReason::Duplicate, null));
         $this->at('2026-10-01 09:00', fn () => $this->pay('999', [], Subscription::factory()->create(['branch_id' => $this->south->id])));
 
         $this->actingAs($this->preparer())->get(route('reports.index'))->assertInertia(fn ($page) => $page
@@ -76,7 +82,7 @@ class BranchReportTest extends TestCase
     public function test_a_past_period_keeps_its_figures_when_a_line_is_cancelled_later(): void
     {
         $payment = $this->at('2026-09-29 10:00', fn () => $this->pay('80'));
-        $this->at('2026-09-30 10:00', fn () => $payment->cancel($this->collector, CorrectionReason::NotReceived, null));
+        $this->at('2026-09-30 10:00', fn () => CancelLine::cancel($payment, $this->collector, CorrectionReason::NotReceived, null));
         $this->actingAs($this->preparer());
 
         $this->get(route('reports.index', ['from' => '2026-09-29', 'to' => '2026-09-29']))->assertInertia(fn ($page) => $page
@@ -196,11 +202,11 @@ class BranchReportTest extends TestCase
 
     public function test_cancellations_and_refunds_count_with_the_corrections_and_never_as_charges(): void
     {
-        $penalty = $this->at('2026-10-01 08:00', fn () => SubscriptionTransaction::recordCharge($this->subscription, $this->collector, ChargeType::Penalty, '100', 'late'));
+        $penalty = $this->at('2026-10-01 08:00', fn () => RecordCharge::handle($this->subscription, $this->collector, ChargeType::Penalty, '100', 'late'));
         $payment = $this->at('2026-10-01 08:10', fn () => $this->pay('40'));
         $head = User::factory()->branchAdmin()->create(['branch_id' => $this->north->id]);
-        $this->at('2026-10-01 08:20', fn () => $penalty->applyAction($head, TransactionAction::Cancel, ['correction_reason' => 'other', 'correction_notes' => 'إعفاء']));
-        $this->at('2026-10-01 08:30', fn () => $payment->applyAction($head, TransactionAction::Refund, []));
+        $this->at('2026-10-01 08:20', fn () => TransactionActions::applyAction($penalty, $head, TransactionAction::Cancel, ['correction_reason' => 'other', 'correction_notes' => 'إعفاء']));
+        $this->at('2026-10-01 08:30', fn () => TransactionActions::applyAction($payment, $head, TransactionAction::Refund, []));
         $this->actingAs($this->preparer());
 
         $this->get(route('reports.index'))->assertInertia(fn ($page) => $page
@@ -217,7 +223,7 @@ class BranchReportTest extends TestCase
         $this->at('2026-10-01 08:00', fn () => $this->subscription->transactions()->create([
             'recorded_by' => $this->collector->id, 'type' => SubscriptionTransaction::TYPE_CREDIT, 'source_key' => 'import:LEGACY-1', 'amount' => '-25.00', 'notes' => 'رصيد افتتاحي من النظام القديم',
         ]));
-        $this->at('2026-10-01 08:10', fn () => SubscriptionTransaction::recordCharge($this->subscription, $this->collector, ChargeType::Penalty, '100', 'late'));
+        $this->at('2026-10-01 08:10', fn () => RecordCharge::handle($this->subscription, $this->collector, ChargeType::Penalty, '100', 'late'));
         $this->actingAs($this->preparer());
 
         $this->get(route('reports.index'))->assertInertia(fn ($page) => $page
@@ -230,7 +236,7 @@ class BranchReportTest extends TestCase
 
     public function test_the_lines_download_as_csv_narrowed_to_one_kind(): void
     {
-        $this->at('2026-10-01 08:00', fn () => SubscriptionTransaction::recordCharge($this->subscription, $this->collector, ChargeType::Penalty, '100', 'late'));
+        $this->at('2026-10-01 08:00', fn () => RecordCharge::handle($this->subscription, $this->collector, ChargeType::Penalty, '100', 'late'));
         $payment = $this->at('2026-10-01 08:10', fn () => $this->pay('40'));
         $this->actingAs($this->preparer());
 
@@ -240,7 +246,7 @@ class BranchReportTest extends TestCase
         $this->assertStringContainsString(rawurlencode('التقارير_North_2026-10-01_2026-10-01.csv'), $response->headers->get('Content-Disposition'));
 
         $this->assertStringStartsWith("\u{FEFF}\"North — التقارير المالية\"\n\"الفترة: 01/10/2026 – 01/10/2026\"\n\nالتاريخ,الوقت,الفرع", $csv);
-        $this->assertStringContainsString($payment->printedVoucherNumber(), $csv);
+        $this->assertStringContainsString(LinePresenter::printedVoucherNumber($payment), $csv);
         $this->assertStringNotContainsString(__(ChargeType::Penalty->label()), $csv);
         $this->get(route('reports.index', ['kind' => 'charges']))->assertInertia(fn ($page) => $page
             ->where('transactions.data', fn ($lines): bool => collect($lines)->pluck('type')->all() === ['penalty']));
@@ -248,7 +254,7 @@ class BranchReportTest extends TestCase
 
     public function test_the_excel_editor_gets_every_line_oldest_first_with_the_pages_filters(): void
     {
-        $this->at('2026-10-01 08:00', fn () => SubscriptionTransaction::recordCharge($this->subscription, $this->collector, ChargeType::Penalty, '100', 'late'));
+        $this->at('2026-10-01 08:00', fn () => RecordCharge::handle($this->subscription, $this->collector, ChargeType::Penalty, '100', 'late'));
         $first = $this->at('2026-10-01 08:10', fn () => $this->pay('40'));
         $second = $this->at('2026-10-01 09:00', fn () => $this->pay('15.5'));
         $this->at('2026-10-01 09:30', fn () => $this->pay('20', [], Subscription::factory()->create(['branch_id' => $this->south->id])));
@@ -313,7 +319,7 @@ class BranchReportTest extends TestCase
     public function test_print_designer_receives_the_chosen_summary_or_filtered_details_with_company_templates(): void
     {
         $payment = $this->at('2026-10-01 08:10', fn () => $this->pay('40'));
-        $this->at('2026-10-01 08:20', fn () => SubscriptionTransaction::recordCharge($this->subscription, $this->collector, ChargeType::Penalty, '100', 'late'));
+        $this->at('2026-10-01 08:20', fn () => RecordCharge::handle($this->subscription, $this->collector, ChargeType::Penalty, '100', 'late'));
         $this->actingAs($this->preparer());
 
         $this->get(route('reports.index', ['print' => 1, 'print_view' => 'summary']))->assertInertia(fn ($page) => $page
@@ -323,7 +329,7 @@ class BranchReportTest extends TestCase
             ->has('printTemplates'));
         $this->get(route('reports.index', ['print' => 1, 'print_all' => 1, 'print_view' => 'lines', 'kind' => 'payments']))->assertInertia(fn ($page) => $page
             ->where('printData.total', 1)
-            ->where('printData.rows.0.cells.السند', $payment->printedVoucherNumber())
+            ->where('printData.rows.0.cells.السند', LinePresenter::printedVoucherNumber($payment))
             ->where('printData.rows.0.cells.له', '40.00')
             ->where('printData.context.templatePage', '/reports'));
     }
@@ -353,13 +359,13 @@ class BranchReportTest extends TestCase
 
     public function test_historical_debts_keep_later_cancellations_out_and_separate_credit_balances(): void
     {
-        $charge = $this->at('2026-06-01 09:00', fn () => SubscriptionTransaction::recordCharge($this->subscription, $this->collector, ChargeType::Penalty, '100', null));
+        $charge = $this->at('2026-06-01 09:00', fn () => RecordCharge::handle($this->subscription, $this->collector, ChargeType::Penalty, '100', null));
         $this->at('2026-09-29 09:00', fn () => $this->pay('20'));
-        $this->at('2026-09-30 09:00', fn () => SubscriptionTransaction::recordCharge($this->subscription, $this->collector, ChargeType::Penalty, '50', null));
+        $this->at('2026-09-30 09:00', fn () => RecordCharge::handle($this->subscription, $this->collector, ChargeType::Penalty, '50', null));
         $credited = Subscription::factory()->create(['branch_id' => $this->north->id]);
         $this->at('2026-09-30 09:30', fn () => $this->pay('30', [], $credited));
-        $this->at('2026-10-01 09:00', fn () => $charge->cancel($this->collector, CorrectionReason::Duplicate, null));
-        $this->at('2026-09-30 10:00', fn () => SubscriptionTransaction::recordCharge(Subscription::factory()->create(['branch_id' => $this->south->id]), $this->collector, ChargeType::Penalty, '999', null));
+        $this->at('2026-10-01 09:00', fn () => CancelLine::cancel($charge, $this->collector, CorrectionReason::Duplicate, null));
+        $this->at('2026-09-30 10:00', fn () => RecordCharge::handle(Subscription::factory()->create(['branch_id' => $this->south->id]), $this->collector, ChargeType::Penalty, '999', null));
 
         $this->actingAs($this->preparer())->get(route('reports.index', ['section' => 'debts', 'from' => '2026-09-30', 'to' => '2026-09-30', 'print' => 1]))->assertInertia(fn ($page) => $page
             ->where('debts.total', '130.00')
@@ -373,7 +379,7 @@ class BranchReportTest extends TestCase
 
     public function test_report_statement_prints_signed_balances_and_positive_debit_credit_amounts(): void
     {
-        $this->at('2026-09-30 09:00', fn () => SubscriptionTransaction::recordCharge($this->subscription, $this->collector, ChargeType::Penalty, '100', null));
+        $this->at('2026-09-30 09:00', fn () => RecordCharge::handle($this->subscription, $this->collector, ChargeType::Penalty, '100', null));
         $this->at('2026-10-01 09:00', fn () => $this->pay('150'));
         $owner = User::factory()->superAdmin()->create();
 
@@ -424,7 +430,7 @@ class BranchReportTest extends TestCase
         $earlier = $this->at('2026-09-20 09:00', fn () => $this->pay('30'))->boxEntry->box;
         $earlier->update(['status' => 'received', 'closed_at' => Carbon::parse('2026-09-21 18:00', 'Asia/Gaza'), 'received_at' => Carbon::parse('2026-09-22 09:00', 'Asia/Gaza')]);
         $other = User::factory()->collector()->create(['branch_id' => $this->north->id]);
-        $current = $this->at('2026-09-29 09:00', fn () => SubscriptionTransaction::recordPayment($this->subscription, $other, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']))->boxEntry->box;
+        $current = $this->at('2026-09-29 09:00', fn () => RecordPayment::handle($this->subscription, $other, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']))->boxEntry->box;
 
         $this->actingAs($this->preparer())->get(route('reports.index', ['section' => 'boxes', 'from' => '2026-09-30', 'to' => '2026-09-30']))->assertInertia(fn ($page) => $page
             ->has('detailTable.rows', 1)
@@ -462,7 +468,7 @@ class BranchReportTest extends TestCase
 
     public function test_statement_filters_preserve_historical_balances_and_print_only_matching_lines(): void
     {
-        $this->at('2026-10-01 08:00', fn () => SubscriptionTransaction::recordCharge($this->subscription, $this->collector, ChargeType::Penalty, '100', null));
+        $this->at('2026-10-01 08:00', fn () => RecordCharge::handle($this->subscription, $this->collector, ChargeType::Penalty, '100', null));
         $this->at('2026-10-01 09:00', fn () => $this->pay('150'));
         $this->actingAs(User::factory()->superAdmin()->create());
 
@@ -481,12 +487,12 @@ class BranchReportTest extends TestCase
 
     public function test_statement_totals_leave_out_payments_cancelled_within_the_period(): void
     {
-        $this->at('2026-09-29 08:00', fn () => SubscriptionTransaction::recordCharge($this->subscription, $this->collector, ChargeType::Penalty, '100', null));
+        $this->at('2026-09-29 08:00', fn () => RecordCharge::handle($this->subscription, $this->collector, ChargeType::Penalty, '100', null));
         $this->at('2026-09-29 09:00', fn () => $this->pay('40'));
         $mistake = $this->at('2026-09-29 10:00', fn () => $this->pay('15'));
-        $this->at('2026-09-29 10:05', fn () => $mistake->cancel($this->collector, CorrectionReason::Duplicate, null));
+        $this->at('2026-09-29 10:05', fn () => CancelLine::cancel($mistake, $this->collector, CorrectionReason::Duplicate, null));
         $later = $this->at('2026-09-30 09:00', fn () => $this->pay('10'));
-        $this->at('2026-10-01 09:00', fn () => $later->cancel($this->collector, CorrectionReason::NotReceived, null));
+        $this->at('2026-10-01 09:00', fn () => CancelLine::cancel($later, $this->collector, CorrectionReason::NotReceived, null));
         $this->actingAs(User::factory()->superAdmin()->create());
 
         $this->get(route('reports.index', ['section' => 'statement', 'subscription' => $this->subscription->id, 'from' => '2026-09-29', 'to' => '2026-09-30']))->assertInertia(fn ($page) => $page
@@ -500,7 +506,7 @@ class BranchReportTest extends TestCase
 
     public function test_statement_without_period_movements_keeps_its_opening_balance_and_has_no_fake_table_rows(): void
     {
-        $this->at('2026-09-30 09:00', fn () => SubscriptionTransaction::recordCharge($this->subscription, $this->collector, ChargeType::Penalty, '7178', null));
+        $this->at('2026-09-30 09:00', fn () => RecordCharge::handle($this->subscription, $this->collector, ChargeType::Penalty, '7178', null));
         $this->actingAs(User::factory()->superAdmin()->create());
 
         $this->get(route('reports.index', ['section' => 'statement', 'subscription' => $this->subscription->id]))->assertInertia(fn ($page) => $page
@@ -515,8 +521,8 @@ class BranchReportTest extends TestCase
     {
         $a = Subscription::factory()->create(['branch_id' => $this->north->id, 'full_name' => 'أحمد علي']);
         $b = Subscription::factory()->create(['branch_id' => $this->north->id, 'full_name' => 'احمد محمود']);
-        $this->at('2026-10-01 08:00', fn () => SubscriptionTransaction::recordCharge($a, $this->collector, ChargeType::Penalty, '20', null));
-        $this->at('2026-10-01 08:30', fn () => SubscriptionTransaction::recordCharge($b, $this->collector, ChargeType::Penalty, '100', null));
+        $this->at('2026-10-01 08:00', fn () => RecordCharge::handle($a, $this->collector, ChargeType::Penalty, '20', null));
+        $this->at('2026-10-01 08:30', fn () => RecordCharge::handle($b, $this->collector, ChargeType::Penalty, '100', null));
         $this->actingAs($this->preparer());
 
         $this->get(route('reports.index', ['section' => 'debts', 'search' => 'احمد', 'sort' => 'balance', 'direction' => 'asc', 'print' => 1]))->assertInertia(fn ($page) => $page
@@ -531,7 +537,7 @@ class BranchReportTest extends TestCase
     public function test_detail_tables_send_one_page_and_load_every_matching_row_only_for_export(): void
     {
         $debtors = Subscription::factory()->count(17)->create(['branch_id' => $this->north->id, 'circuit_breaker_id' => $this->subscription->circuit_breaker_id, 'meter_box_id' => $this->subscription->meter_box_id, 'registered_by' => $this->collector->id]);
-        $debtors->each(fn (Subscription $debtor, int $index) => $this->at('2026-10-01 08:00', fn () => SubscriptionTransaction::recordCharge($debtor, $this->collector, ChargeType::Penalty, (string) (10 + $index), null)));
+        $debtors->each(fn (Subscription $debtor, int $index) => $this->at('2026-10-01 08:00', fn () => RecordCharge::handle($debtor, $this->collector, ChargeType::Penalty, (string) (10 + $index), null)));
         $this->actingAs($this->preparer());
 
         $this->get(route('reports.index', ['section' => 'debts', 'per_page' => 15, 'page' => 2]))->assertInertia(fn ($page) => $page
@@ -588,7 +594,7 @@ class BranchReportTest extends TestCase
      */
     private function pay(string $amount, array $details = [], ?Subscription $subscription = null): SubscriptionTransaction
     {
-        return SubscriptionTransaction::recordPayment($subscription ?? $this->subscription, $this->collector, [
+        return RecordPayment::handle($subscription ?? $this->subscription, $this->collector, [
             'amount' => $amount, 'currency' => 'ILS', 'payment_method' => 'cash', ...$details,
         ]);
     }

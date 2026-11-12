@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
+use App\Casts\CurrencyCounts;
 use App\Enums\CashBoxType;
-use App\Support\BranchClosingWorkflow;
+use App\Support\Closing\BranchClosingWorkflow;
 use Carbon\CarbonImmutable;
 use Database\Factories\CashBoxFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -24,7 +25,7 @@ class CashBox extends Model
 
     protected function casts(): array
     {
-        return ['type' => CashBoxType::class, 'collector_submitted_at' => 'datetime', 'collector_counts' => 'array', 'head_counts' => 'array', 'expected_counts' => 'array', 'decisions' => 'array', 'opened_at' => 'immutable_datetime', 'closed_at' => 'immutable_datetime', 'received_at' => 'datetime', 'confirmed_at' => 'datetime', 'sent_at' => 'datetime'];
+        return ['type' => CashBoxType::class, 'collector_submitted_at' => 'datetime', 'collector_counts' => CurrencyCounts::class, 'head_counts' => CurrencyCounts::class, 'expected_counts' => CurrencyCounts::class, 'decisions' => 'array', 'opened_at' => 'immutable_datetime', 'closed_at' => 'immutable_datetime', 'received_at' => 'datetime', 'confirmed_at' => 'datetime', 'sent_at' => 'datetime'];
     }
 
     public function stage(): string

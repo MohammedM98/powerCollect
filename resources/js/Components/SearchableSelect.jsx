@@ -94,10 +94,13 @@ export default function SearchableSelect({
         return q ? options.filter((option) => `${option.label} ${option.hint ?? ''}`.toLowerCase().includes(q)) : options;
     }, [options, query, loadOptions, found]);
 
+    const [searchedWith, setSearchedWith] = useState(() => loadOptions);
+
     // A new way of searching (another branch picked, say) makes the old results stale.
-    useEffect(() => {
+    if (searchedWith !== loadOptions) {
+        setSearchedWith(() => loadOptions);
         setFound(null);
-    }, [loadOptions]);
+    }
 
     // Search as the box opens and as the user types; only the latest search counts.
     useEffect(() => {
@@ -167,7 +170,7 @@ export default function SearchableSelect({
             // A portalled list is placed (fixed, beside the field) only after this first render, so focusing it must not scroll the page to where it was drawn before.
             searchRef.current?.focus({ preventScroll: portal });
         }
-    }, [open]);
+    }, [open, portal]);
 
     function select(option) {
         setChosen(option);

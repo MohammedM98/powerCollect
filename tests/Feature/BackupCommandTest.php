@@ -57,6 +57,12 @@ class BackupCommandTest extends TestCase
         return $target;
     }
 
+    /** The database backup's name: an SQLite snapshot, or a mysqldump on MySQL. */
+    private function databaseBackup(string $stamp = '20261007-023000'): string
+    {
+        return "powercollect-{$stamp}-database.".(DB::connection()->getDriverName() === 'sqlite' ? 'sqlite' : 'sql').'.gz';
+    }
+
     /** @return array<int, string> the backup files on the local disk, absolute paths */
     private function backups(): array
     {
@@ -74,16 +80,22 @@ class BackupCommandTest extends TestCase
 
         $names = array_map('basename', $this->backups());
         sort($names);
-        $this->assertSame(['powercollect-20261007-023000-database.sqlite.gz', 'powercollect-20261007-023000-files.tar.gz', 'powercollect-20261007-023000-public-files.tar.gz'], $names);
+        $this->assertSame([$this->databaseBackup(), 'powercollect-20261007-023000-files.tar.gz', 'powercollect-20261007-023000-public-files.tar.gz'], $names);
 
-        // The restore test: open the database copy as a database and the archive as files.
-        $copy = tempnam(sys_get_temp_dir(), 'restore-');
-        file_put_contents($copy, gzdecode(file_get_contents(Storage::disk('local')->path('backups/powercollect-20261007-023000-database.sqlite.gz'))));
-        $restored = new PDO('sqlite:'.$copy);
+        // The restore test: open the database copy as a database (or read the dump) and the archive as files.
+        $database = gzdecode(file_get_contents(Storage::disk('local')->path('backups/'.$this->databaseBackup())));
         $this->assertGreaterThan(0, $migrations);
-        $this->assertSame($migrations, (int) $restored->query('select count(*) from migrations')->fetchColumn());
-        $this->assertSame($voucherCounter, (int) $restored->query('select last_number from payment_voucher_sequences')->fetchColumn());
-        File::delete($copy);
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            $copy = tempnam(sys_get_temp_dir(), 'restore-');
+            file_put_contents($copy, $database);
+            $restored = new PDO('sqlite:'.$copy);
+            $this->assertSame($migrations, (int) $restored->query('select count(*) from migrations')->fetchColumn());
+            $this->assertSame($voucherCounter, (int) $restored->query('select last_number from payment_voucher_sequences')->fetchColumn());
+            File::delete($copy);
+        } else {
+            $this->assertStringContainsString('CREATE TABLE `migrations`', $database);
+            $this->assertMatchesRegularExpression('/INSERT INTO `payment_voucher_sequences` VALUES \\(1,'.$voucherCounter.'[,)]/', $database);
+        }
 
         $target = $this->restoreFiles('backups/powercollect-20261007-023000-files.tar.gz');
         $this->assertSame('proof-image-bytes', file_get_contents($target.'/cash-transfers/proof.jpg'));
@@ -139,7 +151,7 @@ class BackupCommandTest extends TestCase
 
         $this->artisan('backup:run')->assertSuccessful();
 
-        Storage::disk('offsite')->assertExists('backups/powercollect-20261007-023000-database.sqlite.gz');
+        Storage::disk('offsite')->assertExists('backups/'.$this->databaseBackup());
         Storage::disk('offsite')->assertExists('backups/powercollect-20261007-023000-files.tar.gz');
         Storage::disk('offsite')->assertExists('backups/powercollect-20261007-023000-public-files.tar.gz');
         Storage::disk('offsite')->assertMissing('backups/powercollect-20260801-020000-database.sqlite.gz');

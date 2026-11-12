@@ -6,6 +6,7 @@ use App\Enums\MessageChannel;
 use App\Enums\MessageKind;
 use App\Enums\MessageStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ListMobileSubscriberMessagesRequest;
 use App\Http\Requests\StoreMobileSubscriberMessageRequest;
 use App\Jobs\SendSubscriptionMessage;
 use App\Models\MessageBatch;
@@ -14,16 +15,14 @@ use App\Models\SubscriptionMessage;
 use App\Support\Messaging\MessageComposer;
 use App\Support\Messaging\SmsGateway;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class MobileSubscriberMessageController extends Controller
 {
-    public function index(Request $request, SmsGateway $gateway): JsonResponse
+    public function index(ListMobileSubscriberMessagesRequest $request, SmsGateway $gateway): JsonResponse
     {
-        $this->authorize('viewAny', MessageBatch::class);
-        $validated = $request->validate(['search' => ['nullable', 'string', 'max:100']]);
+        $validated = $request->validated();
         $subscribers = Subscription::query()->visibleTo($request->user())
             ->matchingSearch(trim($validated['search'] ?? ''))->orderBy('full_name')->orderBy('id')
             ->paginate(25, ['id', 'full_name', 'subscription_name', 'account_number', 'phone', 'subscription_phone']);
@@ -57,10 +56,10 @@ class MobileSubscriberMessageController extends Controller
                 return $message;
             }
             if (blank($subscription->contactPhone())) {
-                throw ValidationException::withMessages(['phone' => 'لا يوجد رقم هاتف لهذا المشترك. حدّث بياناته أولاً.']);
+                throw ValidationException::withMessages(['phone' => __('This subscriber has no phone number. Update their details first.')]);
             }
             if (! $gateway->deliversMessages()) {
-                throw ValidationException::withMessages(['sms' => 'إرسال الرسائل النصية غير مفعّل. تواصل مع الإدارة لتفعيل خدمة SMS.']);
+                throw ValidationException::withMessages(['sms' => __('Sending text messages is not enabled. Ask the administration to enable the SMS service.')]);
             }
             $batch = MessageBatch::query()->firstOrCreate(['operation_id' => $validated['mobile_operation_id']], [
                 'branch_id' => $subscription->branch_id,

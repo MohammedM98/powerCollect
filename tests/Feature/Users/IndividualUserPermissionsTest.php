@@ -8,8 +8,8 @@ use App\Models\Branch;
 use App\Models\Permission;
 use App\Models\User;
 use App\Models\UserType;
-use App\Support\BranchClosingAccess;
-use App\Support\FinancialReportAccess;
+use App\Support\Closing\BranchClosingAccess;
+use App\Support\Reports\FinancialReportAccess;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Support\Brand;
-use App\Support\BrandDesign;
-use App\Support\CompanyForms;
+use App\Support\Branding\Brand;
+use App\Support\Branding\BrandDesign;
+use App\Support\Branding\CompanyForms;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;

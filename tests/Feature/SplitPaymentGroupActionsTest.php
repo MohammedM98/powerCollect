@@ -13,7 +13,11 @@ use App\Models\SplitPayment;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\BranchClosingWorkflow;
+use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Ledger\CorrectLine;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordPayment;
+use App\Support\Ledger\TransactionActions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
 use Inertia\Testing\AssertableInertia;
@@ -38,7 +42,7 @@ class SplitPaymentGroupActionsTest extends TestCase
         $collector = User::factory()->collector()->for($this->branch)->create();
         $subscriptions = Subscription::factory()->count(3)->for($this->branch)->create();
         foreach ($subscriptions as $subscription) {
-            SubscriptionTransaction::recordCharge($subscription, $collector, ChargeType::Penalty, '500', null);
+            RecordCharge::handle($subscription, $collector, ChargeType::Penalty, '500', null);
         }
         $this->split = SplitPayment::record($collector, [
             'total_amount' => 600, 'bank_name' => 'بنك فلسطين', 'sender_name' => 'أحمد', 'reference_number' => 'SPLIT-123',
@@ -48,7 +52,7 @@ class SplitPaymentGroupActionsTest extends TestCase
     public function test_refunding_any_share_returns_every_share_and_releases_the_open_box_once(): void
     {
         $parts = $this->split->payments;
-        SubscriptionTransaction::recordCharge($parts[0]->subscription, $this->actor, ChargeType::Penalty, '25', null);
+        RecordCharge::handle($parts[0]->subscription, $this->actor, ChargeType::Penalty, '25', null);
         $box = $parts[0]->boxEntry->box;
 
         $this->actOn($parts[1], 'refund')->assertSessionHasNoErrors();
@@ -155,7 +159,7 @@ class SplitPaymentGroupActionsTest extends TestCase
     {
         $this->actor->permissions()->syncWithoutDetaching(Permission::idsFor([PermissionKey::ForceDeleteTransactions]));
         $parts = $this->split->payments;
-        $this->assertSame(['edit_metadata', 'delete', 'refund'], $parts[0]->fresh()->availableActions($this->actor));
+        $this->assertSame(['edit_metadata', 'delete', 'refund'], TransactionActions::availableActions($parts[0]->fresh(), $this->actor));
 
         $this->closeBoxOf($parts[2]);
 
@@ -177,7 +181,7 @@ class SplitPaymentGroupActionsTest extends TestCase
     public function test_a_later_transaction_on_a_sibling_blocks_deletion_of_all_shares(): void
     {
         $parts = $this->split->payments;
-        SubscriptionTransaction::recordCharge($parts[2]->subscription, $this->actor, ChargeType::Penalty, '25', null);
+        RecordCharge::handle($parts[2]->subscription, $this->actor, ChargeType::Penalty, '25', null);
 
         $this->actOn($parts[0], 'delete')->assertSessionHasErrors('action');
 
@@ -194,7 +198,7 @@ class SplitPaymentGroupActionsTest extends TestCase
             ->firstWhere('id', $parts[0]->id);
         $this->assertSame([['edit_metadata', 'delete', 'refund'], true], [$entry()['available_actions'], $entry()['canForceDelete']]);
 
-        SubscriptionTransaction::recordCharge($parts[2]->subscription, $this->actor, ChargeType::Penalty, '25', null);
+        RecordCharge::handle($parts[2]->subscription, $this->actor, ChargeType::Penalty, '25', null);
 
         $this->assertSame([['edit_metadata', 'refund'], false], [$entry()['available_actions'], $entry()['canForceDelete']]);
         $this->actOn($parts[0], 'legacy-delete')->assertForbidden();
@@ -216,7 +220,7 @@ class SplitPaymentGroupActionsTest extends TestCase
     public function test_a_hidden_foreign_branch_share_prevents_partial_refunding(): void
     {
         $foreign = Subscription::factory()->create();
-        SubscriptionTransaction::recordPayment($foreign, $this->actor, [
+        RecordPayment::handle($foreign, $this->actor, [
             'amount' => 50, 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين',
             'reference_number' => 'SPLIT-123', 'split_payment_id' => $this->split->id,
         ]);
@@ -234,7 +238,7 @@ class SplitPaymentGroupActionsTest extends TestCase
     public function test_corrected_shares_are_processed_without_double_refunding_or_reinstating_old_payments(string $action): void
     {
         $original = $this->split->payments[1];
-        $replacement = $original->correct($this->actor, CorrectionReason::WrongAmount, 'خطأ', fn (Subscription $subscription): SubscriptionTransaction => SubscriptionTransaction::recordPayment($subscription, $this->actor, [
+        $replacement = CorrectLine::correct($original, $this->actor, CorrectionReason::WrongAmount, 'خطأ', fn (Subscription $subscription): SubscriptionTransaction => RecordPayment::handle($subscription, $this->actor, [
             'amount' => 150, 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين',
             'reference_number' => 'SPLIT-123', 'split_payment_id' => $this->split->id,
         ]));
@@ -270,7 +274,7 @@ class SplitPaymentGroupActionsTest extends TestCase
     {
         $part = $this->split->payments[0];
         $foreign = Subscription::factory()->create();
-        SubscriptionTransaction::recordPayment($foreign, $this->actor, [
+        RecordPayment::handle($foreign, $this->actor, [
             'amount' => 50, 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين',
             'reference_number' => 'SPLIT-123', 'split_payment_id' => $this->split->id,
         ]);

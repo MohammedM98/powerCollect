@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Support\Readings;
+
+use App\Models\MeterReading;
+use App\Models\User;
+use Illuminate\Validation\ValidationException;
+
+/**
+ * Approving again a week that editing the last reading sent back to review,
+ * shared by the reading's edit and the last reading's adjustment.
+ */
+class ApproveCorrectedReading
+{
+    /**
+     * Approve again a week sent back to review by editing the last reading,
+     * as part of confirming that edit. A week the edit made unusual is held
+     * until the editor confirms it, and then nothing of the edit is saved.
+     *
+     * @throws ValidationException when the week is unusual and not confirmed
+     */
+    public static function approveCorrectedLastReading(MeterReading $reading, User $actor, bool $confirmUnusual): bool
+    {
+        if (! ApproveReading::handle($reading, $actor, $confirmUnusual)) {
+            throw ValidationException::withMessages([
+                'confirm_unusual' => __('Consumption for the week of ').$reading->week_start->format('d/m').__(' after the edit (').rtrim(rtrim(number_format((float) $reading->consumption, 2, '.', ''), '0'), '.').__(' kWh) is far above usual; confirm it is correct so it can be approved.'),
+            ]);
+        }
+
+        return true;
+    }
+}

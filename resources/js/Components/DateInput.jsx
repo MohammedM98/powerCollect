@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Icon from '@/Components/Icon';
 import { formatMonthName, localDay } from '@/lib/format';
@@ -82,7 +82,9 @@ export default function DateInput({
         const below = box.bottom + 8 + popover.offsetHeight <= window.innerHeight || box.top < popover.offsetHeight + 8;
         popover.style.top = `${below ? box.bottom + 8 : box.top - popover.offsetHeight - 8}px`;
         popover.style.left = `${Math.max(12, Math.min(viewport - popover.offsetWidth - 12, box.right - popover.offsetWidth))}px`;
-    }, [open, view]);
+    }, [open, view, buttonRef]);
+
+    const closeFromOutside = useEffectEvent(close);
 
     useEffect(() => {
         if (!open) {
@@ -91,7 +93,7 @@ export default function DateInput({
 
         function onPointerDown(event) {
             if (!popoverRef.current?.contains(event.target) && !buttonRef.current?.contains(event.target)) {
-                close(false);
+                closeFromOutside(false);
             }
         }
 
@@ -99,13 +101,13 @@ export default function DateInput({
             if (event.key === 'Escape') {
                 // Only the calendar closes, not the dialog under it.
                 event.stopPropagation();
-                close();
+                closeFromOutside();
             }
         }
 
         function onScroll(event) {
             if (!(event.target instanceof Node) || !popoverRef.current?.contains(event.target)) {
-                close(false);
+                closeFromOutside(false);
             }
         }
 
@@ -120,7 +122,7 @@ export default function DateInput({
             window.removeEventListener('scroll', onScroll, true);
             window.removeEventListener('resize', onScroll);
         };
-    }, [open]);
+    }, [open, buttonRef]);
 
     // The keyboard's place follows the focused day.
     useEffect(() => {
@@ -242,12 +244,12 @@ export default function DateInput({
                         </div>
 
                         {view === 'days' ? (
-                            <div ref={gridRef} role="grid" aria-label={`${formatMonthName(shownMonth)} ${year}`} onKeyDown={onGridKeyDown}>
+                            <div ref={gridRef} role="grid" tabIndex={-1} aria-label={`${formatMonthName(shownMonth)} ${year}`} onKeyDown={onGridKeyDown}>
                                 <div role="row" className="grid grid-cols-7 pb-1">
                                     {WEEKDAY_INITIALS.map((day) => (
-                                        <abbr key={day.label} role="columnheader" title={day.label} className="py-1 text-center text-xs font-semibold text-gray-500 no-underline">
-                                            {day.initial}
-                                        </abbr>
+                                        <span key={day.label} role="columnheader" className="py-1 text-center text-xs font-semibold text-gray-500">
+                                            <abbr title={day.label} className="no-underline">{day.initial}</abbr>
+                                        </span>
                                     ))}
                                 </div>
                                 {monthGrid(shownMonth).map((week) => (

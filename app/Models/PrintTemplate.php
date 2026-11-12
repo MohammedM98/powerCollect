@@ -29,22 +29,22 @@ class PrintTemplate extends Model
      * @var array<string, array{label: string, icon: string}>
      */
     public const PAGES = [
-        '/meter-readings' => ['label' => 'القراءات الأسبوعية', 'icon' => 'chart'],
-        '/subscriptions' => ['label' => 'المشتركون', 'icon' => 'users'],
-        '/meter-boxes' => ['label' => 'الطبلونات', 'icon' => 'table'],
-        '/meter-boxes/subscriptions-print' => ['label' => 'الطبلونات ومشتركوها', 'icon' => 'users'],
-        '/ledger' => ['label' => 'السجل المالي', 'icon' => 'ledger'],
-        '/reports' => ['label' => 'التقارير المالية', 'icon' => 'trend'],
-        '/receivables' => ['label' => 'أعمار الديون', 'icon' => 'wallet'],
-        '/transaction-audit' => ['label' => 'سجل التدقيق', 'icon' => 'history'],
-        '/users' => ['label' => 'المستخدمون', 'icon' => 'user'],
-        '/branches' => ['label' => 'الفروع', 'icon' => 'pin'],
-        '/circuit-breakers' => ['label' => 'القواطع', 'icon' => 'bolt'],
-        '/messages' => ['label' => 'الرسائل', 'icon' => 'messages'],
-        '/payments/cash-boxes/report' => ['label' => 'تفاصيل الصندوق المالي', 'icon' => 'wallet'],
-        '/subscriptions/statement-print' => ['label' => 'كشف حساب المشترك', 'icon' => 'ledger'],
-        '/reading-cycles/print' => ['label' => 'توزيع القراءات', 'icon' => 'layers'],
-        '/paper-sheets' => ['label' => 'كشوف القراءات الورقية', 'icon' => 'printer'],
+        '/meter-readings' => ['label' => 'Weekly readings', 'icon' => 'chart'],
+        '/subscriptions' => ['label' => 'Subscribers', 'icon' => 'users'],
+        '/meter-boxes' => ['label' => 'Meter boxes', 'icon' => 'table'],
+        '/meter-boxes/subscriptions-print' => ['label' => 'Meter boxes and their subscribers', 'icon' => 'users'],
+        '/ledger' => ['label' => 'Ledger', 'icon' => 'ledger'],
+        '/reports' => ['label' => 'Financial reports', 'icon' => 'trend'],
+        '/receivables' => ['label' => 'Debt ages', 'icon' => 'wallet'],
+        '/transaction-audit' => ['label' => 'Audit log', 'icon' => 'history'],
+        '/users' => ['label' => 'Users', 'icon' => 'user'],
+        '/branches' => ['label' => 'Branches', 'icon' => 'pin'],
+        '/circuit-breakers' => ['label' => 'Circuit breakers', 'icon' => 'bolt'],
+        '/messages' => ['label' => 'Messages', 'icon' => 'messages'],
+        '/payments/cash-boxes/report' => ['label' => 'Cash box details', 'icon' => 'wallet'],
+        '/subscriptions/statement-print' => ['label' => 'Subscriber statement', 'icon' => 'ledger'],
+        '/reading-cycles/print' => ['label' => 'Reading distribution', 'icon' => 'layers'],
+        '/paper-sheets' => ['label' => 'Paper reading sheets', 'icon' => 'printer'],
     ];
 
     protected function casts(): array
@@ -81,10 +81,10 @@ class PrintTemplate extends Model
      */
     public function copyName(): string
     {
-        $name = $this->name.' (نسخة)';
+        $name = $this->name.__(' (copy)');
 
         for ($number = 2; static::query()->where('page', $this->page)->where('name', $name)->exists(); $number++) {
-            $name = $this->name.' (نسخة '.$number.')';
+            $name = $this->name.__(' (copy ').$number.')';
         }
 
         return $name;

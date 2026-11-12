@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Enums\ReadingAssignmentChannel;
 use App\Http\Requests\AllocateReadingBoxesRequest;
+use App\Http\Requests\ApproveReadingAssignmentRequest;
 use App\Models\ReadingCycle;
 use App\Models\User;
 use App\Notifications\ActionCompleted;
-use App\Support\ReadingAllocation;
+use App\Support\Readings\ReadingAllocation;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 /**
@@ -55,14 +55,10 @@ class ReadingAssignmentController extends Controller
      * Approve the drafts of one reader (`user_id`), of the paper sheets
      * (`paper`), or all of them.
      */
-    public function approve(Request $request, ReadingCycle $readingCycle): RedirectResponse
+    public function approve(ApproveReadingAssignmentRequest $request, ReadingCycle $readingCycle): RedirectResponse
     {
-        $this->authorize('approve', $readingCycle);
 
-        $validated = $request->validate([
-            'user_id' => ['nullable', 'integer'],
-            'paper' => ['boolean'],
-        ]);
+        $validated = $request->validated();
 
         if ($readingCycle->isClosed()) {
             return back()->withErrors(['approve' => 'دورة القراءة مغلقة.']);
@@ -72,7 +68,7 @@ class ReadingAssignmentController extends Controller
         $result = $this->allocation->approve($readingCycle, $reader, $request->boolean('paper'), $request->user());
 
         Inertia::flash('allocationResult', ['action' => 'approve', 'moved' => $result['approved'], 'conflicts' => $result['skipped'] > 0
-            ? [['boxId' => null, 'label' => $result['skipped'].' طبلون', 'reason' => ReadingAllocation::CONFLICTS['reader_not_eligible']]]
+            ? [['boxId' => null, 'label' => $result['skipped'].' طبلون', 'reason' => __(ReadingAllocation::CONFLICTS['reader_not_eligible'])]]
             : []]);
 
         if ($result['approved'] === 0) {

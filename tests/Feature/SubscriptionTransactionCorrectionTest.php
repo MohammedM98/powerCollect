@@ -15,6 +15,14 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordClearing;
+use App\Support\Ledger\RecordDiscount;
+use App\Support\Ledger\RecordPayment;
+use App\Support\Readings\AdjustLastReading;
+use App\Support\Readings\ApproveReading;
+use App\Support\Readings\ReadingCharges;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Testing\TestResponse;
@@ -85,7 +93,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
                 ->where('entries.2.reverses.id', $payment->id)
                 ->where('entries.2.reverses.lineNumber', 2)
                 ->where('entries.2.isCredit', false)
-                ->where('entries.2.description', 'إلغاء: دفعة نقدية · سند '.$payment->printedVoucherNumber())
+                ->where('entries.2.description', 'إلغاء: دفعة نقدية · سند '.LinePresenter::printedVoucherNumber($payment))
                 ->where('entries.2.balance', '200.00')
                 ->where('entries.3.id', $replacement->id)
                 ->where('entries.3.isCorrection', true)
@@ -120,7 +128,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
                 ->where('entries.2.groupId', $payment->id)
                 ->where('entries.2.isReversal', true)
                 ->where('entries.2.voucherNumber', '00412')
-                ->where('entries.2.systemVoucherNumber', $payment->printedVoucherNumber())
+                ->where('entries.2.systemVoucherNumber', LinePresenter::printedVoucherNumber($payment))
                 ->where('entries.2.manualVoucherNumber', '00412')
                 ->where('entries.2.cashBox', null)
                 ->where('entries.3.groupId', $payment->correction->id)
@@ -148,7 +156,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
     public function test_the_reversal_stays_under_its_line_and_the_correction_comes_last_after_the_lines_between(): void
     {
         $payment = $this->recordPayment(['amount' => '80', 'payment_method' => 'cash']);
-        $charge = SubscriptionTransaction::recordCharge($this->subscription, $this->branchAdmin, ChargeType::Penalty, '20', null);
+        $charge = RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '20', null);
 
         $this->correct($payment, [...$this->transfer('80'), 'correction_reason' => 'wrong_payment_method', 'correction_notes' => 'حوّلها عبر البنك'])
             ->assertSessionHasNoErrors();
@@ -356,9 +364,9 @@ class SubscriptionTransactionCorrectionTest extends TestCase
 
     public function test_correcting_a_charge_a_discount_and_a_clearing_records_the_right_ones(): void
     {
-        $charge = SubscriptionTransaction::recordCharge($this->subscription, $this->branchAdmin, ChargeType::Penalty, '50', 'تأخير');
-        $discount = SubscriptionTransaction::recordDiscount($this->subscription, $this->branchAdmin, DiscountMethod::Shekel, '30', null);
-        $clearing = SubscriptionTransaction::recordClearing($this->subscription, $this->branchAdmin, '60', 'صيانة المولد');
+        $charge = RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '50', 'تأخير');
+        $discount = RecordDiscount::handle($this->subscription, $this->branchAdmin, DiscountMethod::Shekel, '30', null);
+        $clearing = RecordClearing::handle($this->subscription, $this->branchAdmin, '60', 'صيانة المولد');
 
         $this->correct($charge, ['type' => 'disconnection_fee', 'amount' => '40', 'notes' => 'فصل', 'correction_reason' => 'wrong_type', 'correction_notes' => 'كانت رسوم قطع'])
             ->assertSessionHasNoErrors();
@@ -375,7 +383,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
 
     public function test_a_corrected_clearing_is_checked_against_the_balance_without_the_one_it_replaces(): void
     {
-        $clearing = SubscriptionTransaction::recordClearing($this->subscription, $this->branchAdmin, '60', 'صيانة المولد');
+        $clearing = RecordClearing::handle($this->subscription, $this->branchAdmin, '60', 'صيانة المولد');
 
         // Without it the subscription owes 200: a clearing of 201 needs confirming, 200 is the whole debt.
         $this->correct($clearing, ['amount' => '201', 'notes' => 'صيانة', 'correction_reason' => 'wrong_amount', 'correction_notes' => 'اختبار'])
@@ -389,7 +397,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
 
     public function test_a_subscription_fee_recorded_later_can_be_corrected_with_an_audit_trail(): void
     {
-        $charge = SubscriptionTransaction::recordCharge($this->subscription, $this->branchAdmin, ChargeType::SubscriptionFee, '50', null);
+        $charge = RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::SubscriptionFee, '50', null);
 
         $this->correct($charge, ['type' => 'subscription_fee', 'amount' => '40', 'correction_reason' => 'wrong_amount', 'correction_notes' => 'الرسوم 40'])
             ->assertSessionHasNoErrors()->assertSessionHas('status', 'transaction-corrected');
@@ -402,7 +410,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
 
     public function test_a_subscription_fee_recorded_by_hand_uses_the_regular_charge_deletion_reasons(): void
     {
-        $charge = SubscriptionTransaction::recordCharge($this->subscription, $this->branchAdmin, ChargeType::SubscriptionFee, '50', null);
+        $charge = RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::SubscriptionFee, '50', null);
 
         $this->actingAs($this->branchAdmin)
             ->delete(route('subscriptions.transactions.destroy', [$this->subscription, $charge]), ['correction_reason' => 'fee_cancelled', 'correction_notes' => 'x'])
@@ -418,7 +426,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
     {
         $this->subscription->transactions()->delete();
         SubscriptionTransaction::factory()->for($this->subscription)->create(['amount' => '50.00']);
-        $discount = SubscriptionTransaction::recordDiscount($this->subscription, $this->branchAdmin, DiscountMethod::Shekel, '50', null);
+        $discount = RecordDiscount::handle($this->subscription, $this->branchAdmin, DiscountMethod::Shekel, '50', null);
 
         $this->correct($discount, ['method' => 'shekel', 'value' => '45', 'correction_reason' => 'wrong_amount', 'correction_notes' => 'الخصم 45'])
             ->assertSessionHasNoErrors();
@@ -605,7 +613,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
     {
         $this->grantPermanentDeletionTo($this->branchAdmin);
         $payment = $this->recordPayment(['amount' => '80', 'payment_method' => 'cash']);
-        $charge = SubscriptionTransaction::recordCharge($this->subscription, $this->branchAdmin, ChargeType::Penalty, '20', null);
+        $charge = RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '20', null);
         $this->actingAs($this->branchAdmin)->delete(route('subscriptions.transactions.destroy', [$this->subscription, $payment]), [
             'correction_reason' => 'duplicate',
             'correction_notes' => 'x',
@@ -743,7 +751,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
             'discount_amount' => '0.00',
             'amount_due' => '30.00',
         ]);
-        $reading->approve($this->branchAdmin);
+        ApproveReading::handle($reading, $this->branchAdmin);
         $charge = SubscriptionTransaction::where('meter_reading_id', $reading->id)->where('type', 'meter_reading')->sole();
 
         $this->actingAs($this->branchAdmin)
@@ -772,7 +780,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
             'discount_amount' => '5.00',
             'amount_due' => '25.00',
         ]);
-        $reading->approve($this->branchAdmin);
+        ApproveReading::handle($reading, $this->branchAdmin);
 
         $charge = SubscriptionTransaction::where('meter_reading_id', $reading->id)->where('type', 'meter_reading')->sole();
         $discount = SubscriptionTransaction::where('meter_reading_id', $reading->id)->where('type', 'reading_discount')->sole();
@@ -785,14 +793,14 @@ class SubscriptionTransactionCorrectionTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertSame(MeterReadingStatus::Approved, $reading->fresh()->status);
-        $this->assertSame($reading->chargeSourceKey(), $charge->refresh()->source_key);
-        $this->assertSame($reading->discountSourceKey(), $discount->refresh()->source_key);
+        $this->assertSame(ReadingCharges::chargeSourceKey($reading), $charge->refresh()->source_key);
+        $this->assertSame(ReadingCharges::discountSourceKey($reading), $discount->refresh()->source_key);
         $this->assertDatabaseHas('subscription_transactions', ['reverses_id' => $charge->id, 'amount' => '-30.00']);
         $this->assertDatabaseHas('subscription_transactions', ['reverses_id' => $discount->id, 'amount' => '5.00']);
         $this->assertSame('200.00', $this->subscription->balance());
 
-        $this->assertTrue($reading->correct(1012, 'تصحيح لاحق', $this->branchAdmin));
-        $reading->approve($this->branchAdmin);
+        $this->assertTrue(AdjustLastReading::correct($reading, 1012, 'تصحيح لاحق', $this->branchAdmin));
+        ApproveReading::handle($reading, $this->branchAdmin);
 
         $this->assertSame(MeterReadingStatus::Approved, $reading->fresh()->status);
         $this->assertSame(0, SubscriptionTransaction::query()
@@ -837,7 +845,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
     public function test_a_line_of_another_subscription_is_not_found(): void
     {
         $other = Subscription::factory()->create(['branch_id' => $this->branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($other, $this->branchAdmin, ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($other, $this->branchAdmin, ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $this->actingAs($this->branchAdmin)
             ->delete(route('subscriptions.transactions.destroy', [$this->subscription, $payment]), ['correction_reason' => 'duplicate', 'correction_notes' => 'x'])
@@ -905,7 +913,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
      */
     private function recordPaymentOn(Subscription $subscription, array $details): SubscriptionTransaction
     {
-        return SubscriptionTransaction::recordPayment($subscription, $this->branchAdmin, ['currency' => 'ILS', ...$details]);
+        return RecordPayment::handle($subscription, $this->branchAdmin, ['currency' => 'ILS', ...$details]);
     }
 
     /**
@@ -913,7 +921,7 @@ class SubscriptionTransactionCorrectionTest extends TestCase
      */
     private function recordPayment(array $details): SubscriptionTransaction
     {
-        return SubscriptionTransaction::recordPayment($this->subscription, $this->branchAdmin, ['currency' => 'ILS', ...$details]);
+        return RecordPayment::handle($this->subscription, $this->branchAdmin, ['currency' => 'ILS', ...$details]);
     }
 
     /**

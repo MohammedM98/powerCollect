@@ -19,19 +19,19 @@ class ReadingSubmission extends Model
 {
     /** Why an upload was held or refused, and how it reads. */
     public const ISSUES = [
-        'not_your_assignment' => 'الطبلون ليس من مهامك',
-        'invalid_authorization' => 'تصريح العمل غير صالح؛ نزّل المهام من جديد',
-        'not_on_box' => 'المشترك ليس على هذا الطبلون أو خدمته غير فعّالة',
-        'assignment_changed' => 'أُعيد توزيع الطبلون بعد تنزيله؛ تُحفظ القراءة للمراجعة',
-        'outside_reading_day' => 'سُجّلت القراءة في غير يوم القراءة',
-        'untrusted_clock' => 'وقت الجهاز لا يطابق وقت الخادم',
-        'late_sync' => 'وصلت القراءة بعد انتهاء مهلة المزامنة',
-        'cycle_closed' => 'دورة القراءة مغلقة',
-        'week_locked' => 'يمكن حفظ قراءات الأسبوع الأخير فقط؛ الأسابيع السابقة للعرض فقط.',
-        'already_read' => 'للمشترك قراءة في هذا الأسبوع',
-        'later_week_read' => 'للمشترك قراءة لأسبوع لاحق',
-        'below_previous' => 'القراءة أقل من القراءة السابقة',
-        'impossible_consumption' => 'الاستهلاك أكبر من أي استهلاك أسبوعي ممكن',
+        'not_your_assignment' => 'This meter box is not assigned to you',
+        'invalid_authorization' => 'The work authorization is not valid; download the assignments again',
+        'not_on_box' => 'The subscriber is not on this meter box or their service is not active',
+        'assignment_changed' => 'The meter box was reassigned after it was downloaded; the reading is kept for review',
+        'outside_reading_day' => 'The reading was recorded outside the reading day',
+        'untrusted_clock' => 'The device\'s time does not match the server\'s',
+        'late_sync' => 'The reading arrived after the sync deadline',
+        'cycle_closed' => 'The reading cycle is closed',
+        'week_locked' => 'Only the latest week\'s readings can be saved; earlier weeks are view only.',
+        'already_read' => 'The subscriber already has a reading this week',
+        'later_week_read' => 'The subscriber has a reading for a later week',
+        'below_previous' => 'The reading is below the previous reading',
+        'impossible_consumption' => 'The consumption is above any possible weekly consumption',
     ];
 
     protected function casts(): array
@@ -77,6 +77,6 @@ class ReadingSubmission extends Model
 
     public function issueMessage(): ?string
     {
-        return $this->issue === null ? null : (self::ISSUES[$this->issue] ?? $this->issue);
+        return $this->issue === null ? null : (isset(self::ISSUES[$this->issue]) ? __(self::ISSUES[$this->issue]) : $this->issue);
     }
 }

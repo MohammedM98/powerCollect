@@ -54,8 +54,8 @@ class Tariff extends Model
      */
     public function deletionBlocker(): ?string
     {
-        return DeletionBlocker::describe('التعرفة', [
-            'المشتركون' => $this->subscriptions()->count(),
+        return DeletionBlocker::describe('tariff', [
+            'subscriptions' => $this->subscriptions()->count(),
         ]);
     }
 }

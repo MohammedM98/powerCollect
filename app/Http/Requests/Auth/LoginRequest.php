@@ -3,7 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use App\Models\User;
-use App\Support\BranchDomainContext;
+use App\Support\Branches\BranchDomainContext;
 use App\Support\UserDeviceAccess;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;

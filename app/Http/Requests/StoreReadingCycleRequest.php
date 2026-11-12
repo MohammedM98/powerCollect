@@ -3,8 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Models\Branch;
-use App\Models\MeterReading;
 use App\Models\ReadingCycle;
+use App\Support\Readings\ReadingWeeks;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Carbon;
@@ -50,13 +50,13 @@ class StoreReadingCycleRequest extends FormRequest
                 $branchId = $this->branchId();
                 $weekStart = Carbon::parse($this->input('week_start'));
 
-                if (! MeterReading::weekStartFor($weekStart, $branchId)->equalTo($weekStart)) {
+                if (! ReadingWeeks::weekStartFor($weekStart, $branchId)->equalTo($weekStart)) {
                     $validator->errors()->add('week_start', 'اختر أسبوعًا من أسابيع القراءة في جدول الفرع.');
 
                     return;
                 }
 
-                $weekEnd = MeterReading::weekEndFor($weekStart, $branchId);
+                $weekEnd = ReadingWeeks::weekEndFor($weekStart, $branchId);
                 $readingDate = Carbon::parse($this->input('reading_date'));
 
                 if ($readingDate->lt($weekEnd) || $readingDate->gt($weekEnd->copy()->addDays(6))) {

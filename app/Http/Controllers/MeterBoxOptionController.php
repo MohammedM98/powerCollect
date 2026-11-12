@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ListMeterBoxOptionsRequest;
 use App\Models\MeterBox;
 use App\Models\Subscription;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 
 /**
  * The meter boxes a subscription form's drop-down offers, found as the user
@@ -19,19 +19,14 @@ class MeterBoxOptionController extends Controller
     /** The most boxes one search offers; typing narrows them down. */
     private const LIMIT = 30;
 
-    public function index(Request $request): JsonResponse|RedirectResponse
+    public function index(ListMeterBoxOptionsRequest $request): JsonResponse|RedirectResponse
     {
-        $this->authorize('viewAny', Subscription::class);
 
         if (! $request->expectsJson()) {
             return redirect()->route('subscriptions.index');
         }
 
-        $filters = $request->validate([
-            'search' => ['nullable', 'string', 'max:100'],
-            'branch_id' => ['nullable', 'integer'],
-            'sub_area_id' => ['nullable', 'integer'],
-        ]);
+        $filters = $request->validated();
         $search = trim((string) ($filters['search'] ?? ''));
 
         $boxes = MeterBox::query()

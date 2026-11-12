@@ -80,6 +80,8 @@ export default function BarChart({ data, label, formatValue = formatNumber, coun
                         ))}
                     </div>
 
+                    {/* A focusable chart: the arrow keys step through its bars. */}
+                    {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
                     <div
                         role="img"
                         tabIndex={0}

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { hasLatestWeekReading, lastReadingBalanceChange, lastReadingNeedsUnusualConfirmation, readingDiscount, steppedReading, weekOptionsFor, weeklyCharges } from '../../resources/js/lib/readings.js';
+import { calculateCharges, hasLatestWeekReading, lastReadingBalanceChange, lastReadingNeedsUnusualConfirmation, readingDiscount, steppedReading, weekOptionsFor, weeklyCharges } from '../../resources/js/lib/readings.js';
 
 // The example week: 5 kilos at 30 shekels a kilo is a 150 shekel bill; the minimum is 20 a week.
 test('a week is billed consumption × kilo price, less its standing discount', () => {
@@ -101,4 +101,13 @@ test('an edited last reading changes the balance by what the billed weeks now co
 test('only an approved week made unusual asks the editor to confirm it', () => {
     assert.equal(lastReadingNeedsUnusualConfirmation([{ isApproved: true, unusual: false }, { isApproved: false, unusual: true }]), false);
     assert.equal(lastReadingNeedsUnusualConfirmation([{ isApproved: true, unusual: false }, { isApproved: true, unusual: true }]), true);
+});
+
+test('a typed reading is costed from the row: consumption, its fee and what is due', () => {
+    const row = { previousReading: 100, unitPrice: '1.5', minimumPayment: '20', discount: null };
+
+    assert.equal(calculateCharges('', row), null);
+    assert.equal(calculateCharges('abc', row), null);
+    assert.deepEqual(calculateCharges('120', row), { consumption: 20, readingFee: 30, discountAmount: 0, amountDue: 30, minimumApplies: false });
+    assert.deepEqual(calculateCharges('105', row), { consumption: 5, readingFee: 7.5, discountAmount: 0, amountDue: 20, minimumApplies: true });
 });

@@ -9,6 +9,7 @@ use App\Models\MeterReading;
 use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Support\Readings\ApproveReading;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
@@ -26,7 +27,7 @@ class ReadingPricingTest extends TestCase
     public function test_price_permission_edits_the_latest_reading_without_granting_reading_correction_or_changing_subscriber_defaults(): void
     {
         [$actor, $subscription, $reading] = $this->context(PermissionKey::UpdateSubscriptionKilowattPrice);
-        $reading->approve($actor);
+        ApproveReading::handle($reading, $actor);
         $this->assertFalse($actor->can('update', $reading));
         $this->assertTrue($actor->can('updateUnitPrice', $reading));
         $this->assertFalse($actor->can('updateMinimumPayment', $reading));
@@ -37,10 +38,10 @@ class ReadingPricingTest extends TestCase
         $this->assertSame(['2.00', '20.00', MeterReadingStatus::Pending], [$reading->unit_price, $reading->amount_due, $reading->status]);
         $this->assertSame('0.50', $subscription->fresh()->kilowatt_price);
         $this->assertSame('0.00', $subscription->fresh()->balance());
-        $this->assertSame('0.50', $reading->adjustment_history[0]['before']['unit_price']);
-        $this->assertSame('2.00', $reading->adjustment_history[0]['after']['unit_price']);
-        $this->assertSame($actor->id, $reading->adjustment_history[0]['userId']);
-        $this->assertTrue($reading->approve($actor));
+        $this->assertSame('0.50', $reading->adjustments()->first()->before['unit_price']);
+        $this->assertSame('2.00', $reading->adjustments()->first()->after['unit_price']);
+        $this->assertSame($actor->id, $reading->adjustments()->first()->user_id);
+        $this->assertTrue(ApproveReading::handle($reading, $actor));
         $this->assertSame('20.00', $subscription->fresh()->balance());
     }
 

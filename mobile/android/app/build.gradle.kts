@@ -18,7 +18,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     // The code's package (never shown to users); the app's identity is the applicationId below.
-    namespace = "com.example.power_collect"
+    namespace = "com.abuzayed.powercollect"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -60,6 +60,9 @@ android {
         }
         release {
             signingConfig = signingConfigs.getByName("release")
+            // R8 shrinks and obfuscates the release build; proguard-rules.pro keeps what ML Kit needs.
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }

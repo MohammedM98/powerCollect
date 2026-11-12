@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Concerns\ApprovesCorrectedReadings;
 use App\Http\Requests\AdjustLastReadingRequest;
 use App\Http\Requests\PreviewLastReadingRequest;
 use App\Http\Requests\UpdateReadingPricingRequest;
@@ -10,6 +9,9 @@ use App\Models\MeterReading;
 use App\Models\User;
 use App\Notifications\ActionCompleted;
 use App\Notifications\ReadingNeedsReapproval;
+use App\Support\Readings\AdjustLastReading;
+use App\Support\Readings\ApproveCorrectedReading;
+use App\Support\Readings\RepriceReading;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -24,15 +26,13 @@ use Illuminate\Validation\ValidationException;
  */
 class MeterReadingAdjustmentController extends Controller
 {
-    use ApprovesCorrectedReadings;
-
     public function previewAdjustment(AdjustLastReadingRequest $request, MeterReading $meterReading): JsonResponse
     {
         $newReading = $request->float('current_reading');
         $reset = $request->isMeterChange();
         $after = $reset ? [
             'consumption' => $meterReading->consumption, 'amount_due' => $meterReading->amount_due, 'unusual' => false,
-        ] : $meterReading->recalculatedBetween($meterReading->previous_reading, $newReading);
+        ] : RepriceReading::recalculatedBetween($meterReading, $meterReading->previous_reading, $newReading);
         $next = $meterReading->subscription->meterReadings()->where('week_start', '>', $meterReading->week_start)->first();
 
         return response()->json([
@@ -51,7 +51,7 @@ class MeterReadingAdjustmentController extends Controller
             $reading = MeterReading::query()->lockForUpdate()->findOrFail($meterReading->id);
             $this->authorize('adjustLastReading', $reading);
             if (round($reading->nextPreviousReading(), 2) !== round($request->float('expected_reading'), 2)) {
-                throw ValidationException::withMessages(['current_reading' => 'تغيّرت القراءة؛ حدّث الصفحة وراجع القيمة الجديدة قبل التعديل.']);
+                throw ValidationException::withMessages(['current_reading' => __('The reading changed; refresh the page and review the new value before editing.')]);
             }
 
             $newReading = $request->float('current_reading');
@@ -60,18 +60,20 @@ class MeterReadingAdjustmentController extends Controller
             }
 
             if ($request->isMeterChange()) {
-                $reading->recordAdjustment('baseline_reset', ['previousReading' => $reading->nextPreviousReading()], ['previousReading' => $newReading], $actor, $request->validated('reason'));
+                AdjustLastReading::recordAdjustment($reading, 'baseline_reset', ['previousReading' => $reading->nextPreviousReading()], ['previousReading' => $newReading], $actor, $request->validated('reason'));
                 $reading->update(['next_previous_reading' => $newReading]);
             } else {
-                $wasApproved = $reading->correct($newReading, $reading->notes, $actor);
+                $wasApproved = AdjustLastReading::correct($reading, $newReading, $reading->notes, $actor);
                 $reading->update(['next_previous_reading' => null]);
                 if ($wasApproved) {
-                    $this->approveCorrectedLastReading($reading, $actor, $request->boolean('confirm_unusual'));
+                    ApproveCorrectedReading::approveCorrectedLastReading($reading, $actor, $request->boolean('confirm_unusual'));
                 }
             }
 
             $next = $reading->subscription->meterReadings()->where('week_start', '>', $reading->week_start)->lockForUpdate()->first();
-            $next?->requireCurrentReadingAgain($newReading, $actor);
+            if ($next !== null) {
+                AdjustLastReading::requireCurrentReadingAgain($next, $newReading, $actor);
+            }
         });
 
         $actor->notify(new ActionCompleted('meter-reading-updated', $meterReading->subscription->displayName()));
@@ -95,8 +97,8 @@ class MeterReadingAdjustmentController extends Controller
             if (! $reading->isDirty(['unit_price', 'minimum_payment'])) {
                 return false;
             }
-            $reopened = $reading->correct($reading->current_reading, $reading->notes, $actor);
-            $reading->recordAdjustment('pricing', $before, $reading->only(['unit_price', 'minimum_payment']), $actor);
+            $reopened = AdjustLastReading::correct($reading, $reading->current_reading, $reading->notes, $actor);
+            AdjustLastReading::recordAdjustment($reading, 'pricing', $before, $reading->only(['unit_price', 'minimum_payment']), $actor);
 
             return $reopened;
         });
@@ -121,11 +123,12 @@ class MeterReadingAdjustmentController extends Controller
         $newReading = $request->float('current_reading');
         $nextReading = $request->nextReading();
         $nextCurrentReading = $request->nextCurrentReading();
-        $corrected = $meterReading->recalculatedBetween($meterReading->previous_reading, $newReading);
+        $corrected = RepriceReading::recalculatedBetween($meterReading, $meterReading->previous_reading, $newReading);
         $weeks = [$this->previewedWeek($meterReading, $meterReading->previous_reading, $newReading, $corrected)];
 
         if ($nextReading !== null) {
-            $weeks[] = $this->previewedWeek($nextReading, $newReading, $nextCurrentReading, $nextCurrentReading === null ? null : $nextReading->recalculatedBetween(
+            $weeks[] = $this->previewedWeek($nextReading, $newReading, $nextCurrentReading, $nextCurrentReading === null ? null : RepriceReading::recalculatedBetween(
+                $nextReading,
                 $newReading,
                 $nextCurrentReading,
                 [$meterReading->id => $corrected['consumption']],

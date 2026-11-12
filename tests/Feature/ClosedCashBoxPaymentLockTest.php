@@ -13,8 +13,15 @@ use App\Models\ClosingSetting;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\BranchClosingWorkflow;
-use App\Support\BranchSettings;
+use App\Support\Branches\BranchSettings;
+use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Ledger\AmendLine;
+use App\Support\Ledger\CancelLine;
+use App\Support\Ledger\EraseLine;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordClearing;
+use App\Support\Ledger\RecordPayment;
+use App\Support\Ledger\TransactionActions;
 use Closure;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
@@ -37,7 +44,7 @@ class ClosedCashBoxPaymentLockTest extends TestCase
         ])->create();
         $collector = User::factory()->collector()->for($branch)->create();
         $subscription = Subscription::factory()->for($branch)->create();
-        $payment = SubscriptionTransaction::recordPayment($subscription, $collector, [
+        $payment = RecordPayment::handle($subscription, $collector, [
             'amount' => '100', 'currency' => 'ILS', 'payment_method' => $method,
             'bank_name' => 'بنك فلسطين', 'reference_number' => 'TRX-22', 'cash_box' => 'OLD-22',
         ]);
@@ -64,13 +71,13 @@ class ClosedCashBoxPaymentLockTest extends TestCase
     {
         [, $head, , $subscription, $payment, $box] = $this->payment();
         app(BranchClosingWorkflow::class)->receive($box, $head);
-        SubscriptionTransaction::recordCharge($subscription, $head, ChargeType::Penalty, '25', null);
+        RecordCharge::handle($subscription, $head, ChargeType::Penalty, '25', null);
         $actor = $role === 'branchAdmin' ? $head : User::factory()->superAdmin()->create();
         $before = $payment->fresh()->getAttributes();
         $boxBefore = $box->fresh()->getAttributes();
         $entryBefore = $payment->boxEntry()->firstOrFail()->getAttributes();
 
-        $this->assertSame([], $payment->availableActions($actor));
+        $this->assertSame([], TransactionActions::availableActions($payment, $actor));
         foreach (['update', 'amend', 'delete', 'forceDelete'] as $ability) {
             $this->assertFalse($actor->can($ability, $payment));
         }
@@ -163,16 +170,16 @@ class ClosedCashBoxPaymentLockTest extends TestCase
             ->where('entries.0.available_actions', ['edit_metadata', 'delete']));
         $this->get(route('subscriptions.payments.receipt', [$subscription, $payment]))->assertInertia(fn ($page) => $page
             ->where('receipt.cashBox', null));
-        $payment->amend($head, ['notes' => 'قبل الإغلاق'], 'تصحيح');
+        AmendLine::amend($payment, $head, ['notes' => 'قبل الإغلاق'], 'تصحيح');
         $payment->update(['amount' => '-75.00', 'currency_amount' => '75.00']);
         $this->assertSame('75.00', $box->fresh()->totals()['ILS']);
 
         app(BranchClosingWorkflow::class)->receive($box, $head);
         $before = $payment->fresh()->getAttributes();
-        $next = SubscriptionTransaction::recordPayment($subscription, $collector, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $next = RecordPayment::handle($subscription, $collector, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'cash']);
         $this->assertNotSame($box->id, $next->boxEntry->cash_box_id);
         $this->assertSame('open', $next->boxEntry->box->status);
-        $next->amend($head, ['notes' => 'دفعة جديدة'], 'تصحيح');
+        AmendLine::amend($next, $head, ['notes' => 'دفعة جديدة'], 'تصحيح');
 
         $this->get(route('subscriptions.statement', $subscription))->assertInertia(fn ($page) => $page
             ->where('entries.0.cashBox', $box->number)
@@ -208,7 +215,7 @@ class ClosedCashBoxPaymentLockTest extends TestCase
     {
         [, $head, , $subscription, $payment, $box] = $this->payment();
         $box->update(['status' => $status]);
-        SubscriptionTransaction::recordCharge($subscription, $head, ChargeType::Penalty, '25', null);
+        RecordCharge::handle($subscription, $head, ChargeType::Penalty, '25', null);
 
         $this->actingAs($head)->post(route('subscriptions.transactions.actions.store', [$subscription, $payment]), [
             'action' => 'refund',
@@ -221,9 +228,9 @@ class ClosedCashBoxPaymentLockTest extends TestCase
     public function test_deleting_an_earlier_cancellation_tree_preserves_a_later_closed_payments_attributes(): void
     {
         [, $head, $collector, $subscription] = $this->payment();
-        $charge = SubscriptionTransaction::recordCharge($subscription, $head, ChargeType::Penalty, '50', null);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $collector, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
-        $charge->applyAction($head, TransactionAction::Cancel, []);
+        $charge = RecordCharge::handle($subscription, $head, ChargeType::Penalty, '50', null);
+        $payment = RecordPayment::handle($subscription, $collector, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        TransactionActions::applyAction($charge, $head, TransactionAction::Cancel, []);
         app(BranchClosingWorkflow::class)->receive($payment->boxEntry->box, $head);
         $before = $payment->fresh()->getAttributes();
 
@@ -237,17 +244,17 @@ class ClosedCashBoxPaymentLockTest extends TestCase
     public function test_a_legacy_refund_cannot_be_deleted_to_reinstate_a_closed_original(): void
     {
         [, $head, , $subscription, $payment, $box] = $this->payment();
-        SubscriptionTransaction::recordCharge($subscription, $head, ChargeType::Penalty, '25', null);
-        $refund = $payment->applyAction($head, TransactionAction::Refund, []);
+        RecordCharge::handle($subscription, $head, ChargeType::Penalty, '25', null);
+        $refund = TransactionActions::applyAction($payment, $head, TransactionAction::Refund, []);
         $refund->load('referenceTransaction.closingLine.closing', 'reverses', 'closingLine.closing');
         app(BranchClosingWorkflow::class)->receive($box, $head);
         $before = $payment->fresh()->getAttributes();
 
-        $this->assertSame([], $refund->availableActions($head));
-        $this->assertRefused(fn () => $refund->applyAction($head, TransactionAction::DeleteReversal, ['correction_notes' => 'تصحيح']));
-        $this->assertRefused(fn () => $refund->erase($head, 'تصحيح'));
-        $this->assertSame([], $payment->availableActions($head));
-        $this->assertRefused(fn () => $payment->applyAction($head, TransactionAction::DeleteTree, ['correction_notes' => 'تصحيح']));
+        $this->assertSame([], TransactionActions::availableActions($refund, $head));
+        $this->assertRefused(fn () => TransactionActions::applyAction($refund, $head, TransactionAction::DeleteReversal, ['correction_notes' => 'تصحيح']));
+        $this->assertRefused(fn () => EraseLine::erase($refund, $head, 'تصحيح'));
+        $this->assertSame([], TransactionActions::availableActions($payment, $head));
+        $this->assertRefused(fn () => TransactionActions::applyAction($payment, $head, TransactionAction::DeleteTree, ['correction_notes' => 'تصحيح']));
 
         $this->assertModelExists($refund);
         $this->assertSame($before, $payment->fresh()->getAttributes());
@@ -268,15 +275,15 @@ class ClosedCashBoxPaymentLockTest extends TestCase
     public function test_closed_rejected_clearings_cannot_be_cancelled_or_reviewed(): void
     {
         [$branch, $head, $collector, $subscription] = $this->payment();
-        $clearing = SubscriptionTransaction::recordClearing($subscription, $collector, '20', 'خدمة');
+        $clearing = RecordClearing::handle($subscription, $collector, '20', 'خدمة');
         $entry = $clearing->boxEntry;
         app(BranchClosingWorkflow::class)->reviewEntry($entry, $head, 'rejected');
         app(BranchClosingWorkflow::class)->receive($entry->box, $head);
         $before = $clearing->fresh()->getAttributes();
         $entryBefore = $entry->fresh()->getAttributes();
 
-        $this->assertSame([], $clearing->availableActions($head));
-        $this->assertRefused(fn () => $clearing->cancel($head, CorrectionReason::Other, null));
+        $this->assertSame([], TransactionActions::availableActions($clearing, $head));
+        $this->assertRefused(fn () => CancelLine::cancel($clearing, $head, CorrectionReason::Other, null));
         $this->actingAs($head)->post(route('payments.cash-boxes.actions', ['action' => 'electronic', 'record' => $entry->id]), [
             'branch_id' => $branch->id, 'status' => 'confirmed',
         ])->assertSessionHasErrors('action');

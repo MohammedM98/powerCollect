@@ -3,8 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
-use App\Support\Money;
+use App\Support\Ledger\LedgerAmounts;
+use App\Support\Ledger\Money;
 use Brick\Math\BigDecimal;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -84,9 +84,9 @@ class StoreSubscriptionClearingRequest extends FormRequest
 
         $validator->errors()->add('confirm_over_balance', sprintf(
             'قيمة المقاصة (%s شيكل) أكبر من الرصيد المستحق (%s شيكل)، فيصبح للمشترك رصيد لصالحه قدره %s شيكل. أكّد إذا كنت تريد فعلًا إضافة المقاصة لهذا المشترك.',
-            SubscriptionTransaction::formatAmount($amount),
-            SubscriptionTransaction::formatAmount($owing),
-            SubscriptionTransaction::formatAmount(Money::subtract($amount, $owed)),
+            LedgerAmounts::formatAmount($amount),
+            LedgerAmounts::formatAmount($owing),
+            LedgerAmounts::formatAmount(Money::subtract($amount, $owed)),
         ));
     }
 

@@ -10,7 +10,9 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Money;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\Money;
+use App\Support\Ledger\TransactionActions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -76,7 +78,7 @@ class FinancialCycleReportsJourneyTest extends TestCase
         $monaDollars = $this->pay($collector, $mona, ['amount' => '10', 'currency' => 'USD', 'exchange_rate' => '3.7', 'payment_method' => 'cash']);
         $this->actingAs($manager)->post(route('subscriptions.discounts.store', $salem), ['method' => 'shekel', 'value' => '5'])->assertSessionHasNoErrors();
         $salemDiscount = $salem->transactions()->where('type', SubscriptionTransaction::TYPE_DISCOUNT)->sole();
-        $this->assertSame(['000001', null, '000002'], [$salemCash->printedVoucherNumber(), $khaledTransfer->printedVoucherNumber(), $monaDollars->printedVoucherNumber()]);
+        $this->assertSame(['000001', null, '000002'], [LinePresenter::printedVoucherNumber($salemCash), LinePresenter::printedVoucherNumber($khaledTransfer), LinePresenter::printedVoucherNumber($monaDollars)]);
         $this->assertSame(['-37.00', '10.00'], [$monaDollars->amount, $monaDollars->currency_amount]);
         $this->assertBalances([45.0, 36.4, 28.0], $salem, $khaled, $mona);
 
@@ -173,9 +175,9 @@ class FinancialCycleReportsJourneyTest extends TestCase
         $this->travelTo(Carbon::parse('2026-10-24 00:00', 'Asia/Gaza'));
         $this->artisan('closings:process')->assertSuccessful();
         $this->assertSame(0, CashBox::query()->where('branch_id', $branch->id)->whereIn('status', ['open', 'pending'])->whereHas('payments')->count());
-        $this->assertSame([[], []], [$khaledTransfer->fresh()->availableActions($manager), $monaDollars->fresh()->availableActions($manager)]);
+        $this->assertSame([[], []], [TransactionActions::availableActions($khaledTransfer->fresh(), $manager), TransactionActions::availableActions($monaDollars->fresh(), $manager)]);
         // A discount is in no box, so the week's closing leaves it open to cancelling, on the day that is done.
-        $this->assertSame([], $salemDiscount->fresh()->availableActions($manager));
+        $this->assertSame([], TransactionActions::availableActions($salemDiscount->fresh(), $manager));
         $this->travelTo(Carbon::parse('2026-10-24 10:00', 'Asia/Gaza'));
         $this->actingAs($auditor)->post(route('payments.bank-audits.store', $khaledTransfer->fresh()->boxEntry), ['bank_amount' => '45', 'reason' => 'وصل أقل من المسجل'])->assertSessionHasNoErrors();
         $preview = $this->actingAs($auditor)->get(route('payments.cash-boxes', ['branch_id' => $branch->id, 'place' => 'closed', 'week' => '2026-10-17']))->inertiaProps('periodAudit');

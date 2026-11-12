@@ -4,10 +4,12 @@ namespace App\Jobs;
 
 use App\Enums\MessageStatus;
 use App\Models\SubscriptionMessage;
+use App\Notifications\ActionCompleted;
 use App\Support\Messaging\SmsDeliveryFailed;
 use App\Support\Messaging\SmsGateway;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Throwable;
 
 /**
  * Sends one SMS to a subscription through the SMS gateway, and records
@@ -57,6 +59,35 @@ class SendSubscriptionMessage implements ShouldQueue
         }
 
         $message->markSent();
+    }
+
+    /**
+     * The job gave up for a reason the gateway did not report (an unexpected
+     * error, a timeout, tries used up by the worker): the message is marked
+     * failed with the reason so it can be retried from its batch, and the
+     * person who created the batch is told once, on the batch's first failure.
+     */
+    public function failed(?Throwable $exception): void
+    {
+        $message = $this->message->fresh();
+
+        if ($message === null || $message->status === MessageStatus::Sent) {
+            return;
+        }
+
+        $message->markFailed($exception?->getMessage() ?: 'The message could not be sent.');
+
+        $batch = $message->batch;
+
+        if ($batch?->createdBy === null) {
+            return;
+        }
+
+        $failedInBatch = $batch->messages()->where('status', MessageStatus::Failed)->count();
+
+        if ($failedInBatch === 1) {
+            $batch->createdBy->notify(new ActionCompleted('messages-failed', $message->phone));
+        }
     }
 
     /**

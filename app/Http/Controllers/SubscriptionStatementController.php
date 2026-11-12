@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Concerns\BuildsSubscriptionStatement;
 use App\Http\Requests\PrintSubscriptionStatementRequest;
 use App\Models\Subscription;
+use App\Support\Ledger\StatementBuilder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
 class SubscriptionStatementController extends Controller
 {
-    use BuildsSubscriptionStatement;
-
     public function preview(PrintSubscriptionStatementRequest $request): InertiaResponse
     {
         $query = Subscription::query()->readableTo($request->user());
@@ -24,7 +22,7 @@ class SubscriptionStatementController extends Controller
         }
 
         return Inertia::render('Subscriptions/StatementPrint', [
-            ...($subscription ? $this->subscriptionStatement($request->user(), $subscription) : ['subscription' => null, 'entries' => []]),
+            ...($subscription ? StatementBuilder::subscriptionStatement($request->user(), $subscription) : ['subscription' => null, 'entries' => []]),
             'printOptions' => [
                 'view' => $request->validated('view', 'full'),
                 'filters' => collect(['search', 'type', 'method', 'dateFrom', 'dateTo', 'sort'])
@@ -44,7 +42,7 @@ class SubscriptionStatementController extends Controller
         $this->authorize('view', $subscription);
 
         return Inertia::render('Subscriptions/Statement', [
-            ...$this->subscriptionStatement($request->user(), $subscription),
+            ...StatementBuilder::subscriptionStatement($request->user(), $subscription),
             'focusLineId' => $request->integer('transaction') ?: null,
         ]);
     }

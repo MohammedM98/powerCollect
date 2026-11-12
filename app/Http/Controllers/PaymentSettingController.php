@@ -3,23 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateBoxPeriodSettingRequest;
+use App\Http\Requests\ViewPaymentSettingsRequest;
 use App\Models\Bank;
 use App\Models\Branch;
 use App\Models\ClosingSetting;
 use App\Models\CurrencyRate;
-use App\Support\BranchDomainContext;
+use App\Support\Branches\BranchDomainContext;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
 class PaymentSettingController extends Controller
 {
-    public function index(Request $request): InertiaResponse
+    public function index(ViewPaymentSettingsRequest $request): InertiaResponse
     {
-        $this->authorize('manageAny', ClosingSetting::class);
-        $request->validate(['branch' => ['nullable', 'integer']]);
         $actor = $request->user();
         $branchId = $request->filled('branch') ? $request->integer('branch') : (BranchDomainContext::id() ?? ($actor->isSuperAdmin() ? null : $actor->workBranchId()));
         $branch = $branchId === null ? null : Branch::query()

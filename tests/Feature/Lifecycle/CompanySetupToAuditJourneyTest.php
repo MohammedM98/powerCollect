@@ -20,6 +20,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\TariffSegment;
 use App\Models\User;
+use App\Support\Ledger\TransactionActions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -271,7 +272,7 @@ class CompanySetupToAuditJourneyTest extends TestCase
         $this->closingAction($manager, 'receive', $cash->boxEntry->cash_box_id)->assertSessionHasNoErrors();
         $this->closingAction($manager, 'receive', $cash->boxEntry->cash_box_id)->assertSessionHasErrors('action');
         $this->assertSame('completed', $cash->boxEntry->box->fresh()->stage());
-        $this->assertSame([], $cash->fresh()->availableActions($manager));
+        $this->assertSame([], TransactionActions::availableActions($cash->fresh(), $manager));
 
         // A payment after the cash box closed opens a new box; the week's cut-off closes everything left.
         $late = $this->pay($collector, $salem, ['amount' => '20', 'payment_method' => 'cash']);

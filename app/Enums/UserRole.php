@@ -4,6 +4,13 @@ namespace App\Enums;
 
 use App\Enums\Concerns\HasOptions;
 
+/**
+ * The starter set an account was created with: it chooses the permissions a
+ * new account starts with (starterPermissions()) and is shown as a label.
+ * What an account may do is decided by its permissions alone; only the
+ * Super Admin is told apart by role (User::isSuperAdmin()). A test keeps
+ * other role checks out of the application.
+ */
 enum UserRole: string
 {
     use HasOptions;

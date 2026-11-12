@@ -27,7 +27,7 @@ class EnsureSupportedMobileApp
     {
         $minimumBuild = (int) config('powercollect.mobile_app_min_build');
 
-        if ($minimumBuild > 0 && ! $request->routeIs('mobile.logout') && $this->build($request) < $minimumBuild) {
+        if ($minimumBuild > 0 && ! $request->routeIs('mobile.logout', 'mobile.v1.logout') && $this->build($request) < $minimumBuild) {
             return response()->json([
                 'message' => 'نسخة التطبيق على هذا الجهاز قديمة. حدّث التطبيق إلى آخر نسخة ثم أعد المحاولة؛ القراءات والمسودات المحفوظة على الجهاز تبقى كما هي.',
                 'download_url' => config('powercollect.mobile_app_url'),

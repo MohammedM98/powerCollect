@@ -36,7 +36,6 @@ export default function HoldToConfirm({ count, disabled, busy, onConfirm, label,
         if (disabled || busy) {
             reset();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [disabled, busy]);
 
     useEffect(() => {

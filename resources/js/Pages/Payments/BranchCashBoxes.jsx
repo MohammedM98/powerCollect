@@ -18,6 +18,7 @@ import FinancialBoxList from './FinancialBoxList';
 import { boxTypes, BoxTypeIcon } from './CollectorCashBox';
 import { FinancialBoxCard, financialAmountsLine } from './FinancialBoxComponents';
 import PageHeader from '@/Components/PageHeader';
+import { queryValue, urlWithout } from '@/lib/pageUrl';
 
 const periodDate = (date) => new Intl.DateTimeFormat('ar-u-nu-latn', { dateStyle: 'medium', timeZone: 'Asia/Gaza' }).format(new Date(`${date}T12:00:00Z`));
 
@@ -51,7 +52,7 @@ function SummaryTile({ icon, label, boxes, hint, active, onClick }) {
 
 /** Open boxes for closing, and closed boxes grouped by their closing week. */
 export default function BranchCashBoxes({ branch, branches, branchScope = null, started, place, tabs, boxes, periods, week, pendingCount, periodAudit, urls, canSearchTransfers, searchingTransfers, transferSearch, canApprovePeriod }) {
-    const { errors } = usePage().props;
+    const { props: { errors }, url: pageUrl } = usePage();
     const [search, setSearch] = useState('');
     const [person, setPerson] = useState('');
     const [type, setType] = useState('');
@@ -62,7 +63,7 @@ export default function BranchCashBoxes({ branch, branches, branchScope = null, 
     const [auditingEntry, setAuditingEntry] = useState(null);
     const [view, setView] = useState(() => savedPreference('view', 'table', ['table', 'cards']));
     const [sort, setSort] = useState({ key: 'dates', direction: 'desc' });
-    const [boxId, setBoxId] = useState(() => Number(new URLSearchParams(window.location.search).get('box')) || null);
+    const [boxId, setBoxId] = useState(() => Number(queryValue(pageUrl, 'box')) || null);
     const selectedBox = boxes.find((box) => box.id === boxId);
     const inPlace = boxes.filter((box) => box.place === place);
     const people = [...new Map(inPlace.filter((box) => box.user).map((box) => [box.user.id, box.user.name])).entries()].sort((a, b) => a[1].localeCompare(b[1], 'ar'));
@@ -102,9 +103,7 @@ export default function BranchCashBoxes({ branch, branches, branchScope = null, 
 
     function closeBox() {
         setBoxId(null);
-        const url = new URL(window.location.href);
-        url.searchParams.delete('box');
-        window.history.replaceState(window.history.state, '', url);
+        router.replace({ url: urlWithout(pageUrl, 'box'), preserveScroll: true, preserveState: true });
     }
 
     function perform(kind, record, extra = {}, options = {}) {

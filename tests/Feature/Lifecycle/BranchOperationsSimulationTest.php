@@ -23,8 +23,13 @@ use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\TransactionDeletion;
 use App\Models\User;
-use App\Support\BranchBoxes;
-use App\Support\ClosingPeriods;
+use App\Support\Closing\BranchBoxes;
+use App\Support\Closing\ClosingPeriods;
+use App\Support\Ledger\LineHistory;
+use App\Support\Ledger\TransactionActions;
+use App\Support\Readings\ReadingCharges;
+use App\Support\Readings\ReadingConsumption;
+use App\Support\Readings\ReadingWeeks;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -248,7 +253,7 @@ class BranchOperationsSimulationTest extends TestCase
         if ($subscription === null) {
             return;
         }
-        $week = MeterReading::latestEndedWeekStart($this->branch->id);
+        $week = ReadingWeeks::latestEndedWeekStart($this->branch->id);
         $previous = $subscription->previousReadingBefore($week);
         $consumption = $this->chance(8) ? mt_rand(2100, 2600) : mt_rand(0, 140);
 
@@ -268,10 +273,10 @@ class BranchOperationsSimulationTest extends TestCase
 
         $this->submit('approve '.$pending->count().' readings', fn () => $this->actingAs($this->head)->post(route('meter-readings.approve'), [
             'reading_ids' => $pending->modelKeys(), 'confirm_unusual' => $confirmUnusual,
-        ]), mustSucceed: $confirmUnusual || $pending->contains(fn (MeterReading $reading): bool => ! $reading->isUnusual()));
+        ]), mustSucceed: $confirmUnusual || $pending->contains(fn (MeterReading $reading): bool => ! ReadingConsumption::isUnusual($reading)));
 
         foreach ($pending as $reading) {
-            $this->assertSame($confirmUnusual || ! $reading->isUnusual(), $reading->fresh()->status === MeterReadingStatus::Approved, $this->failure("reading {$reading->id} was not approved as asked"));
+            $this->assertSame($confirmUnusual || ! ReadingConsumption::isUnusual($reading), $reading->fresh()->status === MeterReadingStatus::Approved, $this->failure("reading {$reading->id} was not approved as asked"));
         }
     }
 
@@ -603,7 +608,7 @@ class BranchOperationsSimulationTest extends TestCase
         $this->submit("close box {$box->id} ({$box->type->value}) by {$closer->name}", fn () => $this->actingAs($closer)->post(route('payments.cash-boxes.actions', ['action' => 'receive', 'record' => $box->id]), ['branch_id' => $this->branch->id]), mustSucceed: true);
 
         $this->assertSame('received', $box->fresh()->status, $this->failure("box {$box->id} did not close"));
-        $this->assertSame([], $box->payments()->with('transaction')->get()->map->transaction->filter()->flatMap(fn (SubscriptionTransaction $line): array => $line->fresh()->availableActions($this->head))->all(), $this->failure("a line in closed box {$box->id} still offers actions"));
+        $this->assertSame([], $box->payments()->with('transaction')->get()->map->transaction->filter()->flatMap(fn (SubscriptionTransaction $line): array => TransactionActions::availableActions($line->fresh(), $this->head))->all(), $this->failure("a line in closed box {$box->id} still offers actions"));
     }
 
     private function closeBoxesOfType(int $step): void
@@ -755,7 +760,7 @@ class BranchOperationsSimulationTest extends TestCase
 
             foreach ($lines as $line) {
                 $runningInCents += $this->cents($line->amount);
-                if ($line->type !== SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT && ! $line->isInClosedDay()) {
+                if ($line->type !== SubscriptionTransaction::TYPE_BANK_AUDIT_ADJUSTMENT && ! LineHistory::isInClosedDay($line)) {
                     $this->assertSame($this->money($runningInCents), (string) $line->balance_after, $this->failure("balance_after of line {$line->id} ({$line->type}) is not the running total"));
                 }
                 if ($line->isReversal()) {
@@ -780,7 +785,7 @@ class BranchOperationsSimulationTest extends TestCase
             $this->assertSame($summary['balance'], $this->money($this->cents($summary['charged']) - $this->cents($summary['paid']) - $this->cents($summary['discounted']) - $this->cents($summary['cleared'])), $this->failure("the statement summary of {$subscription->id} does not add up to its balance"));
             $this->assertSame($lines->modelKeys(), collect($statement['entries'])->pluck('id')->all(), $this->failure("the statement of {$subscription->id} does not list every line once, in order"));
             foreach ($statement['entries'] as $entry) {
-                $this->assertSame($byId[$entry['id']]->availableActions($this->head), $entry['available_actions'], $this->failure("the statement offers other actions for line {$entry['id']} than the server allows"));
+                $this->assertSame(TransactionActions::availableActions($byId[$entry['id']], $this->head), $entry['available_actions'], $this->failure("the statement offers other actions for line {$entry['id']} than the server allows"));
             }
         }
 
@@ -873,7 +878,7 @@ class BranchOperationsSimulationTest extends TestCase
             // A bill deleted for good leaves its reading approved and unbilled, with the deletion in the audit log.
             $this->assertTrue($lines->where('type', SubscriptionTransaction::TYPE_METER_READING)->isNotEmpty() || in_array($reading->id, $this->deletedBillReadingIds(), true), $this->failure("approved reading {$reading->id} was never billed"));
             if ($charge = $charges->first()) {
-                $this->assertSame($reading->amountBeforeDiscount(), $charge->amount, $this->failure("approved reading {$reading->id} is billed another amount than it costs"));
+                $this->assertSame(ReadingCharges::amountBeforeDiscount($reading), $charge->amount, $this->failure("approved reading {$reading->id} is billed another amount than it costs"));
                 $this->assertSame($this->cents($reading->discount_amount) > 0 ? $this->money(-$this->cents($reading->discount_amount)) : null, $discounts->first()?->amount, $this->failure("reading {$reading->id} takes off another standing discount than it was given"));
             }
         }

@@ -8,9 +8,9 @@ use App\Models\CashBox;
 use App\Models\CashBoxPayment;
 use App\Models\Closing;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\BranchClosingWorkflow;
+use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Testing\TestResponse;
@@ -35,7 +35,7 @@ class SendCashBoxesToAuditTest extends TestCase
 
     private function box(Branch $branch, User $collector, string $method = 'cash'): CashBox
     {
-        $payment = SubscriptionTransaction::recordPayment(Subscription::factory()->for($branch)->create(), $collector, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => $method, 'bank_name' => 'بنك فلسطين', 'reference_number' => 'TRX-'.$collector->id.'-'.CashBoxPayment::query()->count()]);
+        $payment = RecordPayment::handle(Subscription::factory()->for($branch)->create(), $collector, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => $method, 'bank_name' => 'بنك فلسطين', 'reference_number' => 'TRX-'.$collector->id.'-'.CashBoxPayment::query()->count()]);
 
         return CashBoxPayment::query()->where('subscription_transaction_id', $payment->id)->sole()->box;
     }

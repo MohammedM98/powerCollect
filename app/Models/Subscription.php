@@ -7,10 +7,10 @@ use App\Enums\MeterReadingStatus;
 use App\Enums\SubscriptionStatus;
 use App\Models\Concerns\BelongsToBranch;
 use App\Support\ArabicSearch;
-use App\Support\BranchDomainScope;
-use App\Support\DailySeries;
 use App\Support\DeletionBlocker;
-use App\Support\Money;
+use App\Support\Ledger\Money;
+use App\Support\Readings\ReadingWeeks;
+use App\Support\Reports\DailySeries;
 use Database\Factories\SubscriptionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -76,14 +76,14 @@ class Subscription extends Model
 
         static::deleting(function (Subscription $subscription): void {
             if ($subscription->transactions()->exists()) {
-                throw ValidationException::withMessages(['deletion' => 'لا يمكن حذف اشتراك له سجل مالي؛ يمكنك أرشفته بعد فصل الخدمة.']);
+                throw ValidationException::withMessages(['deletion' => __('A subscription with a financial history cannot be deleted; you can archive it after ending its service.')]);
             }
         });
 
         static::deleted(function (Subscription $subscription): void {
             $profile = $subscription->profile;
 
-            if ($profile !== null && ! $profile->subscriptions()->withoutGlobalScope(BranchDomainScope::class)->exists()) {
+            if ($profile !== null && ! $profile->subscriptions()->acrossBranches()->exists()) {
                 $profile->delete();
             }
         });
@@ -141,6 +141,12 @@ class Subscription extends Model
         return filled($this->subscription_phone) ? $this->subscription_phone : $this->phone;
     }
 
+    /** Each time the subscription was archived or restored, oldest first. */
+    public function archiveEvents(): HasMany
+    {
+        return $this->hasMany(SubscriptionArchiveEvent::class)->orderBy('id');
+    }
+
     public function profile(): BelongsTo
     {
         return $this->belongsTo(SubscriberProfile::class, 'subscriber_profile_id');
@@ -156,7 +162,7 @@ class Subscription extends Model
     {
         $year = now()->format('Y');
 
-        $lastAccountNumber = static::withoutGlobalScope(BranchDomainScope::class)
+        $lastAccountNumber = static::query()->acrossBranches()
             ->where('account_number', 'like', $year.'%')
             ->orderByRaw('LENGTH(account_number) DESC')
             ->orderByDesc('account_number')
@@ -178,7 +184,6 @@ class Subscription extends Model
             'activated_at' => 'datetime',
             'archived_at' => 'datetime',
             'service_ended_on' => 'date',
-            'archive_history' => 'array',
             'subscription_fee' => 'decimal:2',
             'kilowatt_price' => 'decimal:2',
             'initial_reading' => 'float',
@@ -274,7 +279,7 @@ class Subscription extends Model
      */
     public function latestWeekReading(): ?MeterReading
     {
-        return $this->meterReadings()->whereDate('week_start', MeterReading::latestEndedWeekStart($this->branch_id)->toDateString())->first();
+        return $this->meterReadings()->whereDate('week_start', ReadingWeeks::latestEndedWeekStart($this->branch_id)->toDateString())->first();
     }
 
     /**
@@ -318,25 +323,25 @@ class Subscription extends Model
      */
     public function deletionBlocker(): ?string
     {
-        if ($this->archived_at !== null || ! empty($this->archive_history)) {
-            return 'لا يمكن حذف اشتراك مؤرشف؛ يبقى ملفه وسجله المالي محفوظين في الأرشيف.';
+        if ($this->archived_at !== null || $this->archiveEvents()->exists()) {
+            return __('An archived subscription cannot be deleted; its file and financial record stay in the archive.');
         }
 
-        return DeletionBlocker::describe('المشترك', [
-            'القراءات' => $this->meterReadings()->count(),
-            'قوائم القطع' => $this->disconnectionItems()->count(),
-            'القراءات الميدانية' => ReadingSubmission::query()->where('subscription_id', $this->id)->count(),
-            'الحركات المالية' => $this->transactions()->count(),
-        ], 'يمكنك تغيير حالته إلى «مفصول» بدلًا من حذفه.');
+        return DeletionBlocker::describe('subscription', [
+            'readings' => $this->meterReadings()->count(),
+            'disconnection_lists' => $this->disconnectionItems()->count(),
+            'field_readings' => ReadingSubmission::query()->where('subscription_id', $this->id)->count(),
+            'transactions' => $this->transactions()->count(),
+        ], instead: true);
     }
 
     /** Archive eligibility is checked again under a row lock when saving. */
     public function archiveBlocker(): ?string
     {
         return match (true) {
-            $this->archived_at !== null => 'هذا الاشتراك مؤرشف بالفعل.',
-            $this->status !== SubscriptionStatus::Disconnected => 'الأرشفة متاحة فقط للاشتراك المفصول بعد إنهاء خدمته.',
-            $this->hasUnfinishedReadings() => 'أكمل القراءات المعلّقة وإعادة إدخال القراءات المطلوبة قبل الأرشفة.',
+            $this->archived_at !== null => __('This subscription is already archived.'),
+            $this->status !== SubscriptionStatus::Disconnected => __('Archiving is only available for a disconnected subscription whose service has ended.'),
+            $this->hasUnfinishedReadings() => __('Complete the pending readings and re-enter the requested readings before archiving.'),
             default => null,
         };
     }
@@ -387,7 +392,7 @@ class Subscription extends Model
         DB::transaction(function (): void {
             $subscription = self::query()->lockForUpdate()->findOrFail($this->id);
             if ($subscription->transactions()->exists()) {
-                throw ValidationException::withMessages(['deletion' => 'لا يمكن حذف اشتراك له سجل مالي؛ يمكنك أرشفته بعد فصل الخدمة.']);
+                throw ValidationException::withMessages(['deletion' => __('A subscription with a financial history cannot be deleted; you can archive it after ending its service.')]);
             }
             $subscription->delete();
         });

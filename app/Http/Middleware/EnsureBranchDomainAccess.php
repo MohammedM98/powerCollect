@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Support\BranchDomainContext;
+use App\Support\Branches\BranchDomainContext;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,7 +47,7 @@ class EnsureBranchDomainAccess
             // A form without a branch choice (anyone but the Super Admin) sends it empty: the domain decides the branch.
             $branchChosen = $request->filled('branch_id') || ($request->exists('branch_id') && $actor->isSuperAdmin());
             if ($branchChosen && (int) $request->input('branch_id') !== $branch->id) {
-                throw ValidationException::withMessages(['branch_id' => 'اختر الفرع المطابق لرابط الموقع الحالي.']);
+                throw ValidationException::withMessages(['branch_id' => __('Choose the branch that matches the current site address.')]);
             }
         }
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePeriodAuditRequest;
-use App\Support\BankTransferAuditing;
+use App\Support\Closing\BankTransferAuditing;
 use Illuminate\Http\RedirectResponse;
 
 class PeriodAuditController extends Controller

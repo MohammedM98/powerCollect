@@ -5,11 +5,12 @@ namespace Tests\Feature;
 use App\Enums\DiscountMethod;
 use App\Http\Requests\StoreSubscriptionPaymentRequest;
 use App\Models\Closing;
-use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Money;
+use App\Support\Ledger\LedgerAmounts;
+use App\Support\Ledger\Money;
+use App\Support\Readings\ReadingCharges;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,8 +20,8 @@ class ExactMoneyTest extends TestCase
 
     public function test_discounts_preserve_decimal_cents_beyond_binary_float_precision(): void
     {
-        $this->assertSame('90071992547409.91', SubscriptionTransaction::discountFor(DiscountMethod::Shekel, '90071992547409.91', null));
-        $this->assertSame('0.01', SubscriptionTransaction::discountFor(DiscountMethod::Percentage, '50', '0.01'));
+        $this->assertSame('90071992547409.91', LedgerAmounts::discountFor(DiscountMethod::Shekel, '90071992547409.91', null));
+        $this->assertSame('0.01', LedgerAmounts::discountFor(DiscountMethod::Percentage, '50', '0.01'));
     }
 
     public function test_reading_charges_multiply_and_apply_minimums_as_decimal_strings(): void
@@ -29,7 +30,7 @@ class ExactMoneyTest extends TestCase
             'reading_fee' => '90071992547409.91',
             'discount_amount' => '0.00',
             'amount_due' => '90071992547409.91',
-        ], MeterReading::chargesFor(1, '90071992547409.91', '0.00'));
+        ], ReadingCharges::chargesFor(1, '90071992547409.91', '0.00'));
     }
 
     public function test_conversion_and_minor_units_never_pass_through_binary_floats(): void
@@ -61,9 +62,9 @@ class ExactMoneyTest extends TestCase
 
     public function test_reading_discounts_round_half_cents_and_cap_at_the_reading_fee(): void
     {
-        $this->assertSame('0.01', MeterReading::discountFor(DiscountMethod::Percentage, '50', 1, '0.01'));
-        $this->assertSame('0.01', MeterReading::discountFor(DiscountMethod::Kilowatt, '2', 1, '0.01'));
-        $this->assertSame('0.01', MeterReading::discountFor(DiscountMethod::Shekel, '2', 1, '0.01'));
-        $this->assertSame('10.00', MeterReading::chargesFor(1, '0.01', '10.00')['amount_due']);
+        $this->assertSame('0.01', ReadingCharges::discountFor(DiscountMethod::Percentage, '50', 1, '0.01'));
+        $this->assertSame('0.01', ReadingCharges::discountFor(DiscountMethod::Kilowatt, '2', 1, '0.01'));
+        $this->assertSame('0.01', ReadingCharges::discountFor(DiscountMethod::Shekel, '2', 1, '0.01'));
+        $this->assertSame('10.00', ReadingCharges::chargesFor(1, '0.01', '10.00')['amount_due']);
     }
 }

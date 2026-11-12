@@ -3,28 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PermissionKey;
-use App\Http\Concerns\BuildsSubscriptionStatement;
-use App\Http\Concerns\ProvidesFormOptions;
-use App\Http\Concerns\ProvidesSubscriptionForm;
+use App\Http\Requests\ViewDashboardRequest;
 use App\Models\Branch;
 use App\Models\Governorate;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\BranchScope;
-use App\Support\DailySeries;
-use App\Support\DashboardOverview;
+use App\Support\Branches\BranchFormOptions;
+use App\Support\Branches\BranchScope;
+use App\Support\Ledger\StatementBuilder;
+use App\Support\Reports\DailySeries;
+use App\Support\Reports\DashboardOverview;
+use App\Support\Subscriptions\SubscriptionForm;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
 class DashboardController extends Controller
 {
-    use BuildsSubscriptionStatement, ProvidesFormOptions, ProvidesSubscriptionForm;
-
     /**
      * The home page: the figures of the branches the user looks after —
      * their own branch, or for the Super Admin the whole company, narrowed
@@ -32,17 +30,10 @@ class DashboardController extends Controller
      * appears only for someone who may open the page it summarizes, so the
      * dashboard differs per user without any role name hardcoded here.
      */
-    public function index(Request $request): InertiaResponse
+    public function index(ViewDashboardRequest $request): InertiaResponse
     {
         $actor = $request->user();
-        $validated = $request->validate([
-            'days' => ['nullable', 'integer', Rule::in(DashboardOverview::PERIODS)],
-            'branch' => ['nullable', 'integer'],
-            'governorate' => ['nullable', 'integer'],
-            'method' => ['nullable', Rule::in(['cash', 'transfer'])],
-            'search' => ['nullable', 'string', 'max:100'],
-            'page' => ['nullable', 'integer', 'min:1'],
-        ]);
+        $validated = $request->validated();
         $days = (int) ($validated['days'] ?? 30);
         $company = BranchScope::shownTo($actor);
         $allBranches = $company ? Branch::query()->with('governorate')->orderBy('name')->get() : collect();
@@ -106,15 +97,15 @@ class DashboardController extends Controller
             'canCreateBranch' => $actor->can('create', Branch::class),
             'canCreateUser' => $actor->can('create', User::class),
             // The "new branch/user" pop-up's dropdowns, loaded only when its button is clicked.
-            'branchForm' => Inertia::optional(fn () => $actor->can('create', Branch::class) ? $this->branchFormOptions() : null),
+            'branchForm' => Inertia::optional(fn () => $actor->can('create', Branch::class) ? BranchFormOptions::branchFormOptions() : null),
             'userForm' => Inertia::optional(fn () => $actor->can('create', User::class)
-                ? $this->userBranchOptions()
+                ? BranchFormOptions::userBranchOptions()
                 : null),
             // A subscriber's statement — their account, with the payment, charge and discount forms — opened over the dashboard.
-            'statement' => fn () => $this->requestedStatement($request, $actor),
+            'statement' => fn () => StatementBuilder::requestedStatement($request, $actor),
             // The "new subscriber" and "edit subscriber" windows: their dropdowns, and the subscriber being edited, loaded when opened.
             'subscriptionForm' => Inertia::optional(fn () => $actor->can('create', Subscription::class) || $actor->isSuperAdmin() || $actor->hasPermission(PermissionKey::UpdateSubscriptions)
-                ? array_map(fn (mixed $option): mixed => $option instanceof Closure ? $option() : $option, $this->subscriptionFormOptions())
+                ? array_map(fn (mixed $option): mixed => $option instanceof Closure ? $option() : $option, SubscriptionForm::subscriptionFormOptions())
                 : null),
             'subscriptionEdit' => Inertia::optional(fn () => $this->requestedSubscriptionEdit($request, $actor)),
         ]);
@@ -141,7 +132,7 @@ class DashboardController extends Controller
         }
 
         return [
-            ...$this->subscriptionEditableFields($subscription),
+            ...SubscriptionForm::subscriptionEditableFields($subscription),
             'subscriptionCount' => $subscription->profile?->subscriptions()->readableTo($actor)->count() ?? 1,
         ];
     }

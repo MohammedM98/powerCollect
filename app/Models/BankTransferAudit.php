@@ -24,10 +24,10 @@ class BankTransferAudit extends Model
     {
         static::updating(function (self $audit): void {
             if ($audit->getRawOriginal('posted_at') !== null || $audit->getRawOriginal('adjustment_transaction_id') !== null) {
-                throw ValidationException::withMessages(['audit' => 'لا يمكن تغيير قرار تدقيق معتمد.']);
+                throw ValidationException::withMessages(['audit' => __('An approved audit decision cannot be changed.')]);
             }
         });
-        static::deleting(fn (): never => throw ValidationException::withMessages(['audit' => 'لا يمكن حذف قرار تدقيق معتمد.']));
+        static::deleting(fn (): never => throw ValidationException::withMessages(['audit' => __('An approved audit decision cannot be deleted.')]));
     }
 
     public function entry(): BelongsTo

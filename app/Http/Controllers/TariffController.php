@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\MeterReadingStatus;
 use App\Enums\TariffCategory;
-use App\Http\Concerns\DeletesRecords;
 use App\Http\Requests\StoreTariffRequest;
 use App\Http\Requests\UpdateTariffRequest;
 use App\Models\MeterReading;
@@ -13,6 +12,7 @@ use App\Models\TariffRateChange;
 use App\Models\TariffSegment;
 use App\Models\User;
 use App\Notifications\ActionCompleted;
+use App\Support\RecordDeletion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -20,8 +20,6 @@ use Inertia\Response as InertiaResponse;
 
 class TariffController extends Controller
 {
-    use DeletesRecords;
-
     /**
      * How many recent weeks of approved readings the average consumption
      * on each tariff card covers.
@@ -120,7 +118,7 @@ class TariffController extends Controller
      */
     public function destroy(Request $request, Tariff $tariff): RedirectResponse
     {
-        return $this->deleteRecord($request, $tariff, 'tariff-deleted', __($tariff->category->label()));
+        return RecordDeletion::deleteRecord($request, $tariff, 'tariff-deleted', __($tariff->category->label()));
     }
 
     /**

@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Support\Brand;
-use App\Support\BrandDesign;
-use App\Support\BrandPalette;
+use App\Support\Branding\Brand;
+use App\Support\Branding\BrandDesign;
+use App\Support\Branding\BrandPalette;
 use Illuminate\Console\Command;
 
 class BrandOptions extends Command
@@ -17,13 +17,13 @@ class BrandOptions extends Command
     {
         $this->components->info('Presets ("design": {"preset": "…"}): a whole look; any choice below then changes it.');
         foreach (BrandDesign::PRESETS as $key => $preset) {
-            $this->components->twoColumnDetail("<fg=green>{$key}</> {$preset['label']}", $preset['description']);
+            $this->components->twoColumnDetail("<fg=green>{$key}</> ".__($preset['label']), __($preset['description']));
         }
 
         $this->newLine();
         $this->components->info('Design choices ("design": {"choice": "option"}), the first of each being today\'s look:');
         foreach (BrandDesign::OPTIONS as $key => $choice) {
-            $this->components->twoColumnDetail("<fg=green>{$key}</> {$choice['label']}", implode(' · ', array_keys($choice['options'])));
+            $this->components->twoColumnDetail("<fg=green>{$key}</> ".__($choice['label']), implode(' · ', array_keys($choice['options'])));
         }
 
         $this->newLine();
@@ -38,7 +38,7 @@ class BrandOptions extends Command
         $this->newLine();
         $this->components->info('Exact values ("tokens": {"name": number}), each within its range; they win over the choices above:');
         foreach (BrandDesign::TOKENS as $key => $token) {
-            $this->components->twoColumnDetail("<fg=green>{$key}</> {$token['label']}", "{$token['min']} – {$token['max']} {$token['unit']}");
+            $this->components->twoColumnDetail("<fg=green>{$key}</> ".__($token['label']), "{$token['min']} – {$token['max']} {$token['unit']}");
         }
 
         $this->newLine();

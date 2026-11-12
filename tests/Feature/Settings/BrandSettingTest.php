@@ -3,8 +3,8 @@
 namespace Tests\Feature\Settings;
 
 use App\Models\User;
-use App\Support\Brand;
-use App\Support\BrandDesign;
+use App\Support\Branding\Brand;
+use App\Support\Branding\BrandDesign;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;

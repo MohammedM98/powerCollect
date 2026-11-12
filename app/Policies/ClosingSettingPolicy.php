@@ -5,7 +5,7 @@ namespace App\Policies;
 use App\Enums\PermissionKey;
 use App\Models\Branch;
 use App\Models\User;
-use App\Support\BranchDomainContext;
+use App\Support\Branches\BranchDomainContext;
 
 class ClosingSettingPolicy extends BranchSchedulePolicy
 {

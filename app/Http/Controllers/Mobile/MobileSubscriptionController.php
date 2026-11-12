@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MeterReading;
 use App\Models\ReadingAssignment;
 use App\Models\Subscription;
+use App\Support\Readings\ReadingWeeks;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -19,7 +20,7 @@ class MobileSubscriptionController extends Controller
 
         abort_unless($actor->hasPermission(PermissionKey::RecordMeterReadings), 403);
 
-        $weekStart = MeterReading::latestEndedWeekStart($actor->workBranchId());
+        $weekStart = ReadingWeeks::latestEndedWeekStart($actor->workBranchId());
         $week = $weekStart->toDateString();
         $subscriptions = Subscription::query()
             ->visibleTo($actor)
@@ -36,7 +37,7 @@ class MobileSubscriptionController extends Controller
 
         return response()->json([
             'week_start' => $week,
-            'week_end' => MeterReading::weekEndFor($weekStart, $actor->workBranchId())->toDateString(),
+            'week_end' => ReadingWeeks::weekEndFor($weekStart, $actor->workBranchId())->toDateString(),
             'can_record_readings_now' => $actor->can('create', [MeterReading::class, $weekStart]),
             'data' => $subscriptions->getCollection()->map(function (Subscription $subscription) use ($week): array {
                 $currentWeekReading = $subscription->meterReadings->first(fn (MeterReading $reading): bool => $reading->week_start->toDateString() === $week);

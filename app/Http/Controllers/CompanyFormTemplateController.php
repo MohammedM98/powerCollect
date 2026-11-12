@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ListCompanyFormTemplatesRequest;
 use App\Http\Requests\SaveCompanyFormTemplateRequest;
 use App\Models\CompanyDocument;
 use App\Models\CompanyFormTemplate;
-use App\Support\CompanyForms;
+use App\Support\Branding\CompanyForms;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,10 +20,9 @@ use Throwable;
 
 class CompanyFormTemplateController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(ListCompanyFormTemplatesRequest $request): Response
     {
-        $this->authorize('viewAny', CompanyFormTemplate::class);
-        $filters = $request->validate(['search' => ['nullable', 'string', 'max:150'], 'view' => ['nullable', 'in:templates,documents'], 'per_page' => ['nullable', 'in:15,25,50,100']]);
+        $filters = $request->validated();
         $search = trim($filters['search'] ?? '');
         $perPage = (int) ($filters['per_page'] ?? 15);
         $templates = CompanyFormTemplate::query()->with('updatedBy')
@@ -56,7 +56,7 @@ class CompanyFormTemplateController extends Controller
     {
         $this->authorize('create', CompanyFormTemplate::class);
 
-        return Inertia::render('CompanyForms/Editor', ['template' => null, 'defaultLayout' => CompanyForms::defaultLayout(), 'fields' => CompanyForms::FIELDS]);
+        return Inertia::render('CompanyForms/Editor', ['template' => null, 'defaultLayout' => CompanyForms::defaultLayout(), 'fields' => CompanyForms::fieldLabels()]);
     }
 
     public function edit(CompanyFormTemplate $companyForm): Response
@@ -64,7 +64,7 @@ class CompanyFormTemplateController extends Controller
         $this->authorize('update', $companyForm);
         $companyForm->load('updatedBy');
 
-        return Inertia::render('CompanyForms/Editor', ['template' => $companyForm->toEditor(), 'defaultLayout' => CompanyForms::defaultLayout(), 'fields' => CompanyForms::FIELDS]);
+        return Inertia::render('CompanyForms/Editor', ['template' => $companyForm->toEditor(), 'defaultLayout' => CompanyForms::defaultLayout(), 'fields' => CompanyForms::fieldLabels()]);
     }
 
     public function show(Request $request, CompanyFormTemplate $companyForm): JsonResponse
@@ -101,7 +101,7 @@ class CompanyFormTemplateController extends Controller
             DB::transaction(function () use ($request, $companyForm, &$source): void {
                 $companyForm->refreshForUpdate();
                 if ($companyForm->version !== (int) $request->validated('version')) {
-                    throw ValidationException::withMessages(['version' => 'عدّل موظف آخر هذا النموذج. حدّث الصفحة قبل حفظ تغييراتك.']);
+                    throw ValidationException::withMessages(['version' => __('Another employee edited this form. Refresh the page before saving your changes.')]);
                 }
                 $source = $request->hasFile('source') ? CompanyForms::storeFile($request->file('source')) : null;
                 $companyForm->update([

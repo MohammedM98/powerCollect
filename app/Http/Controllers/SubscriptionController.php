@@ -2,44 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\PermissionKey;
 use App\Enums\SubscriptionStatus;
-use App\Http\Concerns\BuildsSubscriptionStatement;
-use App\Http\Concerns\DeletesRecords;
-use App\Http\Concerns\FiltersDataTable;
-use App\Http\Concerns\FiltersSubscriptionList;
-use App\Http\Concerns\ProvidesSubscriptionForm;
-use App\Http\Concerns\ReturnsToDashboard;
 use App\Http\Requests\StoreSubscriptionRequest;
 use App\Http\Requests\UpdateSubscriptionRequest;
 use App\Models\Branch;
-use App\Models\CircuitBreaker;
 use App\Models\MessageBatch;
-use App\Models\MeterBox;
 use App\Models\MeterReading;
-use App\Models\SubArea;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
-use App\Models\Tariff;
-use App\Models\TariffSegment;
-use App\Models\User;
 use App\Notifications\ActionCompleted;
-use App\Support\BranchScope;
-use App\Support\DailySeries;
-use App\Support\Money;
+use App\Support\Branches\BranchScope;
+use App\Support\Ledger\StatementBuilder;
+use App\Support\Navigation\DashboardReturn;
+use App\Support\Queries\DataTableFilters;
+use App\Support\Queries\SubscriptionListQuery;
+use App\Support\Readings\ReadingWeeks;
+use App\Support\RecordDeletion;
+use App\Support\Reports\DailySeries;
+use App\Support\Subscriptions\SubscriptionForm;
+use App\Support\Subscriptions\SubscriptionPage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
 class SubscriptionController extends Controller
 {
-    use BuildsSubscriptionStatement, DeletesRecords, FiltersDataTable, FiltersSubscriptionList, ProvidesSubscriptionForm, ReturnsToDashboard;
-
     /**
      * Display a listing of the resource.
      */
@@ -64,13 +55,13 @@ class SubscriptionController extends Controller
             ->withSum('transactions as outstanding_balance', 'amount')
             ->withExists(['transactions as has_subscription_fee' => fn (Builder $transactions) => $transactions->where('type', SubscriptionTransaction::TYPE_SUBSCRIPTION_FEE)]);
         $showArchived ? $query->whereNotNull('subscriptions.archived_at') : $query->whereNull('subscriptions.archived_at');
-        $this->applySubscriptionListFilters($query, $request, includeArchived: true);
+        SubscriptionListQuery::applySubscriptionListFilters($query, $request, includeArchived: true);
 
         $canRecordReadings = $actor->can('create', MeterReading::class);
 
-        $subscriptions = fn () => $query->paginate($this->dataTablePerPage($request))
+        $subscriptions = fn () => $query->paginate(DataTableFilters::dataTablePerPage($request))
             ->withQueryString()
-            ->through(fn (Subscription $subscription) => $this->indexRow($subscription, $actor, $canRecordReadings));
+            ->through(fn (Subscription $subscription) => SubscriptionPage::indexRow($subscription, $actor, $canRecordReadings));
 
         return Inertia::render('Subscriptions/Index', [
             'subscriptions' => $subscriptions,
@@ -86,14 +77,14 @@ class SubscriptionController extends Controller
                 'message' => $actor->can('create', MessageBatch::class),
             ],
             'statusOptions' => SubscriptionStatus::options(),
-            'filters' => $this->dataTableState($request, 'display_name'),
-            'filterOptions' => fn () => $this->filterOptions($actor, $request),
+            'filters' => DataTableFilters::dataTableState($request, 'display_name'),
+            'filterOptions' => fn () => SubscriptionPage::filterOptions($actor, $request),
             // Whoever sees every branch's subscribers reads, large above the table, which branch the list holds.
             'branchScope' => fn () => BranchScope::shownTo($actor) ? BranchScope::forFilter($actor, $request->input('filter.branch_id')) : null,
             // New reading forms offer only the latest week of each branch.
-            'readingWeekOptions' => fn () => MeterReading::recentWeekOptionsFor($actor, 1),
-            'statement' => fn () => $this->requestedStatement($request, $actor),
-            ...$this->subscriptionFormOptions(),
+            'readingWeekOptions' => fn () => ReadingWeeks::recentWeekOptionsFor($actor, 1),
+            'statement' => fn () => StatementBuilder::requestedStatement($request, $actor),
+            ...SubscriptionForm::subscriptionFormOptions(),
         ]);
     }
 
@@ -104,7 +95,7 @@ class SubscriptionController extends Controller
     {
         $this->authorize('create', Subscription::class);
 
-        return Inertia::render('Subscriptions/Create', $this->subscriptionFormOptions());
+        return Inertia::render('Subscriptions/Create', SubscriptionForm::subscriptionFormOptions());
     }
 
     /**
@@ -126,8 +117,8 @@ class SubscriptionController extends Controller
         if ($data['status'] === SubscriptionStatus::Active->value && blank($data['subscription_date'] ?? null)) {
             $data['subscription_date'] = DailySeries::today()->toDateString();
         }
-        $data = $this->enforceMinimumChargePermission($actor, $data);
-        $data = $this->enforceKilowattPricePermission($actor, $data);
+        $data = SubscriptionPage::enforceMinimumChargePermission($actor, $data);
+        $data = SubscriptionPage::enforceKilowattPricePermission($actor, $data);
 
         $subscription = DB::transaction(function () use ($data, $actor, $chargeSubscriptionFee, $sourceSubscription): Subscription {
             $subscription = new Subscription($data);
@@ -140,7 +131,7 @@ class SubscriptionController extends Controller
             $subscription->save();
 
             if ($chargeSubscriptionFee) {
-                $this->chargeSubscriptionFee($subscription, $actor);
+                SubscriptionPage::chargeSubscriptionFee($subscription, $actor);
             }
 
             return $subscription;
@@ -148,26 +139,7 @@ class SubscriptionController extends Controller
 
         $actor->notify(new ActionCompleted('subscription-created', $subscription->displayName()));
 
-        return $this->redirectAfterSave($request, 'subscriptions.index', 'subscription-created');
-    }
-
-    /**
-     * Charge the subscription's subscription fee to their account, as a
-     * subscription-fee line, if it has an amount.
-     */
-    private function chargeSubscriptionFee(Subscription $subscription, User $actor): void
-    {
-        if ($subscription->subscription_fee === null || Money::decimal($subscription->subscription_fee)->isLessThanOrEqualTo(0)) {
-            return;
-        }
-
-        $subscription->transactions()->create([
-            'recorded_by' => $actor->id,
-            'type' => SubscriptionTransaction::TYPE_SUBSCRIPTION_FEE,
-            'source_key' => 'subscription-fee:'.$subscription->id,
-            'amount' => $subscription->subscription_fee,
-            'currency_amount' => $subscription->subscription_fee,
-        ]);
+        return DashboardReturn::redirectAfterSave($request, 'subscriptions.index', 'subscription-created');
     }
 
     /**
@@ -179,10 +151,10 @@ class SubscriptionController extends Controller
 
         return Inertia::render('Subscriptions/Edit', [
             'subscription' => [
-                ...$this->subscriptionEditableFields($subscription),
+                ...SubscriptionForm::subscriptionEditableFields($subscription),
                 'subscriptionCount' => $subscription->profile->subscriptions()->readableTo(auth()->user())->count(),
             ],
-            ...$this->subscriptionFormOptions(),
+            ...SubscriptionForm::subscriptionFormOptions(),
         ]);
     }
 
@@ -192,8 +164,8 @@ class SubscriptionController extends Controller
     public function update(UpdateSubscriptionRequest $request, Subscription $subscription): RedirectResponse
     {
         $data = $request->safe()->except(['charge_subscription_fee']);
-        $data = $this->enforceMinimumChargePermission(auth()->user(), $data, $subscription);
-        $data = $this->enforceKilowattPricePermission(auth()->user(), $data, $subscription);
+        $data = SubscriptionPage::enforceMinimumChargePermission(auth()->user(), $data, $subscription);
+        $data = SubscriptionPage::enforceKilowattPricePermission(auth()->user(), $data, $subscription);
         // Only a subscription without the fee on the account is validated for charging it.
         $chargeSubscriptionFee = (bool) $request->validated('charge_subscription_fee', false);
 
@@ -213,12 +185,12 @@ class SubscriptionController extends Controller
             $subscription->update($data);
 
             if ($chargeSubscriptionFee) {
-                $this->chargeSubscriptionFee($subscription, $request->user());
+                SubscriptionPage::chargeSubscriptionFee($subscription, $request->user());
             }
         });
         $request->user()->notify(new ActionCompleted('subscription-updated', $subscription->displayName()));
 
-        return $this->redirectAfterSave($request, 'subscriptions.index', 'subscription-updated');
+        return DashboardReturn::redirectAfterSave($request, 'subscriptions.index', 'subscription-updated');
     }
 
     /**
@@ -226,238 +198,6 @@ class SubscriptionController extends Controller
      */
     public function destroy(Request $request, Subscription $subscription): RedirectResponse
     {
-        return $this->deleteRecord($request, $subscription, 'subscription-deleted', $subscription->displayName(), fn () => $subscription->deleteWithSubscriptionFee());
-    }
-
-    /**
-     * One row of the subscriptions list: the editable fields, plus what the
-     * table, the details window and the reading form display.
-     *
-     * @return array<string, mixed>
-     */
-    private function indexRow(Subscription $subscription, User $actor, bool $canRecordReadings): array
-    {
-        $readings = $subscription->meterReadings->sortByDesc('week_start')->values();
-        $latestReading = $readings->first();
-        $entryWeek = MeterReading::latestEndedWeekStart($subscription->branch_id);
-        $entryReading = $readings->first(fn (MeterReading $reading): bool => $reading->week_start->equalTo($entryWeek));
-        $hasPreviousReading = $readings->contains(fn (MeterReading $reading): bool => $reading->week_start->lessThan($entryWeek));
-        $hasLaterReading = $readings->contains(fn (MeterReading $reading): bool => $reading->week_start->greaterThan($entryWeek));
-
-        return [
-            ...$this->subscriptionEditableFields($subscription),
-            'branchName' => $subscription->branch->name,
-            'governorateName' => $subscription->branch->governorate?->name,
-            'areaName' => $subscription->branch->area?->name,
-            'meterBoxNumber' => $subscription->meterBox?->box_number,
-            'meterBoxName' => $subscription->meterBox?->displayName(),
-            'subAreaId' => $subscription->meterBox?->sub_area_id,
-            'subAreaName' => $subscription->meterBox?->subArea?->name,
-            'tariffCategory' => $subscription->tariff->category->value,
-            'tariffCategoryLabel' => __($subscription->tariff->category->label()),
-            'tariffSegmentName' => $subscription->tariffSegment?->name,
-            'tariffRate' => $subscription->tariff->rate,
-            'kilowattPrice' => $subscription->kilowattPrice(),
-            'hasOwnKilowattPrice' => $subscription->hasOwnKilowattPrice(),
-            'circuitBreakerAmpere' => $subscription->circuitBreaker?->ampere,
-            'standingDiscountSummary' => $subscription->standingDiscount?->summary(),
-            'standingDiscount' => $subscription->standingDiscount ? ['method' => $subscription->standingDiscount->method->value, 'value' => $subscription->standingDiscount->value] : null,
-            'statusLabel' => $subscription->archived_at !== null ? 'مؤرشف' : __($subscription->status->label()),
-            'archivedAt' => $subscription->archived_at?->toIso8601String(),
-            'serviceEndedOn' => $subscription->service_ended_on?->format('Y-m-d'),
-            'archiveReason' => $subscription->archive_reason,
-            'archiveHistory' => $subscription->archive_history ?? [],
-            'canArchive' => $actor->can('archive', $subscription),
-            'archiveBlocker' => $subscription->archiveBlocker(),
-            'canRestore' => $subscription->archived_at !== null && $actor->can('restore', $subscription),
-            'registeredByName' => $subscription->registeredBy?->name,
-            'outstandingBalance' => $subscription->outstanding_balance ?? '0.00',
-            'weeklyMinimumPayment' => $subscription->weeklyMinimumPayment(),
-            'subscriptionCount' => $subscription->profile?->subscriptions_count ?? 1,
-            'meterReadings' => $readings->map(fn (MeterReading $reading) => $this->statementReading($reading, $actor)),
-            'lastReading' => $latestReading?->requires_reentry ? $latestReading->previous_reading : ($latestReading?->nextPreviousReading() ?? (float) ($subscription->initial_reading ?? 0)),
-            'lastReadingWeekStart' => $latestReading?->week_start->format('Y-m-d'),
-            'editableLastReadingId' => $this->editableLastReadingId($subscription, $readings, $actor),
-            'initialReading' => ! $hasPreviousReading ? [
-                'isInitial' => true, 'weekStart' => $entryWeek->toDateString(),
-                'value' => $entryReading?->previous_reading ?? (float) ($subscription->initial_reading ?? 0),
-                'previewUrl' => route('subscriptions.reading-baseline.preview', $subscription),
-                'saveUrl' => route('subscriptions.reading-baseline.update', $subscription),
-                'canEdit' => ! $hasLaterReading && $actor->can('adjustInitialReading', [$subscription, $entryWeek]),
-            ] : null,
-            'canRecordReading' => $canRecordReadings && ! $hasLaterReading && $subscription->status === SubscriptionStatus::Active,
-            'canUpdate' => $actor->can('update', $subscription),
-            'canDelete' => $actor->can('delete', $subscription),
-            'canRecordPayment' => $actor->can('recordPayment', $subscription),
-            'canRecordSplitPayment' => $actor->can('recordSplitPayment', Subscription::class) && $actor->can('recordPayment', $subscription),
-            'canAddCharge' => $actor->can('addCharge', $subscription),
-            'canAddDiscount' => $actor->can('addDiscount', $subscription),
-            'canAddClearing' => $actor->can('addClearing', $subscription),
-        ];
-    }
-
-    /**
-     * The reading the subscription's latest week starts from — its last
-     * reading — when the actor may edit it in the reading history: no week
-     * after it but the latest one has been entered.
-     *
-     * @param  Collection<int, MeterReading>  $readings  newest first
-     */
-    private function editableLastReadingId(Subscription $subscription, Collection $readings, User $actor): ?int
-    {
-        $latestWeekStart = MeterReading::latestEndedWeekStart($subscription->branch_id);
-        $lastReading = $readings->first(fn (MeterReading $reading): bool => $reading->week_start->lessThan($latestWeekStart));
-
-        if ($lastReading === null || $readings->filter(fn (MeterReading $reading): bool => $reading->week_start->greaterThan($lastReading->week_start))->count() > 1) {
-            return null;
-        }
-
-        return $actor->can('adjustLastReading', $lastReading) ? $lastReading->id : null;
-    }
-
-    /**
-     * One weekly reading as listed in a subscription's statement.
-     *
-     * @return array<string, mixed>
-     */
-    private function statementReading(MeterReading $reading, User $actor): array
-    {
-        return [
-            'id' => $reading->id,
-            'weekStart' => $reading->week_start->format('Y-m-d'),
-            'weekEnd' => $reading->week_end->format('Y-m-d'),
-            'previous_reading' => $reading->previous_reading,
-            'current_reading' => $reading->requires_reentry ? null : $reading->current_reading,
-            'nextPreviousReading' => $reading->nextPreviousReading(),
-            'requiresReentry' => $reading->requires_reentry,
-            'adjustmentHistory' => $reading->adjustment_history ?? [],
-            'consumption' => $reading->consumption,
-            'amountDue' => $reading->amount_due,
-            'discountAmount' => $reading->discount_amount,
-            'discount' => $reading->discount_method ? ['method' => $reading->discount_method->value, 'value' => $reading->discount_value] : null,
-            'unitPrice' => $reading->unit_price,
-            'minimumPayment' => $reading->minimum_payment,
-            'status' => $reading->status->value,
-            'statusLabel' => __($reading->status->label()),
-            'notes' => $reading->notes,
-            'recordedByName' => $reading->recordedBy?->name,
-            'recordedAt' => $reading->created_at->copy()->setTimezone(config('app.business_timezone'))->format('Y-m-d H:i'),
-            'recordedSource' => $reading->mobile_operation_id !== null ? 'app' : 'web',
-            'minimumApplied' => $reading->discount_method === null && (float) $reading->reading_fee < (float) $reading->minimum_payment,
-            'canUpdate' => $actor->can('update', $reading),
-            'canApprove' => $actor->can('approve', $reading),
-            'unusual' => $reading->isUnusual() ? ['usual' => $reading->usual_consumption] : null,
-            'canUpdateUnitPrice' => $actor->can('updateUnitPrice', $reading),
-            'canUpdateMinimumPayment' => $actor->can('updateMinimumPayment', $reading),
-        ];
-    }
-
-    /**
-     * Without the dedicated permission, minimum_charge is never taken from
-     * the request as-is — it always tracks the chosen circuit breaker's own
-     * minimum_payment (or, on update with no circuit breaker chosen, stays
-     * whatever the subscription already had). This mirrors the frontend's
-     * locked field, but enforced server-side so it can't be bypassed by
-     * crafting a raw request.
-     *
-     * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
-     */
-    private function enforceMinimumChargePermission(User $actor, array $data, ?Subscription $existing = null): array
-    {
-        if ($this->canEditMinimumCharge($actor)) {
-            return $data;
-        }
-
-        $circuitBreaker = ! empty($data['circuit_breaker_id']) ? CircuitBreaker::find($data['circuit_breaker_id']) : null;
-
-        $data['minimum_charge'] = match (true) {
-            $circuitBreaker !== null => $circuitBreaker->minimum_payment,
-            $existing !== null => $existing->minimum_charge,
-            default => 0,
-        };
-
-        return $data;
-    }
-
-    /**
-     * The kilo price a subscriber is saved with. Only someone holding the
-     * dedicated permission can give one: it is stored when it differs from
-     * the tariff's, and left empty — so they follow the tariff — when it is
-     * blank or equal to it. Anyone else never sets it from the request: a new
-     * subscriber follows their tariff, and an existing one keeps the price
-     * they have, unless their tariff was changed, which a price chosen for
-     * the old one no longer fits.
-     *
-     * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
-     */
-    private function enforceKilowattPricePermission(User $actor, array $data, ?Subscription $existing = null): array
-    {
-        if ($actor->hasPermission(PermissionKey::UpdateSubscriptionKilowattPrice) && array_key_exists('kilowatt_price', $data)) {
-            $tariffRate = Tariff::findOrFail($data['tariff_id'])->rate;
-
-            $data['kilowatt_price'] = filled($data['kilowatt_price']) && ! Money::decimal($data['kilowatt_price'])->isEqualTo($tariffRate)
-                ? $data['kilowatt_price']
-                : null;
-
-            return $data;
-        }
-
-        $data['kilowatt_price'] = $existing !== null && (int) $existing->tariff_id === (int) $data['tariff_id']
-            ? $existing->kilowatt_price
-            : null;
-
-        return $data;
-    }
-
-    /**
-     * The "Minimum charge" dropdown: each minimum charge (الحد الأدنى) the
-     * visible subscriptions have, smallest first.
-     *
-     * @return array{key: string, label: string, options: array<int, array{value: string, label: string}>}
-     */
-    private function minimumChargeFilterGroup(User $actor): array
-    {
-        return $this->filterGroup('minimum_charge', 'الحد الأدنى', Subscription::query()
-            ->readableTo($actor)
-            ->whereNotNull('minimum_charge')
-            ->distinct()
-            ->orderBy('minimum_charge')
-            ->pluck('minimum_charge')
-            ->map(fn ($charge) => ['value' => (string) (float) $charge, 'label' => SubscriptionTransaction::formatAmount($charge).' شيكل']));
-    }
-
-    /**
-     * The Filter menu's dropdown groups for the index page. The branch
-     * filter only makes sense for a Super Admin — everyone else's list is
-     * already scoped to their own single branch.
-     *
-     * @return array<int, array{key: string, label: string, options: array<int, array{value: string, label: string}>}>
-     */
-    private function filterOptions(User $actor, Request $request): array
-    {
-        $groups = [
-            $this->filterGroup('status', 'الحالة', SubscriptionStatus::options()),
-            $this->filterGroup('tariff_id', 'نوع الاشتراك', $this->modelOptions(
-                Tariff::orderBy('category')->get(),
-                fn (Tariff $tariff) => __($tariff->category->label()),
-            )),
-            $this->filterGroup('tariff_segment_id', 'تصنيف الزبائن', $this->modelOptions(TariffSegment::orderBy('name')->get(), 'name')),
-            $this->subAreaFilterGroup(SubArea::query()->visibleTo($actor)->orderBy('name')->get()),
-            ...$this->meterBoxFilterGroupsFor(
-                $actor,
-                $request,
-                $actor->canViewAllSubscriberAccounts() ? fn (MeterBox $box) => $box->branch->name : null,
-            ),
-            $this->circuitBreakerFilterGroup(),
-            $this->minimumChargeFilterGroup($actor),
-        ];
-
-        if ($actor->canViewAllSubscriberAccounts()) {
-            $groups[] = $this->branchFilterGroup($actor);
-        }
-
-        return $groups;
+        return RecordDeletion::deleteRecord($request, $subscription, 'subscription-deleted', $subscription->displayName(), fn () => $subscription->deleteWithSubscriptionFee());
     }
 }

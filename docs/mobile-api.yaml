@@ -1,0 +1,950 @@
+openapi: 3.1.0
+info:
+  title: PowerCollect field app API
+  version: "1"
+  description: >-
+    The API the Android field app calls. Every request sends X-App-Build; a build below
+    MOBILE_APP_MIN_BUILD gets 426 with the download link. Version 1 is served under
+    /api/mobile/v1; the same routes stay under /api/mobile for builds released before it.
+servers:
+  - url: /api/mobile/v1
+security:
+  - bearerToken: []
+paths:
+  /audit-notes/{note}/reply:
+    post:
+      operationId: audit_notes_reply
+      summary: MobileCashBoxController@reply
+      parameters:
+        - name: note
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [body]
+              properties:
+                body:
+                  type: string
+              x-form-request: ReplyToMobileAuditNoteRequest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /cash-boxes:
+    get:
+      operationId: cash_boxes_index
+      summary: MobileCashBoxController@index
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /cash-boxes/sync:
+    post:
+      operationId: cash_boxes_sync
+      summary: MobileCashBoxController@sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pending_payments]
+              properties:
+                pending_payments:
+                  type: integer
+              x-form-request: SyncMobileCashBoxRequest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /cash-boxes/{action}/{record}:
+    post:
+      operationId: cash_boxes_actions
+      summary: MobileCashBoxController@action
+      parameters:
+        - name: action
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: record
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [branch_id, type, box_ids, status]
+              properties:
+                branch_id:
+                  type: integer
+                type:
+                  type: string
+                box_ids:
+                  type: array
+                status:
+                  type: string
+              x-form-request: BranchClosingActionRequest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /collections:
+    get:
+      operationId: collections_index
+      summary: MobileCollectionController@index
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+    post:
+      operationId: collections_store
+      summary: MobileCollectionController@store
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mobile_operation_id, collector_confirmed, subscription_id]
+              properties:
+                mobile_operation_id:
+                  type: string
+                  format: uuid
+                collector_confirmed:
+                  type: boolean
+                collected_at:
+                  type: string
+                  format: date
+                subscription_id:
+                  type: string
+              x-form-request: StoreMobileCollectionRequest
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordedCollection'
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /collections/reference-status:
+    get:
+      operationId: collections_reference_status
+      summary: MobileCollectionController@referenceStatus
+      parameters:
+        - name: reference_number
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /collections/subscriptions:
+    get:
+      operationId: collections_subscriptions
+      summary: MobileCollectionController@subscriptions
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /collections/subscriptions/{subscription}:
+    get:
+      operationId: collections_subscriptions_show
+      summary: MobileCollectionController@show
+      parameters:
+        - name: subscription
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /collections/subscriptions/{subscription}/adjustments:
+    post:
+      operationId: collections_subscriptions_adjustments
+      summary: MobileAdjustmentController@store
+      parameters:
+        - name: subscription
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mobile_operation_id, action]
+              properties:
+                mobile_operation_id:
+                  type: string
+                  format: uuid
+                action:
+                  type: string
+                charge:
+                  type: boolean
+              x-form-request: StoreMobileAdjustmentRequest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /collections/subscriptions/{subscription}/messages:
+    get:
+      operationId: collections_subscriptions_messages_index
+      summary: SubscriptionMessageController@index
+      parameters:
+        - name: subscription
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: kind
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+    post:
+      operationId: collections_subscriptions_messages_store
+      summary: MobileSubscriberMessageController@store
+      parameters:
+        - name: subscription
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mobile_operation_id, body]
+              properties:
+                mobile_operation_id:
+                  type: string
+                  format: uuid
+                body:
+                  type: string
+              x-form-request: StoreMobileSubscriberMessageRequest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /collections/subscriptions/{subscription}/transactions:
+    get:
+      operationId: collections_subscriptions_transactions
+      summary: MobileCollectionController@transactions
+      parameters:
+        - name: subscription
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /login:
+    post:
+      operationId: login
+      summary: MobileSessionController@store
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                remember:
+                  type: boolean
+              x-form-request: StoreMobileSessionRequest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionResponse'
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /diagnostics:
+    post:
+      operationId: storeDiagnostics
+      summary: MobileDiagnosticsController@store
+      description: The app's error log (times, error types and stacks; never tokens or subscriber data), sent from the account screen and kept in the server log.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [log]
+              properties:
+                log:
+                  type: string
+                  maxLength: 65536
+      responses:
+        '202':
+          description: Received
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+        '429':
+          description: Sent too often
+  /logout:
+    post:
+      operationId: logout
+      summary: MobileSessionController@destroy
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /me:
+    get:
+      operationId: me
+      summary: MobileSessionController@show
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeResponse'
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /messages/subscriptions:
+    get:
+      operationId: messages_subscriptions
+      summary: MobileSubscriberMessageController@index
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /reading-assignments:
+    get:
+      operationId: reading_assignments_index
+      summary: MobileReadingAssignmentController@index
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentsResponse'
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /reading-assignments/sync:
+    post:
+      operationId: reading_assignments_sync
+      summary: MobileReadingAssignmentController@sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [readings]
+              properties:
+                readings:
+                  type: array
+              x-form-request: SyncMobileReadingsRequest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /reading-distribution:
+    get:
+      operationId: reading_distribution_index
+      summary: MobileReadingDistributionController@index
+      parameters:
+        - name: branch_id
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /reading-distribution/{readingCycle}/approve:
+    post:
+      operationId: reading_distribution_approve
+      summary: MobileReadingDistributionController@approve
+      parameters:
+        - name: readingCycle
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /reading-distribution/{readingCycle}/assign:
+    post:
+      operationId: reading_distribution_store
+      summary: MobileReadingDistributionController@store
+      parameters:
+        - name: readingCycle
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [box_ids, target]
+              properties:
+                box_ids:
+                  type: array
+                target:
+                  type: string
+                user_id:
+                  type: integer
+                versions:
+                  type: array
+                confirm_downloaded:
+                  type: boolean
+                recurring:
+                  type: boolean
+                publish:
+                  type: boolean
+              x-form-request: AllocateReadingBoxesRequest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /readings:
+    get:
+      operationId: readings_index
+      summary: MobileReadingController@index
+      parameters:
+        - name: week
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: subscription_status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+    post:
+      operationId: readings_store
+      summary: MobileReadingController@store
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mobile_operation_id]
+              properties:
+                mobile_operation_id:
+                  type: string
+                  format: uuid
+              x-form-request: StoreMobileMeterReadingRequest
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeterReading'
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /split-payments:
+    post:
+      operationId: split_payments_store
+      summary: MobileSplitPaymentController@store
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mobile_operation_id, collector_confirmed]
+              properties:
+                mobile_operation_id:
+                  type: string
+                  format: uuid
+                collector_confirmed:
+                  type: boolean
+              x-form-request: StoreMobileSplitPaymentRequest
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+  /subscriptions:
+    get:
+      operationId: subscriptions_index
+      summary: MobileSubscriptionController@index
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Not signed in, or the token expired
+        '403':
+          description: Not permitted
+        '422':
+          description: Validation failed
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
+components:
+  securitySchemes:
+    bearerToken:
+      type: http
+      scheme: bearer
+      description: The token from /login. The server keeps only its SHA-256 and expires it after 12 hours, or 30 days with remember.
+  schemas:
+    SessionUser:
+      description: SessionUserResource
+      type: object
+      required: [id, name, username, payment_methods, transfer_banks, sender_banks, currencies]
+      properties:
+        id: {type: integer}
+        name: {type: string}
+        username: {type: string}
+        branch_name: {type: [string, 'null']}
+        can_record_readings: {type: boolean}
+        can_distribute_readings: {type: boolean}
+        can_approve_reading_assignments: {type: boolean}
+        can_view_readings: {type: boolean}
+        can_record_collections: {type: boolean}
+        can_adjust_balances: {type: boolean}
+        can_add_clearings: {type: boolean}
+        can_view_subscriptions: {type: boolean}
+        can_record_split_payments: {type: boolean}
+        can_send_messages: {type: boolean}
+        can_view_messages: {type: boolean}
+        payment_methods: {type: array, items: {type: string}}
+        transfer_banks: {type: array, items: {type: string}}
+        sender_banks: {type: array, items: {type: string}}
+        currencies: {type: array, items: {type: object}}
+    SessionResponse:
+      type: object
+      required: [user, token]
+      properties:
+        user: {$ref: '#/components/schemas/SessionUser'}
+        token: {type: string}
+    MeResponse:
+      type: object
+      required: [user]
+      properties:
+        user: {$ref: '#/components/schemas/SessionUser'}
+    Collection:
+      description: CollectionResource
+      type: object
+      required: [id, subscription, amount, currency, amount_in_shekels, payment_method, status, recorded_at]
+      properties:
+        id: {type: integer}
+        subscription: {type: string}
+        amount: {type: string, description: In the currency it was paid in}
+        currency: {type: string}
+        exchange_rate: {type: [string, 'null']}
+        amount_in_shekels: {type: string}
+        payment_method: {type: string}
+        bank_name: {type: [string, 'null']}
+        bank_received_on: {type: [string, 'null'], format: date}
+        sender_bank_name: {type: [string, 'null']}
+        status: {type: string, enum: [recorded]}
+        recorded_at: {type: string, format: date-time}
+        voucher_number: {type: [string, 'null']}
+        reference_number: {type: [string, 'null']}
+        sender_name: {type: [string, 'null']}
+        notes: {type: [string, 'null']}
+    RecordedCollection:
+      description: RecordedCollectionResource
+      allOf:
+        - $ref: '#/components/schemas/Collection'
+        - type: object
+          required: [balance_after]
+          properties:
+            balance_after: {type: string}
+    MeterReading:
+      description: MeterReadingResource
+      type: object
+      required: [id, status, current_reading, unusual_consumption]
+      properties:
+        id: {type: integer}
+        mobile_operation_id: {type: [string, 'null'], format: uuid}
+        status: {type: string}
+        current_reading: {type: number}
+        unusual_consumption: {type: boolean}
+    ReadingAssignment:
+      description: ReadingAssignmentResource
+      type: object
+      required: [id, version, authorization, cycle, meter_box, subscriptions]
+      properties:
+        id: {type: integer}
+        version: {type: integer}
+        authorization: {type: string}
+        cycle:
+          type: object
+          properties:
+            id: {type: integer}
+            week_start: {type: string, format: date}
+            week_end: {type: string, format: date}
+            reading_date: {type: string, format: date}
+            entry_open: {type: boolean}
+            entry_starts_at: {type: string, format: date-time}
+            entry_ends_at: {type: string, format: date-time}
+            sync_deadline: {type: string, format: date-time}
+        meter_box:
+          type: object
+          properties:
+            id: {type: integer}
+            number: {type: [string, 'null']}
+            name: {type: string}
+            location: {type: [string, 'null']}
+            sub_area_id: {type: [integer, 'null']}
+            sub_area_name: {type: [string, 'null']}
+        subscriptions:
+          type: array
+          items:
+            type: object
+            properties:
+              id: {type: integer}
+              name: {type: string}
+              account_number: {type: string}
+              previous_reading: {type: number}
+              already_read: {type: boolean}
+              current_reading: {type: [number, 'null']}
+              reading_status: {type: [string, 'null']}
+              recent_readings: {type: array, items: {type: object}}
+    AssignmentsResponse:
+      type: object
+      properties:
+        business_date: {type: string, format: date}
+        next_reading: {type: [object, 'null']}
+        assignments: {type: array, items: {$ref: '#/components/schemas/ReadingAssignment'}}

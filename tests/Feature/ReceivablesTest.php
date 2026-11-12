@@ -9,7 +9,9 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\DebtAging;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordPayment;
+use App\Support\Reports\DebtAging;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -82,11 +84,11 @@ class ReceivablesTest extends TestCase
     public function test_a_cancelled_charge_is_never_aged_and_a_partial_refund_brings_back_the_old_debt_it_paid(): void
     {
         $this->travelTo('2026-05-23 12:00:00');
-        SubscriptionTransaction::recordCharge($this->subscription, $this->branchAdmin, ChargeType::Penalty, '100', null);
+        RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '100', null);
         $this->travelTo('2026-06-12 12:00:00');
-        $payment = SubscriptionTransaction::recordPayment($this->subscription, $this->branchAdmin, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($this->subscription, $this->branchAdmin, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
         $this->travelTo('2026-07-12 12:00:00');
-        $charge = SubscriptionTransaction::recordCharge($this->subscription, $this->branchAdmin, ChargeType::Penalty, '20', null);
+        $charge = RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '20', null);
         $this->actingAs($this->branchAdmin)
             ->delete(route('subscriptions.transactions.destroy', [$this->subscription, $charge]), ['correction_reason' => 'duplicate', 'correction_notes' => 'مكررة'])
             ->assertSessionHasNoErrors();

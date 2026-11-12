@@ -6,7 +6,7 @@ use App\Enums\MessageKind;
 use App\Enums\MeterReadingStatus;
 use App\Models\Subscription;
 use App\Models\User;
-use App\Support\Money;
+use App\Support\Ledger\Money;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -98,7 +98,7 @@ class MessageComposer
             'الاسم' => $subscription->displayName(),
             'رقم_الاشتراك' => (string) $subscription->account_number,
             'الطبلون' => $subscription->meterBox?->displayName() ?? '',
-            'الفرع' => $subscription->branch?->name ?? '',
+            __('Branch') => $subscription->branch?->name ?? '',
             'الرصيد' => self::money($subscription->balance ?? $subscription->balance()),
         ];
 

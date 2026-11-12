@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\DiscountMethod;
+use App\Support\Ledger\LedgerAmounts;
 use Database\Factories\StandingDiscountFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -36,12 +37,12 @@ class StandingDiscount extends Model
      */
     public static function termsFor(DiscountMethod $method, float|string $value): string
     {
-        $value = SubscriptionTransaction::formatAmount($value);
+        $value = LedgerAmounts::formatAmount($value);
 
         return match ($method) {
             DiscountMethod::Percentage => $value.'%',
-            DiscountMethod::Kilowatt => $value.' كيلو',
-            DiscountMethod::Shekel => $value.' شيكل من سعر الكيلو',
+            DiscountMethod::Kilowatt => $value.__(' kWh'),
+            DiscountMethod::Shekel => $value.__(' shekels off the kWh price'),
         };
     }
 

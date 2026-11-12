@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Support\BranchDomainScope;
 use Database\Factories\SubscriberProfileFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,7 +32,7 @@ class SubscriberProfile extends Model
 
         static::saved(function (SubscriberProfile $profile): void {
             if ($profile->wasChanged(self::PERSONAL_FIELDS)) {
-                $profile->subscriptions()->withoutGlobalScope(BranchDomainScope::class)->update($profile->only(self::PERSONAL_FIELDS));
+                $profile->subscriptions()->acrossBranches()->update($profile->only(self::PERSONAL_FIELDS));
             }
         });
 

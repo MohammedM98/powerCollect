@@ -10,13 +10,16 @@ namespace App\Support;
 final class DeletionBlocker
 {
     /**
-     * "لا يمكن حذف الفرع لوجود سجلات مرتبطة به — المشتركون: 12 · المستخدمون: 3.",
-     * or null when nothing uses the record. `$instead` suggests what to do
-     * instead, for records that are rarely unused.
+     * Why the record cannot be deleted, listing what uses it and how much
+     * (for a branch: subscriptions 12 · users 3), or null when nothing uses
+     * it. The wording is in lang/ar.json: deletion.{record} names the
+     * record, deletion.{record}.{use} each use, and deletion.{record}.instead
+     * what to do instead, for records that are rarely unused.
      *
-     * @param  array<string, int>  $uses  what uses the record => how many
+     * @param  string  $record  the record's key, such as branch or meter_box
+     * @param  array<string, int>  $uses  each use's key => how many
      */
-    public static function describe(string $record, array $uses, ?string $instead = null): ?string
+    public static function describe(string $record, array $uses, bool $instead = false): ?string
     {
         $inUse = array_filter($uses);
 
@@ -24,8 +27,9 @@ final class DeletionBlocker
             return null;
         }
 
-        $list = implode(' · ', array_map(fn (string $label, int $count): string => "{$label}: {$count}", array_keys($inUse), $inUse));
+        $list = implode(' · ', array_map(fn (string $use, int $count): string => __("deletion.{$record}.{$use}").": {$count}", array_keys($inUse), $inUse));
+        $message = __('deletion.blocked', ['record' => __("deletion.{$record}"), 'list' => $list]);
 
-        return trim("لا يمكن حذف {$record} لوجود سجلات مرتبطة به — {$list}. {$instead}");
+        return $instead ? $message.' '.__("deletion.{$record}.instead") : $message;
     }
 }

@@ -15,26 +15,26 @@ enum AuditAction: string
     public function label(): string
     {
         return match ($this) {
-            self::ViewAccounts => 'عرض المشتركين وكشوف حساباتهم',
-            self::ViewLedger => 'عرض السجل المالي',
-            self::ViewHistory => 'عرض سجل تعديل الحركات',
-            self::ReviewTransfers => 'مراجعة الحوالات وتسجيل مبلغ البنك',
-            self::ApproveBoxes => 'اعتماد تدقيق الصندوق',
-            self::ApprovePeriods => 'اعتماد تدقيق الفترة كاملة',
-            self::PrintReports => 'طباعة الصناديق والكشوف والسندات',
+            self::ViewAccounts => 'View subscribers and their account statements',
+            self::ViewLedger => 'View the ledger',
+            self::ViewHistory => 'View the transaction change log',
+            self::ReviewTransfers => 'Review transfers and record the bank amount',
+            self::ApproveBoxes => 'Approve a box audit',
+            self::ApprovePeriods => 'Approve a whole period audit',
+            self::PrintReports => 'Print boxes, statements and vouchers',
         };
     }
 
     public function description(): string
     {
         return match ($this) {
-            self::ViewAccounts => 'يقرأ بيانات المشترك وكشفه دون تعديلها.',
-            self::ViewLedger => 'يتابع الدفعات والحركات المالية للفروع المحددة.',
-            self::ViewHistory => 'يرى من عدّل الحركة ووقت التعديل وسببه.',
-            self::ReviewTransfers => 'يسجّل ما وصل إلى البنك وسبب الفرق في الصناديق المغلقة.',
-            self::ApproveBoxes => 'يعتمد الصندوق ويرحّل فروق التدقيق إلى حسابات المشتركين.',
-            self::ApprovePeriods => 'يعتمد صناديق الفترة معًا؛ يتطلب اعتماد الصناديق.',
-            self::PrintReports => 'يفتح تقارير الطباعة للبيانات التي يملك الاطلاع عليها.',
+            self::ViewAccounts => 'Reads a subscriber\'s details and statement without changing them.',
+            self::ViewLedger => 'Follows the selected branches\' payments and transactions.',
+            self::ViewHistory => 'Sees who changed a transaction, when and why.',
+            self::ReviewTransfers => 'Records what reached the bank and why it differs, in closed boxes.',
+            self::ApproveBoxes => 'Approves the box and posts the audit differences to the subscribers\' accounts.',
+            self::ApprovePeriods => 'Approves the period\'s boxes together; needs box approval.',
+            self::PrintReports => 'Opens the print reports for the data they may view.',
         };
     }
 }

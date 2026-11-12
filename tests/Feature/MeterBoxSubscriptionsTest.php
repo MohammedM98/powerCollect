@@ -12,8 +12,9 @@ use App\Models\Governorate;
 use App\Models\MeterBox;
 use App\Models\SubArea;
 use App\Models\Subscription;
-use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -28,9 +29,9 @@ class MeterBoxSubscriptionsTest extends TestCase
         MeterBox::factory()->create(['branch_id' => $actor->branch_id, 'box_number' => 'BOX-002']);
         $debtor = Subscription::factory()->create(['branch_id' => $actor->branch_id, 'meter_box_id' => $box->id]);
         $creditor = Subscription::factory()->create(['branch_id' => $actor->branch_id, 'meter_box_id' => $box->id, 'status' => SubscriptionStatus::Disconnected]);
-        SubscriptionTransaction::recordCharge($debtor, $actor, ChargeType::Penalty, '100', 'Charge');
-        SubscriptionTransaction::recordPayment($debtor, $actor, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
-        SubscriptionTransaction::recordPayment($creditor, $actor, ['amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        RecordCharge::handle($debtor, $actor, ChargeType::Penalty, '100', 'Charge');
+        RecordPayment::handle($debtor, $actor, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        RecordPayment::handle($creditor, $actor, ['amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash']);
         Subscription::factory()->create(['meter_box_id' => $box->id]);
 
         $this->actingAs($actor)->get(route('meter-boxes.index'))->assertInertia(fn ($page) => $page
@@ -54,7 +55,7 @@ class MeterBoxSubscriptionsTest extends TestCase
             'subscription_name' => 'Subscription name', 'initial_reading' => 0,
         ]);
         Subscription::factory()->create(['branch_id' => $actor->branch_id]);
-        SubscriptionTransaction::recordPayment($subscription, $actor, ['amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        RecordPayment::handle($subscription, $actor, ['amount' => '50', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $this->actingAs($actor)->getJson(route('meter-boxes.subscriptions.index', $box))->assertOk()
             ->assertJsonPath('total', 1)

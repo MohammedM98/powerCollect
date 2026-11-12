@@ -9,7 +9,7 @@ use App\Models\CompanyFormTemplate;
 use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\User;
-use App\Support\CompanyForms;
+use App\Support\Branding\CompanyForms;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;

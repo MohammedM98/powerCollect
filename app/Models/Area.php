@@ -47,9 +47,9 @@ class Area extends Model
      */
     public function deletionBlocker(): ?string
     {
-        return DeletionBlocker::describe('المنطقة', [
-            'منطقة 2' => $this->subAreas()->count(),
-            'الفروع' => Branch::query()->where('area_id', $this->id)->count(),
+        return DeletionBlocker::describe('area', [
+            'sub_areas' => $this->subAreas()->count(),
+            'branches' => Branch::query()->where('area_id', $this->id)->count(),
         ]);
     }
 }

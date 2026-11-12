@@ -21,6 +21,7 @@ import HistoryModal from './HistoryModal';
 import ResultReport from './ResultReport';
 import { secondaryButtonClass } from '@/Components/SecondaryButton';
 import PageHeader from '@/Components/PageHeader';
+import { urlWithout } from '@/lib/pageUrl';
 
 const FOCUS_RING = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white';
 
@@ -61,7 +62,7 @@ function Stat({ label, value, tone = 'text-gray-900', hint }) {
  * first and reporting how it went for each.
  */
 export default function Show({ list, items, summary, abilities, reasonOptions, channelOptions, smsDeliversMessages, warningTemplates, defaultWarning, placeholders, today, usualFee, filters, filterOptions, history }) {
-    const { flash } = usePage();
+    const { flash, url: pageUrl } = usePage();
     const { search, setSearch, sort, setPerPage, filterValues, setFilter, setFilters, clearFilters } = useDataTable(`/disconnection-lists/${list.id}`, filters);
     const [selectedIds, setSelectedIds] = useState(() => new Set());
     const [allMatching, setAllMatching] = useState(false);
@@ -131,9 +132,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
 
     function closeHistory() {
         setHistoryLoading(null);
-        const url = new URL(window.location.href);
-        url.searchParams.delete('history');
-        router.replace({ url: `${url.pathname}${url.search}`, props: (props) => ({ ...props, history: null }), preserveScroll: true, preserveState: true });
+        router.replace({ url: urlWithout(pageUrl, 'history'), props: (props) => ({ ...props, history: null }), preserveScroll: true, preserveState: true });
     }
 
     function toggleClosed() {

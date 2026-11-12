@@ -61,9 +61,9 @@ class MeterBox extends Model
      */
     public function deletionBlocker(): ?string
     {
-        return DeletionBlocker::describe('الطبلون', [
-            'المشتركون' => $this->subscriptions()->count(),
-            'توزيع القراءات' => ReadingAssignment::query()->where('meter_box_id', $this->id)->count(),
+        return DeletionBlocker::describe('meter_box', [
+            'subscriptions' => $this->subscriptions()->count(),
+            'reading_distribution' => ReadingAssignment::query()->where('meter_box_id', $this->id)->count(),
         ]);
     }
 }

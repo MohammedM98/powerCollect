@@ -3,17 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PermissionKey;
-use App\Http\Concerns\DeletesRecords;
-use App\Http\Concerns\FiltersDataTable;
-use App\Http\Concerns\ProvidesFormOptions;
-use App\Http\Concerns\ReturnsToDashboard;
 use App\Http\Requests\StoreBranchRequest;
 use App\Http\Requests\UpdateBranchRequest;
 use App\Models\Area;
 use App\Models\Branch;
 use App\Models\Governorate;
 use App\Notifications\ActionCompleted;
-use App\Support\BranchDomainContext;
+use App\Support\Branches\BranchDomainContext;
+use App\Support\Branches\BranchFormOptions;
+use App\Support\Navigation\DashboardReturn;
+use App\Support\Queries\DataTableFilters;
+use App\Support\RecordDeletion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -21,8 +21,6 @@ use Inertia\Response as InertiaResponse;
 
 class BranchController extends Controller
 {
-    use DeletesRecords, FiltersDataTable, ProvidesFormOptions, ReturnsToDashboard;
-
     private const SORTABLE = ['name', 'location', 'phone', 'is_active', 'created_at'];
 
     /**
@@ -34,10 +32,10 @@ class BranchController extends Controller
 
         $actor = $request->user();
         $query = Branch::query()->with(['governorate', 'area']);
-        $this->applyDataTableFilters($query, $request, ['name', 'location', 'phone'], self::SORTABLE, 'name');
-        $this->applyDataTableFilterSelects($query, $request, ['is_active', 'governorate_id', 'area_id']);
+        DataTableFilters::applyDataTableFilters($query, $request, ['name', 'location', 'phone'], self::SORTABLE, 'name');
+        DataTableFilters::applyDataTableFilterSelects($query, $request, ['is_active', 'governorate_id', 'area_id']);
 
-        $branches = $query->paginate($this->dataTablePerPage($request))
+        $branches = $query->paginate(DataTableFilters::dataTablePerPage($request))
             ->withQueryString()
             ->through(fn (Branch $branch) => [
                 ...$branch->toArray(),
@@ -51,9 +49,9 @@ class BranchController extends Controller
             'canCreate' => $actor->can('create', Branch::class),
             'canManageDomains' => $actor->hasPermission(PermissionKey::ManageBranchDomains),
             'domainRoutingEnabled' => (bool) config('powercollect.branch_domains_enabled'),
-            'filters' => $this->dataTableState($request, 'name'),
+            'filters' => DataTableFilters::dataTableState($request, 'name'),
             'filterOptions' => $this->filterOptions(),
-            ...$this->branchFormOptions(),
+            ...BranchFormOptions::branchFormOptions(),
         ]);
     }
 
@@ -64,7 +62,7 @@ class BranchController extends Controller
     {
         $this->authorize('create', Branch::class);
 
-        return Inertia::render('Branches/Create', $this->branchFormOptions());
+        return Inertia::render('Branches/Create', BranchFormOptions::branchFormOptions());
     }
 
     /**
@@ -75,7 +73,7 @@ class BranchController extends Controller
         $branch = Branch::create($request->validated());
         $request->user()->notify(new ActionCompleted('branch-created', $branch->name));
 
-        return $this->redirectAfterSave($request, 'branches.index', 'branch-created');
+        return DashboardReturn::redirectAfterSave($request, 'branches.index', 'branch-created');
     }
 
     /**
@@ -87,7 +85,7 @@ class BranchController extends Controller
 
         return Inertia::render('Branches/Edit', [
             'branch' => $branch,
-            ...$this->branchFormOptions(),
+            ...BranchFormOptions::branchFormOptions(),
         ]);
     }
 
@@ -107,7 +105,7 @@ class BranchController extends Controller
      */
     public function destroy(Request $request, Branch $branch): RedirectResponse
     {
-        return $this->deleteRecord($request, $branch, 'branch-deleted', $branch->name);
+        return RecordDeletion::deleteRecord($request, $branch, 'branch-deleted', $branch->name);
     }
 
     /**
@@ -118,9 +116,9 @@ class BranchController extends Controller
     private function filterOptions(): array
     {
         return [
-            $this->activeStatusFilterGroup(),
-            $this->filterGroup('governorate_id', 'المحافظة', $this->modelOptions(Governorate::orderBy('name')->get())),
-            $this->areaFilterGroup(Area::orderBy('name')->get()),
+            DataTableFilters::activeStatusFilterGroup(),
+            DataTableFilters::filterGroup('governorate_id', 'المحافظة', DataTableFilters::modelOptions(Governorate::orderBy('name')->get())),
+            DataTableFilters::areaFilterGroup(Area::orderBy('name')->get()),
         ];
     }
 }

@@ -12,7 +12,8 @@ use App\Models\CurrencyRate;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Money;
+use App\Support\Ledger\Money;
+use App\Support\Ledger\TransactionActions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia;
@@ -179,7 +180,7 @@ class FinancialLifecycleTest extends TestCase
 
         $this->assertSame('100.00', $subscription->balance());
         $this->assertDatabaseHas('cash_boxes', ['id' => $payment->boxEntry->cash_box_id, 'received_by' => $actor->id]);
-        $this->assertSame([], $payment->fresh()->availableActions($actor));
+        $this->assertSame([], TransactionActions::availableActions($payment->fresh(), $actor));
     }
 
     #[TestWith(['collector'])]

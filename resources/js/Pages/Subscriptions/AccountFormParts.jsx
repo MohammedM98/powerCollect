@@ -344,7 +344,7 @@ export function FormHeader({ titleId, icon, tone = 'graphite', title, subtitle, 
                 <Icon name={icon} className="h-5 w-5" strokeWidth={1.8} />
             </span>
             <div className="min-w-0">
-                <h3 id={titleId} className="text-[20px] font-extrabold leading-tight" style={{ fontFamily: 'var(--gl-head)' }}>
+                <h3 id={titleId} className="text-[20px] font-extrabold leading-tight !font-[family-name:var(--gl-head)]">
                     {title}
                 </h3>
                 <p className="gl-sub mt-0.5 !text-[13px]">{subtitle}</p>

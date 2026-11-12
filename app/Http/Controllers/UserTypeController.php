@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Concerns\DeletesRecords;
 use App\Http\Requests\StoreUserTypeRequest;
 use App\Http\Requests\UpdateUserTypeRequest;
 use App\Models\UserType;
 use App\Notifications\ActionCompleted;
+use App\Support\RecordDeletion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,8 +16,6 @@ use Illuminate\Http\Request;
  */
 class UserTypeController extends Controller
 {
-    use DeletesRecords;
-
     public function index(): RedirectResponse
     {
         $this->authorize('viewAny', UserType::class);
@@ -47,6 +45,6 @@ class UserTypeController extends Controller
 
     public function destroy(Request $request, UserType $userType): RedirectResponse
     {
-        return $this->deleteRecord($request, $userType, 'user-type-deleted', $userType->name);
+        return RecordDeletion::deleteRecord($request, $userType, 'user-type-deleted', $userType->name);
     }
 }

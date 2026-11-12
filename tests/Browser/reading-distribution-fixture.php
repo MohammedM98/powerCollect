@@ -8,6 +8,7 @@ use App\Models\ReadingCycle;
 use App\Models\SubArea;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Support\Readings\ReadingWeeks;
 
 /** This fixture is only run by the browser harness against its temporary database. */
 if (config('database.default') !== 'sqlite' || ! str_contains(config('database.connections.sqlite.database'), 'powercollect-browser-')) {
@@ -45,7 +46,7 @@ foreach (['أبو ذر', 'الشافعي', 'السوق', 'المدارس', 'ال
 $messageSubscription = Subscription::query()->where('branch_id', $branch->id)->firstOrFail();
 $baselineSubscription = Subscription::query()->where('branch_id', $branch->id)->whereKeyNot($messageSubscription->id)->firstOrFail();
 $baselineSubscription->update(['initial_reading' => 123]);
-$messageWeek = MeterReading::latestEndedWeekStart($branch)->subWeeks(12)->toDateString();
+$messageWeek = ReadingWeeks::latestEndedWeekStart($branch)->subWeeks(12)->toDateString();
 MeterReading::factory()->approved()->for($messageSubscription)->create([
     'week_start' => $messageWeek, 'previous_reading' => 100, 'current_reading' => 125,
     'consumption' => 25, 'unit_price' => 1.75, 'recorded_by' => $owner->id,

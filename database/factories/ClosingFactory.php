@@ -6,7 +6,7 @@ use App\Enums\ClosingStatus;
 use App\Enums\ClosingType;
 use App\Models\Branch;
 use App\Models\Closing;
-use App\Support\ClosingPeriods;
+use App\Support\Closing\ClosingPeriods;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -40,11 +40,11 @@ class ClosingFactory extends Factory
 
     public function submitted(): static
     {
-        return $this->state(fn (): array => ['status' => ClosingStatus::Submitted, 'counted_cash' => '0.00', 'opening_cash' => '0.00', 'submitted_at' => now()]);
+        return $this->state(fn (): array => ['status' => ClosingStatus::Submitted, 'opening_cash' => '0.00', 'submitted_at' => now()]);
     }
 
     public function approved(): static
     {
-        return $this->state(fn (): array => ['status' => ClosingStatus::Approved, 'counted_cash' => '0.00', 'opening_cash' => '0.00', 'submitted_at' => now(), 'reviewed_at' => now()]);
+        return $this->state(fn (): array => ['status' => ClosingStatus::Approved, 'opening_cash' => '0.00', 'submitted_at' => now(), 'reviewed_at' => now()]);
     }
 }

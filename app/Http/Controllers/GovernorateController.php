@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Concerns\DeletesRecords;
-use App\Http\Concerns\FiltersDataTable;
 use App\Http\Requests\StoreGovernorateRequest;
 use App\Http\Requests\UpdateGovernorateRequest;
 use App\Models\Area;
@@ -11,6 +9,8 @@ use App\Models\Governorate;
 use App\Models\SubArea;
 use App\Models\User;
 use App\Notifications\ActionCompleted;
+use App\Support\Queries\DataTableFilters;
+use App\Support\RecordDeletion;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,8 +20,6 @@ use Inertia\Response as InertiaResponse;
 
 class GovernorateController extends Controller
 {
-    use DeletesRecords, FiltersDataTable;
-
     private const SORTABLE = ['name', 'created_at'];
 
     /**
@@ -49,9 +47,9 @@ class GovernorateController extends Controller
         $query = Governorate::query()
             ->withCount('areas')
             ->when($scopedToBranch, fn (Builder $query) => $query->whereKey($selectedGovernorateId));
-        $this->applyDataTableFilters($query, $request, ['name'], self::SORTABLE, 'name');
+        DataTableFilters::applyDataTableFilters($query, $request, ['name'], self::SORTABLE, 'name');
 
-        $governorates = $query->paginate($this->dataTablePerPage($request))
+        $governorates = $query->paginate(DataTableFilters::dataTablePerPage($request))
             ->withQueryString()
             ->through(fn (Governorate $governorate) => [
                 ...$this->editableFields($governorate),
@@ -66,7 +64,7 @@ class GovernorateController extends Controller
             'selectedArea' => $this->selectedArea($selectedAreaId, $user),
             'scopedToBranch' => $scopedToBranch,
             'canCreateGovernorate' => $user->can('create', Governorate::class),
-            'filters' => $this->dataTableState($request, 'name'),
+            'filters' => DataTableFilters::dataTableState($request, 'name'),
             'governorateOptions' => Governorate::orderBy('name')->get(),
             'areaOptions' => Area::visibleTo($user)->orderBy('name')->get(),
             'allowSubAreaWithoutArea' => $user->isSuperAdmin(),
@@ -122,7 +120,7 @@ class GovernorateController extends Controller
      */
     public function destroy(Request $request, Governorate $governorate): RedirectResponse
     {
-        return $this->deleteRecord($request, $governorate, 'governorate-deleted', $governorate->name);
+        return RecordDeletion::deleteRecord($request, $governorate, 'governorate-deleted', $governorate->name);
     }
 
     /**

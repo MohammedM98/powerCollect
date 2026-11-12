@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Branch;
 use App\Models\CompanyDocument;
-use App\Support\CompanyForms;
+use App\Support\Branding\CompanyForms;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

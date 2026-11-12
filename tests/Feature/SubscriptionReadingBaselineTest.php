@@ -8,6 +8,8 @@ use App\Models\MeterReading;
 use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Support\Readings\ApproveReading;
+use App\Support\Readings\RecordReading;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
@@ -54,8 +56,8 @@ class SubscriptionReadingBaselineTest extends TestCase
     {
         $actor = User::factory()->branchAdmin()->create();
         $subscription = Subscription::factory()->for($actor->branch)->create(['initial_reading' => 123, 'kilowatt_price' => 0.5, 'minimum_charge' => 0]);
-        $current = MeterReading::recordFor($subscription, now()->parse('2026-09-18'), 150, $actor, null);
-        $current->approve($actor, true);
+        $current = RecordReading::handle($subscription, now()->parse('2026-09-18'), 150, $actor, null);
+        ApproveReading::handle($current, $actor, true);
         $payload = $this->payload(['expected_reading' => 123, 'current_reading' => 130]);
 
         $this->actingAs($actor)->postJson(route('subscriptions.reading-baseline.preview', $subscription), $payload)
@@ -68,7 +70,7 @@ class SubscriptionReadingBaselineTest extends TestCase
         $this->assertTrue($current->fresh()->requires_reentry);
         $this->assertSame('0.00', $subscription->fresh()->balance());
         $this->assertSame(1, $subscription->meterReadings()->count());
-        $this->assertSame('initial_reading_adjustment', $current->fresh()->adjustment_history[0]['kind']);
+        $this->assertSame('initial_reading_adjustment', $current->adjustments()->first()->kind);
         $this->get(route('subscriptions.index'))->assertInertia(fn ($page) => $page
             ->where('subscriptions.data.0.initialReading.value', 130)
             ->where('subscriptions.data.0.meterReadings.0.requiresReentry', true)

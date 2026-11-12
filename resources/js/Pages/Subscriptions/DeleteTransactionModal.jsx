@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import FormModal from '@/Components/FormModal';
 import { describeBalance } from '@/lib/accountStatement';
@@ -32,11 +32,15 @@ export default function DeleteTransactionModal({ onClose, subscription, balance,
 
     // A reading entered wrongly is meant to be corrected and billed again, so that reason suggests sending it back; any other waives its bill.
     // The box stays the user's to change once a reason is picked.
-    useEffect(() => {
+    const suggestReopening = useEffectEvent((reason) => {
         if (isReadingCharge) {
-            form.setData('reopen_reading', form.data.correction_reason === 'wrong_reading');
+            form.setData('reopen_reading', reason === 'wrong_reading');
         }
-    }, [form.data.correction_reason]);
+    });
+    const correctionReason = form.data.correction_reason;
+    useEffect(() => {
+        suggestReopening(correctionReason);
+    }, [correctionReason]);
     const deleteForm = {
         ...form,
         isEdit: true,

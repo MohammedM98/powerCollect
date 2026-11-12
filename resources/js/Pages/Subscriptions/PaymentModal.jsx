@@ -1,25 +1,21 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useId, useRef, useState } from 'react';
 import { useHttp, usePage } from '@inertiajs/react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
-import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import Modal from '@/Components/Modal';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
-import SearchableSelect from '@/Components/SearchableSelect';
 import { useResourceForm } from '@/hooks/useResourceForm';
 import { paymentInShekels } from '@/lib/accountStatement';
 import { overpaymentLevel } from '@/lib/overpayment';
-import { formatMoney, normalizeDecimalInput } from '@/lib/format';
+import { formatMoney } from '@/lib/format';
 import { clearErrorOnInput, submitOnCtrlEnter, validateFormFields } from '@/lib/formValidation';
-import { balanceCells, CoverageBar, FieldLabel, FormHeader, FormStep, MovementCard, MOVEMENT_TONES, SheetBody, SHEET_FORM_CLASS } from './AccountFormParts';
+import { balanceCells, CoverageBar, FormHeader, FormStep, MovementCard, MOVEMENT_TONES, SheetBody, SHEET_FORM_CLASS } from './AccountFormParts';
 import { CorrectionReasonFields, EMPTY_CORRECTION, OriginalLine } from './CorrectionFields';
-import { inputClass, MethodTile, PaymentReceipt, TransferFields } from './PaymentModalParts';
+import { inputClass, PaymentReceipt } from './PaymentModalParts';
+import PaymentMethodStep from './PaymentMethodStep';
+import PaymentAmountStep from './PaymentAmountStep';
+import PaymentFooter from './PaymentFooter';
 
 export { inputClass };
-
-const QUICK_AMOUNTS = [50, 100, 200];
-
 
 /**
  * Record a payment on a subscription's account: how much, in shekels, and
@@ -115,11 +111,17 @@ export default function PaymentModal({
     const methods = ['bank_transfer', 'cash'].filter((method) => paymentMethods.some((option) => option.value === method));
     const tone = correcting ? 'correction' : 'payment';
 
+    const askReferenceStatus = useEffectEvent((query) => referenceCheck
+        .get(`/subscriptions/${subscription.id}/payments/reference-status?${query}`)
+        .then((status) => setReferenceStatus(status ?? null))
+        .catch(() => setReferenceStatus(null)));
+    const cancelReferenceCheck = useEffectEvent(() => referenceCheck.cancel());
+
     useEffect(() => {
         const reference = data.reference_number.trim();
 
         if (!show || !throughBank || reference === '') {
-            referenceCheck.cancel();
+            cancelReferenceCheck();
             setReferenceStatus(null);
 
             return undefined;
@@ -137,15 +139,12 @@ export default function PaymentModal({
                 query.set('ignore_transaction_id', correcting.id);
             }
 
-            referenceCheck
-                .get(`/subscriptions/${subscription.id}/payments/reference-status?${query}`)
-                .then((status) => setReferenceStatus(status ?? null))
-                .catch(() => setReferenceStatus(null));
+            askReferenceStatus(query);
         }, 400);
 
         return () => {
             clearTimeout(timer);
-            referenceCheck.cancel();
+            cancelReferenceCheck();
         };
     }, [show, throughBank, data.reference_number, data.amount, data.currency, data.sender_name, correcting?.id, subscription.id]);
 
@@ -303,175 +302,36 @@ export default function PaymentModal({
                         <SheetBody>
                             {correcting && <OriginalLine entry={correcting} />}
 
-                            <FormStep number={1} title="المبلغ المستلم" done={Number(data.amount) > 0 && inShekels !== null}>
-                                <div>
-                                    <label htmlFor="amount" className="sr-only">المبلغ المستلم</label>
-                                    <div className="gl-amount" data-invalid={errors.amount ? true : undefined}>
-                                        <div className="flex items-center gap-3">
-                                            <input
-                                                ref={amountInput}
-                                                id="amount"
-                                                name="amount"
-                                                required
-                                                autoFocus
-                                                inputMode="decimal"
-                                                autoComplete="off"
-                                                placeholder="0.00"
-                                                dir="ltr"
-                                                aria-describedby={errors.amount ? `${titleId}-amount-error` : undefined}
-                                                value={data.amount}
-                                                onChange={(e) => setData((current) => ({ ...current, amount: normalizeDecimalInput(e.target.value), confirm_overpayment: false }))}
-                                                className="gl-amount-input"
-                                            />
-                                            <div className="w-40 shrink-0 sm:w-44">
-                                                <label htmlFor="payment-currency" className="sr-only">عملة الدفع</label>
-                                                <SearchableSelect
-                                                    id="payment-currency"
-                                                    name="currency"
-                                                    required
-                                                    value={data.currency}
-                                                    onChange={setCurrency}
-                                                    options={currencies.map((currency) => ({ value: currency.code, label: `${currency.label} (${currency.code})` }))}
-                                                    searchable={false}
-                                                    clearable={false}
-                                                />
-                                            </div>
-                                        </div>
-                                        {data.currency !== 'ILS' && <p className="mt-3 text-sm" style={{ color: Number(exchangeRate) > 0 ? 'var(--gl-muted)' : 'var(--gl-bad)' }} role="status">{Number(exchangeRate) > 0 ? <>سعر الصرف المعتمد: 1 {currencyLabel} = <bdi className="font-display font-semibold">{Number(exchangeRate)}</bdi> شيكل</> : 'لم يُضبط سعر لهذه العملة؛ يجب ضبطه من صفحة العملات وأسعار الصرف أولًا.'}</p>}
-                                        <div className="gl-amount-quick">
-                                            {QUICK_AMOUNTS.map((quick) => (
-                                                <button
-                                                    key={quick}
-                                                    type="button"
-                                                    onClick={() => setAmount(String(quick))}
-                                                    className="gl-chip gl-chip-sm gl-num"
-                                                >
-                                                    {quick}
-                                                </button>
-                                            ))}
-                                            {owed > 0 && (
-                                                <button
-                                                    type="button"
-                                                    disabled={data.currency !== 'ILS' && !(Number(exchangeRate) > 0)}
-                                                    onClick={() => setAmount(String(Number((owed / (data.currency === 'ILS' ? 1 : Number(exchangeRate))).toFixed(2))))}
-                                                    className="gl-chip gl-chip-sm" style={{ color: 'var(--gl-ok)', borderColor: 'color-mix(in srgb, var(--gl-ok) 40%, transparent)' }}
-                                                >
-                                                    تسديد كامل الدين
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <InputError message={errors.currency} className="mt-2" />
-                                    <InputError message={errors.payment_token} className="mt-2" />
-                                    <InputError message={errors.exchange_rate} className="mt-2" />
-                                    {errors.amount && (
-                                        <p
-                                            id={`${titleId}-amount-error`}
-                                            role="alert"
-                                            className="gl-error mt-2 flex items-center gap-1.5"
-                                        >
-                                            <Icon name="info" className="h-[18px] w-[18px]" />
-                                            {errors.amount}
-                                        </p>
-                                    )}
-                                    {overpayment !== 'none' && (
-                                        <div
-                                            role={overpayment === 'confirm' ? 'alert' : 'status'}
-                                            className="gl-notice mt-3" style={{ '--gl-c': overpayment === 'confirm' ? 'var(--gl-bad)' : 'var(--gl-warn)' }}
-                                        >
-                                            <p className="flex items-start gap-2 font-medium">
-                                                <Icon name="alert" className="mt-0.5 h-[18px] w-[18px] shrink-0" />
-                                                <span>
-                                                    {overpayment === 'confirm' ? 'المبلغ أكبر بكثير من المستحق' : 'المبلغ أكبر من المستحق'} على المشترك (
-                                                    <bdi className="font-display">{formatMoney(owed)}</bdi> ₪)، وسيبقى له رصيد دائن قدره{' '}
-                                                    <bdi className="font-display font-bold">{formatMoney((inShekels ?? 0) - owed)}</bdi> ₪.
-                                                    {overpayment === 'confirm' && ' تأكد أنك لم تكتب رقمًا زائدًا بالخطأ.'}
-                                                </span>
-                                            </p>
-                                            {overpayment === 'confirm' && (
-                                                <label className="mt-2 flex cursor-pointer items-center gap-2 font-semibold">
-                                                    <input
-                                                        type="checkbox"
-                                                        className="h-[18px] w-[18px]"
-                                                        checked={data.confirm_overpayment}
-                                                        onChange={(e) => setData('confirm_overpayment', e.target.checked)}
-                                                    />
-                                                    أؤكد أن المبلغ <bdi className="font-display">{formatMoney(data.amount)}</bdi> {currencyMark} صحيح
-                                                </label>
-                                            )}
-                                            <InputError message={errors.confirm_overpayment} className="mt-2" />
-                                        </div>
-                                    )}
-                                    {data.currency !== 'ILS' && inShekels !== null && <p role="status" className="mt-3 text-sm text-gray-600">القيمة المسجلة على حساب المشترك: <bdi className="font-display font-semibold">{formatMoney(inShekels)}</bdi> شيكل.</p>}
-                                </div>
-                            </FormStep>
+                            <PaymentAmountStep
+                                amountInput={amountInput}
+                                currencies={currencies}
+                                currencyLabel={currencyLabel}
+                                currencyMark={currencyMark}
+                                data={data}
+                                errors={errors}
+                                exchangeRate={exchangeRate}
+                                inShekels={inShekels}
+                                overpayment={overpayment}
+                                owed={owed}
+                                setAmount={setAmount}
+                                setCurrency={setCurrency}
+                                setData={setData}
+                                titleId={titleId}
+                            />
 
-                            <FormStep number={2} title="طريقة الدفع" hint={methods.length > 1 ? 'بالأرقام 1 · 2' : null} done={throughBank ? Boolean(data.bank_name) : Boolean(data.payment_method)}>
-                                <fieldset>
-                                    <legend className="sr-only">طريقة الدفع</legend>
-                                    <div className="grid gap-3 sm:grid-cols-2">
-                                        {methods.map((method) =>
-                                            method === 'bank_transfer' ? (
-                                                <MethodTile
-                                                    key={method}
-                                                    value={method}
-                                                    checked={throughBank}
-                                                    onChange={(value) => setData('payment_method', value)}
-                                                    icon="bank"
-                                                    title="تحويل بنكي أو محفظة"
-                                                    hint={transferBanks.join('، ')}
-                                                />
-                                            ) : (
-                                                <MethodTile
-                                                    key={method}
-                                                    value={method}
-                                                    checked={data.payment_method === method}
-                                                    onChange={(value) => setData('payment_method', value)}
-                                                    icon="banknotes"
-                                                    title="نقد"
-                                                    hint="استُلم المبلغ نقدًا"
-                                                />
-                                            ),
-                                        )}
-                                    </div>
-                                    <InputError message={errors.payment_method} className="mt-2" />
-
-                                    {throughBank && (
-                                        <TransferFields
-                                            data={data}
-                                            setData={setData}
-                                            errors={errors}
-                                            transferBanks={transferBanks}
-                                            senderBanks={senderBanks}
-                                            senderIsSubscriber={senderIsSubscriber}
-                                            onSenderToggle={toggleSender}
-                                            checkingReference={referenceCheck.processing}
-                                            referenceStatus={referenceStatus}
-                                        />
-                                    )}
-
-                                    {!throughBank && (
-                                        <div className="animate-menu gl-receipt mt-3 grid gap-4 !border-solid p-4">
-                                            <div>
-                                                <FieldLabel htmlFor="manual_voucher_number" hint="رقم الوصل الورقي">
-                                                    رقم السند اليدوي
-                                                </FieldLabel>
-                                                <input
-                                                    id="manual_voucher_number"
-                                                    name="manual_voucher_number"
-                                                    dir="ltr"
-                                                    autoComplete="off"
-                                                    placeholder="مثال: 00412"
-                                                    value={data.manual_voucher_number}
-                                                    onChange={(e) => setData('manual_voucher_number', e.target.value)}
-                                                    className={`${inputClass} text-end font-display placeholder:font-sans placeholder:font-normal`}
-                                                />
-                                                <InputError message={errors.manual_voucher_number} className="mt-2" />
-                                            </div>
-                                        </div>
-                                    )}
-                                </fieldset>
-                            </FormStep>
+                            <PaymentMethodStep
+                                data={data}
+                                errors={errors}
+                                methods={methods}
+                                referenceCheck={referenceCheck}
+                                referenceStatus={referenceStatus}
+                                senderBanks={senderBanks}
+                                senderIsSubscriber={senderIsSubscriber}
+                                setData={setData}
+                                throughBank={throughBank}
+                                toggleSender={toggleSender}
+                                transferBanks={transferBanks}
+                            />
 
                             <FormStep number={3} title="ملاحظة" hint="اختياري: تظهر في كشف الحساب" done={Boolean(data.notes)}>
                                 <div>
@@ -496,39 +356,16 @@ export default function PaymentModal({
                             )}
                         </SheetBody>
 
-                        <div className="gl-dialog-foot flex shrink-0 items-center gap-3 px-5 py-4 sm:px-6">
-                            <SecondaryButton onClick={requestClose} className="gl-lg">
-                                إلغاء
-                            </SecondaryButton>
-                            <span className="gl-sub hidden items-center gap-1.5 !text-[12.5px] xl:flex">
-                                <span className="kbd" dir="ltr">
-                                    Ctrl + Enter
-                                </span>
-                                للحفظ ·<span className="kbd">1</span>
-                                <span className="kbd">2</span>
-                                للطريقة
-                            </span>
-                            <PrimaryButton
-                                type="submit"
-                                disabled={
-                                    !(Number(data.amount) > 0) ||
-                                    inShekels === null ||
-                                    form.processing ||
-                                    (Boolean(referenceStatus?.conflict) && !data.confirm_duplicate_reference) ||
-                                    (overpayment === 'confirm' && !data.confirm_overpayment)
-                                }
-                                className={`gl-lg ms-auto min-w-0 flex-1 sm:min-w-[230px] sm:flex-none ${correcting ? 'gl-correcting' : ''}`}
-                            >
-                                <Icon name="check" className="h-[18px] w-[18px]" strokeWidth={2.2} />
-                                {form.processing
-                                    ? 'جارٍ الحفظ...'
-                                    : correcting
-                                      ? 'حفظ التصحيح'
-                                      : Number(data.amount) > 0
-                                        ? `تسجيل ${formatMoney(data.amount)} ${currencyMark}`
-                                        : 'تسجيل الدفعة'}
-                            </PrimaryButton>
-                        </div>
+                        <PaymentFooter
+                            correcting={correcting}
+                            currencyMark={currencyMark}
+                            data={data}
+                            form={form}
+                            inShekels={inShekels}
+                            overpayment={overpayment}
+                            referenceStatus={referenceStatus}
+                            requestClose={requestClose}
+                        />
                     </form>
                 )}
             </Modal>

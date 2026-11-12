@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -14,6 +14,7 @@ import { statementPrintDetails } from '@/lib/statementPrint';
 import { STATEMENT_VIEWS } from '@/lib/accountStatement';
 import { formatDate } from '@/lib/format';
 import { useBrand } from '@/hooks/useBrand';
+import { urlWith } from '@/lib/pageUrl';
 
 /** Pixels in a millimetre on screen (96 dpi). */
 const PX_PER_MM = 96 / 25.4;
@@ -39,7 +40,7 @@ const ZOOMS = [
  * design into one from here.
  */
 export default function PrintDesigner({ settings, children, beforePrint }) {
-    const { props } = usePage();
+    const { props, url: pageUrl } = usePage();
     const brand = useBrand();
     const sourceRef = useRef(null);
     const stageRef = useRef(null);
@@ -70,7 +71,7 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
             setPrinting(false);
         }
     }
-    const templates = props.printTemplates ?? [];
+    const templates = useMemo(() => props.printTemplates ?? [], [props.printTemplates]);
     const supportsTemplates = Array.isArray(props.printTemplates);
     const canManageTemplates = Boolean(props.can?.managePrintTemplates) && supportsTemplates;
     // Without the permission to customise, the printout keeps the company's template as it is.
@@ -136,12 +137,14 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
         return () => root.classList.remove('print-mode');
     }, []);
 
+    const fitLayoutToColumns = useEffectEvent((columns) => setLayout((current) => fitLayout(current ?? start.layout, freshLayout(columns))));
+
     // Read the page's table now and whenever it redraws.
     useEffect(() => {
         if (provided) {
             setTable({ columns: provided.columns, rows: provided.rows });
             setSummary(provided.summary ?? '');
-            setLayout((current) => fitLayout(current ?? start.layout, freshLayout(provided.columns)));
+            fitLayoutToColumns(provided.columns);
             return;
         }
         let frame = null;
@@ -153,11 +156,7 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
             if (extracted) {
                 setTable(extracted);
                 setSummary(extractSummary(sourceRef.current));
-                setLayout((current) => {
-                    const fresh = freshLayout(extracted.columns);
-
-                    return fitLayout(current ?? start.layout, fresh);
-                });
+                fitLayoutToColumns(extracted.columns);
             }
         }
 
@@ -171,7 +170,6 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
             observer.disconnect();
             cancelAnimationFrame(frame);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [provided]);
 
     useEffect(() => {
@@ -268,20 +266,14 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
                     }}><Icon name="check" className="h-4 w-4" />حفظ القالب{isChanged ? ' *' : ''}</SecondaryButton>}
                     {statementPrint && <label className="flex items-center gap-2 text-sm text-gray-600">عرض الكشف
                         <select aria-label="عرض الكشف المطبوع" value={props.printOptions.view} onChange={(event) => {
-                            const url = new URL(window.location.href);
-                            url.searchParams.set('view', event.target.value);
-                            if (props.subscription) url.searchParams.set('subscription', props.subscription.id);
-                            router.get(url.href, {}, { preserveState: true, preserveScroll: true });
+                            router.get(urlWith(pageUrl, { view: event.target.value, subscription: props.subscription?.id }), {}, { preserveState: true, preserveScroll: true });
                         }} className="!py-1.5 text-sm">
                             {STATEMENT_VIEWS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                         </select>
                     </label>}
                     {report?.counts && <label className="flex items-center gap-2 text-sm text-gray-600">الحركات
                         <select aria-label="تصفية الحركات المطبوعة" value={report.filter} onChange={(event) => {
-                            const url = new URL(window.location.href);
-                            url.searchParams.set('filter', event.target.value);
-                            if (report.boxId) url.searchParams.set('box', report.boxId);
-                            router.get(url.href, {}, { preserveState: true, preserveScroll: true });
+                            router.get(urlWith(pageUrl, { filter: event.target.value, box: report.boxId || null }), {}, { preserveState: true, preserveScroll: true });
                         }} className="!py-1.5 text-sm">
                             {Object.entries(reportFilters).map(([key, label]) => <option key={key} value={key}>{label} ({report.counts[key]})</option>)}
                         </select>

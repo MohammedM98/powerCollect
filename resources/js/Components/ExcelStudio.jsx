@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useEffectEvent, useId, useMemo, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import { DialogHeader } from '@/Components/DialogFrame';
@@ -7,10 +7,11 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import Switch from '@/Components/Switch';
 import TextInput from '@/Components/TextInput';
-import SegmentedTabs from '@/Components/SegmentedTabs';
-import { buildWorkbookModel, COLUMN_WIDTH_RANGE, columnLetter, columnWidth, defaultExcelSettings, EXCEL_FONT_SIZES, EXCEL_ORIENTATIONS, EXCEL_ROW_HEIGHTS, EXCEL_THEMES, excelFileName, excelLook, fitExcelSettings, formatExcelCell } from '@/lib/excelSheet';
-
-const PREVIEW_ROWS = 80;
+import { buildWorkbookModel, COLUMN_WIDTH_RANGE, columnLetter, columnWidth, defaultExcelSettings, excelFileName, fitExcelSettings } from '@/lib/excelSheet';
+import { Preview } from './ExcelPreview';
+import { store, Section } from './ExcelStudioParts';
+import ExcelCompanyTemplates from './ExcelCompanyTemplates';
+import ExcelLookSection from './ExcelLookSection';
 
 const LOOK = [
     ['header', 'العنوان والفرع والفترة أعلى الورقة'],
@@ -24,25 +25,6 @@ const LOOK = [
     ['pageSetup', 'جاهز للطباعة من Excel', 'A4 بعرض الصفحة، وصف العناوين وترقيم الصفحات في كل صفحة'],
     ['criteria', 'ورقة «معايير التقرير»', 'الفرع والفترة والتصفية، ومن أعدّ الملف ومتى'],
 ];
-
-/** Settings kept in this browser: the last export of each kind, and the templates saved for it. */
-const store = {
-    read(key, fallback) {
-        try {
-            const value = window.localStorage.getItem(key);
-            return value ? JSON.parse(value) : fallback;
-        } catch {
-            return fallback;
-        }
-    },
-    write(key, value) {
-        try {
-            window.localStorage.setItem(key, JSON.stringify(value));
-        } catch {
-            // Private browsing: the settings simply aren't remembered.
-        }
-    },
-};
 
 /**
  * The Excel editor: the parts a page can export (see lib/excelSheet.js),
@@ -75,11 +57,8 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
     const listHttp = useHttp({});
     const saveHttp = useHttp({});
 
-    useEffect(() => {
-        if (!show) {
-            return;
-        }
-
+    // Each opening reads the rows and the saved settings afresh, with whatever the caller passes then.
+    const loadWorkbook = useEffectEvent(() => {
         let cancelled = false;
         const controller = new AbortController();
         setParts(null);
@@ -106,6 +85,14 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
             cancelled = true;
             controller.abort();
         };
+    });
+
+    useEffect(() => {
+        if (!show) {
+            return undefined;
+        }
+
+        return loadWorkbook();
     }, [show]);
 
     const sheets = useMemo(() => (parts && settings ? buildWorkbookModel(parts, settings, meta) : []), [parts, settings, meta]);
@@ -303,42 +290,7 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                     </label>
                                 </Section>
 
-                                <Section title="الألوان والخط">
-                                    <p className="mb-2 text-sm font-semibold text-gray-700">ألوان صف العناوين والعنوان</p>
-                                    <div className="grid grid-cols-5 gap-2" role="radiogroup" aria-label="الألوان">
-                                        {Object.entries(EXCEL_THEMES).map(([key, theme]) => (
-                                            <button
-                                                key={key}
-                                                type="button"
-                                                role="radio"
-                                                aria-checked={settings.theme === key}
-                                                onClick={() => change({ theme: key })}
-                                                className={`flex flex-col items-center gap-1 rounded-control border p-1.5 text-[11px] font-semibold transition ${settings.theme === key ? 'border-excel-500 bg-excel-500/5 text-gray-900' : 'border-gray-100 text-gray-600 hover:border-gray-200'}`}
-                                            >
-                                                <span className="flex h-7 w-full flex-col overflow-hidden rounded border border-gray-200" aria-hidden="true">
-                                                    <span className="h-2" style={{ background: `#${theme.title}` }} />
-                                                    <span className="flex-1" style={{ background: `#${theme.head}` }} />
-                                                    <span className="h-1.5" style={{ background: `#${theme.group}` }} />
-                                                </span>
-                                                {theme.label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <div className="mt-4 space-y-3 text-sm font-semibold text-gray-700">
-                                        <div className="flex items-center justify-between gap-3">
-                                            حجم الخط
-                                            <SegmentedTabs label="حجم الخط" value={settings.fontSize} onChange={(value) => change({ fontSize: value })} options={Object.entries(EXCEL_FONT_SIZES).map(([value, size]) => ({ value, label: size.label }))} />
-                                        </div>
-                                        <div className="flex items-center justify-between gap-3">
-                                            ارتفاع الصفوف
-                                            <SegmentedTabs label="ارتفاع الصفوف" value={settings.rowHeight} onChange={(value) => change({ rowHeight: value })} options={Object.entries(EXCEL_ROW_HEIGHTS).map(([value, height]) => ({ value, label: height.label }))} />
-                                        </div>
-                                        <div className="flex items-center justify-between gap-3">
-                                            اتجاه الصفحة عند الطباعة
-                                            <SegmentedTabs label="اتجاه الصفحة" value={settings.orientation} onChange={(value) => change({ orientation: value })} options={Object.entries(EXCEL_ORIENTATIONS).map(([value, label]) => ({ value, label }))} />
-                                        </div>
-                                    </div>
-                                </Section>
+                                <ExcelLookSection change={change} settings={settings} />
 
                                 <Section title="الشكل داخل Excel">
                                     <div className="space-y-3">
@@ -350,51 +302,18 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                     </div>
                                 </Section>
 
-                                <Section title="قوالب الشركة" hint="مشتركة بين جميع المستخدمين">
-                                    {company.templates.length === 0 ? (
-                                        <p className="mb-3 text-xs leading-5 text-gray-500">
-                                            لا قوالب للشركة بعد.{!company.canManage && ' يضيفها من يملك صلاحية إدارة قوالب الطباعة.'}
-                                        </p>
-                                    ) : (
-                                        <ul className="mb-3 overflow-hidden rounded-control border border-gray-100">
-                                            {company.templates.map((template) => (
-                                                <li key={template.id} className="flex items-center gap-1.5 border-b border-gray-100 px-3 py-2 last:border-b-0">
-                                                    <button type="button" className="min-w-0 flex-1 text-start text-sm" onClick={() => applyTemplate(template.settings)} title="تطبيق القالب">
-                                                        <b className="block truncate font-semibold text-gray-900">{template.name}</b>
-                                                        {template.updatedBy && <small className="block truncate text-xs text-gray-500">آخر تعديل: {template.updatedBy}</small>}
-                                                    </button>
-                                                    {template.isDefault && <span className="shrink-0 rounded-full bg-excel-500/10 px-2 py-0.5 text-[11px] font-bold text-excel-700">الافتراضي</span>}
-                                                    {company.canManage && (
-                                                        <>
-                                                            <button type="button" disabled={saveHttp.processing} onClick={() => sendCompany('put', `/excel-templates/${template.id}`, { settings: layout() })} className="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-40" aria-label={`حفظ الإعداد الحالي في ${template.name}`} title="حفظ الإعداد الحالي فيه">
-                                                                <Icon name="check" className="h-4 w-4" />
-                                                            </button>
-                                                            <button type="button" disabled={saveHttp.processing} onClick={() => sendCompany('put', `/excel-templates/${template.id}`, { is_default: !template.isDefault })} className="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-40" aria-label={template.isDefault ? `إلغاء ${template.name} كقالب افتراضي` : `جعل ${template.name} القالب الافتراضي`} title={template.isDefault ? 'إلغاء الافتراضي' : 'جعله الافتراضي'}>
-                                                                <Icon name="pin" className="h-4 w-4" />
-                                                            </button>
-                                                            <button type="button" disabled={saveHttp.processing} onClick={() => window.confirm(`حذف القالب «${template.name}» لجميع المستخدمين؟`) && sendCompany('delete', `/excel-templates/${template.id}`, {})} className="rounded p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-40" aria-label={`حذف القالب ${template.name}`} title="حذف">
-                                                                <Icon name="trash" className="h-4 w-4" />
-                                                            </button>
-                                                        </>
-                                                    )}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                    {company.canManage && (
-                                        <>
-                                            <div className="flex gap-2">
-                                                <TextInput className="min-w-0 flex-1 text-sm" placeholder="اسم قالب الشركة، مثلاً: تقرير الإدارة" value={companyName} onChange={(event) => setCompanyName(event.target.value)} onKeyDown={(event) => event.key === 'Enter' && saveCompanyTemplate()} aria-label="اسم قالب الشركة" maxLength={60} />
-                                                <SecondaryButton onClick={saveCompanyTemplate} disabled={!companyName.trim() || saveHttp.processing}>حفظ للشركة</SecondaryButton>
-                                            </div>
-                                            <label className="mt-2 flex items-center gap-2 text-xs font-semibold text-gray-600">
-                                                <input type="checkbox" className="rounded border-gray-300 text-excel-600 focus:ring-excel-500" checked={companyDefault} onChange={(event) => setCompanyDefault(event.target.checked)} />
-                                                القالب الافتراضي لكل من يصدّر هذا التقرير
-                                            </label>
-                                            {Object.values(saveHttp.errors ?? {})[0] && <p role="alert" className="mt-2 text-xs font-semibold text-red-700">{Object.values(saveHttp.errors)[0]}</p>}
-                                        </>
-                                    )}
-                                </Section>
+                                <ExcelCompanyTemplates
+                                            saveCompanyTemplate={saveCompanyTemplate}
+                                            sendCompany={sendCompany}
+                                    applyTemplate={applyTemplate}
+                                    company={company}
+                                    companyDefault={companyDefault}
+                                    companyName={companyName}
+                                    layout={layout}
+                                    saveHttp={saveHttp}
+                                    setCompanyDefault={setCompanyDefault}
+                                    setCompanyName={setCompanyName}
+                                />
 
                                 <Section title="قوالبي" hint="تُحفظ في هذا المتصفح">
                                     {templates.length > 0 && (
@@ -439,117 +358,5 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                 </footer>
             </div>
         </Modal>
-    );
-}
-
-function Section({ title, hint = null, children }) {
-    return (
-        <section className="border-b border-gray-100 py-5 last:border-b-0">
-            <h3 className="mb-3 flex items-center justify-between gap-2 text-sm font-bold text-gray-900">
-                {title}
-                {hint && <span className="text-xs font-medium text-gray-500">{hint}</span>}
-            </h3>
-            {children}
-        </section>
-    );
-}
-
-/** The weight and lines of each kind of row; its colours, size and height come from the look the user chose. */
-const ROW_STYLE = {
-    title: 'font-bold',
-    subtitle: 'font-bold text-gray-900',
-    meta: 'text-gray-500',
-    head: 'text-center font-bold',
-    group: 'font-bold',
-    subtotal: 'bg-gray-100 font-bold',
-    total: 'border-t-4 border-double border-gray-500 bg-gray-200 font-bold',
-};
-
-/** The sheets as Excel will show them: column letters, row numbers, the formula bar and a tab per sheet. */
-function Preview({ sheet, sheets, sheetIndex, onSheet, shownCell, onCell, settings }) {
-    if (!sheet) {
-        return <p className="m-auto text-sm text-gray-500">اختر جزءاً واحداً على الأقل.</p>;
-    }
-
-    const shown = sheet.rows.slice(0, PREVIEW_ROWS);
-    const { theme, font, rows: heights } = excelLook(settings);
-    // Points to pixels, as Excel draws at 100%.
-    const px = (points) => Math.round(points * 1.333);
-    const rowStyle = (kind) => ({
-        title: { color: `#${theme.title}`, fontSize: px(font.title), height: px(font.title * 1.75) },
-        subtitle: { fontSize: px(font.subtitle), height: px(font.subtitle * 1.65) },
-        meta: { fontSize: px(font.body - 1), height: px(heights.data) },
-        head: { background: `#${theme.head}`, color: `#${theme.headText}`, height: px(heights.data + 6) },
-        group: { background: `#${theme.group}`, color: `#${theme.groupText}` },
-    })[kind] ?? { height: px(heights.data) };
-    const width = 40 + sheet.widths.reduce((total, columnWidth) => total + columnWidth * 7.5, 0);
-
-    return (
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-control border border-gray-200 bg-surface">
-            <div className="flex items-center gap-2 bg-excel-600 px-3 py-1.5 text-xs font-semibold text-white">
-                <Icon name="excel" className="h-4 w-4" />
-                معاينة الورقة
-                <span className="ms-auto font-display">{sheet.rows.length.toLocaleString('en')} صف</span>
-            </div>
-            <div className="flex items-center border-b border-gray-200 text-xs" dir="ltr">
-                <span className="min-w-16 border-e border-gray-200 px-3 py-1.5 font-display text-gray-600">{shownCell?.address ?? 'A1'}</span>
-                <i className="border-e border-gray-200 px-3 py-1.5 text-gray-400">fx</i>
-                <code className="truncate px-3 py-1.5" dir="auto">{shownCell ? (shownCell.formula ? `=${shownCell.formula}` : shownCell.text) : ''}</code>
-            </div>
-            <div className="min-h-0 flex-1 overflow-auto" dir={settings.rtl ? 'rtl' : 'ltr'}>
-                <table className="border-collapse" style={{ width, tableLayout: 'fixed', fontFamily: 'Arial, sans-serif', fontSize: px(font.body) }}>
-                    <colgroup>
-                        <col style={{ width: 40 }} />
-                        {sheet.widths.map((columnWidth, index) => (
-                            <col key={index} style={{ width: columnWidth * 7.5 }} />
-                        ))}
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th className="sticky top-0 border border-gray-200 bg-gray-50" />
-                            {sheet.widths.map((_, index) => (
-                                <th key={index} className="sticky top-0 border border-gray-200 bg-gray-50 px-1 py-0.5 font-normal text-gray-500">{columnLetter(index)}</th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {shown.map((row) => {
-                            const merged = ['title', 'subtitle', 'meta', 'group'].includes(row.kind) && row.cells.length === 1;
-                            return (
-                                <tr key={row.row} className={`${ROW_STYLE[row.kind] ?? ''} ${row.zebra ? 'bg-gray-50' : ''}`} style={rowStyle(row.kind)}>
-                                    <td className="border border-gray-200 bg-gray-50 px-1 text-center font-normal text-gray-400">{row.row}</td>
-                                    {row.kind === 'blank' ? (
-                                        <td colSpan={sheet.widths.length} className="h-5 border border-gray-200" />
-                                    ) : merged ? (
-                                        <td colSpan={sheet.widths.length} className="truncate border border-gray-200 px-2">{row.cells[0].v}</td>
-                                    ) : (
-                                        sheet.widths.map((_, index) => {
-                                            const cell = row.cells[index] ?? { v: '' };
-                                            const text = formatExcelCell(cell.v, cell.t, settings.currency);
-                                            const address = `${columnLetter(index)}${row.row}`;
-                                            const numeric = ['money', 'decimal', 'int'].includes(cell.t);
-                                            return (
-                                                <td key={index} onClick={() => onCell({ address, formula: cell.f, text })} className={`cursor-cell truncate border border-gray-200 px-2 ${numeric ? 'font-display tabular-nums' : ''} ${shownCell?.address === address ? 'outline outline-2 -outline-offset-2 outline-excel-500' : ''}`} style={{ textAlign: numeric ? (settings.rtl ? 'left' : 'right') : undefined }}>
-                                                    {cell.f && <span className="me-1 text-[9px] italic text-excel-600">ƒ</span>}
-                                                    {text}
-                                                </td>
-                                            );
-                                        })
-                                    )}
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
-            {sheet.rows.length > PREVIEW_ROWS && <p className="border-t border-gray-100 px-3 py-2 text-xs text-gray-500">تعرض المعاينة أول {PREVIEW_ROWS} صفاً من {sheet.rows.length.toLocaleString('en')}؛ الملف يحوي كل الصفوف.</p>}
-            <div className="flex gap-0.5 overflow-x-auto border-t border-gray-200 bg-gray-50 px-2" role="tablist" aria-label="أوراق الملف">
-                {sheets.map((candidate, index) => (
-                    <button key={candidate.key} type="button" role="tab" aria-selected={index === sheetIndex} onClick={() => onSheet(index)} className={`whitespace-nowrap border-t-[3px] px-3 py-1.5 text-xs ${index === sheetIndex ? 'border-excel-600 bg-surface font-bold text-excel-700' : 'border-transparent text-gray-500'}`}>
-                        {candidate.name}
-                    </button>
-                ))}
-            </div>
-        </div>
     );
 }

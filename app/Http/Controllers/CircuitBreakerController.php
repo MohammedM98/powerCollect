@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Concerns\DeletesRecords;
-use App\Http\Concerns\FiltersDataTable;
 use App\Http\Requests\StoreCircuitBreakerRequest;
 use App\Http\Requests\UpdateCircuitBreakerRequest;
 use App\Models\CircuitBreaker;
 use App\Notifications\ActionCompleted;
+use App\Support\Queries\DataTableFilters;
+use App\Support\RecordDeletion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,8 +15,6 @@ use Inertia\Response as InertiaResponse;
 
 class CircuitBreakerController extends Controller
 {
-    use DeletesRecords, FiltersDataTable;
-
     private const SORTABLE = ['ampere', 'minimum_payment'];
 
     /**
@@ -28,10 +26,10 @@ class CircuitBreakerController extends Controller
 
         $actor = $request->user();
         $query = CircuitBreaker::query();
-        $this->applyDataTableFilters($query, $request, [], self::SORTABLE, 'ampere');
-        $this->applyDataTableFilterSelects($query, $request, ['ampere']);
+        DataTableFilters::applyDataTableFilters($query, $request, [], self::SORTABLE, 'ampere');
+        DataTableFilters::applyDataTableFilterSelects($query, $request, ['ampere']);
 
-        $circuitBreakers = $query->paginate($this->dataTablePerPage($request))
+        $circuitBreakers = $query->paginate(DataTableFilters::dataTablePerPage($request))
             ->withQueryString()
             ->through(fn (CircuitBreaker $circuitBreaker) => [
                 ...$this->editableFields($circuitBreaker),
@@ -42,7 +40,7 @@ class CircuitBreakerController extends Controller
         return Inertia::render('CircuitBreakers/Index', [
             'circuitBreakers' => $circuitBreakers,
             'canCreate' => $actor->can('create', CircuitBreaker::class),
-            'filters' => $this->dataTableState($request, 'ampere'),
+            'filters' => DataTableFilters::dataTableState($request, 'ampere'),
             'filterOptions' => $this->filterOptions(),
         ]);
     }
@@ -96,7 +94,7 @@ class CircuitBreakerController extends Controller
      */
     public function destroy(Request $request, CircuitBreaker $circuitBreaker): RedirectResponse
     {
-        return $this->deleteRecord($request, $circuitBreaker, 'circuit-breaker-deleted', __(':ampere A', ['ampere' => $circuitBreaker->ampere]));
+        return RecordDeletion::deleteRecord($request, $circuitBreaker, 'circuit-breaker-deleted', __(':ampere A', ['ampere' => $circuitBreaker->ampere]));
     }
 
     /**
@@ -126,7 +124,7 @@ class CircuitBreakerController extends Controller
         $amperes = CircuitBreaker::query()->distinct()->orderBy('ampere')->pluck('ampere');
 
         return [
-            $this->filterGroup('ampere', 'الأمبير', $amperes->map(fn (int|string $ampere) => ['value' => (string) $ampere, 'label' => "{$ampere}A"])),
+            DataTableFilters::filterGroup('ampere', 'الأمبير', $amperes->map(fn (int|string $ampere) => ['value' => (string) $ampere, 'label' => "{$ampere}A"])),
         ];
     }
 }

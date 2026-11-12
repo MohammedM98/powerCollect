@@ -145,6 +145,7 @@ export default function Modal({ show, onClose, children, maxWidth = 'md', panelC
 
     return createPortal(
         <div
+            role="presentation"
             data-modal-presentation={presentation}
             className="modal-scroll fixed inset-0 z-50 flex overflow-y-auto overscroll-contain px-4 py-6 sm:px-6"
             onPointerDown={(e) => {

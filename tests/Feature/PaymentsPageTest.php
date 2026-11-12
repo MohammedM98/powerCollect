@@ -10,6 +10,7 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia;
@@ -123,7 +124,7 @@ class PaymentsPageTest extends TestCase
     {
         $subscription = Subscription::factory()->create(['branch_id' => $this->branch->id, 'full_name' => 'Owing Customer', 'minimum_charge' => 15]);
         $subscription->transactions()->create(['recorded_by' => $this->collector->id, 'type' => SubscriptionTransaction::TYPE_SUBSCRIPTION_FEE, 'source_key' => 'fee:1', 'amount' => '120.00']);
-        SubscriptionTransaction::recordPayment($subscription, $this->collector, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        RecordPayment::handle($subscription, $this->collector, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $this->actingAs($this->collector)->get(route('payments.index', ['search' => 'Owing']))
             ->assertInertia(fn (AssertableInertia $page) => $page
@@ -171,12 +172,12 @@ class PaymentsPageTest extends TestCase
     public function test_the_day_shows_only_the_users_own_live_payments(): void
     {
         $subscription = Subscription::factory()->create(['branch_id' => $this->branch->id]);
-        $cash = SubscriptionTransaction::recordPayment($subscription, $this->collector, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
-        SubscriptionTransaction::recordPayment($subscription, $this->collector, [
+        $cash = RecordPayment::handle($subscription, $this->collector, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        RecordPayment::handle($subscription, $this->collector, [
             'amount' => '250.50', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Payer', 'reference_number' => 'TR-1',
         ]);
-        SubscriptionTransaction::recordPayment($subscription, $this->userAllowedTo(PermissionKey::RecordCollections), ['amount' => '999', 'currency' => 'ILS', 'payment_method' => 'cash']);
-        $cancelled = SubscriptionTransaction::recordPayment($subscription, $this->collector, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        RecordPayment::handle($subscription, $this->userAllowedTo(PermissionKey::RecordCollections), ['amount' => '999', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $cancelled = RecordPayment::handle($subscription, $this->collector, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'cash']);
         $cancelled->update(['cancelled_at' => now()]);
 
         $this->actingAs($this->collector)->get(route('payments.summary'))
@@ -194,14 +195,14 @@ class PaymentsPageTest extends TestCase
     public function test_someone_who_may_only_record_payments_can_print_their_receipt(): void
     {
         $subscription = Subscription::factory()->create(['branch_id' => $this->branch->id]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $this->collector, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($subscription, $this->collector, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $this->actingAs($this->collector)
             ->get(route('subscriptions.payments.receipt', [$subscription, $payment]))
             ->assertOk();
 
         $elsewhere = Subscription::factory()->create(['branch_id' => Branch::factory()->create()->id]);
-        $elsewherePayment = SubscriptionTransaction::recordPayment($elsewhere, User::factory()->superAdmin()->create(), ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $elsewherePayment = RecordPayment::handle($elsewhere, User::factory()->superAdmin()->create(), ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $this->actingAs($this->collector)
             ->get(route('subscriptions.payments.receipt', [$elsewhere, $elsewherePayment]))

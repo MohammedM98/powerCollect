@@ -14,6 +14,8 @@ use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\TariffSegment;
 use App\Models\User;
+use App\Support\Ledger\RecordCharge;
+use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\TestResponse;
@@ -55,7 +57,7 @@ class RecordDeletionTest extends TestCase
     {
         $subscription = Subscription::factory()->create(['branch_id' => $this->branch->id]);
         SubscriptionTransaction::factory()->for($subscription)->create();
-        SubscriptionTransaction::recordPayment($subscription, $this->superAdmin, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        RecordPayment::handle($subscription, $this->superAdmin, ['amount' => '20', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $this->deleteAs($this->superAdmin, route('subscriptions.destroy', $subscription))
             ->assertSessionHasErrors(['delete' => 'لا يمكن حذف المشترك لوجود سجلات مرتبطة به — الحركات المالية: 2. يمكنك تغيير حالته إلى «مفصول» بدلًا من حذفه.']);
@@ -67,7 +69,7 @@ class RecordDeletionTest extends TestCase
     public function test_a_subscription_with_a_subscription_fee_loaded_later_cannot_be_deleted(): void
     {
         $subscription = Subscription::factory()->create(['branch_id' => $this->branch->id]);
-        SubscriptionTransaction::recordCharge($subscription, $this->superAdmin, ChargeType::SubscriptionFee, '50', null);
+        RecordCharge::handle($subscription, $this->superAdmin, ChargeType::SubscriptionFee, '50', null);
 
         $this->deleteAs($this->superAdmin, route('subscriptions.destroy', $subscription))
             ->assertSessionHasErrors(['delete' => 'لا يمكن حذف المشترك لوجود سجلات مرتبطة به — الحركات المالية: 1. يمكنك تغيير حالته إلى «مفصول» بدلًا من حذفه.']);

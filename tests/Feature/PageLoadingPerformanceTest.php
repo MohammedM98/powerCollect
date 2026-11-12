@@ -12,6 +12,7 @@ use App\Models\SubArea;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Models\UserType;
+use App\Support\Readings\ReadingWeeks;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -45,7 +46,7 @@ class PageLoadingPerformanceTest extends TestCase
         $actor = User::factory()->superAdmin()->create();
         $subscriptions = Subscription::factory()->count(3)->create();
         foreach ($subscriptions as $subscription) {
-            $latest = MeterReading::latestEndedWeekStart($subscription->branch_id);
+            $latest = ReadingWeeks::latestEndedWeekStart($subscription->branch_id);
             for ($week = 0; $week < 4; $week++) {
                 MeterReading::factory()->for($subscription)->create([
                     'week_start' => $latest->copy()->subWeeks($week), 'recorded_by' => $actor->id,
@@ -73,7 +74,7 @@ class PageLoadingPerformanceTest extends TestCase
         $this->freezeTime();
         $actor = User::factory()->superAdmin()->create();
         $subscription = Subscription::factory()->create();
-        $latest = MeterReading::latestEndedWeekStart($subscription->branch_id);
+        $latest = ReadingWeeks::latestEndedWeekStart($subscription->branch_id);
         for ($week = 0; $week < 12; $week++) {
             MeterReading::factory()->for($subscription)->create([
                 'week_start' => $latest->copy()->subWeeks($week), 'recorded_by' => $actor->id,
@@ -118,7 +119,7 @@ class PageLoadingPerformanceTest extends TestCase
         $branch = Branch::factory()->create();
         $otherBranch = Branch::factory()->create();
         $subscription = Subscription::factory()->create(['branch_id' => $branch->id]);
-        $week = MeterReading::latestEndedWeekStart($branch->id);
+        $week = ReadingWeeks::latestEndedWeekStart($branch->id);
         $reading = MeterReading::factory()->for($subscription)->create(['branch_id' => $branch->id, 'week_start' => $week]);
         MeterReading::factory()->for($subscription)->create(['branch_id' => $otherBranch->id, 'week_start' => $week->copy()->addWeek()]);
 

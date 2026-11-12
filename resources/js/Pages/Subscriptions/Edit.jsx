@@ -1,6 +1,7 @@
 import FormPage from '@/Components/FormPage';
 import { useResourceForm } from '@/hooks/useResourceForm';
-import SubscriptionForm, { subscriptionFormData } from './SubscriptionForm';
+import SubscriptionForm from './SubscriptionForm';
+import { subscriptionFormData } from '@/lib/subscriptionForm';
 
 export default function Edit({
     subscription,

@@ -33,7 +33,7 @@ export function PermissionChangeReview({ employee, changes }) {
                 <br />
                 لا تتغيّر الصلاحيات خارج نطاق إدارتك.
             </p>
-            <div className="max-h-[50vh] space-y-3 overflow-y-auto" tabIndex={0} aria-label="جميع تغييرات الصلاحيات">
+            <div role="region" className="max-h-[50vh] space-y-3 overflow-y-auto" tabIndex={0} aria-label="جميع تغييرات الصلاحيات">
                 {Object.entries(bySection).map(([section, items]) => (
                     <section key={section} className="overflow-hidden rounded-control border border-gray-100">
                         <h4 className="bg-gray-50 px-3 py-1.5 text-sm font-bold text-gray-700">{section}</h4>

@@ -1,13 +1,6 @@
 import { useRef, useState } from 'react';
-import { router } from '@inertiajs/react';
-
-/** The current address without the open statement. */
-function urlWithoutStatement() {
-    const url = new URL(window.location.href);
-    url.searchParams.delete('statement');
-
-    return `${url.pathname}${url.search}`;
-}
+import { router, usePage } from '@inertiajs/react';
+import { urlWithout } from '@/lib/pageUrl';
 
 /**
  * The statement window of a page whose controller sends the `statement`
@@ -27,6 +20,7 @@ export function useStatementWindow(statement) {
     const [form, setForm] = useState(null);
     const [focusLineId, setFocusLineId] = useState(null);
     const request = useRef(null);
+    const { url } = usePage();
 
     function open(header, initialForm = null, lineId = null) {
         setLoading(header);
@@ -49,7 +43,7 @@ export function useStatementWindow(statement) {
         setForm(null);
         setFocusLineId(null);
         router.replace({
-            url: urlWithoutStatement(),
+            url: urlWithout(url, 'statement'),
             props: (props) => ({ ...props, statement: null }),
             preserveScroll: true,
             preserveState: true,

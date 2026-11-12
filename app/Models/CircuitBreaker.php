@@ -31,6 +31,6 @@ class CircuitBreaker extends Model
      */
     public function deletionBlocker(): ?string
     {
-        return DeletionBlocker::describe('القاطع', ['المشتركون' => $this->subscriptions()->count()]);
+        return DeletionBlocker::describe('circuit_breaker', ['subscriptions' => $this->subscriptions()->count()]);
     }
 }

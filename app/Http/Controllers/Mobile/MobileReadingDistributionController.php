@@ -2,29 +2,28 @@
 
 namespace App\Http\Controllers\Mobile;
 
-use App\Enums\PermissionKey;
 use App\Enums\ReadingAssignmentChannel;
 use App\Enums\ReadingAssignmentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AllocateReadingBoxesRequest;
+use App\Http\Requests\ViewMobileReadingDistributionRequest;
 use App\Models\Branch;
 use App\Models\MeterBox;
 use App\Models\ReadingCycle;
 use App\Models\ReadingDistribution;
 use App\Models\ReadingEntrySetting;
 use App\Models\User;
-use App\Support\ReadingAllocation;
-use App\Support\RecurringReadingDistribution;
+use App\Support\Readings\ReadingAllocation;
+use App\Support\Readings\RecurringReadingDistribution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class MobileReadingDistributionController extends Controller
 {
-    public function index(Request $request, RecurringReadingDistribution $distribution): JsonResponse
+    public function index(ViewMobileReadingDistributionRequest $request, RecurringReadingDistribution $distribution): JsonResponse
     {
         $actor = $request->user();
-        abort_unless($actor->hasAnyPermission(PermissionKey::ManageReadingAssignments, PermissionKey::ApproveReadingAssignments), 403);
-        $validated = $request->validate(['branch_id' => ['nullable', 'integer', 'exists:branches,id']]);
+        $validated = $request->validated();
         $branchId = $validated['branch_id'] ?? $actor->workBranchId();
         abort_unless($actor->isSuperAdmin() || (int) $branchId === $actor->workBranchId(), 403);
         $branches = $actor->isSuperAdmin() ? Branch::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']) : [];
@@ -80,7 +79,7 @@ class MobileReadingDistributionController extends Controller
             $request->boolean('recurring'), $request->boolean('publish') || $request->boolean('recurring'));
 
         return response()->json($result + ['confirmation_box_ids' => array_values(array_map(fn (array $conflict): int => $conflict['boxId'],
-            array_filter($result['conflicts'], fn (array $conflict): bool => $conflict['reason'] === ReadingAllocation::CONFLICTS['downloaded'])))]);
+            array_filter($result['conflicts'], fn (array $conflict): bool => $conflict['reason'] === __(ReadingAllocation::CONFLICTS['downloaded']))))]);
     }
 
     public function approve(Request $request, ReadingCycle $readingCycle, ReadingAllocation $allocation): JsonResponse

@@ -14,10 +14,13 @@ use App\Models\MobileAccessToken;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\BranchClosingWorkflow;
+use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Ledger\CancelLine;
+use App\Support\Ledger\TransactionActions;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
@@ -81,7 +84,6 @@ class BranchClosingWorkflowTest extends TestCase
         }
 
         $this->assertNull($closing->fresh()->submitted_at);
-        $this->assertDatabaseCount('closing_versions', 0);
     }
 
     public function test_start_preserves_historical_closings_and_ignores_old_payments(): void
@@ -264,7 +266,7 @@ class BranchClosingWorkflowTest extends TestCase
         [$branch, $head, $collector] = $this->start();
         $payment = $this->payment($branch, $collector);
         $box = CashBox::query()->sole();
-        $payment->cancel($head, CorrectionReason::PaymentRefunded, 'Refund');
+        CancelLine::cancel($payment, $head, CorrectionReason::PaymentRefunded, 'Refund');
 
         $this->travelTo($box->closing->coverage_until);
         $this->artisan('closings:process')->assertSuccessful();
@@ -438,7 +440,7 @@ class BranchClosingWorkflowTest extends TestCase
 
         $this->assertSame('75.00', $entry->fresh()->amount);
         $this->assertSame('75.00', app(BranchClosingWorkflow::class)->expected($entry->box)['ILS']);
-        $payment->cancel($head, CorrectionReason::PaymentRefunded, 'Refund');
+        CancelLine::cancel($payment, $head, CorrectionReason::PaymentRefunded, 'Refund');
         $this->assertModelExists($entry);
         $this->assertModelExists($payment);
         $this->assertSame(0, CashBoxPayment::visibleInBox()->count());
@@ -455,10 +457,10 @@ class BranchClosingWorkflowTest extends TestCase
         SubscriptionTransaction::factory()->for($payment->subscription)->create(['amount' => '25']);
 
         $before = $payment->fresh()->getAttributes();
-        $this->assertSame([], $payment->fresh()->availableActions($actor));
+        $this->assertSame([], TransactionActions::availableActions($payment->fresh(), $actor));
 
         try {
-            $payment->applyAction($actor, TransactionAction::Refund, []);
+            TransactionActions::applyAction($payment, $actor, TransactionAction::Refund, []);
             $this->fail('A closed-box payment must not be refunded.');
         } catch (ValidationException $exception) {
             $this->assertArrayHasKey('action', $exception->errors());
@@ -501,5 +503,13 @@ class BranchClosingWorkflowTest extends TestCase
 
         $this->assertDatabaseHas('cash_box_syncs', ['user_id' => $collector->id, 'branch_id' => $branch->id, 'pending_payments' => 0]);
         $this->assertDatabaseMissing('cash_box_syncs', ['user_id' => $head->id]);
+    }
+
+    public function test_a_boxs_counts_read_back_in_currency_order_whatever_order_the_database_returns(): void
+    {
+        $box = CashBox::factory()->create();
+        DB::table('cash_boxes')->where('id', $box->id)->update(['expected_counts' => json_encode(['JOD' => '1.00', 'ILS' => '2.00', 'USD' => '3.00'])]);
+
+        $this->assertSame(['ILS' => '2.00', 'USD' => '3.00', 'JOD' => '1.00'], $box->fresh()->expected_counts);
     }
 }

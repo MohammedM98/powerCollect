@@ -13,7 +13,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\User;
-use App\Support\Money;
+use App\Support\Ledger\Money;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia;

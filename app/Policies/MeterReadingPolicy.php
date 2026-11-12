@@ -6,6 +6,7 @@ use App\Enums\PermissionKey;
 use App\Models\MeterReading;
 use App\Models\ReadingEntrySetting;
 use App\Models\User;
+use App\Support\Readings\ReadingWeeks;
 use Carbon\CarbonInterface;
 
 class MeterReadingPolicy
@@ -49,7 +50,7 @@ class MeterReadingPolicy
             return false;
         }
 
-        if (! MeterReading::weekStartFor($meterReading->week_start, $meterReading->branch_id)->equalTo(MeterReading::latestEndedWeekStart($meterReading->branch_id))) {
+        if (! ReadingWeeks::weekStartFor($meterReading->week_start, $meterReading->branch_id)->equalTo(ReadingWeeks::latestEndedWeekStart($meterReading->branch_id))) {
             return false;
         }
 
@@ -70,7 +71,7 @@ class MeterReadingPolicy
         }
 
         return ($user->isSuperAdmin() || $meterReading->branch_id === $user->workBranchId())
-            && MeterReading::weekStartFor($meterReading->week_start, $meterReading->branch_id)->equalTo($this->lastWeekStart($meterReading->branch_id));
+            && ReadingWeeks::weekStartFor($meterReading->week_start, $meterReading->branch_id)->equalTo($this->lastWeekStart($meterReading->branch_id));
     }
 
     public function adjustLastReading(User $user, MeterReading $meterReading): bool
@@ -79,8 +80,8 @@ class MeterReadingPolicy
             return false;
         }
 
-        return $meterReading->week_start->lessThan(MeterReading::latestEndedWeekStart($meterReading->branch_id))
-            && ! $meterReading->hasLaterReadingBefore(MeterReading::latestEndedWeekStart($meterReading->branch_id))
+        return $meterReading->week_start->lessThan(ReadingWeeks::latestEndedWeekStart($meterReading->branch_id))
+            && ! $meterReading->hasLaterReadingBefore(ReadingWeeks::latestEndedWeekStart($meterReading->branch_id))
             && $meterReading->laterReadingsCount() <= 1;
     }
 
@@ -98,7 +99,7 @@ class MeterReadingPolicy
     {
         return $meterReading->subscription->archived_at === null && ! $meterReading->requires_reentry
             && ($user->isSuperAdmin() || $user->workBranchId() === $meterReading->branch_id)
-            && $meterReading->week_start->equalTo(MeterReading::latestEndedWeekStart($meterReading->branch_id))
+            && $meterReading->week_start->equalTo(ReadingWeeks::latestEndedWeekStart($meterReading->branch_id))
             && $meterReading->laterReadingsCount() === 0;
     }
 
@@ -171,7 +172,7 @@ class MeterReadingPolicy
      */
     private function weekIsOpenFor(CarbonInterface $weekStart, ?int $branchId): bool
     {
-        return MeterReading::weekStartFor($weekStart, $branchId)->equalTo(MeterReading::latestEndedWeekStart($branchId));
+        return ReadingWeeks::weekStartFor($weekStart, $branchId)->equalTo(ReadingWeeks::latestEndedWeekStart($branchId));
     }
 
     /**
@@ -179,7 +180,7 @@ class MeterReadingPolicy
      */
     private function lastWeekStart(?int $branchId): CarbonInterface
     {
-        return MeterReading::weekStartFor(MeterReading::latestEndedWeekStart($branchId)->subDay(), $branchId);
+        return ReadingWeeks::weekStartFor(ReadingWeeks::latestEndedWeekStart($branchId)->subDay(), $branchId);
     }
 
     /**

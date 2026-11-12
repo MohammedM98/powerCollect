@@ -2,19 +2,30 @@
 
 namespace App\Providers;
 
+use App\Models\CashBox;
+use App\Models\CashBoxPayment;
+use App\Models\DisconnectionListItem;
+use App\Models\MeterBox;
+use App\Models\MeterReading;
 use App\Models\SmsSetting;
+use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\BranchClosingWorkflow;
-use App\Support\BranchDomainScope;
-use App\Support\BranchSettings;
-use App\Support\Brand;
+use App\Support\Branches\BranchDomainScope;
+use App\Support\Branches\BranchSettings;
+use App\Support\Branding\Brand;
+use App\Support\Closing\BranchClosingWorkflow;
 use App\Support\Messaging\HttpSmsGateway;
 use App\Support\Messaging\LogSmsGateway;
 use App\Support\Messaging\SmsGateway;
+use App\Support\OperationsAlert;
+use App\Support\Reports\ReportCache;
+use Illuminate\Queue\Events\QueueBusy;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use RuntimeException;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -62,6 +73,21 @@ class AppServiceProvider extends ServiceProvider
         SubscriptionTransaction::deleting(function (SubscriptionTransaction $payment): void {
             app(BranchClosingWorkflow::class)->releaseEditablePayment($payment);
         });
+        Event::listen(function (QueueBusy $event): void {
+            report(new RuntimeException("The {$event->connectionName}:{$event->queue} queue has {$event->size} jobs waiting."));
+            OperationsAlert::notifySuperAdmins('queue-busy', (string) $event->size);
+        });
+        // Report figures stay cached until what they count changes (ReportCache).
+        SubscriptionTransaction::updated(fn () => ReportCache::touch(ReportCache::HISTORY));
+        SubscriptionTransaction::created(function (SubscriptionTransaction $line): void {
+            if ($line->created_at?->lt(now()->subMinute())) {
+                ReportCache::touch(ReportCache::HISTORY);
+            }
+        });
+        foreach ([SubscriptionTransaction::class, MeterReading::class, CashBox::class, CashBoxPayment::class, Subscription::class, MeterBox::class, DisconnectionListItem::class] as $model) {
+            $model::saved(fn () => ReportCache::touch(ReportCache::ACTIVITY));
+            $model::deleted(fn () => ReportCache::touch(ReportCache::ACTIVITY));
+        }
         Password::defaults(fn (): Password => Password::min(8));
 
         // The company's identity and look: the Super Admin's, unless the server keeps it (powercollect.brand_editor_enabled).

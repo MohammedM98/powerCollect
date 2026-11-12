@@ -7,8 +7,8 @@ use App\Enums\PaymentMethod;
 use App\Enums\PermissionKey;
 use App\Enums\UserRole;
 use App\Models\Concerns\BelongsToBranch;
-use App\Support\BranchDomainContext;
-use App\Support\BranchViewContext;
+use App\Support\Branches\BranchDomainContext;
+use App\Support\Branches\BranchViewContext;
 use App\Support\DeletionBlocker;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -18,37 +18,40 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 #[Fillable(['name', 'username', 'password', 'role', 'branch_id', 'is_active', 'user_type_id', 'max_devices'])]
-#[Hidden(['password', 'remember_token', 'audit_settings'])]
+#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use BelongsToBranch, HasFactory, Notifiable;
 
     /** Why the last active Super Admin cannot be deactivated, demoted or deleted. */
-    public const LAST_SUPER_ADMIN_MESSAGE = 'لا يمكن إيقاف آخر مدير نظام فعّال أو تغيير دوره أو حذفه؛ أضف مدير نظام آخر أولًا.';
+    public const LAST_SUPER_ADMIN_MESSAGE = 'The last active system administrator cannot be deactivated, change role or be deleted; add another system administrator first.';
 
     /** Keep administrator lockout protections independent of employee job titles. */
     protected static function booted(): void
     {
+        static::saved(fn (User $user) => $user->savePendingAuditSettings());
+
         // However it is reached, the company must keep one active Super Admin, or nobody can get back in to fix anything.
         static::updating(function (User $user): void {
             $losesTheRole = $user->isDirty('role') && $user->role !== UserRole::SuperAdmin;
             $losesAccess = $user->isDirty('is_active') && ! $user->is_active;
 
             if (($losesTheRole || $losesAccess) && $user->isOnlyActiveSuperAdmin()) {
-                throw ValidationException::withMessages(['is_active' => self::LAST_SUPER_ADMIN_MESSAGE]);
+                throw ValidationException::withMessages(['is_active' => __(self::LAST_SUPER_ADMIN_MESSAGE)]);
             }
         });
 
         static::deleting(function (User $user): void {
             if ($user->isOnlyActiveSuperAdmin()) {
-                throw ValidationException::withMessages(['delete' => self::LAST_SUPER_ADMIN_MESSAGE]);
+                throw ValidationException::withMessages(['delete' => __(self::LAST_SUPER_ADMIN_MESSAGE)]);
             }
         });
     }
@@ -64,7 +67,6 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => UserRole::class,
             'is_active' => 'boolean',
-            'audit_settings' => 'array',
             'max_devices' => 'integer',
         ];
     }
@@ -154,11 +156,6 @@ class User extends Authenticatable
                 ->exists();
     }
 
-    public function isBranchAdmin(): bool
-    {
-        return $this->role === UserRole::BranchAdmin;
-    }
-
     /** Administrative membership stays unchanged when viewing another branch. */
     public function workBranchId(): ?int
     {
@@ -194,21 +191,6 @@ class User extends Authenticatable
         return $this->isSuperAdmin() || $this->hasAnyPermission(PermissionKey::ManagePermissions, PermissionKey::AuditClosings, PermissionKey::ManageBranchDomains);
     }
 
-    public function isCollector(): bool
-    {
-        return $this->role === UserRole::Collector;
-    }
-
-    public function isDataEntry(): bool
-    {
-        return $this->role === UserRole::DataEntry;
-    }
-
-    public function isFinancialAuditor(): bool
-    {
-        return $this->role === UserRole::FinancialAuditor;
-    }
-
     /** Read subscriber accounts across branches without granting branch administration. */
     public function canViewAllSubscriberAccounts(): bool
     {
@@ -227,6 +209,74 @@ class User extends Authenticatable
             && $this->loadMissing('permissions')->permissions->every(
                 fn (Permission $permission): bool => in_array($permission->key, [PermissionKey::AuditClosings->value, PermissionKey::ViewAllClosings->value], true),
             );
+    }
+
+    /**
+     * Audit settings waiting to be saved with the user: set through the
+     * audit_settings attribute, written to user_audit_scopes and
+     * user_audit_branches once the user is saved. False when none are waiting.
+     *
+     * @var array{scope: string, branch_ids: list<int>, actions: list<string>}|false|null
+     */
+    private array|false|null $pendingAuditSettings = false;
+
+    public function auditScope(): HasOne
+    {
+        return $this->hasOne(UserAuditScope::class);
+    }
+
+    /** The branches a financial auditor limited to selected branches may audit. */
+    public function auditBranches(): BelongsToMany
+    {
+        return $this->belongsToMany(Branch::class, 'user_audit_branches')->orderBy('user_audit_branches.id');
+    }
+
+    /**
+     * The saved audit settings, or null when none were set (everything is audited).
+     *
+     * @return array{scope: string, branch_ids: list<int>, actions: list<string>}|null
+     */
+    public function getAuditSettingsAttribute(): ?array
+    {
+        if ($this->pendingAuditSettings !== false) {
+            return $this->pendingAuditSettings;
+        }
+
+        $scope = $this->loadMissing('auditScope')->auditScope;
+
+        return $scope === null ? null : [
+            'scope' => $scope->scope,
+            'branch_ids' => $this->loadMissing('auditBranches')->auditBranches->modelKeys(),
+            'actions' => $scope->actions,
+        ];
+    }
+
+    /** @param  array{scope: string, branch_ids: list<int>, actions: list<string>}|null  $settings */
+    public function setAuditSettingsAttribute(?array $settings): void
+    {
+        $this->pendingAuditSettings = $settings;
+    }
+
+    /** Write the audit settings set on the user, once the user has been saved. */
+    private function savePendingAuditSettings(): void
+    {
+        if ($this->pendingAuditSettings === false) {
+            return;
+        }
+
+        $settings = $this->pendingAuditSettings;
+        $this->pendingAuditSettings = false;
+
+        if ($settings === null) {
+            $this->auditScope()->delete();
+            $this->auditBranches()->detach();
+        } else {
+            $this->auditScope()->updateOrCreate([], ['scope' => $settings['scope'], 'actions' => array_values($settings['actions'])]);
+            $this->auditBranches()->detach();
+            $this->auditBranches()->attach(array_values(array_unique($settings['branch_ids'])));
+        }
+
+        $this->unsetRelation('auditScope')->unsetRelation('auditBranches');
     }
 
     /** @return array{scope: string, branch_ids: list<int>, actions: list<string>} */
@@ -327,29 +377,29 @@ class User extends Authenticatable
             })
             ->count();
 
-        return DeletionBlocker::describe('المستخدم', [
-            'المشتركون المسجّلون' => $this->registeredSubscriptions()->count(),
-            'الحركات المالية' => $named(SubscriptionTransaction::class, 'recorded_by', 'employee_id', 'cancelled_by'),
-            'تعديلات الدفعات' => $named(TransactionAmendment::class, 'user_id'),
-            'الحذف النهائي' => $named(TransactionDeletion::class, 'user_id'),
-            'سجل تعديل البيانات الشخصية' => $named(SubscriberProfileChange::class, 'user_id'),
-            'القراءات' => $named(MeterReading::class, 'recorded_by', 'approved_by'),
-            'خصومات القراءات الأسبوعية' => $named(StandingDiscount::class, 'granted_by'),
-            'كشوف الإغلاق' => $named(Closing::class, 'prepared_by', 'reviewed_by'),
-            'سجل كشوف الإغلاق' => $named(ClosingEvent::class, 'user_id') + $named(ClosingPayment::class, 'matched_by'),
-            'تسليمات النقد' => $named(CashTransfer::class, 'sent_by', 'recipient_id', 'received_by'),
-            'التعديلات الجماعية' => $named(SubscriptionBulkChange::class, 'user_id', 'undone_by'),
-            'تغييرات الأسعار' => $named(TariffRateChange::class, 'changed_by'),
-            'الرسائل' => $named(MessageBatch::class, 'created_by') + $named(SubscriptionMessage::class, 'sent_by'),
-            'قوائم القطع' => $named(DisconnectionList::class, 'created_by', 'closed_by')
+        return DeletionBlocker::describe('user', [
+            'registered_subscriptions' => $this->registeredSubscriptions()->count(),
+            'transactions' => $named(SubscriptionTransaction::class, 'recorded_by', 'employee_id', 'cancelled_by'),
+            'payment_amendments' => $named(TransactionAmendment::class, 'user_id'),
+            'permanent_deletions' => $named(TransactionDeletion::class, 'user_id'),
+            'personal_detail_changes' => $named(SubscriberProfileChange::class, 'user_id'),
+            'readings' => $named(MeterReading::class, 'recorded_by', 'approved_by'),
+            'standing_discounts' => $named(StandingDiscount::class, 'granted_by'),
+            'closings' => $named(Closing::class, 'prepared_by', 'reviewed_by'),
+            'closing_history' => $named(ClosingEvent::class, 'user_id') + $named(ClosingPayment::class, 'matched_by'),
+            'cash_transfers' => $named(CashTransfer::class, 'sent_by', 'recipient_id', 'received_by'),
+            'bulk_changes' => $named(SubscriptionBulkChange::class, 'user_id', 'undone_by'),
+            'price_changes' => $named(TariffRateChange::class, 'changed_by'),
+            'messages' => $named(MessageBatch::class, 'created_by') + $named(SubscriptionMessage::class, 'sent_by'),
+            'disconnection_lists' => $named(DisconnectionList::class, 'created_by', 'closed_by')
                 + $named(DisconnectionListItem::class, 'added_by', 'removed_by', 'disconnected_by')
                 + $named(DisconnectionEvent::class, 'user_id'),
-            'توزيع القراءات' => $named(ReadingCycle::class, 'created_by', 'closed_by')
+            'reading_distribution' => $named(ReadingCycle::class, 'created_by', 'closed_by')
                 + $named(ReadingAssignment::class, 'user_id', 'assigned_by', 'approved_by')
                 + $named(ReadingAssignmentEvent::class, 'actor_id', 'from_user_id', 'to_user_id')
                 + $named(ReadingSubmission::class, 'user_id', 'reviewed_by')
                 + $named(PaperSheet::class, 'created_by', 'last_printed_by'),
-        ], 'يمكنك إيقاف حسابه بدلًا من حذفه.');
+        ], instead: true);
     }
 
     /**

@@ -28,10 +28,10 @@ class ExcelTemplate extends Model
      * @var array<string, string>
      */
     public const KINDS = [
-        'reports' => 'التقارير المالية',
-        'tables' => 'جداول الموقع',
-        'statements' => 'كشوف الحساب',
-        'reading-history' => 'سجل القراءات',
+        'reports' => 'Financial reports',
+        'tables' => 'Site tables',
+        'statements' => 'Account statements',
+        'reading-history' => 'Readings log',
     ];
 
     protected function casts(): array

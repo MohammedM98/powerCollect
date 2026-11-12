@@ -1,15 +1,29 @@
 import 'dart:async';
+import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'api_client.dart';
-import 'app_identity.dart';
-import 'field_store.dart';
-import 'field_shell.dart';
-import 'login_page.dart';
+import 'core/api_client.dart';
+import 'design/app_identity.dart';
+import 'core/field_store.dart';
+import 'shell/field_shell.dart';
+import 'auth/login_page.dart';
+import 'core/diagnostics.dart';
 
-void main() => runApp(const PowerCollectApp());
+void main() {
+  // Every error the app did not handle goes to the log the collector can send.
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    unawaited(
+        Diagnostics.record(details.exception, details.stack, where: 'flutter'));
+  };
+  PlatformDispatcher.instance.onError = (error, stack) {
+    unawaited(Diagnostics.record(error, stack, where: 'platform'));
+    return false;
+  };
+  runApp(const PowerCollectApp());
+}
 
 class PowerCollectApp extends StatefulWidget {
   const PowerCollectApp({super.key, this.apiClient, this.fieldStore});
@@ -66,10 +80,12 @@ class _PowerCollectAppState extends State<PowerCollectApp>
           (mode) => mode.name == store.state['appearance'],
           orElse: () => ThemeMode.system);
       api.token = store.token;
-      if (mounted)
+      if (mounted) {
         setState(() => user =
             store.remembersSession && store.token != null ? store.user : null);
-    } catch (_) {
+      }
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'main'));
       startupError = 'تعذر فتح التخزين المحلي. أعد تشغيل التطبيق.';
     } finally {
       if (mounted) setState(() => loading = false);
@@ -91,16 +107,20 @@ class _PowerCollectAppState extends State<PowerCollectApp>
     } on PendingReadingsAccountSwitch {
       try {
         await api.logout();
-      } on ApiException catch (_) {
+      } on ApiException catch (error, stack) {
+        unawaited(Diagnostics.record(error, stack, where: 'main'));
         // Restore the original session even if the new token cannot be revoked.
       }
       api.token = previousToken;
       throw const ApiException(
           'توجد قراءات غير مرسلة لحساب آخر. زامنها أولًا.', 0);
-    } catch (_) {
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'main'));
       try {
         await api.logout();
-      } on ApiException catch (_) {}
+      } on ApiException catch (error, stack) {
+        unawaited(Diagnostics.record(error, stack, where: 'main'));
+      }
       api.token = previousToken;
       throw const ApiException(
           'تعذر حفظ جلسة الدخول بأمان على الجهاز. حاول مجددًا.', 0);
@@ -121,8 +141,13 @@ class _PowerCollectAppState extends State<PowerCollectApp>
       if (!error.isNetwork) rethrow;
       api.token = null;
     }
+    // Payments sent without an answer stay, for the same collector to settle.
+    final pendingCollections = store.state['pending_collections'];
     store.state.clear();
     store.state['appearance'] = appearance.name;
+    if (pendingCollections != null) {
+      store.state['pending_collections'] = pendingCollections;
+    }
     await store.save();
     if (mounted) setState(() => user = null);
   }
@@ -131,6 +156,7 @@ class _PowerCollectAppState extends State<PowerCollectApp>
     if (user == null) return;
     api.token = null;
     store.state['remember_session'] = false;
+    store.clearRoster();
     unawaited(store.save().catchError((Object _) {}));
     navigatorKey.currentState?.popUntil((route) => route.isFirst);
     if (mounted) setState(() => user = null);
@@ -141,7 +167,8 @@ class _PowerCollectAppState extends State<PowerCollectApp>
     store.state['appearance'] = mode.name;
     try {
       await store.save();
-    } catch (_) {
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'main'));
       if (previous == null) {
         store.state.remove('appearance');
       } else {

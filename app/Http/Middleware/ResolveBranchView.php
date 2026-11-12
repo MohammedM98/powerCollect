@@ -3,8 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Branch;
-use App\Support\BranchDomainScope;
-use App\Support\BranchViewContext;
+use App\Support\Branches\BranchViewContext;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -39,7 +38,7 @@ class ResolveBranchView
                     $request->session()->forget($key);
                     $clearBranch = true;
                 } elseif (is_scalar($choice) && ctype_digit((string) $choice) && (int) $choice > 0) {
-                    $branch = Branch::withoutGlobalScope(BranchDomainScope::class)->findOrFail((int) $choice);
+                    $branch = Branch::query()->acrossBranches()->findOrFail((int) $choice);
                     $request->session()->put($key, $branch->id);
                 }
                 break;
@@ -47,7 +46,7 @@ class ResolveBranchView
         }
 
         $branchId = $request->session()->get($key);
-        $branch = $branchId ? Branch::withoutGlobalScope(BranchDomainScope::class)->find($branchId) : null;
+        $branch = $branchId ? Branch::query()->acrossBranches()->find($branchId) : null;
         if ($branch === null) {
             $request->session()->forget($key);
         }

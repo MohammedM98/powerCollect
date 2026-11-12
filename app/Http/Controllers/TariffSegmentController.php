@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Concerns\DeletesRecords;
 use App\Http\Requests\StoreTariffSegmentRequest;
 use App\Http\Requests\UpdateTariffSegmentRequest;
 use App\Models\TariffSegment;
 use App\Notifications\ActionCompleted;
+use App\Support\RecordDeletion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -15,8 +15,6 @@ use Illuminate\Http\Request;
  */
 class TariffSegmentController extends Controller
 {
-    use DeletesRecords;
-
     /**
      * Store a newly created resource in storage.
      */
@@ -44,6 +42,6 @@ class TariffSegmentController extends Controller
      */
     public function destroy(Request $request, TariffSegment $tariffSegment): RedirectResponse
     {
-        return $this->deleteRecord($request, $tariffSegment, 'tariff-segment-deleted', $tariffSegment->label());
+        return RecordDeletion::deleteRecord($request, $tariffSegment, 'tariff-segment-deleted', $tariffSegment->label());
     }
 }

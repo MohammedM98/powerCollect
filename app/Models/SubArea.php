@@ -41,8 +41,8 @@ class SubArea extends Model
      */
     public function deletionBlocker(): ?string
     {
-        return DeletionBlocker::describe('منطقة 2', [
-            'الطبلونات' => MeterBox::query()->where('sub_area_id', $this->id)->count(),
+        return DeletionBlocker::describe('sub_area', [
+            'meter_boxes' => MeterBox::query()->where('sub_area_id', $this->id)->count(),
         ]);
     }
 }

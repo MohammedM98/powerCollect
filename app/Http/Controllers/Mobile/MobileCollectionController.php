@@ -2,21 +2,26 @@
 
 namespace App\Http\Controllers\Mobile;
 
-use App\Enums\AccountingType;
-use App\Enums\ChargeType;
 use App\Enums\PaymentMethod;
 use App\Enums\PermissionKey;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CheckMobileReferenceRequest;
+use App\Http\Requests\ListMobileSubscriptionsRequest;
+use App\Http\Requests\ListMobileTransactionsRequest;
 use App\Http\Requests\StoreMobileCollectionRequest;
+use App\Http\Resources\Mobile\CollectionResource;
+use App\Http\Resources\Mobile\RecordedCollectionResource;
 use App\Models\Closing;
-use App\Models\MessageBatch;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Support\ArabicSearch;
-use App\Support\BranchClosingWorkflow;
-use App\Support\ClosingPeriods;
-use App\Support\Messaging\SmsGateway;
-use App\Support\Money;
+use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\ClosingPeriods;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\MobileCollectionData;
+use App\Support\Ledger\Money;
+use App\Support\Ledger\PaymentReferences;
+use App\Support\Ledger\RecordPayment;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
@@ -26,15 +31,12 @@ use Illuminate\Support\Facades\DB;
 class MobileCollectionController extends Controller
 {
     /** How many of the latest statement lines the subscription page shows. */
-    private const RECENT_TRANSACTIONS = 10;
+    public const RECENT_TRANSACTIONS = 10;
 
-    public function subscriptions(Request $request): JsonResponse
+    public function subscriptions(ListMobileSubscriptionsRequest $request): JsonResponse
     {
-        abort_unless($request->user()->can('recordAnyPayment', Subscription::class)
-            || $request->user()->can('viewAny', Subscription::class)
-            || $request->user()->hasAnyPermission(PermissionKey::AddCharges, PermissionKey::AddDiscounts, PermissionKey::AddClearings), 403);
 
-        $validated = $request->validate(['search' => ['nullable', 'string', 'max:100']]);
+        $validated = $request->validated();
         $search = trim($validated['search'] ?? '');
         // Any subscription of the branch can pay, as on the website: a
         // suspended or disconnected one may still be settling their debt.
@@ -72,101 +74,11 @@ class MobileCollectionController extends Controller
      */
     public function show(Request $request, string $subscription): JsonResponse
     {
-        abort_unless($request->user()->can('recordAnyPayment', Subscription::class)
-            || $request->user()->can('viewAny', Subscription::class)
-            || $request->user()->hasAnyPermission(PermissionKey::AddCharges, PermissionKey::AddDiscounts, PermissionKey::AddClearings), 403);
-
-        $subscription = Subscription::query()
-            ->whereNull('subscriptions.archived_at')
-            ->visibleTo($request->user())
-            ->with(['branch.area', 'meterBox.subArea', 'tariff', 'circuitBreaker', 'latestMeterReading'])
-            ->findOrFail($subscription);
-        $lastReading = $subscription->latestMeterReading;
-        $balanceInCents = Closing::cents($subscription->balance());
-        $canViewHistory = $request->user()->can('view', $subscription);
-        $lastPayment = $canViewHistory ? $subscription->transactions()
-            ->where('type', SubscriptionTransaction::TYPE_PAYMENT)
-            ->whereNull('cancelled_at')
-            ->latest()
-            ->latest('id')
-            ->first() : null;
-        $recentTransactions = $canViewHistory ? $subscription->transactions()
-            ->with(['meterReading', 'referenceTransaction', 'bankTransferAudit'])
-            ->latest()
-            ->latest('id')
-            ->limit(self::RECENT_TRANSACTIONS)
-            ->get() : collect();
-
-        // Walk back from the current balance, so each line shows the balance it left.
-        $balanceAfterInCents = $balanceInCents;
-        $transactions = $recentTransactions->map(function (SubscriptionTransaction $transaction) use (&$balanceAfterInCents): array {
-            return $this->statementLine($transaction, $balanceAfterInCents);
-        });
-
-        return response()->json([
-            'subscription' => [
-                'id' => $subscription->id,
-                'full_name' => $subscription->displayName(),
-                'subscriber_name' => $subscription->full_name,
-                'subscription_name' => $subscription->subscription_name,
-                'national_id' => $subscription->national_id,
-                'personal_phone' => $subscription->phone,
-                'account_number' => $subscription->account_number,
-                'meter_box_number' => $subscription->meterBox?->box_number,
-                'meter_box_name' => $subscription->meterBox?->displayName(),
-                'meter_box_location' => $subscription->meterBox?->location,
-                'phone' => $subscription->contactPhone(),
-                'address' => $subscription->address,
-                'area_name' => $subscription->branch?->area?->name,
-                'sub_area_name' => $subscription->meterBox?->subArea?->name,
-                'balance' => Closing::money($balanceInCents),
-                'status' => $subscription->status->value,
-                'status_label' => __($subscription->status->label()),
-                'accounting_type' => $subscription->accounting_type->value,
-                'accounting_type_label' => match ($subscription->accounting_type) {
-                    AccountingType::Weekly => 'أسبوعي',
-                    AccountingType::Monthly => 'شهري',
-                },
-                'subscription_date' => $subscription->subscription_date?->toDateString(),
-                'tariff_name' => __($subscription->tariff->category->label()),
-                'kilowatt_price' => $subscription->kilowattPrice(),
-                'minimum_payment' => number_format((float) $subscription->weeklyMinimumPayment(), 2, '.', ''),
-                'circuit_breaker_ampere' => $subscription->circuitBreaker?->ampere,
-                'initial_reading' => $subscription->initial_reading,
-            ],
-            'last_reading' => $lastReading ? [
-                'id' => $lastReading->id,
-                'week_start' => $lastReading->week_start->toDateString(),
-                'week_end' => $lastReading->week_end->toDateString(),
-                'previous_reading' => $lastReading->previous_reading,
-                'current_reading' => $lastReading->current_reading,
-                'consumption' => $lastReading->consumption,
-                'status' => $lastReading->status->value,
-                'status_label' => __($lastReading->status->label()),
-            ] : null,
-            'last_payment' => $lastPayment ? $this->collectionData($lastPayment->setRelation('subscription', $subscription)) : null,
-            'transactions' => $transactions->all(),
-            'permissions' => [
-                'view_history' => $canViewHistory,
-                'record_payment' => $request->user()->can('recordPayment', $subscription),
-                'record_split_payment' => $request->user()->can('recordSplitPayment', Subscription::class) && $request->user()->can('recordPayment', $subscription),
-                'add_charge' => $request->user()->can('addCharge', $subscription),
-                'add_discount' => $request->user()->can('addDiscount', $subscription),
-                'add_clearing' => $request->user()->can('addClearing', $subscription),
-                'payment_methods' => array_map(fn (PaymentMethod $method): string => $method->value, $request->user()->allowedPaymentMethods()),
-            ],
-            'charge_types' => $request->user()->can('addCharge', $subscription) ? ChargeType::formOptions() : [],
-            'messaging' => [
-                'can_send' => $request->user()->can('create', MessageBatch::class),
-                'can_view_history' => $request->user()->can('viewAny', MessageBatch::class),
-                'sms_available' => app(SmsGateway::class)->deliversMessages(),
-            ],
-        ]);
+        return MobileCollectionData::show($request, $subscription);
     }
 
-    public function transactions(Request $request, string $subscription): JsonResponse
+    public function transactions(ListMobileTransactionsRequest $request, string $subscription): JsonResponse
     {
-        $request->validate(['page' => ['sometimes', 'integer', 'min:1']]);
         $subscription = Subscription::query()->visibleTo($request->user())->findOrFail($subscription);
         $this->authorize('view', $subscription);
         $transactions = $subscription->transactions()
@@ -178,7 +90,7 @@ class MobileCollectionController extends Controller
                 ->orWhere(fn ($sameTime) => $sameTime->where('created_at', $first->created_at)->where('id', '<=', $first->id)))
             ->sum('amount')) : 0;
         $lines = $transactions->getCollection()->map(function (SubscriptionTransaction $transaction) use (&$balanceAfterInCents): array {
-            return $this->statementLine($transaction, $balanceAfterInCents);
+            return MobileCollectionData::statementLine($transaction, $balanceAfterInCents);
         });
 
         return response()->json([
@@ -188,30 +100,6 @@ class MobileCollectionController extends Controller
             'last_page' => $transactions->lastPage(),
             'total' => $transactions->total(),
         ]);
-    }
-
-    /** @return array<string, mixed> */
-    private function statementLine(SubscriptionTransaction $transaction, int &$balanceAfterInCents): array
-    {
-        $entry = [
-            'id' => $transaction->id,
-            'date' => $transaction->created_at->copy()->setTimezone(config('app.business_timezone'))->toDateString(),
-            'recorded_at' => $transaction->created_at->copy()->setTimezone(config('app.business_timezone'))->format('Y-m-d H:i'),
-            'bank_received_on' => $transaction->bank_received_on?->toDateString(),
-            'type' => $transaction->type,
-            'type_label' => $transaction->typeLabel(),
-            'description' => $transaction->description(),
-            'notes' => $transaction->notes,
-            'voucher_number' => $transaction->displayVoucherNumber(),
-            'reference_number' => $transaction->reference_number,
-            'amount' => Closing::money(abs(Closing::cents($transaction->amount))),
-            'is_credit' => (float) $transaction->amount < 0,
-            'is_cancelled' => $transaction->isCancelled(),
-            'balance_after' => Closing::money($balanceAfterInCents),
-        ];
-        $balanceAfterInCents -= Closing::cents($transaction->amount);
-
-        return $entry;
     }
 
     public function index(Request $request): JsonResponse
@@ -242,7 +130,7 @@ class MobileCollectionController extends Controller
             'payment_methods' => array_map(fn (PaymentMethod $method): string => $method->value, $methods),
             ...(in_array(PaymentMethod::Cash, $methods, true) ? ['cash_total' => Money::negate(Money::sum($collections->filter(fn (SubscriptionTransaction $transaction): bool => $transaction->payment_method === PaymentMethod::Cash)->pluck('amount')))] : []),
             ...(in_array(PaymentMethod::BankTransfer, $methods, true) ? ['bank_transfer_total' => Money::negate(Money::sum($collections->filter(fn (SubscriptionTransaction $transaction): bool => $transaction->payment_method === PaymentMethod::BankTransfer)->pluck('amount')))] : []),
-            'data' => $collections->map(fn (SubscriptionTransaction $transaction): array => $this->collectionData($transaction))->all(),
+            'data' => $collections->map(fn (SubscriptionTransaction $transaction): CollectionResource => new CollectionResource($transaction))->all(),
         ]);
     }
 
@@ -251,19 +139,18 @@ class MobileCollectionController extends Controller
      * app to say as it is typed. A repeated one is still recorded once the
      * collector confirms it (`confirm_duplicate_reference`).
      */
-    public function referenceStatus(Request $request): JsonResponse
+    public function referenceStatus(CheckMobileReferenceRequest $request): JsonResponse
     {
-        abort_unless($request->user()->hasPermission(PermissionKey::RecordCollections), 403);
 
-        $validated = $request->validate(['reference_number' => ['required', 'string', 'max:100']]);
-        $conflict = SubscriptionTransaction::activeReferenceConflict($validated['reference_number']);
-        $mayDiscloseConflict = $conflict?->mayDiscloseReferenceTo($request->user()) ?? false;
+        $validated = $request->validated();
+        $conflict = PaymentReferences::activeReferenceConflict($validated['reference_number']);
+        $mayDiscloseConflict = $conflict !== null && PaymentReferences::mayDiscloseReferenceTo($conflict, $request->user());
 
         return response()->json([
             'available' => $conflict === null,
             'message' => $conflict === null ? 'الرقم المرجعي متاح.' : 'الرقم المرجعي مكرر: مسجَّل مسبقًا على دفعة أخرى.',
             'conflict' => $conflict ? [
-                'voucher_number' => $mayDiscloseConflict ? $conflict->displayVoucherNumber() : null,
+                'voucher_number' => $mayDiscloseConflict ? LinePresenter::displayVoucherNumber($conflict) : null,
                 'subscription_name' => $mayDiscloseConflict ? $conflict->subscription->displayName() : null,
             ] : null,
         ]);
@@ -272,7 +159,7 @@ class MobileCollectionController extends Controller
     public function store(StoreMobileCollectionRequest $request): JsonResponse
     {
         if ($existingTransaction = $request->existingTransaction()) {
-            return response()->json($this->recordedCollectionData($existingTransaction), 201);
+            return response()->json(new RecordedCollectionResource($existingTransaction), 201);
         }
 
         $subscription = Subscription::query()->visibleTo($request->user())->findOrFail($request->integer('subscription_id'));
@@ -281,7 +168,7 @@ class MobileCollectionController extends Controller
 
         try {
             $transaction = DB::transaction(function () use ($subscription, $request, $validated): SubscriptionTransaction {
-                $transaction = SubscriptionTransaction::recordPayment($subscription, $request->user(), [
+                $transaction = RecordPayment::handle($subscription, $request->user(), [
                     'mobile_operation_id' => $validated['mobile_operation_id'],
                     'amount' => $validated['amount'],
                     'currency' => $validated['currency'],
@@ -313,50 +200,6 @@ class MobileCollectionController extends Controller
             abort_unless($transaction->recorded_by === $request->user()->id, 403);
         }
 
-        return response()->json($this->recordedCollectionData($transaction), 201);
-    }
-
-    /**
-     * A payment just recorded, with the subscription's balance after it, as
-     * the website's receipt shows it.
-     *
-     * @return array<string, mixed>
-     */
-    private function recordedCollectionData(SubscriptionTransaction $transaction): array
-    {
-        $transaction->load('subscription');
-
-        return [
-            ...$this->collectionData($transaction),
-            'balance_after' => $transaction->subscription->balance(),
-        ];
-    }
-
-    /**
-     * The amount is in the currency it was paid in; `amount_in_shekels` is
-     * what it took off the balance.
-     *
-     * @return array{id: int, subscription: string, amount: string, currency: string, exchange_rate: ?string, amount_in_shekels: string, payment_method: string, bank_name: ?string, bank_received_on: ?string, sender_bank_name: ?string, status: string, recorded_at: string, voucher_number: ?string, reference_number: ?string, sender_name: ?string, notes: ?string}
-     */
-    private function collectionData(SubscriptionTransaction $transaction): array
-    {
-        return [
-            'id' => $transaction->id,
-            'subscription' => $transaction->subscription->displayName(),
-            'amount' => $transaction->currency_amount,
-            'currency' => $transaction->currency->value,
-            'exchange_rate' => $transaction->exchange_rate,
-            'amount_in_shekels' => number_format(-(float) $transaction->amount, 2, '.', ''),
-            'payment_method' => $transaction->payment_method->value,
-            'bank_name' => $transaction->bank_name,
-            'bank_received_on' => $transaction->bank_received_on?->toDateString(),
-            'sender_bank_name' => $transaction->sender_bank_name,
-            'status' => 'recorded',
-            'recorded_at' => $transaction->created_at->toIso8601String(),
-            'voucher_number' => $transaction->printedVoucherNumber(),
-            'reference_number' => $transaction->reference_number,
-            'sender_name' => $transaction->sender_name,
-            'notes' => $transaction->notes,
-        ];
+        return response()->json(new RecordedCollectionResource($transaction), 201);
     }
 }

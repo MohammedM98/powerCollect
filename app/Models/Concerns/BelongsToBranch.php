@@ -4,7 +4,7 @@ namespace App\Models\Concerns;
 
 use App\Models\Branch;
 use App\Models\User;
-use App\Support\BranchDomainContext;
+use App\Support\Branches\BranchDomainContext;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

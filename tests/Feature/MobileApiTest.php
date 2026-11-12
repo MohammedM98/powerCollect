@@ -17,7 +17,9 @@ use App\Models\SubArea;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Money;
+use App\Support\Ledger\Money;
+use App\Support\Ledger\RecordPayment;
+use App\Support\Readings\ReadingWeeks;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -36,9 +38,9 @@ class MobileApiTest extends TestCase
         if ($subscription->meter_box_id === null) {
             $subscription->update(['meter_box_id' => MeterBox::factory()->create(['branch_id' => $reader->branch_id])->id]);
         }
-        $week = MeterReading::latestEndedWeekStart($reader->branch_id);
+        $week = ReadingWeeks::latestEndedWeekStart($reader->branch_id);
         $cycle = ReadingCycle::firstOrCreate(['branch_id' => $reader->branch_id, 'week_start' => $week->toDateString()], [
-            'week_end' => MeterReading::weekEndFor($week, $reader->branch_id)->toDateString(),
+            'week_end' => ReadingWeeks::weekEndFor($week, $reader->branch_id)->toDateString(),
             'reading_date' => now()->timezone(config('app.business_timezone'))->toDateString(), 'created_by' => $reader->id,
         ]);
         ReadingAssignment::factory()->mobile($reader)->approved()->create([
@@ -127,7 +129,7 @@ class MobileApiTest extends TestCase
         $this->travelTo('2026-09-24 10:00:00');
         $user = User::factory()->collector()->create();
         $user->permissions()->sync(Permission::idsFor([PermissionKey::ViewMeterReadings, PermissionKey::BrowseMeterReadingWeeks]));
-        $week = MeterReading::latestEndedWeekStart(null);
+        $week = ReadingWeeks::latestEndedWeekStart(null);
         $olderWeek = $week->copy()->subWeek();
         $subscription = Subscription::factory()->create(['branch_id' => $user->branch_id, 'full_name' => 'Alpha', 'account_number' => 'WEEK-42']);
         $missing = Subscription::factory()->create(['branch_id' => $user->branch_id, 'full_name' => 'Beta', 'initial_reading' => 40]);
@@ -252,6 +254,37 @@ class MobileApiTest extends TestCase
         $this->assertDatabaseCount('mobile_access_tokens', 0);
     }
 
+    public function test_version_one_serves_every_mobile_route_under_the_same_names(): void
+    {
+        $routes = collect(app('router')->getRoutes()->getRoutesByName());
+        $unversioned = $routes->keys()->filter(fn (string $name): bool => str_starts_with($name, 'mobile.') && ! str_starts_with($name, 'mobile.v1.'))->values();
+
+        $this->assertNotEmpty($unversioned);
+
+        foreach ($unversioned as $name) {
+            $versioned = $routes->get('mobile.v1.'.substr($name, strlen('mobile.')));
+
+            $this->assertNotNull($versioned, "{$name} has no v1 route.");
+            $this->assertSame('api/mobile/v1/'.substr($routes->get($name)->uri(), strlen('api/mobile/')), $versioned->uri());
+            $this->assertSame($routes->get($name)->methods(), $versioned->methods());
+            $this->assertSame($routes->get($name)->gatherMiddleware(), $versioned->gatherMiddleware());
+        }
+    }
+
+    public function test_a_version_one_session_signs_in_and_out_and_an_old_build_can_still_sign_out(): void
+    {
+        $user = User::factory()->branchAdmin()->create();
+        $token = $this->postJson(route('mobile.v1.login'), ['username' => $user->username, 'password' => 'password'])
+            ->assertOk()->json('token');
+
+        config(['powercollect.mobile_app_min_build' => 9]);
+        $this->withHeaders(['Authorization' => 'Bearer '.$token, 'X-App-Build' => '8']);
+
+        $this->getJson(route('mobile.v1.me'))->assertStatus(426);
+        $this->postJson(route('mobile.v1.logout'))->assertOk();
+        $this->assertDatabaseCount('mobile_access_tokens', 0);
+    }
+
     public function test_every_app_build_is_served_while_no_minimum_build_is_set(): void
     {
         $user = User::factory()->branchAdmin()->create();
@@ -283,7 +316,7 @@ class MobileApiTest extends TestCase
         $user = User::factory()->dataEntry()->create();
         $subscription = Subscription::factory()->create(['branch_id' => $user->branch_id, 'initial_reading' => 0]);
         $this->assignReading($user, $subscription);
-        $week = MeterReading::latestEndedWeekStart(null);
+        $week = ReadingWeeks::latestEndedWeekStart(null);
         foreach ([4 => [0, 100], 3 => [100, 130], 2 => [130, 170], 1 => [170, 195]] as $weeksAgo => [$previous, $current]) {
             MeterReading::factory()->approved()->create([
                 'subscription_id' => $subscription->id, 'week_start' => $week->copy()->subWeeks($weeksAgo),
@@ -329,7 +362,7 @@ class MobileApiTest extends TestCase
         $payload = [
             'mobile_operation_id' => $operationId,
             'subscription_id' => $subscription->id,
-            'week_start' => MeterReading::latestEndedWeekStart(null)->toDateString(),
+            'week_start' => ReadingWeeks::latestEndedWeekStart(null)->toDateString(),
             'current_reading' => 1250,
         ];
 
@@ -382,7 +415,7 @@ class MobileApiTest extends TestCase
             ->postJson(route('mobile.readings.store'), [
                 'mobile_operation_id' => Str::uuid()->toString(),
                 'subscription_id' => $otherSubscription->id,
-                'week_start' => MeterReading::latestEndedWeekStart(null)->toDateString(),
+                'week_start' => ReadingWeeks::latestEndedWeekStart(null)->toDateString(),
                 'current_reading' => 100,
             ])->assertUnprocessable()->assertJsonValidationErrors('subscription_id');
         $this->assertDatabaseCount('meter_readings', 0);
@@ -465,7 +498,7 @@ class MobileApiTest extends TestCase
         $paymentAt = function (string $utc) use ($collector, $subscription): int {
             $this->travelTo($utc);
 
-            return SubscriptionTransaction::recordPayment($subscription, $collector, ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash'])->id;
+            return RecordPayment::handle($subscription, $collector, ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash'])->id;
         };
         $paymentAt('2026-10-05 09:00:00'); // 12:00 on the 5th in Gaza
         $paymentAt('2026-10-05 20:30:00'); // 23:30 on the 5th in Gaza
@@ -575,7 +608,7 @@ class MobileApiTest extends TestCase
         $collector = $this->collectorWithPermission(...[...self::TAKES_PAYMENTS, PermissionKey::ViewSubscriptions]);
         $subscription = Subscription::factory()->create(['branch_id' => $collector->branch_id, 'full_name' => 'أحمد', 'phone' => '0599000111']);
         $charge = SubscriptionTransaction::factory()->for($subscription)->create(['amount' => '120.00', 'created_at' => now()->subDays(2)]);
-        $payment = SubscriptionTransaction::recordPayment($subscription, $collector, ['amount' => '30', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        $payment = RecordPayment::handle($subscription, $collector, ['amount' => '30', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
         $this->withHeader('Authorization', 'Bearer '.MobileAccessToken::issue($collector))
             ->getJson(route('mobile.collections.subscriptions.show', $subscription))
@@ -712,7 +745,7 @@ class MobileApiTest extends TestCase
         $collector = User::factory()->collector()->create();
         $collector->permissions()->sync(Permission::idsFor(self::TAKES_PAYMENTS));
         $subscription = Subscription::factory()->create(['branch_id' => $collector->branch_id]);
-        SubscriptionTransaction::recordPayment($subscription, $collector, [
+        RecordPayment::handle($subscription, $collector, [
             'amount' => '10',
             'currency' => 'ILS',
             'payment_method' => 'bank_transfer',
@@ -749,7 +782,7 @@ class MobileApiTest extends TestCase
             ->assertOk()
             ->assertJson(['available' => true, 'message' => 'الرقم المرجعي متاح.']);
 
-        SubscriptionTransaction::recordPayment(Subscription::factory()->create(['branch_id' => $collector->branch_id]), $collector, [
+        RecordPayment::handle(Subscription::factory()->create(['branch_id' => $collector->branch_id]), $collector, [
             'amount' => '10', 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'Ahmad', 'reference_number' => 'WEB-100',
         ]);
 

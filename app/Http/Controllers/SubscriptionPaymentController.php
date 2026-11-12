@@ -3,14 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Enums\Currency;
+use App\Http\Requests\CheckPaymentReferenceRequest;
 use App\Http\Requests\StoreSubscriptionPaymentRequest;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Notifications\ActionCompleted;
-use App\Support\BranchClosingAccess;
-use App\Support\ClosingPeriods;
-use App\Support\DailySeries;
-use App\Support\WebPaymentOperation;
+use App\Support\Closing\BranchClosingAccess;
+use App\Support\Closing\ClosingPeriods;
+use App\Support\Ledger\LedgerAmounts;
+use App\Support\Ledger\LineHistory;
+use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\PaymentReferences;
+use App\Support\Ledger\WebPaymentOperation;
+use App\Support\Reports\DailySeries;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,19 +25,12 @@ use Inertia\Response as InertiaResponse;
 class SubscriptionPaymentController extends Controller
 {
     /** Check a transfer reference while the collector is still filling the form. */
-    public function referenceStatus(Request $request, Subscription $subscription): JsonResponse
+    public function referenceStatus(CheckPaymentReferenceRequest $request, Subscription $subscription): JsonResponse
     {
-        $this->authorize('recordPayment', $subscription);
 
-        $validated = $request->validate([
-            'reference_number' => ['required', 'string', 'max:100'],
-            'ignore_transaction_id' => ['nullable', 'integer'],
-            'amount' => ['nullable', 'numeric', 'gt:0'],
-            'currency' => ['nullable', 'string', 'max:3'],
-            'sender_name' => ['nullable', 'string', 'max:255'],
-        ]);
+        $validated = $request->validated();
         $ignoreId = isset($validated['ignore_transaction_id']) ? (int) $validated['ignore_transaction_id'] : null;
-        $conflict = SubscriptionTransaction::activeReferenceConflict($validated['reference_number'], $ignoreId);
+        $conflict = PaymentReferences::activeReferenceConflict($validated['reference_number'], $ignoreId);
         $warning = null;
 
         if (! $conflict && isset($validated['amount'], $validated['currency'], $validated['sender_name'])) {
@@ -76,7 +74,7 @@ class SubscriptionPaymentController extends Controller
         if ($payment->wasRecentlyCreated) {
             $request->user()->notify(new ActionCompleted(
                 'payment-recorded',
-                sprintf('%s — %s شيكل', $subscription->displayName(), SubscriptionTransaction::formatAmount(ltrim($payment->amount, '-'))),
+                sprintf('%s — %s شيكل', $subscription->displayName(), LedgerAmounts::formatAmount(ltrim($payment->amount, '-'))),
             ));
         }
 
@@ -84,7 +82,7 @@ class SubscriptionPaymentController extends Controller
             'amount' => $payment->currency_amount,
             'currency' => $payment->currency->value,
             'inShekels' => ltrim($payment->amount, '-'),
-            'voucherNumber' => $payment->printedVoucherNumber(),
+            'voucherNumber' => LinePresenter::printedVoucherNumber($payment),
             'balance' => $subscription->balance(),
             'receiptUrl' => route('subscriptions.payments.receipt', [$subscription, $payment]),
         ]);
@@ -102,7 +100,7 @@ class SubscriptionPaymentController extends Controller
     public function receipt(Request $request, Subscription $subscription, SubscriptionTransaction $transaction): InertiaResponse
     {
         // Whoever records payments may print their receipts, even without access to the subscriptions list.
-        $auditor = BranchClosingAccess::audit($request->user()) && $request->user()->auditIncludesBranch($subscription->branch_id) && $transaction->isInClosedDay();
+        $auditor = BranchClosingAccess::audit($request->user()) && $request->user()->auditIncludesBranch($subscription->branch_id) && LineHistory::isInClosedDay($transaction);
         abort_unless($auditor || $request->user()->can('view', $subscription) || $request->user()->can('recordPayment', $subscription), 403);
         abort_if($request->user()->isAuditOnly() && ! $auditor, 403);
         abort_unless($transaction->isPayment() || $transaction->isClearing(), 404);
@@ -123,18 +121,18 @@ class SubscriptionPaymentController extends Controller
             'receipt' => [
                 'id' => $transaction->id,
                 'isClearing' => $transaction->isClearing(),
-                'voucherNumber' => $transaction->displayVoucherNumber(),
-                'systemVoucherNumber' => $transaction->printedVoucherNumber(),
+                'voucherNumber' => LinePresenter::displayVoucherNumber($transaction),
+                'systemVoucherNumber' => LinePresenter::printedVoucherNumber($transaction),
                 'manualVoucherNumber' => $transaction->manual_voucher_number,
                 'date' => DailySeries::localDate($transaction->created_at),
                 'time' => DailySeries::localTime($transaction->created_at),
                 'paidOn' => $transaction->paid_on?->toDateString(),
                 'bankReceivedOn' => $transaction->bank_received_on?->toDateString(),
                 'lateReason' => $transaction->late_reason,
-                'amount' => SubscriptionTransaction::formatAmount($transaction->currency_amount ?? ltrim($transaction->amount, '-')),
+                'amount' => LedgerAmounts::formatAmount($transaction->currency_amount ?? ltrim($transaction->amount, '-')),
                 'currencyLabel' => __($transaction->currency->label()),
                 'isShekel' => $transaction->currency === Currency::Shekel,
-                'inShekels' => SubscriptionTransaction::formatAmount(ltrim($transaction->amount, '-')),
+                'inShekels' => LedgerAmounts::formatAmount(ltrim($transaction->amount, '-')),
                 'exchangeRate' => rtrim(rtrim($transaction->exchange_rate, '0'), '.'),
                 'paymentMethodLabel' => $transaction->payment_method ? __($transaction->payment_method->label()) : null,
                 'bankName' => $transaction->bank_name,
@@ -142,7 +140,7 @@ class SubscriptionPaymentController extends Controller
                 'senderName' => $transaction->sender_name,
                 'referenceNumber' => $transaction->reference_number,
                 'splitPayment' => $transaction->splitPayment ? [...$transaction->splitPayment->badge(), 'partsCount' => $transaction->splitPayment->payments()->count()] : null,
-                'cashBox' => $transaction->cashBoxNumber(),
+                'cashBox' => LinePresenter::cashBoxNumber($transaction),
                 'notes' => $transaction->notes,
                 'recordedByName' => $transaction->recordedBy?->name,
                 'balanceAfter' => $transaction->balance_after,
@@ -161,13 +159,13 @@ class SubscriptionPaymentController extends Controller
     {
         $transaction->loadMissing('subscription');
 
-        if (! $transaction->mayDiscloseReferenceTo(request()->user())) {
+        if (! PaymentReferences::mayDiscloseReferenceTo($transaction, request()->user())) {
             return ['id' => null, 'voucherNumber' => null, 'subscriptionName' => 'دفعة أخرى مسجّلة مسبقًا', 'url' => null];
         }
 
         return [
             'id' => $transaction->id,
-            'voucherNumber' => $transaction->displayVoucherNumber(),
+            'voucherNumber' => LinePresenter::displayVoucherNumber($transaction),
             'subscriptionName' => $transaction->subscription->displayName(),
             'url' => route('subscriptions.statement', [$transaction->subscription, 'transaction' => $transaction->id]),
         ];

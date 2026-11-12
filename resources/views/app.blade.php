@@ -1,4 +1,4 @@
-@php($brand = app(\App\Support\Brand::class))
+@php($brand = app(\App\Support\Branding\Brand::class))
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" {!! $brand->htmlAttributes() !!}>
     <head>

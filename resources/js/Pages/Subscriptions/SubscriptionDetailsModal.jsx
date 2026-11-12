@@ -119,14 +119,15 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
     const currentWeekRecorded = subscription ? hasLatestWeekReading(subscription, readingWeekOptions) : false;
     const lastPayment = statement?.entries.findLast((entry) => entry.type === 'payment' && !entry.cancellation && !entry.isReversal);
 
+    const subscriptionId = subscription?.id ?? null;
     useEffect(() => {
-        if (!subscription) {
-            return;
+        if (subscriptionId === null) {
+            return undefined;
         }
         const previousFocus = document.activeElement;
         dialogRef.current?.focus();
         return () => previousFocus?.focus();
-    }, [subscription?.id]);
+    }, [subscriptionId]);
 
     function selectTab(tab, focus = false) {
         setActiveTab(tab);
@@ -165,6 +166,8 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
 
     return <>
         <Modal show={Boolean(subscription)} onClose={onClose} maxWidth="full" panelClassName={`subscription-profile-panel ${expanded ? 'is-expanded' : ''}`}>
+            {/* The dialog takes its own keys: the arrows move between tabs, Escape closes. */}
+            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
             {subscription && <div className="subscription-profile" role="dialog" aria-modal="true" aria-labelledby={`${tabsId}-title`} dir="rtl" tabIndex={-1} ref={dialogRef} onKeyDown={handleKeyDown}>
                 <header className="sp-header">
                     <div className="sp-top">

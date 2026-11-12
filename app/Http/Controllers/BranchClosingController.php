@@ -8,8 +8,8 @@ use App\Models\CashBox;
 use App\Models\CashBoxPayment;
 use App\Models\ClosingSetting;
 use App\Models\Subscription;
-use App\Support\BranchClosingAccess;
-use App\Support\BranchClosingWorkflow;
+use App\Support\Closing\BranchClosingAccess;
+use App\Support\Closing\BranchClosingWorkflow;
 use Illuminate\Http\RedirectResponse;
 
 class BranchClosingController extends Controller
