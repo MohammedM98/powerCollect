@@ -16,7 +16,12 @@ class SessionTokenStorage(context: Context) {
     private val preferences = context.getSharedPreferences("session_vault", Context.MODE_PRIVATE)
     private val alias = "powercollect.session.v1"
 
-    private fun key(create: Boolean): SecretKey? {
+    /** A separate key for the field state file, so the token's key is never used on the roster. */
+    private val stateAlias = "powercollect.state.v1"
+
+    private fun key(create: Boolean): SecretKey? = key(alias, create)
+
+    private fun key(alias: String, create: Boolean): SecretKey? {
         val store = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
         (store.getKey(alias, null) as? SecretKey)?.let { return it }
         if (!create) return null
@@ -58,5 +63,29 @@ class SessionTokenStorage(context: Context) {
 
     fun clear() {
         if (!preferences.edit().remove("token").commit()) throw IOException("Session storage failed")
+    }
+
+    /** The field state file's JSON, encrypted with the state key: "pcs1.<iv>.<ciphertext>". */
+    fun seal(text: String): String {
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.ENCRYPT_MODE, key(stateAlias, true))
+        val encrypted = cipher.doFinal(text.toByteArray(Charsets.UTF_8))
+        return "pcs1.${Base64.encodeToString(cipher.iv, Base64.NO_WRAP)}.${Base64.encodeToString(encrypted, Base64.NO_WRAP)}"
+    }
+
+    /** The JSON [seal] wrote, or null when it cannot be read (the key is gone, or the text was altered). */
+    fun open(value: String): String? {
+        try {
+            val parts = value.split('.')
+            require(parts.size == 3 && parts[0] == "pcs1")
+            val secret = key(stateAlias, false) ?: return null
+            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+            cipher.init(Cipher.DECRYPT_MODE, secret, GCMParameterSpec(128, Base64.decode(parts[1], Base64.NO_WRAP)))
+            return String(cipher.doFinal(Base64.decode(parts[2], Base64.NO_WRAP)), Charsets.UTF_8)
+        } catch (_: GeneralSecurityException) {
+            return null
+        } catch (_: IllegalArgumentException) {
+            return null
+        }
     }
 }

@@ -141,8 +141,13 @@ class _PowerCollectAppState extends State<PowerCollectApp>
       if (!error.isNetwork) rethrow;
       api.token = null;
     }
+    // Payments sent without an answer stay, for the same collector to settle.
+    final pendingCollections = store.state['pending_collections'];
     store.state.clear();
     store.state['appearance'] = appearance.name;
+    if (pendingCollections != null) {
+      store.state['pending_collections'] = pendingCollections;
+    }
     await store.save();
     if (mounted) setState(() => user = null);
   }
@@ -151,6 +156,7 @@ class _PowerCollectAppState extends State<PowerCollectApp>
     if (user == null) return;
     api.token = null;
     store.state['remember_session'] = false;
+    store.clearRoster();
     unawaited(store.save().catchError((Object _) {}));
     navigatorKey.currentState?.popUntil((route) => route.isFirst);
     if (mounted) setState(() => user = null);

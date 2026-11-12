@@ -20,6 +20,8 @@ class MainActivity : FlutterActivity() {
                         "read" -> result.success(sessions.read())
                         "write" -> { sessions.write(call.arguments as String); result.success(null) }
                         "clear" -> { sessions.clear(); result.success(null) }
+                        "seal" -> result.success(sessions.seal(call.arguments as String))
+                        "open" -> result.success(sessions.open(call.arguments as String))
                         else -> result.notImplemented()
                     }
                 } catch (_: Exception) {

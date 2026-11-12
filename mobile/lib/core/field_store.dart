@@ -37,11 +37,46 @@ class FieldStore {
     return File('${_directory!.path}${Platform.pathSeparator}field_state.json');
   }
 
+  /// The prefix of a state file sealed with the phone's Keystore key.
+  static const _sealed = 'pcs1.';
+
+  /// The state file's JSON, sealed with the phone's Keystore key so the
+  /// roster, the user and queued readings are not readable as text. Should
+  /// sealing fail, the JSON is written as it is: unsent readings and
+  /// payments matter more than hiding them.
+  Future<String> _seal(String json) async {
+    try {
+      return await _session.invokeMethod<String>('seal', json) ?? json;
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'field_store'));
+      return json;
+    }
+  }
+
+  /// The JSON in the state file: opened when sealed, as it is when written
+  /// before sealing (it is sealed on the next save). A sealed file whose key
+  /// is gone (the app's data was restored to another phone) reads as empty.
+  Future<String?> _open(String text) async {
+    if (!text.startsWith(_sealed)) return text;
+    try {
+      return await _session.invokeMethod<String>('open', text);
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'field_store'));
+      return null;
+    }
+  }
+
   Future<void> load() async {
     final file = await _file();
     if (!await file.exists()) return;
-    final decoded = jsonDecode(await file.readAsString());
+    final text = await file.readAsString();
+    final json = await _open(text);
+    if (json == null) return;
+    final decoded = jsonDecode(json);
     if (decoded is Map<String, dynamic>) state = decoded;
+    if (!text.startsWith(_sealed)) {
+      await save();
+    }
     final legacyToken = token;
     if (legacyToken != null) {
       await _session.invokeMethod<void>('write', legacyToken);
@@ -69,7 +104,7 @@ class FieldStore {
         }
         final file = await _file();
         final temporary = File('${file.path}.tmp');
-        await temporary.writeAsString(snapshot, flush: true);
+        await temporary.writeAsString(await _seal(snapshot), flush: true);
         await temporary.rename(file.path);
         _persistedToken = nextToken;
       } catch (error, stack) {
@@ -118,6 +153,15 @@ class FieldStore {
       });
 
   bool get remembersSession => state['remember_session'] != false;
+
+  /// When the session ends without signing out (it expired): the subscriber
+  /// roster leaves the phone; the readings waiting to upload stay, being the
+  /// collector's unsent work, and the roster comes back at the next sign-in.
+  void clearRoster() {
+    for (final key in ['subscribers', 'next_reading', 'roster_updated_at']) {
+      state.remove(key);
+    }
+  }
 
   List<Map<String, dynamic>> get queuedReadings =>
       (state['queued_readings'] as List<dynamic>? ?? [])
