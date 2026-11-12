@@ -11,6 +11,8 @@ class SessionHeaders implements HttpHeaders {
   void set(String name, Object value, {bool preserveHeaderCase = false}) =>
       values[name] = value;
   @override
+  String? value(String name) => values[name]?.toString();
+  @override
   dynamic noSuchMethod(Invocation invocation) => null;
 }
 
@@ -19,6 +21,8 @@ class SessionResponse extends Stream<List<int>> implements HttpClientResponse {
   @override
   final int statusCode;
   final String body;
+  @override
+  final SessionHeaders headers = SessionHeaders();
   @override
   StreamSubscription<List<int>> listen(void Function(List<int>)? onData,
           {Function? onError, void Function()? onDone, bool? cancelOnError}) =>
