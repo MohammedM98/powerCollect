@@ -516,7 +516,7 @@ class _SplitPaymentPageState extends State<SplitPaymentPage> {
                           ],
                           const SizedBox(height: 16),
                           AppNotice(
-                              'الموزّع: ${(allocated / 100).toStringAsFixed(2)} ₪ · المتبقي: ${(remaining / 100).toStringAsFixed(2)} ₪',
+                              'الموزّع: ${AppIdentity.grouped(allocated / 100)} ₪ · المتبقي: ${AppIdentity.grouped(remaining / 100)} ₪',
                               success: remaining == 0 && allocated > 0),
                           if (needsOverpayment)
                             CheckboxListTile(
