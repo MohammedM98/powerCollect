@@ -13,7 +13,7 @@ export const BANK = 'بنك فلسطين';
  */
 export async function setUpCompany(report) {
     const owner = new Session('owner');
-    report.done('the Super Admin signs in', await owner.signIn('owner'));
+    report.check('the Super Admin signs in', (await owner.signIn('owner')).signedIn, 'refused');
     const grants = JSON.parse(artisan('tinker', '--execute', 'require base_path("tests/Live/starter-permissions.php");').trim().split('\n').pop());
 
     report.done('adds a governorate', await owner.post('/governorates', { name: 'المحافظة الوسطى' }));
@@ -91,7 +91,7 @@ export async function signInStaff(company, names = Object.keys(company.users)) {
     for (const name of names) {
         sessions[name] = new Session(name);
         const response = await sessions[name].signIn(company.users[name].username);
-        if (response.status !== 302 || /login/.test(response.location ?? '')) throw new Error(`${name} could not sign in (${response.status} → ${response.location})`);
+        if (!response.signedIn) throw new Error(`${name} could not sign in (${response.status} → ${response.location})`);
     }
 
     return sessions;

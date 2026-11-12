@@ -340,7 +340,7 @@ artisan('closings:process');
 report.refused('a week later the old sessions have expired', await manager.post(`/subscriptions/${mona}/charges`, { type: 'penalty', amount: '1', notes: 'x' }), [419, 401]);
 for (const [name, session] of Object.entries(staff)) {
     const signedIn = await session.signIn(name === 'owner' ? 'owner' : company.users[name].username);
-    if (signedIn.status !== 302 || /login/.test(signedIn.location ?? '')) report.check(`${name} signs in again`, false, `HTTP ${signedIn.status} → ${signedIn.location} ${signedIn.text.slice(0, 200)}`);
+    if (!signedIn.signedIn) report.check(`${name} signs in again`, false, `HTTP ${signedIn.status} → ${signedIn.location} ${signedIn.text.slice(0, 200)}`);
 }
 const week2 = '2026-11-13';
 report.equal('the scheduled closing left no box with money open', scalar(`select count(*) from cash_boxes b where branch_id=${branch} and status in ('open','pending') and exists (select 1 from cash_box_payments p where p.cash_box_id=b.id)`), 0);

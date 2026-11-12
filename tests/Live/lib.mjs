@@ -58,6 +58,8 @@ export class Session {
         this.version = /&quot;version&quot;:&quot;([^&]*)&quot;|"version":"([^"]*)"/.exec(page.text)?.slice(1).find(Boolean) ?? null;
         const response = await this.raw('POST', '/login', { body: { username, password } });
         this.username = username;
+        // A refused sign-in is sent back to the form; an accepted one goes on to the dashboard.
+        response.signedIn = response.status === 302 && /\/dashboard$/.test(response.location ?? '');
 
         return response;
     }
