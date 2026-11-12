@@ -4,12 +4,12 @@ import 'dart:ui' show PlatformDispatcher;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'api_client.dart';
-import 'app_identity.dart';
-import 'field_store.dart';
-import 'field_shell.dart';
-import 'login_page.dart';
-import 'diagnostics.dart';
+import 'core/api_client.dart';
+import 'design/app_identity.dart';
+import 'core/field_store.dart';
+import 'shell/field_shell.dart';
+import 'auth/login_page.dart';
+import 'core/diagnostics.dart';
 
 void main() {
   // Every error the app did not handle goes to the log the collector can send.
