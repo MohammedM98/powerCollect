@@ -1074,7 +1074,7 @@
     }
 }
 
-/* ── The Power Collect mark and lockup (Components/SuperPowerMark.jsx): the logo's black tile, white S and lime bolt ── */
+/* ── The Power Collect mark and lockup (Components/SuperPowerMark.jsx): the logo's blue tile, white S and the bolt cut through it ── */
 .gl-mark {
     display: block;
     flex: none;
@@ -1082,11 +1082,6 @@
 
 .gl-mark-tile {
     fill: rgb(var(--logo-tile));
-}
-
-.dark .gl-mark-tile {
-    stroke: rgb(255 255 255 / 0.14);
-    stroke-width: 12;
 }
 
 .gl-mark-letter {

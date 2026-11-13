@@ -135,7 +135,7 @@
         border-color: var(--gl-line-strong);
         border-radius: 5px;
         background-color: var(--gl-fill);
-        /* Checked: the identity's deep olive, so the white tick reads (lime would hide it). */
+        /* Checked: the brand's blue under a white tick. */
         color: rgb(var(--brand-500));
     }
 
@@ -2414,7 +2414,7 @@ input[type='radio'] {
 }
 
 :root[data-ui-background='graphite'] {
-    /* The open page's pill: the identity's black in the light theme and its lime in the dark one (theme.css `--nav-active`). */
+    /* The open page's pill: the identity's blue with white text (theme.css `--nav-active`). */
     --tn-graphite: rgb(var(--nav-active));
     --tn-graphite-dark: var(--tn-graphite);
     --tn-graphite-ink: rgb(var(--nav-active-ink));

@@ -1,12 +1,13 @@
 /** The logo's S (traced from the company's logo, on a 1254-unit canvas), with its notch for the bolt. */
 const LETTER = 'M260 247H1001L843 469H566L1007 798L787 1031H257L434 824H642V772H539L566 722L260 508Z';
 
-/** The lightning bolt across the S. */
-const BOLT = 'M673 515L539 772H650L622 968L762 764H653Z';
+/** The lightning bolt cut through the S, in the tile's blue. */
+const BOLT = 'M700 455L515 795H645L605 1045L820 725H683Z';
 
 /**
- * The Power Collect mark: a black rounded tile holding the white S and its
- * lime bolt, as the logo, in both themes. Flat, readable from 16px. `draw`
+ * The Power Collect mark: a blue rounded tile holding the white S with a
+ * lightning bolt cut through it in the tile's blue, in both themes. Flat,
+ * readable from 16px. `draw`
  * traces the S in when it appears (still when motion is off). An empty
  * `label` marks it decorative, hidden from screen readers, for a mark beside
  * text that already names the company.

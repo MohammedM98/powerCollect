@@ -62,7 +62,7 @@ export function FieldLabel({ htmlFor, required = false, hint, children }) {
     );
 }
 
-/** The colour each kind of movement is drawn in, from components.css: the company's colour as text (olive on light, lime on dark), red for what is added on, green for what comes off, amber for a correction. */
+/** The colour each kind of movement is drawn in, from components.css: the company's colour as text, red for what is added on, green for what comes off, amber for a correction. */
 export const MOVEMENT_TONES = {
     payment: 'rgb(var(--gl-brand))',
     charge: 'var(--gl-bad)',

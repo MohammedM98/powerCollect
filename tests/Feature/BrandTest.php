@@ -70,12 +70,12 @@ class BrandTest extends TestCase
         $response->assertSee('<link rel="icon" href="/favicon.svg">', false);
     }
 
-    public function test_pages_start_in_the_power_collect_lime_identity_with_the_top_bar_and_solid_cards(): void
+    public function test_pages_start_in_the_power_collect_blue_identity_with_the_top_bar_and_solid_cards(): void
     {
         $response = $this->get(route('login'));
 
         $response->assertInertia(fn ($page) => $page
-            ->where('brand.primaryColor', '#D3FB0E')
+            ->where('brand.primaryColor', '#2563EB')
             ->where('brand.design.preset', 'superpower')
             ->where('brand.design.navigation', 'topbar')
             ->where('brand.design.cards', 'elevated')
@@ -83,7 +83,7 @@ class BrandTest extends TestCase
             ->where('brand.design.details', 'modal'));
         $response->assertSee('data-ui-background="graphite"', false);
         $response->assertSee('data-ui-neutral="graphite"', false);
-        // The lime identity is theme.css's own (black ink on lime): no generated shades or white ink are drawn over it.
+        // The blue identity is theme.css's own: no generated shades or ink are drawn over it.
         $response->assertDontSee('--brand-50:', false);
         $response->assertDontSee('--brand-ink:', false);
         // The charcoal look keeps theme.css's own neutral greys: no tinted grey scale is drawn over them.
@@ -114,7 +114,7 @@ class BrandTest extends TestCase
         $response->assertSee('<link rel="icon" href="'.$logoUrl.'">', false);
         $response->assertSee(':root{--brand-50:', false);
         $response->assertSee('--ui-danger:rgb(var(--danger-600))', false);
-        // Its colour carries white text and fills the open page's pill, unlike the lime identity's black ink.
+        // Its colour carries white text and fills the open page's pill.
         $response->assertSee('--brand-ink:255 255 255;--nav-active:var(--brand-solid);', false);
     }
 

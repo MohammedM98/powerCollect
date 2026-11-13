@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="127 127 1000 1000" role="img" aria-label="سوبر باور">
-  <rect x="127" y="127" width="1000" height="1000" rx="270" fill="#000"/>
+  <rect x="127" y="127" width="1000" height="1000" rx="270" fill="#2563EB"/>
   <path d="M260 247H1001L843 469H566L1007 798L787 1031H257L434 824H642V772H539L566 722L260 508Z" fill="#fff"/>
-  <path d="M673 515L539 772H650L622 968L762 764H653Z" fill="#D3FB0E"/>
+  <path d="M700 455L515 795H645L605 1045L820 725H683Z" fill="#2563EB"/>
 </svg>

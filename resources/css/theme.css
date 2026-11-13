@@ -29,52 +29,51 @@
     /* ── 1. Brand ─────────────────────────────────────────────────────────── */
 
     /*
-     * Power Collect's identity, from the logo: black, white and its lime
-     * (#D3FB0E). Lime is a fill, never text on white: buttons, the open
-     * page's pill in the dark theme and badges are lime with black text
-     * (`--brand-ink`, 16:1). Brand text, links and icons on a light page use
-     * the deep olive steps (500 and darker read at 5.3:1 or more on white).
+     * Power Collect's identity, from the logo: black, white and its calm
+     * blue (#2563EB, 500). Buttons, badges and the open page's pill are blue
+     * with white text (`--brand-ink`, 5.2:1); brand text and links on a
+     * light page use 600 and darker (6.7:1 or more on white).
      */
-    --brand-50: 248 254 220;
-    --brand-100: 240 253 184;
-    --brand-200: 228 252 120;
-    --brand-300: 216 251 50;
-    --brand-400: 140 175 0;
-    --brand-500: 92 116 0;
-    --brand-600: 77 98 0;
-    --brand-700: 62 79 0;
-    --brand-800: 48 61 0;
-    --brand-900: 33 42 0;
+    --brand-50: 239 246 255;
+    --brand-100: 219 234 254;
+    --brand-200: 191 219 254;
+    --brand-300: 147 197 253;
+    --brand-400: 96 165 250;
+    --brand-500: 37 99 235;
+    --brand-600: 29 78 216;
+    --brand-700: 30 64 175;
+    --brand-800: 30 58 138;
+    --brand-900: 23 37 84;
 
     /*
      * The brand colour where it must look the same in both themes: the
-     * buttons' lime (solid, with hi and lo for hover and press), the lime
-     * used as text on dark panels (tint, soft) and the deep olive.
+     * buttons' blue (solid, with hi and lo for hover and press), the light
+     * blue used as text on dark panels (tint, soft) and the deep blue.
      */
-    --brand-tint: 236 254 160;
-    --brand-soft: 211 251 14;
-    --brand-bright: 216 251 40;
-    --brand-glow: 211 251 14;
-    --brand-hi: 222 255 70;
-    --brand-solid: 211 251 14;
-    --brand-lo: 190 228 10;
-    --brand-deep: 62 79 0;
+    --brand-tint: 191 219 254;
+    --brand-soft: 96 165 250;
+    --brand-bright: 59 130 246;
+    --brand-glow: 59 130 246;
+    --brand-hi: 59 130 246;
+    --brand-solid: 37 99 235;
+    --brand-lo: 29 78 216;
+    --brand-deep: 30 64 175;
 
-    /* Text and icons drawn on a lime fill. A company with a colour of its own gets white (Brand::stylesheet). */
-    --brand-ink: 10 10 10;
+    /* Text and icons drawn on a fill in the brand colour. */
+    --brand-ink: 255 255 255;
 
-    /* The open page or section in the navigation: black with white text in the light theme, lime with black text in the dark one. */
-    --nav-active: 10 10 10;
+    /* The open page or section in the navigation: the brand's blue with white text, in both themes. */
+    --nav-active: 37 99 235;
     --nav-active-ink: 255 255 255;
-    --nav-active-icon: 211 251 14;
+    --nav-active-icon: 255 255 255;
 
-    /* The logo's own colours (Components/SuperPowerMark.jsx): its black tile, white S and lime bolt. */
-    --logo-tile: 0 0 0;
+    /* The logo's own colours (Components/SuperPowerMark.jsx): its blue tile and white S, the bolt cut through the S in the tile's blue. */
+    --logo-tile: 37 99 235;
     --logo-letter: 255 255 255;
-    --logo-bolt: 211 251 14;
+    --logo-bolt: 37 99 235;
 
-    /* The signature line: the logo's lime fading into its olive. */
-    --spectrum: linear-gradient(90deg, rgb(var(--brand-solid)), rgb(var(--brand-400)) 60%, rgb(var(--brand-deep)));
+    /* The signature line: the logo's light blue into its deep blue. */
+    --spectrum: linear-gradient(90deg, rgb(var(--brand-soft)), rgb(var(--brand-solid)) 55%, rgb(var(--brand-deep)));
 
     /* ── 2. Neutrals ──────────────────────────────────────────────────────── */
 
@@ -262,20 +261,16 @@
 .dark {
     color-scheme: dark;
 
-    --brand-50: 26 31 4;
-    --brand-100: 36 43 6;
-    --brand-200: 58 70 6;
-    --brand-300: 100 120 8;
-    --brand-400: 160 192 12;
-    --brand-500: 92 116 0;
-    --brand-600: 211 251 14;
-    --brand-700: 222 252 90;
-    --brand-800: 234 253 150;
-    --brand-900: 244 254 205;
-
-    --nav-active: 211 251 14;
-    --nav-active-ink: 10 10 10;
-    --nav-active-icon: 10 10 10;
+    --brand-50: 20 27 41;
+    --brand-100: 24 36 60;
+    --brand-200: 30 50 90;
+    --brand-300: 30 64 175;
+    --brand-400: 59 130 246;
+    --brand-500: 37 99 235;
+    --brand-600: 96 165 250;
+    --brand-700: 147 197 253;
+    --brand-800: 191 219 254;
+    --brand-900: 219 234 254;
 
     --gray-50: 10 10 10;
     --gray-100: 25 25 25;
