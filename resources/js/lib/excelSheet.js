@@ -13,8 +13,8 @@
 
 /** The colour sets a file can take: its heading row, its title and the heading of each group (hex, without #). */
 export const EXCEL_THEMES = {
-    graphite: { label: 'داكن', head: '1B2026', headText: 'FFFFFF', title: 'A51D26', group: 'F6E7E8', groupText: '7D121B' },
-    brand: { label: 'أحمر الشركة', head: 'A51D26', headText: 'FFFFFF', title: 'A51D26', group: 'F6E7E8', groupText: '7D121B' },
+    graphite: { label: 'داكن', head: '1B2026', headText: 'FFFFFF', title: '2563EB', group: 'EFF6FF', groupText: '1E40AF' },
+    brand: { label: 'أزرق الشركة', head: '2563EB', headText: 'FFFFFF', title: '2563EB', group: 'EFF6FF', groupText: '1E40AF' },
     blue: { label: 'أزرق', head: '1E3A8A', headText: 'FFFFFF', title: '1E3A8A', group: 'DBEAFE', groupText: '1E3A8A' },
     green: { label: 'أخضر', head: '1D6F42', headText: 'FFFFFF', title: '1D6F42', group: 'DCFCE7', groupText: '14532D' },
     plain: { label: 'رمادي للطباعة', head: 'E5E7EB', headText: '111827', title: '111827', group: 'F3F4F6', groupText: '111827' },

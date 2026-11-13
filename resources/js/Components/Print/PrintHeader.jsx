@@ -39,7 +39,7 @@ export default function PrintHeader({ header, context, meta, accent }) {
         </div>}
         {rule !== 'none' && <div aria-hidden="true" className="mt-3" style={{
             borderTop: `${header.ruleWidth ?? 2}px solid ${accent}`,
-            ...(rule === 'double' ? { paddingTop: '1mm', borderBottom: `${header.ruleWidth ?? 2}px solid ${header.ruleColor ?? '#A51D26'}` } : {}),
+            ...(rule === 'double' ? { paddingTop: '1mm', borderBottom: `${header.ruleWidth ?? 2}px solid ${header.ruleColor ?? '#2563EB'}` } : {}),
         }} />}
         {letterhead && <div className="mt-4">{heading}</div>}
     </header>;

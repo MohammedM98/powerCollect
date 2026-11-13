@@ -60,7 +60,7 @@ const LAYOUT_PREFIX = 'print-layout:';
  * shown, its extra print fields hidden. `company` and `ruleColor` come from
  * the company's identity (its name and print colour).
  */
-export function defaultLayout({ columns, title = '', company = '', ruleColor = '#A51D26' }) {
+export function defaultLayout({ columns, title = '', company = '', ruleColor = '#2563EB' }) {
     return {
         paper: 'A4',
         orientation: columns.length > 6 ? 'landscape' : 'portrait',
@@ -124,7 +124,8 @@ export function defaultLayout({ columns, title = '', company = '', ruleColor = '
             headerShade: true,
             rowNumbers: false,
             wrap: true,
-            accent: '#111827',
+            // The company's print colour (its identity's blue by default): the title, the header line and the table's lines.
+            accent: ruleColor,
             // Rows coloured by their values, first matching rule wins (see rowHighlight).
             highlights: [],
         },
