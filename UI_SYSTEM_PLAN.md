@@ -10,6 +10,7 @@
 | --- | --- |
 | `power-collect-prototype.html` | العناصر داخل شاشات: قائمة المشتركين، نافذة الدفعة، إدخال القراءات |
 | `power-collect-forms.html` | تخطيط النماذج الجديد: مشترك جديد، تعديل مشترك، نافذة الطبلون |
+| `power-collect-components.html` | **كتالوج المكوّنات:** كل مكوّن في بطاقة باسمه وملفه وحالته، من الزر حتى نوافذ الإضافة والتعديل والحذف. فهرسه في الجزء الخامس |
 
 ---
 
@@ -309,3 +310,90 @@
 - [ ] **8. الحارس:** قاعدة ESLint ترفض `<button>` و`<select>` و`<textarea>` الخام وأحجام الخط العشوائية داخل `Pages`.
 
 **الاختبارات:** الخطوات 5 و6 تغيّر بنية النماذج، فتُحدَّث معها اختبارات المتصفح في `tests/Browser` واختبارات المكوّنات (`npm run test:components`)، ويُعاد فحص سهولة الوصول الموثَّق في `FRONTEND_UX_FIXES.md`.
+
+---
+
+## الجزء الخامس: فهرس المكوّنات
+
+كل ما في الواجهة محصور هنا في أربع طبقات. كل طبقة تُبنى من التي قبلها فقط، فتعديل عنصر يظهر في كل ما يحتويه. الحالة: **موجود** يبقى كما هو، **يُعدَّل** موجود ويتغير شكله أو خصائصه، **جديد** يُضاف.
+
+المرجع المرئي: `power-collect-components.html`، وكل بطاقة فيه تحمل الاسم نفسه المكتوب هنا.
+
+### 5.1 الأساسيات
+
+| الاسم | الملف | الحالة | ما يتغير |
+| --- | --- | --- | --- |
+| Tokens | `resources/css/theme.css` | يُعدَّل | تُضاف `--h-sm/md/lg` و`--r-sm/md/lg/xl`. الألوان تبقى |
+| أنماط العناصر | `resources/css/components.css` | يُعدَّل | `gl-btn` و`gl-field` يقرآن المتغيرات الجديدة |
+
+### 5.2 العناصر
+
+أصغر القطع. لا تحتوي مكوّناً آخر غير الأيقونة.
+
+| المكوّن | الملف | الحالة | الخصائص الأساسية |
+| --- | --- | --- | --- |
+| `Icon` | `Components/Icon.jsx` | يُعدَّل | `name` · `size` (sm/md/lg) · السماكة 1.75 ثابتة |
+| `Button` | `Components/Button.jsx` | جديد | `variant` · `size` · `icon` · `loading`. يجمع `PrimaryButton` و`SecondaryButton` و`DangerButton` و`AddButton` و`GroupActionButton` و`PrintButton` و`ExcelButton`، وتبقى هذه أسماء فوقه |
+| `IconButton` | `Components/IconButton.jsx` | جديد | `icon` · `label` (إلزامي) · `variant` · `size` |
+| `FormField` | `Components/Form/FormField.jsx` | يُعدَّل | `label` · `required` · `hint` · `error` · يُضاف `width` و`was` |
+| `TextInput` | `Components/TextInput.jsx` | موجود | الحالات: تركيز، خطأ، صحيح، للقراءة فقط |
+| `NumberInput` | `Components/NumberInput.jsx` | جديد | `unit` · `decimals` · تنسيق عند الخروج. يستعمل `Affix` |
+| `MeterInput` | `Components/MeterInput.jsx` | جديد | `value` · `previous` (لحساب الاستهلاك والتحقق) |
+| `Textarea` | `Components/Textarea.jsx` | جديد | بدل الـ 31 موضعاً الخام |
+| `FormSelect` · `SearchableSelect` | `Components/Form/FormSelect.jsx` · `SearchableSelect.jsx` | موجود | `blockedMessage` حين ينتظر حقلاً آخر |
+| `PasswordInput` | `Components/PasswordInput.jsx` | موجود | — |
+| `DateInput` | `Components/DateInput.jsx` | يُعدَّل | تُضاف `shortcuts` (اليوم، أمس، أول الشهر…) |
+| `Switch` | `Components/Switch.jsx` | موجود | — |
+| `ChoiceChips` | `Components/ChoiceChips.jsx` | موجود | — |
+| `SegmentedTabs` | `Components/SegmentedTabs.jsx` | موجود | — |
+| `StatusPill` | `Components/DataTable/StatusPill.jsx` | موجود | النغمات: ok · warn · bad · محايد |
+| العدّاد والصورة الرمزية | `gl-cnt` · `gl-av` في `components.css` | موجود | العدّاد الأحمر لما يحتاج تصرفاً فقط |
+
+### 5.3 المكوّنات المجمَّعة
+
+قطع الصفحة. كل واحدة مبنية من العناصر السابقة.
+
+| المكوّن | الملف | الحالة | يتكوّن من |
+| --- | --- | --- | --- |
+| `PageHeader` | `Components/PageHeader.jsx` | موجود | عنوان + سطر + `Button` |
+| `DataTableToolbar` · `FilterBar` | `Components/DataTable/DataTableToolbar.jsx` · `Form/FilterBar.jsx` | يُعدَّل | حقل بحث 38 + `ChoiceChips` + `IconButton` |
+| `DataTable` | `Components/DataTable/*` · `hooks/useDataTable.js` | موجود | `SortableTh` · `RowIdentity` · `StatusPill` · أزرار الصف · `RowMenu` · `Pagination` |
+| `RowMenu` | `Components/DataTable/RowMenu.jsx` · `RowActionsMenu.jsx` | موجود | قائمة «المزيد»: الإجراءات العادية ثم فاصل ثم الأرشفة والحذف |
+| `BulkActionBar` | `Pages/Subscriptions/BulkActionBar.jsx` | موجود | العدد + `Button variant="group"` |
+| `KpiTile` · `StatStrip` | `Components/KpiTile.jsx` · `StatStrip.jsx` | موجود | `Icon` + `CountUp` |
+| `UnderlineTabs` · `PeriodTabs` | `Components/UnderlineTabs.jsx` · `PeriodTabs.jsx` | موجود | تبويب + عدّاد |
+| `AsyncState` | `Components/AsyncState.jsx` | موجود | ثلاث حالات: تحميل، تعذّر مع إعادة المحاولة، فارغ مع أول خطوة |
+| `Notice` | `Components/Notice.jsx` | جديد | `tone` (info/warn/bad/ok) + إجراء اختياري |
+| `FlashNotifications` | `Components/FlashNotifications.jsx` | يُعدَّل | تُضاف نغمة `info` وزر إجراء داخل الرسالة |
+| `FormSection` | `Components/Form/FormSection.jsx` | يُعدَّل | `title` · `description` · `icon` · `optional`، وحقوله في عمودين |
+| `FormBar` | `Components/Form/FormBar.jsx` | جديد | `missing` · `changes` + `Button` الحفظ والإلغاء |
+| `FormPage` | `Components/FormPage.jsx` | يُعدَّل | رأس يتبع الاسم + `FormSection` × n + `FormBar` |
+
+### 5.4 النوافذ
+
+كل النوافذ تُبنى على `DialogFrame`، وتختلف في المحتوى والنغمة والعرض فقط.
+
+**الهيكل المشترك:** رأس (أيقونة بنغمة، عنوان، سطر تحته، زر إغلاق) ← جسم يتمرّر وحده ← ذيل (الرئيسي أولاً بارتفاع 46، ثم الثانوي، ثم الحالة، والإلغاء في الطرف).
+
+**العروض:** `sm` 460 للأسئلة · `md` 560 للنماذج القصيرة · `lg` 820 لنماذج المال ذات الملخص الجانبي.
+
+| النافذة | الملف | الحالة | العرض | متى |
+| --- | --- | --- | --- | --- |
+| `DialogFrame` | `Components/DialogFrame.jsx` · `Modal.jsx` | يُعدَّل | — | الهيكل. تُوحَّد العروض الثلاثة وترتيب الذيل |
+| `FormModal` · إضافة | `Components/FormModal.jsx` | يُعدَّل | md | العنوان الحيّ، و`saveAndAddAnother` |
+| `FormModal` · تعديل | `Components/FormModal.jsx` | يُعدَّل | md | علامات التغيير، الحفظ معطّل حتى يتغير شيء، زر الحذف في طرف الذيل |
+| `FormModal` · مع ملخص جانبي | `Pages/Subscriptions/PaymentModal.jsx` و`ChargeModal` و`DiscountModal` و`ClearingModal` | موجود | lg | نماذج المال: الحقول على جهة والملخص المحسوب على الأخرى |
+| `DetailsModal` | `Pages/Subscriptions/SubscriptionDetailsModal.jsx` · `Form/InsetList.jsx` | موجود | md | عرض للقراءة فقط، وفي الذيل الإجراءات على السجل |
+| `ConfirmDialog` | `Components/ConfirmDialog.jsx` | موجود | sm | سؤال قبل إجراء له أثر. الزر يسمّي الإجراء («إغلاق الدورة») لا «تأكيد» |
+| `DeleteDialog` | `hooks/useDeleteRecord.jsx` | موجود | sm | الحذف النهائي: الزر ينتظر كتابة اسم السجل. هنا وحده يكون زر الخطر مصمتاً |
+| `DeleteDialog` · ممنوع | `hooks/useDeleteRecord.jsx` | يُعدَّل | sm | حين يرفض الخادم الحذف: تقول النافذة ما الذي يستخدم السجل وتعرض البديل (عرض المرتبطين، أرشفة) بدل رسالة خطأ عائمة |
+| `DiscardDialog` | داخل `Components/FormModal.jsx` | موجود | sm | إغلاق نموذج فيه بيانات لم تُحفظ. الخيار الآمن هو الأبرز |
+| `HoldToConfirm` | `Components/HoldToConfirm.jsx` | موجود | sm | الإجراء الجماعي الخطير: ضغط مطوّل ثلاث ثوانٍ |
+
+### 5.5 قاعدة التعديل مرة واحدة
+
+1. **اللون أو المقاس:** يُعدَّل في `theme.css` فقط. لا لون ولا مقاس مكتوب داخل مكوّن أو صفحة.
+2. **شكل عنصر:** يُعدَّل في مكوّنه في الطبقة 5.2، فيتغير في كل المكوّنات المجمَّعة والنوافذ.
+3. **هيكل كل النوافذ:** يُعدَّل في `DialogFrame` وحده.
+4. **هيكل كل النماذج:** يُعدَّل في `FormSection` و`FormBar` و`FormModal`.
+5. **الصفحات** تستعمل المكوّنات فقط، ولا تكتب `<button>` أو `<select>` أو `<textarea>` أو أنماطاً خاصة بها (الخطوة 8 في الجزء الرابع تفرض ذلك).
