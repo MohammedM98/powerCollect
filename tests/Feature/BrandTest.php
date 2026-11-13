@@ -66,16 +66,16 @@ class BrandTest extends TestCase
             ->where('brand.logos.main', '/images/logo-superpower.svg')
             ->where('brand.logos.print', '/images/logo-superpower.svg')
             ->where('brand.animatedLogo', true)
-            ->where('brand.printColor', '#2563EB'));
+            ->where('brand.printColor', '#0F766E'));
         $response->assertSee('<link rel="icon" href="/favicon.svg">', false);
     }
 
-    public function test_pages_start_in_the_power_collect_blue_identity_with_the_top_bar_and_solid_cards(): void
+    public function test_pages_start_in_the_power_collect_teal_identity_with_the_top_bar_and_solid_cards(): void
     {
         $response = $this->get(route('login'));
 
         $response->assertInertia(fn ($page) => $page
-            ->where('brand.primaryColor', '#2563EB')
+            ->where('brand.primaryColor', '#20B2A0')
             ->where('brand.design.preset', 'superpower')
             ->where('brand.design.navigation', 'topbar')
             ->where('brand.design.cards', 'elevated')
@@ -83,7 +83,7 @@ class BrandTest extends TestCase
             ->where('brand.design.details', 'modal'));
         $response->assertSee('data-ui-background="graphite"', false);
         $response->assertSee('data-ui-neutral="graphite"', false);
-        // The blue identity is theme.css's own: no generated shades or ink are drawn over it.
+        // The teal identity is theme.css's own: no generated shades or ink are drawn over it.
         $response->assertDontSee('--brand-50:', false);
         $response->assertDontSee('--brand-ink:', false);
         // The charcoal look keeps theme.css's own neutral greys: no tinted grey scale is drawn over them.

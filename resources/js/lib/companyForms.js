@@ -45,13 +45,13 @@ export const LETTERHEAD_DEFAULTS = {
     style: 'simple', logoPosition: 'center', logoWidth: 24, logoHeight: 22,
     english: '', arabicAlign: 'right', englishAlign: 'left',
     companyFont: 'plex', companySize: 17, subtitleSize: 13, englishFont: 'arial', englishSize: 14, textColor: '#17202a',
-    ruleStyle: 'single', ruleWidth: 1, ruleColor: '#d8dde4', ruleColor2: '#2563eb', ruleGap: 1,
+    ruleStyle: 'single', ruleWidth: 1, ruleColor: '#d8dde4', ruleColor2: '#0f766e', ruleGap: 1,
 };
 
 /** A ready formal letterhead: the logo centred, Arabic on the right, English on the left, over two coloured lines. */
 export const FORMAL_LETTERHEAD = {
     style: 'letterhead', logoPosition: 'center', logoWidth: 32, logoHeight: 24, arabicAlign: 'right', englishAlign: 'left',
-    ruleStyle: 'double', ruleWidth: 2, ruleColor: '#111827', ruleColor2: '#2563eb', ruleGap: 1,
+    ruleStyle: 'double', ruleWidth: 2, ruleColor: '#111827', ruleColor2: '#0f766e', ruleGap: 1,
 };
 
 /** The letterhead's settings over the defaults; `accent`, the company's print colour, is the second line's until one is chosen. */

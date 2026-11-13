@@ -60,7 +60,7 @@ const LAYOUT_PREFIX = 'print-layout:';
  * shown, its extra print fields hidden. `company` and `ruleColor` come from
  * the company's identity (its name and print colour).
  */
-export function defaultLayout({ columns, title = '', company = '', ruleColor = '#2563EB' }) {
+export function defaultLayout({ columns, title = '', company = '', ruleColor = '#0F766E' }) {
     return {
         paper: 'A4',
         orientation: columns.length > 6 ? 'landscape' : 'portrait',
