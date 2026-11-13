@@ -13,12 +13,12 @@
         "print": null
     },
     "colors": {
-        "primary": "#2563EB",
+        "primary": "#20B2A0",
         "secondary": null,
         "accent": null,
         "background": null,
         "surface": null,
-        "print": "#2563EB",
+        "print": "#0F766E",
         "success": null,
         "warning": null,
         "danger": null,
@@ -46,7 +46,7 @@
         "inputs": "filled",
         "inputFocus": "ring",
         "checkboxes": "square",
-        "switches": "brand",
+        "switches": "pill",
         "badges": "soft",
         "pageTitle": "plain",
         "textSize": "normal",

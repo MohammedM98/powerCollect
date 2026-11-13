@@ -63,7 +63,8 @@ export const PAGE_NUMBER_POSITIONS = [
 ];
 
 export const ACCENTS = [
-    { value: '#2563EB', label: 'أزرق الهوية' },
+    { value: '#0F766E', label: 'لون الهوية' },
+    { value: '#2563EB', label: 'أزرق' },
     { value: '#111827', label: 'أسود' },
     { value: '#A51D26', label: 'عنابي' },
     { value: '#047857', label: 'أخضر' },

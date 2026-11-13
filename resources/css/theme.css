@@ -13,7 +13,7 @@
  *   1. Brand            the main colour (buttons, links, focus, the logo's colour)
  *   2. Neutrals         page, cards, lines and text; graphite for the dark panels
  *   3. Status           success, warning, danger and info
- *   4. Actions          editing and printing (the identity's blue), exporting to Excel (green)
+ *   4. Actions          editing (blue), printing (the identity's teal), exporting to Excel (green)
  *   5. Accents          extra colours for charts, tags and roles
  *   6. Named colours    what the pages with a stylesheet of their own read
  *   7. Dark navigation  the greys inside a dark or coloured navigation
@@ -29,64 +29,66 @@
     /* ── 1. Brand ─────────────────────────────────────────────────────────── */
 
     /*
-     * Power Collect's identity, from the logo: black, white and its calm
-     * blue (#2563EB, 500). Buttons, badges and the open page's pill are blue
-     * with white text (`--brand-ink`, 5.2:1); brand text and links on a
-     * light page use 600 and darker (6.7:1 or more on white).
+     * Power Collect's identity: a fresh teal-green (#20B2A0, `solid`) with
+     * black and white. As a fill (buttons, badges, the open page's pill) it
+     * carries dark ink (`--brand-ink`, 8:1), never white. Brand text, links
+     * and fills that carry white use 500 and darker (5.5:1 or more on white).
      */
-    --brand-50: 239 246 255;
-    --brand-100: 219 234 254;
-    --brand-200: 191 219 254;
-    --brand-300: 147 197 253;
-    --brand-400: 96 165 250;
-    --brand-500: 37 99 235;
-    --brand-600: 29 78 216;
-    --brand-700: 30 64 175;
-    --brand-800: 30 58 138;
-    --brand-900: 23 37 84;
+    --brand-50: 240 253 250;
+    --brand-100: 204 246 239;
+    --brand-200: 153 233 220;
+    --brand-300: 94 214 194;
+    --brand-400: 32 178 160;
+    --brand-500: 15 118 110;
+    --brand-600: 13 100 93;
+    --brand-700: 17 94 89;
+    --brand-800: 19 78 74;
+    --brand-900: 4 47 46;
 
     /*
      * The brand colour where it must look the same in both themes: the
-     * buttons' blue (solid, with hi and lo for hover and press), the light
-     * blue used as text on dark panels (tint, soft) and the deep blue.
+     * buttons' teal (solid, with hi and lo for hover and press), the light
+     * teal used as text on dark panels (tint, soft) and the deep teal.
      */
-    --brand-tint: 191 219 254;
-    --brand-soft: 96 165 250;
-    --brand-bright: 59 130 246;
-    --brand-glow: 59 130 246;
-    --brand-hi: 59 130 246;
-    --brand-solid: 37 99 235;
-    --brand-lo: 29 78 216;
-    --brand-deep: 30 64 175;
+    --brand-tint: 153 233 220;
+    --brand-soft: 94 214 194;
+    --brand-bright: 45 191 170;
+    --brand-glow: 32 178 160;
+    --brand-hi: 45 191 170;
+    --brand-solid: 32 178 160;
+    --brand-lo: 26 158 142;
+    --brand-deep: 15 118 110;
 
-    /* Text and icons drawn on a fill in the brand colour. */
-    --brand-ink: 255 255 255;
+    /* Text and icons drawn on a fill in the brand colour: a deep teal-black. A company with a colour of its own gets white (Brand::stylesheet). */
+    --brand-ink: 6 32 29;
 
-    /* The open page or section in the navigation: the brand's blue with white text, in both themes. */
-    --nav-active: 37 99 235;
-    --nav-active-ink: 255 255 255;
-    --nav-active-icon: 255 255 255;
+    /* The open page or section in the navigation: the identity's teal with dark ink, in both themes. */
+    --nav-active: 32 178 160;
+    --nav-active-ink: 6 32 29;
+    --nav-active-icon: 6 32 29;
+
+    /* The logo's bolt (Components/SuperPowerMark.jsx); its S takes the text colour. */
+    --logo-bolt: 20 160 143;
+
+    /* The on/off switch when on: a familiar green, in both themes. */
+    --switch-on: 22 163 74;
 
     /*
      * Button roles beside the main (brand) one, so each kind of action is
      * told apart at a glance (components.css `gl-add`, `gl-group`):
-     * adding something new is teal, acting on a group of rows or managing a
+     * adding something new is blue, acting on a group of rows or managing a
      * list is charcoal (light grey in the dark theme). Each fill carries its
      * ink at 4.5:1 or more.
      */
-    --add-fill: 15 118 110;
-    --add-hover: 17 94 89;
-    --add-press: 19 78 74;
+    --add-fill: 37 99 235;
+    --add-hover: 29 78 216;
+    --add-press: 30 64 175;
     --add-ink: 255 255 255;
     --group-fill: 38 38 38;
     --group-hover: 64 64 64;
     --group-press: 82 82 82;
     --group-ink: 255 255 255;
 
-    /* The logo's own colours (Components/SuperPowerMark.jsx): its blue tile and white S, the bolt cut through the S in the tile's blue. */
-    --logo-tile: 37 99 235;
-    --logo-letter: 255 255 255;
-    --logo-bolt: 37 99 235;
 
     /* The signature line: the logo's light blue into its deep blue. */
     --spectrum: linear-gradient(90deg, rgb(var(--brand-soft)), rgb(var(--brand-solid)) 55%, rgb(var(--brand-deep)));
@@ -94,21 +96,21 @@
     /* ── 2. Neutrals ──────────────────────────────────────────────────────── */
 
     /*
-     * Neutral graphite and silver greys, with no blue tint. Quiet
+     * Neutral greys, a touch cool so they sit well beside the teal. Quiet
      * text (400) reads at 5.1:1 on the page's soft gray (50) and muted
      * text (500) higher still, above the WCAG AA minimum of 4.5.
      */
-    --gray-50: 245 245 245;
-    --gray-100: 239 239 239;
-    --gray-200: 228 228 228;
-    --gray-300: 212 212 212;
-    --gray-400: 100 100 100;
-    --gray-500: 82 82 82;
-    --gray-600: 70 70 70;
-    --gray-700: 54 54 54;
-    --gray-800: 38 38 38;
-    --gray-900: 23 23 23;
-    --gray-950: 12 12 12;
+    --gray-50: 246 247 249;
+    --gray-100: 240 242 245;
+    --gray-200: 228 231 236;
+    --gray-300: 205 211 219;
+    --gray-400: 96 104 114;
+    --gray-500: 89 98 109;
+    --gray-600: 72 79 89;
+    --gray-700: 55 61 70;
+    --gray-800: 38 43 50;
+    --gray-900: 19 23 28;
+    --gray-950: 12 14 17;
 
     /* Cards, tables, dialogs and fields. */
     --surface: 255 255 255;
@@ -193,7 +195,7 @@
 
     /* ── 4. Actions ───────────────────────────────────────────────────────── */
 
-    /* Editing and information: the identity's blue (the same as the brand's), so edit buttons match the main ones. */
+    /* Blue: adding something new, information and its tints. */
     --blue-50: 239 246 255;
     --blue-100: 219 234 254;
     --blue-200: 191 219 254;
@@ -209,14 +211,14 @@
     --blue-lo: 29 78 216;
 
     /*
-     * The identity's blue, for printing, and Excel's own green, for exporting to Excel:
+     * The identity's teal, for printing, and Excel's own green, for exporting to Excel:
      * each action wears its colour on every page so it is found at a glance.
      * 300 is the soft ink on a dark header, 600 the ink on a light tint.
      */
-    --print-300: 147 197 253;
-    --print-500: 37 99 235;
-    --print-600: 29 78 216;
-    --print-700: 30 64 175;
+    --print-300: 94 214 194;
+    --print-500: 15 118 110;
+    --print-600: 13 100 93;
+    --print-700: 17 94 89;
     --excel-300: 134 220 165;
     --excel-500: 31 135 80;
     --excel-600: 33 115 70;
@@ -277,39 +279,42 @@
 .dark {
     color-scheme: dark;
 
-    --brand-50: 20 27 41;
-    --brand-100: 24 36 60;
-    --brand-200: 30 50 90;
-    --brand-300: 30 64 175;
-    --brand-400: 59 130 246;
-    --brand-500: 37 99 235;
-    --brand-600: 96 165 250;
-    --brand-700: 147 197 253;
-    --brand-800: 191 219 254;
-    --brand-900: 219 234 254;
+    --brand-50: 14 32 30;
+    --brand-100: 17 42 39;
+    --brand-200: 19 61 56;
+    --brand-300: 15 118 110;
+    --brand-400: 32 178 160;
+    --brand-500: 15 118 110;
+    --brand-600: 94 214 194;
+    --brand-700: 153 233 220;
+    --brand-800: 204 246 239;
+    --brand-900: 230 251 247;
 
-    --gray-50: 10 10 10;
-    --gray-100: 25 25 25;
-    --gray-200: 36 36 36;
-    --gray-300: 52 52 52;
-    --gray-400: 138 138 138;
-    --gray-500: 163 163 163;
-    --gray-600: 188 188 188;
-    --gray-700: 208 208 208;
-    --gray-800: 229 229 229;
-    --gray-900: 245 245 245;
-    --gray-950: 250 250 250;
+    --logo-bolt: 45 200 178;
+    --switch-on: 34 197 94;
+
+    --gray-50: 20 23 27;
+    --gray-100: 34 39 45;
+    --gray-200: 44 50 58;
+    --gray-300: 60 67 76;
+    --gray-400: 133 142 153;
+    --gray-500: 163 171 181;
+    --gray-600: 188 194 202;
+    --gray-700: 208 213 219;
+    --gray-800: 229 232 236;
+    --gray-900: 236 239 243;
+    --gray-950: 248 249 250;
 
     --blue-500: 37 99 235;
     --blue-600: 96 165 250;
     --blue-700: 147 197 253;
 
-    --print-600: 96 165 250;
+    --print-600: 94 214 194;
     --excel-500: 26 128 72;
     --excel-600: 110 220 150;
     --excel-700: 20 96 54;
 
-    --surface: 22 22 22;
+    --surface: 28 32 37;
 
 
 
@@ -349,8 +354,8 @@
     --ui-info-t: rgb(var(--blue-600) / 0.08);
     --ui-warn: rgb(var(--warning-700));
     --ui-warn-t: rgb(var(--warning-700) / 0.1);
-    --ui-danger: rgb(var(--brand-600));
-    --ui-danger-t: rgb(var(--brand-500) / 0.08);
+    --ui-danger: rgb(var(--danger-600));
+    --ui-danger-t: rgb(var(--danger-600) / 0.08);
     --ui-focus: rgb(var(--gray-900));
     --ui-shadow: 0 1px 2px rgb(var(--shadow-ink) / 0.04), 0 14px 34px -18px rgb(var(--shadow-ink) / 0.18);
     --ui-pop: 0 2px 6px rgb(var(--shadow-ink) / 0.06), 0 24px 44px -20px rgb(var(--shadow-ink) / 0.32);
@@ -366,7 +371,8 @@
     --ui-success-t: rgb(var(--success-400) / 0.1);
     --ui-warn: rgb(var(--warning-400));
     --ui-warn-t: rgb(var(--warning-400) / 0.1);
-    --ui-danger-t: rgb(var(--brand-600) / 0.12);
+    --ui-danger: rgb(var(--danger-400));
+    --ui-danger-t: rgb(var(--danger-400) / 0.12);
     --ui-focus: rgb(var(--gray-700));
     --ui-shadow: 0 20px 40px -24px #000;
     --ui-pop: 0 30px 60px -20px #000;
@@ -385,18 +391,18 @@
 :root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) .tn-bar {
     color-scheme: dark;
 
-    --gray-50: 10 10 10;
-    --gray-100: 25 25 25;
-    --gray-200: 36 36 36;
-    --gray-300: 52 52 52;
-    --gray-400: 138 138 138;
-    --gray-500: 163 163 163;
-    --gray-600: 188 188 188;
-    --gray-700: 208 208 208;
-    --gray-800: 229 229 229;
-    --gray-900: 245 245 245;
-    --gray-950: 250 250 250;
-    --surface: 22 22 22;
+    --gray-50: 20 23 27;
+    --gray-100: 34 39 45;
+    --gray-200: 44 50 58;
+    --gray-300: 60 67 76;
+    --gray-400: 133 142 153;
+    --gray-500: 163 171 181;
+    --gray-600: 188 194 202;
+    --gray-700: 208 213 219;
+    --gray-800: 229 232 236;
+    --gray-900: 236 239 243;
+    --gray-950: 248 249 250;
+    --surface: 28 32 37;
 }
 
 /*
@@ -405,7 +411,7 @@
  * The page's own colour and the solid panels on it (the `gl-` components in
  * components.css and the charcoal look in app.css, BrandDesign `background`:
  * graphite). Nothing is see-through or blurred: panels are opaque cards with
- * a thin line, in neutral greys in both themes with no blue tint; the only
+ * a thin line, in quiet cool greys in both themes; the only
  * colour on the page is the company's buttons and links. Values with their
  * own transparency are written `R G B / alpha` and read `rgb(var(--panel-line))`.
  *
@@ -413,10 +419,10 @@
  * on a panel.
  */
 :root {
-    --panel-page: 245 245 245;
-    --panel-ink: 23 23 23;
-    --panel-muted: 82 82 82;
-    --panel-faint: 96 96 96;
+    --panel-page: 246 247 249;
+    --panel-ink: 19 23 28;
+    --panel-muted: 89 98 109;
+    --panel-faint: 96 104 114;
     --panel-bg: 255 255 255;
     --panel-line: 0 0 0 / 0.09;
     --panel-line-strong: 0 0 0 / 0.16;
@@ -431,11 +437,11 @@
 }
 
 .dark {
-    --panel-page: 10 10 10;
-    --panel-ink: 240 240 240;
-    --panel-muted: 168 168 168;
-    --panel-faint: 142 142 142;
-    --panel-bg: 22 22 22;
+    --panel-page: 20 23 27;
+    --panel-ink: 236 239 243;
+    --panel-muted: 163 171 181;
+    --panel-faint: 133 142 153;
+    --panel-bg: 28 32 37;
     --panel-line: 255 255 255 / 0.08;
     --panel-line-strong: 255 255 255 / 0.16;
     --panel-fill: 255 255 255 / 0.05;
@@ -477,7 +483,8 @@
     --ui-focus: rgb(var(--brand-solid));
     --ui-shadow: var(--panel-shadow);
     --ui-pop: var(--panel-shadow);
-    --ui-hero: linear-gradient(135deg, rgb(var(--brand-hi)), rgb(var(--brand-solid)) 55%, rgb(var(--brand-lo)));
+    /* Cards with white text on the company's colour: its deep shade, darkened toward the corner, in both themes. */
+    --ui-hero: linear-gradient(135deg, rgb(var(--brand-deep)), color-mix(in srgb, rgb(var(--brand-deep)) 78%, #000) 55%, color-mix(in srgb, rgb(var(--brand-deep)) 62%, #000));
 }
 
 /*
