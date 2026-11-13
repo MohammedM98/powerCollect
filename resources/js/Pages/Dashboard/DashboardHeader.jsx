@@ -73,12 +73,12 @@ export default function DashboardHeader({
                     </span>
                 )}
                 {canCreateBranch ? (
-                    <button type="button" className="gl-btn gl-sec" onClick={() => openCreateForm('branch')}>
+                    <button type="button" className="gl-btn gl-add" onClick={() => openCreateForm('branch')}>
                         <Icon name="plus" className="h-4 w-4" />
                         فرع جديد
                     </button>
                 ) : canCreateUser ? (
-                    <button type="button" className="gl-btn gl-sec" onClick={() => openCreateForm('user')}>
+                    <button type="button" className="gl-btn gl-add" onClick={() => openCreateForm('user')}>
                         <Icon name="plus" className="h-4 w-4" />
                         مستخدم جديد
                     </button>

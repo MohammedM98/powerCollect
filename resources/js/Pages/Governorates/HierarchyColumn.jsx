@@ -70,7 +70,7 @@ export default function HierarchyColumn({
                             setAdding(true);
                             setEditingId(null);
                         }}
-                        className="ms-auto inline-flex h-9 items-center gap-1.5 rounded-lg border border-gray-200 bg-surface px-2.5 text-xs font-bold text-gray-700 transition hover:border-brand-500/40 hover:bg-brand-500/10 hover:text-brand-600"
+                        className="ms-auto inline-flex h-9 items-center gap-1.5 rounded-lg border border-teal-600/30 bg-teal-500/5 px-2.5 text-xs font-bold text-teal-700 transition hover:border-teal-600/50 hover:bg-teal-500/15 dark:text-teal-300"
                     >
                         <Icon name="plus" className="h-4 w-4" strokeWidth={2} />
                         إضافة
