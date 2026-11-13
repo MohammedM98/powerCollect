@@ -1027,9 +1027,9 @@
 
 .row-action-edit:hover {
     border-color: transparent;
-    background: linear-gradient(180deg, rgb(var(--blue-500)), rgb(var(--blue-700)));
+    background: linear-gradient(180deg, rgb(var(--blue-hi)), rgb(var(--blue-lo)));
     color: #fff;
-    box-shadow: 0 8px 16px -8px rgb(var(--blue-600) / 0.8);
+    box-shadow: 0 8px 16px -8px rgb(var(--blue-lo) / 0.8);
 }
 
 .row-action-delete {
@@ -3380,14 +3380,21 @@ input[type='radio'] {
 }
 
 :root[data-ui-background='graphite'] .row-action-edit {
-    color: var(--gl-info);
+    color: rgb(var(--gl-brand));
+}
+
+/* Editing fills in the identity's blue on hover, like the main buttons. */
+:root[data-ui-background='graphite'] .row-action-edit:hover {
+    border-color: transparent;
+    background: rgb(var(--gl-btn));
+    color: rgb(var(--brand-ink));
 }
 
 :root[data-ui-background='graphite'] .row-action-delete {
     color: var(--gl-bad);
 }
 
-:root[data-ui-background='graphite'] :is(.row-action-edit, .row-action-delete, .row-action-print, .row-action-excel):hover {
+:root[data-ui-background='graphite'] :is(.row-action-delete, .row-action-print, .row-action-excel):hover {
     border-color: transparent;
     background: color-mix(in srgb, currentColor 18%, transparent);
 }
@@ -3489,7 +3496,7 @@ html:not(.dark)[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg 
 
 /*
  * The old graphite cards and the grey inner boxes, in the panel look: a card
- * that was graphite (white text on it) is the deep blue in the company's
+ * that was graphite (white text on it) is a gradient in the company's
  * colour, and a grey box inside a panel is the soft tint with a thin line,
  * as the prototype's inner boxes.
  */

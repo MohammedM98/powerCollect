@@ -177,20 +177,20 @@
 
     /* ── 4. Actions ───────────────────────────────────────────────────────── */
 
-    /* Editing: kept under its old name (`blue-*`) but drawn in neutral charcoal, so no blue shows. */
-    --blue-50: 245 245 245;
-    --blue-100: 235 235 235;
-    --blue-200: 219 219 219;
-    --blue-300: 196 196 196;
-    --blue-400: 150 150 150;
-    --blue-500: 64 64 64;
-    --blue-600: 46 46 46;
-    --blue-700: 38 38 38;
-    --blue-800: 30 30 30;
-    --blue-900: 23 23 23;
-    --blue-950: 14 14 14;
-    --blue-hi: 82 82 82;
-    --blue-lo: 38 38 38;
+    /* Editing and information: the identity's blue (the same as the brand's), so edit buttons match the main ones. */
+    --blue-50: 239 246 255;
+    --blue-100: 219 234 254;
+    --blue-200: 191 219 254;
+    --blue-300: 147 197 253;
+    --blue-400: 96 165 250;
+    --blue-500: 37 99 235;
+    --blue-600: 29 78 216;
+    --blue-700: 30 64 175;
+    --blue-800: 30 58 138;
+    --blue-900: 23 37 84;
+    --blue-950: 17 28 60;
+    --blue-hi: 59 130 246;
+    --blue-lo: 29 78 216;
 
     /*
      * Violet, for printing, and Excel's own green, for exporting to Excel:
@@ -284,9 +284,9 @@
     --gray-900: 245 245 245;
     --gray-950: 250 250 250;
 
-    --blue-500: 163 163 163;
-    --blue-600: 212 212 212;
-    --blue-700: 115 115 115;
+    --blue-500: 37 99 235;
+    --blue-600: 96 165 250;
+    --blue-700: 147 197 253;
 
     --print-600: 196 181 253;
     --excel-500: 26 128 72;
@@ -456,7 +456,7 @@
     --ui-focus: rgb(var(--brand-solid));
     --ui-shadow: var(--panel-shadow);
     --ui-pop: var(--panel-shadow);
-    --ui-hero: linear-gradient(135deg, rgb(var(--brand-lo)), rgb(var(--brand-deep)) 60%, rgb(var(--brand-deep)));
+    --ui-hero: linear-gradient(135deg, rgb(var(--brand-hi)), rgb(var(--brand-solid)) 55%, rgb(var(--brand-lo)));
 }
 
 /*

@@ -227,7 +227,7 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
                             className={`inline-flex h-11 items-center gap-2 whitespace-nowrap rounded-[13px] border px-4 text-[15px] font-bold transition ${
                                 dark
                                     ? 'border-white/15 bg-white/5 text-white hover:bg-white/10'
-                                    : 'border-blue-500/30 bg-blue-500/10 text-blue-600 hover:border-transparent hover:bg-blue-600 hover:text-white'
+                                    : 'border-blue-500/30 bg-blue-500/10 text-blue-600 hover:border-transparent hover:bg-blue-500 hover:text-white'
                             }`}
                         >
                             <Icon name="pencil" className="h-[17px] w-[17px]" />
