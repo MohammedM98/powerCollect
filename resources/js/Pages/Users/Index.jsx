@@ -3,7 +3,7 @@ import { Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import AddButton from '@/Components/AddButton';
 import Icon from '@/Components/Icon';
-import BlueActionButton from '@/Components/BlueActionButton';
+import GroupActionButton from '@/Components/GroupActionButton';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import SortableTh from '@/Components/DataTable/SortableTh';
@@ -43,7 +43,7 @@ export default function Index({
                 <>
                     <h1 className="text-3xl font-bold text-gray-900">المستخدمون</h1>
                     <div className="flex shrink-0 flex-wrap items-center gap-2 [&>button]:h-11">
-                        {userTypeItems && <BlueActionButton onClick={() => setManagingTypes(true)} aria-haspopup="dialog" aria-expanded={managingTypes}><Icon name={canCreateUserType ? 'plus' : 'tag'} className="h-4 w-4" />أنواع المستخدمين</BlueActionButton>}
+                        {userTypeItems && <GroupActionButton onClick={() => setManagingTypes(true)} aria-haspopup="dialog" aria-expanded={managingTypes}><Icon name={canCreateUserType ? 'plus' : 'tag'} className="h-4 w-4" />أنواع المستخدمين</GroupActionButton>}
                         {canCreate && <AddButton onClick={() => setCreating(true)}>مستخدم جديد</AddButton>}
                     </div>
                 </>

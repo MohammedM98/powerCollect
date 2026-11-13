@@ -67,6 +67,22 @@
     --nav-active-ink: 255 255 255;
     --nav-active-icon: 255 255 255;
 
+    /*
+     * Button roles beside the main (brand) one, so each kind of action is
+     * told apart at a glance (components.css `gl-add`, `gl-group`):
+     * adding something new is teal, acting on a group of rows or managing a
+     * list is charcoal (light grey in the dark theme). Each fill carries its
+     * ink at 4.5:1 or more.
+     */
+    --add-fill: 15 118 110;
+    --add-hover: 17 94 89;
+    --add-press: 19 78 74;
+    --add-ink: 255 255 255;
+    --group-fill: 38 38 38;
+    --group-hover: 64 64 64;
+    --group-press: 82 82 82;
+    --group-ink: 255 255 255;
+
     /* The logo's own colours (Components/SuperPowerMark.jsx): its blue tile and white S, the bolt cut through the S in the tile's blue. */
     --logo-tile: 37 99 235;
     --logo-letter: 255 255 255;
@@ -296,6 +312,11 @@
     --surface: 22 22 22;
 
 
+
+    --group-fill: 229 229 229;
+    --group-hover: 245 245 245;
+    --group-press: 212 212 212;
+    --group-ink: 23 23 23;
 }
 
 /*

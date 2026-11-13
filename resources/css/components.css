@@ -2111,6 +2111,23 @@
     color: var(--gl-ink);
 }
 
+/* Adding something new (Components/AddButton.jsx): teal, apart from the main action's blue. */
+.gl-btn.gl-add {
+    --gl-btn-fill: rgb(var(--add-fill));
+    --gl-btn-hover: rgb(var(--add-hover));
+    --gl-btn-press: rgb(var(--add-press));
+    --gl-btn-ink: rgb(var(--add-ink));
+}
+
+/* Acting on a group of rows or managing a list (Components/GroupActionButton.jsx): charcoal, light grey in the dark theme. */
+.gl-btn.gl-group {
+    --gl-btn-fill: rgb(var(--group-fill));
+    --gl-btn-hover: rgb(var(--group-hover));
+    --gl-btn-press: rgb(var(--group-press));
+    --gl-btn-ink: rgb(var(--group-ink));
+    --gl-btn-rim: transparent;
+}
+
 .gl-btn.gl-danger {
     --gl-btn-fill: color-mix(in srgb, var(--gl-bad) 12%, transparent);
     --gl-btn-hover: var(--gl-bad);
@@ -2147,13 +2164,24 @@
 
 /* The main button's look split into parts (a button and its menu). */
 .gl-btn-surface {
+    --gl-surface-fill: rgb(var(--gl-btn));
+    --gl-surface-hover: color-mix(in srgb, rgb(var(--gl-btn)) 84%, rgb(var(--brand-lo)));
+    --gl-surface-ink: rgb(var(--brand-ink));
     display: inline-flex;
     overflow: hidden;
     border-radius: 10px;
-    background: rgb(var(--gl-btn));
-    color: rgb(var(--brand-ink));
+    background: var(--gl-surface-fill);
+    color: var(--gl-surface-ink);
     font-weight: 600;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+}
+
+/* The split button in the group actions' charcoal (Pages/Subscriptions/BulkActionsMenu.jsx). */
+.gl-btn-surface.gl-group {
+    --gl-surface-fill: rgb(var(--group-fill));
+    --gl-surface-hover: rgb(var(--group-hover));
+    --gl-surface-ink: rgb(var(--group-ink));
+    box-shadow: none;
 }
 
 .gl-btn-part {
@@ -2166,11 +2194,11 @@
 }
 
 .gl-btn-part + .gl-btn-part {
-    border-inline-start: 1px solid rgb(255 255 255 / 0.2);
+    border-inline-start: 1px solid color-mix(in srgb, var(--gl-surface-ink) 22%, transparent);
 }
 
 .gl-btn-part:hover:not(:disabled) {
-    background: color-mix(in srgb, rgb(var(--gl-btn)) 84%, rgb(var(--brand-lo)));
+    background: var(--gl-surface-hover);
 }
 
 .gl-btn-part:disabled {
@@ -2178,7 +2206,7 @@
 }
 
 .gl-btn-part:focus-visible {
-    outline: 2px solid #fff;
+    outline: 2px solid var(--gl-surface-ink);
     outline-offset: -3px;
 }
 

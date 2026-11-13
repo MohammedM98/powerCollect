@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
-import { blueActionSurfaceClass, blueActionControlClass } from '@/Components/BlueActionButton';
+import { groupActionSurfaceClass, groupActionControlClass } from '@/Components/GroupActionButton';
 import RowMenu from '@/Components/DataTable/RowMenu';
 
 const ACTIONS = [
@@ -30,14 +30,14 @@ export default function BulkActionsMenu({ abilities, onChoose }) {
     }
 
     return (
-        <div className={`${blueActionSurfaceClass} items-stretch`}>
+        <div className={`${groupActionSurfaceClass} items-stretch`}>
             <button
                 type="button"
                 onClick={(event) => toggle(event, 'actions')}
                 disabled={actions.length === 0}
                 aria-haspopup="menu"
                 aria-expanded={menu?.kind === 'actions'}
-                className={`${blueActionControlClass} rounded-s-control`}
+                className={`${groupActionControlClass} rounded-s-control`}
             >
                 <Icon name="layers" className="h-4 w-4" />
                 إجراءات جماعية
