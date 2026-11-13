@@ -1,7 +1,6 @@
 /*
- * The Superpower glass components, as drawn by the approved prototype
- * (resources/brand/reference/superpower-glass-prototype.html): the same
- * panels, figures, charts, fields, tables, drawers and board, prefixed
+ * The Superpower components: solid panels, figures, charts, fields,
+ * tables, drawers and board, prefixed
  * `gl-` so they never meet Tailwind's own names. Every colour comes from
  * theme.css (section 8, and the brand's shades), so both themes, the dark
  * backgrounds and the company's colour follow. Components in
@@ -9,17 +8,17 @@
  * names them.
  */
 :root {
-    --gl-ink: rgb(var(--glass-ink));
-    --gl-muted: rgb(var(--glass-muted));
-    --gl-faint: rgb(var(--glass-faint));
-    --gl-line: rgb(var(--glass-line));
-    --gl-line-hi: rgb(var(--glass-line-hi));
-    --gl-fill: rgb(var(--glass-fill));
-    --gl-fill-2: rgb(var(--glass-fill-strong));
-    --gl-ok: rgb(var(--glass-success));
-    --gl-warn: rgb(var(--glass-warning));
-    --gl-bad: rgb(var(--glass-danger));
-    --gl-info: rgb(var(--glass-info));
+    --gl-ink: rgb(var(--panel-ink));
+    --gl-muted: rgb(var(--panel-muted));
+    --gl-faint: rgb(var(--panel-faint));
+    --gl-line: rgb(var(--panel-line));
+    --gl-line-strong: rgb(var(--panel-line-strong));
+    --gl-fill: rgb(var(--panel-fill));
+    --gl-fill-2: rgb(var(--panel-fill-strong));
+    --gl-ok: rgb(var(--panel-success));
+    --gl-warn: rgb(var(--panel-warning));
+    --gl-bad: rgb(var(--panel-danger));
+    --gl-info: rgb(var(--panel-info));
     /* The company's colour as text and lines (brand), and as a filled button (btn). */
     --gl-brand: var(--brand-600);
     --gl-btn: var(--brand-solid);
@@ -36,12 +35,12 @@
     font-feature-settings: 'tnum';
 }
 
-/* ── Glass and layout ─────────────────────────────────────────────────── */
-.gl-glass {
-    background: rgb(var(--glass-panel));
+/* ── Panels and layout ─────────────────────────────────────────────────── */
+.gl-card {
+    background: rgb(var(--panel-bg));
     border: 1px solid var(--gl-line);
     border-radius: calc(20px * var(--radius-scale, 1));
-    box-shadow: inset 0 1px 0 var(--gl-line-hi), var(--glass-shadow);
+    box-shadow: var(--panel-shadow);
     color: var(--gl-ink);
 }
 
@@ -225,7 +224,7 @@
 }
 
 .gl-kpi.gl-hero {
-    background: linear-gradient(150deg, rgb(var(--gl-brand) / 0.32), rgb(var(--glass-panel)) 60%);
+    background: linear-gradient(150deg, rgb(var(--gl-brand) / 0.32), rgb(var(--panel-bg)) 60%);
 }
 
 .gl-kpi.gl-hero .gl-val {
@@ -408,9 +407,9 @@
 }
 
 .gl-seg button[aria-pressed='true'] {
-    background: rgb(var(--glass-panel));
+    background: rgb(var(--panel-bg));
     color: var(--gl-ink);
-    box-shadow: 0 1px 0 var(--gl-line-hi) inset, 0 4px 10px -6px rgb(0 0 0 / 0.6);
+    box-shadow: 0 4px 10px -6px rgb(0 0 0 / 0.6);
 }
 
 .dark .gl-seg button[aria-pressed='true'] {
@@ -670,7 +669,7 @@
 
 .gl-qbtn:hover {
     background: var(--gl-fill-2);
-    border-color: var(--gl-line-hi);
+    border-color: var(--gl-line-strong);
 }
 
 .gl-qbtn svg {
@@ -816,7 +815,7 @@
     padding: 20px;
     border-radius: 16px;
     background: var(--gl-fill);
-    border: 1px dashed var(--gl-line-hi);
+    border: 1px dashed var(--gl-line-strong);
 }
 
 .gl-receipt .gl-big {
@@ -885,7 +884,7 @@
     gap: 6px;
     padding: 11px 12px;
     border-radius: 14px;
-    background: rgb(var(--glass-panel));
+    background: rgb(var(--panel-bg));
     border: 1px solid var(--gl-line);
     cursor: grab;
     touch-action: none;
@@ -893,7 +892,7 @@
 }
 
 .dark .gl-mb {
-    background: color-mix(in srgb, rgb(var(--glass-panel)) 80%, rgb(255 255 255 / 0.12));
+    background: color-mix(in srgb, rgb(var(--panel-bg)) 80%, rgb(255 255 255 / 0.12));
 }
 
 .gl-mb.is-dragging {
@@ -906,7 +905,7 @@
     margin: 0;
     pointer-events: none;
     cursor: grabbing;
-    box-shadow: 0 30px 60px -10px rgb(0 0 0 / 0.7), 0 0 0 1px var(--gl-line-hi);
+    box-shadow: 0 30px 60px -10px rgb(0 0 0 / 0.7), 0 0 0 1px var(--gl-line-strong);
 }
 
 .gl-mb.is-landing {
@@ -996,7 +995,7 @@
     display: grid;
     place-items: center;
     min-height: 100px;
-    border: 1.5px dashed var(--gl-line-hi);
+    border: 1.5px dashed var(--gl-line-strong);
     border-radius: 14px;
     color: var(--gl-faint);
 }
@@ -1196,8 +1195,7 @@
     padding-block: 32px;
     padding-left: max(16px, env(safe-area-inset-left, 0px));
     padding-right: max(16px, env(safe-area-inset-right, 0px));
-    background-color: rgb(var(--glass-page));
-    background-image: var(--glass-ambient);
+    background-color: rgb(var(--panel-page));
     color: var(--gl-ink);
     font-size: 14px;
     line-height: 1.6;
@@ -1283,7 +1281,7 @@
     }
 }
 
-/* ── Shared controls drawn in the glass look (PrimaryButton, DangerButton, InputLabel, InputError, Switch…) ── */
+/* ── Shared controls drawn in the panel look (PrimaryButton, DangerButton, InputLabel, InputError, Switch…) ── */
 .gl-label {
     font-size: 12.5px;
     font-weight: 600;
@@ -1349,8 +1347,8 @@
     padding: 12px 16px;
     border: 1px solid var(--gl-line);
     border-radius: 18px;
-    background: rgb(var(--glass-panel));
-    box-shadow: inset 0 1px 0 var(--gl-line-hi);
+    background: rgb(var(--panel-bg));
+    box-shadow: none;
 }
 
 .gl-scope-row {
@@ -1441,7 +1439,7 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    border: 2px solid rgb(var(--glass-panel));
+    border: 2px solid rgb(var(--panel-bg));
 }
 
 .gl-record-title {
@@ -1496,7 +1494,6 @@
         background: none;
         border: 0;
         box-shadow: none;
-        backdrop-filter: none;
     }
 }
 
@@ -1512,7 +1509,7 @@
 
 .gl-chip:hover {
     background: var(--gl-fill-2);
-    border-color: var(--gl-line-hi);
+    border-color: var(--gl-line-strong);
 }
 
 /* ── Windows (Components/DialogFrame.jsx, Modal.jsx) ──────────────────── */
@@ -1612,7 +1609,7 @@
     width: 11px;
     height: 11px;
     border-radius: 50%;
-    border: 2px solid rgb(var(--glass-panel));
+    border: 2px solid rgb(var(--panel-bg));
 }
 
 .gl-mv-tag {
@@ -1641,7 +1638,7 @@
     padding: 9px 12px;
     border-radius: 13px;
     border: 1px solid var(--gl-line);
-    background: rgb(var(--glass-panel));
+    background: rgb(var(--panel-bg));
 }
 
 .gl-mv-cell small {
@@ -1737,7 +1734,7 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    border: 1.5px solid var(--gl-line-hi);
+    border: 1.5px solid var(--gl-line-strong);
     color: var(--gl-muted);
     font: 700 13px var(--gl-head);
 }
@@ -1822,8 +1819,8 @@
     width: min(460px, 100%);
     overflow: hidden;
     border-radius: 14px;
-    background: rgb(var(--glass-ink));
-    color: rgb(var(--glass-page));
+    background: rgb(var(--panel-ink));
+    color: rgb(var(--panel-page));
     font-size: 14px;
     box-shadow: 0 24px 44px -12px rgb(0 0 0 / 0.6);
     animation: gl-toast 0.45s cubic-bezier(0.2, 1.3, 0.4, 1) both;
@@ -1855,12 +1852,12 @@
 
 .gl-toast-close:hover {
     opacity: 1;
-    background: rgb(var(--glass-page) / 0.12);
+    background: rgb(var(--panel-page) / 0.12);
 }
 
 .gl-toast-track {
     height: 3px;
-    background: rgb(var(--glass-page) / 0.12);
+    background: rgb(var(--panel-page) / 0.12);
 }
 
 .gl-toast-track > div {
@@ -1914,7 +1911,7 @@
     gap: 8px;
     margin-top: 12px;
     padding-top: 12px;
-    border-top: 1px dashed var(--gl-line-hi);
+    border-top: 1px dashed var(--gl-line-strong);
 }
 
 .gl-method {
@@ -1931,7 +1928,7 @@
 }
 
 .gl-method:hover {
-    border-color: var(--gl-line-hi);
+    border-color: var(--gl-line-strong);
 }
 
 .gl-method:focus-within {
@@ -1966,7 +1963,7 @@
     flex: none;
     margin-inline-start: auto;
     border-radius: 50%;
-    border: 1.5px solid var(--gl-line-hi);
+    border: 1.5px solid var(--gl-line-strong);
 }
 
 .gl-method[data-checked] .gl-method-dot {
@@ -1986,7 +1983,7 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: rgb(var(--glass-panel));
+    background: rgb(var(--panel-bg));
     transform: translateY(-50%);
 }
 
@@ -2030,13 +2027,13 @@
 
 /*
  * ── The button system ───────────────────────────────────────────────────
- * Flat, crisp buttons that sit on the glass instead of floating over it:
- * one solid fill per role, a thin light along the top edge like the glass
+ * Flat, crisp buttons that sit on the panels instead of floating over them:
+ * one solid fill per role, a thin light along the top edge like the panel
  * panels' rim, no gradient, glow or drop shadow. Hover deepens the fill a
  * step (white text keeps 4.5:1 on the company's colour), a press deepens it
  * further and nudges it down, focus shows a ring in the company's colour.
  *   gl-btn          main action: the company's colour
- *   gl-btn gl-sec   side action: the glass tint with a thin line
+ *   gl-btn gl-sec   side action: the soft tint with a thin line
  *   gl-btn gl-ghost quiet action: text only until hovered
  *   gl-btn gl-danger destructive: a red tint that fills on hover
  *   gl-sm / gl-lg   32px and 44px (38px by default); a page's own sizes win
@@ -2088,15 +2085,15 @@
 
 .gl-btn.gl-sec {
     --gl-btn-fill: var(--gl-fill-2);
-    --gl-btn-hover: color-mix(in srgb, var(--gl-fill-2) 70%, var(--gl-line-hi));
+    --gl-btn-hover: color-mix(in srgb, var(--gl-fill-2) 70%, var(--gl-line-strong));
     --gl-btn-press: var(--gl-fill);
     --gl-btn-ink: var(--gl-ink);
     --gl-btn-line: var(--gl-line);
-    --gl-btn-rim: var(--gl-line-hi);
+    --gl-btn-rim: var(--gl-line-strong);
 }
 
 .gl-btn.gl-sec:hover:not(:disabled) {
-    border-color: var(--gl-line-hi);
+    border-color: var(--gl-line-strong);
 }
 
 .gl-btn.gl-ghost {
@@ -2202,13 +2199,13 @@
     }
 }
 
-/* ── Page head (Layouts/AuthenticatedLayout.jsx): the page's title and its actions as one glass card ── */
+/* ── Page head (Layouts/AuthenticatedLayout.jsx): the page's title and its actions as one card ── */
 .gl-page-head {
     padding: 18px 22px;
     border: 1px solid var(--gl-line);
     border-radius: 20px;
-    background: rgb(var(--glass-panel));
-    box-shadow: inset 0 1px 0 var(--gl-line-hi), var(--glass-shadow);
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--panel-shadow);
 }
 
 @media print {
@@ -2217,6 +2214,5 @@
         border: 0;
         background: none;
         box-shadow: none;
-        backdrop-filter: none;
     }
 }

@@ -88,7 +88,7 @@ function EnergyField() {
 }
 
 /**
- * The sign-in screen: one glass card in the middle of the page, over a field
+ * The sign-in screen: one card in the middle of the page, over a field
  * of current, holding the mark, the product's name and the form (`children`).
  * `subtitle` is the line under the name.
  */
@@ -100,7 +100,7 @@ export default function GuestLayout({ subtitle = 'سجّل الدخول لمتا
             <EnergyField />
             <ThemeToggle className="gl-auth-corner" />
 
-            <main className="gl-glass gl-auth-card">
+            <main className="gl-card gl-auth-card">
                 <div className="gl-auth-head">
                     <AnimatedLogo />
                     <div>

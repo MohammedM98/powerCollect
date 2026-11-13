@@ -158,11 +158,11 @@ export default function Modal({ show, onClose, children, maxWidth = 'md', panelC
                 pressStartedOutside.current = false;
             }}
         >
-            <div className="modal-glass-backdrop animate-modal-backdrop pointer-events-none fixed inset-0" aria-hidden="true" />
+            <div className="modal-scrim animate-modal-backdrop pointer-events-none fixed inset-0" aria-hidden="true" />
             <div
                 ref={panelRef}
                 tabIndex={-1}
-                className={`modal-glass-panel animate-modal-panel relative m-auto w-full overflow-hidden rounded-panel outline-none ${maxWidthClass} ${panelClassName}`}
+                className={`modal-sheet-panel animate-modal-panel relative m-auto w-full overflow-hidden rounded-panel outline-none ${maxWidthClass} ${panelClassName}`}
             >
                 {children}
             </div>

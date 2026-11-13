@@ -41,7 +41,7 @@ class Brand
     public const PALETTE = ['primary', 'secondary', 'accent', 'background', 'surface'];
 
     /** The navigation drawn dark in both themes (theme.css, section 7), whose greys follow the neutral tone's dark ones. */
-    private const DARK_PANELS = ":root:is([data-ui-nav-style='dark'],[data-ui-nav-style='brand']) :is(.tn-glass,.sn-panel)";
+    private const DARK_PANELS = ":root:is([data-ui-nav-style='dark'],[data-ui-nav-style='brand']) .tn-bar";
 
     /** The colour theme.css is drawn in; a company in it needs no shades of its own. */
     public const THEME_PRIMARY = '#A51D26';

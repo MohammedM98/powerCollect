@@ -29,7 +29,7 @@ export default function DashboardFiguresColumn({
     return (
         <div className="gl-col">
             {collections && (
-                <section className="gl-glass gl-panel gl-rise" style={{ '--i': 1 }} aria-label="التحصيل">
+                <section className="gl-card gl-panel gl-rise" style={{ '--i': 1 }} aria-label="التحصيل">
                     <StatStrip>
                         <Stat
                             label="المحصّل اليوم"
@@ -217,7 +217,7 @@ export default function DashboardFiguresColumn({
                         />
                     )}
                     {debts === undefined ? (
-                        <div className="gl-glass gl-kpi">
+                        <div className="gl-card gl-kpi">
                             <div className="gl-skel w-1/2" />
                             <div className="gl-skel mt-6 h-8 w-2/3" />
                         </div>

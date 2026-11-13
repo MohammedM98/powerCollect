@@ -70,7 +70,7 @@ class BrandTest extends TestCase
         $response->assertSee('<link rel="icon" href="/favicon.svg">', false);
     }
 
-    public function test_pages_start_in_the_superpower_charcoal_glass_look_in_charcoal(): void
+    public function test_pages_start_in_the_superpower_charcoal_look_with_the_top_bar_and_solid_cards(): void
     {
         $response = $this->get(route('login'));
 
@@ -78,7 +78,8 @@ class BrandTest extends TestCase
             ->where('brand.primaryColor', '#2B2B2B')
             ->where('brand.design.preset', 'superpower')
             ->where('brand.design.navigation', 'topbar')
-            ->where('brand.design.cards', 'glass')
+            ->where('brand.design.cards', 'elevated')
+            ->where('brand.design.navStyle', 'solid')
             ->where('brand.design.details', 'modal'));
         $response->assertSee('data-ui-background="graphite"', false);
         $response->assertSee('data-ui-neutral="graphite"', false);
@@ -227,7 +228,7 @@ class BrandTest extends TestCase
         $response->assertSee(':root{--success-50:', false);
         $response->assertSee('--gray-50:237 241 247;', false);
         $response->assertSee('.dark{--gray-50:', false);
-        $response->assertSee(":root:is([data-ui-nav-style='dark'],[data-ui-nav-style='brand']) :is(.tn-glass,.sn-panel){--gray-50:", false);
+        $response->assertSee(":root:is([data-ui-nav-style='dark'],[data-ui-nav-style='brand']) .tn-bar{--gray-50:", false);
         $response->assertSee('data-ui-nav-style="dark"', false);
         $response->assertInertia(fn ($page) => $page->where('brand.stylesheet', app(Brand::class)->stylesheet()));
     }
@@ -297,11 +298,13 @@ class BrandTest extends TestCase
         $this->assertSame('superpower', BrandDesign::normalize(['preset' => 'superpower', 'background' => 'navy', 'neutral' => 'navy'])['preset']);
     }
 
-    public function test_a_look_saved_with_the_retired_side_section_bar_shows_the_top_bar(): void
+    public function test_a_look_saved_with_the_retired_side_bar_or_glass_shows_the_top_bar_and_solid_panels(): void
     {
-        $design = BrandDesign::normalize(['preset' => 'superpower', 'navigation' => 'sidebar']);
+        $design = BrandDesign::normalize(['preset' => 'superpower', 'navigation' => 'sidebar', 'navStyle' => 'glass', 'cards' => 'glass']);
 
         $this->assertSame('topbar', $design['navigation']);
+        $this->assertSame('solid', $design['navStyle']);
+        $this->assertSame('elevated', $design['cards']);
         $this->assertSame('superpower', $design['preset']);
     }
 
@@ -331,7 +334,10 @@ class BrandTest extends TestCase
         $response = $this->get(route('login'));
 
         $response->assertSee('data-ui-radius="soft"', false);
-        $response->assertSee(':root[data-ui-navigation]{--radius-scale:1.6;--ui-transition:240ms;--glass-alpha:0.75;--glass-blur:24px;}', false);
+        $response->assertSee(':root[data-ui-navigation]{--radius-scale:1.6;--ui-transition:240ms;}', false);
+        // The withdrawn glass look's transparency and blur in an older file draw nothing.
+        $response->assertDontSee('--panel-alpha', false);
+        $response->assertDontSee('--glass-alpha', false);
         $response->assertSee(':root[data-ui-navigation] :is(.ui-btn-primary,.ui-btn-secondary,.ui-btn-danger){border-radius:20px;}', false);
     }
 

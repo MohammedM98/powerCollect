@@ -17,7 +17,7 @@
  *   5. Accents          extra colours for charts, tags and roles
  *   6. Named colours    what the pages with a stylesheet of their own read
  *   7. Dark navigation  the greys inside a dark or coloured navigation
- *   8. Panels           the solid panels and the page's colour (formerly glass)
+ *   8. Panels           the solid panels and the page's own colour
  *
  * Colours that change with the theme are set twice: in `:root` for the light
  * theme and in `.dark` for the dark one. Those set once look the same in both.
@@ -352,7 +352,7 @@
  * lines, the open section) reads on the dark panel. A neutral tone of the
  * company's own redraws these greys too (Brand::stylesheet()).
  */
-:root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) .tn-glass {
+:root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) .tn-bar {
     color-scheme: dark;
 
     --gray-50: 10 10 10;
@@ -370,54 +370,52 @@
 }
 
 /*
- * ── 8. Panels (formerly the glass look) ─────────────────────────────────
+ * ── 8. Panels ────────────────────────────────────────────────────────────
  *
  * The page's own colour and the solid panels on it (the `gl-` components in
- * glass.css and the charcoal look in app.css, BrandDesign `background`:
+ * components.css and the charcoal look in app.css, BrandDesign `background`:
  * graphite). Nothing is see-through or blurred: panels are opaque cards with
  * a thin line, in neutral greys in both themes with no blue tint; the only
  * colour on the page is the company's buttons and links. Values with their
- * own transparency are written `R G B / alpha` and read `rgb(var(--glass-line))`.
+ * own transparency are written `R G B / alpha` and read `rgb(var(--panel-line))`.
  *
  * Every text colour here reads at 4.5:1 or more (WCAG AA) on the page and
  * on a panel.
  */
 :root {
-    --glass-page: 245 245 245;
-    --glass-ink: 23 23 23;
-    --glass-muted: 82 82 82;
-    --glass-faint: 96 96 96;
-    --glass-panel: 255 255 255;
-    --glass-line: 0 0 0 / 0.09;
-    --glass-line-hi: 255 255 255 / 0;
-    --glass-fill: 0 0 0 / 0.04;
-    --glass-fill-strong: 0 0 0 / 0.07;
-    --glass-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -16px rgb(0 0 0 / 0.18);
-    --glass-ambient: none;
+    --panel-page: 245 245 245;
+    --panel-ink: 23 23 23;
+    --panel-muted: 82 82 82;
+    --panel-faint: 96 96 96;
+    --panel-bg: 255 255 255;
+    --panel-line: 0 0 0 / 0.09;
+    --panel-line-strong: 0 0 0 / 0.16;
+    --panel-fill: 0 0 0 / 0.04;
+    --panel-fill-strong: 0 0 0 / 0.07;
+    --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -16px rgb(0 0 0 / 0.18);
 
-    --glass-success: 8 105 66;
-    --glass-warning: 146 86 4;
-    --glass-danger: 180 32 48;
-    --glass-info: 3 105 161;
+    --panel-success: 8 105 66;
+    --panel-warning: 146 86 4;
+    --panel-danger: 180 32 48;
+    --panel-info: 3 105 161;
 }
 
 .dark {
-    --glass-page: 10 10 10;
-    --glass-ink: 240 240 240;
-    --glass-muted: 168 168 168;
-    --glass-faint: 142 142 142;
-    --glass-panel: 22 22 22;
-    --glass-line: 255 255 255 / 0.08;
-    --glass-line-hi: 255 255 255 / 0;
-    --glass-fill: 255 255 255 / 0.05;
-    --glass-fill-strong: 255 255 255 / 0.09;
-    --glass-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 28px -18px rgb(0 0 0 / 0.9);
-    --glass-ambient: none;
+    --panel-page: 10 10 10;
+    --panel-ink: 240 240 240;
+    --panel-muted: 168 168 168;
+    --panel-faint: 142 142 142;
+    --panel-bg: 22 22 22;
+    --panel-line: 255 255 255 / 0.08;
+    --panel-line-strong: 255 255 255 / 0.16;
+    --panel-fill: 255 255 255 / 0.05;
+    --panel-fill-strong: 255 255 255 / 0.09;
+    --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 28px -18px rgb(0 0 0 / 0.9);
 
-    --glass-success: 60 207 145;
-    --glass-warning: 234 168 66;
-    --glass-danger: 242 100 111;
-    --glass-info: 56 189 248;
+    --panel-success: 60 207 145;
+    --panel-warning: 234 168 66;
+    --panel-danger: 242 100 111;
+    --panel-info: 56 189 248;
 }
 
 /*
@@ -428,33 +426,33 @@
  * company's colour.
  */
 :root[data-ui-background='graphite'] {
-    --ui-page: rgb(var(--glass-page));
-    --ui-surface: rgb(var(--glass-panel));
-    --ui-raised: rgb(var(--glass-fill));
-    --ui-sunken: rgb(var(--glass-fill));
-    --ui-line: rgb(var(--glass-line));
-    --ui-line2: rgb(var(--glass-line));
-    --ui-ink: rgb(var(--glass-ink));
-    --ui-ink2: rgb(var(--glass-ink));
-    --ui-muted: rgb(var(--glass-muted));
-    --ui-faint: rgb(var(--glass-faint));
-    --ui-success: rgb(var(--glass-success));
-    --ui-success-t: rgb(var(--glass-success) / 0.14);
-    --ui-info: rgb(var(--glass-info));
-    --ui-info-t: rgb(var(--glass-info) / 0.14);
-    --ui-warn: rgb(var(--glass-warning));
-    --ui-warn-t: rgb(var(--glass-warning) / 0.14);
-    --ui-danger: rgb(var(--glass-danger));
-    --ui-danger-t: rgb(var(--glass-danger) / 0.14);
+    --ui-page: rgb(var(--panel-page));
+    --ui-surface: rgb(var(--panel-bg));
+    --ui-raised: rgb(var(--panel-fill));
+    --ui-sunken: rgb(var(--panel-fill));
+    --ui-line: rgb(var(--panel-line));
+    --ui-line2: rgb(var(--panel-line));
+    --ui-ink: rgb(var(--panel-ink));
+    --ui-ink2: rgb(var(--panel-ink));
+    --ui-muted: rgb(var(--panel-muted));
+    --ui-faint: rgb(var(--panel-faint));
+    --ui-success: rgb(var(--panel-success));
+    --ui-success-t: rgb(var(--panel-success) / 0.14);
+    --ui-info: rgb(var(--panel-info));
+    --ui-info-t: rgb(var(--panel-info) / 0.14);
+    --ui-warn: rgb(var(--panel-warning));
+    --ui-warn-t: rgb(var(--panel-warning) / 0.14);
+    --ui-danger: rgb(var(--panel-danger));
+    --ui-danger-t: rgb(var(--panel-danger) / 0.14);
     --ui-focus: rgb(var(--brand-solid));
-    --ui-shadow: inset 0 1px 0 rgb(var(--glass-line-hi)), var(--glass-shadow);
-    --ui-pop: var(--glass-shadow);
+    --ui-shadow: var(--panel-shadow);
+    --ui-pop: var(--panel-shadow);
     --ui-hero: linear-gradient(135deg, rgb(var(--brand-lo)), rgb(var(--brand-deep)) 60%, rgb(var(--brand-deep)));
 }
 
 /*
  * Keyboard focus: one ring, in the company's colour, for every control the
- * glass design system draws (buttons, icon buttons, segments, toggles, chips,
+ * panel design system draws (buttons, icon buttons, segments, toggles, chips,
  * tabs, menu buttons and switches), so the keyboard's place looks the same
  * everywhere. Fields show theirs on the frame (.gl-field:focus-within); the
  * appearance setting data-ui-focus-ring recolours or softens it (app.css).

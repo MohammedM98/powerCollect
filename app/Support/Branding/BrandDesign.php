@@ -46,7 +46,6 @@ class BrandDesign
             'topbar' => 'Top bar with the section pages under it',
         ]],
         'navStyle' => ['label' => 'Bar and menu style', 'options' => [
-            'glass' => 'Floating bar',
             'solid' => 'Solid light',
             'dark' => 'Dark',
             'brand' => 'Company colour',
@@ -91,7 +90,6 @@ class BrandDesign
             'outlined' => 'With a border',
             'flat' => 'Flat',
             'floating' => 'Floating with a deep shadow',
-            'glass' => 'Solid panel',
             'accent' => 'With a top line in the company colour',
         ]],
         'tables' => ['label' => 'Tables', 'options' => [
@@ -232,7 +230,8 @@ class BrandDesign
     /**
      * Options that were withdrawn, and the option a design saved with one
      * now shows: the navy and night-blue looks became the charcoal one, and
-     * the side section bar became the top bar.
+     * the side section bar became the top bar, and the glass bar and cards
+     * (withdrawn with the whole glass look) became solid ones.
      *
      * @var array<string, array<string, string>>
      */
@@ -240,6 +239,8 @@ class BrandDesign
         'background' => ['navy' => 'graphite', 'midnight' => 'graphite'],
         'neutral' => ['navy' => 'graphite'],
         'navigation' => ['sidebar' => 'topbar'],
+        'navStyle' => ['glass' => 'solid'],
+        'cards' => ['glass' => 'elevated'],
     ];
 
     /**
@@ -260,8 +261,6 @@ class BrandDesign
         'hoverLift' => ['label' => 'Lift amount on hover', 'min' => 0, 'max' => 8, 'step' => 1, 'unit' => 'px'],
         'shadowStrength' => ['label' => 'Shadow strength', 'min' => 0, 'max' => 2, 'step' => 0.05, 'unit' => '×'],
         'transitionMs' => ['label' => 'Motion speed', 'min' => 0, 'max' => 800, 'step' => 20, 'unit' => 'ms'],
-        'glassAlpha' => ['label' => 'Glass transparency', 'min' => 0.2, 'max' => 0.9, 'step' => 0.05, 'unit' => ''],
-        'glassBlur' => ['label' => 'Glass blur strength', 'min' => 0, 'max' => 40, 'step' => 2, 'unit' => 'px'],
     ];
 
     /**
@@ -274,7 +273,7 @@ class BrandDesign
         'superpower' => [
             'label' => 'Charcoal super power',
             'description' => 'Solid cards in neutral charcoal greys, light grey in the light theme, a top bar with the section pages under it, tables inside solid panels, gradient buttons and filled fields.',
-            'design' => ['background' => 'graphite', 'neutral' => 'graphite', 'cards' => 'glass', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand', 'navHighlight' => 'brand'],
+            'design' => ['background' => 'graphite', 'neutral' => 'graphite', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand', 'navHighlight' => 'brand'],
         ],
         'classic' => [
             'label' => 'Classic premium',
@@ -305,11 +304,6 @@ class BrandDesign
             'label' => 'Dark executive',
             'description' => 'A dark section bar, cards with a coloured top line, raised buttons and a table header in the company colour.',
             'design' => ['navStyle' => 'dark', 'background' => 'glow', 'neutral' => 'stone', 'buttons' => 'raised', 'cards' => 'accent', 'tableHeader' => 'brand', 'badges' => 'solid', 'pageTitle' => 'underline', 'headingFont' => 'messiri', 'buttonHover' => 'lift', 'cardHover' => 'lift', 'navHighlight' => 'brand', 'switches' => 'brand', 'inputFocus' => 'glow'],
-        ],
-        'glass' => [
-            'label' => 'Modern glass',
-            'description' => 'Glass cards over a gradient background, pill buttons and very rounded corners.',
-            'design' => ['navStyle' => 'glass', 'background' => 'gradient', 'radius' => 'round', 'buttons' => 'pill', 'cards' => 'glass', 'tables' => 'cards', 'inputs' => 'filled', 'bodyFont' => 'cairo', 'headingFont' => 'cairo', 'searchStyle' => 'pill', 'buttonHover' => 'scale', 'buttonPress' => 'shrink', 'cardHover' => 'glow', 'switches' => 'brand', 'inputFocus' => 'glow'],
         ],
         'official' => [
             'label' => 'Formal government',
@@ -467,8 +461,6 @@ class BrandDesign
             '--hover-lift' => $tokens['hoverLift'] !== null ? $tokens['hoverLift'].'px' : null,
             '--shadow-strength' => $tokens['shadowStrength'],
             '--ui-transition' => $tokens['transitionMs'] !== null ? $tokens['transitionMs'].'ms' : null,
-            '--glass-alpha' => $tokens['glassAlpha'],
-            '--glass-blur' => $tokens['glassBlur'] !== null ? $tokens['glassBlur'].'px' : null,
         ], fn ($value): bool => $value !== null);
         $buttons = array_filter([
             'border-radius' => $tokens['buttonRadius'] !== null ? $tokens['buttonRadius'].'px' : null,

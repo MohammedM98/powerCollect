@@ -130,7 +130,7 @@ html.tn-locked {
     --tn-bar-height: 58px;
 }
 
-.tn-glass {
+.tn-bar {
     pointer-events: auto;
     position: relative;
     display: grid;
@@ -150,23 +150,23 @@ html.tn-locked {
     transition: grid-template-rows 0.3s var(--tn-ease), box-shadow 0.3s;
 }
 
-.dark .tn-glass {
+.dark .tn-bar {
     border-color: rgb(255 255 255 / 0.08);
     box-shadow: 0 18px 40px -24px #000;
 }
 
-.tn-header.is-scrolled .tn-glass {
+.tn-header.is-scrolled .tn-bar {
     box-shadow:
         0 1px 2px rgb(var(--shadow-ink) / 0.05),
         0 18px 40px -22px rgb(var(--shadow-ink) / 0.45);
 }
 
-.dark .tn-header.is-scrolled .tn-glass {
+.dark .tn-header.is-scrolled .tn-bar {
     box-shadow: 0 22px 48px -20px #000;
 }
 
 /* The section's pages: the bar's second row, under a thin line, across its whole width. */
-.tn-glass:has(> .tn-bar-tabs) {
+.tn-bar:has(> .tn-bar-tabs) {
     grid-template-rows: var(--tn-bar-height) var(--tn-subnav-height);
 }
 
@@ -190,7 +190,7 @@ html.tn-locked {
     min-width: 0;
 }
 
-.tn-glass::before {
+.tn-bar::before {
     content: '';
     position: absolute;
     inset-inline: 22px;
@@ -708,7 +708,7 @@ html.tn-locked {
         display: grid;
     }
 
-    .tn-glass {
+    .tn-bar {
         grid-template-columns: minmax(0, 1fr) auto;
         border-radius: calc(18px * var(--radius-scale, 1));
         padding-inline: 8px 6px;

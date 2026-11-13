@@ -52,7 +52,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
             <header className={`tn-header ${scrolled ? 'is-scrolled' : ''}`} data-subnav={subnav ? true : undefined}>
                 <div
                     ref={barRef}
-                    className="tn-glass"
+                    className="tn-bar"
                     onTransitionEnd={(event) => {
                         if (event.target === barRef.current) {
                             syncHighlight(true);

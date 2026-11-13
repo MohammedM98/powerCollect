@@ -1,5 +1,5 @@
 /**
- * What is wrong with a field, under it, in the glass look's red. Announced
+ * What is wrong with a field, under it, in the panel look's red. Announced
  * as it appears (role="alert"); give it an `id` and point the field's
  * aria-describedby at it so the error is read with the field too.
  */
