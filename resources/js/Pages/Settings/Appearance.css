@@ -242,6 +242,5 @@
     border: 1px solid rgb(var(--gray-200));
     border-radius: calc(20px * var(--radius-scale, 1));
     background: rgb(var(--surface) / 0.92);
-    backdrop-filter: blur(16px);
     box-shadow: var(--shadow-lift);
 }

@@ -17,7 +17,7 @@
  *   5. Accents          extra colours for charts, tags and roles
  *   6. Named colours    what the pages with a stylesheet of their own read
  *   7. Dark navigation  the greys inside a dark or coloured navigation
- *   8. Glass            the Superpower glass look: glass panels and the page's light
+ *   8. Panels           the solid panels and the page's colour (formerly glass)
  *
  * Colours that change with the theme are set twice: in `:root` for the light
  * theme and in `.dark` for the dark one. Those set once look the same in both.
@@ -54,7 +54,7 @@
     --brand-deep: 92 13 20;
 
     /* The logo's own colours (resources/js/Components/AnimatedLogo.jsx): its letters, its arrow and their tints. */
-    --logo-letters: 59 64 73;
+    --logo-letters: 43 43 43;
     --logo-arrow: 155 38 44;
     --logo-dot: 107 33 37;
     --logo-tint-silver: 223 223 225;
@@ -67,48 +67,48 @@
     /* ── 2. Neutrals ──────────────────────────────────────────────────────── */
 
     /*
-     * Graphite and silver neutrals, from the logo's AF letters. Quiet
+     * Neutral graphite and silver greys, with no blue tint. Quiet
      * text (400) reads at 5.1:1 on the page's soft gray (50) and muted
      * text (500) higher still, above the WCAG AA minimum of 4.5.
      */
-    --gray-50: 239 241 244;
-    --gray-100: 233 236 239;
-    --gray-200: 223 226 230;
-    --gray-300: 205 211 218;
-    --gray-400: 94 103 115;
-    --gray-500: 76 84 96;
-    --gray-600: 70 78 89;
-    --gray-700: 53 60 70;
-    --gray-800: 35 42 51;
-    --gray-900: 17 24 32;
-    --gray-950: 11 13 16;
+    --gray-50: 245 245 245;
+    --gray-100: 239 239 239;
+    --gray-200: 228 228 228;
+    --gray-300: 212 212 212;
+    --gray-400: 100 100 100;
+    --gray-500: 82 82 82;
+    --gray-600: 70 70 70;
+    --gray-700: 54 54 54;
+    --gray-800: 38 38 38;
+    --gray-900: 23 23 23;
+    --gray-950: 12 12 12;
 
     /* Cards, tables, dialogs and fields. */
     --surface: 255 255 255;
 
     /* Dark graphite that stays dark in both themes: the active nav item, avatars, the dashboard's main card. */
-    --graphite-400: 58 67 78;
-    --graphite-500: 53 60 70;
-    --graphite-600: 43 49 56;
-    --graphite-700: 38 44 51;
-    --graphite-800: 27 32 38;
-    --graphite-900: 17 21 25;
-    --graphite-950: 11 13 16;
+    --graphite-400: 66 66 66;
+    --graphite-500: 56 56 56;
+    --graphite-600: 46 46 46;
+    --graphite-700: 40 40 40;
+    --graphite-800: 30 30 30;
+    --graphite-900: 20 20 20;
+    --graphite-950: 12 12 12;
 
     /* Silver that stays light in both themes: text and lines on the graphite panels. */
-    --silver-50: 242 243 245;
-    --silver-100: 223 227 232;
-    --silver-200: 209 213 219;
-    --silver-300: 199 203 210;
-    --silver-400: 174 182 193;
-    --silver-500: 154 163 174;
-    --silver-600: 139 148 160;
-    --silver-700: 107 116 128;
-    --silver-800: 94 103 115;
-    --silver-900: 76 84 96;
+    --silver-50: 244 244 244;
+    --silver-100: 229 229 229;
+    --silver-200: 214 214 214;
+    --silver-300: 204 204 204;
+    --silver-400: 180 180 180;
+    --silver-500: 161 161 161;
+    --silver-600: 145 145 145;
+    --silver-700: 115 115 115;
+    --silver-800: 100 100 100;
+    --silver-900: 82 82 82;
 
     /* The tint of every shadow. */
-    --shadow-ink: 16 24 40;
+    --shadow-ink: 0 0 0;
 
     /* ── 3. Status ────────────────────────────────────────────────────────── */
 
@@ -166,20 +166,20 @@
 
     /* ── 4. Actions ───────────────────────────────────────────────────────── */
 
-    /* Blue, for editing: calm enough to sit beside the burgundy and graphite. */
-    --blue-50: 239 246 255;
-    --blue-100: 219 234 254;
-    --blue-200: 191 219 254;
-    --blue-300: 147 197 253;
-    --blue-400: 96 165 250;
-    --blue-500: 47 102 214;
-    --blue-600: 32 84 190;
-    --blue-700: 24 64 150;
-    --blue-800: 30 64 175;
-    --blue-900: 30 58 138;
-    --blue-950: 23 37 84;
-    --blue-hi: 59 116 230;
-    --blue-lo: 31 79 184;
+    /* Editing: kept under its old name (`blue-*`) but drawn in neutral charcoal, so no blue shows. */
+    --blue-50: 245 245 245;
+    --blue-100: 235 235 235;
+    --blue-200: 219 219 219;
+    --blue-300: 196 196 196;
+    --blue-400: 150 150 150;
+    --blue-500: 64 64 64;
+    --blue-600: 46 46 46;
+    --blue-700: 38 38 38;
+    --blue-800: 30 30 30;
+    --blue-900: 23 23 23;
+    --blue-950: 14 14 14;
+    --blue-hi: 82 82 82;
+    --blue-lo: 38 38 38;
 
     /*
      * Violet, for printing, and Excel's own green, for exporting to Excel:
@@ -261,30 +261,30 @@
     --brand-800: 243 164 169;
     --brand-900: 249 204 207;
 
-    --gray-50: 11 13 16;
-    --gray-100: 27 31 37;
-    --gray-200: 37 42 50;
-    --gray-300: 52 58 67;
-    --gray-400: 128 137 149;
-    --gray-500: 158 166 177;
-    --gray-600: 184 190 199;
-    --gray-700: 204 209 216;
-    --gray-800: 226 229 233;
-    --gray-900: 244 245 247;
-    --gray-950: 250 250 251;
+    --gray-50: 10 10 10;
+    --gray-100: 25 25 25;
+    --gray-200: 36 36 36;
+    --gray-300: 52 52 52;
+    --gray-400: 138 138 138;
+    --gray-500: 163 163 163;
+    --gray-600: 188 188 188;
+    --gray-700: 208 208 208;
+    --gray-800: 229 229 229;
+    --gray-900: 245 245 245;
+    --gray-950: 250 250 250;
 
-    --blue-500: 96 143 240;
-    --blue-600: 133 169 245;
-    --blue-700: 62 104 196;
+    --blue-500: 163 163 163;
+    --blue-600: 212 212 212;
+    --blue-700: 115 115 115;
 
     --print-600: 196 181 253;
     --excel-500: 26 128 72;
     --excel-600: 110 220 150;
     --excel-700: 20 96 54;
 
-    --surface: 20 23 28;
+    --surface: 22 22 22;
 
-    --logo-letters: 201 206 214;
+    --logo-letters: 214 214 214;
 
     --spectrum: linear-gradient(90deg, rgb(var(--brand-deep)), rgb(var(--brand-hi)) 40%, rgb(var(--silver-700)) 75%, rgb(var(--gray-200)));
 }
@@ -340,105 +340,96 @@
     --ui-focus: rgb(var(--gray-700));
     --ui-shadow: 0 20px 40px -24px #000;
     --ui-pop: 0 30px 60px -20px #000;
-    --ui-hero: linear-gradient(135deg, #1c2127, #161a1f 55%, #0b0d10);
+    --ui-hero: linear-gradient(135deg, #222, #181818 55%, #0c0c0c);
 }
 
 /*
  * ── 7. Dark navigation ───────────────────────────────────────────────────
  *
  * A company whose navigation is dark or in its own colour (BrandDesign
- * `navStyle`) draws the top bar and the side menu in the dark theme's
+ * `navStyle`) draws the top bar in the dark theme's
  * greys, whatever the page's theme, so everything inside them (text, icons,
  * lines, the open section) reads on the dark panel. A neutral tone of the
  * company's own redraws these greys too (Brand::stylesheet()).
  */
-:root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) :is(.tn-glass, .sn-panel) {
+:root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) .tn-glass {
     color-scheme: dark;
 
-    --gray-50: 11 13 16;
-    --gray-100: 27 31 37;
-    --gray-200: 37 42 50;
-    --gray-300: 52 58 67;
-    --gray-400: 128 137 149;
-    --gray-500: 158 166 177;
-    --gray-600: 184 190 199;
-    --gray-700: 204 209 216;
-    --gray-800: 226 229 233;
-    --gray-900: 244 245 247;
-    --gray-950: 250 250 251;
-    --surface: 20 23 28;
+    --gray-50: 10 10 10;
+    --gray-100: 25 25 25;
+    --gray-200: 36 36 36;
+    --gray-300: 52 52 52;
+    --gray-400: 138 138 138;
+    --gray-500: 163 163 163;
+    --gray-600: 188 188 188;
+    --gray-700: 208 208 208;
+    --gray-800: 229 229 229;
+    --gray-900: 245 245 245;
+    --gray-950: 250 250 250;
+    --surface: 22 22 22;
 }
 
 /*
- * ── 8. Glass ─────────────────────────────────────────────────────────────
+ * ── 8. Panels (formerly the glass look) ─────────────────────────────────
  *
- * The Superpower glass look (resources/brand/design-system.superpower.json):
- * the page's own colour, the soft light over it, and the frosted panels on
- * it, drawn by app.css when a company's background is graphite (BrandDesign
- * `background`). Neutral greys in both themes, with no tint and no coloured
- * light: the only colour on the page is the company's buttons and links. Values with their own transparency are written
- * `R G B / alpha` and read `rgb(var(--glass-line))`.
+ * The page's own colour and the solid panels on it (the `gl-` components in
+ * glass.css and the charcoal look in app.css, BrandDesign `background`:
+ * graphite). Nothing is see-through or blurred: panels are opaque cards with
+ * a thin line, in neutral greys in both themes with no blue tint; the only
+ * colour on the page is the company's buttons and links. Values with their
+ * own transparency are written `R G B / alpha` and read `rgb(var(--glass-line))`.
  *
- * Every text colour here reads at 4.5:1 or more (WCAG AA) on the page, on a
- * panel and on its own 14% tint: faint text 5.9:1 light, 5.7:1 dark.
- *
- * The panel's transparency and blur are company tokens (BrandDesign TOKENS:
- * glassAlpha, glassBlur).
+ * Every text colour here reads at 4.5:1 or more (WCAG AA) on the page and
+ * on a panel.
  */
 :root {
-    --glass-page: 236 238 241;
-    --glass-ink: 17 20 25;
-    --glass-muted: 72 79 90;
-    --glass-faint: 84 91 102;
+    --glass-page: 245 245 245;
+    --glass-ink: 23 23 23;
+    --glass-muted: 82 82 82;
+    --glass-faint: 96 96 96;
     --glass-panel: 255 255 255;
-    --glass-alpha: 0.6;
-    --glass-blur: 18px;
-    --glass-line: 20 25 35 / 0.12;
-    --glass-line-hi: 255 255 255 / 0.9;
-    --glass-fill: 20 25 35 / 0.05;
-    --glass-fill-strong: 20 25 35 / 0.09;
-    --glass-shadow: 0 24px 40px -28px rgb(20 24 30 / 0.45);
-    --glass-ambient:
-        radial-gradient(1200px 640px at 85% -12%, rgb(255 255 255 / 0.75), transparent 62%),
-        radial-gradient(900px 600px at 0% 112%, rgb(20 25 35 / 0.04), transparent 62%);
-    --glass-nav: none;
+    --glass-line: 0 0 0 / 0.09;
+    --glass-line-hi: 255 255 255 / 0;
+    --glass-fill: 0 0 0 / 0.04;
+    --glass-fill-strong: 0 0 0 / 0.07;
+    --glass-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -16px rgb(0 0 0 / 0.18);
+    --glass-ambient: none;
 
     --glass-success: 8 105 66;
     --glass-warning: 146 86 4;
     --glass-danger: 180 32 48;
-    --glass-info: 28 84 196;
+    --glass-info: 3 105 161;
 }
 
 .dark {
-    --glass-page: 10 11 13;
-    --glass-ink: 238 240 243;
-    --glass-muted: 165 170 178;
-    --glass-faint: 138 144 152;
-    --glass-panel: 24 26 30;
-    --glass-line: 255 255 255 / 0.09;
-    --glass-line-hi: 255 255 255 / 0.16;
+    --glass-page: 10 10 10;
+    --glass-ink: 240 240 240;
+    --glass-muted: 168 168 168;
+    --glass-faint: 142 142 142;
+    --glass-panel: 22 22 22;
+    --glass-line: 255 255 255 / 0.08;
+    --glass-line-hi: 255 255 255 / 0;
     --glass-fill: 255 255 255 / 0.05;
     --glass-fill-strong: 255 255 255 / 0.09;
-    --glass-shadow: 0 26px 50px -30px rgb(0 0 0 / 0.95);
-    --glass-ambient: radial-gradient(1300px 720px at 85% -12%, rgb(255 255 255 / 0.05), transparent 62%);
-    --glass-nav: none;
+    --glass-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 28px -18px rgb(0 0 0 / 0.9);
+    --glass-ambient: none;
 
     --glass-success: 60 207 145;
     --glass-warning: 234 168 66;
     --glass-danger: 242 100 111;
-    --glass-info: 106 165 255;
+    --glass-info: 56 189 248;
 }
 
 /*
- * The named colours (section 6) in the glass look: the pages that keep a
+ * The named colours (section 6) in the charcoal look: the pages that keep a
  * stylesheet of their own (the ledger, reading entry, the profile, reading
- * schedule, SMS settings) draw on the glass: panels, lines, text and the
- * company's colour from the tokens above. Their hero cards keep white text
- * on a deep blue in the company's colour.
+ * schedule, SMS settings) draw on the same panels, lines, text and company
+ * colour as the tokens above. Their hero cards keep white text on the
+ * company's colour.
  */
 :root[data-ui-background='graphite'] {
     --ui-page: rgb(var(--glass-page));
-    --ui-surface: rgb(var(--glass-panel) / 0.86);
+    --ui-surface: rgb(var(--glass-panel));
     --ui-raised: rgb(var(--glass-fill));
     --ui-sunken: rgb(var(--glass-fill));
     --ui-line: rgb(var(--glass-line));

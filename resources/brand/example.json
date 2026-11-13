@@ -30,7 +30,7 @@
         "motionStyle": "standard",
         "details": "modal",
         "footerStyle": "full",
-        "navigation": "sidebar",
+        "navigation": "topbar",
         "navStyle": "dark",
         "width": "wide",
         "background": "glow",

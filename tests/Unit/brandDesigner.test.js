@@ -13,10 +13,10 @@ function designer() {
 
 test('legacy customer files get neutral new choices and preserve original choices', () => {
     const { fromFile, toFile } = designer();
-    const output = toFile(fromFile({ version: 1, company: { name: 'شركة تجريبية' }, design: { tables: 'spreadsheet', navigation: 'sidebar' } }));
+    const output = toFile(fromFile({ version: 1, company: { name: 'شركة تجريبية' }, design: { tables: 'spreadsheet', navigation: 'topbar' } }));
 
     assert.equal(output.design.tables, 'spreadsheet');
-    assert.equal(output.design.navigation, 'sidebar');
+    assert.equal(output.design.navigation, 'topbar');
     assert.equal(output.design.tableVariant, 'default');
     assert.equal(output.design.motionStyle, 'standard');
     assert.equal(output.design.details, 'modal');

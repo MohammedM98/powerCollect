@@ -13,7 +13,7 @@
         "print": null
     },
     "colors": {
-        "primary": "#2B3138",
+        "primary": "#2B2B2B",
         "secondary": null,
         "accent": null,
         "background": null,
@@ -30,7 +30,7 @@
         "motionStyle": "standard",
         "details": "modal",
         "footerStyle": "full",
-        "navigation": "sidebar",
+        "navigation": "topbar",
         "navStyle": "glass",
         "width": "wide",
         "background": "graphite",

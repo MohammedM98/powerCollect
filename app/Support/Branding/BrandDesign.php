@@ -43,10 +43,10 @@ class BrandDesign
             'compact' => 'Compact',
         ]],
         'navigation' => ['label' => 'Navigation', 'options' => [
-            'sidebar' => 'Floating section bar',
+            'topbar' => 'Top bar with the section pages under it',
         ]],
         'navStyle' => ['label' => 'Bar and menu style', 'options' => [
-            'glass' => 'Transparent glass',
+            'glass' => 'Floating bar',
             'solid' => 'Solid light',
             'dark' => 'Dark',
             'brand' => 'Company colour',
@@ -62,7 +62,7 @@ class BrandDesign
             'gradient' => 'Gradient from the top',
             'dots' => 'Dots',
             'grid' => 'Line grid',
-            'graphite' => 'Charcoal glass',
+            'graphite' => 'Plain charcoal',
         ]],
         'neutral' => ['label' => 'Grey tone', 'options' => [
             'graphite' => 'Graphite',
@@ -91,7 +91,7 @@ class BrandDesign
             'outlined' => 'With a border',
             'flat' => 'Flat',
             'floating' => 'Floating with a deep shadow',
-            'glass' => 'Glass',
+            'glass' => 'Solid panel',
             'accent' => 'With a top line in the company colour',
         ]],
         'tables' => ['label' => 'Tables', 'options' => [
@@ -231,13 +231,15 @@ class BrandDesign
 
     /**
      * Options that were withdrawn, and the option a design saved with one
-     * now shows: the navy and night-blue looks became the charcoal one.
+     * now shows: the navy and night-blue looks became the charcoal one, and
+     * the side section bar became the top bar.
      *
      * @var array<string, array<string, string>>
      */
     private const RETIRED = [
         'background' => ['navy' => 'graphite', 'midnight' => 'graphite'],
         'neutral' => ['navy' => 'graphite'],
+        'navigation' => ['sidebar' => 'topbar'],
     ];
 
     /**
@@ -270,8 +272,8 @@ class BrandDesign
      */
     public const PRESETS = [
         'superpower' => [
-            'label' => 'Charcoal glass super power',
-            'description' => 'Glass cards over a charcoal background, light grey in the light theme, a floating section bar, tables inside glass panels, gradient buttons and filled fields.',
+            'label' => 'Charcoal super power',
+            'description' => 'Solid cards in neutral charcoal greys, light grey in the light theme, a top bar with the section pages under it, tables inside solid panels, gradient buttons and filled fields.',
             'design' => ['background' => 'graphite', 'neutral' => 'graphite', 'cards' => 'glass', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand', 'navHighlight' => 'brand'],
         ],
         'classic' => [

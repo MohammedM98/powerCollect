@@ -109,7 +109,7 @@
 .ledger-page .mb{display:inline-block;font-size:12px;font-weight:700;color:var(--ledger-info);background:var(--ledger-info-t);border-radius:calc(8px * var(--radius-scale, 1));padding:0 6px;margin-inline-start:4px}
 .ledger-page .empty{padding:50px 20px;text-align:center;color:var(--ledger-faint)}
 .ledger-page .empty b{display:block;font:700 18px var(--font-heading, 'El Messiri'),serif;color:var(--ledger-ink2)}
-.ledger-page .foot{position:sticky;bottom:0;display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding:14px 18px;border-top:1px solid var(--ledger-line);background:color-mix(in srgb,var(--ledger-surface) 92%,transparent);backdrop-filter:blur(8px)}
+.ledger-page .foot{position:sticky;bottom:0;display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding:14px 18px;border-top:1px solid var(--ledger-line);background:var(--ledger-surface)}
 .ledger-page .foot div{font-size:12.5px;color:var(--ledger-faint)}
 .ledger-page .foot div b{display:block;font:800 17px Alexandria;color:var(--ledger-ink)}
 .ledger-page .foot div b.g{color:var(--ledger-success)}

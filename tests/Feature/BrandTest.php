@@ -75,9 +75,9 @@ class BrandTest extends TestCase
         $response = $this->get(route('login'));
 
         $response->assertInertia(fn ($page) => $page
-            ->where('brand.primaryColor', '#2B3138')
+            ->where('brand.primaryColor', '#2B2B2B')
             ->where('brand.design.preset', 'superpower')
-            ->where('brand.design.navigation', 'sidebar')
+            ->where('brand.design.navigation', 'topbar')
             ->where('brand.design.cards', 'glass')
             ->where('brand.design.details', 'modal'));
         $response->assertSee('data-ui-background="graphite"', false);
@@ -119,11 +119,11 @@ class BrandTest extends TestCase
         $this->artisan('brand:import', ['file' => $this->identityFile(['design' => ['preset' => 'soft', 'tables' => 'bordered']])])->assertSuccessful();
 
         $this->get(route('login'))->assertInertia(fn ($page) => $page
-            ->where('brand.design.navigation', 'sidebar')
+            ->where('brand.design.navigation', 'topbar')
             ->where('brand.design.radius', 'round')
             ->where('brand.design.buttons', 'soft')
             ->where('brand.design.tables', 'bordered'))
-            ->assertSee('data-ui-navigation="sidebar"', false);
+            ->assertSee('data-ui-navigation="topbar"', false);
     }
 
     public function test_company_forms_start_with_the_imported_company_on_their_letterhead(): void
@@ -295,6 +295,14 @@ class BrandTest extends TestCase
         }
 
         $this->assertSame('superpower', BrandDesign::normalize(['preset' => 'superpower', 'background' => 'navy', 'neutral' => 'navy'])['preset']);
+    }
+
+    public function test_a_look_saved_with_the_retired_side_section_bar_shows_the_top_bar(): void
+    {
+        $design = BrandDesign::normalize(['preset' => 'superpower', 'navigation' => 'sidebar']);
+
+        $this->assertSame('topbar', $design['navigation']);
+        $this->assertSame('superpower', $design['preset']);
     }
 
     public function test_import_rejects_invalid_palette_roles_and_component_choices_without_saving(): void

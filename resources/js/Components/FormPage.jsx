@@ -39,7 +39,7 @@ export default function FormPage({ title, form, cancelHref, layout: Layout = Aut
             <form noValidate onSubmit={submit} onInput={(e) => clearErrorOnInput(e, form)} onKeyDown={submitOnCtrlEnter} className={`rise-in ${widthClass}`}>
                 {children}
 
-                <div className="sticky bottom-4 z-10 mt-6 flex items-center justify-end gap-3 rounded-card border border-gray-100 bg-surface/90 px-5 py-4 shadow-lift backdrop-blur">
+                <div className="sticky bottom-4 z-10 mt-6 flex items-center justify-end gap-3 rounded-card border border-gray-100 bg-surface px-5 py-4 shadow-lift">
                     <Link href={cancelHref} prefetch className={secondaryButtonClass}>
                         إلغاء
                     </Link>

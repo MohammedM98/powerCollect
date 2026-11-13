@@ -3,8 +3,6 @@ import { router, usePage } from '@inertiajs/react';
 import TopBar from '@/Components/TopBar/TopBar';
 import BranchViewSwitcher, { WorkingBranchChip } from '@/Components/BranchViewSwitcher';
 import NavigationDrawer from '@/Components/TopBar/NavigationDrawer';
-import SideNavigation from '@/Components/SideNavigation/SideNavigation';
-import MobileTabBar from '@/Components/SideNavigation/MobileTabBar';
 import { useBrandDocument } from '@/hooks/useBrand';
 import { Breadcrumb, SectionPages } from '@/Components/TopBar/PageTrail';
 import { handlePaletteShortcut, pageWindowOpen } from '@/Components/TopBar/shortcuts';
@@ -31,8 +29,9 @@ const NO_BADGES = {};
 let openedOnce = false;
 let cachedBranchKey;
 
-// How far down the floating bar reaches, so content under it counts as scrolled away.
+// How far down the bar reaches (with the section's pages under it), so content under it counts as scrolled away.
 const BAR_CLEARANCE = 90;
+const BAR_WITH_PAGES_CLEARANCE = 150;
 
 /** Whether the user is typing, so a single-key shortcut must not fire. */
 function isTyping(target) {
@@ -40,11 +39,11 @@ function isTyping(target) {
 }
 
 /**
- * Every signed-in page: the section dock at the side beside a slim bar of
- * tools (on phones, the top bar and a tab bar on the screen's bottom edge),
- * the trail to the page, the section's pages as tabs, the page's title,
- * then the page itself.
- * Only the top bar stays on screen while scrolling, so tables keep the room.
+ * Every signed-in page: one bar at the top with the logo, the sections and
+ * the tools, the section's pages as tabs directly under it, then the trail
+ * to the page, the page's title and the page itself. There is no side menu:
+ * phones open the sections from the bar's menu button. Only the bar (with
+ * its tabs) stays on screen while scrolling, so tables keep the room.
  * `badges` counts what waits on a page, by its link: { '/payments/summary': 2 }.
  * `scope` names the branch (or "جميع الفروع") whose figures the page shows;
  * the bar keeps it beside the page's name once the title has scrolled away.
@@ -77,6 +76,8 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
 
     const groups = navigationGroups(can);
     const trail = pageTrail(groups, url);
+    const hasSectionPages = sectionLinks(trail?.group).length > 0;
+    const barClearance = hasSectionPages ? BAR_WITH_PAGES_CLEARANCE : BAR_CLEARANCE;
     const searchesSubscribers = Boolean(can?.recordPayments && can?.viewSubscriptions);
     const anyLayerOpen = drawerOpen || paletteOpen || shortcutsOpen || tourOpen;
 
@@ -182,13 +183,13 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
             return undefined;
         }
 
-        const observer = new IntersectionObserver(([entry]) => setPastTitle(!entry.isIntersecting && entry.boundingClientRect.top < BAR_CLEARANCE), {
-            rootMargin: `-${BAR_CLEARANCE}px 0px 0px 0px`,
+        const observer = new IntersectionObserver(([entry]) => setPastTitle(!entry.isIntersecting && entry.boundingClientRect.top < barClearance), {
+            rootMargin: `-${barClearance}px 0px 0px 0px`,
         });
         observer.observe(marker);
 
         return () => observer.disconnect();
-    }, []);
+    }, [barClearance]);
 
     // The phone menu is for narrow screens only.
     useEffect(() => {
@@ -215,14 +216,9 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
                 تخطي إلى المحتوى
             </a>
 
-            <SideNavigation groups={groups} badges={badges} />
-
-            {/* Beside the section dock on wide screens the bar keeps only its tools; on phones it is the full bar. */}
             <TopBar
                 groups={groups}
-                slim
-                trail={<Breadcrumb trail={trail} inBar />}
-                context={sectionLinks(trail?.group).length > 0 ? <SectionPages trail={trail} url={url} badges={badges} inBar /> : null}
+                subnav={hasSectionPages ? <SectionPages trail={trail} url={url} badges={badges} /> : null}
                 branchChip={<WorkingBranchChip />}
                 badges={badges}
                 where={pastTitle && trail ? { section: trail.group?.shortLabel, page: trail.link.label, scope } : null}
@@ -237,30 +233,14 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
                 onStartTour={() => setTourOpen(true)}
             />
 
-            <div className="sn-content">
-
-            <main id="main-content" tabIndex={-1} className="mx-auto max-w-[var(--ui-content-width)] px-[var(--tn-gutter)] pb-16 pt-8 outline-none">
+            <main id="main-content" tabIndex={-1} className="mx-auto max-w-[var(--ui-content-width)] px-[var(--tn-gutter)] pb-16 pt-7 outline-none">
                 <BranchViewSwitcher />
-                {/* On phones the path and the section's pages sit above the title; wide screens show them in the top bar's context card. */}
-                <div className="lg:hidden">
-                    <Breadcrumb trail={trail} />
-                    <SectionPages trail={trail} url={url} badges={badges} />
-                </div>
+                <Breadcrumb trail={trail} />
                 {header && <div className="gl-page-head rise-in mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">{header}</div>}
                 <div ref={titleEndRef} aria-hidden="true" />
                 {children}
             </main>
             <AppFooter />
-            </div>
-
-            <MobileTabBar
-                groups={groups}
-                badges={badges}
-                onOpenMore={(event) => {
-                    menuButtonRef.current = event.currentTarget;
-                    setDrawerOpen(true);
-                }}
-            />
 
             <NavigationDrawer
                 open={drawerOpen}
