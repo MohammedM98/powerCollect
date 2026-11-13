@@ -52,17 +52,12 @@ describe('the top bar', () => {
         await waitFor(() => expect(sectionButton().getAttribute('aria-expanded')).toBe('false'));
     });
 
-    it('loads the appearance panel when it is first opened, under its button and focused', async () => {
-        const user = userEvent.setup();
-        renderBar();
+    it("shows the section's pages as tabs inside the bar, and only the light and dark switch for the look", () => {
+        renderBar({ subnav: <nav aria-label="صفحات القسم"><a href="/subscriptions">المشتركون</a></nav> });
 
-        await user.click(screen.getByRole('button', { name: 'المظهر: الوضع والألوان والشفافية' }));
-
-        const panel = await screen.findByRole('dialog', { name: 'المظهر' });
-        await waitFor(() => expect(panel.contains(document.activeElement)).toBe(true));
-        expect(panel.style.top).not.toBe('');
-
-        await user.keyboard('{Escape}');
-        await waitFor(() => expect(screen.queryByRole('dialog', { name: 'المظهر' })).toBeNull());
+        const bar = screen.getByRole('banner');
+        expect(bar.contains(screen.getByRole('navigation', { name: 'صفحات القسم' }))).toBe(true);
+        expect(screen.getByRole('button', { name: /التبديل إلى الوضع/ })).toBeTruthy();
+        expect(screen.queryByRole('button', { name: /المظهر/ })).toBeNull();
     });
 });

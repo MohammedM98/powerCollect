@@ -37,7 +37,7 @@ export default function StatRing({ percent = 0, color = 'text-brand-500', size =
 }
 
 /**
- * The goal ring of the glass look: a 104px ring that draws itself to
+ * The goal ring of the panel look: a 104px ring that draws itself to
  * `percent`, the number in the middle with a line under it (`caption`).
  */
 export function GoalRing({ percent = 0, caption }) {

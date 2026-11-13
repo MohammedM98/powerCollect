@@ -125,7 +125,7 @@
 .profile-page button, .profile-page input { font: inherit; }
 .profile-page :focus-visible { outline: 2px solid var(--pp-focus); outline-offset: 3px; }
 .profile-page .pp-button { height: 44px; border-radius: calc(12px * var(--radius-scale, 1)); padding: 0 16px; font-weight: 600; font-size: 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--pp-line); background: var(--pp-surface); color: var(--pp-ink2); transition: .18s; }
-.profile-page .pp-button.primary { border: 0; color: #fff; background: linear-gradient(180deg,rgb(var(--brand-hi)),rgb(var(--brand-lo))); box-shadow: 0 10px 24px -12px rgb(var(--brand-solid) / 0.9); }
+.profile-page .pp-button.primary { border: 0; color: rgb(var(--brand-ink)); background: linear-gradient(180deg,rgb(var(--brand-hi)),rgb(var(--brand-lo))); box-shadow: 0 10px 24px -12px rgb(var(--brand-solid) / 0.9); }
 .profile-page .pp-button.danger { background: var(--pp-danger-t); border-color: color-mix(in srgb, var(--pp-danger) 40%, transparent); color: var(--pp-danger); margin-inline-start: auto; }
 .profile-page .pp-button.danger:hover:not(:disabled) { background: var(--pp-brand); border-color: var(--pp-brand); color: #fff; }
 .profile-page .pp-button:disabled { opacity: .45; cursor: not-allowed; filter: none; box-shadow: none; }

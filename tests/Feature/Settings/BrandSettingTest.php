@@ -57,7 +57,7 @@ class BrandSettingTest extends TestCase
         $this->actingAs($this->superAdmin)->get(route('settings.appearance.edit'))
             ->assertInertia(fn ($page) => $page
                 ->component('Settings/Appearance')
-                ->where('profile.design.navigation', 'sidebar')
+                ->where('profile.design.navigation', 'topbar')
                 ->where('profile.ownLogos', ['main', 'icon'])
                 ->where('presets.corporate.design.navStyle', 'solid')
                 ->where('can.manageBrand', true));
@@ -89,9 +89,9 @@ class BrandSettingTest extends TestCase
             ->where('brand.logos.main', Storage::disk('public')->url($logo[0]))
             ->where('brand.primaryColor', '#0F766E')
             ->where('brand.printColor', '#0F766E')
-            ->where('brand.design.navigation', 'sidebar')
+            ->where('brand.design.navigation', 'topbar')
             ->where('brand.design.tables', 'bordered'));
-        $response->assertSee('data-ui-navigation="sidebar"', false);
+        $response->assertSee('data-ui-navigation="topbar"', false);
         $response->assertSee('data-ui-buttons="solid"', false);
         $response->assertSee('data-ui-density="compact"', false);
         $response->assertSee('data-ui-body-font="cairo"', false);
@@ -150,7 +150,7 @@ class BrandSettingTest extends TestCase
 
         $file = $this->actingAs($this->superAdmin)->get(route('settings.appearance.export'))->assertOk()->streamedContent();
         $exported = json_decode($file, true);
-        $this->assertSame('sidebar', $exported['design']['navigation']);
+        $this->assertSame('topbar', $exported['design']['navigation']);
         $this->assertStringStartsWith('data:image/png;base64,', $exported['logos']['main']);
 
         $this->actingAs($this->superAdmin)->post(route('settings.appearance.reset'))->assertSessionHas('status', 'brand-reset');

@@ -5,7 +5,6 @@ import ActivityBell from '@/Components/ActivityBell';
 import { shouldPrefetchPage, HOME_LINK, currentGroup, topBarItems } from '@/lib/navigation';
 import MegaMenu, { megaWidth } from './MegaMenu';
 import AccountMenu from './AccountMenu';
-import LookStudio from './LookStudio';
 import { useTheme } from '@/hooks/useTheme';
 import './top-bar.css';
 import { useMegaMenu } from './useMegaMenu';
@@ -21,21 +20,20 @@ function badgeOf(group, badges) {
 }
 
 /**
- * The floating glass bar at the top of every page: the logo, the sections in
- * the middle with a dark light that follows the pointer, and the tools (search,
- * activity, account; the menu button on phones). Once the page's title has
+ * The bar at the top of every page: the logo, the sections in the middle
+ * with a light in the company's colour that follows the pointer, and the
+ * tools (the working branch, search, light or dark theme, activity, account;
+ * the menu button on phones). The open section's pages (`subnav`) sit as
+ * tabs on a second row directly under it, in the same bar. Once the page's title has
  * scrolled away, `where` ({ section, page, scope? }) takes the branch's place
  * under the name, and the page's name sits beside the logo on phones, so the
  * user still sees where they are — and, with `scope`, whose figures they read. A section's pages open in one panel under it
  * that reshapes itself as the pointer moves between sections; a mouse click
  * on a section opens its first page, while touch and the keyboard, with no
- * hover, open the panel. Beside the section dock (`slim`), wide screens see
- * one context card instead: where the page sits (`trail`), the working
- * branch (`branchChip`), the search, the theme, this person's appearance
- * panel (LookStudio), the activity and the account on its first row, and
- * the section's pages (`context`) as tabs on its second.
+ * hover, open the panel. Wide screens show the working branch (`branchChip`)
+ * among the tools.
  */
-export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDrawer, drawerOpen, layerOpen, onShowShortcuts, onStartTour, slim = false, trail = null, context = null, branchChip = null }) {
+export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDrawer, drawerOpen, layerOpen, onShowShortcuts, onStartTour, subnav = null, branchChip = null }) {
     const { props, url } = usePage();
     const { dark, changePreference } = useTheme();
     const { appName, auth } = props;
@@ -51,10 +49,10 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
 
     return (
         <>
-            <header className={`tn-header ${scrolled ? 'is-scrolled' : ''}`} data-slim={slim || undefined}>
+            <header className={`tn-header ${scrolled ? 'is-scrolled' : ''}`} data-subnav={subnav ? true : undefined}>
                 <div
                     ref={barRef}
-                    className="tn-glass"
+                    className="tn-bar"
                     onTransitionEnd={(event) => {
                         if (event.target === barRef.current) {
                             syncHighlight(true);
@@ -169,7 +167,6 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                     </nav>
 
                     <div className="tn-tools flex items-center gap-1">
-                        {trail && <div className="tn-bar-trail">{trail}</div>}
                         {branchChip}
                         {/* Named by the words it shows, so a voice command that says them reaches it, even when the narrow bar hides them. */}
                         <button type="button" className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label={`${searchText} Ctrl K`} aria-keyshortcuts="Control+K" title="بحث وأوامر · Ctrl K">
@@ -180,7 +177,6 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                         <button type="button" className="tn-tool" onClick={() => changePreference(dark ? 'light' : 'dark')} aria-label={dark ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
                             <Icon name={dark ? 'sun' : 'moon'} />
                         </button>
-                        <LookStudio open={popover === 'look'} onToggle={() => togglePopover('look')} onClose={() => setPopover(null)} />
                         <ActivityBell open={popover === 'bell'} onToggle={() => togglePopover('bell')} onClose={() => setPopover(null)} />
                         <span className="tn-separator" aria-hidden="true" />
                         <AccountMenu
@@ -200,7 +196,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             <Icon name="menu" />
                         </button>
                     </div>
-                    {context && <div className="tn-bar-tabs">{context}</div>}
+                    {subnav && <div className="tn-bar-tabs">{subnav}</div>}
                 </div>
             </header>
 

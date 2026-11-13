@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motionOff } from '@/Components/CountUp';
 
 /**
- * Items laid out in lanes, the prototype's board (glass.css `gl-board`): an
+ * Items laid out in lanes, the prototype's board (components.css `gl-board`): an
  * item is dragged from one lane to another, or, from the keyboard, picked up
  * with Space or Enter, carried with the arrow keys and put down with Space
  * or Enter again (Escape puts it back). The board never moves anything
@@ -218,7 +218,7 @@ export default function MoveBoard({ lanes, items, laneOf, itemKey, itemLabel, re
                             role="listitem"
                             data-lane={lane.key}
                             aria-label={`${lane.label}: ${laneItems.length}`}
-                            className={`gl-glass gl-lane gl-rise ${hotLane === lane.key ? 'is-hot' : ''}`}
+                            className={`gl-card gl-lane gl-rise ${hotLane === lane.key ? 'is-hot' : ''}`}
                             style={{ '--i': Math.min(index, 11) }}
                         >
                             <h3>

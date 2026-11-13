@@ -10,9 +10,9 @@ import DiscountModal from './DiscountModal';
 import PaymentModal from './PaymentModal';
 import SplitPaymentModal from '@/Pages/Payments/SplitPaymentModal';
 
-/** Each action's colour, from glass.css: the main button's blue for payments, red for what is added on, green for what comes off. */
+/** Each action's colour, from components.css: the company's colour as text for payments, red for what is added on, green for what comes off. */
 const ACTION_TONES = {
-    payment: 'rgb(var(--gl-btn))',
+    payment: 'rgb(var(--gl-brand))',
     split_payment: 'rgb(var(--gl-brand))',
     charge: 'var(--gl-bad)',
     discount: 'var(--gl-ok)',

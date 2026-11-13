@@ -1,22 +1,33 @@
 /*
- * The top bar: a floating glass bar with the logo, the six sections in the
- * middle and the tools at the end. Hovering a section slides a dark graphite
- * light under it and opens one panel that reshapes itself between sections.
- * Colors are the design tokens from app.css, so both themes follow.
+ * The top bar: one solid bar with the logo, the sections in the middle and
+ * the tools at the end, and, on a section's page, that section's pages as
+ * tabs on a second row directly under them. Hovering a section slides a
+ * light in the company's colour under it and opens one panel that reshapes
+ * itself between sections. Colors are the design tokens from theme.css, so
+ * both themes follow; nothing in the bar is see-through.
  */
 :root {
     --tn-gutter: clamp(16px, 2.6vw, 44px);
-    --tn-bar-height: 68px;
+    --tn-bar-height: 66px;
     /* The bar's height before it slims: the room it keeps in the page whatever its own height. */
-    --tn-bar-rest-height: 68px;
+    --tn-bar-rest-height: 66px;
+    /* The row of the section's pages under the bar. */
+    --tn-subnav-height: 54px;
     --tn-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
     --tn-graphite: linear-gradient(135deg, rgb(var(--graphite-700)), rgb(var(--graphite-800)) 60%, rgb(var(--graphite-900)));
     --tn-graphite-dark: linear-gradient(135deg, rgb(var(--graphite-400)), rgb(var(--graphite-600)) 60%, rgb(var(--graphite-800)));
+    /* Text and icons on that light (the identity's look sets them per theme, app.css). */
+    --tn-graphite-ink: #fff;
+    --tn-graphite-icon: #fff;
 }
 
 html {
     scroll-padding-top: 110px;
     scrollbar-gutter: stable;
+}
+
+html:has(.tn-header[data-subnav]) {
+    scroll-padding-top: 170px;
 }
 
 html.tn-locked {
@@ -99,7 +110,7 @@ html.tn-locked {
     100% { width: 100%; opacity: 0; }
 }
 
-/* ═════ The floating glass bar ═════
+/* ═════ The bar ═════
    The header keeps the same height in the page when the bar slims: were it
    to shrink, the page would move up under the reader, scroll back above the
    point where the bar slims, and the bar would grow and shrink in turn. */
@@ -113,50 +124,76 @@ html.tn-locked {
     transition: padding 0.3s var(--tn-ease);
 }
 
+.tn-header[data-subnav] {
+    height: calc(12px + var(--tn-bar-rest-height) + var(--tn-subnav-height));
+}
+
 .tn-header.is-scrolled {
     padding-top: 8px;
     --tn-bar-height: 58px;
 }
 
-.tn-glass {
+.tn-bar {
     pointer-events: auto;
     position: relative;
-    height: var(--tn-bar-height);
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: var(--tn-bar-height);
     align-items: center;
-    gap: 14px;
+    column-gap: 14px;
     max-width: var(--ui-content-width, 1720px);
     margin-inline: auto;
     padding-inline: 12px 10px;
-    border-radius: calc(22px * var(--radius-scale, 1));
-    background: rgb(var(--surface) / 0.72);
-    backdrop-filter: blur(22px) saturate(1.6);
-    border: 1px solid rgb(255 255 255 / 0.7);
+    border-radius: calc(20px * var(--radius-scale, 1));
+    background: rgb(var(--surface));
+    border: 1px solid rgb(var(--gray-200));
     box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 0.7),
-        0 1px 2px rgb(var(--shadow-ink) / 0.05),
-        0 14px 34px -20px rgb(var(--shadow-ink) / 0.35);
-    transition: height 0.3s var(--tn-ease), background 0.3s, box-shadow 0.3s;
+        0 1px 2px rgb(var(--shadow-ink) / 0.04),
+        0 12px 30px -22px rgb(var(--shadow-ink) / 0.35);
+    transition: grid-template-rows 0.3s var(--tn-ease), box-shadow 0.3s;
 }
 
-.dark .tn-glass {
-    background: rgb(var(--graphite-900) / 0.66);
+.dark .tn-bar {
     border-color: rgb(255 255 255 / 0.08);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 18px 40px -20px #000;
+    box-shadow: 0 18px 40px -24px #000;
 }
 
-.tn-header.is-scrolled .tn-glass {
-    background: rgb(var(--surface) / 0.84);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 20px 44px -22px rgb(var(--shadow-ink) / 0.5);
+.tn-header.is-scrolled .tn-bar {
+    box-shadow:
+        0 1px 2px rgb(var(--shadow-ink) / 0.05),
+        0 18px 40px -22px rgb(var(--shadow-ink) / 0.45);
 }
 
-.dark .tn-header.is-scrolled .tn-glass {
-    background: rgb(var(--graphite-900) / 0.82);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 22px 48px -18px #000;
+.dark .tn-header.is-scrolled .tn-bar {
+    box-shadow: 0 22px 48px -20px #000;
 }
 
-.tn-glass::before {
+/* The section's pages: the bar's second row, under a thin line, across its whole width. */
+.tn-bar:has(> .tn-bar-tabs) {
+    grid-template-rows: var(--tn-bar-height) var(--tn-subnav-height);
+}
+
+.tn-bar-tabs {
+    grid-column: 1 / -1;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    margin-inline: -12px -10px;
+    padding-inline: 12px 10px;
+    border-top: 1px solid rgb(var(--gray-200));
+}
+
+.dark .tn-bar-tabs {
+    border-top-color: rgb(255 255 255 / 0.07);
+}
+
+.tn-bar-tabs .tn-subnav {
+    flex: 1;
+    min-width: 0;
+}
+
+.tn-bar::before {
     content: '';
     position: absolute;
     inset-inline: 22px;
@@ -328,12 +365,15 @@ html.tn-locked {
     transform: rotate(180deg);
 }
 
-.tn-section[data-lit='true'],
-.tn-section[data-lit='true'] .tn-section-icon {
-    color: #fff;
+.tn-section[data-lit='true'] {
+    color: var(--tn-graphite-ink);
 }
 
-/* The current section: a glowing burgundy line at the bar's bottom edge. */
+.tn-section[data-lit='true'] .tn-section-icon {
+    color: var(--tn-graphite-icon);
+}
+
+/* The current section: a glowing line in the company's colour at the bar's bottom edge. */
 .tn-section[data-current='true']::after {
     content: '';
     position: absolute;
@@ -351,8 +391,8 @@ html.tn-locked {
     height: 19px;
     padding: 0 5px;
     border-radius: calc(99px * var(--radius-scale, 1));
-    background: rgb(var(--brand-500));
-    color: #fff;
+    background: rgb(var(--brand-solid));
+    color: rgb(var(--brand-ink));
     font: 700 11px/19px Alexandria, sans-serif;
     text-align: center;
     box-shadow: 0 0 0 2px rgb(var(--surface) / 0.9);
@@ -401,7 +441,7 @@ html.tn-locked {
 .tn-tool:hover,
 .tn-tool[aria-expanded='true'] {
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
     box-shadow: 0 10px 20px -12px rgb(var(--shadow-ink) / 0.7);
 }
 
@@ -433,8 +473,8 @@ html.tn-locked {
     height: 17px;
     padding: 0 4px;
     border-radius: calc(99px * var(--radius-scale, 1));
-    background: rgb(var(--brand-500));
-    color: #fff;
+    background: rgb(var(--brand-solid));
+    color: rgb(var(--brand-ink));
     font: 700 10.5px/17px Alexandria, sans-serif;
     box-shadow: 0 0 0 2px rgb(var(--surface));
 }
@@ -535,7 +575,7 @@ html.tn-locked {
     height: 38px;
     border-radius: calc(12px * var(--radius-scale, 1));
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
     font: 700 15px Alexandria, var(--font-body, 'IBM Plex Sans Arabic'), sans-serif;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.15), 0 0 0 1px rgb(255 255 255 / 0.06);
     flex: none;
@@ -581,7 +621,7 @@ html.tn-locked {
 
     .tn-search:hover {
         background: var(--tn-graphite);
-        color: #fff;
+        color: var(--tn-graphite-ink);
         border-color: transparent;
     }
 
@@ -601,21 +641,67 @@ html.tn-locked {
     }
 }
 
-.tn-mobile-only {
+/* The working branch as a chip among the tools (BranchViewSwitcher WorkingBranchChip), on wide screens: a dot, the branch and its picker. */
+.tn-branch-chip {
     display: none;
+    position: relative;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 10px 0 12px;
+    margin-inline-end: 6px;
+    border: 1px solid rgb(var(--gray-200));
+    border-radius: calc(12px * var(--radius-scale, 1));
+    background: rgb(var(--gray-50));
+    font-size: 13.5px;
+    font-weight: 700;
+    white-space: nowrap;
 }
 
-/* Wide screens only: the switch between the side menu and the top bar. */
-@media (max-width: 1023px) {
-    .tn-desktop-only {
-        display: none !important;
+@media (min-width: 1024px) {
+    .tn-branch-chip {
+        display: inline-flex;
     }
+}
+
+.tn-branch-chip i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgb(var(--success-600));
+    box-shadow: 0 0 0 3px rgb(var(--success-600) / 0.25);
+}
+
+.tn-branch-chip select {
+    appearance: none;
+    max-width: 14rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.tn-branch-chip select:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.tn-branch-chip:focus-within {
+    outline: 2px solid rgb(var(--gl-brand));
+    outline-offset: 2px;
+}
+
+.tn-mobile-only {
+    display: none;
 }
 
 @media (max-width: 1023px) {
     :root {
         --tn-bar-height: 60px;
         --tn-bar-rest-height: 60px;
+        --tn-subnav-height: 50px;
     }
 
     .tn-sections,
@@ -628,7 +714,7 @@ html.tn-locked {
         display: grid;
     }
 
-    .tn-glass {
+    .tn-bar {
         grid-template-columns: minmax(0, 1fr) auto;
         border-radius: calc(18px * var(--radius-scale, 1));
         padding-inline: 8px 6px;
@@ -651,7 +737,6 @@ html.tn-locked {
     border-radius: calc(24px * var(--radius-scale, 1));
     overflow: hidden;
     background: rgb(var(--surface) / 0.97);
-    backdrop-filter: blur(24px) saturate(1.5);
     border: 1px solid rgb(var(--gray-200) / 0.8);
     box-shadow: 0 2px 6px rgb(var(--shadow-ink) / 0.06), 0 34px 70px -26px rgb(var(--shadow-ink) / 0.45);
     opacity: 0;
@@ -761,7 +846,7 @@ html.tn-locked {
 .tn-mega-link:hover .tn-tile,
 .tn-mega-link:focus-visible .tn-tile {
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
     border-color: transparent;
     box-shadow: 0 10px 18px -10px rgb(var(--shadow-ink) / 0.7);
     transform: translateY(-1px);
@@ -843,8 +928,8 @@ html.tn-locked {
     height: 22px;
     padding: 0 7px;
     border-radius: calc(99px * var(--radius-scale, 1));
-    background: rgb(var(--brand-500));
-    color: #fff;
+    background: rgb(var(--brand-solid));
+    color: rgb(var(--brand-ink));
     font: 700 12px/22px Alexandria, sans-serif;
     text-align: center;
 }
@@ -858,7 +943,7 @@ html.tn-locked {
     padding: 14px;
     border-radius: calc(18px * var(--radius-scale, 1));
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
     transition: transform 0.2s var(--tn-ease), box-shadow 0.2s;
 }
 
@@ -924,7 +1009,6 @@ html.tn-locked {
     z-index: 60;
     border-radius: calc(22px * var(--radius-scale, 1));
     background: rgb(var(--surface) / 0.97);
-    backdrop-filter: blur(24px);
     border: 1px solid rgb(var(--gray-200) / 0.8);
     box-shadow: 0 30px 60px -24px rgb(var(--shadow-ink) / 0.45);
     animation: tn-pop-in 0.22s var(--tn-ease);
@@ -996,7 +1080,7 @@ html.tn-locked {
 
 .tn-segments button[aria-pressed='true'] {
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
     box-shadow: 0 6px 14px -8px rgb(var(--shadow-ink) / 0.7);
 }
 
@@ -1050,7 +1134,6 @@ html.tn-locked {
     inset: 0;
     z-index: 80;
     background: rgb(var(--graphite-950) / 0.5);
-    backdrop-filter: blur(6px);
     animation: tn-fade 0.2s;
 }
 
@@ -1103,7 +1186,7 @@ html.tn-locked {
 
 .tn-palette-item.is-active .tn-tile {
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
 }
 
 .tn-palette-item mark {
@@ -1198,13 +1281,13 @@ html.tn-locked {
 .tn-drawer-group[aria-expanded='true'],
 .tn-drawer-group[data-current='true'] {
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
     box-shadow: inset -3px 0 0 rgb(var(--brand-500)), 0 12px 24px -14px rgb(var(--shadow-ink) / 0.6);
 }
 
 .tn-drawer-group[aria-expanded='true'] svg,
 .tn-drawer-group[data-current='true'] svg {
-    color: #fff;
+    color: var(--tn-graphite-icon);
 }
 
 .tn-drawer-group[aria-expanded='true'] .tn-chevron {
@@ -1277,12 +1360,12 @@ html.tn-locked {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    height: 44px;
-    padding: 0 17px;
+    height: 40px;
+    padding: 0 14px;
     border-radius: calc(12px * var(--radius-scale, 1));
-    font-size: 16px;
-    font-weight: 700;
-    color: rgb(var(--gray-900));
+    font-size: 15px;
+    font-weight: 600;
+    color: rgb(var(--gray-700));
     white-space: nowrap;
     transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
@@ -1298,8 +1381,9 @@ html.tn-locked {
 
 .tn-subnav a[aria-current='page'] {
     background: var(--tn-graphite);
-    color: #fff;
-    box-shadow: inset 0 -2px 0 rgb(var(--brand-500)), 0 10px 20px -12px rgb(var(--shadow-ink) / 0.7);
+    color: var(--tn-graphite-ink);
+    font-weight: 700;
+    box-shadow: 0 8px 18px -12px rgb(var(--shadow-ink) / 0.7);
 }
 
 .tn-subnav a:focus-visible {
@@ -1308,13 +1392,13 @@ html.tn-locked {
 }
 
 .tn-subnav a svg {
-    width: 19px;
-    height: 19px;
-    color: rgb(var(--gray-600));
+    width: 18px;
+    height: 18px;
+    color: rgb(var(--gray-500));
 }
 
 .tn-subnav a[aria-current='page'] svg {
-    color: #fff;
+    color: var(--tn-graphite-icon);
 }
 
 .tn-subnav a .tn-badge {
@@ -1322,8 +1406,8 @@ html.tn-locked {
     height: 19px;
     padding: 0 5px;
     border-radius: calc(99px * var(--radius-scale, 1));
-    background: rgb(var(--brand-500));
-    color: #fff;
+    background: rgb(var(--brand-solid));
+    color: rgb(var(--brand-ink));
     font: 700 11px/19px Alexandria, sans-serif;
     text-align: center;
 }

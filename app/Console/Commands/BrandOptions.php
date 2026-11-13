@@ -44,7 +44,7 @@ class BrandOptions extends Command
         $this->newLine();
         $this->components->info('Your own CSS ("customCss": "…"), last of all: anything the choices do not cover.');
         $this->line('  It may use .ui-btn-primary, .ui-btn-secondary, .ui-btn-danger, .ui-switch, .ui-badge, .ui-page-title, .shadow-card,');
-        $this->line('  .data-table, .data-table-toolbar, .tn-glass, .sn-panel and every [data-ui-*] attribute on <html>. Links to other sites,');
+        $this->line('  .data-table, .data-table-toolbar, .tn-bar and every [data-ui-*] attribute on <html>. Links to other sites,');
         $this->line('  @import and escapes are removed; url() may hold data: images only.');
 
         $this->newLine();

@@ -17,7 +17,7 @@
  *   5. Accents          extra colours for charts, tags and roles
  *   6. Named colours    what the pages with a stylesheet of their own read
  *   7. Dark navigation  the greys inside a dark or coloured navigation
- *   8. Glass            the Superpower glass look: glass panels and the page's light
+ *   8. Panels           the solid panels and the page's own colour
  *
  * Colours that change with the theme are set twice: in `:root` for the light
  * theme and in `.dark` for the dark one. Those set once look the same in both.
@@ -28,87 +28,98 @@
 
     /* ── 1. Brand ─────────────────────────────────────────────────────────── */
 
-    /* Burgundy, from the logo's arrow. 500 is the primary color. */
-    --brand-50: 251 241 241;
-    --brand-100: 244 214 216;
-    --brand-200: 236 188 191;
-    --brand-300: 216 134 140;
-    --brand-400: 196 81 90;
-    --brand-500: 165 29 38;
-    --brand-600: 143 24 32;
-    --brand-700: 118 18 26;
-    --brand-800: 92 13 20;
-    --brand-900: 63 0 8;
+    /*
+     * Power Collect's identity, from the logo: black, white and its calm
+     * blue (#2563EB, 500). Buttons, badges and the open page's pill are blue
+     * with white text (`--brand-ink`, 5.2:1); brand text and links on a
+     * light page use 600 and darker (6.7:1 or more on white).
+     */
+    --brand-50: 239 246 255;
+    --brand-100: 219 234 254;
+    --brand-200: 191 219 254;
+    --brand-300: 147 197 253;
+    --brand-400: 96 165 250;
+    --brand-500: 37 99 235;
+    --brand-600: 29 78 216;
+    --brand-700: 30 64 175;
+    --brand-800: 30 58 138;
+    --brand-900: 23 37 84;
 
     /*
-     * The brand colour where it must look the same in both themes: on the
-     * dark graphite panels, in gradients, glows and the signature line.
+     * The brand colour where it must look the same in both themes: the
+     * buttons' blue (solid, with hi and lo for hover and press), the light
+     * blue used as text on dark panels (tint, soft) and the deep blue.
      */
-    --brand-tint: 255 154 160;
-    --brand-soft: 224 112 122;
-    --brand-bright: 216 65 75;
-    --brand-glow: 196 48 58;
-    --brand-hi: 184 35 44;
-    --brand-solid: 165 29 38;
-    --brand-lo: 125 18 27;
-    --brand-deep: 92 13 20;
+    --brand-tint: 191 219 254;
+    --brand-soft: 96 165 250;
+    --brand-bright: 59 130 246;
+    --brand-glow: 59 130 246;
+    --brand-hi: 59 130 246;
+    --brand-solid: 37 99 235;
+    --brand-lo: 29 78 216;
+    --brand-deep: 30 64 175;
 
-    /* The logo's own colours (resources/js/Components/AnimatedLogo.jsx): its letters, its arrow and their tints. */
-    --logo-letters: 59 64 73;
-    --logo-arrow: 155 38 44;
-    --logo-dot: 107 33 37;
-    --logo-tint-silver: 223 223 225;
-    --logo-tint-letters: 189 191 194;
-    --logo-tint-arrow: 104 30 33;
+    /* Text and icons drawn on a fill in the brand colour. */
+    --brand-ink: 255 255 255;
 
-    /* The signature line: burgundy fading into silver, like the logo's arrow. */
-    --spectrum: linear-gradient(90deg, rgb(var(--brand-deep)), rgb(var(--brand-solid)) 40%, rgb(var(--silver-500)) 75%, rgb(var(--silver-100)));
+    /* The open page or section in the navigation: the brand's blue with white text, in both themes. */
+    --nav-active: 37 99 235;
+    --nav-active-ink: 255 255 255;
+    --nav-active-icon: 255 255 255;
+
+    /* The logo's own colours (Components/SuperPowerMark.jsx): its blue tile and white S, the bolt cut through the S in the tile's blue. */
+    --logo-tile: 37 99 235;
+    --logo-letter: 255 255 255;
+    --logo-bolt: 37 99 235;
+
+    /* The signature line: the logo's light blue into its deep blue. */
+    --spectrum: linear-gradient(90deg, rgb(var(--brand-soft)), rgb(var(--brand-solid)) 55%, rgb(var(--brand-deep)));
 
     /* ── 2. Neutrals ──────────────────────────────────────────────────────── */
 
     /*
-     * Graphite and silver neutrals, from the logo's AF letters. Quiet
+     * Neutral graphite and silver greys, with no blue tint. Quiet
      * text (400) reads at 5.1:1 on the page's soft gray (50) and muted
      * text (500) higher still, above the WCAG AA minimum of 4.5.
      */
-    --gray-50: 239 241 244;
-    --gray-100: 233 236 239;
-    --gray-200: 223 226 230;
-    --gray-300: 205 211 218;
-    --gray-400: 94 103 115;
-    --gray-500: 76 84 96;
-    --gray-600: 70 78 89;
-    --gray-700: 53 60 70;
-    --gray-800: 35 42 51;
-    --gray-900: 17 24 32;
-    --gray-950: 11 13 16;
+    --gray-50: 245 245 245;
+    --gray-100: 239 239 239;
+    --gray-200: 228 228 228;
+    --gray-300: 212 212 212;
+    --gray-400: 100 100 100;
+    --gray-500: 82 82 82;
+    --gray-600: 70 70 70;
+    --gray-700: 54 54 54;
+    --gray-800: 38 38 38;
+    --gray-900: 23 23 23;
+    --gray-950: 12 12 12;
 
     /* Cards, tables, dialogs and fields. */
     --surface: 255 255 255;
 
     /* Dark graphite that stays dark in both themes: the active nav item, avatars, the dashboard's main card. */
-    --graphite-400: 58 67 78;
-    --graphite-500: 53 60 70;
-    --graphite-600: 43 49 56;
-    --graphite-700: 38 44 51;
-    --graphite-800: 27 32 38;
-    --graphite-900: 17 21 25;
-    --graphite-950: 11 13 16;
+    --graphite-400: 66 66 66;
+    --graphite-500: 56 56 56;
+    --graphite-600: 46 46 46;
+    --graphite-700: 40 40 40;
+    --graphite-800: 30 30 30;
+    --graphite-900: 20 20 20;
+    --graphite-950: 12 12 12;
 
     /* Silver that stays light in both themes: text and lines on the graphite panels. */
-    --silver-50: 242 243 245;
-    --silver-100: 223 227 232;
-    --silver-200: 209 213 219;
-    --silver-300: 199 203 210;
-    --silver-400: 174 182 193;
-    --silver-500: 154 163 174;
-    --silver-600: 139 148 160;
-    --silver-700: 107 116 128;
-    --silver-800: 94 103 115;
-    --silver-900: 76 84 96;
+    --silver-50: 244 244 244;
+    --silver-100: 229 229 229;
+    --silver-200: 214 214 214;
+    --silver-300: 204 204 204;
+    --silver-400: 180 180 180;
+    --silver-500: 161 161 161;
+    --silver-600: 145 145 145;
+    --silver-700: 115 115 115;
+    --silver-800: 100 100 100;
+    --silver-900: 82 82 82;
 
     /* The tint of every shadow. */
-    --shadow-ink: 16 24 40;
+    --shadow-ink: 0 0 0;
 
     /* ── 3. Status ────────────────────────────────────────────────────────── */
 
@@ -166,20 +177,20 @@
 
     /* ── 4. Actions ───────────────────────────────────────────────────────── */
 
-    /* Blue, for editing: calm enough to sit beside the burgundy and graphite. */
+    /* Editing and information: the identity's blue (the same as the brand's), so edit buttons match the main ones. */
     --blue-50: 239 246 255;
     --blue-100: 219 234 254;
     --blue-200: 191 219 254;
     --blue-300: 147 197 253;
     --blue-400: 96 165 250;
-    --blue-500: 47 102 214;
-    --blue-600: 32 84 190;
-    --blue-700: 24 64 150;
-    --blue-800: 30 64 175;
-    --blue-900: 30 58 138;
-    --blue-950: 23 37 84;
-    --blue-hi: 59 116 230;
-    --blue-lo: 31 79 184;
+    --blue-500: 37 99 235;
+    --blue-600: 29 78 216;
+    --blue-700: 30 64 175;
+    --blue-800: 30 58 138;
+    --blue-900: 23 37 84;
+    --blue-950: 17 28 60;
+    --blue-hi: 59 130 246;
+    --blue-lo: 29 78 216;
 
     /*
      * Violet, for printing, and Excel's own green, for exporting to Excel:
@@ -250,43 +261,41 @@
 .dark {
     color-scheme: dark;
 
-    --brand-50: 42 16 19;
-    --brand-100: 58 20 24;
-    --brand-200: 92 28 34;
-    --brand-300: 140 40 48;
-    --brand-400: 196 70 78;
-    --brand-500: 184 35 44;
-    --brand-600: 222 92 100;
-    --brand-700: 236 128 135;
-    --brand-800: 243 164 169;
-    --brand-900: 249 204 207;
+    --brand-50: 20 27 41;
+    --brand-100: 24 36 60;
+    --brand-200: 30 50 90;
+    --brand-300: 30 64 175;
+    --brand-400: 59 130 246;
+    --brand-500: 37 99 235;
+    --brand-600: 96 165 250;
+    --brand-700: 147 197 253;
+    --brand-800: 191 219 254;
+    --brand-900: 219 234 254;
 
-    --gray-50: 11 13 16;
-    --gray-100: 27 31 37;
-    --gray-200: 37 42 50;
-    --gray-300: 52 58 67;
-    --gray-400: 128 137 149;
-    --gray-500: 158 166 177;
-    --gray-600: 184 190 199;
-    --gray-700: 204 209 216;
-    --gray-800: 226 229 233;
-    --gray-900: 244 245 247;
-    --gray-950: 250 250 251;
+    --gray-50: 10 10 10;
+    --gray-100: 25 25 25;
+    --gray-200: 36 36 36;
+    --gray-300: 52 52 52;
+    --gray-400: 138 138 138;
+    --gray-500: 163 163 163;
+    --gray-600: 188 188 188;
+    --gray-700: 208 208 208;
+    --gray-800: 229 229 229;
+    --gray-900: 245 245 245;
+    --gray-950: 250 250 250;
 
-    --blue-500: 96 143 240;
-    --blue-600: 133 169 245;
-    --blue-700: 62 104 196;
+    --blue-500: 37 99 235;
+    --blue-600: 96 165 250;
+    --blue-700: 147 197 253;
 
     --print-600: 196 181 253;
     --excel-500: 26 128 72;
     --excel-600: 110 220 150;
     --excel-700: 20 96 54;
 
-    --surface: 20 23 28;
+    --surface: 22 22 22;
 
-    --logo-letters: 201 206 214;
 
-    --spectrum: linear-gradient(90deg, rgb(var(--brand-deep)), rgb(var(--brand-hi)) 40%, rgb(var(--silver-700)) 75%, rgb(var(--gray-200)));
 }
 
 /*
@@ -340,130 +349,119 @@
     --ui-focus: rgb(var(--gray-700));
     --ui-shadow: 0 20px 40px -24px #000;
     --ui-pop: 0 30px 60px -20px #000;
-    --ui-hero: linear-gradient(135deg, #1c2127, #161a1f 55%, #0b0d10);
+    --ui-hero: linear-gradient(135deg, #222, #181818 55%, #0c0c0c);
 }
 
 /*
  * ── 7. Dark navigation ───────────────────────────────────────────────────
  *
  * A company whose navigation is dark or in its own colour (BrandDesign
- * `navStyle`) draws the top bar and the side menu in the dark theme's
+ * `navStyle`) draws the top bar in the dark theme's
  * greys, whatever the page's theme, so everything inside them (text, icons,
  * lines, the open section) reads on the dark panel. A neutral tone of the
  * company's own redraws these greys too (Brand::stylesheet()).
  */
-:root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) :is(.tn-glass, .sn-panel) {
+:root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) .tn-bar {
     color-scheme: dark;
 
-    --gray-50: 11 13 16;
-    --gray-100: 27 31 37;
-    --gray-200: 37 42 50;
-    --gray-300: 52 58 67;
-    --gray-400: 128 137 149;
-    --gray-500: 158 166 177;
-    --gray-600: 184 190 199;
-    --gray-700: 204 209 216;
-    --gray-800: 226 229 233;
-    --gray-900: 244 245 247;
-    --gray-950: 250 250 251;
-    --surface: 20 23 28;
+    --gray-50: 10 10 10;
+    --gray-100: 25 25 25;
+    --gray-200: 36 36 36;
+    --gray-300: 52 52 52;
+    --gray-400: 138 138 138;
+    --gray-500: 163 163 163;
+    --gray-600: 188 188 188;
+    --gray-700: 208 208 208;
+    --gray-800: 229 229 229;
+    --gray-900: 245 245 245;
+    --gray-950: 250 250 250;
+    --surface: 22 22 22;
 }
 
 /*
- * ── 8. Glass ─────────────────────────────────────────────────────────────
+ * ── 8. Panels ────────────────────────────────────────────────────────────
  *
- * The Superpower glass look (resources/brand/design-system.superpower.json):
- * the page's own colour, the soft light over it, and the frosted panels on
- * it, drawn by app.css when a company's background is graphite (BrandDesign
- * `background`). Neutral greys in both themes, with no tint and no coloured
- * light: the only colour on the page is the company's buttons and links. Values with their own transparency are written
- * `R G B / alpha` and read `rgb(var(--glass-line))`.
+ * The page's own colour and the solid panels on it (the `gl-` components in
+ * components.css and the charcoal look in app.css, BrandDesign `background`:
+ * graphite). Nothing is see-through or blurred: panels are opaque cards with
+ * a thin line, in neutral greys in both themes with no blue tint; the only
+ * colour on the page is the company's buttons and links. Values with their
+ * own transparency are written `R G B / alpha` and read `rgb(var(--panel-line))`.
  *
- * Every text colour here reads at 4.5:1 or more (WCAG AA) on the page, on a
- * panel and on its own 14% tint: faint text 5.9:1 light, 5.7:1 dark.
- *
- * The panel's transparency and blur are company tokens (BrandDesign TOKENS:
- * glassAlpha, glassBlur).
+ * Every text colour here reads at 4.5:1 or more (WCAG AA) on the page and
+ * on a panel.
  */
 :root {
-    --glass-page: 236 238 241;
-    --glass-ink: 17 20 25;
-    --glass-muted: 72 79 90;
-    --glass-faint: 84 91 102;
-    --glass-panel: 255 255 255;
-    --glass-alpha: 0.6;
-    --glass-blur: 18px;
-    --glass-line: 20 25 35 / 0.12;
-    --glass-line-hi: 255 255 255 / 0.9;
-    --glass-fill: 20 25 35 / 0.05;
-    --glass-fill-strong: 20 25 35 / 0.09;
-    --glass-shadow: 0 24px 40px -28px rgb(20 24 30 / 0.45);
-    --glass-ambient:
-        radial-gradient(1200px 640px at 85% -12%, rgb(255 255 255 / 0.75), transparent 62%),
-        radial-gradient(900px 600px at 0% 112%, rgb(20 25 35 / 0.04), transparent 62%);
-    --glass-nav: none;
+    --panel-page: 245 245 245;
+    --panel-ink: 23 23 23;
+    --panel-muted: 82 82 82;
+    --panel-faint: 96 96 96;
+    --panel-bg: 255 255 255;
+    --panel-line: 0 0 0 / 0.09;
+    --panel-line-strong: 0 0 0 / 0.16;
+    --panel-fill: 0 0 0 / 0.04;
+    --panel-fill-strong: 0 0 0 / 0.07;
+    --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -16px rgb(0 0 0 / 0.18);
 
-    --glass-success: 8 105 66;
-    --glass-warning: 146 86 4;
-    --glass-danger: 180 32 48;
-    --glass-info: 28 84 196;
+    --panel-success: 8 105 66;
+    --panel-warning: 146 86 4;
+    --panel-danger: 180 32 48;
+    --panel-info: 3 105 161;
 }
 
 .dark {
-    --glass-page: 10 11 13;
-    --glass-ink: 238 240 243;
-    --glass-muted: 165 170 178;
-    --glass-faint: 138 144 152;
-    --glass-panel: 24 26 30;
-    --glass-line: 255 255 255 / 0.09;
-    --glass-line-hi: 255 255 255 / 0.16;
-    --glass-fill: 255 255 255 / 0.05;
-    --glass-fill-strong: 255 255 255 / 0.09;
-    --glass-shadow: 0 26px 50px -30px rgb(0 0 0 / 0.95);
-    --glass-ambient: radial-gradient(1300px 720px at 85% -12%, rgb(255 255 255 / 0.05), transparent 62%);
-    --glass-nav: none;
+    --panel-page: 10 10 10;
+    --panel-ink: 240 240 240;
+    --panel-muted: 168 168 168;
+    --panel-faint: 142 142 142;
+    --panel-bg: 22 22 22;
+    --panel-line: 255 255 255 / 0.08;
+    --panel-line-strong: 255 255 255 / 0.16;
+    --panel-fill: 255 255 255 / 0.05;
+    --panel-fill-strong: 255 255 255 / 0.09;
+    --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 28px -18px rgb(0 0 0 / 0.9);
 
-    --glass-success: 60 207 145;
-    --glass-warning: 234 168 66;
-    --glass-danger: 242 100 111;
-    --glass-info: 106 165 255;
+    --panel-success: 60 207 145;
+    --panel-warning: 234 168 66;
+    --panel-danger: 242 100 111;
+    --panel-info: 56 189 248;
 }
 
 /*
- * The named colours (section 6) in the glass look: the pages that keep a
+ * The named colours (section 6) in the charcoal look: the pages that keep a
  * stylesheet of their own (the ledger, reading entry, the profile, reading
- * schedule, SMS settings) draw on the glass: panels, lines, text and the
- * company's colour from the tokens above. Their hero cards keep white text
- * on a deep blue in the company's colour.
+ * schedule, SMS settings) draw on the same panels, lines, text and company
+ * colour as the tokens above. Their hero cards keep white text on the
+ * company's colour.
  */
 :root[data-ui-background='graphite'] {
-    --ui-page: rgb(var(--glass-page));
-    --ui-surface: rgb(var(--glass-panel) / 0.86);
-    --ui-raised: rgb(var(--glass-fill));
-    --ui-sunken: rgb(var(--glass-fill));
-    --ui-line: rgb(var(--glass-line));
-    --ui-line2: rgb(var(--glass-line));
-    --ui-ink: rgb(var(--glass-ink));
-    --ui-ink2: rgb(var(--glass-ink));
-    --ui-muted: rgb(var(--glass-muted));
-    --ui-faint: rgb(var(--glass-faint));
-    --ui-success: rgb(var(--glass-success));
-    --ui-success-t: rgb(var(--glass-success) / 0.14);
-    --ui-info: rgb(var(--glass-info));
-    --ui-info-t: rgb(var(--glass-info) / 0.14);
-    --ui-warn: rgb(var(--glass-warning));
-    --ui-warn-t: rgb(var(--glass-warning) / 0.14);
-    --ui-danger: rgb(var(--glass-danger));
-    --ui-danger-t: rgb(var(--glass-danger) / 0.14);
+    --ui-page: rgb(var(--panel-page));
+    --ui-surface: rgb(var(--panel-bg));
+    --ui-raised: rgb(var(--panel-fill));
+    --ui-sunken: rgb(var(--panel-fill));
+    --ui-line: rgb(var(--panel-line));
+    --ui-line2: rgb(var(--panel-line));
+    --ui-ink: rgb(var(--panel-ink));
+    --ui-ink2: rgb(var(--panel-ink));
+    --ui-muted: rgb(var(--panel-muted));
+    --ui-faint: rgb(var(--panel-faint));
+    --ui-success: rgb(var(--panel-success));
+    --ui-success-t: rgb(var(--panel-success) / 0.14);
+    --ui-info: rgb(var(--panel-info));
+    --ui-info-t: rgb(var(--panel-info) / 0.14);
+    --ui-warn: rgb(var(--panel-warning));
+    --ui-warn-t: rgb(var(--panel-warning) / 0.14);
+    --ui-danger: rgb(var(--panel-danger));
+    --ui-danger-t: rgb(var(--panel-danger) / 0.14);
     --ui-focus: rgb(var(--brand-solid));
-    --ui-shadow: inset 0 1px 0 rgb(var(--glass-line-hi)), var(--glass-shadow);
-    --ui-pop: var(--glass-shadow);
-    --ui-hero: linear-gradient(135deg, rgb(var(--brand-lo)), rgb(var(--brand-deep)) 60%, rgb(var(--brand-deep)));
+    --ui-shadow: var(--panel-shadow);
+    --ui-pop: var(--panel-shadow);
+    --ui-hero: linear-gradient(135deg, rgb(var(--brand-hi)), rgb(var(--brand-solid)) 55%, rgb(var(--brand-lo)));
 }
 
 /*
  * Keyboard focus: one ring, in the company's colour, for every control the
- * glass design system draws (buttons, icon buttons, segments, toggles, chips,
+ * panel design system draws (buttons, icon buttons, segments, toggles, chips,
  * tabs, menu buttons and switches), so the keyboard's place looks the same
  * everywhere. Fields show theirs on the frame (.gl-field:focus-within); the
  * appearance setting data-ui-focus-ring recolours or softens it (app.css).

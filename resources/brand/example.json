@@ -30,7 +30,7 @@
         "motionStyle": "standard",
         "details": "modal",
         "footerStyle": "full",
-        "navigation": "sidebar",
+        "navigation": "topbar",
         "navStyle": "dark",
         "width": "wide",
         "background": "glow",
@@ -71,9 +71,7 @@
         "buttonFontWeight": 700,
         "hoverLift": 3,
         "shadowStrength": 1.2,
-        "transitionMs": 200,
-        "glassAlpha": null,
-        "glassBlur": null
+        "transitionMs": 200
     },
     "customCss": ".ui-page-title { letter-spacing: 0.01em; }\n.ui-btn-primary { text-transform: none; }"
 }

@@ -41,10 +41,10 @@ class Brand
     public const PALETTE = ['primary', 'secondary', 'accent', 'background', 'surface'];
 
     /** The navigation drawn dark in both themes (theme.css, section 7), whose greys follow the neutral tone's dark ones. */
-    private const DARK_PANELS = ":root:is([data-ui-nav-style='dark'],[data-ui-nav-style='brand']) :is(.tn-glass,.sn-panel)";
+    private const DARK_PANELS = ":root:is([data-ui-nav-style='dark'],[data-ui-nav-style='brand']) .tn-bar";
 
     /** The colour theme.css is drawn in; a company in it needs no shades of its own. */
-    public const THEME_PRIMARY = '#A51D26';
+    public const THEME_PRIMARY = '#2563EB';
 
     /** Where the imported file is kept, on the local disk. */
     private const STORED = 'brand/brand.json';
@@ -159,8 +159,10 @@ class Brand
 
         if ($colors['primary'] !== null && strcasecmp($colors['primary'], self::THEME_PRIMARY) !== 0) {
             $palette = BrandPalette::fromHex($colors['primary']);
-            $root .= $declare($palette['light'], 'brand').$declare($palette['fixed'], 'brand').'--ui-danger:rgb(var(--danger-600));--ui-danger-t:rgb(var(--danger-600) / 0.08);';
-            $dark .= $declare($palette['dark'], 'brand').$declare(BrandPalette::darkButtons($colors['primary']), 'brand').'--ui-danger:rgb(var(--danger-400));--ui-danger-t:rgb(var(--danger-400) / 0.12);';
+            // Another company's colour carries white text, and the open page's pill is that colour in both themes.
+            $onColour = '--brand-ink:255 255 255;--nav-active:var(--brand-solid);--nav-active-ink:255 255 255;--nav-active-icon:255 255 255;';
+            $root .= $declare($palette['light'], 'brand').$declare($palette['fixed'], 'brand').$onColour.'--ui-danger:rgb(var(--danger-600));--ui-danger-t:rgb(var(--danger-600) / 0.08);';
+            $dark .= $declare($palette['dark'], 'brand').$declare(BrandPalette::darkButtons($colors['primary']), 'brand').$onColour.'--ui-danger:rgb(var(--danger-400));--ui-danger-t:rgb(var(--danger-400) / 0.12);';
         }
 
         foreach (self::STATUSES as $status) {

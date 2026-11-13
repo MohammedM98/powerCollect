@@ -149,7 +149,7 @@
 .rs-savebar button { height: 44px; border-radius: calc(12px * var(--radius-scale, 1)); border: 0; padding: 0 16px; font-weight: 600; cursor: pointer; font-size: 16px; }
 .rs-savebar .rs-revert { background: #ffffff14; color: rgb(var(--silver-100)); }
 .rs-savebar .rs-revert:hover { background: #ffffff26; }
-.rs-savebar .rs-save { background: linear-gradient(180deg, rgb(var(--brand-hi)), rgb(var(--brand-lo))); color: #fff; }
+.rs-savebar .rs-save { background: linear-gradient(180deg, rgb(var(--brand-hi)), rgb(var(--brand-lo))); color: rgb(var(--brand-ink)); }
 .rs-savebar :focus-visible { outline-color: #fff; }
 .dark .rs-day:hover b, .dark .rs-day.is-selected b, .dark .rs-quick button:hover { color: var(--ui-brand-ink); }
 .dark .rs-day.is-selected { border-color: rgb(var(--brand-soft)); }

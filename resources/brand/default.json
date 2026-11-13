@@ -13,12 +13,12 @@
         "print": null
     },
     "colors": {
-        "primary": "#2B3138",
+        "primary": "#2563EB",
         "secondary": null,
         "accent": null,
         "background": null,
         "surface": null,
-        "print": "#A51D26",
+        "print": "#1A1A1A",
         "success": null,
         "warning": null,
         "danger": null,
@@ -30,14 +30,14 @@
         "motionStyle": "standard",
         "details": "modal",
         "footerStyle": "full",
-        "navigation": "sidebar",
-        "navStyle": "glass",
+        "navigation": "topbar",
+        "navStyle": "solid",
         "width": "wide",
         "background": "graphite",
         "neutral": "graphite",
         "radius": "rounded",
         "buttons": "gradient",
-        "cards": "glass",
+        "cards": "elevated",
         "tables": "boxed",
         "tableHeader": "plain",
         "density": "comfortable",
@@ -59,7 +59,7 @@
         "cardHover": "none",
         "rowHover": "tint",
         "focusRing": "brand",
-        "navHighlight": "brand"
+        "navHighlight": "pill"
     },
     "tokens": {
         "radiusScale": null,
@@ -71,9 +71,7 @@
         "buttonFontWeight": null,
         "hoverLift": null,
         "shadowStrength": null,
-        "transitionMs": null,
-        "glassAlpha": null,
-        "glassBlur": null
+        "transitionMs": null
     },
     "customCss": null
 }

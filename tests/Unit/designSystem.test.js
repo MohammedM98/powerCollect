@@ -43,8 +43,8 @@ test('every page the design system maps exists', () => {
     }
 });
 
-test('the glass stylesheet is loaded and the identity files are where the design system says', () => {
-    assert.match(readFileSync(new URL('resources/css/app.css', root), 'utf8'), /@import '\.\/glass\.css';/);
+test('the component stylesheet is loaded and the identity files are where the design system says', () => {
+    assert.match(readFileSync(new URL('resources/css/app.css', root), 'utf8'), /@import '\.\/components\.css';/);
     assert.ok(existsSync(new URL(design.stylesheet.file, root)));
     assert.ok(existsSync(new URL(design.identity.logo, root)));
     assert.ok(existsSync(new URL(design.identity.favicon, root)));

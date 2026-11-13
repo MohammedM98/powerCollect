@@ -1,79 +1,56 @@
 {
-  "name": "superpower-glass",
+  "name": "superpower",
   "version": 1,
-  "title": "سوبر باور · زجاجي فحمي",
-  "purpose": "المصدر الواحد لتصميم سوبر باور الزجاجي الفحمي: الرموز (tokens)، المكوّنات المعاد استخدامها، قوالب الصفحات، وأين تُستخدم كل صفحة. الواجهة تُنفَّذ من هذا الملف، وأي تغيير في التصميم يبدأ منه.",
-  "reference": {
-    "prototype": "resources/brand/reference/superpower-glass-prototype.html",
-    "note": "النموذج الأولي المعتمد بصريًا. عند أي اختلاف بين الكود والنموذج فالنموذج هو المرجع، إلا في الصفحات المستثناة في exclusions."
-  },
+  "title": "سوبر باور · فحمي",
+  "purpose": "المصدر الواحد لتصميم سوبر باور الفحمي: الرموز (tokens)، المكوّنات المعاد استخدامها، قوالب الصفحات، وأين تُستخدم كل صفحة. الواجهة تُنفَّذ من هذا الملف، وأي تغيير في التصميم يبدأ منه.",
   "tokens": {
     "format": "قيم الألوان مثلثات RGB (مثل: 10 11 13) كما في resources/css/theme.css، وما له شفافية مكتوب 'R G B / alpha'. الألوان تُعرَّف في theme.css فقط.",
     "dark": {
-      "bg": "10 11 13",
-      "ink": "238 240 243",
-      "muted": "165 170 178",
-      "faint": "138 144 152",
-      "glass": "24 26 30 / 0.60",
-      "line": "255 255 255 / 0.09",
-      "lineHighlight": "255 255 255 / 0.16",
+      "bg": "10 10 10",
+      "ink": "240 240 240",
+      "muted": "168 168 168",
+      "faint": "142 142 142",
+      "panel": "22 22 22",
+      "line": "255 255 255 / 0.08",
+      "lineStrong": "255 255 255 / 0.16",
       "fill": "255 255 255 / 0.05",
       "fillStrong": "255 255 255 / 0.09",
-      "ambient": [
-        "radial-gradient(1300px 720px at 85% -12%, rgb(255 255 255 / .05), transparent 62%)"
-      ],
       "semantic": {
         "success": "60 207 145",
         "warning": "234 168 66",
         "danger": "242 100 111",
-        "info": "106 165 255"
+        "info": "56 189 248"
       },
-      "brandOnDark": "135 141 150",
-      "brandButton": "43 49 56"
+      "brandOnDark": "96 165 250",
+      "brandButton": "37 99 235"
     },
     "light": {
-      "bg": "236 238 241",
-      "ink": "17 20 25",
-      "muted": "72 79 90",
-      "faint": "84 91 102",
-      "glass": "255 255 255 / 0.60",
-      "line": "20 25 35 / 0.12",
-      "lineHighlight": "255 255 255 / 0.90",
-      "fill": "20 25 35 / 0.05",
-      "fillStrong": "20 25 35 / 0.09",
-      "ambient": [
-        "radial-gradient(1200px 640px at 85% -12%, rgb(255 255 255 / .75), transparent 62%)",
-        "radial-gradient(900px 600px at 0% 112%, rgb(20 25 35 / .04), transparent 62%)"
-      ],
+      "bg": "245 245 245",
+      "ink": "23 23 23",
+      "muted": "82 82 82",
+      "faint": "96 96 96",
+      "panel": "255 255 255",
+      "line": "0 0 0 / 0.09",
+      "lineStrong": "0 0 0 / 0.16",
+      "fill": "0 0 0 / 0.04",
+      "fillStrong": "0 0 0 / 0.07",
       "semantic": {
         "success": "8 105 66",
         "warning": "146 86 4",
         "danger": "180 32 48",
-        "info": "28 84 196"
+        "info": "3 105 161"
       },
-      "brandOnLight": "43 49 56",
-      "brandButton": "43 49 56"
+      "brandOnLight": "29 78 216",
+      "brandButton": "37 99 235"
     },
     "variants": {
-      "graphite": "الوحيد: فحمي في الداكن ورمادي فاتح في الفاتح، بالقيم أعلاه. أُلغي الكحلي والأزرق الليلي.",
-      "note": "كل نص يقرأ بتباين 4.5:1 على الأقل (WCAG AA) على الصفحة وعلى اللوحة الزجاجية."
+      "graphite": "الوحيد: رمادي محايد بلا صبغة زرقاء، داكن في الوضع الداكن وفاتح في الفاتح، بالقيم أعلاه. أُلغي الكحلي والأزرق والنظام الزجاجي.",
+      "note": "كل نص يقرأ بتباين 4.5:1 على الأقل (WCAG AA) على الصفحة وعلى اللوحة."
     },
-    "glass": {
-      "alphaDefault": 0.6,
-      "alphaRange": [
-        0.2,
-        0.9
-      ],
-      "blurDefaultPx": 18,
-      "blurRangePx": [
-        0,
-        40
-      ],
-      "saturate": 1.25,
-      "insetHighlight": "inset 0 1px 0 lineHighlight",
-      "shadowDark": "0 26px 50px -30px rgb(0 0 0 / .95)",
-      "shadowLight": "0 24px 40px -28px rgb(30 40 70 / .5)",
-      "fallbackWhenNoBackdropFilter": "رفع الشفافية إلى 0.92 بدل الزجاج"
+    "panels": {
+      "opacity": "مصمتة دائمًا: لا شفافية ولا تمويه (backdrop-filter) في أي مكان",
+      "shadowDark": "0 1px 2px rgb(0 0 0 / .5), 0 12px 28px -18px rgb(0 0 0 / .9)",
+      "shadowLight": "0 1px 2px rgb(0 0 0 / .04), 0 8px 24px -16px rgb(0 0 0 / .18)"
     },
     "shape": {
       "panelRadiusPx": 20,
@@ -93,7 +70,7 @@
       "fontFilesAlreadyInRepo": "resources/fonts"
     },
     "motion": {
-      "pageIn": "0.55s cubic-bezier(.2,.7,.2,1) من opacity 0 و translateY 14px و blur 6px",
+      "pageIn": "0.55s cubic-bezier(.2,.7,.2,1) من opacity 0 و translateY 14px",
       "rise": "0.65s cubic-bezier(.2,.7,.2,1) من opacity 0 و translateY 18px و scale .985، تأخير تتابعي 70ms لكل بطاقة، وحد أقصى 12 عنصرًا",
       "lineDraw": "1.4s stroke-dashoffset (pathLength=1) ثم تظهر المساحة بعد 0.8s",
       "barGrow": "1.1s scaleX من بداية السطر (inline-start)",
@@ -108,46 +85,30 @@
       ]
     },
     "accent": {
-      "default": "charcoal",
-      "charcoal": {
-        "dark": "135 141 150",
-        "light": "43 49 56",
-        "button": "43 49 56",
-        "hex": "#2B3138",
-        "note": "فحمي: الأزرار، العنصر النشط في التنقل، خط المخطط، حلقة الهدف. أُلغي الأزرق."
+      "default": "blue",
+      "blue": {
+        "hex": "#2563EB",
+        "fill": "37 99 235",
+        "ink": "255 255 255",
+        "textOnLight": "29 78 216",
+        "textOnDark": "96 165 250",
+        "note": "هوية باور كولكت: أزرق هادئ مع الأبيض. الأزرار والشارات والعنصر النشط في التنقل زرقاء بنص أبيض (5.2:1)؛ النص والروابط بالأزرق الداكن في الوضع الفاتح وبالأزرق الفاتح في الداكن. الشعار: بلاطة زرقاء وحرف S أبيض يقطعه برق بلون البلاطة."
       },
-      "alternatives": {
-        "burgundy": {
-          "dark": "216 65 75",
-          "light": "165 29 38",
-          "button": "176 32 44"
-        },
-        "emerald": {
-          "dark": "60 207 145",
-          "light": "5 150 105",
-          "button": "4 120 87"
-        },
-        "amber": {
-          "dark": "234 168 66",
-          "light": "180 100 10",
-          "button": "161 98 7"
-        }
-      },
-      "navActive": "خلفية متدرجة بلون الزر مع ظل وتوهج ونص أبيض (وليست خلفية شفافة)"
+      "navActive": "حبة زرقاء بنص وأيقونة بيضاء في الوضعين."
     }
   },
   "brandPreset": {
     "id": "superpower",
-    "label": "سوبر باور زجاجي فحمي",
-    "description": "بطاقات زجاجية فوق خلفية فحمية في الداكن ورمادية فاتحة في الفاتح، شريط جانبي أو علوي، جداول داخل لوحات زجاجية، أزرار متدرجة وحقول معبأة.",
+    "label": "سوبر باور · هوية باور كولكت",
+    "description": "بطاقات مصمتة بدرجات فحمية محايدة في الداكن ورمادية فاتحة في الفاتح، شريط علوي وصفحات القسم تحته، جداول داخل لوحات مصمتة، أزرار متدرجة وحقول معبأة.",
     "design": {
-      "navigation": "sidebar",
-      "navStyle": "glass",
+      "navigation": "topbar",
+      "navStyle": "solid",
       "background": "graphite",
       "neutral": "graphite",
       "radius": "rounded",
       "buttons": "gradient",
-      "cards": "glass",
+      "cards": "elevated",
       "tables": "boxed",
       "tableHeader": "plain",
       "tableToolbar": "plain",
@@ -164,10 +125,10 @@
       "switches": "brand",
       "rowHover": "tint",
       "focusRing": "brand",
-      "navHighlight": "brand"
+      "navHighlight": "pill"
     },
     "colors": {
-      "primary": "#2B3138"
+      "primary": "#2563EB"
     }
   },
   "components": [
@@ -183,7 +144,7 @@
         "children",
         "className"
       ],
-      "spec": "لوحة زجاجية: padding 18px، عنوان 16px/700 وسطر فرعي muted 12.5px وأزرار على الطرف الآخر"
+      "spec": "لوحة مصمتة: padding 18px، عنوان 16px/700 وسطر فرعي muted 12.5px وأزرار على الطرف الآخر"
     },
     {
       "name": "KpiTile",
@@ -245,7 +206,7 @@
         "BlueActionButton (gl-btn-surface / gl-btn-part)"
       ],
       "prototype": "btn / btn.sec / btn.sm",
-      "spec": "مسطّحة على الزجاج بلا تدرج ولا توهج ولا ظل طائف: تعبئة واحدة لكل دور مع خط ضوء رفيع أعلاها كحافة الزجاج. gl-btn رئيسي بلون الهوية، gl-sec ثانوي زجاجي بخط رفيع، gl-ghost هادئ نص فقط، gl-danger أحمر خفيف يمتلئ عند المرور. الأحجام gl-sm 32px والافتراضي 38px وgl-lg 44px. المرور يعمّق اللون درجة (النص الأبيض يبقى 4.5:1)، والضغط أعمق مع نزول 1px، والتركيز حلقة بلون الهوية، والمعطّل شفافية .45."
+      "spec": "مسطّحة على اللوحات بلا تدرج ولا توهج ولا ظل طائف: تعبئة واحدة لكل دور. gl-btn رئيسي بلون الهوية، gl-sec ثانوي بتعبئة خفيفة وخط رفيع، gl-ghost هادئ نص فقط، gl-danger أحمر خفيف يمتلئ عند المرور. الأحجام gl-sm 32px والافتراضي 38px وgl-lg 44px. المرور يعمّق اللون درجة (النص الأبيض يبقى 4.5:1)، والضغط أعمق مع نزول 1px، والتركيز حلقة بلون الهوية، والمعطّل شفافية .45."
     },
     {
       "name": "Fields",
@@ -341,7 +302,7 @@
         "ConfirmDialog"
       ],
       "prototype": "popup",
-      "spec": "زجاج. كل نافذة منبثقة وسط الشاشة فوق خلفية معتمة، ولا لوحات جانبية. الأطول من الشاشة تتمرر، وعلى الجوال تلتصق بأسفل الشاشة كورقة.",
+      "spec": "لوحة مصمتة. كل نافذة منبثقة وسط الشاشة فوق خلفية معتمة، ولا لوحات جانبية. الأطول من الشاشة تتمرر، وعلى الجوال تلتصق بأسفل الشاشة كورقة.",
       "audit": "Modal يوسّط كل نافذة بهوامش تلقائية، وapp.css يجعلها ورقة سفلية على الجوال (.modal-scroll)."
     },
     {
@@ -362,13 +323,6 @@
       "decision": "معتمد: زر التراجع أو الارتجاع فقط حيث توجد عملية عكسية في الخادم أصلًا."
     },
     {
-      "name": "SideNavigation",
-      "status": "existing",
-      "file": "resources/js/Components/SideNavigation/SideNavigation.jsx",
-      "prototype": "Sidebar",
-      "spec": "زجاج بتدرج أزرق علوي، أقسام قابلة للطي (حركة grid-template-rows)، العنصر النشط بخلفية لون الهوية .18 وحد، وضع rail أيقونات فقط، ومصغّر في الجوال كدرج. البحث والإشعارات في الشريط النحيف بجانبها، وزر الطيّ في رأسها."
-    },
-    {
       "name": "TopBar",
       "status": "existing",
       "files": [
@@ -383,7 +337,7 @@
         "TopBar/QuickTour"
       ],
       "prototype": "TopBar / MegaMenu",
-      "spec": "شريط زجاجي لاصق، أزرار الأقسام تفتح MegaMenu بشبكة عمودين وأيقونة ووصف لكل صفحة. بجانب شريط الأقسام على الشاشات العريضة يبقى الشريط نحيفًا (slim): البحث، الوضع، الإشعارات، الحساب. على الجوال الشريط الكامل وشريط التبويب السفلي."
+      "spec": "الشريط العلوي هو التنقل الوحيد (لا شريط جانبي): شريط مصمت لاصق بالشعار والأقسام والأدوات (فرع العمل، البحث، الوضع الفاتح والداكن، الإشعارات، الحساب). أزرار الأقسام تفتح MegaMenu بشبكة عمودين وأيقونة ووصف لكل صفحة، وصفحات القسم الحالي تبويبات في صف ثانٍ تحت الشريط مباشرة. على الجوال زر القائمة يفتح الأقسام في درج."
     },
     {
       "name": "ThemeToggle",
@@ -395,7 +349,7 @@
       "status": "existing",
       "file": "resources/js/Components/MoveBoard.jsx",
       "prototype": "MoveBoard + BoardPage",
-      "spec": "أعمدة زجاجية، رأس كل عمود: نقطة لون + اسم + عدّاد + سطر ملاحظة. بطاقة العنصر: رقم mono وعمر، صورة رمزية واسم، سطر وصف، مبلغ + وسم. السحب: عتبة 6px، نسخة شبح scale 1.04 وميل -2deg، العمود الهدف يتوهج، حالة فارغة 'أفلت هنا'، وبعد الإفلات Toast مع تراجع. تبويبات underline فوق اللوحة. أي حالة مالية تمرّ بتأكيد.",
+      "spec": "أعمدة مصمتة، رأس كل عمود: نقطة لون + اسم + عدّاد + سطر ملاحظة. بطاقة العنصر: رقم mono وعمر، صورة رمزية واسم، سطر وصف، مبلغ + وسم. السحب: عتبة 6px، نسخة شبح scale 1.04 وميل -2deg، العمود الهدف يتوهج، حالة فارغة 'أفلت هنا'، وبعد الإفلات Toast مع تراجع. تبويبات underline فوق اللوحة. أي حالة مالية تمرّ بتأكيد.",
       "audit": "منفّذ في Components/MoveBoard.jsx: أعمدة boardColumns (المتاحة، الكشوف الورقية، ثم كل قارئ)، سحب بالمؤشر بعتبة 6px ونسخة شبح، وبديل لوحة المفاتيح (Enter للحمل، الأسهم للعمود، Enter للنقل، Escape للإلغاء). اللوحة لا تنقل شيئًا بنفسها: الإفلات يفتح ConfirmDialog ثم يرسل movePayload كما يفعل الجدول. لا Toast تراجع لأن التوزيع لا يملك عكسًا على الخادم؛ النقل العكسي نقل جديد.",
       "decision": "معتمد: عرض بديل بجانب جدول التوزيع في ReadingCycles/Show لا بديل عنه، ونقل طبلون بعد تحميل قراءاته إلى الهاتف يمرّ بتأكيد."
     },
@@ -938,7 +892,7 @@
       "template": "form",
       "uses": [
         "Fields",
-        "Panel(glass)",
+        "Panel",
         "PrimaryButton"
       ],
       "verify": true
@@ -954,20 +908,20 @@
     }
   ],
   "exclusions": [
-    "كل ما يُطبع أو يُصدَّر: Pages/Print/*، Subscriptions/StatementPrint وPaymentReceipt، Reports/ReportPrintSheet، ReadingCycles/PaperSheet، CompanyForms/Print وCompanyFormPaper، Components/Print/*، وملفات Excel (ExcelStudio، TableExcelDesigner). تبقى بألوانها الخاصة (design.print) فاتحة بلا زجاج.",
+    "كل ما يُطبع أو يُصدَّر: Pages/Print/*، Subscriptions/StatementPrint وPaymentReceipt، Reports/ReportPrintSheet، ReadingCycles/PaperSheet، CompanyForms/Print وCompanyFormPaper، Components/Print/*، وملفات Excel (ExcelStudio، TableExcelDesigner). تبقى بألوانها الخاصة (design.print) فاتحة ومسطّحة.",
     "تطبيق Flutter في /mobile.",
     "منطق الحسابات والتحصيل والحركات المالية وAPI والصلاحيات. التغيير بصري فقط."
   ],
   "rules": [
     "لا لون حرفيًا خارج theme.css. أي لون جديد يُضاف إلى theme.css كمثلث RGB.",
     "الوضعان فاتح وداكن لكل مكوّن، وRTL أولًا بخصائص منطقية.",
-    "التباين: نص عادي 4.5:1 على الأقل فوق الزجاج في الوضعين، وحالة التركيز مرئية.",
+    "التباين: نص عادي 4.5:1 على الأقل فوق اللوحات في الوضعين، وحالة التركيز مرئية.",
     "لا اعتماد جديد بدون موافقة. الحركة بـ CSS وWeb Animations وrAF.",
     "أي مكوّن مشترك جديد يُسجَّل في هذا الملف، وأي صفحة تُضاف أو تُنقل تُحدَّث هنا."
   ],
   "layoutPrinciple": "التخطيط والبطاقات والحركة مأخوذة من نموذج لوحة الفيديو المعتمد (شريط إحصاءات، استوديو مخطط، حلقة هدف، أعمدة حيّة، لوحة سحب)، وليست من تخطيط صفحات powerCollect الحالي. الصفحات تُعاد ترتيبها على القوالب أدناه مع بقاء البيانات والسلوك كما هي.",
   "stylesheet": {
-    "file": "resources/css/glass.css",
+    "file": "resources/css/components.css",
     "note": "أصناف النموذج الأولي نفسها بالبادئة gl-، وألوانها من theme.css."
   },
   "identity": {

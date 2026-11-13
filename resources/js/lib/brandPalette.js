@@ -166,8 +166,11 @@ export function brandStylesheet(hex) {
     const palette = brandPalette(hex);
     const declare = (shades) => Object.entries(shades).map(([step, rgb]) => `--brand-${step}:${rgb};`).join('');
 
-    return `:root{${declare(palette.light)}${declare(palette.fixed)}--ui-danger:rgb(var(--danger-600));--ui-danger-t:rgb(var(--danger-600) / 0.08);}`
-        + `.dark{${declare(palette.dark)}${declare(darkButtons(hex))}--ui-danger:rgb(var(--danger-400));--ui-danger-t:rgb(var(--danger-400) / 0.12);}`;
+    // Another company's colour carries white text, and the open page's pill is that colour in both themes (as Brand::stylesheet).
+    const onColour = '--brand-ink:255 255 255;--nav-active:var(--brand-solid);--nav-active-ink:255 255 255;--nav-active-icon:255 255 255;';
+
+    return `:root{${declare(palette.light)}${declare(palette.fixed)}${onColour}--ui-danger:rgb(var(--danger-600));--ui-danger-t:rgb(var(--danger-600) / 0.08);}`
+        + `.dark{${declare(palette.dark)}${declare(darkButtons(hex))}${onColour}--ui-danger:rgb(var(--danger-400));--ui-danger-t:rgb(var(--danger-400) / 0.12);}`;
 }
 
 /** Semantic company colours, matching Brand::stylesheet in both themes. */
