@@ -19,9 +19,11 @@ function EnergyField() {
         let pulses = [];
 
         function setup() {
-            width = canvas.width = window.innerWidth * ratio;
-            height = canvas.height = window.innerHeight * ratio;
-            const gap = 86 * ratio;
+            // The field fills the brand panel it sits in.
+            const box = canvas.parentElement.getBoundingClientRect();
+            width = canvas.width = box.width * ratio;
+            height = canvas.height = box.height * ratio;
+            const gap = 64 * ratio;
             lines = [];
 
             for (let y = gap / 2; y < height; y += gap) {
@@ -32,14 +34,14 @@ function EnergyField() {
                 lines.push({ horizontal: false, at: x });
             }
 
-            pulses = Array.from({ length: 14 }, () => ({ line: lines[Math.floor(Math.random() * lines.length)], t: Math.random(), speed: 0.0015 + Math.random() * 0.003 }));
+            pulses = Array.from({ length: 9 }, () => ({ line: lines[Math.floor(Math.random() * lines.length)], t: Math.random(), speed: 0.0015 + Math.random() * 0.003 }));
         }
 
         function draw() {
             const rgb = getComputedStyle(document.documentElement).getPropertyValue('--brand-soft').trim() || '96 146 255';
             context.clearRect(0, 0, width, height);
             context.lineWidth = ratio;
-            context.strokeStyle = `rgb(${rgb} / 0.07)`;
+            context.strokeStyle = `rgb(${rgb} / 0.09)`;
 
             lines.forEach((line) => {
                 context.beginPath();
@@ -87,35 +89,92 @@ function EnergyField() {
     return <canvas ref={canvasRef} className="gl-auth-field" aria-hidden="true" />;
 }
 
+/** One wheel of the meter: the digits 0–9 in a column, turned to `digit`. */
+function MeterWheel({ digit, delay }) {
+    return (
+        <span className="gl-meter-wheel" aria-hidden="true">
+            <span className="gl-meter-strip" style={{ '--digit': digit, animationDelay: `${delay}ms` }}>
+                {Array.from({ length: 10 }, (_, value) => (
+                    <span key={value}>{value}</span>
+                ))}
+            </span>
+        </span>
+    );
+}
+
 /**
- * The sign-in screen: one card in the middle of the page, over a field
- * of current, holding the mark, the product's name and the form (`children`).
- * `subtitle` is the line under the name.
+ * Today's date as a meter shows a reading: day, month and year on digit
+ * wheels that turn into place once as the page opens.
  */
-export default function GuestLayout({ subtitle = 'سجّل الدخول لمتابعة التحصيل والقراءات.', children }) {
+function MeterDate() {
+    const today = new Date();
+    const groups = [
+        { name: 'اليوم', value: String(today.getDate()).padStart(2, '0') },
+        { name: 'الشهر', value: String(today.getMonth() + 1).padStart(2, '0') },
+        { name: 'السنة', value: String(today.getFullYear()) },
+    ];
+    let wheel = 0;
+
+    return (
+        <figure className="gl-meter" aria-label={`تاريخ اليوم ${today.toLocaleDateString('ar-PS-u-nu-latn')}`}>
+            <div className="gl-meter-face" dir="ltr">
+                {groups.map((group, index) => (
+                    <span key={group.name} className="gl-meter-group">
+                        {index > 0 && <span className="gl-meter-dot" aria-hidden="true" />}
+                        {[...group.value].map((digit) => {
+                            wheel += 1;
+                            return <MeterWheel key={wheel} digit={Number(digit)} delay={200 + wheel * 90} />;
+                        })}
+                    </span>
+                ))}
+            </div>
+            <figcaption>قراءة اليوم</figcaption>
+        </figure>
+    );
+}
+
+/**
+ * The sign-in screen, in two halves: the company's panel (its mark over a
+ * field of current, and today's date on a meter's wheels) and the form
+ * (`children`) under a plain heading. `title` and `subtitle` head the form;
+ * a page with its own heading (the error page) passes `title={null}`.
+ * On a phone the panel becomes a strip above the form.
+ */
+export default function GuestLayout({ title = 'تسجيل الدخول', subtitle = 'ادخل باسم المستخدم الذي أعطاك إياه مدير النظام.', children }) {
     const brand = useBrandDocument();
 
     return (
         <div className="gl-auth">
-            <EnergyField />
-            <ThemeToggle className="gl-auth-corner" />
-
-            <main className="gl-card gl-auth-card">
-                <div className="gl-auth-head">
+            <aside className="gl-auth-panel">
+                <EnergyField />
+                <div className="gl-auth-brand">
                     <AnimatedLogo />
                     <div>
-                        <h1>{brand.name}</h1>
-                        {brand.nameEnglish && <div className="gl-en" dir="ltr">{brand.nameEnglish.toUpperCase()}</div>}
+                        <b>{brand.name}</b>
+                        {brand.nameEnglish && <span dir="ltr">{brand.nameEnglish}</span>}
                     </div>
-                    <p>{subtitle}</p>
+                </div>
+                <MeterDate />
+                <p className="gl-auth-line">القراءات والدفعات وصناديق الفروع في مكان واحد.</p>
+            </aside>
+
+            <main className="gl-auth-main">
+                <ThemeToggle className="gl-auth-corner" />
+                <div className="gl-auth-card">
+                    {title && (
+                        <header className="gl-auth-head">
+                            <h1>{title}</h1>
+                            <p>{subtitle}</p>
+                        </header>
+                    )}
+
+                    {children}
                 </div>
 
-                {children}
-
-                <div className="gl-auth-foot">
+                <footer className="gl-auth-foot">
                     <span>© <span dir="ltr">{new Date().getFullYear()}</span> {brand.name}</span>
-                    <span>اتصال مشفّر</span>
-                </div>
+                    <span>الاتصال مشفّر</span>
+                </footer>
             </main>
         </div>
     );

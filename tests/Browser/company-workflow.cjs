@@ -62,7 +62,13 @@ async function addThroughWindow(page, path, addButton, fields, { submit = 'حف�
     await page.getByRole('button', { name: addButton }).first().click();
     const dialog = page.getByRole('dialog').last();
     await dialog.waitFor();
-    await fillFields(dialog, fields);
+    // A stepped form takes its fields step by step: an array holds each step's fields, "التالي" between them.
+    for (const [index, stepFields] of (Array.isArray(fields) ? fields : [fields]).entries()) {
+        if (index > 0) {
+            await dialog.getByRole('button', { name: 'التالي', exact: true }).click();
+        }
+        await fillFields(dialog, stepFields);
+    }
     await dialog.getByRole('button', { name: submit, exact: true }).click();
     await confirmIfAsked(page);
     await dialog.waitFor({ state: 'hidden' });
@@ -155,8 +161,8 @@ step('banks and the dollar rate', async () => {
 
 step('tariffs and a circuit breaker', async () => {
     const page = people.owner;
-    await addThroughWindow(page, '/tariffs', 'تعرفة جديدة', { 'الفئة': { select: 'منزلي' }, 'السعر (شيكل)': '0.50' });
-    await addThroughWindow(page, '/tariffs', 'تعرفة جديدة', { 'الفئة': { select: 'تجاري' }, 'السعر (شيكل)': '0.80' });
+    await addThroughWindow(page, '/tariffs', 'تعرفة جديدة', { 'الفئة': { select: 'منزلي' }, 'سعر الكيلوواط': '0.50' });
+    await addThroughWindow(page, '/tariffs', 'تعرفة جديدة', { 'الفئة': { select: 'تجاري' }, 'سعر الكيلوواط': '0.80' });
     await snap(page, 'tariffs');
     await addThroughWindow(page, '/circuit-breakers', 'قاطع جديد', { 'الأمبير': '10', 'الحد الأدنى للدفع (شيكل)': '10' });
     await page.getByRole('cell', { name: '10' }).first().waitFor();
@@ -252,17 +258,20 @@ step('readings are opened for entry today, whatever day the run is on', async ()
 step('the branch manager registers subscribers on the tablons, one an old record without an ID or mobile', async () => {
     people.manager = await signIn(staff.manager.username);
     const page = people.manager;
-    const subscriber = (fields) => addThroughWindow(page, '/subscriptions', 'مشترك جديد', {
-        'الحالة': { chip: 'نشط' }, 'نوع الاشتراك': { select: 'منزلي' }, 'القاطع': { select: '10' }, 'القراءة السابقة': '1000',
-        'تحميل رسوم اشتراك': { switch: true }, 'رسوم الاشتراك': '300', ...fields,
-    });
-    await subscriber({ 'الاسم': 'سالم عبد الله', 'رقم الهوية': '401234567', 'رقم الجوال': '0599123456', 'الطبلون (الاسم والرقم)': { select: 'T-101' } });
-    await subscriber({
-        'الاسم': 'خالد يوسف', 'رقم الهوية': '402345678', 'رقم الجوال': '0599765432', 'نوع الاشتراك': { select: 'تجاري' },
-        'الطبلون (الاسم والرقم)': { select: 'T-103' }, 'القراءة السابقة': '500', 'رسوم الاشتراك': '400',
-    });
+    // The subscriber window's three steps: the person, the subscription and its meter, then the fees.
+    const subscriber = ([person, subscription, fees]) => addThroughWindow(page, '/subscriptions', 'مشترك جديد', [
+        { 'الحالة': { chip: 'نشط' }, ...person },
+        { 'نوع الاشتراك': { select: 'منزلي' }, 'القاطع': { select: '10' }, ...subscription },
+        { 'القراءة السابقة': '1000', 'تحميل رسوم اشتراك': { switch: true }, 'رسوم الاشتراك': '300', ...fees },
+    ]);
+    await subscriber([{ 'الاسم': 'سالم عبد الله', 'رقم الهوية': '401234567', 'رقم الجوال': '0599123456' }, { 'الطبلون (الاسم والرقم)': { select: 'T-101' } }, {}]);
+    await subscriber([
+        { 'الاسم': 'خالد يوسف', 'رقم الهوية': '402345678', 'رقم الجوال': '0599765432' },
+        { 'نوع الاشتراك': { select: 'تجاري' }, 'الطبلون (الاسم والرقم)': { select: 'T-103' } },
+        { 'القراءة السابقة': '500', 'رسوم الاشتراك': '400' },
+    ]);
     // An old record brought in without an identity or mobile number.
-    await subscriber({ 'الاسم': 'حاج قديم بلا هوية', 'الطبلون (الاسم والرقم)': { select: 'T-102' }, 'تحميل رسوم اشتراك': { switch: false }, 'رسوم الاشتراك': null });
+    await subscriber([{ 'الاسم': 'حاج قديم بلا هوية' }, { 'الطبلون (الاسم والرقم)': { select: 'T-102' } }, { 'تحميل رسوم اشتراك': { switch: false }, 'رسوم الاشتراك': null }]);
     await page.goto('/subscriptions');
     for (const account of ['202600001', '202600002', '202600003']) {
         await page.getByText(account).first().waitFor();

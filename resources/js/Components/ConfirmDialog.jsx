@@ -11,7 +11,8 @@ import DangerButton from '@/Components/DangerButton';
  *
  * `tone="danger"` is for throwing work away: the confirm button turns
  * red and the safe choice (cancel) gets the focus. Otherwise confirm is
- * focused, so Enter answers straight away.
+ * focused, so Enter answers straight away. `confirmDisabled` holds the
+ * confirm button until the question's own condition is met (a typed name).
  */
 export default function ConfirmDialog({
     show,
@@ -23,6 +24,7 @@ export default function ConfirmDialog({
     cancelLabel = 'إلغاء',
     icon = 'check',
     tone = 'primary',
+    confirmDisabled = false,
     children,
 }) {
     const id = useId();
@@ -34,7 +36,7 @@ export default function ConfirmDialog({
             <SecondaryButton onClick={onCancel} autoFocus={isDanger}>
                 {cancelLabel}
             </SecondaryButton>
-            <ConfirmButton type="button" onClick={onConfirm} autoFocus={!isDanger}>
+            <ConfirmButton type="button" onClick={onConfirm} autoFocus={!isDanger} disabled={confirmDisabled}>
                 {confirmLabel}
             </ConfirmButton>
         </>}>

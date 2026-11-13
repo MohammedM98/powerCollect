@@ -68,5 +68,5 @@ export default function Error({ status, blank = false }) {
         </div>
     );
 
-    return signedIn ? <AuthenticatedLayout>{body}</AuthenticatedLayout> : <GuestLayout>{body}</GuestLayout>;
+    return signedIn ? <AuthenticatedLayout>{body}</AuthenticatedLayout> : <GuestLayout title={null}>{body}</GuestLayout>;
 }
