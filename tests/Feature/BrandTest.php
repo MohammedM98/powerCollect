@@ -66,7 +66,7 @@ class BrandTest extends TestCase
             ->where('brand.logos.main', '/images/logo-superpower.svg')
             ->where('brand.logos.print', '/images/logo-superpower.svg')
             ->where('brand.animatedLogo', true)
-            ->where('brand.printColor', '#1A1A1A'));
+            ->where('brand.printColor', '#2563EB'));
         $response->assertSee('<link rel="icon" href="/favicon.svg">', false);
     }
 
