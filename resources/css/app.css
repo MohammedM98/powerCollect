@@ -87,11 +87,12 @@
     }
 
     /*
-     * Fields, as the prototype's (components.css `gl-field`): the soft tint,
-     * 12px corners and a thin line that brightens under the pointer and,
-     * with a soft ring in the company's colour, while typing in it, so the
-     * user always sees which field they are on. Selectors are kept as weak as the forms
-     * plugin's, so a utility class on a field still wins.
+     * Fields: the deepest layer, white on a light page and darker than the
+     * tile on a dark one, with a clear line, 12px corners and 44px height.
+     * The line darkens under the pointer and, while typing, turns the
+     * company's colour with a soft ring, so the user always sees which field
+     * they are on. Selectors are kept as weak as the forms plugin's, so a
+     * utility class on a field still wins.
      */
     input:where(:not([type])),
     [type='text'],
@@ -103,10 +104,28 @@
     [type='date'],
     select,
     textarea {
-        border-color: var(--gl-line);
+        border-color: rgb(var(--panel-field-line));
         border-radius: calc(12px * var(--radius-scale, 1));
-        background-color: var(--gl-fill);
+        background-color: rgb(var(--panel-field));
         color: var(--gl-ink);
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    /* One field height everywhere (44px), so fields, lists and buttons in a row line up. */
+    input:where(:not([type])),
+    [type='text'],
+    [type='email'],
+    [type='password'],
+    [type='number'],
+    [type='search'],
+    [type='tel'],
+    [type='date'],
+    select:not([multiple], [size]) {
+        min-height: 44px;
+    }
+
+    :is(input:where(:not([type])), [type='text'], [type='email'], [type='password'], [type='number'], [type='search'], [type='tel'], [type='date'], select, textarea):hover:not(:focus, :disabled) {
+        border-color: rgb(var(--gray-400) / 0.6);
     }
 
     /*
@@ -139,8 +158,8 @@
     [type='date']:focus,
     select:focus,
     textarea:focus {
-        border-color: rgb(var(--gl-brand) / 0.6);
-        box-shadow: 0 0 0 3px rgb(var(--gl-brand) / 0.16);
+        border-color: rgb(var(--gl-brand));
+        box-shadow: 0 0 0 4px rgb(var(--gl-brand) / 0.16);
         outline: none;
     }
 
@@ -1393,15 +1412,15 @@ html[data-modal-open] {
 
 /* Windows: the page behind is dimmed in neutral black, and the panel is a solid card. */
 .modal-scrim {
-    background: rgb(0 0 0 / 0.5);
+    background: rgb(10 13 17 / 0.5);
 }
 
 .modal-sheet-panel {
     border: 1px solid var(--gl-line);
-    border-radius: calc(20px * var(--radius-scale, 1));
+    border-radius: calc(22px * var(--radius-scale, 1));
     background: rgb(var(--panel-bg));
     color: var(--gl-ink);
-    box-shadow: var(--panel-shadow);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.07), 0 30px 70px -24px rgb(0 0 0 / 0.5);
 }
 
 /*

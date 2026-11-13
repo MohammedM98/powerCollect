@@ -129,17 +129,20 @@ export default function Modal({ show, onClose, children, maxWidth = 'md', panelC
         return null;
     }
 
+    // Four window sizes only, each with its use: small (420) for a field or two and confirmations,
+    // medium (560) for most forms, large (820) for a form beside a preview or two columns of fields,
+    // extra large (1040) for long forms with an index and statements. The older names map onto them.
     const maxWidthClass = {
-        sm: 'sm:max-w-sm',
-        md: 'sm:max-w-md',
-        lg: 'sm:max-w-lg',
-        xl: 'sm:max-w-xl',
-        '2xl': 'sm:max-w-2xl',
-        '3xl': 'sm:max-w-3xl',
-        '4xl': 'sm:max-w-4xl',
-        '5xl': 'sm:max-w-5xl',
-        '6xl': 'sm:max-w-[1140px]',
-        '7xl': 'sm:max-w-7xl',
+        sm: 'sm:max-w-[420px]',
+        md: 'sm:max-w-[420px]',
+        lg: 'sm:max-w-[560px]',
+        xl: 'sm:max-w-[560px]',
+        '2xl': 'sm:max-w-[820px]',
+        '3xl': 'sm:max-w-[820px]',
+        '4xl': 'sm:max-w-[820px]',
+        '5xl': 'sm:max-w-[1040px]',
+        '6xl': 'sm:max-w-[1040px]',
+        '7xl': 'sm:max-w-[1040px]',
         full: 'sm:max-w-none',
     }[maxWidth];
 

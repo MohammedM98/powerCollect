@@ -1,8 +1,7 @@
 import FormField from '@/Components/Form/FormField';
-import FormPreview, { countFilled } from '@/Components/Form/FormPreview';
 import FormSelect, { namedOptions } from '@/Components/Form/FormSelect';
 import FormSection from '@/Components/Form/FormSection';
-import Icon from '@/Components/Icon';
+import SettingRow from '@/Components/Form/SettingRow';
 import InputError from '@/Components/InputError';
 import Switch from '@/Components/Switch';
 import TextInput from '@/Components/TextInput';
@@ -23,39 +22,21 @@ export function branchFormData(branch) {
 
 export default function BranchForm({ data, setData, errors, governorates, areas }) {
     const areasInGovernorate = data.governorate_id ? areas.filter((area) => String(area.governorate_id) === String(data.governorate_id)) : [];
-    const governorate = governorates.find((option) => String(option.id) === String(data.governorate_id));
-    const area = areasInGovernorate.find((option) => String(option.id) === String(data.area_id));
 
     function onGovernorateChange(value) {
         setData((prev) => ({ ...prev, governorate_id: value, area_id: '' }));
     }
 
     return (
-        <div className="space-y-4">
-            <FormPreview
-                avatar={<Icon name="building" className="h-6 w-6 text-white/70" />}
-                dotClass={data.is_active ? 'bg-emerald-500' : 'bg-gray-400'}
-                title={data.name.trim() || 'فرع جديد'}
-                subtitle={data.phone.trim() || null}
-                subtitleDir="ltr"
-                chips={[governorate?.name, area?.name, data.is_active ? null : 'متوقف'].filter(Boolean)}
-                filled={countFilled(data, ['name'])}
-                total={1}
-            />
-
-            <FormSection icon="building" title="بيانات الفرع" columns={2}>
+        <div className="space-y-5">
+            <FormSection icon="building" title="بيانات الفرع" columns={1}>
                 <FormField id="name" label="الاسم" required error={errors.name}>
                     <TextInput className="block w-full" value={data.name} autoFocus onChange={(e) => setData('name', e.target.value)} />
                 </FormField>
 
-                <FormField id="phone" label="الهاتف" error={errors.phone}>
-                    <TextInput dir="ltr" className="block w-full" value={data.phone} onChange={(e) => setData('phone', e.target.value)} />
+                <FormField id="phone" label="الهاتف" error={errors.phone} hint="يظهر على الإيصالات المطبوعة.">
+                    <TextInput dir="ltr" inputMode="tel" placeholder="059 000 0000" className="block w-full" value={data.phone} onChange={(e) => setData('phone', e.target.value)} />
                 </FormField>
-
-                <div className="sm:col-span-2">
-                    <Switch checked={data.is_active} onChange={(checked) => setData('is_active', checked)} label="فرع نشط" ariaLabel="فرع نشط" hint="الفرع المتوقف لا يظهر بين الفروع الفعالة." />
-                    <InputError message={errors.is_active} className="mt-1" />
-                </div>
             </FormSection>
 
             <FormSection icon="pin" title="الموقع" columns={2}>
@@ -82,6 +63,13 @@ export default function BranchForm({ data, setData, errors, governorates, areas 
                     error={errors.area_id}
                 />
             </FormSection>
+
+            <div>
+                <SettingRow title="فرع نشط" description="الفرع المتوقف لا يظهر بين الفروع ولا تُسجّل عليه دفعات.">
+                    <Switch checked={data.is_active} onChange={(checked) => setData('is_active', checked)} ariaLabel="فرع نشط" />
+                </SettingRow>
+                <InputError message={errors.is_active} className="mt-1" />
+            </div>
         </div>
     );
 }

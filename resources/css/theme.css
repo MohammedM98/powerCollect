@@ -419,6 +419,10 @@
  * on a panel.
  */
 :root {
+    /* Fields: the deepest layer, where one types (white on a light page, darker than the tile on a dark one). */
+    --panel-field: 255 255 255;
+    --panel-tile: 243 245 248;
+    --panel-field-line: 205 211 219;
     --panel-page: 246 247 249;
     --panel-ink: 19 23 28;
     --panel-muted: 89 98 109;
@@ -437,6 +441,9 @@
 }
 
 .dark {
+    --panel-field: 24 27 31;
+    --panel-tile: 34 39 45;
+    --panel-field-line: 62 68 76;
     --panel-page: 20 23 27;
     --panel-ink: 236 239 243;
     --panel-muted: 163 171 181;

@@ -125,7 +125,7 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await page.getByRole('button', { name: 'عرض طبلونات حي ألف', exact: true }).click();
         await expect(page).toHaveURL(/filter.*sub_area_id/);
         await page.getByRole('button', { name: 'طبلون جديد', exact: true }).click();
-        const form = page.getByRole('form', { name: 'إنشاء طبلون', exact: true });
+        const form = page.getByRole('form', { name: 'طبلون جديد', exact: true });
         await expect(form).toBeVisible();
         await expect(form.locator('#governorate_id, #area_id, #branch_id')).toHaveCount(0);
         await expect(form.locator('#sub_area_id')).toBeVisible();

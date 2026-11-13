@@ -1403,10 +1403,51 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 10px 14px;
-    padding: 12px 14px;
+    padding: 14px 16px;
     border: 1px solid var(--gl-line);
-    border-radius: 18px;
-    background: linear-gradient(135deg, color-mix(in srgb, rgb(var(--gl-brand)) 10%, transparent), transparent 60%), var(--gl-fill);
+    border-radius: 16px;
+    background: rgb(var(--panel-bg));
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 14px 34px -26px rgb(0 0 0 / 0.4);
+}
+
+/* Beside the fields (a large window): "how it will look in the lists", the card standing on its own column. */
+.gl-preview-aside {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    padding: 20px;
+    border-radius: 16px;
+    background: rgb(var(--panel-tile));
+    border: 1px solid rgb(var(--panel-ink) / 0.055);
+}
+
+.gl-preview-aside > p {
+    margin: 0;
+    color: var(--gl-muted);
+    font-size: 13px;
+}
+
+.gl-preview-aside .gl-record-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    font-size: 20px;
+}
+
+.gl-preview-note {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+}
+
+.gl-preview-note svg {
+    flex: none;
+    width: 15px;
+    height: 15px;
+    margin-top: 3px;
+    color: rgb(var(--gl-brand));
 }
 
 .gl-record-avatar {
@@ -1417,14 +1458,16 @@
     width: 44px;
     height: 44px;
     border-radius: 13px;
-    background: linear-gradient(140deg, rgb(var(--graphite-500)), rgb(var(--graphite-900)));
-    color: rgb(var(--silver-50));
+    background: rgb(var(--brand-solid));
+    color: rgb(var(--brand-ink));
     font: 700 15px var(--gl-head);
+    transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.5, 1);
 }
 
 .gl-record-avatar svg {
     width: 20px;
     height: 20px;
+    color: rgb(var(--brand-ink));
 }
 
 .gl-record-avatar i {
@@ -1460,13 +1503,293 @@
     color: var(--gl-ink);
 }
 
-/* ── Section card (Components/Form/FormSection.jsx): one part of a form ── */
+/* ── Form groups (Components/Form/FormSection.jsx) and setting rows (Components/Form/SettingRow.jsx) ── */
+/* A form's group: a small quiet name above a grey tile holding its fields (white on the tile). */
 .gl-section {
     min-width: 0;
+}
+
+.gl-group-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 4px 8px;
+    color: var(--gl-muted);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.gl-group-name svg {
+    width: 15px;
+    height: 15px;
+    color: rgb(var(--gl-brand));
+}
+
+/* A stepped form's line of steps (Components/Form/FormSteps.jsx StepIndicator). */
+.gl-steps {
+    position: relative;
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    margin: 0;
+    padding: 4px 24px 8px;
+    list-style: none;
+}
+
+.gl-steps-line {
+    position: absolute;
+    top: 19px;
+    inset-inline: calc(24px + 100% / (var(--steps, 3) * 2));
+    height: 2px;
+    background: var(--gl-line);
+}
+
+.gl-steps-line i {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    background: rgb(var(--brand-solid));
+    transition: width 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.gl-step-item {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    color: var(--gl-faint);
+    font-size: 13px;
+    text-align: center;
+}
+
+.gl-step-dot {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--gl-line-strong);
+    border-radius: 50%;
+    background: rgb(var(--panel-tile));
+    color: var(--gl-muted);
+    font-weight: 600;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.gl-step-item[data-state='current'] {
+    color: var(--gl-ink);
+    font-weight: 600;
+}
+
+.gl-step-item[data-state='current'] .gl-step-dot {
+    border-color: transparent;
+    background: rgb(var(--brand-solid));
+    color: rgb(var(--brand-ink));
+    box-shadow: 0 0 0 5px rgb(var(--brand-solid) / 0.18);
+}
+
+.gl-step-item[data-state='done'] .gl-step-dot {
+    border-color: transparent;
+    background: rgb(var(--brand-solid) / 0.16);
+    color: rgb(var(--gl-brand));
+}
+
+[data-form-step]:not([hidden]) {
+    animation: gl-step-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes gl-step-in {
+    from {
+        opacity: 0;
+        transform: translateX(-14px);
+    }
+}
+
+/* A long form's index down the side (FormSteps.jsx FormOutline). */
+.gl-outline-layout {
+    display: grid;
+    flex: 1;
+    min-height: 0;
+    grid-template-columns: 220px minmax(0, 1fr);
+    border-top: 1px solid var(--gl-line);
+}
+
+.gl-outline {
+    display: grid;
+    align-content: start;
+    gap: 2px;
+    padding: 20px 12px;
+    border-inline-end: 1px solid var(--gl-line);
+}
+
+.gl-outline a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: var(--gl-muted);
+    font-size: 14px;
+    text-decoration: none;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.gl-outline a:hover {
+    background: var(--gl-fill-2);
+    color: var(--gl-ink);
+}
+
+.gl-outline a[aria-current] {
+    background: rgb(var(--brand-solid) / 0.14);
+    color: rgb(var(--gl-brand));
+    font-weight: 600;
+}
+
+@media (max-width: 760px) {
+    .gl-outline-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .gl-outline {
+        display: flex;
+        overflow-x: auto;
+        padding: 8px 16px;
+        border-inline-end: 0;
+        border-bottom: 1px solid var(--gl-line);
+        scrollbar-width: none;
+    }
+
+    .gl-outline a {
+        white-space: nowrap;
+    }
+}
+
+/* An edited record's unsaved changes, beside the save button. */
+.gl-unsaved {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--gl-warn);
+    font-size: 13px;
+}
+
+.gl-unsaved::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* A grouped list (Components/Form/InsetList.jsx): the name on one side and the value on the other, on one row. */
+.gl-inset {
+    overflow: hidden;
+    border: 1px solid rgb(var(--panel-ink) / 0.055);
+    border-radius: 16px;
+    background: rgb(var(--panel-tile));
+}
+
+.gl-inset-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 60px;
+    padding: 8px 16px;
+}
+
+.gl-inset-row + .gl-inset-row {
+    border-top: 1px solid var(--gl-line);
+}
+
+.gl-inset-label {
+    flex: 0 0 40%;
+    min-width: 0;
+}
+
+.gl-inset-label b,
+.gl-inset-label label {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+}
+
+.gl-inset-label small {
+    display: block;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+}
+
+.gl-inset-value {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* A field in a grouped list shows its frame only under the pointer or while typing in it. */
+.gl-inset-value :is(input:not([type='checkbox'], [type='radio']), select) {
+    width: 100%;
+    border-color: transparent;
+    background-color: transparent;
+    box-shadow: none;
+    text-align: left;
+}
+
+.gl-inset-value :is(input, select):hover:not(:focus) {
+    border-color: transparent;
+    background-color: rgb(var(--panel-field) / 0.6);
+}
+
+.gl-inset-value :is(input, select):focus {
+    background-color: rgb(var(--panel-field));
+}
+
+.gl-inset-caption {
+    margin: 8px 16px 0;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+}
+
+.gl-inset-caption b {
+    color: var(--gl-ink);
+}
+
+/* A setting on its own tile: its name and what it means, its switch at the end. */
+.gl-setting {
+    display: flex;
+    align-items: center;
+    gap: 16px;
     padding: 16px;
-    border: 1px solid var(--gl-line);
-    border-radius: 18px;
-    background: var(--gl-fill);
+    border: 1px solid rgb(var(--panel-ink) / 0.055);
+    border-radius: 16px;
+    background: rgb(var(--panel-tile));
+}
+
+.gl-setting-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.gl-setting-text b {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+}
+
+.gl-setting-text small {
+    display: block;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+
+.gl-tile {
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid rgb(var(--panel-ink) / 0.055);
+    border-radius: 16px;
+    background: rgb(var(--panel-tile));
 }
 
 .gl-section-ico {
@@ -1509,12 +1832,18 @@
 
 /* ── Windows (Components/DialogFrame.jsx, Modal.jsx) ──────────────────── */
 .gl-dialog-head {
-    border-bottom: 1px solid var(--gl-line);
+    padding-bottom: 8px;
 }
 
+/* The save bar: no band of its own; the window's own surface, its main button large. */
 .gl-dialog-foot {
-    border-top: 1px solid var(--gl-line);
-    background: var(--gl-fill);
+    padding-top: 20px;
+    padding-bottom: 24px;
+}
+
+/* A long window's body scrolls under its header and save bar: a thin line marks each edge only then. */
+.gl-dialog-body-scrolls {
+    border-block: 1px solid var(--gl-line);
 }
 
 .gl-tone {

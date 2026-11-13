@@ -6,7 +6,7 @@ export default function MeterBoxModal({ show, onClose, meterBox, branches, canCh
     const form = useResourceForm('/meter-boxes', meterBox, { ...meterBoxFormData(meterBox), branch_id: meterBox?.branch_id ?? branchId ?? '' });
 
     return (
-        <FormModal show={show} onClose={onClose} form={form} title={form.isEdit ? 'تعديل الطبلون' : 'إنشاء طبلون'} icon="table" maxWidth="3xl">
+        <FormModal show={show} onClose={onClose} form={form} title={form.isEdit ? 'تعديل الطبلون' : 'طبلون جديد'} description="يرتبط به المشتركون وتُسجّل عليه القراءات." icon="table" maxWidth="3xl">
             <MeterBoxForm
                 data={form.data}
                 setData={form.setData}
