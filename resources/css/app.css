@@ -2375,6 +2375,95 @@ input[type='radio'] {
 }
 
 /*
+ * The prototype's calm table, the default look wider than a phone: one
+ * sheet on the surface, no lines between columns, quiet column titles,
+ * a hairline between rows, a soft tint under the row being pointed at,
+ * and the chosen row in the company's colour with a bar at its start.
+ */
+@container (min-width: 641px) {
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table {
+        border-spacing: 0;
+        font-size: 15px;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table th {
+        padding: 12px 16px;
+        border-bottom: 1px solid rgb(var(--gray-100));
+        color: rgb(var(--gray-500));
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table td,
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table td:first-child,
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table td:last-child {
+        border-width: 0 0 1px;
+        border-style: solid;
+        border-color: rgb(var(--gray-100));
+        border-radius: 0;
+        background: transparent;
+        transition: background-color 0.15s;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table :is(th, td):first-child {
+        padding-inline-start: 24px;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table :is(th, td):last-child {
+        padding-inline-end: 24px;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:last-child td {
+        border-bottom-width: 0;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:hover,
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:focus-within {
+        filter: none;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:is(:hover, :focus-within):not(.bg-brand-50) td {
+        border-color: rgb(var(--gray-100));
+        background: rgb(var(--gray-50));
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:is(:hover, :focus-within):not(.bg-brand-50) td:first-child {
+        box-shadow: none;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr.bg-brand-50 td {
+        background: rgb(var(--brand-solid) / 0.1);
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr.bg-brand-50 td:first-child {
+        box-shadow: inset -3px 0 0 rgb(var(--brand-solid));
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table-container {
+        padding: 0;
+        border-color: rgb(var(--gray-200) / 0.7);
+        background: rgb(var(--surface));
+    }
+
+    :root[data-table-density='compact']:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table {
+        border-spacing: 0;
+    }
+}
+
+/* A row's actions wait out of sight until the row is pointed at, focused or chosen (where there is a pointer to point with). */
+@media (hover: hover) and (pointer: fine) {
+    .data-table tbody tr .row-actions {
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+
+    .data-table tbody tr:is(:hover, :focus-within, .bg-brand-50) .row-actions,
+    .data-table tbody tr .row-actions:has([aria-expanded='true']) {
+        opacity: 1;
+    }
+}
+
+/*
  * The navigation's look (`navStyle`): a solid light bar, or a dark one or
  * one in the company's colour, whose greys theme.css
  * (section 7) turns to the dark theme's so everything in it reads.
