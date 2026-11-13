@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
+import TextInput from '@/Components/TextInput';
 
 /**
  * Deleting a record from a list, after a confirmation. `requestDelete(url,
@@ -8,12 +9,18 @@ import ConfirmDialog from '@/Components/ConfirmDialog';
  * deletes only what nothing uses any more, and otherwise says what still
  * does. Render `deleteDialog` once on the page. `noun` names the kind of
  * record in the question ("المشترك", "الفرع"…), unless a request names
- * its own.
+ * its own. A deletion cannot be undone, so the button waits until the
+ * record's name is typed (spaces at the ends aside).
  */
 export function useDeleteRecord(noun) {
     const [pending, setPending] = useState(null);
+    const [typedName, setTypedName] = useState('');
+    const nameTyped = Boolean(pending) && typedName.trim() === String(pending.name).trim();
 
     function confirm() {
+        if (!nameTyped) {
+            return;
+        }
         router.delete(pending.url, { preserveScroll: true });
         setPending(null);
     }
@@ -29,8 +36,35 @@ export function useDeleteRecord(noun) {
             cancelLabel="إلغاء"
             icon="trash"
             tone="danger"
-        />
+            confirmDisabled={!nameTyped}
+        >
+            {pending && (
+                <div className="mt-4 grid gap-2">
+                    <label htmlFor="delete-record-name" className="text-sm text-[color:var(--gl-muted)]">
+                        اكتب <b className="text-[color:var(--gl-bad)]">{pending.name}</b> للتأكيد
+                    </label>
+                    <TextInput
+                        id="delete-record-name"
+                        autoComplete="off"
+                        value={typedName}
+                        onChange={(event) => setTypedName(event.target.value)}
+                        onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                                event.preventDefault();
+                                confirm();
+                            }
+                        }}
+                        className="block w-full"
+                    />
+                </div>
+            )}
+        </ConfirmDialog>
     );
 
-    return { requestDelete: (url, name, ownNoun = null) => setPending({ url, name, noun: ownNoun }), deleteDialog };
+    function requestDelete(url, name, ownNoun = null) {
+        setTypedName('');
+        setPending({ url, name, noun: ownNoun });
+    }
+
+    return { requestDelete, deleteDialog };
 }

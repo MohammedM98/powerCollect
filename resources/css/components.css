@@ -1377,7 +1377,7 @@
 
 .gl-scope-name {
     margin: 0;
-    font: 800 19px/1.35 var(--gl-head);
+    font: 700 18px/1.35 var(--gl-head);
 }
 
 .gl-scope-facts {
@@ -1888,10 +1888,9 @@
     display: grid;
     gap: 14px;
     margin: 14px 24px 0;
-    padding: 14px 16px 16px;
-    border-radius: 18px;
-    border: 1px solid var(--gl-line);
-    background: linear-gradient(135deg, color-mix(in srgb, var(--gl-t) 12%, transparent), transparent 60%), var(--gl-fill);
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: rgb(var(--panel-tile));
 }
 
 .gl-mv-who {
@@ -1920,9 +1919,9 @@
     place-items: center;
     width: 40px;
     height: 40px;
-    border-radius: 12px;
-    background: linear-gradient(140deg, rgb(var(--graphite-500)), rgb(var(--graphite-900)));
-    color: rgb(var(--silver-50));
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--gl-t) 16%, rgb(var(--panel-bg)));
+    color: var(--gl-t);
     font: 700 14px var(--gl-head);
 }
 
@@ -1959,10 +1958,7 @@
 
 .gl-mv-cell {
     min-width: 0;
-    padding: 9px 12px;
-    border-radius: 13px;
-    border: 1px solid var(--gl-line);
-    background: rgb(var(--panel-bg));
+    padding: 4px 2px;
 }
 
 .gl-mv-cell small {
@@ -1992,7 +1988,10 @@
 }
 
 .gl-mv-cell.is-result {
-    border-color: color-mix(in srgb, var(--gl-cell, var(--gl-ink)) 45%, transparent);
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: rgb(var(--panel-bg));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gl-cell, var(--gl-ink)) 30%, transparent);
 }
 
 .gl-mv-op {
@@ -2048,12 +2047,13 @@
 /* Numbered steps, in the order the form is filled in. */
 .gl-step {
     display: grid;
-    grid-template-columns: 28px minmax(0, 1fr);
-    gap: 4px 12px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
 }
 
+/* The prototype's forms carry no step numbers: the step's name reads as a quiet group label. */
 .gl-step-n {
-    display: grid;
+    display: none;
     place-items: center;
     width: 28px;
     height: 28px;
@@ -2070,9 +2070,9 @@
 }
 
 .gl-step h4 {
-    align-self: center;
     margin: 0;
-    font: 700 15.5px/1.4 var(--gl-head);
+    color: var(--gl-muted);
+    font: 600 13.5px/1.5 var(--gl-head);
 }
 
 .gl-step h4 small {
@@ -2082,7 +2082,7 @@
 }
 
 .gl-step-body {
-    grid-column: 2;
+    grid-column: 1;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 12px;
@@ -2113,16 +2113,6 @@
         grid-column: 1 / -1;
     }
 
-    .gl-step {
-        grid-template-columns: 24px minmax(0, 1fr);
-        gap: 4px 10px;
-    }
-
-    .gl-step-n {
-        width: 24px;
-        height: 24px;
-        font-size: 12px;
-    }
 }
 
 /* ── Notifications (Components/FlashNotifications.jsx) ────────────────── */
@@ -2200,20 +2190,22 @@
 }
 
 /* ── Recording a payment (Pages/Subscriptions/PaymentModal.jsx) ───────── */
+/* The amount in the middle and large (the prototype's quick payment): a line under it, the quick amounts centred below. */
 .gl-amount {
-    padding: 14px 18px 12px;
-    border-radius: 18px;
-    border: 1px solid var(--gl-line);
-    background: var(--gl-fill);
-    transition: border-color 0.15s, box-shadow 0.15s;
+    padding: 4px 0 0;
 }
 
-.gl-amount:focus-within {
-    border-color: rgb(var(--gl-brand) / 0.6);
-    box-shadow: 0 0 0 3px rgb(var(--gl-brand) / 0.16);
+.gl-amount > div:first-child {
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--gl-line-strong);
+    transition: border-color 0.2s;
 }
 
-.gl-amount[data-invalid] {
+.gl-amount:focus-within > div:first-child {
+    border-color: rgb(var(--gl-brand));
+}
+
+.gl-amount[data-invalid] > div:first-child {
     border-color: var(--gl-bad);
 }
 
@@ -2225,9 +2217,10 @@
     background: none !important;
     box-shadow: none !important;
     color: var(--gl-ink);
-    font: 800 40px/1.25 var(--gl-head);
+    font: 700 46px/1.25 var(--gl-head);
     font-variant-numeric: tabular-nums;
-    text-align: end;
+    text-align: center;
+    caret-color: rgb(var(--gl-brand));
 }
 
 .gl-amount-input::placeholder {
@@ -2238,10 +2231,9 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px dashed var(--gl-line-strong);
+    margin-top: 14px;
 }
 
 .gl-method {

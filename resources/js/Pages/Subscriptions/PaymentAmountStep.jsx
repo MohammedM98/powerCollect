@@ -77,11 +77,6 @@ export default function PaymentAmountStep({
                         </p>
                     )}
                     <div className="gl-amount-quick">
-                        {QUICK_AMOUNTS.map((quick) => (
-                            <button key={quick} type="button" onClick={() => setAmount(String(quick))} className="gl-chip gl-chip-sm gl-num">
-                                {quick}
-                            </button>
-                        ))}
                         {owed > 0 && (
                             <button
                                 type="button"
@@ -93,6 +88,11 @@ export default function PaymentAmountStep({
                                 تسديد كامل الدين
                             </button>
                         )}
+                        {QUICK_AMOUNTS.map((quick) => (
+                            <button key={quick} type="button" onClick={() => setAmount(String(quick))} className="gl-chip gl-chip-sm gl-num">
+                                {quick}
+                            </button>
+                        ))}
                     </div>
                 </div>
                 <InputError message={errors.currency} className="mt-2" />
