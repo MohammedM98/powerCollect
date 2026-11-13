@@ -17,7 +17,7 @@ const ICONS = {
     'مراجعة وإغلاق': 'lock',
 };
 
-/** Actions with a color of their own: blue to edit, burgundy to delete, violet to print, Excel green for Excel. */
+/** Actions with a color of their own: blue to edit and to print, red to delete, Excel green for Excel. */
 const TONES = {
     تعديل: 'row-action-edit',
     حذف: 'row-action-delete',

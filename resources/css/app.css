@@ -3403,6 +3403,10 @@ input[type='radio'] {
     color: rgb(var(--print-300));
 }
 
+html:not(.dark)[data-ui-background='graphite'] .row-action-print {
+    color: rgb(var(--print-600));
+}
+
 :root[data-ui-background='graphite'] .row-action-excel {
     color: rgb(var(--excel-300));
 }
