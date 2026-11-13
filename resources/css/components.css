@@ -2297,6 +2297,23 @@
     padding-inline: 16px;
 }
 
+/* While a window is open the messages keep clear of its buttons: beside it on a wide screen, above it on a narrow one. */
+body:has([role='dialog'], [role='alertdialog']) .gl-toasts {
+    align-items: flex-end;
+}
+
+body:has([role='dialog'], [role='alertdialog']) .gl-toast {
+    width: min(360px, 100%);
+}
+
+@media (max-width: 1099px) {
+    body:has([role='dialog'], [role='alertdialog']) .gl-toasts {
+        top: calc(12px + env(safe-area-inset-top, 0px));
+        bottom: auto;
+        align-items: center;
+    }
+}
+
 .gl-toast {
     position: relative;
     width: min(460px, 100%);
