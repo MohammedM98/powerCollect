@@ -50,7 +50,27 @@ export function hiddenEnds(scrollLeft, scrollWidth, clientWidth) {
 export function SectionPages({ trail, url, badges }) {
     const stripRef = useRef(null);
     const [fade, setFade] = useState(null);
+    const [line, setLine] = useState(null);
     const links = sectionLinks(trail?.group);
+
+    // The line under the open page: measured from the link, it slides when the page changes.
+    useEffect(() => {
+        const strip = stripRef.current;
+        if (!strip) {
+            return undefined;
+        }
+
+        function placeLine() {
+            const currentLink = strip.querySelector('[aria-current="page"]');
+            setLine(currentLink ? { left: currentLink.offsetLeft + 6, width: currentLink.offsetWidth - 12 } : null);
+        }
+
+        placeLine();
+        window.addEventListener('resize', placeLine);
+        document.fonts?.ready.then(placeLine);
+
+        return () => window.removeEventListener('resize', placeLine);
+    }, [url, links.length]);
 
     useEffect(() => {
         const strip = stripRef.current;
@@ -108,6 +128,7 @@ export function SectionPages({ trail, url, badges }) {
                     {badges[link.href] > 0 && <span className="tn-badge">{badges[link.href]}</span>}
                 </Link>
             ))}
+            <span className="tn-subnav-line" aria-hidden="true" style={line ? { width: line.width, transform: `translateX(${line.left}px)` } : undefined} />
         </div>
     );
 }

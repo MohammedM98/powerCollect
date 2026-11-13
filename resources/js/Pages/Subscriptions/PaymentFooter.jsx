@@ -10,10 +10,6 @@ export default function PaymentFooter({ correcting, currencyMark, data, form, in
             <SecondaryButton onClick={requestClose} className="gl-lg">
                 إلغاء
             </SecondaryButton>
-                للحفظ ·<span className="kbd">1</span>
-                <span className="kbd">2</span>
-                للطريقة
-            </span>
             <PrimaryButton
                 type="submit"
                 disabled={

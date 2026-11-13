@@ -2601,13 +2601,13 @@ input[type='radio'] {
 }
 
 /* The open page, the home page among the sections, and a current section's page strip. */
-:root[data-ui-background='graphite'] :is(a.tn-drawer-group[data-current='true'], .tn-drawer-link[aria-current='page'], .tn-subnav a[aria-current='page']) {
+:root[data-ui-background='graphite'] :is(a.tn-drawer-group[data-current='true'], .tn-drawer-link[aria-current='page']) {
     background: var(--tn-graphite);
     color: var(--tn-graphite-ink);
     box-shadow: none;
 }
 
-:root[data-ui-background='graphite'] :is(a.tn-drawer-group[data-current='true'], .tn-drawer-link[aria-current='page'], .tn-subnav a[aria-current='page']) svg {
+:root[data-ui-background='graphite'] :is(a.tn-drawer-group[data-current='true'], .tn-drawer-link[aria-current='page']) svg {
     color: var(--tn-graphite-icon);
 }
 
@@ -3292,13 +3292,13 @@ input[type='radio'] {
     color: rgb(var(--nav-role-ink));
 }
 
-:root[data-ui-navigation]:is([data-ui-nav-highlight='secondary'], [data-ui-nav-highlight='accent']) :is(.tn-drawer-link, .tn-subnav a)[aria-current='page'] {
+:root[data-ui-navigation]:is([data-ui-nav-highlight='secondary'], [data-ui-nav-highlight='accent']) .tn-drawer-link[aria-current='page'] {
     background: rgb(var(--nav-role-solid));
     color: rgb(var(--nav-role-ink));
     box-shadow: inset -3px 0 0 rgb(var(--nav-role-ink));
 }
 
-:root[data-ui-navigation]:is([data-ui-nav-highlight='secondary'], [data-ui-nav-highlight='accent']) :is(.tn-drawer-link, .tn-subnav a)[aria-current='page'] svg {
+:root[data-ui-navigation]:is([data-ui-nav-highlight='secondary'], [data-ui-nav-highlight='accent']) .tn-drawer-link[aria-current='page'] svg {
     color: rgb(var(--nav-role-ink));
 }
 
