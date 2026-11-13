@@ -16,6 +16,9 @@
     --tn-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
     --tn-graphite: linear-gradient(135deg, rgb(var(--graphite-700)), rgb(var(--graphite-800)) 60%, rgb(var(--graphite-900)));
     --tn-graphite-dark: linear-gradient(135deg, rgb(var(--graphite-400)), rgb(var(--graphite-600)) 60%, rgb(var(--graphite-800)));
+    /* Text and icons on that light (the identity's look sets them per theme, app.css). */
+    --tn-graphite-ink: #fff;
+    --tn-graphite-icon: #fff;
 }
 
 html {
@@ -362,12 +365,15 @@ html.tn-locked {
     transform: rotate(180deg);
 }
 
-.tn-section[data-lit='true'],
-.tn-section[data-lit='true'] .tn-section-icon {
-    color: #fff;
+.tn-section[data-lit='true'] {
+    color: var(--tn-graphite-ink);
 }
 
-/* The current section: a glowing burgundy line at the bar's bottom edge. */
+.tn-section[data-lit='true'] .tn-section-icon {
+    color: var(--tn-graphite-icon);
+}
+
+/* The current section: a glowing line in the company's colour at the bar's bottom edge. */
 .tn-section[data-current='true']::after {
     content: '';
     position: absolute;
@@ -385,8 +391,8 @@ html.tn-locked {
     height: 19px;
     padding: 0 5px;
     border-radius: calc(99px * var(--radius-scale, 1));
-    background: rgb(var(--brand-500));
-    color: #fff;
+    background: rgb(var(--brand-solid));
+    color: rgb(var(--brand-ink));
     font: 700 11px/19px Alexandria, sans-serif;
     text-align: center;
     box-shadow: 0 0 0 2px rgb(var(--surface) / 0.9);
@@ -435,7 +441,7 @@ html.tn-locked {
 .tn-tool:hover,
 .tn-tool[aria-expanded='true'] {
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
     box-shadow: 0 10px 20px -12px rgb(var(--shadow-ink) / 0.7);
 }
 
@@ -467,8 +473,8 @@ html.tn-locked {
     height: 17px;
     padding: 0 4px;
     border-radius: calc(99px * var(--radius-scale, 1));
-    background: rgb(var(--brand-500));
-    color: #fff;
+    background: rgb(var(--brand-solid));
+    color: rgb(var(--brand-ink));
     font: 700 10.5px/17px Alexandria, sans-serif;
     box-shadow: 0 0 0 2px rgb(var(--surface));
 }
@@ -569,7 +575,7 @@ html.tn-locked {
     height: 38px;
     border-radius: calc(12px * var(--radius-scale, 1));
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
     font: 700 15px Alexandria, var(--font-body, 'IBM Plex Sans Arabic'), sans-serif;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.15), 0 0 0 1px rgb(255 255 255 / 0.06);
     flex: none;
@@ -615,7 +621,7 @@ html.tn-locked {
 
     .tn-search:hover {
         background: var(--tn-graphite);
-        color: #fff;
+        color: var(--tn-graphite-ink);
         border-color: transparent;
     }
 
@@ -683,7 +689,7 @@ html.tn-locked {
 }
 
 .tn-branch-chip:focus-within {
-    outline: 2px solid rgb(var(--brand-solid));
+    outline: 2px solid rgb(var(--gl-brand));
     outline-offset: 2px;
 }
 
@@ -840,7 +846,7 @@ html.tn-locked {
 .tn-mega-link:hover .tn-tile,
 .tn-mega-link:focus-visible .tn-tile {
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
     border-color: transparent;
     box-shadow: 0 10px 18px -10px rgb(var(--shadow-ink) / 0.7);
     transform: translateY(-1px);
@@ -922,8 +928,8 @@ html.tn-locked {
     height: 22px;
     padding: 0 7px;
     border-radius: calc(99px * var(--radius-scale, 1));
-    background: rgb(var(--brand-500));
-    color: #fff;
+    background: rgb(var(--brand-solid));
+    color: rgb(var(--brand-ink));
     font: 700 12px/22px Alexandria, sans-serif;
     text-align: center;
 }
@@ -937,7 +943,7 @@ html.tn-locked {
     padding: 14px;
     border-radius: calc(18px * var(--radius-scale, 1));
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
     transition: transform 0.2s var(--tn-ease), box-shadow 0.2s;
 }
 
@@ -1074,7 +1080,7 @@ html.tn-locked {
 
 .tn-segments button[aria-pressed='true'] {
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
     box-shadow: 0 6px 14px -8px rgb(var(--shadow-ink) / 0.7);
 }
 
@@ -1180,7 +1186,7 @@ html.tn-locked {
 
 .tn-palette-item.is-active .tn-tile {
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
 }
 
 .tn-palette-item mark {
@@ -1275,13 +1281,13 @@ html.tn-locked {
 .tn-drawer-group[aria-expanded='true'],
 .tn-drawer-group[data-current='true'] {
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
     box-shadow: inset -3px 0 0 rgb(var(--brand-500)), 0 12px 24px -14px rgb(var(--shadow-ink) / 0.6);
 }
 
 .tn-drawer-group[aria-expanded='true'] svg,
 .tn-drawer-group[data-current='true'] svg {
-    color: #fff;
+    color: var(--tn-graphite-icon);
 }
 
 .tn-drawer-group[aria-expanded='true'] .tn-chevron {
@@ -1375,7 +1381,7 @@ html.tn-locked {
 
 .tn-subnav a[aria-current='page'] {
     background: var(--tn-graphite);
-    color: #fff;
+    color: var(--tn-graphite-ink);
     font-weight: 700;
     box-shadow: 0 8px 18px -12px rgb(var(--shadow-ink) / 0.7);
 }
@@ -1392,7 +1398,7 @@ html.tn-locked {
 }
 
 .tn-subnav a[aria-current='page'] svg {
-    color: #fff;
+    color: var(--tn-graphite-icon);
 }
 
 .tn-subnav a .tn-badge {
@@ -1400,8 +1406,8 @@ html.tn-locked {
     height: 19px;
     padding: 0 5px;
     border-radius: calc(99px * var(--radius-scale, 1));
-    background: rgb(var(--brand-500));
-    color: #fff;
+    background: rgb(var(--brand-solid));
+    color: rgb(var(--brand-ink));
     font: 700 11px/19px Alexandria, sans-serif;
     text-align: center;
 }

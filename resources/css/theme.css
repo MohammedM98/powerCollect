@@ -28,41 +28,53 @@
 
     /* ── 1. Brand ─────────────────────────────────────────────────────────── */
 
-    /* Burgundy, from the logo's arrow. 500 is the primary color. */
-    --brand-50: 251 241 241;
-    --brand-100: 244 214 216;
-    --brand-200: 236 188 191;
-    --brand-300: 216 134 140;
-    --brand-400: 196 81 90;
-    --brand-500: 165 29 38;
-    --brand-600: 143 24 32;
-    --brand-700: 118 18 26;
-    --brand-800: 92 13 20;
-    --brand-900: 63 0 8;
+    /*
+     * Power Collect's identity, from the logo: black, white and its lime
+     * (#D3FB0E). Lime is a fill, never text on white: buttons, the open
+     * page's pill in the dark theme and badges are lime with black text
+     * (`--brand-ink`, 16:1). Brand text, links and icons on a light page use
+     * the deep olive steps (500 and darker read at 5.3:1 or more on white).
+     */
+    --brand-50: 248 254 220;
+    --brand-100: 240 253 184;
+    --brand-200: 228 252 120;
+    --brand-300: 216 251 50;
+    --brand-400: 140 175 0;
+    --brand-500: 92 116 0;
+    --brand-600: 77 98 0;
+    --brand-700: 62 79 0;
+    --brand-800: 48 61 0;
+    --brand-900: 33 42 0;
 
     /*
-     * The brand colour where it must look the same in both themes: on the
-     * dark graphite panels, in gradients, glows and the signature line.
+     * The brand colour where it must look the same in both themes: the
+     * buttons' lime (solid, with hi and lo for hover and press), the lime
+     * used as text on dark panels (tint, soft) and the deep olive.
      */
-    --brand-tint: 255 154 160;
-    --brand-soft: 224 112 122;
-    --brand-bright: 216 65 75;
-    --brand-glow: 196 48 58;
-    --brand-hi: 184 35 44;
-    --brand-solid: 165 29 38;
-    --brand-lo: 125 18 27;
-    --brand-deep: 92 13 20;
+    --brand-tint: 236 254 160;
+    --brand-soft: 211 251 14;
+    --brand-bright: 216 251 40;
+    --brand-glow: 211 251 14;
+    --brand-hi: 222 255 70;
+    --brand-solid: 211 251 14;
+    --brand-lo: 190 228 10;
+    --brand-deep: 62 79 0;
 
-    /* The logo's own colours (resources/js/Components/AnimatedLogo.jsx): its letters, its arrow and their tints. */
-    --logo-letters: 43 43 43;
-    --logo-arrow: 155 38 44;
-    --logo-dot: 107 33 37;
-    --logo-tint-silver: 223 223 225;
-    --logo-tint-letters: 189 191 194;
-    --logo-tint-arrow: 104 30 33;
+    /* Text and icons drawn on a lime fill. A company with a colour of its own gets white (Brand::stylesheet). */
+    --brand-ink: 10 10 10;
 
-    /* The signature line: burgundy fading into silver, like the logo's arrow. */
-    --spectrum: linear-gradient(90deg, rgb(var(--brand-deep)), rgb(var(--brand-solid)) 40%, rgb(var(--silver-500)) 75%, rgb(var(--silver-100)));
+    /* The open page or section in the navigation: black with white text in the light theme, lime with black text in the dark one. */
+    --nav-active: 10 10 10;
+    --nav-active-ink: 255 255 255;
+    --nav-active-icon: 211 251 14;
+
+    /* The logo's own colours (Components/SuperPowerMark.jsx): its black tile, white S and lime bolt. */
+    --logo-tile: 0 0 0;
+    --logo-letter: 255 255 255;
+    --logo-bolt: 211 251 14;
+
+    /* The signature line: the logo's lime fading into its olive. */
+    --spectrum: linear-gradient(90deg, rgb(var(--brand-solid)), rgb(var(--brand-400)) 60%, rgb(var(--brand-deep)));
 
     /* ── 2. Neutrals ──────────────────────────────────────────────────────── */
 
@@ -250,16 +262,20 @@
 .dark {
     color-scheme: dark;
 
-    --brand-50: 42 16 19;
-    --brand-100: 58 20 24;
-    --brand-200: 92 28 34;
-    --brand-300: 140 40 48;
-    --brand-400: 196 70 78;
-    --brand-500: 184 35 44;
-    --brand-600: 222 92 100;
-    --brand-700: 236 128 135;
-    --brand-800: 243 164 169;
-    --brand-900: 249 204 207;
+    --brand-50: 26 31 4;
+    --brand-100: 36 43 6;
+    --brand-200: 58 70 6;
+    --brand-300: 100 120 8;
+    --brand-400: 160 192 12;
+    --brand-500: 92 116 0;
+    --brand-600: 211 251 14;
+    --brand-700: 222 252 90;
+    --brand-800: 234 253 150;
+    --brand-900: 244 254 205;
+
+    --nav-active: 211 251 14;
+    --nav-active-ink: 10 10 10;
+    --nav-active-icon: 10 10 10;
 
     --gray-50: 10 10 10;
     --gray-100: 25 25 25;
@@ -284,9 +300,7 @@
 
     --surface: 22 22 22;
 
-    --logo-letters: 214 214 214;
 
-    --spectrum: linear-gradient(90deg, rgb(var(--brand-deep)), rgb(var(--brand-hi)) 40%, rgb(var(--silver-700)) 75%, rgb(var(--gray-200)));
 }
 
 /*

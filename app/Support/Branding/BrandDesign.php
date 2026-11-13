@@ -273,7 +273,7 @@ class BrandDesign
         'superpower' => [
             'label' => 'Charcoal super power',
             'description' => 'Solid cards in neutral charcoal greys, light grey in the light theme, a top bar with the section pages under it, tables inside solid panels, gradient buttons and filled fields.',
-            'design' => ['background' => 'graphite', 'neutral' => 'graphite', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand', 'navHighlight' => 'brand'],
+            'design' => ['background' => 'graphite', 'neutral' => 'graphite', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'switches' => 'brand', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand'],
         ],
         'classic' => [
             'label' => 'Classic premium',

@@ -1,20 +1,23 @@
-/** The Super Power bolt, an "S" of two strokes leaning the same way (public/images/logo-superpower.svg). */
-const BOLT = 'M37.5 9.5H24.8a2 2 0 0 0-1.86 1.27l-6.1 15.6A1.5 1.5 0 0 0 18.24 28.4H28l-5.3 15.8a.9.9 0 0 0 1.57.83l17.6-21.1A1.5 1.5 0 0 0 40.7 21.5H32.2l6.62-9.7A1.5 1.5 0 0 0 37.5 9.5z';
+/** The logo's S (traced from the company's logo, on a 1254-unit canvas), with its notch for the bolt. */
+const LETTER = 'M260 247H1001L843 469H566L1007 798L787 1031H257L434 824H642V772H539L566 722L260 508Z';
+
+/** The lightning bolt across the S. */
+const BOLT = 'M673 515L539 772H650L622 968L762 764H653Z';
 
 /**
- * The Super Power mark: a rounded square in the company's colour holding the
- * white bolt and its spark. One colour, no gradient or shadow, readable from
- * 16px. `draw` traces the bolt in when it appears (still when motion is off).
- * An empty `label` marks it decorative, hidden from screen readers, for a
- * mark beside text that already names the company.
+ * The Power Collect mark: a black rounded tile holding the white S and its
+ * lime bolt, as the logo, in both themes. Flat, readable from 16px. `draw`
+ * traces the S in when it appears (still when motion is off). An empty
+ * `label` marks it decorative, hidden from screen readers, for a mark beside
+ * text that already names the company.
  */
 export function SuperPowerMark({ size = 36, draw = false, label = 'شعار سوبر باور' }) {
     return (
-        <svg className={`gl-mark ${draw ? 'is-drawing' : ''}`} width={size} height={size} viewBox="0 0 56 56" {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}>
-            <rect className="gl-mark-tile" width="56" height="56" rx="16" />
+        <svg className={`gl-mark ${draw ? 'is-drawing' : ''}`} width={size} height={size} viewBox="127 127 1000 1000" {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}>
+            <rect className="gl-mark-tile" x="127" y="127" width="1000" height="1000" rx="270" />
+            <path className="gl-mark-letter" d={LETTER} />
             <path className="gl-mark-bolt" d={BOLT} />
-            {draw && <path className="gl-mark-line" d={BOLT} pathLength="1" />}
-            <circle className="gl-mark-node" cx="40.6" cy="45.2" r="2.6" />
+            {draw && <path className="gl-mark-line" d={LETTER} pathLength="1" />}
         </svg>
     );
 }

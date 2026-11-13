@@ -66,16 +66,16 @@ class BrandTest extends TestCase
             ->where('brand.logos.main', '/images/logo-superpower.svg')
             ->where('brand.logos.print', '/images/logo-superpower.svg')
             ->where('brand.animatedLogo', true)
-            ->where('brand.printColor', '#A51D26'));
+            ->where('brand.printColor', '#1A1A1A'));
         $response->assertSee('<link rel="icon" href="/favicon.svg">', false);
     }
 
-    public function test_pages_start_in_the_superpower_charcoal_look_with_the_top_bar_and_solid_cards(): void
+    public function test_pages_start_in_the_power_collect_lime_identity_with_the_top_bar_and_solid_cards(): void
     {
         $response = $this->get(route('login'));
 
         $response->assertInertia(fn ($page) => $page
-            ->where('brand.primaryColor', '#2B2B2B')
+            ->where('brand.primaryColor', '#D3FB0E')
             ->where('brand.design.preset', 'superpower')
             ->where('brand.design.navigation', 'topbar')
             ->where('brand.design.cards', 'elevated')
@@ -83,8 +83,9 @@ class BrandTest extends TestCase
             ->where('brand.design.details', 'modal'));
         $response->assertSee('data-ui-background="graphite"', false);
         $response->assertSee('data-ui-neutral="graphite"', false);
-        $response->assertSee(':root{--brand-50:', false);
-        $response->assertSee('.dark{--brand-50:', false);
+        // The lime identity is theme.css's own (black ink on lime): no generated shades or white ink are drawn over it.
+        $response->assertDontSee('--brand-50:', false);
+        $response->assertDontSee('--brand-ink:', false);
         // The charcoal look keeps theme.css's own neutral greys: no tinted grey scale is drawn over them.
         $response->assertDontSee('--gray-50:', false);
     }
@@ -113,6 +114,8 @@ class BrandTest extends TestCase
         $response->assertSee('<link rel="icon" href="'.$logoUrl.'">', false);
         $response->assertSee(':root{--brand-50:', false);
         $response->assertSee('--ui-danger:rgb(var(--danger-600))', false);
+        // Its colour carries white text and fills the open page's pill, unlike the lime identity's black ink.
+        $response->assertSee('--brand-ink:255 255 255;--nav-active:var(--brand-solid);', false);
     }
 
     public function test_a_file_naming_only_a_preset_gets_its_whole_look_with_any_choice_it_changes(): void

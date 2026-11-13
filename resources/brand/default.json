@@ -13,12 +13,12 @@
         "print": null
     },
     "colors": {
-        "primary": "#2B2B2B",
+        "primary": "#D3FB0E",
         "secondary": null,
         "accent": null,
         "background": null,
         "surface": null,
-        "print": "#A51D26",
+        "print": "#1A1A1A",
         "success": null,
         "warning": null,
         "danger": null,
@@ -59,7 +59,7 @@
         "cardHover": "none",
         "rowHover": "tint",
         "focusRing": "brand",
-        "navHighlight": "brand"
+        "navHighlight": "pill"
     },
     "tokens": {
         "radiusScale": null,

@@ -24,10 +24,13 @@
     --gl-btn: var(--brand-solid);
     --gl-head: var(--font-heading, 'Cairo'), 'IBM Plex Sans Arabic', system-ui, sans-serif;
     --gl-d: 1;
+    /* Text on a movement's tone (dark tones in the light theme, bright ones in the dark). */
+    --gl-tone-ink: #fff;
 }
 
 .dark {
     --gl-brand: var(--brand-soft);
+    --gl-tone-ink: #0a0a0a;
 }
 
 .gl-num {
@@ -422,7 +425,7 @@
     font-size: 12px;
     font-weight: 700;
     background: rgb(var(--gl-btn));
-    color: #fff;
+    color: rgb(var(--brand-ink));
 }
 
 .gl-tog[aria-pressed='false'] {
@@ -1071,23 +1074,27 @@
     }
 }
 
-/* ── The Super Power mark and lockup (Components/SuperPowerMark.jsx) ────── */
+/* ── The Power Collect mark and lockup (Components/SuperPowerMark.jsx): the logo's black tile, white S and lime bolt ── */
 .gl-mark {
     display: block;
     flex: none;
 }
 
 .gl-mark-tile {
-    fill: rgb(var(--brand-solid));
+    fill: rgb(var(--logo-tile));
 }
 
-.gl-mark-bolt,
-.gl-mark-node {
-    fill: #fff;
+.dark .gl-mark-tile {
+    stroke: rgb(255 255 255 / 0.14);
+    stroke-width: 12;
 }
 
-.gl-mark-node {
-    opacity: 0.9;
+.gl-mark-letter {
+    fill: rgb(var(--logo-letter));
+}
+
+.gl-mark-bolt {
+    fill: rgb(var(--logo-bolt));
 }
 
 .gl-mark.is-drawing .gl-mark-tile {
@@ -1096,18 +1103,18 @@
     animation: gl-mark-tile 0.7s cubic-bezier(0.2, 1.3, 0.4, 1) both;
 }
 
-.gl-mark.is-drawing .gl-mark-bolt {
+.gl-mark.is-drawing .gl-mark-letter {
     animation: gl-fade 0.5s ease 1s both;
 }
 
-.gl-mark.is-drawing .gl-mark-node {
+.gl-mark.is-drawing .gl-mark-bolt {
     animation: gl-fade 0.4s ease 1.2s both;
 }
 
 .gl-mark-line {
     fill: none;
-    stroke: #fff;
-    stroke-width: 1.6;
+    stroke: rgb(var(--logo-letter));
+    stroke-width: 22;
     stroke-linejoin: round;
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
@@ -1326,6 +1333,7 @@
 }
 
 .gl-switch[data-on] .gl-switch-knob {
+    background: rgb(var(--brand-ink));
     transform: translateX(calc(-18px * var(--gl-d)));
 }
 
@@ -1742,7 +1750,7 @@
 .gl-step[data-done] .gl-step-n {
     border-color: var(--gl-t, rgb(var(--gl-btn)));
     background: var(--gl-t, rgb(var(--gl-btn)));
-    color: #fff;
+    color: var(--gl-t-ink, rgb(var(--brand-ink)));
 }
 
 .gl-step h4 {
@@ -1954,7 +1962,7 @@
 
 .gl-method[data-checked] .gl-method-icon {
     background: rgb(var(--gl-btn));
-    color: #fff;
+    color: rgb(var(--brand-ink));
 }
 
 .gl-method-dot {
@@ -1968,7 +1976,7 @@
 
 .gl-method[data-checked] .gl-method-dot {
     border-color: rgb(var(--gl-btn));
-    background: radial-gradient(circle, #fff 0 3.5px, rgb(var(--gl-btn)) 4px);
+    background: radial-gradient(circle, rgb(var(--brand-ink)) 0 3.5px, rgb(var(--gl-btn)) 4px);
 }
 
 .gl-receipt-cut {
@@ -2030,7 +2038,7 @@
  * Flat, crisp buttons that sit on the panels instead of floating over them:
  * one solid fill per role, a thin light along the top edge like the panel
  * panels' rim, no gradient, glow or drop shadow. Hover deepens the fill a
- * step (white text keeps 4.5:1 on the company's colour), a press deepens it
+ * step (its ink, `--brand-ink`, keeps 4.5:1 on the company's colour), a press deepens it
  * further and nudges it down, focus shows a ring in the company's colour.
  *   gl-btn          main action: the company's colour
  *   gl-btn gl-sec   side action: the soft tint with a thin line
@@ -2042,7 +2050,7 @@
     --gl-btn-fill: rgb(var(--gl-btn));
     --gl-btn-hover: color-mix(in srgb, rgb(var(--gl-btn)) 84%, rgb(var(--brand-lo)));
     --gl-btn-press: color-mix(in srgb, rgb(var(--gl-btn)) 68%, rgb(var(--brand-lo)));
-    --gl-btn-ink: #fff;
+    --gl-btn-ink: rgb(var(--brand-ink));
     --gl-btn-line: transparent;
     --gl-btn-rim: rgb(255 255 255 / 0.18);
     display: inline-flex;
@@ -2148,7 +2156,7 @@
     overflow: hidden;
     border-radius: 10px;
     background: rgb(var(--gl-btn));
-    color: #fff;
+    color: rgb(var(--brand-ink));
     font-weight: 600;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
 }

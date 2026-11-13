@@ -169,7 +169,7 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                         onInput={(e) => clearErrorOnInput(e, form)}
                         onKeyDown={onKeyDown}
                         className={SHEET_FORM_CLASS}
-                        style={{ '--gl-t': MOVEMENT_TONES[tone] }}
+                        style={{ '--gl-t': MOVEMENT_TONES[tone], '--gl-t-ink': 'var(--gl-tone-ink)' }}
                     >
                         <FormHeader
                             titleId={titleId}

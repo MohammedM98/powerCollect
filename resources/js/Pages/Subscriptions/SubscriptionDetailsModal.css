@@ -74,7 +74,7 @@
 .sp-quick-actions { display: flex; gap: 6px; margin: 0 0 8px auto; }
 .sp-quick-actions button { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 10px; border: 1px solid var(--gl-line); border-radius: calc(11px * var(--radius-scale, 1)); color: var(--gl-ink); background: var(--gl-fill); font-weight: 700; font-size: 14px; }
 .sp-quick-actions svg { width: 16px; height: 16px; }
-.sp-quick-actions .sp-pay { padding: 0 14px; border: 0; color: #fff; background: rgb(var(--gl-btn)); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18); border-radius: calc(10px * var(--radius-scale, 1)); }
+.sp-quick-actions .sp-pay { padding: 0 14px; border: 0; color: rgb(var(--brand-ink)); background: rgb(var(--gl-btn)); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18); border-radius: calc(10px * var(--radius-scale, 1)); }
 .sp-quick-actions .sp-pay:hover { background: color-mix(in srgb, rgb(var(--gl-btn)) 84%, rgb(var(--brand-lo))); }
 .sp-body { flex: 1; min-height: 0; overflow: auto; padding: 20px 22px 24px; }
 .sp-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
@@ -107,7 +107,7 @@
 .sp-footer-actions { margin-inline-start: auto; display: flex; gap: 8px; flex: none; }
 .sp-button { height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 16px; border: 1px solid var(--sp-line); border-radius: calc(13px * var(--radius-scale, 1)); background: var(--sp-surface); color: var(--sp-ink-secondary); font: 700 15px var(--font-body, 'IBM Plex Sans Arabic'), sans-serif; }
 .sp-button:hover { background: var(--sp-sunken); }
-.sp-button.sp-primary { border: 0; color: #fff; background: rgb(var(--gl-btn)); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18); border-radius: calc(10px * var(--radius-scale, 1)); }
+.sp-button.sp-primary { border: 0; color: rgb(var(--brand-ink)); background: rgb(var(--gl-btn)); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18); border-radius: calc(10px * var(--radius-scale, 1)); }
 .sp-button.sp-primary:hover { filter: brightness(1.07); }
 .sp-account-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .sp-account-summary > div { border: 1px solid var(--sp-line-soft); border-radius: calc(16px * var(--radius-scale, 1)); padding: 12px 14px; background: var(--sp-raised); }
