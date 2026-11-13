@@ -13,7 +13,7 @@
  *   1. Brand            the main colour (buttons, links, focus, the logo's colour)
  *   2. Neutrals         page, cards, lines and text; graphite for the dark panels
  *   3. Status           success, warning, danger and info
- *   4. Actions          editing (blue), printing (violet), exporting to Excel (green)
+ *   4. Actions          editing and printing (the identity's blue), exporting to Excel (green)
  *   5. Accents          extra colours for charts, tags and roles
  *   6. Named colours    what the pages with a stylesheet of their own read
  *   7. Dark navigation  the greys inside a dark or coloured navigation
@@ -209,14 +209,14 @@
     --blue-lo: 29 78 216;
 
     /*
-     * Violet, for printing, and Excel's own green, for exporting to Excel:
+     * The identity's blue, for printing, and Excel's own green, for exporting to Excel:
      * each action wears its colour on every page so it is found at a glance.
      * 300 is the soft ink on a dark header, 600 the ink on a light tint.
      */
-    --print-300: 196 181 253;
-    --print-500: 124 58 237;
-    --print-600: 109 40 217;
-    --print-700: 91 33 182;
+    --print-300: 147 197 253;
+    --print-500: 37 99 235;
+    --print-600: 29 78 216;
+    --print-700: 30 64 175;
     --excel-300: 134 220 165;
     --excel-500: 31 135 80;
     --excel-600: 33 115 70;
@@ -304,7 +304,7 @@
     --blue-600: 96 165 250;
     --blue-700: 147 197 253;
 
-    --print-600: 196 181 253;
+    --print-600: 96 165 250;
     --excel-500: 26 128 72;
     --excel-600: 110 220 150;
     --excel-700: 20 96 54;
