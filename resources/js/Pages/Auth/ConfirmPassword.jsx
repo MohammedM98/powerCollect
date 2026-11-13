@@ -16,7 +16,7 @@ export default function ConfirmPassword() {
     }
 
     return (
-        <GuestLayout subtitle="هذه منطقة آمنة. أكّد كلمة المرور قبل المتابعة.">
+        <GuestLayout title="تأكيد كلمة المرور" subtitle="هذه منطقة آمنة. أكّد كلمة المرور قبل المتابعة.">
             <Head title="تأكيد كلمة المرور" />
 
             <form onSubmit={submit}>
