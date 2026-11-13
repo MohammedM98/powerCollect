@@ -76,20 +76,21 @@ const CELL_COLORS = { owes: 'var(--gl-bad)', credit: 'var(--gl-ok)', settled: 'v
 /**
  * The three cells of a movement that changes the balance: the balance now,
  * the movement (`sign` -1 takes it off, 1 adds it on) and the balance it
- * leaves, coloured as balances are everywhere. `amount` null leaves the
- * result blank.
+ * leaves, coloured as balances are everywhere. `amount` null counts as
+ * nothing yet, so the result starts at the balance now.
  *
  * @param {{ balance: number|string, balanceLabel?: string, amount: number|null, sign: -1|1, moveLabel: string, moveNote?: string, afterLabel?: string }} movement
  * @returns {Array<{ label: string, value: string, note?: string, color?: string, move?: boolean, result?: boolean }>}
  */
 export function balanceCells({ balance, balanceLabel = 'الرصيد الحالي', amount, sign, moveLabel, moveNote = '', afterLabel = 'الرصيد بعدها' }) {
     const before = describeBalance(balance);
-    const after = amount === null ? null : describeBalance(Number(balance) + sign * amount);
+    // Before an amount is typed the balance after is the balance now; it follows the amount as it is typed.
+    const after = describeBalance(Number(balance) + sign * (amount ?? 0));
 
     return [
         { label: balanceLabel, value: balanceText(before), note: before.label, color: CELL_COLORS[before.tone] },
         { label: moveLabel, value: `${sign < 0 ? '−' : '+'} ${formatMoney(amount ?? 0)} ₪`, note: moveNote, move: true },
-        { label: afterLabel, value: after ? balanceText(after) : '—', note: after?.label ?? '', color: after ? CELL_COLORS[after.tone] : 'var(--gl-faint)', result: true },
+        { label: afterLabel, value: balanceText(after), note: after.label, color: CELL_COLORS[after.tone], result: true },
     ];
 }
 

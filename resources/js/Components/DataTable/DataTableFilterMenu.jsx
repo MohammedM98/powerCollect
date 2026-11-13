@@ -8,7 +8,7 @@ import { childOptions, nestFilterGroups, parentChange, parentValue, scopedOption
 function FilterField({ group, value, onChange, placeholder = 'الكل', className = 'sm:w-44' }) {
     return (
         <div className={`flex w-full min-w-0 flex-col gap-1.5 ${className}`}>
-            <span className={`flex items-center gap-1.5 text-xs font-semibold ${value ? 'text-gray-900' : 'text-gray-500'}`}>
+            <span className={`flex items-center gap-1.5 text-[13.5px] font-semibold ${value ? 'text-gray-900' : 'text-gray-700'}`}>
                 {group.label}
                 {value && <span className="h-1.5 w-1.5 rounded-full bg-brand-500" aria-hidden="true" />}
             </span>
@@ -119,7 +119,6 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                                 group={{ ...child, options: scopedOptions({ options: childOptions(child, value) }, values) }}
                                 value={values?.[child.key] ?? ''}
                                 placeholder={`كل ${value}`}
-                                className="sm:w-60"
                                 onChange={(next) => changeMany({ [group.key]: value, [child.key]: next })}
                             />
                         )}
@@ -133,7 +132,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                     type="button"
                     onClick={() => setOpen((current) => !current)}
                     aria-expanded={open}
-                    className="flex items-center gap-2 rounded-control border border-gray-200 bg-surface px-3.5 py-2.5 text-xs font-semibold text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
+                    className="flex h-[var(--control-h)] items-center gap-2 rounded-control border border-gray-200 bg-surface px-3.5 text-sm font-semibold text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
                 >
                     <Icon name="filter" className="h-4 w-4" />
                     الفلاتر الظاهرة
@@ -171,7 +170,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                 <button
                     type="button"
                     onClick={onClear}
-                    className="rounded-control px-3 py-2.5 text-xs font-semibold text-brand-600 transition hover:bg-brand-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900"
+                    className="h-[var(--control-h)] rounded-control px-3 text-sm font-semibold text-brand-600 transition hover:bg-brand-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900"
                 >
                     مسح الفلاتر ({activeCount})
                 </button>

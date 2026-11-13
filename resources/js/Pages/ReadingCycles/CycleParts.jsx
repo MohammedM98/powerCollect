@@ -45,7 +45,7 @@ export function DistributionSummary({ boxes }) {
                     <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-control bg-gray-50 text-gray-600">
                         <Icon name={stat.icon} className="h-5 w-5" />
                     </span>
-                    <p className="text-xs font-semibold text-gray-500">{stat.label}</p>
+                    <p className="text-[13.5px] font-semibold text-gray-700">{stat.label}</p>
                     <p className={`mt-1 font-display text-2xl font-bold ${stat.tone}`}>{formatNumber(stat.value)}</p>
                     <p className="mt-2 text-xs leading-5 text-gray-500">{stat.hint}</p>
                 </div>

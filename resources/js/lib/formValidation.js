@@ -47,20 +47,7 @@ function messageFor(field) {
  * form can be sent.
  */
 export function validateFormFields(formElement, form) {
-    return validateFields(formElement.elements, form);
-}
-
-/** The fields inside a part of a form (a step of it), for checking that part alone. */
-export function fieldsWithin(container) {
-    return container ? container.querySelectorAll('input, select, textarea') : [];
-}
-
-/**
- * Check the given fields as validateFormFields does a whole form: each
- * failing field's message shown under it, the first one focused.
- */
-export function validateFields(fields, form) {
-    const invalidFields = [...fields].filter((field) => field.willValidate && !field.checkValidity());
+    const invalidFields = [...formElement.elements].filter((field) => field.willValidate && !field.checkValidity());
 
     if (invalidFields.length === 0) {
         return true;

@@ -143,7 +143,7 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
 
     return (
         <>
-            <Modal show={show} onClose={requestClose} maxWidth="3xl">
+            <Modal show={show} onClose={requestClose} maxWidth="5xl">
                 {receipt ? (
                     <DoneScreen
                         tone={correcting ? 'amber' : 'red'}

@@ -94,7 +94,7 @@ export default function InlineNameEditor({ initialName = '', placeholder, reques
                 <div className="flex items-center gap-2 px-1.5 pt-1">
                     {error && <p className="text-xs text-brand-600">{error}</p>}
                     {onMore && (
-                        <button type="button" onClick={onMore} className="ms-auto text-xs font-semibold text-gray-500 hover:text-brand-600">
+                        <button type="button" onClick={onMore} className="ms-auto text-[13.5px] font-semibold text-gray-700 hover:text-brand-600">
                             تعديل كامل…
                         </button>
                     )}

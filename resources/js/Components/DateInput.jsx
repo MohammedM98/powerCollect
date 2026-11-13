@@ -180,7 +180,7 @@ export default function DateInput({
                         openCalendar();
                     }
                 }}
-                className={`flex h-[42px] w-full items-center justify-between gap-2 rounded-control border px-3 text-start text-base leading-6 transition focus:outline-none disabled:cursor-not-allowed ${fieldColors}`}
+                className={`flex h-[var(--control-h)] w-full items-center justify-between gap-2 rounded-control border px-3 text-start text-base leading-6 transition focus:outline-none disabled:cursor-not-allowed ${fieldColors}`}
             >
                 <span className={`truncate ${onDark ? (hasValue ? 'text-white' : 'text-white/60') : (hasValue ? 'text-gray-900' : 'text-gray-400/60')}`}>{hasValue ? formatWeekDay(value) : placeholder}</span>
                 <Icon name="calendar" className={`h-[18px] w-[18px] shrink-0 ${onDark ? 'text-white/60' : 'text-gray-400'}`} />
@@ -247,7 +247,7 @@ export default function DateInput({
                             <div ref={gridRef} role="grid" tabIndex={-1} aria-label={`${formatMonthName(shownMonth)} ${year}`} onKeyDown={onGridKeyDown}>
                                 <div role="row" className="grid grid-cols-7 pb-1">
                                     {WEEKDAY_INITIALS.map((day) => (
-                                        <span key={day.label} role="columnheader" className="py-1 text-center text-xs font-semibold text-gray-500">
+                                        <span key={day.label} role="columnheader" className="py-1 text-center text-[13.5px] font-semibold text-gray-700">
                                             <abbr title={day.label} className="no-underline">{day.initial}</abbr>
                                         </span>
                                     ))}

@@ -3,7 +3,6 @@ import { useHttp } from '@inertiajs/react';
 import Affix from '@/Components/Affix';
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
-import { FormStep } from '@/Components/Form/FormSteps';
 import SettingRow from '@/Components/Form/SettingRow';
 import InputError from '@/Components/InputError';
 import Switch from '@/Components/Switch';
@@ -26,8 +25,7 @@ const STATUS_OPTIONS = [
  */
 const REQUIRED_FIELDS = ['full_name', 'status', 'tariff_id', 'minimum_charge'];
 
-/** A new subscriber is added in these steps (FormModal `steps`); an edited one is read through this index (`outline`). */
-export const SUBSCRIPTION_STEPS = [{ title: 'المشترك' }, { title: 'الاشتراك والعداد' }, { title: 'الرسوم والمراجعة' }];
+/** The form's sections, for the index down the side of its window (FormModal `outline`). */
 export const SUBSCRIPTION_OUTLINE = [
     { id: 'subscription-subscriber', title: 'بيانات المشترك', icon: 'user' },
     { id: 'subscription-tariff', title: 'الاشتراك والقاطع', icon: 'bolt' },
@@ -227,181 +225,173 @@ export default function SubscriptionForm({
 
     return (
         <div className="space-y-5">
-            {isEdit && preview}
+            {preview}
 
-            <FormStep index={0}>
-                {(sharedPersonalDetails || subscriptionCount > 1) && (
-                    <div className="rounded-xl border border-brand-100 bg-brand-50 p-4 text-sm text-brand-800">
-                        {sharedPersonalDetails
-                            ? 'سيُضاف اشتراك جديد بنفس الهوية. يمكنك إضافة وصف إلى الاسم وتغيير رقم الجوال لهذا الاشتراك.'
-                            : 'الاسم ورقم الجوال قابلان للتعديل لهذا الاشتراك فقط. الهوية والعنوان مشتركان بين الاشتراكات.'}
-                        <InputError message={errors.source_subscription_id} className="mt-1" />
-                    </div>
-                )}
-
-                <div id="subscription-subscriber" className="scroll-mt-4">
-                    <SubscriberSection
-                        chooseStatus={chooseStatus}
-                        data={data}
-                        errors={errors}
-                        independentContactDetails={independentContactDetails}
-                        isEdit={isEdit}
-                        nameField={nameField}
-                        original={original}
-                        phoneField={phoneField}
-                        setData={setData}
-                        sharedPersonalDetails={sharedPersonalDetails}
-                        statusOptions={statusOptions}
-                    />
+            {(sharedPersonalDetails || subscriptionCount > 1) && (
+                <div className="rounded-xl border border-brand-100 bg-brand-50 p-4 text-sm text-brand-800">
+                    {sharedPersonalDetails
+                        ? 'سيُضاف اشتراك جديد بنفس الهوية. يمكنك إضافة وصف إلى الاسم وتغيير رقم الجوال لهذا الاشتراك.'
+                        : 'الاسم ورقم الجوال قابلان للتعديل لهذا الاشتراك فقط. الهوية والعنوان مشتركان بين الاشتراكات.'}
+                    <InputError message={errors.source_subscription_id} className="mt-1" />
                 </div>
-            </FormStep>
+            )}
 
-            <FormStep index={1}>
-                <div id="subscription-tariff" className="scroll-mt-4">
+            <div id="subscription-subscriber" className="scroll-mt-4">
+                <SubscriberSection
+                    chooseStatus={chooseStatus}
+                    data={data}
+                    errors={errors}
+                    independentContactDetails={independentContactDetails}
+                    isEdit={isEdit}
+                    nameField={nameField}
+                    original={original}
+                    phoneField={phoneField}
+                    setData={setData}
+                    sharedPersonalDetails={sharedPersonalDetails}
+                    statusOptions={statusOptions}
+                />
+            </div>
 
-                    <SubscriptionTariffSection
-                        canEditKilowattPrice={canEditKilowattPrice}
-                        canEditMinimumCharge={canEditMinimumCharge}
-                        circuitBreakers={circuitBreakers}
-                        confirmingKilowattPriceUnlock={confirmingKilowattPriceUnlock}
-                        confirmingMinimumChargeUnlock={confirmingMinimumChargeUnlock}
-                        data={data}
-                        errors={errors}
-                        hasOwnKilowattPrice={hasOwnKilowattPrice}
-                        kilowattPriceDropped={kilowattPriceDropped}
-                        kilowattPriceLocked={kilowattPriceLocked}
-                        kilowattPriceUnlocked={kilowattPriceUnlocked}
-                        lockKilowattPrice={lockKilowattPrice}
-                        minimumChargeLocked={minimumChargeLocked}
-                        minimumChargeUnlocked={minimumChargeUnlocked}
-                        onCircuitBreakerChange={onCircuitBreakerChange}
-                        onTariffChange={onTariffChange}
-                        segments={segments}
-                        selectedTariff={selectedTariff}
-                        setConfirmingKilowattPriceUnlock={setConfirmingKilowattPriceUnlock}
-                        setConfirmingMinimumChargeUnlock={setConfirmingMinimumChargeUnlock}
-                        setData={setData}
-                        tariffRate={tariffRate}
-                        tariffs={tariffs}
-                        unlockKilowattPrice={unlockKilowattPrice}
-                        unlockMinimumCharge={unlockMinimumCharge}
-                    />
-                </div>
+            <div id="subscription-tariff" className="scroll-mt-4">
 
-                <div id="subscription-location" className="scroll-mt-4">
+                <SubscriptionTariffSection
+                    canEditKilowattPrice={canEditKilowattPrice}
+                    canEditMinimumCharge={canEditMinimumCharge}
+                    circuitBreakers={circuitBreakers}
+                    confirmingKilowattPriceUnlock={confirmingKilowattPriceUnlock}
+                    confirmingMinimumChargeUnlock={confirmingMinimumChargeUnlock}
+                    data={data}
+                    errors={errors}
+                    hasOwnKilowattPrice={hasOwnKilowattPrice}
+                    kilowattPriceDropped={kilowattPriceDropped}
+                    kilowattPriceLocked={kilowattPriceLocked}
+                    kilowattPriceUnlocked={kilowattPriceUnlocked}
+                    lockKilowattPrice={lockKilowattPrice}
+                    minimumChargeLocked={minimumChargeLocked}
+                    minimumChargeUnlocked={minimumChargeUnlocked}
+                    onCircuitBreakerChange={onCircuitBreakerChange}
+                    onTariffChange={onTariffChange}
+                    segments={segments}
+                    selectedTariff={selectedTariff}
+                    setConfirmingKilowattPriceUnlock={setConfirmingKilowattPriceUnlock}
+                    setConfirmingMinimumChargeUnlock={setConfirmingMinimumChargeUnlock}
+                    setData={setData}
+                    tariffRate={tariffRate}
+                    tariffs={tariffs}
+                    unlockKilowattPrice={unlockKilowattPrice}
+                    unlockMinimumCharge={unlockMinimumCharge}
+                />
+            </div>
 
-                    <SubscriptionLocationSection
-                        branches={branches}
-                        canChooseBranch={canChooseBranch}
-                        data={data}
-                        errors={errors}
-                        isEdit={isEdit}
-                        loadMeterBoxes={loadMeterBoxes}
-                        onBranchChange={onBranchChange}
-                        onMeterBoxChange={onMeterBoxChange}
-                        onSubAreaChange={onSubAreaChange}
-                        resolvedAreaId={resolvedAreaId}
-                        resolvedAreaName={resolvedAreaName}
-                        selectedBox={selectedBox}
-                        showMeterBoxField={showMeterBoxField}
-                        subAreaId={subAreaId}
-                        subAreasInArea={subAreasInArea}
-                    />
-                </div>
-            </FormStep>
+            <div id="subscription-location" className="scroll-mt-4">
 
-            <FormStep index={2}>
-                {!isEdit && preview}
+                <SubscriptionLocationSection
+                    branches={branches}
+                    canChooseBranch={canChooseBranch}
+                    data={data}
+                    errors={errors}
+                    isEdit={isEdit}
+                    loadMeterBoxes={loadMeterBoxes}
+                    onBranchChange={onBranchChange}
+                    onMeterBoxChange={onMeterBoxChange}
+                    onSubAreaChange={onSubAreaChange}
+                    resolvedAreaId={resolvedAreaId}
+                    resolvedAreaName={resolvedAreaName}
+                    selectedBox={selectedBox}
+                    showMeterBoxField={showMeterBoxField}
+                    subAreaId={subAreaId}
+                    subAreasInArea={subAreasInArea}
+                />
+            </div>
 
-                <div id="subscription-fees" className="scroll-mt-4">
-                    <FormSection icon="calendar" title="معلومات الاشتراك">
-                        <FormField
-                            id="initial_reading"
-                            label="القراءة السابقة"
-                            required={readingRequired}
-                            error={errors.initial_reading}
-                            hint={readingRequired ? 'منها يبدأ حساب الاستهلاك.' : 'تُدخل القراءة عند تفعيل المشترك، منها يبدأ حساب استهلاكه.'}
-                        >
-                            <Affix unit="ك.و.س">
-                                <TextInput
-                                    type="number"
-                                    required={readingRequired}
-                                    disabled={!readingRequired}
-                                    min={0}
-                                    step="0.01"
-                                    className={`block w-full disabled:opacity-100 ${readingRequired ? '' : 'bg-gray-50 text-gray-600'}`}
-                                    value={data.initial_reading}
-                                    onChange={(event) => setData('initial_reading', event.target.value)}
-                                />
-                            </Affix>
-                        </FormField>
-
-                        <FormField id="subscription_fee" label="رسوم الاشتراك" required={data.charge_subscription_fee} error={errors.subscription_fee}>
-                            <Affix unit="₪">
-                                <TextInput
-                                    type="number"
-                                    step="0.01"
-                                    disabled={subscriptionFeeLocked}
-                                    title={subscriptionFeeCharged ? 'حُمّلت الرسوم على الحساب؛ عدّلها من سجل المعاملات.' : subscriptionFeeLocked ? 'فعّل تحميل رسوم اشتراك لإدخال المبلغ' : undefined}
-                                    className={`block w-full disabled:opacity-100 ${subscriptionFeeLocked ? 'bg-gray-50 text-gray-600' : ''}`}
-                                    required={data.charge_subscription_fee}
-                                    min={data.charge_subscription_fee ? '0.01' : '0'}
-                                    value={data.subscription_fee}
-                                    onChange={(e) => setData('subscription_fee', e.target.value)}
-                                />
-                            </Affix>
-                        </FormField>
-
-                        <FormField id="subscription_date" label="تاريخ الاشتراك" error={errors.subscription_date}>
-                            <DateInput
-                                // The server accepts no date before 2000 or after today.
-                                min="2000-01-01"
-                                max={new Date().toLocaleDateString('en-CA')}
-                                value={data.subscription_date}
-                                onChange={(value) => setData('subscription_date', value)}
+            <div id="subscription-fees" className="scroll-mt-4">
+                <FormSection icon="calendar" title="معلومات الاشتراك">
+                    <FormField
+                        id="initial_reading"
+                        label="القراءة السابقة"
+                        required={readingRequired}
+                        error={errors.initial_reading}
+                        hint={readingRequired ? 'منها يبدأ حساب الاستهلاك.' : 'تُدخل القراءة عند تفعيل المشترك، منها يبدأ حساب استهلاكه.'}
+                    >
+                        <Affix unit="ك.و.س">
+                            <TextInput
+                                type="number"
+                                required={readingRequired}
+                                disabled={!readingRequired}
+                                min={0}
+                                step="0.01"
+                                className={`block w-full disabled:opacity-100 ${readingRequired ? '' : 'bg-gray-50 text-gray-600'}`}
+                                value={data.initial_reading}
+                                onChange={(event) => setData('initial_reading', event.target.value)}
                             />
-                        </FormField>
+                        </Affix>
+                    </FormField>
 
-                        {'charge_subscription_fee' in data && (
-                            <div className="sm:col-span-2 lg:col-span-3">
-                                <SettingRow
-                                    title="تحميل رسوم اشتراك"
-                                    description={
-                                        data.charge_subscription_fee
-                                            ? 'تُضاف رسوم الاشتراك إلى الرصيد وسجل المعاملات عند حفظ المشترك.'
-                                            : 'لن تُضاف الرسوم إلى الرصيد أو سجل المعاملات. يمكنك تحميلها لاحقًا من سجل المعاملات.'
-                                    }
-                                >
-                                    <Switch
-                                        checked={data.charge_subscription_fee}
-                                        onChange={(checked) => choose('charge_subscription_fee', checked)}
-                                        ariaLabel="تحميل رسوم اشتراك"
-                                    />
-                                </SettingRow>
-                                <InputError message={errors.charge_subscription_fee} className="mt-1" />
-                            </div>
-                        )}
-                    </FormSection>
-                </div>
-
-                <div id="subscription-extra" className="scroll-mt-4">
-                    <FormSection icon="note" title="معلومات إضافية">
-                        <FormField id="address" label="العنوان" error={errors.address} span="sm:col-span-2 lg:col-span-3">
-                            <textarea
-                                rows={2}
-                                className="block w-full"
-                                value={data.address}
-                                readOnly={sharedPersonalDetails}
-                                onChange={(e) => setData('address', e.target.value)}
+                    <FormField id="subscription_fee" label="رسوم الاشتراك" required={data.charge_subscription_fee} error={errors.subscription_fee}>
+                        <Affix unit="₪">
+                            <TextInput
+                                type="number"
+                                step="0.01"
+                                disabled={subscriptionFeeLocked}
+                                title={subscriptionFeeCharged ? 'حُمّلت الرسوم على الحساب؛ عدّلها من سجل المعاملات.' : subscriptionFeeLocked ? 'فعّل تحميل رسوم اشتراك لإدخال المبلغ' : undefined}
+                                className={`block w-full disabled:opacity-100 ${subscriptionFeeLocked ? 'bg-gray-50 text-gray-600' : ''}`}
+                                required={data.charge_subscription_fee}
+                                min={data.charge_subscription_fee ? '0.01' : '0'}
+                                value={data.subscription_fee}
+                                onChange={(e) => setData('subscription_fee', e.target.value)}
                             />
-                        </FormField>
+                        </Affix>
+                    </FormField>
 
-                        <FormField id="notes" label="معلومات أخرى" error={errors.notes} span="sm:col-span-2 lg:col-span-3">
-                            <textarea rows={2} className="block w-full" value={data.notes} onChange={(e) => setData('notes', e.target.value)} />
-                        </FormField>
-                    </FormSection>
-                </div>
-            </FormStep>
+                    <FormField id="subscription_date" label="تاريخ الاشتراك" error={errors.subscription_date}>
+                        <DateInput
+                            // The server accepts no date before 2000 or after today.
+                            min="2000-01-01"
+                            max={new Date().toLocaleDateString('en-CA')}
+                            value={data.subscription_date}
+                            onChange={(value) => setData('subscription_date', value)}
+                        />
+                    </FormField>
+
+                    {'charge_subscription_fee' in data && (
+                        <div className="sm:col-span-2 lg:col-span-3">
+                            <SettingRow
+                                title="تحميل رسوم اشتراك"
+                                description={
+                                    data.charge_subscription_fee
+                                        ? 'تُضاف رسوم الاشتراك إلى الرصيد وسجل المعاملات عند حفظ المشترك.'
+                                        : 'لن تُضاف الرسوم إلى الرصيد أو سجل المعاملات. يمكنك تحميلها لاحقًا من سجل المعاملات.'
+                                }
+                            >
+                                <Switch
+                                    checked={data.charge_subscription_fee}
+                                    onChange={(checked) => choose('charge_subscription_fee', checked)}
+                                    ariaLabel="تحميل رسوم اشتراك"
+                                />
+                            </SettingRow>
+                            <InputError message={errors.charge_subscription_fee} className="mt-1" />
+                        </div>
+                    )}
+                </FormSection>
+            </div>
+
+            <div id="subscription-extra" className="scroll-mt-4">
+                <FormSection icon="note" title="معلومات إضافية">
+                    <FormField id="address" label="العنوان" error={errors.address} span="sm:col-span-2 lg:col-span-3">
+                        <textarea
+                            rows={2}
+                            className="block w-full"
+                            value={data.address}
+                            readOnly={sharedPersonalDetails}
+                            onChange={(e) => setData('address', e.target.value)}
+                        />
+                    </FormField>
+
+                    <FormField id="notes" label="معلومات أخرى" error={errors.notes} span="sm:col-span-2 lg:col-span-3">
+                        <textarea rows={2} className="block w-full" value={data.notes} onChange={(e) => setData('notes', e.target.value)} />
+                    </FormField>
+                </FormSection>
+            </div>
         </div>
     );
 }

@@ -111,7 +111,11 @@
         transition: border-color 0.15s, box-shadow 0.15s;
     }
 
-    /* One field height everywhere (44px), so fields, lists and buttons in a row line up. */
+    /*
+     * One field height everywhere (--control-h, theme.css), so every text
+     * field, list, date and search box is the same size wherever it is used
+     * and fields side by side line up.
+     */
     input:where(:not([type])),
     [type='text'],
     [type='email'],
@@ -121,7 +125,8 @@
     [type='tel'],
     [type='date'],
     select:not([multiple], [size]) {
-        min-height: 44px;
+        height: var(--control-h);
+        min-height: var(--control-h);
     }
 
     :is(input:where(:not([type])), [type='text'], [type='email'], [type='password'], [type='number'], [type='search'], [type='tel'], [type='date'], select, textarea):hover:not(:focus, :disabled) {

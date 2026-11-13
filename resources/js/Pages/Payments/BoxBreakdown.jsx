@@ -69,7 +69,7 @@ export default function BoxBreakdown({ type, entries, className = '' }) {
 
     return <section aria-label={(groupings[type] ?? groupings.cash).title} className={`overflow-hidden rounded-card border border-gray-100 bg-surface p-4 ${className}`}>
         <header className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <h3 className="text-xs font-semibold text-gray-500">{(groupings[type] ?? groupings.cash).title}</h3>
+            <h3 className="text-[13.5px] font-semibold text-gray-700">{(groupings[type] ?? groupings.cash).title}</h3>
             <p className="text-xs text-gray-500"><b className="font-display text-gray-700">{count}</b> حركة سارية · <b dir="ltr" className="font-display text-gray-700">{formatMoney(total)}</b> شيكل</p>
         </header>
         <ul className="flex flex-wrap gap-2">

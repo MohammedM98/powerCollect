@@ -1,6 +1,6 @@
 import FormModal from '@/Components/FormModal';
 import { useResourceForm } from '@/hooks/useResourceForm';
-import SubscriptionForm, { SUBSCRIPTION_OUTLINE, SUBSCRIPTION_STEPS } from './SubscriptionForm';
+import SubscriptionForm, { SUBSCRIPTION_OUTLINE } from './SubscriptionForm';
 import { subscriptionFormData } from '@/lib/subscriptionForm';
 
 export default function SubscriptionModal({
@@ -29,11 +29,10 @@ export default function SubscriptionModal({
             form={form}
             title={form.isEdit ? 'تعديل المشترك' : sourceSubscription ? 'إضافة اشتراك' : 'إنشاء مشترك'}
             icon="user"
-            description={form.isEdit ? 'التغييرات تظهر في كشف الحساب والقراءات القادمة.' : undefined}
-            maxWidth={form.isEdit ? '5xl' : '3xl'}
+            description={form.isEdit ? 'التغييرات تظهر في كشف الحساب والقراءات القادمة.' : 'يُضاف إلى القوائم ويبدأ احتساب قراءاته فور حفظه.'}
+            maxWidth="5xl"
             visitOptions={visitOptions}
-            steps={form.isEdit ? null : SUBSCRIPTION_STEPS}
-            outline={form.isEdit ? SUBSCRIPTION_OUTLINE : null}
+            outline={SUBSCRIPTION_OUTLINE}
         >
             <SubscriptionForm
                 data={form.data}

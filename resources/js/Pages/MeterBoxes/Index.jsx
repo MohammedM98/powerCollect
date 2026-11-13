@@ -207,8 +207,8 @@ export default function Index({
                                 { value: 'created_at', label: 'تاريخ الإضافة' },
                             ]}
                         />
-                        {canViewSubscriptions && <div role="group" aria-label="ترتيب مشتركي جميع الطبلونات" className="flex w-full min-w-0 flex-col gap-1.5 sm:w-52">
-                            <label htmlFor="all-meter-box-subscriptions-direction" className="text-xs font-semibold text-gray-500">ترتيب المشتركين داخل الطبلون</label>
+                        {canViewSubscriptions && <div role="group" aria-label="ترتيب مشتركي جميع الطبلونات" className="flex w-full min-w-0 flex-col gap-1.5 sm:w-44">
+                            <label htmlFor="all-meter-box-subscriptions-direction" className="text-[13.5px] font-semibold text-gray-700">ترتيب المشتركين</label>
                             <SearchableSelect
                                 id="all-meter-box-subscriptions-direction"
                                 value={`${subscriptionOrder.sort}:${subscriptionOrder.direction}`}
@@ -257,7 +257,7 @@ export default function Index({
                                     <div className="flex flex-wrap items-center gap-3 text-sm">
                                         <Icon name="pin" className="h-5 w-5 text-brand-600" />
                                         {region.id === 'none' ? <b>{region.name}</b> : <button type="button" onClick={() => setFilter('sub_area_id', String(region.id))} className="font-bold text-gray-900 underline-offset-4 hover:text-brand-600 hover:underline" aria-label={`عرض طبلونات ${region.name}`}>{region.name}</button>}
-                                        <span className="rounded-control bg-surface px-2.5 py-1 text-xs font-semibold text-gray-500">{formatNumber(region.boxes.length)} طبلون في هذه الصفحة</span>
+                                        <span className="rounded-control bg-surface px-2.5 py-1 text-[13.5px] font-semibold text-gray-700">{formatNumber(region.boxes.length)} طبلون في هذه الصفحة</span>
                                     </div>
                                 </td></tr>}
                                 {region.boxes.map((meterBox) => (

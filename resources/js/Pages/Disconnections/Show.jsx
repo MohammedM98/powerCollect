@@ -47,7 +47,7 @@ function BarButton({ icon, label, onClick, className = '' }) {
 function Stat({ label, value, tone = 'text-gray-900', hint }) {
     return (
         <div className="rounded-card border border-gray-100 bg-surface px-4 py-3 shadow-card">
-            <p className="text-xs font-semibold text-gray-500">{label}</p>
+            <p className="text-[13.5px] font-semibold text-gray-700">{label}</p>
             <p className={`mt-1 font-display text-2xl font-bold ${tone}`}>{value}</p>
             {hint && <p className="mt-0.5 text-xs text-gray-500">{hint}</p>}
         </div>

@@ -7,7 +7,7 @@ import KpiTile from '@/Components/KpiTile';
 import SearchableSelect from '@/Components/SearchableSelect';
 import { cents, reportMoney, shortDate } from '@/lib/reportFormatting';
 
-export const TH = 'px-3 py-2.5 text-start text-xs font-semibold text-gray-500';
+export const TH = 'px-3 py-2.5 text-start text-[13.5px] font-semibold text-gray-700';
 
 export const NUM_TH = TH.replace('text-start', 'text-right');
 
