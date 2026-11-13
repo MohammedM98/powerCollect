@@ -268,7 +268,7 @@ export default function Index({
             <ReadingContextBar anchorRef={filtersRef} sectionRef={sheetRef} week={week} weekEnd={weekEnd} groups={filterOptions} values={filterValues} search={search} total={rows.total} onChangeFilters={setFilters} />
             <div className="re-sort">
                 <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-52">
-                    <span className="text-xs font-semibold text-gray-500">ترتيب حسب</span>
+                    <span className="text-[13.5px] font-semibold text-gray-700">ترتيب حسب</span>
                     <SearchableSelect
                         id="sheet-sort"
                         value={filters.sort}
@@ -279,7 +279,7 @@ export default function Index({
                     />
                 </div>
                 <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-48">
-                    <span className="text-xs font-semibold text-gray-500">الاتجاه</span>
+                    <span className="text-[13.5px] font-semibold text-gray-700">الاتجاه</span>
                     <SearchableSelect
                         id="sheet-direction"
                         value={filters.direction}

@@ -1,3 +1,4 @@
+import StatementTitle from './StatementTitle';
 import { useId, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
@@ -59,10 +60,7 @@ export default function StatementModal({ subscription, statement, initialForm = 
                                 <Icon name="ledger" className="h-[22px] w-[22px]" />
                             </span>
                             <div className="min-w-0 flex-1">
-                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                                    <h3 id={titleId} className="text-xl font-extrabold !font-[family-name:var(--gl-head)]">
-                                        كشف حساب {header.fullName}
-                                    </h3>
+                                <StatementTitle id={titleId} name={header.fullName} as="h3">
                                     {header.statusLabel && <StatusPill tone={STATUS_TONES[header.status]} label={header.statusLabel} />}
                                     {header.standingDiscount && <StandingDiscountBadge discount={header.standingDiscount} />}
                                     {header.standingDiscount && statement?.canAddDiscount && (
@@ -72,8 +70,8 @@ export default function StatementModal({ subscription, statement, initialForm = 
                                             discountLabel={header.standingDiscount.segment ? `${header.standingDiscount.terms} · ${header.standingDiscount.segment}` : header.standingDiscount.terms}
                                         />
                                     )}
-                                </div>
-                                <p className="gl-sub mt-0.5 !text-[13px]">
+                                </StatementTitle>
+                                <p className="gl-sub mt-1.5 !text-[13.5px]">
                                     {header.subscriberNumber && (
                                         <>
                                             مشترك <span dir="ltr">{header.subscriberNumber}</span> ·{' '}

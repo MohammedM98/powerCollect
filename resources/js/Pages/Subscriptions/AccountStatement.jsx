@@ -1,3 +1,4 @@
+import { FilterBar, FilterField } from '@/Components/Form/FilterBar';
 import { Fragment, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import Balance from '@/Components/Balance';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
@@ -225,20 +226,18 @@ export default function AccountStatement({ subscription, entries, summary, payme
                             disabled={visibleEntries.length === 0}
                         />
                     </div>
-                    <div className="grid items-end gap-3 sm:grid-cols-2 lg:grid-cols-8">
-                        <label className="block text-sm text-gray-600 sm:col-span-2">
-                            بحث
+                    <FilterBar label="تصفية الحركات">
+                        <FilterField label="بحث">
                             <input
                                 type="search"
                                 value={filters.search}
                                 onChange={(e) => setFilter('search', e.target.value)}
-                                placeholder="البيان والتفاصيل، رقم السند، المبلغ، البنك أو اسم الموظف..."
-                                className="mt-1 block w-full text-sm"
+                                placeholder="البيان، رقم السند، المبلغ أو البنك"
+                                className="block w-full text-sm"
                             />
-                        </label>
-                        <label className="block text-sm text-gray-600">
-                            نوع الحركة
-                            <select value={filters.type} onChange={(e) => setFilter('type', e.target.value)} className="mt-1 block w-full text-sm">
+                        </FilterField>
+                        <FilterField label="نوع الحركة">
+                            <select value={filters.type} onChange={(e) => setFilter('type', e.target.value)} className="block w-full text-sm">
                                 <option value="">الكل</option>
                                 <option value="debit">كل ما عليه (تحميل)</option>
                                 <option value="credit">كل ما له (تسديد وخصم)</option>
@@ -248,10 +247,9 @@ export default function AccountStatement({ subscription, entries, summary, payme
                                     </option>
                                 ))}
                             </select>
-                        </label>
-                        <label className="block text-sm text-gray-600">
-                            طريقة الدفع
-                            <select value={filters.method} onChange={(e) => setFilter('method', e.target.value)} className="mt-1 block w-full text-sm">
+                        </FilterField>
+                        <FilterField label="طريقة الدفع">
+                            <select value={filters.method} onChange={(e) => setFilter('method', e.target.value)} className="block w-full text-sm">
                                 <option value="">الكل</option>
                                 {paymentMethods.map((method) => (
                                     <option key={method.value} value={method.value}>
@@ -259,22 +257,19 @@ export default function AccountStatement({ subscription, entries, summary, payme
                                     </option>
                                 ))}
                             </select>
-                        </label>
-                        <div className="block text-sm text-gray-600">
-                            من تاريخ
-                            <DateInput aria-label="من تاريخ" className="mt-1" value={filters.dateFrom} max={filters.dateTo || undefined} onChange={(value) => setFilter('dateFrom', value)} />
-                        </div>
-                        <div className="block text-sm text-gray-600">
-                            إلى تاريخ
-                            <DateInput aria-label="إلى تاريخ" className="mt-1" value={filters.dateTo} min={filters.dateFrom || undefined} onChange={(value) => setFilter('dateTo', value)} />
-                        </div>
-                        <label className="block text-sm text-gray-600 sm:col-span-2">
-                            ترتيب الحركات
-                            <select value={filters.sort ?? ''} onChange={(event) => setFilter('sort', event.target.value)} className="mt-1 block w-full text-sm">
+                        </FilterField>
+                        <FilterField label="من تاريخ">
+                            <DateInput aria-label="من تاريخ" value={filters.dateFrom} max={filters.dateTo || undefined} onChange={(value) => setFilter('dateFrom', value)} />
+                        </FilterField>
+                        <FilterField label="إلى تاريخ">
+                            <DateInput aria-label="إلى تاريخ" value={filters.dateTo} min={filters.dateFrom || undefined} onChange={(value) => setFilter('dateTo', value)} />
+                        </FilterField>
+                        <FilterField label="ترتيب الحركات">
+                            <select value={filters.sort ?? ''} onChange={(event) => setFilter('sort', event.target.value)} className="block w-full text-sm">
                                 {STATEMENT_SORT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                             </select>
-                        </label>
-                    </div>
+                        </FilterField>
+                    </FilterBar>
                     {filters.sort?.startsWith('bank_') && <p className="mt-2 text-sm text-gray-500">الحركات دون تاريخ وصول للبنك تظهر أخيرًا. الرصيد بجانب كل حركة هو رصيدها وقت التسجيل.</p>}
                     {invalidDates && (
                         <p role="alert" className="mt-2 text-sm text-red-600">

@@ -62,7 +62,7 @@ export default function HierarchyColumn({
                     </button>
                 )}
                 <h2 className="font-luxe text-lg font-bold text-gray-900">{title}</h2>
-                {items && <small className="font-display text-xs font-semibold text-gray-500">{count}</small>}
+                {items && <small className="font-display text-[13.5px] font-semibold text-gray-700">{count}</small>}
                 {items && canAdd && (
                     <button
                         type="button"

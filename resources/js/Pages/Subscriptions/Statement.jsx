@@ -1,3 +1,4 @@
+import StatementTitle from './StatementTitle';
 import { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -28,9 +29,9 @@ export default function Statement(statement) {
                         <div className="mb-1 text-sm font-semibold text-gray-500">
                             <BackLink href="/subscriptions">المشتركون</BackLink>
                         </div>
-                        <h2 className="text-3xl font-bold text-gray-900">كشف حساب المشترك</h2>
-                        <p className="mt-1 text-sm text-gray-500">
-                            {subscription.fullName} · حساب <span dir="ltr">{subscription.accountNumber}</span> · {subscription.tariffCategoryLabel}
+                        <StatementTitle name={subscription.fullName} />
+                        <p className="mt-1.5 text-sm text-gray-500">
+                            حساب <span dir="ltr">{subscription.accountNumber}</span> · {subscription.tariffCategoryLabel}
                             {subscription.tariffSegmentName && ` (${subscription.tariffSegmentName})`}
                             {subscription.meterBoxNumber && ` · طبلون ${subscription.meterBoxNumber}`} · {subscription.branchName}
                         </p>

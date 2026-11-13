@@ -197,7 +197,7 @@ export default function SearchableSelect({
                         ? `flex h-[46px] w-full items-center justify-between gap-2 rounded-control border bg-white/10 px-3.5 text-start text-base leading-6 text-white transition focus:outline-none focus-visible:border-white/50 focus-visible:ring-4 focus-visible:ring-white/15 disabled:cursor-not-allowed disabled:opacity-50 ${
                               open ? 'border-white/50 ring-4 ring-white/15' : active ? 'border-white/35' : 'border-white/15 hover:border-white/35 hover:bg-white/15'
                           }`
-                        : `flex h-[42px] w-full items-center justify-between gap-2 rounded-control border bg-surface px-3 text-start text-base leading-6 transition focus:outline-none focus-visible:border-brand-500 focus-visible:ring-4 focus-visible:ring-brand-500/15 disabled:cursor-not-allowed disabled:border-dashed disabled:bg-gray-50 disabled:text-gray-500 ${
+                        : `flex h-[var(--control-h)] w-full items-center justify-between gap-2 rounded-control border bg-surface px-3 text-start text-base leading-6 transition focus:outline-none focus-visible:border-brand-500 focus-visible:ring-4 focus-visible:ring-brand-500/15 disabled:cursor-not-allowed disabled:border-dashed disabled:bg-gray-50 disabled:text-gray-500 ${
                               open ? 'border-brand-500 ring-4 ring-brand-500/15' : active ? 'border-brand-500/60' : 'border-gray-200 hover:border-brand-500/45'
                           }`
                 }

@@ -43,8 +43,8 @@ export default function SubscriptionTariffSection({
     unlockMinimumCharge,
 }) {
     return (
-        <FormSection icon="bolt" title="نوع الاشتراك والقاطع" info="سعر الكيلو والحد الأدنى يُحسبان تلقائيًا من اختيارك">
-            <FormField id="accounting_type" label="نوع المحاسبة" error={errors.accounting_type} span="sm:col-span-2 lg:col-span-3">
+        <FormSection icon="bolt" title="نوع الاشتراك والقاطع" info="سعر الكيلو والحد الأدنى يُحسبان تلقائيًا من اختيارك" columns={2}>
+            <FormField id="accounting_type" label="نوع المحاسبة" error={errors.accounting_type} span="sm:col-span-2">
                 <ChoiceChips
                     label="نوع المحاسبة"
                     value={data.accounting_type}
@@ -53,7 +53,7 @@ export default function SubscriptionTariffSection({
                 />
             </FormField>
 
-            <FormField id="tariff_id" label="نوع الاشتراك" required error={errors.tariff_id} span="sm:col-span-2">
+            <FormField id="tariff_id" label="نوع الاشتراك" required error={errors.tariff_id}>
                 <SearchableSelect
                     name="tariff_id"
                     required
@@ -71,25 +71,25 @@ export default function SubscriptionTariffSection({
                 />
             </FormField>
 
-            <div>
-                <div className="flex items-center justify-between">
+            <div className="grid min-w-0 content-start gap-2">
+                <div className="flex items-center justify-between gap-2">
                     <InputLabel htmlFor="tariff_rate" value="سعر الكيلو" />
                     {canEditKilowattPrice && selectedTariff && !kilowattPriceUnlocked && (
                         <button
                             type="button"
                             onClick={() => setConfirmingKilowattPriceUnlock(true)}
-                            className="text-xs font-semibold text-brand-600 hover:underline"
+                            className="text-[13px] font-semibold text-brand-600 hover:underline"
                         >
                             تعديل السعر
                         </button>
                     )}
                     {kilowattPriceUnlocked && (
-                        <button type="button" onClick={lockKilowattPrice} className="text-xs font-semibold text-gray-500 hover:underline">
+                        <button type="button" onClick={lockKilowattPrice} className="text-[13.5px] font-semibold text-gray-700 hover:underline">
                             إلغاء التعديل
                         </button>
                     )}
                 </div>
-                <div className="mt-1">
+                <div>
                     <Affix unit="₪">
                         <TextInput
                             id="tariff_rate"
@@ -114,13 +114,13 @@ export default function SubscriptionTariffSection({
                     </Affix>
                 </div>
                 {kilowattPriceUnlocked ? (
-                    <p className="mt-1 text-xs text-gray-500">سعر التعرفة {formatAmount(tariffRate)} شيكل؛ يمكن أن يكون أقل منه أو أكثر.</p>
+                    <p className="m-0 text-[13px] text-gray-500">سعر التعرفة {formatAmount(tariffRate)} شيكل؛ يمكن أن يكون أقل منه أو أكثر.</p>
                 ) : hasOwnKilowattPrice ? (
-                    <p className="mt-1 text-xs font-semibold text-brand-600">سعر خاص بهذا المشترك — سعر التعرفة {formatAmount(tariffRate)} شيكل.</p>
+                    <p className="m-0 text-[13px] font-semibold text-brand-600">سعر خاص بهذا المشترك — سعر التعرفة {formatAmount(tariffRate)} شيكل.</p>
                 ) : kilowattPriceDropped ? (
-                    <p className="mt-1 text-xs text-amber-600">أُلغي السعر الخاص بهذا المشترك لتغيير نوع الاشتراك.</p>
+                    <p className="m-0 text-[13px] text-amber-600">أُلغي السعر الخاص بهذا المشترك لتغيير نوع الاشتراك.</p>
                 ) : null}
-                <InputError message={errors.kilowatt_price} className="mt-1" />
+                <InputError message={errors.kilowatt_price} />
                 <ConfirmDialog
                     show={confirmingKilowattPriceUnlock}
                     onConfirm={unlockKilowattPrice}
@@ -132,7 +132,7 @@ export default function SubscriptionTariffSection({
                 />
             </div>
 
-            <FormField id="circuit_breaker_id" label="القاطع" error={errors.circuit_breaker_id} span="sm:col-span-2">
+            <FormField id="circuit_breaker_id" label="القاطع" error={errors.circuit_breaker_id}>
                 <SearchableSelect
                     value={data.circuit_breaker_id}
                     onChange={onCircuitBreakerChange}
@@ -148,8 +148,8 @@ export default function SubscriptionTariffSection({
                 />
             </FormField>
 
-            <div>
-                <div className="flex items-center justify-between">
+            <div className="grid min-w-0 content-start gap-2">
+                <div className="flex items-center justify-between gap-2">
                     <InputLabel htmlFor="minimum_charge">
                         الحد الأدنى
                         <span className="text-red-500"> *</span>
@@ -158,13 +158,13 @@ export default function SubscriptionTariffSection({
                         <button
                             type="button"
                             onClick={() => setConfirmingMinimumChargeUnlock(true)}
-                            className="text-xs font-semibold text-brand-600 hover:underline"
+                            className="text-[13px] font-semibold text-brand-600 hover:underline"
                         >
                             تعديل يدوي
                         </button>
                     )}
                 </div>
-                <div className="mt-1">
+                <div>
                     <Affix unit="₪">
                         <TextInput
                             id="minimum_charge"
@@ -177,7 +177,7 @@ export default function SubscriptionTariffSection({
                         />
                     </Affix>
                 </div>
-                <InputError message={errors.minimum_charge} className="mt-1" />
+                <InputError message={errors.minimum_charge} />
                 <ConfirmDialog
                     show={confirmingMinimumChargeUnlock}
                     onConfirm={unlockMinimumCharge}
@@ -189,7 +189,7 @@ export default function SubscriptionTariffSection({
                 />
             </div>
             {segments.length > 0 && (
-                <FormField id="tariff_segment_id" label="تصنيف الزبائن" error={errors.tariff_segment_id} span="sm:col-span-2">
+                <FormField id="tariff_segment_id" label="تصنيف الزبائن" error={errors.tariff_segment_id}>
                     <SearchableSelect
                         value={data.tariff_segment_id}
                         onChange={(value) => setData('tariff_segment_id', value)}

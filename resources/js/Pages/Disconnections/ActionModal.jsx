@@ -284,7 +284,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                             </div>
                             {firstText && (
                                 <div className="rounded-control border border-gray-100 bg-gray-50 p-3 text-sm">
-                                    <p className="mb-1 text-xs font-semibold text-gray-500">معاينة رسالة {reached[0].name}</p>
+                                    <p className="mb-1 text-[13.5px] font-semibold text-gray-700">معاينة رسالة {reached[0].name}</p>
                                     <p className="whitespace-pre-line text-gray-800">{firstText}</p>
                                 </div>
                             )}

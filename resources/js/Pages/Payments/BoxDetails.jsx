@@ -51,7 +51,7 @@ function Stat({ icon, label, value, hint }) {
     return <div className="flex min-w-0 items-start gap-3 bg-surface p-3 sm:p-4">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-gray-100 bg-gray-50 text-gray-500"><Icon name={icon} className="h-[18px] w-[18px]" /></span>
         <div className="min-w-0">
-            <dt className="text-xs font-semibold text-gray-500">{label}</dt>
+            <dt className="text-[13.5px] font-semibold text-gray-700">{label}</dt>
             <dd className="mt-1 font-display text-xl font-bold text-gray-900">{value}</dd>
             {hint && <dd className="mt-0.5 text-xs text-gray-500">{hint}</dd>}
         </div>
@@ -63,7 +63,7 @@ function JourneyStep({ icon, label, at, by, pending, children }) {
     return <li className={`flex min-w-0 items-start gap-2.5 rounded-control border p-3 ${at ? 'border-gray-100 bg-surface' : 'border-dashed border-gray-200'}`}>
         <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] ${at ? 'bg-gray-900 text-surface' : 'bg-gray-100 text-gray-400'}`}><Icon name={icon} className="h-4 w-4" /></span>
         <span className="min-w-0 leading-5">
-            <span className="block text-xs font-semibold text-gray-500">{label}</span>
+            <span className="block text-[13.5px] font-semibold text-gray-700">{label}</span>
             {at ? <><b className="block text-sm text-gray-900">{dateTime(at)}</b>{by && <span className="block truncate text-xs text-gray-600">{by}</span>}</> : <span className="block text-sm text-gray-500">{pending}</span>}
             {children}
         </span>

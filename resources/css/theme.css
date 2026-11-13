@@ -24,6 +24,9 @@
  */
 
 :root {
+    /* The height of every field and list (inputs, selects, dates, search) and of the buttons beside them. */
+    --control-h: 46px;
+
     color-scheme: light;
 
     /* ── 1. Brand ─────────────────────────────────────────────────────────── */

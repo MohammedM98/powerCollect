@@ -1446,9 +1446,9 @@
 
 /* ── Shared controls drawn in the panel look (PrimaryButton, DangerButton, InputLabel, InputError, Switch…) ── */
 .gl-label {
-    font-size: 12.5px;
+    font-size: 14px;
     font-weight: 600;
-    color: var(--gl-muted);
+    color: rgb(var(--gray-700));
 }
 
 .gl-error {
@@ -1682,97 +1682,16 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin: 0 4px 8px;
-    color: var(--gl-muted);
-    font-size: 13px;
-    font-weight: 500;
+    margin: 0 4px 10px;
+    color: rgb(var(--gray-800));
+    font-size: 15px;
+    font-weight: 700;
 }
 
 .gl-group-name svg {
-    width: 15px;
-    height: 15px;
+    width: 17px;
+    height: 17px;
     color: rgb(var(--gl-brand));
-}
-
-/* A stepped form's line of steps (Components/Form/FormSteps.jsx StepIndicator). */
-.gl-steps {
-    position: relative;
-    display: grid;
-    grid-auto-columns: 1fr;
-    grid-auto-flow: column;
-    margin: 0;
-    padding: 4px 24px 8px;
-    list-style: none;
-}
-
-.gl-steps-line {
-    position: absolute;
-    top: 19px;
-    inset-inline: calc(24px + 100% / (var(--steps, 3) * 2));
-    height: 2px;
-    background: var(--gl-line);
-}
-
-.gl-steps-line i {
-    position: absolute;
-    inset-block: 0;
-    inset-inline-start: 0;
-    background: rgb(var(--brand-solid));
-    transition: width 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.gl-step-item {
-    position: relative;
-    display: grid;
-    justify-items: center;
-    gap: 6px;
-    color: var(--gl-faint);
-    font-size: 13px;
-    text-align: center;
-}
-
-.gl-step-dot {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    place-items: center;
-    width: 30px;
-    height: 30px;
-    border: 1px solid var(--gl-line-strong);
-    border-radius: 50%;
-    background: rgb(var(--panel-tile));
-    color: var(--gl-muted);
-    font-weight: 600;
-    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
-}
-
-.gl-step-item[data-state='current'] {
-    color: var(--gl-ink);
-    font-weight: 600;
-}
-
-.gl-step-item[data-state='current'] .gl-step-dot {
-    border-color: transparent;
-    background: rgb(var(--brand-solid));
-    color: rgb(var(--brand-ink));
-    box-shadow: 0 0 0 5px rgb(var(--brand-solid) / 0.18);
-}
-
-.gl-step-item[data-state='done'] .gl-step-dot {
-    border-color: transparent;
-    background: rgb(var(--brand-solid) / 0.16);
-    color: rgb(var(--gl-brand));
-}
-
-[data-form-step]:not([hidden]) {
-    animation: gl-step-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-@keyframes gl-step-in {
-    from {
-        opacity: 0;
-        transform: translateX(-14px);
-    }
 }
 
 /* A long form's index down the side (FormSteps.jsx FormOutline). */
@@ -2180,6 +2099,119 @@
     animation: none;
 }
 
+/*
+ * Every money form (payment, charge, discount, clearing…) on a wide screen:
+ * the fields on one side and the movement as a summary on the other, like
+ * an invoice: who it is for, the balance now, the movement, and the balance
+ * it leaves, which follows what is typed. The summary stays in view while
+ * the fields scroll. Narrow windows keep it above the fields.
+ */
+@media (min-width: 860px) {
+    .gl-sheet:has(> .gl-mv) {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 300px;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        grid-template-areas:
+            'head head'
+            'body side'
+            'foot foot';
+    }
+
+    .gl-sheet:has(> .gl-mv) > .gl-dialog-head {
+        grid-area: head;
+        border-bottom: 1px solid var(--gl-line);
+    }
+
+    .gl-sheet:has(> .gl-mv) > .gl-sheet-body {
+        grid-area: body;
+    }
+
+    .gl-sheet:has(> .gl-mv) > .gl-dialog-foot {
+        grid-area: foot;
+        border-top: 1px solid var(--gl-line);
+    }
+
+    .gl-sheet > .gl-mv {
+        grid-area: side;
+        align-self: start;
+        max-height: calc(100% - 40px);
+        overflow-y: auto;
+        margin: 20px 0 20px 24px;
+        padding: 18px;
+        gap: 16px;
+        border-radius: 18px;
+    }
+
+    /* Who it is for: the movement's tag on its own line, then the avatar and the name kept whole. */
+    .gl-sheet > .gl-mv .gl-mv-who {
+        display: grid;
+        grid-template-columns: 40px minmax(0, 1fr);
+        gap: 10px 12px;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-tag {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        justify-self: start;
+        margin: 0;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cells,
+    .gl-sheet > .gl-mv .gl-mv-cells[data-count='2'] {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+        padding-top: 14px;
+        border-top: 1px solid var(--gl-line);
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-op {
+        display: none;
+    }
+
+    /* Each line of the summary: its name and note on one side, its amount on the other. */
+    .gl-sheet > .gl-mv .gl-mv-cell {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: baseline;
+        column-gap: 12px;
+        padding: 8px 0;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell small {
+        grid-column: 1;
+        color: rgb(var(--gray-700));
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell b {
+        grid-column: 2;
+        grid-row: 1;
+        font-size: 17px;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell em {
+        grid-column: 1 / -1;
+        font-size: 12.5px;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell.is-result {
+        grid-template-columns: minmax(0, 1fr);
+        margin-top: 8px;
+        padding: 14px;
+        border-radius: 14px;
+        background: rgb(var(--panel-bg));
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gl-cell, var(--gl-ink)) 30%, transparent);
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell.is-result b {
+        grid-column: 1;
+        grid-row: auto;
+        font-size: 26px;
+        transition: color 0.2s;
+    }
+}
+
 /* A statement's movements, one button each in its own colour (Pages/Subscriptions/StatementForms.jsx). */
 .gl-acts {
     display: flex;
@@ -2240,14 +2272,14 @@
 
 .gl-step h4 {
     margin: 0;
-    color: var(--gl-muted);
-    font: 600 13.5px/1.5 var(--gl-head);
+    color: rgb(var(--gray-800));
+    font: 700 15px/1.5 var(--gl-head);
 }
 
 .gl-step h4 small {
     margin-inline-start: 6px;
     color: var(--gl-muted);
-    font: 500 12.5px var(--font-body, inherit);
+    font: 500 13px var(--font-body, inherit);
 }
 
 .gl-step-body {
@@ -2376,22 +2408,21 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 /* ── Recording a payment (Pages/Subscriptions/PaymentModal.jsx) ───────── */
-/* The amount in the middle and large (the prototype's quick payment): a line under it, the quick amounts centred below. */
+/* The payment's amount, drawn like every money form's amount box (AccountFormParts AmountBox): the figure large, its quick picks under a dashed line. */
 .gl-amount {
-    padding: 4px 0 0;
+    padding: 16px 18px 14px;
+    border-radius: 22px;
+    border: 1.5px solid rgb(var(--gray-200));
+    background: rgb(var(--surface));
+    transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.gl-amount > div:first-child {
-    padding-bottom: 6px;
-    border-bottom: 2px solid var(--gl-line-strong);
-    transition: border-color 0.2s;
+.gl-amount:focus-within {
+    border-color: rgb(var(--brand-500));
+    box-shadow: 0 0 0 5px rgb(var(--brand-500) / 0.12);
 }
 
-.gl-amount:focus-within > div:first-child {
-    border-color: rgb(var(--gl-brand));
-}
-
-.gl-amount[data-invalid] > div:first-child {
+.gl-amount[data-invalid] {
     border-color: var(--gl-bad);
 }
 
@@ -2403,9 +2434,9 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     background: none !important;
     box-shadow: none !important;
     color: var(--gl-ink);
-    font: 700 46px/1.25 var(--gl-head);
+    font: 800 44px/1.25 var(--gl-head);
     font-variant-numeric: tabular-nums;
-    text-align: center;
+    text-align: end;
     caret-color: rgb(var(--gl-brand));
 }
 
@@ -2417,9 +2448,10 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
     gap: 8px;
-    margin-top: 14px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed rgb(var(--gray-200));
 }
 
 .gl-method {
@@ -2751,4 +2783,44 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
         background: none;
         box-shadow: none;
     }
+}
+
+/* An account statement's title (Pages/Subscriptions/StatementTitle.jsx): a small "كشف حساب", the subscriber's name large under it. */
+.gl-statement-title {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.gl-statement-kicker {
+    color: var(--gl-muted);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.gl-statement-name {
+    margin: 0;
+    color: var(--gl-ink);
+    font: 800 clamp(24px, 2.4vw, 32px) / 1.25 var(--gl-head);
+    overflow-wrap: anywhere;
+}
+
+/* A row of filters (Components/Form/FilterBar.jsx): every filter the same width, as many to a line as fit. */
+.gl-filter-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    align-items: end;
+    gap: 14px 12px;
+}
+
+.gl-filter-field {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+}
+
+.gl-filter-label {
+    color: rgb(var(--gray-700));
+    font-size: 13.5px;
+    font-weight: 600;
 }
