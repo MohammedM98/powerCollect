@@ -31,13 +31,13 @@
         "details": "modal",
         "footerStyle": "full",
         "navigation": "topbar",
-        "navStyle": "glass",
+        "navStyle": "solid",
         "width": "wide",
-        "background": "navy",
-        "neutral": "navy",
+        "background": "graphite",
+        "neutral": "graphite",
         "radius": "rounded",
         "buttons": "gradient",
-        "cards": "glass",
+        "cards": "elevated",
         "tables": "boxed",
         "tableHeader": "plain",
         "density": "comfortable",
@@ -71,9 +71,7 @@
         "buttonFontWeight": null,
         "hoverLift": null,
         "shadowStrength": null,
-        "transitionMs": null,
-        "glassAlpha": null,
-        "glassBlur": null
+        "transitionMs": null
     },
     "customCss": null
 }

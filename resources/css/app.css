@@ -2550,12 +2550,11 @@ input[type='radio'] {
 }
 
 /*
- * The charcoal and navy looks (`background`: graphite, navy or midnight,
- * see theme.css, section 8): the page in its own colour, and cards as
- * panels with a thin line: solid, or frosted glass with glass cards and the
- * glass bar (the glass section below).
+ * The charcoal look (`background`: graphite, see theme.css, section 8):
+ * the page in its own flat neutral colour, and cards as solid panels with a
+ * thin line. Nothing is see-through.
  */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) body {
+:root[data-ui-background='graphite'] body {
     background-color: rgb(var(--panel-page));
     /* A faint grid behind every page, so panels sit on something without a colour of its own. */
     background-image:
@@ -2564,7 +2563,7 @@ input[type='radio'] {
     background-size: 28px 28px;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-backdrop {
+:root[data-ui-background='graphite'] .tn-backdrop {
     display: none;
 }
 
@@ -2575,27 +2574,27 @@ input[type='radio'] {
  * (and the open section in the top bar) is a pill in the company's colour
  * with white text; a section's own row stays quiet.
  */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.tn-bar, .tn-mega, .tn-popover, .tn-drawer-panel) {
+:root[data-ui-background='graphite'] :is(.tn-bar, .tn-mega, .tn-popover, .tn-drawer-panel) {
     border: 1px solid rgb(var(--panel-line));
     background: rgb(var(--panel-bg));
     box-shadow: var(--panel-shadow);
 }
 
 /* Menus that open over the page stay nearly opaque, so the page behind them doesn't read through. */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.tn-mega, .tn-popover, .tn-drawer-panel) {
+:root[data-ui-background='graphite'] :is(.tn-mega, .tn-popover, .tn-drawer-panel) {
     background: rgb(var(--panel-bg));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-header.is-scrolled .tn-bar {
+:root[data-ui-background='graphite'] .tn-header.is-scrolled .tn-bar {
     background: rgb(var(--panel-bg));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.tn-bar, .tn-mega)::before,
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-section[data-current='true']::after {
+:root[data-ui-background='graphite'] :is(.tn-bar, .tn-mega)::before,
+:root[data-ui-background='graphite'] .tn-section[data-current='true']::after {
     display: none;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) {
+:root[data-ui-background='graphite'] {
     /* The open page's pill: the identity's blue with white text (theme.css `--nav-active`). */
     --tn-graphite: rgb(var(--nav-active));
     --tn-graphite-dark: var(--tn-graphite);
@@ -2603,43 +2602,43 @@ input[type='radio'] {
     --tn-graphite-icon: rgb(var(--nav-active-icon));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-highlight {
+:root[data-ui-background='graphite'] .tn-highlight {
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.tn-tool, .tn-search) {
+:root[data-ui-background='graphite'] :is(.tn-tool, .tn-search) {
     border: 1px solid rgb(var(--panel-line));
     background: rgb(var(--panel-fill));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.tn-tool, .tn-search):hover,
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-tool[aria-expanded='true'] {
+:root[data-ui-background='graphite'] :is(.tn-tool, .tn-search):hover,
+:root[data-ui-background='graphite'] .tn-tool[aria-expanded='true'] {
     background: rgb(var(--panel-fill-strong));
     color: rgb(var(--gray-900));
     box-shadow: none;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-segments {
+:root[data-ui-background='graphite'] .tn-segments {
     border: 1px solid rgb(var(--panel-line));
     background: rgb(var(--panel-fill));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-segments button[aria-pressed='true'] {
+:root[data-ui-background='graphite'] .tn-segments button[aria-pressed='true'] {
     background: rgb(var(--panel-bg));
     color: rgb(var(--gray-900));
     box-shadow: 0 4px 10px -6px rgb(0 0 0 / 0.6);
 }
 
-.dark:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-segments button[aria-pressed='true'] {
+.dark[data-ui-background='graphite'] .tn-segments button[aria-pressed='true'] {
     background: rgb(255 255 255 / 0.14);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.tn-nav-search, .tn-drawer-panel .rounded-2xl.bg-gray-50) {
+:root[data-ui-background='graphite'] :is(.tn-nav-search, .tn-drawer-panel .rounded-2xl.bg-gray-50) {
     border-color: rgb(var(--panel-line));
     background: rgb(var(--panel-fill));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.tn-drawer-group, .tn-drawer-link):hover {
+:root[data-ui-background='graphite'] :is(.tn-drawer-group, .tn-drawer-link):hover {
     background: rgb(var(--panel-fill));
     color: rgb(var(--gray-900));
 }
@@ -2649,7 +2648,7 @@ input[type='radio'] {
  * (open or not), its pages plain lines under it without an indent, and the
  * home page a line like them.
  */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) button.tn-drawer-group {
+:root[data-ui-background='graphite'] button.tn-drawer-group {
     min-height: 36px;
     padding-inline: 10px;
     border-radius: 10px;
@@ -2658,25 +2657,25 @@ input[type='radio'] {
     color: var(--gl-faint);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) button.tn-drawer-group:is([aria-expanded='true'], [data-current='true']) {
+:root[data-ui-background='graphite'] button.tn-drawer-group:is([aria-expanded='true'], [data-current='true']) {
     background: none;
     color: var(--gl-faint);
     box-shadow: none;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) button.tn-drawer-group:hover {
+:root[data-ui-background='graphite'] button.tn-drawer-group:hover {
     background: none;
     color: var(--gl-ink);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) button.tn-drawer-group svg.tn-section-icon,
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) button.tn-drawer-group:is([aria-expanded='true'], [data-current='true']) svg {
+:root[data-ui-background='graphite'] button.tn-drawer-group svg.tn-section-icon,
+:root[data-ui-background='graphite'] button.tn-drawer-group:is([aria-expanded='true'], [data-current='true']) svg {
     width: 16px;
     height: 16px;
     color: inherit;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(a.tn-drawer-group, .tn-drawer-link) {
+:root[data-ui-background='graphite'] :is(a.tn-drawer-group, .tn-drawer-link) {
     min-height: 40px;
     padding-inline: 10px;
     border-radius: 12px;
@@ -2685,57 +2684,57 @@ input[type='radio'] {
     color: var(--gl-muted);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(a.tn-drawer-group, .tn-drawer-link) svg {
+:root[data-ui-background='graphite'] :is(a.tn-drawer-group, .tn-drawer-link) svg {
     width: 18px;
     height: 18px;
     color: inherit;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-drawer-pages .ps-3 {
+:root[data-ui-background='graphite'] .tn-drawer-pages .ps-3 {
     padding-inline-start: 0;
 }
 
 /* The open page, the home page among the sections, and a current section's page strip. */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(a.tn-drawer-group[data-current='true'], .tn-drawer-link[aria-current='page']) {
+:root[data-ui-background='graphite'] :is(a.tn-drawer-group[data-current='true'], .tn-drawer-link[aria-current='page']) {
     background: var(--tn-graphite);
     color: var(--tn-graphite-ink);
     box-shadow: none;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(a.tn-drawer-group[data-current='true'], .tn-drawer-link[aria-current='page']) svg {
+:root[data-ui-background='graphite'] :is(a.tn-drawer-group[data-current='true'], .tn-drawer-link[aria-current='page']) svg {
     color: var(--tn-graphite-icon);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-mega-link .tn-tile {
+:root[data-ui-background='graphite'] .tn-mega-link .tn-tile {
     border-color: rgb(var(--panel-line));
     background: rgb(var(--panel-fill));
     color: rgb(var(--brand-600));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-mega-link:hover {
+:root[data-ui-background='graphite'] .tn-mega-link:hover {
     background: rgb(var(--panel-fill-strong));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-mega-link[aria-current='page'] {
+:root[data-ui-background='graphite'] .tn-mega-link[aria-current='page'] {
     background: rgb(var(--brand-500) / 0.14);
     box-shadow: none;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-bar-tabs {
+:root[data-ui-background='graphite'] .tn-bar-tabs {
     border-top-color: rgb(var(--panel-line));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-branch-chip {
+:root[data-ui-background='graphite'] .tn-branch-chip {
     border-color: rgb(var(--panel-line));
     background: rgb(var(--panel-fill));
 }
 
 /* Where the page sits, and its title: quiet small trail, then a bold title over a muted line. */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tn-trail {
+:root[data-ui-background='graphite'] .tn-trail {
     font-size: 12.5px;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .ui-page-title {
+:root[data-ui-background='graphite'] .ui-page-title {
     font-size: 28px;
     font-weight: 800;
     line-height: 1.25;
@@ -3417,76 +3416,76 @@ input[type='radio'] {
  * fill, rows are separated by a line and tinted under the pointer; figures
  * keep tabular digits. On phones each row is a card.
  */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.data-table-toolbar, .data-table-container, .data-table-totals, .data-table-pagination) {
+:root[data-ui-background='graphite'] :is(.data-table-toolbar, .data-table-container, .data-table-totals, .data-table-pagination) {
     border-color: var(--gl-line);
     background: rgb(var(--panel-bg));
     color: var(--gl-ink);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table-toolbar {
+:root[data-ui-background='graphite'] .data-table-toolbar {
     padding: 16px 18px;
     border-radius: calc(20px * var(--radius-scale, 1)) calc(20px * var(--radius-scale, 1)) 0 0;
     box-shadow: none;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table-toolbar::before {
+:root[data-ui-background='graphite'] .data-table-toolbar::before {
     display: none;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table-container {
+:root[data-ui-background='graphite'] .data-table-container {
     padding: 4px 10px 8px;
     border-radius: calc(20px * var(--radius-scale, 1));
     box-shadow: var(--panel-shadow);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table-toolbar + .data-table-container {
+:root[data-ui-background='graphite'] .data-table-toolbar + .data-table-container {
     border-top-color: var(--gl-line);
     box-shadow: var(--panel-shadow);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table-totals {
+:root[data-ui-background='graphite'] .data-table-totals {
     padding: 12px 18px;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table-totals + .data-table-pagination {
+:root[data-ui-background='graphite'] .data-table-totals + .data-table-pagination {
     border-top-color: var(--gl-line);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table-pagination {
+:root[data-ui-background='graphite'] .data-table-pagination {
     padding: 12px 18px 14px;
     border-radius: 0 0 calc(20px * var(--radius-scale, 1)) calc(20px * var(--radius-scale, 1));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table-totals:not(:has(+ .data-table-pagination)) {
+:root[data-ui-background='graphite'] .data-table-totals:not(:has(+ .data-table-pagination)) {
     border-radius: 0 0 calc(20px * var(--radius-scale, 1)) calc(20px * var(--radius-scale, 1));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.data-table-toolbar, .table-controls) :is(input:not([type='checkbox'], [type='radio']), select, button[aria-expanded]):hover:not(:disabled) {
+:root[data-ui-background='graphite'] :is(.data-table-toolbar, .table-controls) :is(input:not([type='checkbox'], [type='radio']), select, button[aria-expanded]):hover:not(:disabled) {
     border-color: var(--gl-line-strong);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.data-table-toolbar, .table-controls) :is(input:not([type='checkbox'], [type='radio']), select):focus,
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.data-table-toolbar, .table-controls) button[aria-expanded]:focus-visible,
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.data-table-toolbar, .table-controls) button[aria-expanded='true'] {
+:root[data-ui-background='graphite'] :is(.data-table-toolbar, .table-controls) :is(input:not([type='checkbox'], [type='radio']), select):focus,
+:root[data-ui-background='graphite'] :is(.data-table-toolbar, .table-controls) button[aria-expanded]:focus-visible,
+:root[data-ui-background='graphite'] :is(.data-table-toolbar, .table-controls) button[aria-expanded='true'] {
     border-color: rgb(var(--gl-brand) / 0.6);
     --tw-ring-color: rgb(var(--gl-brand) / 0.16);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.data-table-toolbar, .table-controls) button[data-active],
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.data-table-toolbar, .table-controls) select:has(option[value='']):has(option:checked:not([value=''])) {
+:root[data-ui-background='graphite'] :is(.data-table-toolbar, .table-controls) button[data-active],
+:root[data-ui-background='graphite'] :is(.data-table-toolbar, .table-controls) select:has(option[value='']):has(option:checked:not([value=''])) {
     border-color: rgb(var(--gl-brand) / 0.5);
     background-color: rgb(var(--gl-brand) / 0.14);
 }
 
 @container (min-width: 641px) {
-    :root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table {
+    :root[data-ui-background='graphite'] .data-table {
         border-collapse: collapse;
         border-spacing: 0;
         font-size: 14px;
     }
 
-    :root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table th,
-    :root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight'])[data-ui-table-header] .data-table th {
+    :root[data-ui-background='graphite'] .data-table th,
+    :root[data-ui-background='graphite'][data-ui-table-header] .data-table th {
         padding: 10px 12px;
         border: 0;
         border-radius: 0;
@@ -3496,9 +3495,9 @@ input[type='radio'] {
         font-weight: 700;
     }
 
-    :root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table td,
-    :root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table td:first-child,
-    :root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table td:last-child {
+    :root[data-ui-background='graphite'] .data-table td,
+    :root[data-ui-background='graphite'] .data-table td:first-child,
+    :root[data-ui-background='graphite'] .data-table td:last-child {
         padding: 11px 12px;
         border: 0;
         border-top: 1px solid var(--gl-line);
@@ -3507,45 +3506,45 @@ input[type='radio'] {
         box-shadow: none;
     }
 
-    :root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table tbody tr:hover,
-    :root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table tbody tr:focus-within {
+    :root[data-ui-background='graphite'] .data-table tbody tr:hover,
+    :root[data-ui-background='graphite'] .data-table tbody tr:focus-within {
         filter: none;
     }
 
-    :root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table tbody tr:hover td,
-    :root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table tbody tr:focus-within td {
+    :root[data-ui-background='graphite'] .data-table tbody tr:hover td,
+    :root[data-ui-background='graphite'] .data-table tbody tr:focus-within td {
         border-color: var(--gl-line);
         background: var(--gl-fill);
     }
 
-    :root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table tbody tr.bg-brand-50 td {
+    :root[data-ui-background='graphite'] .data-table tbody tr.bg-brand-50 td {
         background: rgb(var(--gl-brand) / 0.1);
     }
 
-    :root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table tbody tr.is-far-behind:not(.bg-brand-50, :focus-within) td:first-child {
+    :root[data-ui-background='graphite'] .data-table tbody tr.is-far-behind:not(.bg-brand-50, :focus-within) td:first-child {
         box-shadow: inset -3px 0 0 var(--gl-bad);
     }
 }
 
 @container (max-width: 640px) {
-    :root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table tbody tr {
+    :root[data-ui-background='graphite'] .data-table tbody tr {
         border-color: var(--gl-line);
         background: rgb(var(--panel-bg));
     }
 
-    :root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table td:not(:first-child)[data-label]:not([data-label=''])::before {
+    :root[data-ui-background='graphite'] .data-table td:not(:first-child)[data-label]:not([data-label=''])::before {
         color: var(--gl-faint);
         font-size: 12px;
     }
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .data-table td {
+:root[data-ui-background='graphite'] .data-table td {
     font-variant-numeric: tabular-nums;
 }
 
 
 /* Row buttons, export buttons and the row's avatar in the panel look: the prototype's quiet icon buttons and avatar. */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-action {
+:root[data-ui-background='graphite'] .row-action {
     width: 34px;
     height: 34px;
     border-color: var(--gl-line);
@@ -3554,92 +3553,92 @@ input[type='radio'] {
     box-shadow: none;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-action:hover {
+:root[data-ui-background='graphite'] .row-action:hover {
     border-color: var(--gl-line-strong);
     background: var(--gl-fill-2);
     color: var(--gl-ink);
     box-shadow: none;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-action-edit {
+:root[data-ui-background='graphite'] .row-action-edit {
     color: rgb(var(--gl-brand));
 }
 
 /* Editing fills in the identity's blue on hover, like the main buttons. */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-action-edit:hover {
+:root[data-ui-background='graphite'] .row-action-edit:hover {
     border-color: transparent;
     background: rgb(var(--gl-btn));
     color: rgb(var(--brand-ink));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-action-delete {
+:root[data-ui-background='graphite'] .row-action-delete {
     color: var(--gl-bad);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.row-action-delete, .row-action-print, .row-action-excel):hover {
+:root[data-ui-background='graphite'] :is(.row-action-delete, .row-action-print, .row-action-excel):hover {
     border-color: transparent;
     background: color-mix(in srgb, currentColor 18%, transparent);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-action-print {
+:root[data-ui-background='graphite'] .row-action-print {
     color: rgb(var(--print-300));
 }
 
-html:not(.dark):is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-action-print {
+html:not(.dark)[data-ui-background='graphite'] .row-action-print {
     color: rgb(var(--print-600));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-action-excel {
+:root[data-ui-background='graphite'] .row-action-excel {
     color: rgb(var(--excel-300));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-action[aria-expanded='true'] {
+:root[data-ui-background='graphite'] .row-action[aria-expanded='true'] {
     border-color: rgb(var(--gl-brand) / 0.5);
     background: rgb(var(--gl-brand) / 0.2);
     color: var(--gl-ink);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-action-view {
+:root[data-ui-background='graphite'] .row-action-view {
     height: 34px;
     background: var(--gl-fill-2);
     color: var(--gl-ink);
     box-shadow: inset 0 0 0 1px var(--gl-line);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-action-view:hover,
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-action-view:focus-within {
+:root[data-ui-background='graphite'] .row-action-view:hover,
+:root[data-ui-background='graphite'] .row-action-view:focus-within {
     background: rgb(var(--gl-btn));
     color: rgb(var(--brand-ink));
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-action-view > button {
+:root[data-ui-background='graphite'] .row-action-view > button {
     font-size: 13px;
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.tone-print, .tone-excel):not(.tone-solid) {
+:root[data-ui-background='graphite'] :is(.tone-print, .tone-excel):not(.tone-solid) {
     border-color: var(--gl-line);
     background: var(--gl-fill-2);
     color: var(--gl-ink);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tone-print:not(.tone-solid) svg {
+:root[data-ui-background='graphite'] .tone-print:not(.tone-solid) svg {
     color: rgb(var(--print-300));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tone-excel:not(.tone-solid) svg {
+:root[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg {
     color: rgb(var(--excel-300));
 }
 
-html:not(.dark):is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tone-print:not(.tone-solid) svg {
+html:not(.dark)[data-ui-background='graphite'] .tone-print:not(.tone-solid) svg {
     color: rgb(var(--print-600));
 }
 
-html:not(.dark):is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .tone-excel:not(.tone-solid) svg {
+html:not(.dark)[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg {
     color: rgb(var(--excel-600));
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) :is(.tone-print, .tone-excel):not(.tone-solid):hover:not(:disabled) {
+:root[data-ui-background='graphite'] :is(.tone-print, .tone-excel):not(.tone-solid):hover:not(:disabled) {
     border-color: var(--gl-line-strong);
     background: var(--gl-fill-2);
     color: var(--gl-ink);
@@ -3647,7 +3646,7 @@ html:not(.dark):is([data-ui-background='graphite'], [data-ui-background='navy'],
     filter: brightness(1.1);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-identity-avatar {
+:root[data-ui-background='graphite'] .row-identity-avatar {
     border: 1px solid var(--gl-line);
     border-radius: 50%;
     background: var(--gl-fill-2);
@@ -3655,13 +3654,13 @@ html:not(.dark):is([data-ui-background='graphite'], [data-ui-background='navy'],
     font-family: var(--gl-head);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .row-identity-avatar > span:not(:empty) {
+:root[data-ui-background='graphite'] .row-identity-avatar > span:not(:empty) {
     border-color: rgb(var(--panel-bg));
 }
 
 
 /* The box entries' and closing tables (financial-boxes.css) as the prototype's table. */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .financial-ledger-table th {
+:root[data-ui-background='graphite'] .financial-ledger-table th {
     background: rgb(var(--panel-bg));
     color: var(--gl-faint);
     font-size: 12px;
@@ -3669,13 +3668,13 @@ html:not(.dark):is([data-ui-background='graphite'], [data-ui-background='navy'],
     border-bottom: 1px solid var(--gl-line);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .financial-ledger-table td {
+:root[data-ui-background='graphite'] .financial-ledger-table td {
     background: none;
     border-bottom-color: var(--gl-line);
     color: var(--gl-ink);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .financial-ledger-table tbody tr:hover td {
+:root[data-ui-background='graphite'] .financial-ledger-table tbody tr:hover td {
     background: var(--gl-fill);
 }
 
@@ -3686,127 +3685,52 @@ html:not(.dark):is([data-ui-background='graphite'], [data-ui-background='navy'],
  * colour, and a grey box inside a panel is the soft tint with a thin line,
  * as the prototype's inner boxes.
  */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .bg-graphite-gradient {
+:root[data-ui-background='graphite'] .bg-graphite-gradient {
     background-image: var(--ui-hero);
     border-color: rgb(255 255 255 / 0.1);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .bg-gray-50:not(body) {
+:root[data-ui-background='graphite'] .bg-gray-50:not(body) {
     border-color: var(--gl-line);
     background-color: var(--gl-fill);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .bg-gray-100:not(body) {
+:root[data-ui-background='graphite'] .bg-gray-100:not(body) {
     background-color: var(--gl-fill-2);
 }
 
 
 /* A chosen chip drawn dark by hand (bg-gray-900 or graphite with light text) takes the company's colour in the panel look. */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .bg-gray-900:is(.text-surface, .text-white),
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .bg-graphite-800.text-white {
+:root[data-ui-background='graphite'] .bg-gray-900:is(.text-surface, .text-white),
+:root[data-ui-background='graphite'] .bg-graphite-800.text-white {
     background-color: rgb(var(--brand-solid));
     color: rgb(var(--brand-ink));
 }
 
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) [class*='bg-gray-50/']:not(body),
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) [class*='bg-gray-100/']:not(body) {
+:root[data-ui-background='graphite'] [class*='bg-gray-50/']:not(body),
+:root[data-ui-background='graphite'] [class*='bg-gray-100/']:not(body) {
     background-color: var(--gl-fill);
 }
 
 /* The permissions screen (PermissionDesign.css): its hero and group icons in the deep blue instead of graphite. */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .pm-hero {
+:root[data-ui-background='graphite'] .pm-hero {
     background: radial-gradient(90% 150% at 100% 0%, color-mix(in srgb, var(--role) 30%, transparent), transparent 58%), var(--ui-hero);
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), var(--panel-shadow);
 }
 
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .pm-group-icon {
+:root[data-ui-background='graphite'] .pm-group-icon {
     background: rgb(var(--brand-solid));
 }
 
 /* Under the panel look the company's colour fills flat, with no glow under it, like the panel buttons. */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) {
+:root[data-ui-background='graphite'] {
     --brand-fill: linear-gradient(rgb(var(--brand-solid)), rgb(var(--brand-solid)));
     --shadow-glow: inset 0 1px 0 rgb(255 255 255 / 0.18);
 }
 
 /* The SMS page's segmented choices pick in the company's colour, like the panel segments. */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) .sm-segments button[aria-pressed='true'] {
+:root[data-ui-background='graphite'] .sm-segments button[aria-pressed='true'] {
     background: rgb(var(--brand-solid));
     color: rgb(var(--brand-ink));
-}
-
-/*
- * ── The navy glass look ──────────────────────────────────────────────────
- *
- * Navy and night blue (`background`, theme.css section 8) light the page
- * with two wide blue lights instead of the charcoal look's faint grid.
- * Glass cards (`cards`: glass) and the glass bar (`navStyle`: glass) draw
- * their panels frosted: the panel's colour at the company's transparency
- * (`--glass-alpha`) over a blur of the page behind (`--glass-blur`), with a
- * light rim along the top edge. Menus and windows that open over the page
- * stay nearly opaque so what is behind them never reads through. Where the
- * browser cannot blur, or the person asks for less transparency, every
- * glass panel is drawn nearly solid.
- */
-:root:is([data-ui-background='navy'], [data-ui-background='midnight']) body {
-    background-image: none;
-}
-
-:root:is([data-ui-background='navy'], [data-ui-background='midnight']) .tn-backdrop {
-    display: block;
-    background: var(--panel-ambient);
-}
-
-:root[data-ui-cards='glass'][data-ui-background] :is(.shadow-card, .gl-card) {
-    border-color: rgb(var(--panel-line));
-    background-color: rgb(var(--panel-bg) / var(--glass-alpha));
-    box-shadow: inset 0 1px 0 rgb(var(--panel-line-hi)), var(--panel-shadow);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
-    backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
-}
-
-:root[data-ui-cards='glass'][data-ui-background] .modal-sheet-panel {
-    border: 1px solid rgb(var(--panel-line));
-    background-color: rgb(var(--panel-bg) / 0.94);
-    box-shadow: inset 0 1px 0 rgb(var(--panel-line-hi)), var(--panel-shadow);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
-    backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
-}
-
-:root[data-ui-nav-style='glass'][data-ui-background] .tn-bar {
-    border-color: rgb(var(--panel-line));
-    background: rgb(var(--panel-bg) / var(--glass-alpha));
-    box-shadow: inset 0 1px 0 rgb(var(--panel-line-hi)), var(--panel-shadow);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
-    backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
-}
-
-/* Once the page scrolls under it, the bar thickens so the text it passes over never reads through. */
-:root[data-ui-nav-style='glass'][data-ui-background] .tn-header.is-scrolled .tn-bar {
-    background: rgb(var(--panel-bg) / min(0.92, calc(var(--glass-alpha) + 0.2)));
-}
-
-:root[data-ui-nav-style='glass'][data-ui-background] :is(.tn-mega, .tn-popover, .tn-drawer-panel) {
-    border: 1px solid rgb(var(--panel-line));
-    background: rgb(var(--panel-bg) / 0.94);
-    box-shadow: inset 0 1px 0 rgb(var(--panel-line-hi)), var(--panel-shadow);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
-    backdrop-filter: blur(var(--glass-blur)) saturate(1.25);
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    :root[data-ui-cards='glass'][data-ui-background] :is(.shadow-card, .gl-card, .modal-sheet-panel),
-    :root[data-ui-nav-style='glass'][data-ui-background] :is(.tn-bar, .tn-mega, .tn-popover, .tn-drawer-panel) {
-        background-color: rgb(var(--panel-bg) / 0.94);
-    }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-    :root[data-ui-cards='glass'][data-ui-background] :is(.shadow-card, .gl-card, .modal-sheet-panel),
-    :root[data-ui-nav-style='glass'][data-ui-background] :is(.tn-bar, .tn-mega, .tn-popover, .tn-drawer-panel) {
-        background-color: rgb(var(--panel-bg) / 0.97);
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-    }
 }

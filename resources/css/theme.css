@@ -17,7 +17,7 @@
  *   5. Accents          extra colours for charts, tags and roles
  *   6. Named colours    what the pages with a stylesheet of their own read
  *   7. Dark navigation  the greys inside a dark or coloured navigation
- *   8. Panels           the panels (solid, or frosted glass) and the page's own colour
+ *   8. Panels           the solid panels and the page's own colour
  *
  * Colours that change with the theme are set twice: in `:root` for the light
  * theme and in `.dark` for the dark one. Those set once look the same in both.
@@ -465,104 +465,13 @@
 }
 
 /*
- * The glass look (BrandDesign `cards`: glass, `navStyle`: glass): how
- * see-through a glass panel is and how much it blurs the page behind it,
- * company tokens (BrandDesign TOKENS: glassAlpha, glassBlur); the light rim
- * along a glass panel's top edge; and the page's light behind them.
+ * The named colours (section 6) in the charcoal look: the pages that keep a
+ * stylesheet of their own (the ledger, reading entry, the profile, reading
+ * schedule, SMS settings) draw on the same panels, lines, text and company
+ * colour as the tokens above. Their hero cards keep white text on the
+ * company's colour.
  */
-:root {
-    --glass-alpha: 0.6;
-    --glass-blur: 18px;
-    --panel-line-hi: 255 255 255 / 0.9;
-    --panel-ambient: none;
-}
-
-.dark {
-    --panel-line-hi: 255 255 255 / 0.12;
-}
-
-/*
- * The Superpower navy look (BrandDesign `background`: navy or midnight):
- * the page, panels and quiet text in navy blue, two wide blue lights over
- * the page (`--panel-ambient`), and, with glass cards and the glass bar,
- * frosted panels over them (app.css). Midnight changes the dark theme only:
- * a deeper night blue with brighter lights.
- *
- * Every text colour here reads at 4.5:1 or more (WCAG AA) on the page and
- * on a panel: faint text 4.9:1 light, 5.6:1 dark, 5.6:1 midnight.
- */
-:root:is([data-ui-background='navy'], [data-ui-background='midnight']) {
-    --panel-field: 255 255 255;
-    --panel-tile: 238 242 250;
-    --panel-field-line: 196 207 228;
-    --panel-page: 227 233 245;
-    --panel-ink: 15 26 51;
-    --panel-muted: 71 90 126;
-    --panel-faint: 82 100 134;
-    --panel-bg: 255 255 255;
-    --panel-line: 30 60 120 / 0.12;
-    --panel-line-strong: 30 60 120 / 0.2;
-    --panel-line-hi: 255 255 255 / 0.9;
-    --panel-fill: 30 60 130 / 0.05;
-    --panel-fill-strong: 30 60 130 / 0.09;
-    --panel-shadow: 0 24px 40px -28px rgb(30 40 70 / 0.5);
-    --panel-ambient:
-        radial-gradient(1200px 640px at 85% -12%, rgb(120 160 240 / 0.38), transparent 62%),
-        radial-gradient(900px 600px at 0% 112%, rgb(150 180 240 / 0.32), transparent 62%);
-
-    --panel-success: 8 105 66;
-    --panel-warning: 146 86 4;
-    --panel-danger: 180 32 48;
-    --panel-info: 28 84 196;
-}
-
-.dark:is([data-ui-background='navy'], [data-ui-background='midnight']) {
-    --panel-field: 10 22 52;
-    --panel-tile: 22 40 82;
-    --panel-field-line: 52 74 122;
-    --panel-page: 5 12 31;
-    --panel-ink: 234 240 255;
-    --panel-muted: 157 176 211;
-    --panel-faint: 132 151 190;
-    --panel-bg: 15 30 66;
-    --panel-line: 140 170 255 / 0.14;
-    --panel-line-strong: 140 170 255 / 0.24;
-    --panel-line-hi: 175 200 255 / 0.24;
-    --panel-fill: 120 160 255 / 0.07;
-    --panel-fill-strong: 120 160 255 / 0.14;
-    --panel-shadow: 0 26px 50px -30px rgb(0 0 0 / 0.95);
-    --panel-ambient:
-        radial-gradient(1300px 720px at 85% -12%, rgb(37 78 170 / 0.34), transparent 62%),
-        radial-gradient(1000px 640px at 0% 112%, rgb(24 58 140 / 0.28), transparent 62%);
-
-    --panel-success: 60 207 145;
-    --panel-warning: 234 168 66;
-    --panel-danger: 242 100 111;
-    --panel-info: 106 165 255;
-}
-
-.dark[data-ui-background='midnight'] {
-    --panel-field: 8 24 64;
-    --panel-tile: 22 50 116;
-    --panel-page: 4 12 39;
-    --panel-bg: 14 38 98;
-    --panel-muted: 159 182 230;
-    --panel-faint: 140 162 210;
-    --panel-danger: 250 128 138;
-    --panel-info: 130 182 255;
-    --panel-ambient:
-        radial-gradient(1300px 720px at 85% -12%, rgb(40 95 235 / 0.38), transparent 62%),
-        radial-gradient(1000px 640px at 0% 112%, rgb(30 80 200 / 0.3), transparent 62%);
-}
-
-/*
- * The named colours (section 6) in the charcoal and navy looks: the pages
- * that keep a stylesheet of their own (the ledger, reading entry, the
- * profile, reading schedule, SMS settings) draw on the same panels, lines,
- * text and company colour as the tokens above. Their hero cards keep white
- * text on the company's colour.
- */
-:root:is([data-ui-background='graphite'], [data-ui-background='navy'], [data-ui-background='midnight']) {
+:root[data-ui-background='graphite'] {
     --ui-page: rgb(var(--panel-page));
     --ui-surface: rgb(var(--panel-bg));
     --ui-raised: rgb(var(--panel-fill));
