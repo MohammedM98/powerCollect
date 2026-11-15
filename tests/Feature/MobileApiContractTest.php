@@ -18,7 +18,7 @@ class MobileApiContractTest extends TestCase
     /** @return array<string, mixed> */
     private function contract(): array
     {
-        return Yaml::parseFile(base_path('docs/mobile-api.yaml'));
+        return Yaml::parseFile(__DIR__.'/mobile-api-contract.yaml');
     }
 
     public function test_every_version_one_route_is_described_and_nothing_else_is(): void

@@ -48,7 +48,7 @@ class BrandOptions extends Command
         $this->line('  @import and escapes are removed; url() may hold data: images only.');
 
         $this->newLine();
-        $this->line('  A complete example: resources/brand/example.json. Import with: php artisan brand:import <file>');
+        $this->line('  Import with: php artisan brand:import <file>');
 
         return self::SUCCESS;
     }

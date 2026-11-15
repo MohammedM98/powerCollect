@@ -3,9 +3,7 @@
  * tables, drawers and board, prefixed
  * `gl-` so they never meet Tailwind's own names. Every colour comes from
  * theme.css (section 8, and the brand's shades), so both themes, the dark
- * backgrounds and the company's colour follow. Components in
- * resources/js/Components draw with these; design-system.superpower.json
- * names them.
+ * backgrounds and the company's colour follow.
  */
 :root {
     --gl-ink: rgb(var(--panel-ink));
@@ -2252,7 +2250,7 @@
     gap: 4px;
 }
 
-/* The prototype's forms carry no step numbers: the step's name reads as a quiet group label. */
+/* Use the step name as the form's group label. */
 .gl-step-n {
     display: none;
     place-items: center;

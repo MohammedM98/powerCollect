@@ -5,7 +5,7 @@ import { ACTION_MESSAGES, visitReturnsStatus } from '@/lib/actionMessages';
 import { createNotificationQueue } from '@/lib/notificationQueue';
 
 /**
- * The prototype's toast (components.css `gl-toast`): a light bar at the bottom
+ * Toast notifications (components.css `gl-toast`) appear at the bottom
  * of the page, the status shown by its icon's colour and, when it failed,
  * by a title above the reason.
  */

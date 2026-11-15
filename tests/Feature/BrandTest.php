@@ -236,9 +236,10 @@ class BrandTest extends TestCase
         $response->assertInertia(fn ($page) => $page->where('brand.stylesheet', app(Brand::class)->stylesheet()));
     }
 
-    public function test_the_full_example_identity_imports(): void
+    public function test_an_identity_preset_imports_with_its_status_colours(): void
     {
-        $this->artisan('brand:import', ['file' => resource_path('brand/example.json')])->assertSuccessful();
+        $file = $this->identityFile(['design' => ['preset' => 'executive'], 'colors' => ['success' => '#16A34A']]);
+        $this->artisan('brand:import', ['file' => $file])->assertSuccessful();
 
         $profile = app(Brand::class)->profile();
         $this->assertSame('executive', $profile['design']['preset']);

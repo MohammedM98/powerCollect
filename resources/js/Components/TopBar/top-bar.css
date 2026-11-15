@@ -1347,7 +1347,7 @@ html.tn-locked {
     mask-image: linear-gradient(to right, transparent 0, #000 2.5rem, #000 calc(100% - 2.5rem), transparent 100%);
 }
 
-/* The prototype's page strip: plain words, the open page underlined by a line that slides to it. */
+/* The underline follows the active page across the page links. */
 .tn-subnav {
     position: relative;
 }

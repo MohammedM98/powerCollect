@@ -21,8 +21,7 @@ function useWorkingBranch() {
 }
 
 /**
- * The super admin's working branch as a chip in the top bar's context card
- * (the gallery's branch chip): a dot, the branch's name (or all of them),
+ * The super admin's working branch in the top bar: a dot, the branch name (or all branches),
  * and the picker that changes it for the rest of their visit.
  */
 export function WorkingBranchChip() {

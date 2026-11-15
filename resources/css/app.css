@@ -2380,7 +2380,7 @@ input[type='radio'] {
 }
 
 /*
- * The prototype's calm table, the default look wider than a phone: one
+ * The default table layout wider than a phone: one
  * sheet on the surface, no lines between columns, quiet column titles,
  * a hairline between rows, a soft tint under the row being pointed at,
  * and the chosen row in the company's colour with a bar at its start.
@@ -2652,7 +2652,7 @@ input[type='radio'] {
 }
 
 /*
- * The menu as the prototype's: a section's row is a small quiet heading
+ * A section's menu row is a small heading
  * (open or not), its pages plain lines under it without an indent, and the
  * home page a line like them.
  */
@@ -3427,7 +3427,7 @@ input[type='radio'] {
 
 
 /*
- * ── Tables in the panel look, as the prototype's ─────────────────────────
+ * ── Tables in the panel look ──────────────────────────────────────────
  * One panel holds a table's toolbar, the table, its totals and its
  * pages, divided by thin lines. Column titles are small and quiet with no
  * fill, rows are separated by a line and tinted under the pointer; figures
@@ -3560,7 +3560,7 @@ input[type='radio'] {
 }
 
 
-/* Row buttons, export buttons and the row's avatar in the panel look: the prototype's quiet icon buttons and avatar. */
+/* Row actions, export buttons and avatars in the panel look. */
 :root[data-ui-background='graphite'] .row-action {
     width: 34px;
     height: 34px;
@@ -3676,7 +3676,7 @@ html:not(.dark)[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg 
 }
 
 
-/* The box entries' and closing tables (financial-boxes.css) as the prototype's table. */
+/* Cash-box entries and closing tables (financial-boxes.css). */
 :root[data-ui-background='graphite'] .financial-ledger-table th {
     background: rgb(var(--panel-bg));
     color: var(--gl-faint);
@@ -3699,8 +3699,7 @@ html:not(.dark)[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg 
 /*
  * The old graphite cards and the grey inner boxes, in the panel look: a card
  * that was graphite (white text on it) is a gradient in the company's
- * colour, and a grey box inside a panel is the soft tint with a thin line,
- * as the prototype's inner boxes.
+ * colour, and a grey box inside a panel has a soft tint with a thin line.
  */
 :root[data-ui-background='graphite'] .bg-graphite-gradient {
     background-image: var(--ui-hero);

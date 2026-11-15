@@ -1,6 +1,5 @@
 /**
- * A row of buttons in one tray, one of them chosen (the prototype's
- * segmented control, components.css `gl-seg`): the period a report covers, the
+ * A segmented control (components.css `gl-seg`): the period a report covers, the
  * order of the branch cards. `options` are `{ value, label }`; `label`
  * names the group for screen readers.
  */

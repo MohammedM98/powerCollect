@@ -9,7 +9,7 @@ plugins {
 
 // The release key lives outside the repository: android/key.properties (git-ignored) with
 // storeFile, storePassword, keyAlias and keyPassword. Without it a release build fails
-// instead of being signed with the debug key; see the Deployment section of README.md.
+// instead of being signed with the debug key.
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {

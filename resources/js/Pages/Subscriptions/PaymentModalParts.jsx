@@ -11,7 +11,7 @@ import { balanceText, FieldLabel } from './AccountFormParts';
 
 export const inputClass = 'block h-[46px] w-full px-4 text-base';
 
-/** One way of paying, as the prototype's choice tile (a radio). */
+/** A payment method presented as a radio option. */
 export function MethodTile({ value, checked, onChange, icon, title, hint }) {
     return (
         <label className="gl-method" data-checked={checked || undefined}>

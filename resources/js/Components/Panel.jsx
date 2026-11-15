@@ -1,5 +1,5 @@
 /**
- * The panel every page is built from (design-system.superpower.json):
+ * The shared page panel:
  * a title, a muted line under it (`sub`), whatever goes at the other end
  * (`right`), then the body. `index` staggers its entrance after the ones
  * before it.

@@ -517,7 +517,7 @@
 
 /*
  * Keyboard focus: one ring, in the company's colour, for every control the
- * panel design system draws (buttons, icon buttons, segments, toggles, chips,
+ * shared panel styles draw (buttons, icon buttons, segments, toggles, chips,
  * tabs, menu buttons and switches), so the keyboard's place looks the same
  * everywhere. Fields show theirs on the frame (.gl-field:focus-within); the
  * appearance setting data-ui-focus-ring recolours or softens it (app.css).

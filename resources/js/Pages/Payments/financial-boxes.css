@@ -7,7 +7,7 @@
 .modal-scroll:has(.financial-box-followup) { display: flex; justify-content: flex-end; padding: 0; }
 .financial-box-followup { width: min(520px, 100vw); max-width: 520px; height: 100dvh; margin: 0; border-radius: 0; }
 
-/* The prototype's row cards share one grid, so headings and values cannot drift. */
+/* Row cards share a grid to align headings and values. */
 .financial-box-list-container { padding: 12px; background: rgb(var(--gray-50)); }
 .financial-box-list { container-type: inline-size; }
 .financial-box-list-table { display: block; width: 100%; border: 0; }

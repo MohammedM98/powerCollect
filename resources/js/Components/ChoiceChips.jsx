@@ -8,8 +8,8 @@ const DOT_COLORS = {
 };
 
 /**
- * A few choices shown as the prototype's chips (components.css `gl-chip`), picked with one click instead of a
- * drop-down (a radio group). Each option is `{ value, label, hint?, dot?, icon? }`:
+ * A radio group rendered as chips (components.css `gl-chip`).
+ * Each option is `{ value, label, hint?, dot?, icon? }`:
  * `hint` is a quiet second part beside the label (a price, say), `dot` a
  * status color, `icon` an icon before the label, `disabled` a choice that
  * cannot be picked (with `title` saying why). The arrow keys move the

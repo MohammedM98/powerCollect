@@ -5,7 +5,7 @@ import Icon from '@/Components/Icon';
 const TAB_ICONS = { open: 'unlock', closed: 'lock', sent: 'send', entries: 'list' };
 
 /**
- * The financial boxes page's tabs, as the prototype's underlined tabs, in
+ * The financial boxes page's tabs in
  * the order work goes through them: the entries of the branch's open boxes,
  * its open boxes, its closed boxes not sent yet, and those sent to audit,
  * each with how many there are. The tab shown carries the line in the

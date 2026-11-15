@@ -1,5 +1,5 @@
 /**
- * A status as the prototype's pill (components.css `gl-pill`): its word in the
+ * A status pill (components.css `gl-pill`): its label in the
  * status colour over a 15% tint of it, so it never reads by colour alone.
  */
 const TONES = {

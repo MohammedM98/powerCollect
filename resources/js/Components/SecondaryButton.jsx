@@ -2,7 +2,7 @@
 export const secondaryButtonClass = 'ui-btn-secondary gl-btn gl-sec';
 
 /**
- * Cancel and side actions: the prototype's quiet button, a soft tint with a thin line.
+ * Cancel and side actions.
  */
 export default function SecondaryButton({ className = '', disabled, children, type = 'button', ...props }) {
     return (

@@ -1,7 +1,7 @@
 import InfoTip from '@/Components/InfoTip';
 
 /**
- * An on/off switch with a visible label: the prototype's capsule
+ * An on/off switch with a visible label
  * (components.css `gl-switch`), in the company's colour when on, its knob
  * sliding toward the end (left in Arabic). `ariaLabel` gives
  * screen readers the full name when the visible label is short, e.g.

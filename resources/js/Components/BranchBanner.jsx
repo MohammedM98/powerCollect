@@ -6,8 +6,7 @@ import { formatNumber } from '@/lib/format';
 import { useBranchView } from '@/hooks/useBranchView';
 
 /**
- * Whose figures the page shows, as a slim bar at its top (the component
- * gallery's scope bar): one branch's name, with its place, phone and
+ * Shows whose figures the page contains: one branch's name, place, phone and
  * subscribers, a governorate's with how many branches
  * it has, or "جميع الفروع" with how many — so whoever sees more than one
  * branch never mistakes one branch's money for another's. `scope` is what App\Support\BranchScope::describe() sends.

@@ -2,7 +2,7 @@ import CountUp from '@/Components/CountUp';
 import Icon from '@/Components/Icon';
 
 /**
- * One figure on a card (the prototype's Kpi): an icon tile and a
+ * One figure on a card: an icon tile and a
  * label (with a `badge` at the far end, such as a change against the
  * period before), the figure with its unit (₪…), and a quiet line of
  * context under it. A number `value` counts up as it shows; a written

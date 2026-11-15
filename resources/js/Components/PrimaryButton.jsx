@@ -2,8 +2,7 @@
 export const primaryButtonClass = 'ui-btn-primary gl-btn';
 
 /**
- * The main action on a screen (one per screen): the prototype's button,
- * a gradient in the company's colour with an inner shine and a soft glow.
+ * The main action on a screen.
  */
 export default function PrimaryButton({ className = '', disabled, children, ...props }) {
     return (
