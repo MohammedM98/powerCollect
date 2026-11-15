@@ -26,7 +26,8 @@ export function useSectionHighlight({ highlightRef, itemRefs, litKey, navRef }) 
             }
 
             highlight.style.width = `${element.offsetWidth}px`;
-            highlight.style.transform = `translateX(${element.offsetLeft}px)`;
+            highlight.style.height = `${element.offsetHeight}px`;
+            highlight.style.transform = `translateY(${element.offsetTop}px)`;
             highlight.style.opacity = 1;
         },
         [litKey, highlightRef, itemRefs],

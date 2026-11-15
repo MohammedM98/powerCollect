@@ -5,6 +5,19 @@ import { megaWidth } from './MegaMenu';
 import { useSectionHighlight } from './useSectionHighlight';
 import { useMenuKeys } from './useMenuKeys';
 
+function menuPosition(button, width, height) {
+    const bounds = button.getBoundingClientRect();
+    const dock = button.closest('.tn-side').getBoundingClientRect();
+    const rtl = getComputedStyle(button).direction === 'rtl';
+    const viewport = document.documentElement;
+    const besideDock = rtl ? dock.left - width - 10 : dock.right + 10;
+
+    return {
+        x: Math.max(16, Math.min(viewport.clientWidth - width - 16, besideDock)),
+        top: Math.max(16, Math.min(bounds.top, viewport.clientHeight - height - 16)),
+    };
+}
+
 /** The top bar's menus: which section's panel is open or pinned, the panels sliding between sections, the light under the hovered section, the small menus (popover), the bar slimming on scroll, and the mouse and keyboard ways in and out of them. */
 export function useMegaMenu({ current, groups, items, layerOpen, url }) {
     const [scrolled, setScrolled] = useState(false);
@@ -16,7 +29,6 @@ export function useMegaMenu({ current, groups, items, layerOpen, url }) {
     const [still, setStill] = useState(false);
     const [geometry, setGeometry] = useState({ width: 420, height: 300, x: 0, top: 92 });
 
-    const barRef = useRef(null);
     const navRef = useRef(null);
     const highlightRef = useRef(null);
     const megaRef = useRef(null);
@@ -89,12 +101,8 @@ export function useMegaMenu({ current, groups, items, layerOpen, url }) {
             const index = groups.findIndex((candidate) => candidate.id === id);
             const shift = first ? 0 : index > previousIndex ? -24 : 24;
             const width = megaWidth(group);
-            const buttonBox = button.getBoundingClientRect();
-            const viewport = document.documentElement.clientWidth;
-            const x = Math.max(16, Math.min(viewport - width - 16, buttonBox.left + buttonBox.width / 2 - width / 2));
-
             setStill(first);
-            setGeometry((previous) => ({ ...previous, width, x, top: barRef.current.getBoundingClientRect().bottom + 10 }));
+            setGeometry((previous) => ({ ...previous, width, ...menuPosition(button, width, previous.height) }));
             // Each panel fades out for 200ms from the moment it starts leaving, then goes.
             if (!first) {
                 panelsRef.current
@@ -126,13 +134,21 @@ export function useMegaMenu({ current, groups, items, layerOpen, url }) {
             return undefined;
         }
 
-        setGeometry((previous) => ({ ...previous, height: content.offsetHeight }));
-        const observer = new ResizeObserver(() =>
-            setGeometry((previous) => (previous.height === content.offsetHeight ? previous : { ...previous, height: content.offsetHeight })),
-        );
+        const newest = panels.at(-1);
+        const button = itemRefs.current.get(newest?.id);
+        if (!button) {
+            return undefined;
+        }
+
+        function placeMenu() {
+            const height = content.offsetHeight;
+            setGeometry((previous) => ({ ...previous, height, ...menuPosition(button, previous.width, height) }));
+        }
+
+        placeMenu();
+        const observer = new ResizeObserver(placeMenu);
         observer.observe(content);
 
-        const newest = panels.at(-1);
         if (newest?.focus && focusedPanel.current !== newest.key) {
             focusedPanel.current = newest.key;
             requestAnimationFrame(() => content.querySelector('.tn-feature, .tn-mega-link')?.focus());
@@ -170,16 +186,12 @@ export function useMegaMenu({ current, groups, items, layerOpen, url }) {
         setHoverKey(null);
     }, [url]);
 
-    // The bar slims once the page scrolls; the open panel follows its edge, and a small menu closes once the page moves away from it.
+    // The bar slims on scroll and its small menus close once the page moves away.
     useEffect(() => {
         function onScroll() {
             const y = window.scrollY;
             // Two edges, so a page resting near one cannot flip the bar back and forth.
             setScrolled((wasScrolled) => (wasScrolled ? y > 4 : y > 24));
-
-            if (state.current.openId && barRef.current) {
-                setGeometry((previous) => ({ ...previous, top: barRef.current.getBoundingClientRect().bottom + 10 }));
-            }
 
             if (state.current.popover && Math.abs(y - state.current.popoverY) > 24) {
                 setPopover(null);
@@ -324,7 +336,6 @@ export function useMegaMenu({ current, groups, items, layerOpen, url }) {
 
     return {
         scrolled,
-        barRef,
         clearTimers,
         closeMega,
         currentKey,
@@ -345,12 +356,9 @@ export function useMegaMenu({ current, groups, items, layerOpen, url }) {
         panels,
         pointerType,
         popover,
-        setGeometry,
         setHoverKey,
         setPopover,
-        state,
         still,
-        syncHighlight,
         togglePopover,
     };
 }

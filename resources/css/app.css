@@ -2550,17 +2550,13 @@ input[type='radio'] {
 }
 
 /*
- * The charcoal look (`background`: graphite, see theme.css, section 8):
- * the page in its own flat neutral colour, and cards as solid panels with a
- * thin line. Nothing is see-through.
+ * The charcoal look (`background`: graphite, see theme.css, section 8)
+ * uses a neutral backdrop and frosted panels in each theme.
  */
 :root[data-ui-background='graphite'] body {
     background-color: rgb(var(--panel-page));
-    /* A faint grid behind every page, so panels sit on something without a colour of its own. */
-    background-image:
-        linear-gradient(rgb(var(--panel-ink) / 0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgb(var(--panel-ink) / 0.035) 1px, transparent 1px);
-    background-size: 28px 28px;
+    background-image: var(--panel-ambient);
+    background-attachment: fixed;
 }
 
 :root[data-ui-background='graphite'] .tn-backdrop {
@@ -2569,29 +2565,41 @@ input[type='radio'] {
 
 
 /*
- * The navigation in the charcoal look: the top bar, the big menu, the small
- * menus and the phone menu are solid panels like the cards. The open page
- * (and the open section in the top bar) is a pill in the company's colour
- * with white text; a section's own row stays quiet.
+ * Floating navigation uses the same material on the dock and toolbar.
+ * Menus over content use a denser tint so their text stays readable.
  */
-:root[data-ui-background='graphite'] :is(.tn-bar, .tn-mega, .tn-popover, .tn-drawer-panel) {
+:root[data-ui-background='graphite'] :is(.tn-bar, .tn-side, .tn-mega, .tn-popover, .tn-drawer-panel) {
     border: 1px solid rgb(var(--panel-line));
-    background: rgb(var(--panel-bg));
-    box-shadow: var(--panel-shadow);
+    background: rgb(var(--panel-bg) / var(--panel-opacity));
+    box-shadow: inset 0 1px 0 rgb(var(--panel-highlight)), var(--panel-shadow);
+    -webkit-backdrop-filter: var(--panel-frost);
+    backdrop-filter: var(--panel-frost);
 }
 
-/* Menus that open over the page stay nearly opaque, so the page behind them doesn't read through. */
-:root[data-ui-background='graphite'] :is(.tn-mega, .tn-popover, .tn-drawer-panel) {
-    background: rgb(var(--panel-bg));
+:root[data-ui-background='graphite'] :is(.tn-mega, .tn-popover, .tn-drawer-panel, .modal-sheet-panel) {
+    background: rgb(var(--panel-bg) / min(1, calc(var(--panel-opacity) + 0.32)));
 }
 
 :root[data-ui-background='graphite'] .tn-header.is-scrolled .tn-bar {
-    background: rgb(var(--panel-bg));
+    background: rgb(var(--panel-bg) / min(1, calc(var(--panel-opacity) + 0.2)));
 }
 
-:root[data-ui-background='graphite'] :is(.tn-bar, .tn-mega)::before,
-:root[data-ui-background='graphite'] .tn-section[data-current='true']::after {
+:root[data-ui-background='graphite'] :is(.tn-bar, .tn-mega)::before {
     display: none;
+}
+
+:root[data-ui-background='graphite'] :is(.tn-shell .gl-card, .modal-sheet-panel) {
+    border-color: rgb(var(--panel-line));
+    box-shadow: inset 0 1px 0 rgb(var(--panel-highlight)), var(--panel-shadow);
+}
+
+:root[data-ui-background='graphite'] .tn-shell .gl-card {
+    background-color: rgb(var(--panel-bg) / var(--panel-opacity));
+}
+
+:root[data-ui-background='graphite'] .modal-scrim {
+    -webkit-backdrop-filter: var(--panel-frost);
+    backdrop-filter: var(--panel-frost);
 }
 
 :root[data-ui-background='graphite'] {
@@ -2980,6 +2988,15 @@ input[type='radio'] {
     --tn-graphite-dark: var(--tn-graphite);
     --tn-graphite-ink: rgb(var(--brand-ink));
     --tn-graphite-icon: rgb(var(--brand-ink));
+}
+
+:root[data-ui-nav-highlight='brand'] .tn-highlight {
+    background: rgb(var(--brand-solid));
+}
+
+:root[data-ui-nav-highlight='brand'] .tn-section[data-lit='true'],
+:root[data-ui-nav-highlight='brand'] .tn-section[data-lit='true'] .tn-section-icon {
+    color: rgb(var(--brand-ink));
 }
 
 :root[data-ui-nav-highlight='underline'] .tn-highlight {
@@ -3418,7 +3435,7 @@ input[type='radio'] {
  */
 :root[data-ui-background='graphite'] :is(.data-table-toolbar, .data-table-container, .data-table-totals, .data-table-pagination) {
     border-color: var(--gl-line);
-    background: rgb(var(--panel-bg));
+    background: rgb(var(--panel-bg) / var(--panel-opacity));
     color: var(--gl-ink);
 }
 

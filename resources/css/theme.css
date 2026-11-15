@@ -411,12 +411,8 @@
 /*
  * ── 8. Panels ────────────────────────────────────────────────────────────
  *
- * The page's own colour and the solid panels on it (the `gl-` components in
- * components.css and the charcoal look in app.css, BrandDesign `background`:
- * graphite). Nothing is see-through or blurred: panels are opaque cards with
- * a thin line, in quiet cool greys in both themes; the only
- * colour on the page is the company's buttons and links. Values with their
- * own transparency are written `R G B / alpha` and read `rgb(var(--panel-line))`.
+ * The graphite palette, including the frosted white and charcoal surfaces
+ * used by the signed-in shell. Solid fallbacks use the same RGB values.
  *
  * Every text colour here reads at 4.5:1 or more (WCAG AA) on the page and
  * on a panel.
@@ -426,7 +422,7 @@
     --panel-field: 255 255 255;
     --panel-tile: 243 245 248;
     --panel-field-line: 205 211 219;
-    --panel-page: 246 247 249;
+    --panel-page: 236 238 241;
     --panel-ink: 19 23 28;
     --panel-muted: 89 98 109;
     --panel-faint: 96 104 114;
@@ -435,7 +431,13 @@
     --panel-line-strong: 0 0 0 / 0.16;
     --panel-fill: 0 0 0 / 0.04;
     --panel-fill-strong: 0 0 0 / 0.07;
-    --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -16px rgb(0 0 0 / 0.18);
+    --panel-shadow: 0 24px 40px -28px rgb(20 24 30 / 0.45);
+    --panel-highlight: 255 255 255 / 0.9;
+    --panel-ambient:
+        radial-gradient(1200px 640px at 85% -12%, rgb(255 255 255 / 0.75), transparent 62%),
+        radial-gradient(900px 600px at 0% 112%, rgb(20 25 35 / 0.04), transparent 62%);
+    --panel-opacity: 1;
+    --panel-frost: none;
 
     --panel-success: 8 105 66;
     --panel-warning: 146 86 4;
@@ -447,21 +449,37 @@
     --panel-field: 24 27 31;
     --panel-tile: 34 39 45;
     --panel-field-line: 62 68 76;
-    --panel-page: 20 23 27;
+    --panel-page: 10 11 13;
     --panel-ink: 236 239 243;
     --panel-muted: 163 171 181;
     --panel-faint: 133 142 153;
-    --panel-bg: 28 32 37;
+    --panel-bg: 24 26 30;
     --panel-line: 255 255 255 / 0.08;
     --panel-line-strong: 255 255 255 / 0.16;
     --panel-fill: 255 255 255 / 0.05;
     --panel-fill-strong: 255 255 255 / 0.09;
-    --panel-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 28px -18px rgb(0 0 0 / 0.9);
+    --panel-shadow: 0 26px 50px -30px rgb(0 0 0 / 0.95);
+    --panel-highlight: 255 255 255 / 0.16;
+    --panel-ambient: radial-gradient(1300px 720px at 85% -12%, rgb(255 255 255 / 0.05), transparent 62%);
 
     --panel-success: 60 207 145;
     --panel-warning: 234 168 66;
     --panel-danger: 242 100 111;
     --panel-info: 56 189 248;
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    :root {
+        --panel-opacity: 0.6;
+        --panel-frost: blur(18px) saturate(1.25);
+    }
+}
+
+@media (prefers-reduced-transparency: reduce), (forced-colors: active) {
+    :root {
+        --panel-opacity: 1;
+        --panel-frost: none;
+    }
 }
 
 /*

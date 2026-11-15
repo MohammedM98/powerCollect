@@ -1,10 +1,6 @@
 /*
- * The top bar: one solid bar with the logo, the sections in the middle and
- * the tools at the end, and, on a section's page, that section's pages as
- * tabs on a second row directly under them. Hovering a section slides a
- * light in the company's colour under it and opens one panel that reshapes
- * itself between sections. Colors are the design tokens from theme.css, so
- * both themes follow; nothing in the bar is see-through.
+ * The floating desktop dock holds the sections. The top bar holds the tools
+ * and the active section's pages. On phones the bar keeps the menu button.
  */
 :root {
     --tn-gutter: clamp(16px, 2.6vw, 44px);
@@ -13,6 +9,9 @@
     --tn-bar-rest-height: 66px;
     /* The row of the section's pages under the bar. */
     --tn-subnav-height: 54px;
+    --tn-sticky-top: calc(var(--tn-bar-rest-height) + 1.5rem);
+    --tn-dock-width: 92px;
+    --tn-dock-gap: 12px;
     --tn-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
     --tn-graphite: linear-gradient(135deg, rgb(var(--graphite-700)), rgb(var(--graphite-800)) 60%, rgb(var(--graphite-900)));
     --tn-graphite-dark: linear-gradient(135deg, rgb(var(--graphite-400)), rgb(var(--graphite-600)) 60%, rgb(var(--graphite-800)));
@@ -27,6 +26,7 @@ html {
 }
 
 html:has(.tn-header[data-subnav]) {
+    --tn-sticky-top: calc(var(--tn-bar-rest-height) + var(--tn-subnav-height) + 1.5rem);
     scroll-padding-top: 170px;
 }
 
@@ -137,7 +137,7 @@ html.tn-locked {
     pointer-events: auto;
     position: relative;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: var(--tn-bar-height);
     align-items: center;
     column-gap: 14px;
@@ -291,50 +291,93 @@ html.tn-locked {
     }
 }
 
-/* The sections, and the dark light that slides between them. */
+/* The dock and the highlight that slides between its sections. */
+.tn-side {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    :is(.tn-header, .tn-content) {
+        margin-inline-start: calc(var(--tn-dock-width) + var(--tn-dock-gap));
+    }
+
+    .tn-side {
+        position: fixed;
+        inset-block: var(--tn-dock-gap);
+        inset-inline-start: var(--tn-dock-gap);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        width: var(--tn-dock-width);
+        padding: 12px 8px;
+        border: 1px solid rgb(var(--gray-200));
+        border-radius: calc(20px * var(--radius-scale, 1));
+        background: rgb(var(--surface));
+        box-shadow: var(--shadow-card);
+        pointer-events: auto;
+    }
+
+    .tn-context :is(.tn-top-logo, .tn-brand-divider) {
+        display: none;
+    }
+}
+
+.tn-side-logo,
+.tn-side-account {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 56px;
+    min-height: 44px;
+    border-radius: calc(16px * var(--radius-scale, 1));
+}
+
+.tn-side-logo {
+    margin-bottom: 6px;
+}
+
 .tn-sections {
     position: relative;
-    justify-self: center;
     display: flex;
-    align-items: center;
-    gap: 2px;
-    height: 100%;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 2px;
+    scrollbar-width: none;
 }
 
 .tn-highlight {
     position: absolute;
     z-index: 0;
-    top: 50%;
-    left: 0;
-    height: 42px;
-    width: 0;
-    margin-top: -21px;
-    border-radius: calc(13px * var(--radius-scale, 1));
-    background: var(--tn-graphite);
+    inset-block-start: 0;
+    inset-inline-start: 2px;
+    border-radius: calc(16px * var(--radius-scale, 1));
+    background: rgb(var(--brand-solid) / 0.14);
     opacity: 0;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 12px 24px -12px rgb(var(--shadow-ink) / 0.7);
-    transition: transform 0.38s var(--tn-ease), width 0.38s var(--tn-ease), opacity 0.2s;
+    transition: transform 0.38s var(--tn-ease), height 0.38s var(--tn-ease), opacity 0.2s;
     pointer-events: none;
-}
-
-.dark .tn-highlight {
-    background: var(--tn-graphite-dark);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1), 0 0 0 1px rgb(255 255 255 / 0.1), 0 12px 24px -12px #000;
 }
 
 .tn-section {
     position: relative;
     z-index: 1;
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    height: 42px;
-    padding-inline: 13px;
-    border-radius: calc(13px * var(--radius-scale, 1));
+    display: grid;
+    flex: none;
+    justify-items: center;
+    align-content: center;
+    gap: 3px;
+    min-height: 55px;
+    padding: 7px 3px;
+    border-radius: calc(16px * var(--radius-scale, 1));
     color: rgb(var(--gray-600));
     font-weight: 600;
-    font-size: 14.5px;
-    white-space: nowrap;
+    font-size: 12px;
+    line-height: 1.4;
+    text-align: center;
     transition: color 0.22s, transform 0.12s;
 }
 
@@ -344,7 +387,7 @@ html.tn-locked {
 
 .tn-section:focus-visible {
     outline: 2px solid rgb(var(--gray-900));
-    outline-offset: 2px;
+    outline-offset: -2px;
 }
 
 .tn-section .tn-section-icon {
@@ -354,39 +397,29 @@ html.tn-locked {
     transition: color 0.22s;
 }
 
-.tn-section .tn-chevron {
-    width: 14px;
-    height: 14px;
-    opacity: 0.7;
-    transition: transform 0.25s var(--tn-ease);
-}
-
-.tn-section[aria-expanded='true'] .tn-chevron {
-    transform: rotate(180deg);
-}
-
 .tn-section[data-lit='true'] {
-    color: var(--tn-graphite-ink);
+    color: rgb(var(--gray-900));
 }
 
 .tn-section[data-lit='true'] .tn-section-icon {
-    color: var(--tn-graphite-icon);
+    color: rgb(var(--gl-brand));
 }
 
-/* The current section: a glowing line in the company's colour at the bar's bottom edge. */
+/* Mark the current section at the edge facing the page. */
 .tn-section[data-current='true']::after {
     content: '';
     position: absolute;
-    inset-inline: 16px;
-    bottom: calc((var(--tn-bar-height) - 42px) / -2);
-    height: 3px;
-    border-radius: calc(3px * var(--radius-scale, 1)) calc(3px * var(--radius-scale, 1)) 0 0;
+    inset-block: 12px;
+    inset-inline-end: 0;
+    width: 3px;
+    border-radius: 3px;
     background: rgb(var(--brand-500));
-    box-shadow: 0 -2px 14px 1px rgb(var(--brand-500) / 0.75);
-    transition: bottom 0.3s var(--tn-ease);
 }
 
 .tn-section .tn-badge {
+    position: absolute;
+    inset-block-start: 4px;
+    inset-inline-end: 3px;
     min-width: 19px;
     height: 19px;
     padding: 0 5px;
@@ -400,30 +433,6 @@ html.tn-locked {
 
 .tn-section[data-lit='true'] .tn-badge {
     box-shadow: 0 0 0 2px rgb(var(--graphite-800));
-}
-
-.tn-section .tn-label-full {
-    display: none;
-}
-
-@media (min-width: 1800px) {
-    .tn-section .tn-label-full {
-        display: inline;
-    }
-
-    .tn-section .tn-label-short {
-        display: none;
-    }
-}
-
-@media (max-width: 1379px) {
-    .tn-section .tn-section-icon {
-        display: none;
-    }
-
-    .tn-section {
-        padding-inline: 11px;
-    }
 }
 
 /* The tools at the bar's end. */
@@ -605,7 +614,7 @@ html.tn-locked {
     margin-inline: 4px;
 }
 
-@media (max-width: 1599px) {
+@media (max-width: 1023px) {
     .tn-search {
         width: 42px;
         padding: 0;
@@ -624,7 +633,9 @@ html.tn-locked {
         color: var(--tn-graphite-ink);
         border-color: transparent;
     }
+}
 
+@media (max-width: 1599px) {
     .tn-account .tn-account-text {
         display: none;
     }
@@ -634,7 +645,7 @@ html.tn-locked {
     }
 }
 
-@media (max-width: 1199px) {
+@media (max-width: 1023px) {
     .tn-brand-divider,
     .tn-brand-text {
         display: none;
@@ -783,6 +794,8 @@ html.tn-locked {
     position: absolute;
     top: 0;
     right: 0;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
     animation: tn-mega-in 0.32s var(--tn-ease);
 }
 

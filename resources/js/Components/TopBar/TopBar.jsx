@@ -4,7 +4,7 @@ import BrandLogo from '@/Components/BrandLogo';
 import ActivityBell from '@/Components/ActivityBell';
 import { shouldPrefetchPage, HOME_LINK, currentGroup, topBarItems } from '@/lib/navigation';
 import MegaMenu, { megaWidth } from './MegaMenu';
-import AccountMenu from './AccountMenu';
+import AccountMenu, { Avatar } from './AccountMenu';
 import { useTheme } from '@/hooks/useTheme';
 import './top-bar.css';
 import { useMegaMenu } from './useMegaMenu';
@@ -20,10 +20,9 @@ function badgeOf(group, badges) {
 }
 
 /**
- * The bar at the top of every page: the logo, the sections in the middle
- * with a light in the company's colour that follows the pointer, and the
- * tools (the working branch, search, light or dark theme, activity, account;
- * the menu button on phones). The open section's pages (`subnav`) sit as
+ * The desktop dock holds the sections. The top bar holds the working branch,
+ * search, theme, activity and account, with the menu button on phones.
+ * The open section's pages (`subnav`) sit as
  * tabs on a second row directly under it, in the same bar. Once the page's title has
  * scrolled away, `where` ({ section, page, scope? }) takes the branch's place
  * under the name, and the page's name sits beside the logo on phones, so the
@@ -45,38 +44,15 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
     const pageLabel = where ? (currentScope ? [where.page, currentScope] : [where.section, where.page]).filter(Boolean).join(' · ') : null;
     const searchText = props.can?.recordPayments && props.can?.viewSubscriptions ? 'ابحث عن صفحة أو مشترك…' : 'ابحث عن صفحة أو أمر…';
 
-    const { scrolled, barRef, clearTimers, closeMega, currentKey, geometry, highlightRef, hoverItem, itemRefs, leaveZone, litKey, megaRef, navRef, onMegaKeyDown, onSectionClick, onSectionKeyDown, openGroup, openId, panelRef, panels, pointerType, popover, setGeometry, setHoverKey, setPopover, state, still, syncHighlight, togglePopover } = useMegaMenu({ current, groups, items, layerOpen, url });
+    const { scrolled, clearTimers, closeMega, currentKey, geometry, highlightRef, hoverItem, itemRefs, leaveZone, litKey, megaRef, navRef, onMegaKeyDown, onSectionClick, onSectionKeyDown, openGroup, openId, panelRef, panels, pointerType, popover, setHoverKey, setPopover, still, togglePopover } = useMegaMenu({ current, groups, items, layerOpen, url });
 
     return (
         <>
             <header className={`tn-header ${scrolled ? 'is-scrolled' : ''}`} data-subnav={subnav ? true : undefined}>
-                <div
-                    ref={barRef}
-                    className="tn-bar"
-                    onTransitionEnd={(event) => {
-                        if (event.target === barRef.current) {
-                            syncHighlight(true);
-
-                            if (state.current.openId) {
-                                setGeometry((previous) => ({ ...previous, top: barRef.current.getBoundingClientRect().bottom + 10 }));
-                            }
-                        }
-                    }}
-                >
-                    <div className="flex min-w-0 items-center">
-                        <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-brand" data-tour="brand" aria-label={`${appName}، ${branchLabel ?? 'نظام التحصيل الكهربائي'}، الصفحة الرئيسية`}>
-                            <BrandLogo alt={appName} markSize={38} />
-                            <span className="tn-brand-divider" aria-hidden="true" />
-                            <span className="tn-brand-text">
-                                <span className="tn-brand-name" dir="auto">{shortAppName(appName)}</span>
-                                <span className="tn-brand-branch" dir="auto">
-                                    <span key={pageLabel ?? ''} className={`tn-brand-swap ${pageLabel ? 'is-page' : ''}`}>{pageLabel ?? branchLabel ?? 'نظام التحصيل الكهربائي'}</span>
-                                </span>
-                            </span>
-                        </Link>
-                        {where && <span key={where.page} className="tn-where" aria-hidden="true">{[where.page, where.scope].filter(Boolean).join(' · ')}</span>}
-                    </div>
-
+                <aside className="tn-side" aria-label="الشريط الجانبي">
+                    <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-side-logo" aria-label={`${appName}، الصفحة الرئيسية`}>
+                        <BrandLogo alt="" markSize={40} className="h-10 w-auto max-w-[56px] object-contain" />
+                    </Link>
                     <nav
                         ref={navRef}
                         className="tn-sections"
@@ -152,19 +128,38 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                                     onKeyDown={(event) => onSectionKeyDown(event, item)}
                                 >
                                     <Icon name={item.group.icon} className="tn-section-icon" />
-                                    <span className="tn-label-short">{item.group.shortLabel}</span>
-                                    <span className="tn-label-full">{item.group.label}</span>
+                                    <span aria-hidden="true">{item.group.shortLabel}</span>
+                                    <span className="sr-only">{item.group.label}</span>
                                     {badge > 0 && (
                                         <>
                                             <span className="tn-badge" aria-hidden="true">{badge}</span>
                                             <span className="sr-only">، {badge} بانتظارك</span>
                                         </>
                                     )}
-                                    <Icon name="chevron-down" className="tn-chevron" />
                                 </button>
                             );
                         })}
                     </nav>
+
+                    <Link href="/profile" prefetch={shouldPrefetchPage('/profile')} className="tn-side-account" aria-label={`${user?.name ?? ''}، الملف الشخصي`}>
+                        <Avatar name={user?.name} />
+                    </Link>
+                </aside>
+
+                <div className="tn-bar">
+                    <div className="tn-context flex min-w-0 items-center">
+                        <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-brand" data-tour="brand" aria-label={`${appName}، ${branchLabel ?? 'نظام التحصيل الكهربائي'}، الصفحة الرئيسية`}>
+                            <span className="tn-top-logo"><BrandLogo alt={appName} markSize={38} /></span>
+                            <span className="tn-brand-divider" aria-hidden="true" />
+                            <span className="tn-brand-text">
+                                <span className="tn-brand-name" dir="auto">{shortAppName(appName)}</span>
+                                <span className="tn-brand-branch" dir="auto">
+                                    <span key={pageLabel ?? ''} className={`tn-brand-swap ${pageLabel ? 'is-page' : ''}`}>{pageLabel ?? branchLabel ?? 'نظام التحصيل الكهربائي'}</span>
+                                </span>
+                            </span>
+                        </Link>
+                        {where && <span key={where.page} className="tn-where" aria-hidden="true">{[where.page, where.scope].filter(Boolean).join(' · ')}</span>}
+                    </div>
 
                     <div className="tn-tools flex items-center gap-1">
                         {branchChip}

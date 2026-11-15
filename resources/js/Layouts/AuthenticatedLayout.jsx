@@ -39,11 +39,9 @@ function isTyping(target) {
 }
 
 /**
- * Every signed-in page: one bar at the top with the logo, the sections and
- * the tools, the section's pages as tabs directly under it, then the trail
- * to the page, the page's title and the page itself. There is no side menu:
- * phones open the sections from the bar's menu button. Only the bar (with
- * its tabs) stays on screen while scrolling, so tables keep the room.
+ * Signed-in pages keep the sections in a desktop dock, the tools and section
+ * tabs in the top bar, then the page's trail and content. Phones open the
+ * sections from the menu button.
  * `badges` counts what waits on a page, by its link: { '/payments/summary': 2 }.
  * `scope` names the branch (or "جميع الفروع") whose figures the page shows;
  * the bar keeps it beside the page's name once the title has scrolled away.
@@ -210,7 +208,7 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
     }
 
     return (
-        <div className="min-h-screen text-gray-900">
+        <div className="tn-shell min-h-screen text-gray-900">
             <div className="tn-backdrop" aria-hidden="true" />
             <a href="#main-content" className="fixed start-4 -top-24 z-[100] rounded-xl bg-surface px-4 py-3 font-semibold tn-lift focus:top-3">
                 تخطي إلى المحتوى
@@ -233,14 +231,16 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
                 onStartTour={() => setTourOpen(true)}
             />
 
-            <main id="main-content" tabIndex={-1} className="mx-auto max-w-[var(--ui-content-width)] px-[var(--tn-gutter)] pb-16 pt-7 outline-none">
-                <BranchViewSwitcher />
-                <Breadcrumb trail={trail} />
-                {header && <div className="gl-page-head rise-in mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">{header}</div>}
-                <div ref={titleEndRef} aria-hidden="true" />
-                {children}
-            </main>
-            <AppFooter />
+            <div className="tn-content">
+                <main id="main-content" tabIndex={-1} className="mx-auto max-w-[var(--ui-content-width)] px-[var(--tn-gutter)] pb-16 pt-7 outline-none">
+                    <BranchViewSwitcher />
+                    <Breadcrumb trail={trail} />
+                    {header && <div className="gl-page-head rise-in mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">{header}</div>}
+                    <div ref={titleEndRef} aria-hidden="true" />
+                    {children}
+                </main>
+                <AppFooter />
+            </div>
 
             <NavigationDrawer
                 open={drawerOpen}
