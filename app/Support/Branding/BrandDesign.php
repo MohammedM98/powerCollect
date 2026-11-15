@@ -46,6 +46,7 @@ class BrandDesign
             'topbar' => 'Top bar with the section pages under it',
         ]],
         'navStyle' => ['label' => 'Bar and menu style', 'options' => [
+            'glass' => 'Floating glass bar',
             'solid' => 'Solid light',
             'dark' => 'Dark',
             'brand' => 'Company colour',
@@ -61,6 +62,8 @@ class BrandDesign
             'gradient' => 'Gradient from the top',
             'dots' => 'Dots',
             'grid' => 'Line grid',
+            'navy' => 'Navy with blue light',
+            'midnight' => 'Night blue',
             'graphite' => 'Plain charcoal',
         ]],
         'neutral' => ['label' => 'Grey tone', 'options' => [
@@ -70,6 +73,7 @@ class BrandDesign
             'neutral' => 'Neutral grey',
             'stone' => 'Warm grey',
             'sage' => 'Greenish grey',
+            'navy' => 'Navy',
         ]],
         'radius' => ['label' => 'Corners', 'options' => [
             'rounded' => 'Rounded',
@@ -86,6 +90,7 @@ class BrandDesign
             'pill' => 'Rounded pill',
         ]],
         'cards' => ['label' => 'Cards', 'options' => [
+            'glass' => 'Frosted glass',
             'elevated' => 'With a light shadow',
             'outlined' => 'With a border',
             'flat' => 'Flat',
@@ -229,18 +234,12 @@ class BrandDesign
 
     /**
      * Options that were withdrawn, and the option a design saved with one
-     * now shows: the navy and night-blue looks became the charcoal one, and
-     * the side section bar became the top bar, and the glass bar and cards
-     * (withdrawn with the whole glass look) became solid ones.
+     * now shows: the side section bar became the top bar.
      *
      * @var array<string, array<string, string>>
      */
     private const RETIRED = [
-        'background' => ['navy' => 'graphite', 'midnight' => 'graphite'],
-        'neutral' => ['navy' => 'graphite'],
         'navigation' => ['sidebar' => 'topbar'],
-        'navStyle' => ['glass' => 'solid'],
-        'cards' => ['glass' => 'elevated'],
     ];
 
     /**
@@ -261,6 +260,8 @@ class BrandDesign
         'hoverLift' => ['label' => 'Lift amount on hover', 'min' => 0, 'max' => 8, 'step' => 1, 'unit' => 'px'],
         'shadowStrength' => ['label' => 'Shadow strength', 'min' => 0, 'max' => 2, 'step' => 0.05, 'unit' => '×'],
         'transitionMs' => ['label' => 'Motion speed', 'min' => 0, 'max' => 800, 'step' => 20, 'unit' => 'ms'],
+        'glassAlpha' => ['label' => 'Glass transparency', 'min' => 0.2, 'max' => 0.9, 'step' => 0.05, 'unit' => ''],
+        'glassBlur' => ['label' => 'Glass blur strength', 'min' => 0, 'max' => 40, 'step' => 2, 'unit' => 'px'],
     ];
 
     /**
@@ -271,9 +272,9 @@ class BrandDesign
      */
     public const PRESETS = [
         'superpower' => [
-            'label' => 'Charcoal super power',
-            'description' => 'Solid cards in neutral charcoal greys, light grey in the light theme, a top bar with the section pages under it, tables inside solid panels, gradient buttons and filled fields.',
-            'design' => ['background' => 'graphite', 'neutral' => 'graphite', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand'],
+            'label' => 'Navy glass super power',
+            'description' => 'Navy glass cards over a blue-lit background, a floating glass top bar with the section pages under it, tables inside glass panels, gradient buttons and filled fields.',
+            'design' => ['background' => 'navy', 'neutral' => 'navy', 'navStyle' => 'glass', 'cards' => 'glass', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand'],
         ],
         'classic' => [
             'label' => 'Classic premium',
@@ -461,6 +462,8 @@ class BrandDesign
             '--hover-lift' => $tokens['hoverLift'] !== null ? $tokens['hoverLift'].'px' : null,
             '--shadow-strength' => $tokens['shadowStrength'],
             '--ui-transition' => $tokens['transitionMs'] !== null ? $tokens['transitionMs'].'ms' : null,
+            '--glass-alpha' => $tokens['glassAlpha'],
+            '--glass-blur' => $tokens['glassBlur'] !== null ? $tokens['glassBlur'].'px' : null,
         ], fn ($value): bool => $value !== null);
         $buttons = array_filter([
             'border-radius' => $tokens['buttonRadius'] !== null ? $tokens['buttonRadius'].'px' : null,

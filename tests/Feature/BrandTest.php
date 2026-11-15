@@ -70,7 +70,7 @@ class BrandTest extends TestCase
         $response->assertSee('<link rel="icon" href="/favicon.svg">', false);
     }
 
-    public function test_pages_start_in_the_power_collect_teal_identity_with_the_top_bar_and_solid_cards(): void
+    public function test_pages_start_in_the_navy_glass_look_in_the_teal_identity_with_the_top_bar(): void
     {
         $response = $this->get(route('login'));
 
@@ -78,16 +78,16 @@ class BrandTest extends TestCase
             ->where('brand.primaryColor', '#20B2A0')
             ->where('brand.design.preset', 'superpower')
             ->where('brand.design.navigation', 'topbar')
-            ->where('brand.design.cards', 'elevated')
-            ->where('brand.design.navStyle', 'solid')
+            ->where('brand.design.cards', 'glass')
+            ->where('brand.design.navStyle', 'glass')
             ->where('brand.design.details', 'modal'));
-        $response->assertSee('data-ui-background="graphite"', false);
-        $response->assertSee('data-ui-neutral="graphite"', false);
+        $response->assertSee('data-ui-background="navy"', false);
+        $response->assertSee('data-ui-neutral="navy"', false);
         // The teal identity is theme.css's own: no generated shades or ink are drawn over it.
         $response->assertDontSee('--brand-50:', false);
         $response->assertDontSee('--brand-ink:', false);
-        // The charcoal look keeps theme.css's own neutral greys: no tinted grey scale is drawn over them.
-        $response->assertDontSee('--gray-50:', false);
+        // The navy look draws its navy-tinted grey scale over theme.css's neutral one.
+        $response->assertSee('--gray-50:', false);
     }
 
     public function test_an_imported_identity_reaches_every_page_with_its_logo_and_colours(): void
@@ -287,27 +287,25 @@ class BrandTest extends TestCase
         $this->assertSame('superpower', $design['preset']);
     }
 
-    public function test_a_look_saved_in_the_retired_navy_or_night_blue_shows_in_charcoal(): void
+    public function test_a_look_saved_in_navy_night_blue_or_charcoal_keeps_its_background(): void
     {
-        foreach (['superpower', 'custom'] as $preset) {
-            foreach (['navy', 'midnight'] as $background) {
-                $design = BrandDesign::normalize(['preset' => $preset, 'background' => $background, 'neutral' => 'navy']);
+        foreach (['navy', 'midnight', 'graphite'] as $background) {
+            $design = BrandDesign::normalize(['preset' => 'custom', 'background' => $background, 'neutral' => 'navy', 'cards' => 'glass', 'navStyle' => 'glass']);
 
-                $this->assertSame('graphite', $design['background'], "{$preset} saved with {$background}");
-                $this->assertSame('graphite', $design['neutral'], "{$preset} saved with {$background}");
-            }
+            $this->assertSame($background, $design['background']);
+            $this->assertSame('navy', $design['neutral']);
+            $this->assertSame('glass', $design['cards']);
+            $this->assertSame('glass', $design['navStyle']);
         }
 
         $this->assertSame('superpower', BrandDesign::normalize(['preset' => 'superpower', 'background' => 'navy', 'neutral' => 'navy'])['preset']);
     }
 
-    public function test_a_look_saved_with_the_retired_side_bar_or_glass_shows_the_top_bar_and_solid_panels(): void
+    public function test_a_look_saved_with_the_retired_side_bar_shows_the_top_bar(): void
     {
-        $design = BrandDesign::normalize(['preset' => 'superpower', 'navigation' => 'sidebar', 'navStyle' => 'glass', 'cards' => 'glass']);
+        $design = BrandDesign::normalize(['preset' => 'superpower', 'navigation' => 'sidebar']);
 
         $this->assertSame('topbar', $design['navigation']);
-        $this->assertSame('solid', $design['navStyle']);
-        $this->assertSame('elevated', $design['cards']);
         $this->assertSame('superpower', $design['preset']);
     }
 
@@ -337,10 +335,7 @@ class BrandTest extends TestCase
         $response = $this->get(route('login'));
 
         $response->assertSee('data-ui-radius="soft"', false);
-        $response->assertSee(':root[data-ui-navigation]{--radius-scale:1.6;--ui-transition:240ms;}', false);
-        // The withdrawn glass look's transparency and blur in an older file draw nothing.
-        $response->assertDontSee('--panel-alpha', false);
-        $response->assertDontSee('--glass-alpha', false);
+        $response->assertSee(':root[data-ui-navigation]{--radius-scale:1.6;--ui-transition:240ms;--glass-alpha:0.75;--glass-blur:24px;}', false);
         $response->assertSee(':root[data-ui-navigation] :is(.ui-btn-primary,.ui-btn-secondary,.ui-btn-danger){border-radius:20px;}', false);
     }
 
