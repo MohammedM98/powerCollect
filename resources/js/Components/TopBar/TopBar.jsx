@@ -2,17 +2,13 @@ import { Link, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import BrandLogo from '@/Components/BrandLogo';
 import ActivityBell from '@/Components/ActivityBell';
+import { useBrand } from '@/hooks/useBrand';
 import { shouldPrefetchPage, HOME_LINK, currentGroup, topBarItems } from '@/lib/navigation';
 import MegaMenu, { megaWidth } from './MegaMenu';
 import AccountMenu, { Avatar } from './AccountMenu';
 import { useTheme } from '@/hooks/useTheme';
 import './top-bar.css';
 import { useMegaMenu } from './useMegaMenu';
-
-/** The app name without the "AF" the logo already shows. */
-export function shortAppName(appName) {
-    return (appName ?? '').replace(/^AF\s+/i, '');
-}
 
 /** How many things wait in a section's pages, from the page's badges. */
 function badgeOf(group, badges) {
@@ -35,8 +31,8 @@ function badgeOf(group, badges) {
 export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDrawer, drawerOpen, layerOpen, onShowShortcuts, onStartTour, subnav = null, branchChip = null }) {
     const { props, url } = usePage();
     const { dark, changePreference } = useTheme();
-    const { appName, auth } = props;
-    const user = auth?.user;
+    const { name: companyName, tagline } = useBrand();
+    const user = props.auth?.user;
     const branchLabel = props.branchView ? props.branchView.current?.name ?? 'جميع الفروع' : user?.branchName;
     const items = topBarItems(groups);
     const current = currentGroup(groups, url);
@@ -50,7 +46,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
         <>
             <header className={`tn-header ${scrolled ? 'is-scrolled' : ''}`} data-subnav={subnav ? true : undefined}>
                 <aside className="tn-side" aria-label="الشريط الجانبي">
-                    <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-side-logo" aria-label={`${appName}، الصفحة الرئيسية`}>
+                    <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-side-logo" aria-label={`${companyName}، الصفحة الرئيسية`}>
                         <BrandLogo alt="" markSize={40} className="h-10 w-auto max-w-[56px] object-contain" />
                     </Link>
                     <nav
@@ -148,13 +144,13 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
 
                 <div className="tn-bar">
                     <div className="tn-context flex min-w-0 items-center">
-                        <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-brand" data-tour="brand" aria-label={`${appName}، ${branchLabel ?? 'نظام التحصيل الكهربائي'}، الصفحة الرئيسية`}>
-                            <span className="tn-top-logo"><BrandLogo alt={appName} markSize={38} /></span>
+                        <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-brand" data-tour="brand" aria-label={`${companyName}، ${branchLabel ?? tagline}، الصفحة الرئيسية`}>
+                            <span className="tn-top-logo"><BrandLogo alt="" markSize={38} /></span>
                             <span className="tn-brand-divider" aria-hidden="true" />
                             <span className="tn-brand-text">
-                                <span className="tn-brand-name" dir="auto">{shortAppName(appName)}</span>
+                                <span className="tn-brand-name" dir="auto">{companyName}</span>
                                 <span className="tn-brand-branch" dir="auto">
-                                    <span key={pageLabel ?? ''} className={`tn-brand-swap ${pageLabel ? 'is-page' : ''}`}>{pageLabel ?? branchLabel ?? 'نظام التحصيل الكهربائي'}</span>
+                                    <span key={pageLabel ?? ''} className={`tn-brand-swap ${pageLabel ? 'is-page' : ''}`}>{pageLabel ?? branchLabel ?? tagline}</span>
                                 </span>
                             </span>
                         </Link>

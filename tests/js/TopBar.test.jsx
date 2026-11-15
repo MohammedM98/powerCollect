@@ -8,14 +8,23 @@ import { setPage, submissions } from './inertia.jsx';
 const groups = allowedNavigationGroups({ viewSubscriptions: true, viewTariffs: true });
 const administration = groups.find((group) => group.id === 'administration');
 
-function renderBar(props = {}) {
-    setPage({ props: { appName: 'شركة الكهرباء', auth: { user: { name: 'سامي', roleLabel: 'محصّل' } }, can: {} }, url: '/subscriptions' });
+function renderBar(props = {}, brand) {
+    setPage({ props: { appName: 'PowerCollect', auth: { user: { name: 'سامي', roleLabel: 'محصّل' } }, can: {}, brand }, url: '/subscriptions' });
     return render(<TopBar groups={groups} badges={{}} onOpenPalette={() => {}} onOpenDrawer={() => {}} onShowShortcuts={() => {}} onStartTour={() => {}} {...props} />);
 }
 
 const sectionButton = () => screen.getByRole('button', { name: new RegExp(administration.label) });
 
 describe('the top bar', () => {
+    it.each([
+        [undefined, 'سوبر باور'],
+        [{ name: 'شركة النور', logos: { main: '/logo.svg', light: '/logo.svg' } }, 'شركة النور'],
+    ])('displays the company identity %j as %s', (brand, name) => {
+        renderBar({}, brand);
+
+        expect(screen.getByText(name, { exact: true })).toBeTruthy();
+    });
+
     it('opens a section from the keyboard, and Esc closes it back onto its button', async () => {
         const user = userEvent.setup();
         renderBar();

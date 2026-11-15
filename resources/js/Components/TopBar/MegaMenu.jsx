@@ -22,7 +22,7 @@ export function megaWidth(group) {
 
 /**
  * One section's pages in the big menu: the section's name and what it holds,
- * its featured pages as dark cards, then the rest with a line on each, and a
+ * its featured pages as tinted cards, then the rest with a line on each, and a
  * footer with the keys and a way to every page.
  */
 export default function MegaMenu({ group, url, badges, width, shift, leaving, onSearch, contentRef }) {
@@ -55,7 +55,7 @@ export default function MegaMenu({ group, url, badges, width, shift, leaving, on
                             {featured.map((link) => (
                                 <Link key={link.href} href={link.href} prefetch={!link.locked && shouldPrefetchPage(link.href)} className="tn-feature" aria-current={isActiveLink(link, url) ? 'page' : undefined} tabIndex={leaving ? -1 : undefined} {...lockedLinkProps(link)}>
                                     <span className="tn-feature-icon"><Icon name={link.icon} /></span>
-                                    <span className="relative z-[1]">
+                                    <span>
                                         <b className="flex items-center gap-1.5 leading-normal">{link.label}{link.locked && <LockMark />}</b>
                                         <small className="block">{link.description}</small>
                                     </span>

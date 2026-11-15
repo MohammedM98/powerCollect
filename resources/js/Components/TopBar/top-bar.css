@@ -902,10 +902,6 @@ html.tn-locked {
     color: inherit !important;
 }
 
-.tn-feature .tn-lock {
-    color: rgb(255 255 255 / 0.55);
-}
-
 /* A locked page's link opens nothing. */
 :is(.tn-mega-link, .tn-feature, .tn-subnav a, .tn-drawer-link)[aria-disabled='true'] {
     cursor: not-allowed;
@@ -948,43 +944,25 @@ html.tn-locked {
 }
 
 .tn-feature {
-    position: relative;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
     gap: 10px;
     padding: 14px;
+    border: 1px solid var(--gl-line);
     border-radius: calc(18px * var(--radius-scale, 1));
-    background: var(--tn-graphite);
-    color: var(--tn-graphite-ink);
-    transition: transform 0.2s var(--tn-ease), box-shadow 0.2s;
+    background-color: color-mix(in srgb, rgb(var(--panel-bg)) 95%, rgb(var(--gl-brand)));
+    color: var(--gl-ink);
+    transition: background-color 0.2s var(--tn-ease), border-color 0.2s var(--tn-ease);
 }
 
-.tn-feature::after {
-    content: '';
-    position: absolute;
-    inset-inline-end: -30px;
-    top: -40px;
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgb(var(--brand-hi) / 0.55), transparent 70%);
-    transition: transform 0.4s var(--tn-ease);
-}
-
-.tn-feature:hover,
-.tn-feature:focus-visible {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 32px -16px rgb(var(--shadow-ink) / 0.8);
-    outline: none;
+.tn-feature:is(:hover, [aria-current='page']) {
+    background-color: color-mix(in srgb, rgb(var(--panel-bg)) 89%, rgb(var(--gl-brand)));
+    border-color: rgb(var(--gl-brand) / 0.45);
 }
 
 .tn-feature:focus-visible {
-    box-shadow: 0 0 0 3px rgb(var(--surface)), 0 0 0 5px rgb(var(--brand-500));
-}
-
-.tn-feature:hover::after {
-    transform: scale(1.25);
+    outline: 2px solid rgb(var(--gl-brand));
+    outline-offset: 2px;
 }
 
 .tn-feature .tn-feature-icon {
@@ -993,8 +971,8 @@ html.tn-locked {
     width: 38px;
     height: 38px;
     border-radius: calc(12px * var(--radius-scale, 1));
-    background: rgb(255 255 255 / 0.1);
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+    background: rgb(var(--gl-brand) / 0.1);
+    color: rgb(var(--gl-brand));
 }
 
 .tn-feature .tn-feature-icon svg {
@@ -1008,12 +986,12 @@ html.tn-locked {
 
 .tn-feature small {
     font-size: 12.5px;
-    color: rgb(var(--silver-400));
+    color: var(--gl-muted);
     line-height: 1.5;
 }
 
 .tn-feature[aria-current='page'] {
-    box-shadow: inset 0 -3px 0 rgb(var(--brand-500)), 0 0 0 2px rgb(var(--brand-500) / 0.5);
+    box-shadow: inset 0 -2px rgb(var(--gl-brand));
 }
 
 /* ═════ The small menus (activity and account) ═════ */

@@ -3,9 +3,9 @@ import { createPortal } from 'react-dom';
 import { usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import BrandLogo from '@/Components/BrandLogo';
+import { useBrand } from '@/hooks/useBrand';
 import { currentGroup } from '@/lib/navigation';
 import NavigationMenu, { NavigationAccount } from './NavigationMenu';
-import { shortAppName } from './TopBar';
 
 /**
  * The menu on phones and narrow screens: the same sections as the bar, the
@@ -14,8 +14,8 @@ import { shortAppName } from './TopBar';
  */
 export default function NavigationDrawer({ open, groups, badges, onClose, onOpenPalette, returnFocusTo }) {
     const { props, url } = usePage();
-    const { appName, auth } = props;
-    const user = auth?.user;
+    const { name: companyName, tagline } = useBrand();
+    const user = props.auth?.user;
     const current = currentGroup(groups, url);
     const [shown, setShown] = useState(open);
     const [closing, setClosing] = useState(false);
@@ -116,10 +116,10 @@ export default function NavigationDrawer({ open, groups, badges, onClose, onOpen
             <div className="tn-scrim" role="presentation" onClick={onClose} />
             <aside ref={panelRef} className="tn-drawer-panel text-gray-900" role="dialog" aria-modal="true" data-top-bar-layer aria-label="قائمة التنقل">
                 <div className="flex items-center gap-2 border-b border-gray-200/70 p-3">
-                    <BrandLogo alt={appName} className="h-9 w-auto" markSize={36} />
+                    <BrandLogo alt="" className="h-9 w-auto" markSize={36} />
                     <span className="min-w-0 flex-1">
-                        <b dir="auto" className="block text-[16px]">{shortAppName(appName)}</b>
-                        <small dir="auto" className="block text-[12.5px] text-gray-500">{user?.branchName ?? 'نظام التحصيل الكهربائي'}</small>
+                        <b dir="auto" className="block text-[16px]">{companyName}</b>
+                        <small dir="auto" className="block text-[12.5px] text-gray-500">{user?.branchName ?? tagline}</small>
                     </span>
                     <button type="button" className="tn-tool" onClick={onClose} aria-label="إغلاق القائمة"><Icon name="close" /></button>
                 </div>
