@@ -36,7 +36,7 @@ async function signIn(username, viewport = { width: 1440, height: 900 }) {
     await page.locator('#password').fill(PASSWORD);
     assert.equal(await page.locator('#username').evaluate((field) => getComputedStyle(field).textAlign), 'right');
     assert.equal(await page.locator('#password').evaluate((field) => getComputedStyle(field).textAlign), 'right');
-    await page.getByRole('button', { name: 'تسجيل الدخول' }).click();
+    await page.getByRole('button', { name: 'تسجيل الدخول إلى النظام' }).click();
     await page.waitForURL((url) => !url.pathname.startsWith('/login'));
     return page;
 }

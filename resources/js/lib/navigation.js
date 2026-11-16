@@ -13,7 +13,7 @@ export function shouldPrefetchPage(href) {
  */
 export const MAIN_LINKS = [
     { href: '/dashboard', label: 'لوحة التحكم', description: 'نظرة اليوم: التحصيل والمهام', icon: 'grid' },
-    { href: '/payments', label: 'تسجيل الدفعات', description: 'استلام دفعة من مشترك وطباعة الوصل', icon: 'banknotes', can: 'recordPayments', exact: true },
+    { href: '/payments', label: 'الدفعات', description: 'استلام دفعة من مشترك وطباعة الوصل', icon: 'banknotes', can: 'recordPayments', exact: true },
     { href: '/payments/summary', label: 'ملخص التحصيل', description: 'ما حُصّل اليوم وهذا الشهر', icon: 'gauge', can: 'viewOwnCashBoxes' },
     { href: '/payments/cash-boxes', label: 'الصناديق المالية', description: 'إغلاق صناديق المحصّلين وتصفح المغلقة حسب الفترات الأسبوعية', icon: 'wallet', can: 'viewCashBoxes' },
     { href: '/ledger', label: 'السجل المالي', description: 'القيود حسب التاريخ والفرع', icon: 'ledger', can: 'viewLedger' },
@@ -23,11 +23,15 @@ export const MAIN_LINKS = [
     { href: '/reports', label: 'التقارير', description: 'تقارير التحصيل والقراءات الجاهزة', icon: 'receipt', can: 'viewReports' },
     { href: '/company-forms', label: 'نماذج الشركة', description: 'تخصيص النماذج وطباعة نسخ فارغة ومعبأة وأرشفة الطلبات الورقية', icon: 'document-plus', can: 'viewCompanyForms' },
     { href: '/subscriptions', label: 'المشتركون', description: 'البحث عن مشترك وإضافته وتعديله', icon: 'users', can: 'viewSubscriptions' },
+    { href: '/subscriptions/bulk-changes', label: 'التعديلات الجماعية', description: 'سجل تغييرات المشتركين', icon: 'layers', can: 'viewSubscriptions' },
+    { href: '/paper-sheets', label: 'الأوراق الورقية', description: 'كشوف القراءات الورقية', icon: 'printer', can: 'printReadingSheets' },
     { href: '/meter-boxes', label: 'الطبلونات', description: 'الطبلونات وأماكنها ومشتركوها', icon: 'table', can: 'viewMeterBoxes' },
     { href: '/meter-readings', label: 'القراءات الأسبوعية', description: 'قراءات العدادات لهذه الدورة', icon: 'chart', can: 'viewMeterReadings' },
     { href: '/reading-cycles', label: 'توزيع القراءات', description: 'توزيع الطبلونات على القرّاء والكشوف الورقية', icon: 'layers', can: 'viewReadingCycles' },
     { href: '/disconnection-lists', label: 'قوائم القطع', description: 'المدرجون للقطع ومواعيدهم وإنذاراتهم', icon: 'power', can: 'viewDisconnections' },
     { href: '/messages', label: 'الرسائل', description: 'تنبيهات الدفع والقطع للمشتركين', icon: 'messages', can: 'viewMessages' },
+    { href: '/messages/create', label: 'رسالة جديدة', description: 'كتابة رسالة للمشتركين', icon: 'send', can: 'sendMessages' },
+    { href: '/branch-access', label: 'الوصول إلى الفروع', description: 'الدخول إلى نطاقات الفروع المتاحة لك', icon: 'office', can: 'viewBranches' },
     { href: '/users', label: 'المستخدمون', description: 'الحسابات والأدوار والفروع', icon: 'user', can: 'viewUsers' },
 ];
 
@@ -62,11 +66,15 @@ function seesOwnBoxesOnly(can) {
 }
 
 export const NAVIGATION_GROUPS = [
-    { id: 'daily', label: 'المشتركون', shortLabel: 'المشتركون', icon: 'users', description: 'المشتركون والطبلونات والقراءات والرسائل', hrefs: ['/subscriptions', '/meter-boxes', '/meter-readings', '/reading-cycles', '/disconnection-lists', '/messages'] },
-    { id: 'finance', label: 'المالية والتحصيل', shortLabel: 'المالية', icon: 'wallet', description: 'الدفعات والصناديق والإغلاق', hrefs: ['/payments', '/payments/summary', '/payments/cash-boxes', '/ledger', '/receivables'] },
-    { id: 'reports', label: 'التقارير والرقابة', shortLabel: 'التقارير', icon: 'trend', description: 'التقارير والأداء والتدقيق', hrefs: ['/reports', '/company-forms', '/branch-performance', '/transaction-audit'] },
-    { id: 'infrastructure', label: 'الفروع والشبكة', shortLabel: 'الشبكة', icon: 'bolt', description: 'الفروع والبنية الكهربائية', hrefs: ['/branches', '/governorates', '/circuit-breakers'] },
-    { id: 'administration', label: 'الإدارة والإعدادات', shortLabel: 'الإدارة', icon: 'cog', description: 'المستخدمون والصلاحيات والإعدادات', hrefs: ['/users', '/settings/permissions', '/tariffs', '/settings/payments', '/settings/reading-schedule', '/settings/print-templates', '/settings/sms', '/settings/appearance', '/settings/mobile-app'], featured: ['/users', '/settings/permissions'] },
+    { id: 'daily', label: 'المشتركون', shortLabel: 'المشتركون', icon: 'users', description: 'الحسابات والتعديلات الجماعية', hrefs: ['/subscriptions', '/subscriptions/bulk-changes'] },
+    { id: 'infrastructure', label: 'الشبكة والتعرفات', shortLabel: 'الشبكة والتعرفات', icon: 'bolt', description: 'الطبلونات والمناطق والأسعار', hrefs: ['/meter-boxes', '/circuit-breakers', '/governorates', '/tariffs'] },
+    { id: 'readings', label: 'القراءات', shortLabel: 'القراءات', icon: 'gauge', description: 'الإدخال والتوزيع والكشوف الورقية', hrefs: ['/meter-readings', '/reading-cycles', '/paper-sheets', '/settings/reading-schedule'] },
+    { id: 'finance', label: 'المالية', shortLabel: 'المالية', icon: 'banknotes', description: 'الدفعات والذمم والحركات المالية', hrefs: ['/payments', '/ledger', '/receivables', '/transaction-audit'] },
+    { id: 'cash-boxes', label: 'الصناديق والإغلاق', shortLabel: 'الصناديق والإغلاق', icon: 'wallet', description: 'صناديق المحصّلين وملخص التحصيل', hrefs: ['/payments/cash-boxes', '/payments/summary'] },
+    { id: 'disconnections', label: 'القطع', shortLabel: 'القطع', icon: 'power', description: 'قوائم القطع والمتابعة', hrefs: ['/disconnection-lists'] },
+    { id: 'messages', label: 'الرسائل', shortLabel: 'الرسائل', icon: 'messages', description: 'الرسائل المرسلة وإعدادات SMS', hrefs: ['/messages', '/messages/create', '/settings/sms'] },
+    { id: 'reports', label: 'التقارير', shortLabel: 'التقارير', icon: 'trend', description: 'تقارير التحصيل والأداء والنماذج', hrefs: ['/reports', '/branch-performance', '/company-forms'] },
+    { id: 'administration', label: 'الإعدادات', shortLabel: 'الإعدادات', icon: 'cog', description: 'الموظفون والصلاحيات والهوية', hrefs: ['/users', '/settings/permissions', '/branches', '/branch-access', '/settings/payments', '/settings/print-templates', '/settings/appearance', '/settings/mobile-app'] },
 ];
 
 /**
@@ -120,8 +128,10 @@ export function topBarItems(groups) {
 }
 
 /** The page a section opens when clicked: its first page the user may open, if any. */
-export function groupLandingLink(group) {
-    return group.links.find((link) => !link.locked);
+export function groupLandingLink(group, lastPage) {
+    const links = sectionLinks(group);
+
+    return links.find((link) => link.href === lastPage) ?? links[0];
 }
 
 /** A locked page's link shows its lock but opens nothing, clicked or entered. */
@@ -140,7 +150,8 @@ export function currentGroup(groups, url) {
  */
 export function pageTrail(groups, url) {
     const group = currentGroup(groups, url);
-    const link = group?.links.find((candidate) => isActiveLink(candidate, url))
+    const link = sectionLinks(group).filter((candidate) => isActiveLink(candidate, url))
+        .sort((first, second) => second.href.length - first.href.length)[0]
         ?? [MAIN_LINKS[0], PROFILE_LINK].find((candidate) => isActiveLink(candidate, url));
 
     return link ? { group, link, exact: url.split('?')[0] === link.href } : null;

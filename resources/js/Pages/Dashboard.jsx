@@ -4,11 +4,14 @@ import { urlWithout } from '@/lib/pageUrl';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useBranchView } from '@/hooks/useBranchView';
 import Icon from '@/Components/Icon';
+import KpiTile from '@/Components/KpiTile';
+import { ChangePill } from '@/Components/StatStrip';
+import { TileLink } from './Dashboard/DashboardParts';
 import LiveBars from '@/Components/LiveBars';
 import Panel from '@/Components/Panel';
 import { GoalRing } from '@/Components/StatRing';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
-import { formatNumber, percentOf } from '@/lib/format';
+import { formatMoney, formatNumber, percentOf } from '@/lib/format';
 import { shouldPrefetchPage } from '@/lib/navigation';
 import { formatWeekDay } from '@/lib/weekDays';
 import { LatestPayments } from './Dashboard/DashboardPanels';
@@ -30,7 +33,6 @@ const periodLabel = (days) => (days === 7 ? '7 أيام' : `${days} يومًا`)
  * @param {import('@/types/pages').DashboardProps} props
  */
 export default function Dashboard({
-    greeting,
     scope,
     branchScope,
     filters,
@@ -41,7 +43,6 @@ export default function Dashboard({
     debts,
     latestPayments,
     fieldApp,
-    auth,
     can,
     canCreateSubscription,
     canCreateBranch,
@@ -192,9 +193,8 @@ export default function Dashboard({
     const hasBreakers = subscriptions?.byBreaker.length > 0;
     const breakerMax = Math.max(0, ...(subscriptions?.byBreaker ?? []).map((breaker) => breaker.count));
     const payments = latestPayments?.rows;
-    const tiles = [subscriptions, meterBoxes, subscriptions, debts !== null].filter(Boolean).length;
+    const tiles = [collections, subscriptions, readings, debts !== null].filter(Boolean).length;
 
-    const greet = `${greeting}،`;
     const periodOptions = periods.map((days) => ({ value: days, label: periodLabel(days) }));
     const readShare = readings ? percentOf(readings.approved, readings.total) : 0;
     const methodParts = collections ? [
@@ -208,7 +208,6 @@ export default function Dashboard({
 
             <div className="gl-page">
                 <DashboardHeader
-                    auth={auth}
                     branchOptions={branchOptions}
                     branchScope={branchScope}
                     branchView={branchView}
@@ -217,7 +216,6 @@ export default function Dashboard({
                     canCreateUser={canCreateUser}
                     filters={filters}
                     governorateOptions={governorateOptions}
-                    greet={greet}
                     openCreateForm={openCreateForm}
                     scope={scope}
                     scopeLine={scopeLine}
@@ -242,9 +240,46 @@ export default function Dashboard({
                     </Panel>
                 ) : (
                     <>
+                        {attention.length > 0 && (
+                            <section aria-labelledby="dashboard-attention">
+                                <h2 className="gl-dashboard-section" id="dashboard-attention"><Icon name="alert" className="h-5 w-5" />بدها انتباهك</h2>
+                                <div className="gl-dashboard-attention">
+                                    {attention.map(({ key, icon, title, subtitle, count, href, tone }) => (
+                                        <Link key={key} href={href} className="gl-card gl-dashboard-alert" data-tone={tone}>
+                                            <span className="gl-ico"><Icon name={icon} className="h-5 w-5" /></span>
+                                            <span className="min-w-0 flex-1">
+                                                <strong className="block">{title}</strong>
+                                                <small className="block text-gray-500">{subtitle}</small>
+                                            </span>
+                                            <b dir="ltr" className="gl-num">{formatNumber(count)}</b>
+                                            <Icon name="chevron-left" className="h-4 w-4 shrink-0 text-gray-500" />
+                                        </Link>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+                        {tiles > 0 && (
+                            <section aria-labelledby="dashboard-collections">
+                                <h2 className="gl-dashboard-section" id="dashboard-collections"><Icon name="trend" className="h-5 w-5" />التحصيل والمشتركون</h2>
+                                <div className="gl-dashboard-kpis">
+                                    {collections && (
+                                        <TileLink href={can?.recordPayments ? '/payments' : '/ledger'}>
+                                            <KpiTile hero icon="banknotes" label={'التحصيل خلال ' + period} value={Number(collections.total)} unit="₪"
+                                                format={formatMoney} badge={<ChangePill change={collections.change} />} hint={'الفترة السابقة ₪ ' + formatMoney(collections.previousTotal)} />
+                                        </TileLink>
+                                    )}
+                                    {subscriptions && <TileLink href="/subscriptions"><KpiTile icon="users" label="المشتركون النشطون" value={subscriptions.active}
+                                        hint={formatNumber(subscriptions.newInPeriod) + ' جديد خلال الفترة'} /></TileLink>}
+                                    {readings && <TileLink href="/meter-readings"><KpiTile icon="gauge" label="قراءات هذا الأسبوع"
+                                        value={formatNumber(readings.approved + readings.pending) + ' / ' + formatNumber(readings.total)} hint={formatNumber(readings.pending) + ' بانتظار الاعتماد'} /></TileLink>}
+                                    {debts === undefined ? <div className="gl-card gl-kpi" role="status" aria-label="جارٍ تحميل الذمم المستحقة"><div className="gl-skel w-1/2" /><div className="gl-skel mt-6 h-8 w-2/3" /></div>
+                                        : debts && <TileLink href="/receivables"><KpiTile icon="clock" label="الذمم المستحقة" value={Number(debts.total)} unit="₪"
+                                            format={formatMoney} hint={formatNumber(debts.count) + ' مشترك عليه رصيد'} /></TileLink>}
+                                </div>
+                            </section>
+                        )}
                         <div className="gl-dash">
                             <DashboardFiguresColumn
-                                attention={attention}
                                 can={can}
                                 collections={collections}
                                 debts={debts}
@@ -256,7 +291,6 @@ export default function Dashboard({
                                 periodOptions={periodOptions}
                                 readings={readings}
                                 subscriptions={subscriptions}
-                                tiles={tiles}
                                 topBreaker={topBreaker}
                                 visit={visit}
                             />

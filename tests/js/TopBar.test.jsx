@@ -1,72 +1,74 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import TopBar from '@/Components/TopBar/TopBar';
+import Sidebar from '@/Components/TopBar/Sidebar';
 import { allowedNavigationGroups } from '@/lib/navigation';
-import { setPage, submissions } from './inertia.jsx';
+import { setPage } from './inertia.jsx';
 
 const groups = allowedNavigationGroups({ viewSubscriptions: true, viewTariffs: true });
-const administration = groups.find((group) => group.id === 'administration');
+const actions = [{ id: 'pay', label: 'تسجيل دفعة', icon: 'banknotes', key: 'P' }];
+const callbacks = { onOpenPalette: vi.fn(), onOpenDrawer: vi.fn(), onShowShortcuts: vi.fn(), onStartTour: vi.fn() };
 
-function renderBar(props = {}, brand) {
-    setPage({ props: { appName: 'PowerCollect', auth: { user: { name: 'سامي', roleLabel: 'محصّل' } }, can: {}, brand }, url: '/subscriptions' });
-    return render(<TopBar groups={groups} badges={{}} onOpenPalette={() => {}} onOpenDrawer={() => {}} onShowShortcuts={() => {}} onStartTour={() => {}} {...props} />);
+function renderBar(props = {}) {
+    setPage({ props: { auth: { user: { name: 'سامي', roleLabel: 'محصّل' } }, can: {} }, url: '/subscriptions' });
+    return render(<TopBar actions={actions} {...callbacks} {...props} />);
 }
 
-const sectionButton = () => screen.getByRole('button', { name: new RegExp(administration.label) });
-
-describe('the top bar', () => {
+describe('the sidebar and top bar', () => {
     it.each([
-        [undefined, 'سوبر باور'],
-        [{ name: 'شركة النور', logos: { main: '/logo.svg', light: '/logo.svg' } }, 'شركة النور'],
-    ])('displays the company identity %j as %s', (brand, name) => {
-        renderBar({}, brand);
-
-        expect(screen.getByText(name, { exact: true })).toBeTruthy();
+        [{ name: 'العجل والكفارنة', logos: { main: '/images/logo-ma.svg' } }],
+        [{ name: 'شركة النور', logos: { main: '/logo.svg', light: '/logo.svg' } }],
+    ])('displays the company identity %j', (brand) => {
+        render(<Sidebar brand={brand} groups={groups} lastPages={{}} badges={{}} />);
+        expect(screen.getByText(brand.name, { exact: true })).toBeTruthy();
     });
 
-    it('opens a section from the keyboard, and Esc closes it back onto its button', async () => {
+    it.each(['mouse', 'keyboard'])('opens the last available section page by %s', async (input) => {
+        const user = userEvent.setup();
+        const navigate = vi.fn((event) => event.preventDefault());
+        render(<Sidebar brand={{ name: 'شركة النور' }} groups={groups} lastPages={{ daily: '/subscriptions/bulk-changes' }} badges={{}} onNavigate={navigate} />);
+        const section = screen.getByRole('link', { name: 'المشتركون', exact: true });
+        expect(section.getAttribute('href')).toBe('/subscriptions/bulk-changes');
+        if (input === 'mouse') {
+            await user.click(section);
+        } else {
+            section.focus();
+            await user.keyboard('{Enter}');
+        }
+
+        expect(navigate).toHaveBeenCalledTimes(1);
+    });
+
+    it('opens the quick actions by keyboard and restores focus on Escape', async () => {
         const user = userEvent.setup();
         renderBar();
-
-        sectionButton().focus();
+        const trigger = screen.getByRole('button', { name: 'إجراء سريع' });
+        trigger.focus();
         await user.keyboard('{Enter}');
-        expect(sectionButton().getAttribute('aria-expanded')).toBe('true');
-        const tariffs = administration.links.find((link) => link.href === '/tariffs');
-        expect(await screen.findByRole('link', { name: new RegExp(tariffs.label) })).toBeTruthy();
+        expect(screen.getByRole('dialog', { name: 'إجراءات سريعة' })).toBeTruthy();
 
         await user.keyboard('{Escape}');
-        expect(sectionButton().getAttribute('aria-expanded')).toBe('false');
-        expect(document.activeElement).toBe(sectionButton());
+        expect(trigger.getAttribute('aria-expanded')).toBe('false');
+        expect(document.activeElement).toBe(trigger);
     });
 
-    it("goes to a section's first page when it is clicked with the mouse", async () => {
-        const user = userEvent.setup();
-        renderBar();
-
-        await user.click(sectionButton());
-
-        expect(submissions.at(-1)).toMatchObject({ method: 'get', url: administration.links.find((link) => !link.locked).href });
-    });
-
-    it('closes an open section when a window opens over the page', async () => {
+    it('closes open quick actions when another window opens', async () => {
         const user = userEvent.setup();
         const { rerender } = renderBar();
+        const trigger = screen.getByRole('button', { name: 'إجراء سريع' });
+        await user.click(trigger);
+        expect(trigger.getAttribute('aria-expanded')).toBe('true');
 
-        sectionButton().focus();
-        await user.keyboard('{Enter}');
-        expect(sectionButton().getAttribute('aria-expanded')).toBe('true');
-
-        act(() => rerender(<TopBar groups={groups} badges={{}} layerOpen onOpenPalette={() => {}} onOpenDrawer={() => {}} onShowShortcuts={() => {}} onStartTour={() => {}} />));
-        await waitFor(() => expect(sectionButton().getAttribute('aria-expanded')).toBe('false'));
+        act(() => rerender(<TopBar actions={actions} layerOpen {...callbacks} />));
+        await waitFor(() => expect(trigger.getAttribute('aria-expanded')).toBe('false'));
     });
 
-    it("shows the section's pages as tabs inside the bar, and only the light and dark switch for the look", () => {
-        renderBar({ subnav: <nav aria-label="صفحات القسم"><a href="/subscriptions">المشتركون</a></nav> });
-
-        const bar = screen.getByRole('banner');
-        expect(bar.contains(screen.getByRole('navigation', { name: 'صفحات القسم' }))).toBe(true);
+    it('puts section tabs, search, theme and glass in the top bar', () => {
+        renderBar({ subnav: <div role="tablist" aria-label="صفحات القسم" /> });
+        expect(screen.getByRole('banner').contains(screen.getByRole('tablist'))).toBe(true);
+        expect(screen.getByRole('button', { name: /Ctrl K/ })).toBeTruthy();
         expect(screen.getByRole('button', { name: /التبديل إلى الوضع/ })).toBeTruthy();
-        expect(screen.queryByRole('button', { name: /المظهر/ })).toBeNull();
+        expect(screen.getByRole('button', { name: 'المظهر الزجاجي' })).toBeTruthy();
     });
 });

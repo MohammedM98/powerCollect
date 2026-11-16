@@ -25,7 +25,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import SearchableSelect from '@/Components/SearchableSelect';
 import { readingPrintUrl } from '@/Components/PrintButton';
 import { secondaryButtonClass } from '@/Components/SecondaryButton';
-import { queryString } from '@/lib/pageUrl';
+import { queryString, queryValue, urlWithout } from '@/lib/pageUrl';
 
 const SUBSCRIPTION_DIRECTION_KEY = 'meter-box-subscription-direction';
 const SUBSCRIPTION_SORT_KEY = 'meter-box-subscription-sort';
@@ -93,7 +93,14 @@ export default function Index({
     canSendMessages,
 }) {
     const [modalMeterBox, setModalMeterBox] = useState(null);
+    const { url: modalUrl } = usePage();
+    const createFromAddress = queryValue(modalUrl, 'create') === '1' && canCreate;
     const [creating, setCreating] = useState(false);
+
+    function closeCreate() {
+        setCreating(false);
+        if (createFromAddress) router.replace({ url: urlWithout(modalUrl, 'create'), preserveState: true, preserveScroll: true });
+    }
     const [expandedIds, setExpandedIds] = useState(new Set());
     const [collapsedIds, setCollapsedIds] = useState(new Set());
     const [expandingAll, setExpandingAll] = useState(false);
@@ -233,7 +240,7 @@ export default function Index({
                 {canViewSubscriptions && <span className="text-xs text-gray-500">التوسيع يعرض مشتركي طبلونات الصفحة الحالية، ويستمر عند الانتقال للصفحة التالية.</span>}
             </div>
 
-            <div className="data-table-container">
+            <div className="data-table-container gl-board-list">
                 <table className="data-table meter-box-table w-full text-sm text-start" aria-label="الطبلونات ومشتركوها">
                     <thead>
                         <tr>
@@ -248,7 +255,10 @@ export default function Index({
                         {meterBoxes.data.length === 0 ? (
                             <tr>
                                 <td className="text-gray-500" colSpan={5}>
-                                    لا توجد نتائج مطابقة.
+                                    <div className="flex flex-wrap items-center gap-3">
+                                        <span>لا توجد نتائج مطابقة.</span>
+                                        <button type="button" className="gl-btn gl-sec gl-sm" onClick={() => branchFilter.clear(setFilters, clearFilters)}>امسح التصفية</button>
+                                    </div>
                                 </td>
                             </tr>
                         ) : (
@@ -262,8 +272,8 @@ export default function Index({
                                 </td></tr>}
                                 {region.boxes.map((meterBox) => (
                                 <Fragment key={meterBox.id}>
-                                <tr className={isExpanded(meterBox.id) ? 'meter-box-expanded' : undefined} {...rowClick(canViewSubscriptions ? () => toggleExpanded(meterBox.id) : meterBox.canUpdate ? () => setModalMeterBox(meterBox) : null)}>
-                                    <td data-label="الطبلون">
+                                <tr className={'gl-board-card ' + (isExpanded(meterBox.id) ? 'meter-box-expanded' : '')} {...rowClick(canViewSubscriptions ? () => toggleExpanded(meterBox.id) : meterBox.canUpdate ? () => setModalMeterBox(meterBox) : null)}>
+                                    <td data-label="الطبلون" className="gl-board-name">
                                         <RowIdentity icon="table" name={meterBox.display_name || meterBox.box_number} subtitle={meterBox.display_name ? meterBox.box_number : undefined} />
                                     </td>
                                     <td data-label={selectedBranch ? 'منطقة الطبلون' : 'الموقع / المنطقة'}>
@@ -275,13 +285,13 @@ export default function Index({
                                     <td data-label="المشتركون">
                                         <p className="text-sm font-semibold text-gray-900"><b className="font-display">{formatNumber(meterBox.subscriptionsCount)}</b> مشترك</p>
                                         {meterBox.subscriptionsCount > 0 && <>
-                                            <div className="my-1.5 flex h-1.5 w-28 overflow-hidden rounded-full bg-gray-100" aria-hidden="true"><span className="bg-emerald-500" style={{ width: `${meterBox.activeSubscriptionsCount / meterBox.subscriptionsCount * 100}%` }} /></div>
+                                            <div className="my-1.5 flex h-1.5 w-full overflow-hidden rounded-full bg-gray-100" aria-hidden="true"><span className="bg-emerald-500" style={{ width: `${meterBox.activeSubscriptionsCount / meterBox.subscriptionsCount * 100}%` }} /></div>
                                             <p className="text-xs text-gray-500">{meterBox.activeSubscriptionsCount} فعّال · {meterBox.subscriptionsCount - meterBox.activeSubscriptionsCount} غير فعّال</p>
                                         </>}
                                     </td>
                                     <td data-actions="" className="text-end">
                                         <div className="flex items-center justify-end gap-2">
-                                        {canViewSubscriptions && <button type="button" className="row-action row-action-quiet" aria-expanded={isExpanded(meterBox.id)} aria-controls={`meter-box-subscriptions-${meterBox.id}`} aria-label={`${isExpanded(meterBox.id) ? 'إخفاء' : 'عرض'} مشتركي ${meterBox.box_number}`} title="المشتركون" onClick={() => toggleExpanded(meterBox.id)}><Icon name="chevron-down" className={`h-4 w-4 transition-transform ${isExpanded(meterBox.id) ? 'rotate-180' : ''}`} /></button>}
+                                        {canViewSubscriptions && <button type="button" className="gl-btn gl-sec gl-sm" aria-expanded={isExpanded(meterBox.id)} aria-controls={`meter-box-subscriptions-${meterBox.id}`} aria-label={`${isExpanded(meterBox.id) ? 'إخفاء' : 'عرض'} مشتركي ${meterBox.box_number}`} title="المشتركون" onClick={() => toggleExpanded(meterBox.id)}><span>{isExpanded(meterBox.id) ? 'إخفاء المشتركين' : 'عرض المشتركين'}</span><Icon name="chevron-down" className={`h-4 w-4 transition-transform ${isExpanded(meterBox.id) ? 'rotate-180' : ''}`} /></button>}
                                         {(meterBox.canUpdate || meterBox.canDelete) && (
                                             <RowActionsMenu>
                                                 {meterBox.canDelete && (
@@ -307,8 +317,8 @@ export default function Index({
 
             <MeterBoxModal
                 key={`new-${selectedBranch?.id ?? 'all'}`}
-                show={creating}
-                onClose={() => setCreating(false)}
+                show={creating || createFromAddress}
+                onClose={closeCreate}
                 meterBox={null}
                 branches={branches}
                 canChooseBranch={canChooseBranch && !selectedBranch}

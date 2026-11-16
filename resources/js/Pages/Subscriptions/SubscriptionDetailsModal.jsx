@@ -165,7 +165,7 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
     }
 
     return <>
-        <Modal show={Boolean(subscription)} onClose={onClose} maxWidth="full" panelClassName={`subscription-profile-panel ${expanded ? 'is-expanded' : ''}`}>
+        <Modal show={Boolean(subscription)} onClose={onClose} maxWidth="full" presentation={expanded ? 'details' : 'drawer'} panelClassName={`subscription-profile-panel ${expanded ? 'is-expanded' : ''}`}>
             {/* The dialog takes its own keys: the arrows move between tabs, Escape closes. */}
             {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
             {subscription && <div className="subscription-profile" role="dialog" aria-modal="true" aria-labelledby={`${tabsId}-title`} dir="rtl" tabIndex={-1} ref={dialogRef} onKeyDown={handleKeyDown}>

@@ -11,7 +11,7 @@ import Icon from '@/Components/Icon';
  * `children` go under it all (a small breakdown of the figure); `index`
  * staggers its entrance.
  */
-export default function KpiTile({ icon, label, value, unit, hint, badge, hero = false, compact = false, index = 0, className = '', style, children }) {
+export default function KpiTile({ icon, label, value, unit, format, hint, badge, hero = false, compact = false, index = 0, className = '', style, children }) {
     return (
         <div className={`gl-card gl-kpi gl-rise ${hero ? 'gl-hero' : ''} ${className}`} style={{ '--i': index, ...style }}>
             <div className="gl-lbl">
@@ -19,9 +19,10 @@ export default function KpiTile({ icon, label, value, unit, hint, badge, hero = 
                 <span className="min-w-0">{label}</span>
                 {badge && <span className="ms-auto">{badge}</span>}
             </div>
-            <div className="gl-val gl-num" style={compact && !hero ? { fontSize: 28 } : undefined}>
-                {typeof value === 'number' ? <CountUp value={value} /> : value}
-                {unit && <small>{unit}</small>}
+            <div className="gl-val gl-num" dir={unit === '₪' ? 'ltr' : undefined} style={compact && !hero ? { fontSize: 28 } : undefined}>
+                {unit === '₪' && <small aria-hidden="true">{unit}</small>}
+                <bdi dir="ltr">{typeof value === 'number' ? <CountUp value={value} format={format} decimals={unit === '₪' ? 2 : 0} /> : value}</bdi>
+                {unit && unit !== '₪' && <small>{unit}</small>}
             </div>
             {hint && <div className="gl-hint">{hint}</div>}
             {children}

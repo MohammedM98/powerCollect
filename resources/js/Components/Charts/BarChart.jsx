@@ -25,10 +25,12 @@ function niceMax(value) {
  * screen readers. `data` is `[{ date: 'Y-m-d', value, count? }]`.
  * `formatValue` writes a value; `countLabel` names what `count` counts.
  */
-export default function BarChart({ data, label, formatValue = formatNumber, countLabel = null, height = 170 }) {
+export default function BarChart({ data: points, label, formatValue = formatNumber, countLabel = null, height = 170, rightToLeft = false, cylindrical = false, previous = null, dayLabel = formatShortDay }) {
+    const data = rightToLeft ? points.toReversed() : points;
+    const comparison = rightToLeft ? previous?.toReversed() : previous;
     const [active, setActive] = useState(null);
     const tooltipId = useId();
-    const max = niceMax(Math.max(0, ...data.map((point) => point.value)));
+    const max = niceMax(Math.max(0, ...data.map((point) => point.value), ...(comparison ?? [])));
     const ticks = Array.from({ length: TICKS + 1 }, (_, index) => (max / TICKS) * (TICKS - index));
     const point = active !== null ? data[active] : null;
     // The labels follow the chart's width: fewer on a phone, so they never overlap or spill past the card.
@@ -108,15 +110,23 @@ export default function BarChart({ data, label, formatValue = formatNumber, coun
                                     {day.value > 0 && (
                                         <span
                                             className={`block w-full max-w-6 rounded-t-[4px] transition-colors ${
-                                                isToday || isActive ? 'bg-brand-500' : 'bg-brand-300/80 dark:bg-brand-300'
+                                                cylindrical ? 'gl-chart-cylinder' : isToday || isActive ? 'bg-brand-500' : 'bg-brand-300/80 dark:bg-brand-300'
                                             } ${isActive && !isToday ? 'brightness-110' : ''}`}
-                                            style={{ height: `max(2px, ${(day.value / max) * 100}%)` }}
+                                            style={{ height: `max(2px, ${(day.value / max) * 100}%)`, '--i': index % 16 }}
                                         />
                                     )}
                                 </div>
                             );
                         })}
                     </div>
+
+                    {comparison?.length > 1 && (
+                        <svg className="pointer-events-none absolute inset-0 w-full overflow-visible" style={{ height }} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                            <polyline className="gl-chart-comparison" pathLength="1"
+                                points={comparison.map((value, index) => ((index + 0.5) * 100 / data.length) + ',' + (100 - value * 100 / max)).join(' ')}
+                                vectorEffect="non-scaling-stroke" />
+                        </svg>
+                    )}
 
                     {point && (
                         <div
@@ -128,7 +138,7 @@ export default function BarChart({ data, label, formatValue = formatNumber, coun
                         >
                             <b className="block font-display text-sm text-gray-900">{formatValue(point.value)}</b>
                             <span className="text-gray-500">
-                                {formatShortDay(point.date)}
+                                {dayLabel(point.date)}
                                 {countLabel && point.count !== undefined && ` · ${formatNumber(point.count)} ${countLabel}`}
                             </span>
                         </div>
@@ -148,7 +158,7 @@ export default function BarChart({ data, label, formatValue = formatNumber, coun
                                     style={{ left: labelLeft(index, data.length, labelsWidth), width: LABEL_WIDTH }}
                                     dir="rtl"
                                 >
-                                    {formatShortDay(day.date)}
+                                    {dayLabel(day.date)}
                                 </span>
                             );
                         })}
@@ -161,7 +171,7 @@ export default function BarChart({ data, label, formatValue = formatNumber, coun
                 <tbody>
                     {data.map((day) => (
                         <tr key={day.date}>
-                            <th scope="row">{formatShortDay(day.date)}</th>
+                            <th scope="row">{dayLabel(day.date)}</th>
                             <td>{formatValue(day.value)}</td>
                             {countLabel && <td>{`${formatNumber(day.count ?? 0)} ${countLabel}`}</td>}
                         </tr>

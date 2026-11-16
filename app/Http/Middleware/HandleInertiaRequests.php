@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Enums\AuditAction;
+use App\Enums\PaymentMethod;
 use App\Enums\PermissionKey;
 use App\Models\Bank;
 use App\Models\Branch;
@@ -30,7 +31,9 @@ use App\Support\Branches\BranchDomainContext;
 use App\Support\Branches\BranchViewContext;
 use App\Support\Branding\Brand;
 use App\Support\Closing\BranchClosingAccess;
+use App\Support\MeterBoxes\MeterBoxPage;
 use App\Support\Reports\FinancialReportAccess;
+use App\Support\Subscriptions\SubscriptionForm;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 use Inertia\Inertia;
@@ -99,6 +102,8 @@ class HandleInertiaRequests extends Middleware
                 'auditOnly' => $user->isAuditOnly(),
                 'printAuditReports' => (! $user->hasFinancialAuditAccess()) || $user->canAuditAction(AuditAction::PrintReports),
                 'viewBranches' => $user->can('viewAny', Branch::class),
+                'createSubscription' => $user->can('create', Subscription::class),
+                'createMeterBox' => $user->can('create', MeterBox::class),
                 'viewSubscriptions' => $user->can('viewAny', Subscription::class),
                 'recordPayments' => $user->can('recordAnyPayment', Subscription::class),
                 'viewOwnCashBoxes' => $user->can('viewOwnCashBoxes', Subscription::class),
@@ -119,6 +124,7 @@ class HandleInertiaRequests extends Middleware
                 'sendMessages' => $user->can('create', MessageBatch::class),
                 'viewDisconnections' => $user->can('viewAny', DisconnectionList::class),
                 'viewReadingCycles' => $user->can('viewAny', ReadingCycle::class),
+                'printReadingSheets' => $user->can('viewAny', ReadingCycle::class) && $user->hasPermission(PermissionKey::PrintReadingSheets),
                 'viewGovernorates' => $user->can('viewAny', Governorate::class) || $user->can('viewAny', SubArea::class),
                 'manageSettings' => $user->can('manage', Permission::class),
                 'manageReadingSchedule' => $user->can('manageAny', ReadingEntrySetting::class),
@@ -130,6 +136,13 @@ class HandleInertiaRequests extends Middleware
                 'manageBrand' => $user->can('manage-brand'),
                 'managePaymentSettings' => $user->can('manage', CurrencyRate::class) || $user->can('manageAny', ClosingSetting::class),
             ] : null,
+            'quickSubscriptionOptions' => Inertia::optional(fn (): ?array => $user?->can('create', Subscription::class) ? SubscriptionForm::subscriptionFormOptions() : null),
+            'quickMeterBoxOptions' => Inertia::optional(fn (): ?array => $user?->can('create', MeterBox::class) ? MeterBoxPage::formOptions() : null),
+            'quickPaymentOptions' => Inertia::optional(fn (): ?array => $user?->can('recordAnyPayment', Subscription::class) ? [
+                'paymentMethods' => PaymentMethod::options($user->allowedPaymentMethods()),
+                'transferBanks' => Bank::receiverNames(),
+                'senderBanks' => Bank::senderNames(),
+            ] : null),
             // A list opened for printing gets the company's print templates for it.
             'printTemplates' => fn () => $user && $request->boolean('print') ? $this->printTemplates($request) : null,
             'activity' => fn () => $user ? $this->recentActivity($user) : null,

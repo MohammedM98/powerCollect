@@ -13,7 +13,7 @@ function PhoneMenu() {
 
     return <>
         <button type="button" ref={menuButton} onClick={() => setOpen(true)}>القائمة</button>
-        <NavigationDrawer open={open} groups={[]} badges={{}} onClose={() => setOpen(false)} onOpenPalette={() => {}} returnFocusTo={menuButton} />
+        <NavigationDrawer open={open} brand={{name: 'شركة الكهرباء', logos: { main: '/favicon.svg' }}} groups={[]} lastPages={{}} badges={{}} onClose={() => setOpen(false)} onOpenPalette={() => {}} returnFocusTo={menuButton} />
     </>;
 }
 
@@ -30,9 +30,10 @@ describe('the phone menu', () => {
         await user.keyboard('{Escape}');
 
         expect(drawer.parentElement.className).toContain('is-closing');
+        expect(drawer.parentElement.hasAttribute('inert')).toBe(true);
         await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
         expect(document.documentElement.classList.contains('tn-locked')).toBe(false);
-        expect(document.activeElement).toBe(screen.getByRole('button', { name: 'القائمة' }));
+        await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'القائمة' })));
     });
 
     it('opened again while sliding out, stays open', async () => {

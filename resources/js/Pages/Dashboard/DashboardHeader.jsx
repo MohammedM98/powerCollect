@@ -1,12 +1,10 @@
 import { Link } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import SearchableSelect from '@/Components/SearchableSelect';
-import WordReveal from '@/Components/WordReveal';
 import { formatWeekDay } from '@/lib/weekDays';
 
 /** The home page's heading: the greeting, the period tabs and the quick actions. */
 export default function DashboardHeader({
-    auth,
     branchOptions,
     branchScope,
     branchView,
@@ -15,7 +13,6 @@ export default function DashboardHeader({
     canCreateUser,
     filters,
     governorateOptions,
-    greet,
     openCreateForm,
     scope,
     scopeLine,
@@ -25,11 +22,7 @@ export default function DashboardHeader({
     return (
         <div className="gl-phead gl-rise">
             <div className="min-w-0">
-                <h1>
-                    <WordReveal text={greet}>
-                        <span className="!text-[rgb(var(--gl-brand))]">{auth.user.name}</span>
-                    </WordReveal>
-                </h1>
+                <h1>لوحة القيادة</h1>
                 <p>{[scopeLine, formatWeekDay(scope.today)].filter(Boolean).join(' · ')}</p>
             </div>
             <div className="gl-phead-actions">
@@ -73,24 +66,24 @@ export default function DashboardHeader({
                     </span>
                 )}
                 {canCreateBranch ? (
-                    <button type="button" className="gl-btn gl-add" onClick={() => openCreateForm('branch')}>
+                    <button type="button" className="gl-btn gl-sec" onClick={() => openCreateForm('branch')}>
                         <Icon name="plus" className="h-4 w-4" />
                         فرع جديد
                     </button>
                 ) : canCreateUser ? (
-                    <button type="button" className="gl-btn gl-add" onClick={() => openCreateForm('user')}>
+                    <button type="button" className="gl-btn gl-sec" onClick={() => openCreateForm('user')}>
                         <Icon name="plus" className="h-4 w-4" />
                         مستخدم جديد
                     </button>
                 ) : null}
                 {can?.recordPayments &&
                     (can?.viewSubscriptions ? (
-                        <button type="button" className="gl-btn" onClick={() => setFindingPayer(true)} aria-haspopup="dialog">
+                        <button type="button" className="gl-btn gl-sec" onClick={() => setFindingPayer(true)} aria-haspopup="dialog">
                             <Icon name="plus" className="h-4 w-4" />
                             تسجيل دفعة
                         </button>
                     ) : (
-                        <Link href="/payments" className="gl-btn">
+                        <Link href="/payments" className="gl-btn gl-sec">
                             <Icon name="plus" className="h-4 w-4" />
                             تسجيل دفعة
                         </Link>

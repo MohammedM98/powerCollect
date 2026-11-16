@@ -43,7 +43,7 @@ export default function SubscriptionWindows({
     selectionCount,
     setArchiveSubscription,
     setBulkField,
-    setCreating,
+    onCloseCreate,
     setHistorySubscriptionId,
     setMessageSubscription,
     setModalSubscription,
@@ -86,7 +86,7 @@ export default function SubscriptionWindows({
                 />
             )}
 
-            {creating && <SubscriptionModal show onClose={() => setCreating(false)} subscription={null} {...modalProps} />}
+            {creating && <SubscriptionModal show onClose={onCloseCreate} subscription={null} {...modalProps} />}
 
             {subscriptionSource && (
                 <SubscriptionModal

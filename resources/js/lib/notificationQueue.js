@@ -1,5 +1,5 @@
 /** How long each kind of notification stays up. Errors stay longer, so there is time to read why. */
-export const NOTIFICATION_DURATIONS = { success: 4000, warning: 5000, error: 7000 };
+export const NOTIFICATION_DURATIONS = { success: 2800, warning: 5000, error: 7000 };
 
 /** How long a closing notification plays its exit before it is removed. */
 export const NOTIFICATION_EXIT_DURATION = 200;
@@ -47,13 +47,13 @@ export function createNotificationQueue(onChange) {
     }
 
     return {
-        push(message, type = 'success') {
+        push(message, type = 'success', action = null) {
             if (typeof message !== 'string' || !message.trim()) {
                 return;
             }
             const id = ++sequence;
-            const duration = NOTIFICATION_DURATIONS[type] ?? NOTIFICATION_DURATIONS.success;
-            notifications = [...notifications, { id, message, type, duration, leaving: false }];
+            const duration = action ? 6000 : (NOTIFICATION_DURATIONS[type] ?? NOTIFICATION_DURATIONS.success);
+            notifications = [...notifications, { id, message, type, duration, action, leaving: false }];
             startTimer(id, duration);
             publish();
         },

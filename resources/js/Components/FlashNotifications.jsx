@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { useEffect, useRef, useState } from 'react';
 import { router } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
@@ -26,8 +27,9 @@ export default function FlashNotifications({ initialStatus }) {
     useEffect(() => {
         const currentQueue = createNotificationQueue(setNotifications);
         queue.current = currentQueue;
-        function showStatus(status) {
-            currentQueue.push(ACTION_MESSAGES[status] ?? status);
+        function showStatus(status, recordedPayment) {
+            const action = recordedPayment?.receiptUrl ? { href: recordedPayment.receiptUrl, label: 'طباعة السند' } : null;
+            currentQueue.push(ACTION_MESSAGES[status] ?? status, 'success', action);
         }
         showStatus(initialStatus);
         // The visits whose response carries a fresh status; a partial reload keeps the page's old one.
@@ -39,7 +41,7 @@ export default function FlashNotifications({ initialStatus }) {
         });
         const unsubscribeSuccess = router.on('success', (event) => {
             if (visitsWithStatus.delete(event.detail.visitId)) {
-                showStatus(event.detail.page.props.status);
+                showStatus(event.detail.page.props.status, event.detail.page.flash?.recordedPayment);
             }
         });
         // A single-field failure (e.g. a reading lower than the last one)
@@ -73,7 +75,7 @@ export default function FlashNotifications({ initialStatus }) {
         };
     }, [initialStatus]);
 
-    return (
+    return createPortal(
         <div
             dir="rtl"
             role="region"
@@ -103,6 +105,9 @@ export default function FlashNotifications({ initialStatus }) {
                                 <p className={`break-words leading-7 ${appearance.title ? '' : 'font-bold'}`}>
                                     {notification.message}
                                 </p>
+                                {notification.action && <a className="gl-btn gl-sec gl-sm mt-1" href={notification.action.href}
+                                    target="_blank" rel="noopener noreferrer" onFocus={() => queue.current.pause(notification.id)}
+                                    onBlur={() => queue.current.resume(notification.id)}>{notification.action.label}</a>}
                             </div>
                             <button
                                 type="button"
@@ -119,6 +124,7 @@ export default function FlashNotifications({ initialStatus }) {
                     </div>
                 );
             })}
-        </div>
+        </div>,
+        document.body,
     );
 }

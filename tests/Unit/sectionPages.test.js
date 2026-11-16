@@ -24,7 +24,7 @@ before(async () => {
             },
             load(id) {
                 if (id === '\0navigation-components') return `export { SectionPages, hiddenEnds } from ${JSON.stringify(path.resolve(import.meta.dirname, '../../resources/js/Components/TopBar/PageTrail.jsx'))}; export { default as MegaMenu } from ${JSON.stringify(path.resolve(import.meta.dirname, '../../resources/js/Components/TopBar/MegaMenu.jsx'))};`;
-                if (id === '\0inertia-link') return "import { createElement } from 'react'; export function Link({ children, prefetch, ...props }) { return createElement('a', props, children); }";
+                if (id === '\0inertia-link') return "import { createElement } from 'react'; export function Link({ children, prefetch, preserveScroll, ...props }) { return createElement('a', props, children); }";
             },
         }],
     });
@@ -38,17 +38,17 @@ function render(can, url) {
     return renderToStaticMarkup(createElement(SectionPages, { trail: pageTrail(navigationGroups(can), url), url, badges: {} }));
 }
 
-test('a user with subscriber access sees that single sub-navigation link and only the sections they may open a page of', () => {
+test('a user with subscriber access sees that subscriber section links and only the sections they may open a page of', () => {
     const can = { viewSubscriptions: true };
     const html = render(can, '/subscriptions');
     assert.match(html, /aria-label="صفحات المشتركون"/);
-    assert.deepEqual([...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]), ['/subscriptions']);
+    assert.deepEqual([...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]), ['/subscriptions', '/subscriptions/bulk-changes']);
     assert.deepEqual(topBarItems(navigationGroups(can)).map((item) => item.key), ['home', 'daily', 'administration']);
 });
 
 test('financial sub-navigation includes only the individually authorized destinations', () => {
     const html = render({ recordPayments: true, viewOwnCashBoxes: true }, '/payments');
-    assert.deepEqual([...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]), ['/payments', '/payments/summary']);
+    assert.deepEqual([...html.matchAll(/href="([^"]+)"/g)].map((match) => match[1]), ['/payments']);
     assert.doesNotMatch(html, /aria-disabled|بلا صلاحية|الصناديق المالية|السجل المالي|أعمار الديون/);
 });
 
@@ -61,7 +61,7 @@ test('the desktop section menu lists only the pages the user may open, and a sec
     const groups = navigationGroups({ viewSubscriptions: true });
     const menu = (group) => renderToStaticMarkup(createElement(MegaMenu, { group, url: '/subscriptions', badges: {}, width: 420 }));
     const subscribers = menu(groups.find((group) => group.id === 'daily'));
-    assert.deepEqual([...subscribers.matchAll(/href="([^"]+)"/g)].map((match) => match[1]), ['/subscriptions']);
+    assert.deepEqual([...subscribers.matchAll(/href="([^"]+)"/g)].map((match) => match[1]), ['/subscriptions', '/subscriptions/bulk-changes']);
     assert.equal(groups.find((group) => group.id === 'finance'), undefined);
 });
 

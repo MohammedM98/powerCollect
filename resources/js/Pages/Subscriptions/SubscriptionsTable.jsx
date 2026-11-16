@@ -10,13 +10,14 @@ import ActionsTh from '@/Components/DataTable/ActionsTh';
 import { printFieldsProps, printRowProps } from '@/lib/print';
 import { formatShekels } from '@/lib/currency';
 import PhoneQuickEdit from './PhoneQuickEdit';
+import Icon from '@/Components/Icon';
 import Balance from '@/Components/Balance';
 import { formatDate } from '@/lib/format';
 
 const STATUS_TONES = {
     active: 'green',
     suspended: 'amber',
-    disconnected: 'gray',
+    disconnected: 'red',
 };
 
 /** Why a menu action is locked: the permission it needs and who grants it. */
@@ -49,6 +50,7 @@ export default function SubscriptionsTable({
     setViewingSubscriptionId,
     sort,
     subscriptions,
+    onClearFilters,
     togglePage,
     toggleSubscription,
 }) {
@@ -84,15 +86,22 @@ export default function SubscriptionsTable({
                 {subscriptions.data.length === 0 ? (
                     <tr>
                         <td className="text-gray-500" colSpan={canSelect ? 10 : 9}>
-                            لا توجد نتائج مطابقة.
+                            <div className="flex flex-wrap items-center gap-3">
+                                <span>لا توجد نتائج مطابقة.</span>
+                                <button type="button" className="gl-btn gl-sec gl-sm" onClick={onClearFilters}>امسح التصفية</button>
+                            </div>
                         </td>
                     </tr>
                 ) : (
-                    // The row and name open the statement; «عرض» opens the subscriber's details.
                     subscriptions.data.map((subscription) => (
+                        // The row opens the profile drawer. Its own links and controls keep their actions.
                         <tr
                             key={subscription.id}
-                            {...rowClick(() => openStatement(subscription))}
+                            {...rowClick(() => setViewingSubscriptionId(subscription.id))}
+                            tabIndex={0}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter' && event.currentTarget === event.target) setViewingSubscriptionId(subscription.id);
+                            }}
                             {...printRowProps(Object.fromEntries(PRINT_FIELDS.map((field) => [field.key, subscription[field.key]])))}
                             className={
                                 [
@@ -155,16 +164,21 @@ export default function SubscriptionsTable({
                                 )}
                             </td>
                             <td className="text-end">
-                                <RowActionsMenu
-                                    onView={() => setViewingSubscriptionId(subscription.id)}
-                                    onEdit={subscription.canUpdate ? () => setModalSubscription(subscription) : undefined}
-                                    onDelete={
-                                        subscription.canDelete
-                                            ? () => requestDelete(`/subscriptions/${subscription.id}`, subscription.display_name)
-                                            : undefined
-                                    }
-                                    menu={rowMenu(subscription)}
-                                />
+                                <div className="flex flex-wrap items-center justify-end gap-1.5">
+                                    {subscription.canRecordPayment && <button type="button" className="gl-ib gl-row-pay" onClick={() => openStatement(subscription, 'payment')} aria-label={'تسجيل دفعة لـ ' + subscription.display_name} title="تسجيل دفعة">
+                                        <Icon name="banknotes" className="h-4 w-4" />
+                                    </button>}
+                                    <RowActionsMenu
+                                        onView={() => setViewingSubscriptionId(subscription.id)}
+                                        onEdit={subscription.canUpdate ? () => setModalSubscription(subscription) : undefined}
+                                        onDelete={
+                                            subscription.canDelete
+                                                ? () => requestDelete(`/subscriptions/${subscription.id}`, subscription.display_name)
+                                                : undefined
+                                        }
+                                        menu={rowMenu(subscription)}
+                                    />
+                                </div>
                             </td>
                         </tr>
                     ))

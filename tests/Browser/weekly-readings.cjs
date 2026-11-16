@@ -110,7 +110,7 @@ const path = require('node:path');
         version = JSON.parse(await page.locator('script[data-page]').textContent()).version;
         await page.locator('#username').fill('owner');
         await page.locator('#password').fill('Strong-Pass-2026');
-        await page.getByRole('button', { name: 'تسجيل الدخول', exact: true }).click();
+        await page.getByRole('button', { name: 'تسجيل الدخول إلى النظام', exact: true }).click();
         await page.waitForURL((url) => !url.pathname.startsWith('/login'));
     }
 

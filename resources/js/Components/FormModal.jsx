@@ -125,7 +125,7 @@ export default function FormModal({
                     onSubmit={submit}
                     onInput={(e) => clearErrorOnInput(e, form)}
                     onKeyDown={submitOnCtrlEnter}
-                    className="flex max-h-[90vh] flex-col"
+                    className="flex max-h-[94dvh] flex-col"
                 >
                     <DialogHeader
                         titleId={`${id}-title`}
@@ -145,8 +145,9 @@ export default function FormModal({
                     )}
 
                     <div className={`gl-dialog-foot flex shrink-0 flex-wrap items-center gap-3 px-5 sm:px-6 ${outline ? 'border-t border-[color:var(--gl-line)]' : ''}`}>
-                        <button type="button" onClick={requestClose} className="gl-btn gl-ghost">إلغاء</button>
+                        <kbd className="tn-kbd hidden sm:inline-flex" dir="ltr">Ctrl + Enter</kbd>
                         <span className="flex-1" />
+                        <button type="button" onClick={requestClose} className="gl-btn gl-ghost">إلغاء</button>
                         {form.isEdit && form.isDirty && <span className="gl-unsaved" role="status">تغييرات غير محفوظة</span>}
                         <PrimaryButton disabled={form.processing} className="gl-lg min-w-[148px]">
                             <Icon name="check" className="h-[18px] w-[18px]" />
