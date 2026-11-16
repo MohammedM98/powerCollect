@@ -62,28 +62,30 @@ class BrandTest extends TestCase
         $response = $this->get(route('login'));
 
         $response->assertInertia(fn ($page) => $page
-            ->where('brand.name', 'سوبر باور')
-            ->where('brand.logos.main', '/images/logo-superpower.svg')
-            ->where('brand.logos.print', '/images/logo-superpower.svg')
+            ->where('brand.name', 'مصعب العجل وأحمد الكفارنة')
+            ->where('brand.logos.main', '/images/logo-ma.svg')
+            ->where('brand.logos.print', '/images/logo-ma.svg')
             ->where('brand.animatedLogo', true)
             ->where('brand.printColor', '#0F766E'));
-        $response->assertSee('<link rel="icon" href="/favicon.svg">', false);
+        $response->assertSee('<link rel="icon" href="/favicon-ma.svg">', false);
     }
 
-    public function test_pages_start_in_the_power_collect_teal_identity_with_the_top_bar_and_solid_cards(): void
+    public function test_pages_start_in_the_ma_identity_with_zain_and_solid_cards(): void
     {
         $response = $this->get(route('login'));
 
         $response->assertInertia(fn ($page) => $page
-            ->where('brand.primaryColor', '#20B2A0')
+            ->where('brand.primaryColor', '#B8461A')
             ->where('brand.design.preset', 'superpower')
             ->where('brand.design.navigation', 'topbar')
             ->where('brand.design.cards', 'elevated')
             ->where('brand.design.navStyle', 'solid')
+            ->where('brand.design.bodyFont', 'zain')
+            ->where('brand.design.headingFont', 'zain')
             ->where('brand.design.details', 'modal'));
         $response->assertSee('data-ui-background="graphite"', false);
         $response->assertSee('data-ui-neutral="graphite"', false);
-        // The teal identity is theme.css's own: no generated shades or ink are drawn over it.
+        // The MA identity is theme.css's own: no generated shades or ink are drawn over it.
         $response->assertDontSee('--brand-50:', false);
         $response->assertDontSee('--brand-ink:', false);
         // The charcoal look keeps theme.css's own neutral greys: no tinted grey scale is drawn over them.
@@ -200,7 +202,7 @@ class BrandTest extends TestCase
 
         $this->assertFalse(app(Brand::class)->isImported());
         $this->assertSame([], Storage::disk('public')->files('brand'));
-        $this->get(route('login'))->assertInertia(fn ($page) => $page->where('brand.name', 'سوبر باور'));
+        $this->get(route('login'))->assertInertia(fn ($page) => $page->where('brand.name', 'مصعب العجل وأحمد الكفارنة'));
     }
 
     public function test_every_ready_company_identity_imports_with_its_logos(): void
@@ -231,7 +233,7 @@ class BrandTest extends TestCase
         $response->assertSee(':root{--success-50:', false);
         $response->assertSee('--gray-50:237 241 247;', false);
         $response->assertSee('.dark{--gray-50:', false);
-        $response->assertSee(":root:is([data-ui-nav-style='dark'],[data-ui-nav-style='brand']) .tn-bar{--gray-50:", false);
+        $response->assertSee(":root:is([data-ui-nav-style='dark'],[data-ui-nav-style='brand']) :is(.tn-bar,.gl-topbar,.gl-section-bar,.gl-sidebar,.gl-sidebar-surface){--gray-50:", false);
         $response->assertSee('data-ui-nav-style="dark"', false);
         $response->assertInertia(fn ($page) => $page->where('brand.stylesheet', app(Brand::class)->stylesheet()));
     }

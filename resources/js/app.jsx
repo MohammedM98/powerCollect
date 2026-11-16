@@ -21,6 +21,10 @@ router.on('networkError', (event) => {
 });
 
 createInertiaApp({
+    title: (title, page) => {
+        const brand = (page.props.brand?.shortName ?? 'العجل والكفارنة').replace(/[&<>]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[character]);
+        return title ? title + ' · ' + brand : brand;
+    },
     // Each page's code is downloaded only when that page is first opened.
     resolve: (name) => {
         // Forms and modals are imported by their pages, rather than compiled as separate route entries.

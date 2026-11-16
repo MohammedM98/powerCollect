@@ -1,19 +1,19 @@
 {
     "version": 1,
     "company": {
-        "name": "سوبر باور",
-        "nameEnglish": "Super Power",
-        "shortName": "سوبر باور",
-        "tagline": "نظام التحصيل الكهربائي"
+        "name": "مصعب العجل وأحمد الكفارنة",
+        "nameEnglish": "Musab Al-Ajal & Ahmad Al-Kafarna General Trading",
+        "shortName": "العجل والكفارنة",
+        "tagline": "للتجارة العامة"
     },
     "logos": {
-        "main": "/images/logo-superpower.svg",
-        "light": null,
-        "icon": "/favicon.svg",
+        "main": "/images/logo-ma.svg",
+        "light": "/images/logo-ma-dark.svg",
+        "icon": "/favicon-ma.svg",
         "print": null
     },
     "colors": {
-        "primary": "#20B2A0",
+        "primary": "#B8461A",
         "secondary": null,
         "accent": null,
         "background": null,
@@ -50,8 +50,8 @@
         "badges": "soft",
         "pageTitle": "plain",
         "textSize": "normal",
-        "bodyFont": "plex",
-        "headingFont": "cairo",
+        "bodyFont": "zain",
+        "headingFont": "zain",
         "motion": "full",
         "buttonHover": "brighten",
         "buttonPress": "sink",

@@ -41,10 +41,10 @@ class Brand
     public const PALETTE = ['primary', 'secondary', 'accent', 'background', 'surface'];
 
     /** The navigation drawn dark in both themes (theme.css, section 7), whose greys follow the neutral tone's dark ones. */
-    private const DARK_PANELS = ":root:is([data-ui-nav-style='dark'],[data-ui-nav-style='brand']) .tn-bar";
+    private const DARK_PANELS = ":root:is([data-ui-nav-style='dark'],[data-ui-nav-style='brand']) :is(.tn-bar,.gl-topbar,.gl-section-bar,.gl-sidebar,.gl-sidebar-surface)";
 
     /** The colour theme.css is drawn in; a company in it needs no shades of its own. */
-    public const THEME_PRIMARY = '#20B2A0';
+    public const THEME_PRIMARY = '#B8461A';
 
     /** Where the imported file is kept, on the local disk. */
     private const STORED = 'brand/brand.json';

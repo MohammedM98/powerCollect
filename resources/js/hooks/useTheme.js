@@ -5,7 +5,7 @@ const preferences = ['light', 'dark', 'auto'];
 function readPreference() {
     try {
         const saved = localStorage.getItem('theme');
-        return preferences.includes(saved) ? saved : 'light';
+        return preferences.includes(saved) ? saved : 'dark';
     } catch {
         return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
     }

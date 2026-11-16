@@ -58,7 +58,7 @@ class BrandSettingTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->component('Settings/Appearance')
                 ->where('profile.design.navigation', 'topbar')
-                ->where('profile.ownLogos', ['main', 'icon'])
+                ->where('profile.ownLogos', ['main', 'light', 'icon'])
                 ->where('presets.corporate.design.navStyle', 'solid')
                 ->where('can.manageBrand', true));
     }
