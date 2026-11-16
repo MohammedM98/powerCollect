@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import Icon from '@/Components/Icon';
 
 /** The keys that work from any page, in a small window. */
-export default function KeyboardShortcuts({ open, onClose, actions = [], canSendMessages, searchesSubscribers }) {
+export default function KeyboardShortcuts({ open, onClose, canRecordPayments, canSendMessages, searchesSubscribers }) {
     const closeRef = useRef(null);
 
     useEffect(() => {
@@ -40,9 +40,10 @@ export default function KeyboardShortcuts({ open, onClose, actions = [], canSend
 
     const keys = [
         ['Ctrl K أو /', searchesSubscribers ? 'بحث في الصفحات والمشتركين والأوامر' : 'بحث في الصفحات والأوامر'],
-        ['Alt + 0…9', 'فتح الرئيسية أو أحد الأقسام'],
-        ['← →', 'التنقل بين صفحات القسم'],
-        ...actions.map(({ key, label }) => [key, label]),
+        ['Alt + 1…6', 'فتح قسم من الشريط'],
+        ['← →', 'التنقل بين الأقسام'],
+        ['↓', 'فتح قائمة القسم'],
+        ...(canRecordPayments ? [['N', 'تسجيل دفعة من أي صفحة']] : []),
         ...(canSendMessages ? [['M', 'رسالة سريعة لمشترك أو أكثر']] : []),
         ['Esc', 'إغلاق أي قائمة أو نافذة'],
     ];

@@ -9,8 +9,8 @@
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
         <link rel="icon" href="{{ $brand->logoUrl('icon') }}">
 
-        <link rel="preload" href="{{ Vite::asset('resources/fonts/zain-arabic-400.woff2') }}" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="{{ Vite::asset('resources/fonts/zain-arabic-700.woff2') }}" as="font" type="font/woff2" crossorigin>
+        <!-- The faces every page shows at once (body text, bold labels and titles, and the figures' Alexandria) load before
+             the first paint, so text doesn't change width and move the page when a face arrives. -->
         <link rel="preload" href="{{ Vite::asset('resources/fonts/ibm-plex-sans-arabic-arabic-400.woff2') }}" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="{{ Vite::asset('resources/fonts/ibm-plex-sans-arabic-arabic-600.woff2') }}" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="{{ Vite::asset('resources/fonts/ibm-plex-sans-arabic-arabic-700.woff2') }}" as="font" type="font/woff2" crossorigin>
@@ -21,7 +21,7 @@
         <script nonce="{{ Vite::cspNonce() }}">
             try {
                 const theme = localStorage.getItem('theme');
-                if (theme === null || theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
                 }
                 // The density chosen in this browser, else the company's (data-ui-density).

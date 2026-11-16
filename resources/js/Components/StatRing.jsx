@@ -36,21 +36,23 @@ export default function StatRing({ percent = 0, color = 'text-brand-500', size =
     );
 }
 
-const SEGMENTS = 17;
-
-/** A segmented gauge with a readable percentage and caption. */
+/**
+ * The goal ring of the panel look: a 104px ring that draws itself to
+ * `percent`, the number in the middle with a line under it (`caption`).
+ */
 export function GoalRing({ percent = 0, caption }) {
     const clamped = Math.min(100, Math.max(0, Number(percent) || 0));
 
     return (
-        <div className="gl-goal-gauge">
-            <svg viewBox="0 0 176 100" width="176" height="100" aria-hidden="true">
-                {Array.from({ length: SEGMENTS }, (_, index) => (
-                    <rect key={index} x="84" y="10" width="8" height="18" rx="4" transform={'rotate(' + (90 - index * 180 / (SEGMENTS - 1)) + ' 88 90)'}
-                        data-filled={index < Math.round(clamped * SEGMENTS / 100) || undefined} style={{ '--i': index }} />
-                ))}
+        <div className="gl-ringbox">
+            <svg width="104" height="104" viewBox="0 0 104 104" aria-hidden="true">
+                <circle cx="52" cy="52" r="42" fill="none" stroke="var(--gl-fill-2)" strokeWidth="10" />
+                <circle className="gl-ring-draw" pathLength="1" style={{ '--t': 1 - clamped / 100 }} cx="52" cy="52" r="42" fill="none" stroke="rgb(var(--gl-brand))" strokeWidth="10" strokeLinecap="round" transform="rotate(-90 52 52)" />
             </svg>
-            <b><span className="gl-num" dir="ltr">{Math.round(clamped)}%</span><small>{caption}</small></b>
+            <b>
+                <span className="gl-num">{Math.round(clamped)}%</span>
+                <small>{caption}</small>
+            </b>
         </div>
     );
 }

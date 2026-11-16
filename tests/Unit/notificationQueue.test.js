@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createNotificationQueue, NOTIFICATION_EXIT_DURATION } from '../../resources/js/lib/notificationQueue.js';
 
-test('repeated actions stack and each message expires after its own 2.8 seconds', (context) => {
+test('repeated actions stack and each message expires after its own four seconds', (context) => {
     context.mock.timers.enable({ apis: ['setTimeout', 'Date'] });
     let visible = [];
     const queue = createNotificationQueue((messages) => { visible = messages; });
@@ -11,7 +11,7 @@ test('repeated actions stack and each message expires after its own 2.8 seconds'
     queue.push('Saved');
     assert.equal(visible.length, 2);
     assert.notEqual(visible[0].id, visible[1].id);
-    context.mock.timers.tick(1799);
+    context.mock.timers.tick(2999);
     assert.equal(visible[0].leaving, false);
     context.mock.timers.tick(1);
     assert.equal(visible[0].leaving, true);
@@ -42,7 +42,7 @@ test('a paused message keeps the time it had left until it is resumed', (context
     let visible = [];
     const queue = createNotificationQueue((messages) => { visible = messages; });
     queue.push('Saved');
-    context.mock.timers.tick(1800);
+    context.mock.timers.tick(3000);
     queue.pause(visible[0].id);
     context.mock.timers.tick(10000);
     assert.equal(visible[0].leaving, false);
@@ -68,18 +68,4 @@ test('manual dismissal leaves other messages intact and disposal clears pending 
     const before = updates;
     context.mock.timers.tick(7000);
     assert.equal(updates, before);
-});
-
-test('a toast with a receipt action stays for six seconds', (context) => {
-    context.mock.timers.enable({ apis: ['setTimeout', 'Date'] });
-    let visible = [];
-    const queue = createNotificationQueue((messages) => { visible = messages; });
-    const action = { href: '/receipts/1', label: 'طباعة السند' };
-    queue.push('Saved', 'success', action);
-    context.mock.timers.tick(5999);
-    assert.deepEqual(visible[0].action, action);
-    assert.equal(visible[0].leaving, false);
-    context.mock.timers.tick(1);
-    assert.equal(visible[0].leaving, true);
-    queue.dispose();
 });

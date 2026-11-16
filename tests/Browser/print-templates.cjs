@@ -11,7 +11,7 @@ const assert = require('node:assert/strict');
         await page.goto('/login');
         await page.locator('#username').fill('owner');
         await page.locator('#password').fill('Strong-Pass-2026');
-        await page.getByRole('button', { name: 'تسجيل الدخول إلى النظام', exact: true }).click();
+        await page.getByRole('button', { name: 'تسجيل الدخول', exact: true }).click();
         await page.waitForURL((url) => !url.pathname.startsWith('/login'));
         await page.goto('/users?print=1&print_all=1&print_template=new&print_title=المستخدمون');
         const paper = page.getByRole('article', { name: 'معاينة الورقة المطبوعة' });

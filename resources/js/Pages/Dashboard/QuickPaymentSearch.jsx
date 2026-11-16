@@ -8,7 +8,7 @@ import { balanceInText, balanceTone, balanceWord } from '@/lib/balance';
 const SEARCH_DELAY = 200;
 
 const BALANCE_TONES = {
-    owes: 'text-danger-600 dark:text-danger-400',
+    owes: 'text-brand-600',
     credit: 'text-emerald-700 dark:text-emerald-400',
     settled: 'text-gray-500',
 };
@@ -57,7 +57,7 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
                 .get(`/payments/search?${new URLSearchParams({ search: term })}`)
                 .then((result) => {
                     if (current) {
-                        setResults([...result.subscriptions].sort((first, second) => Number(second.balance) - Number(first.balance)));
+                        setResults(result.subscriptions);
                         setHasMore(result.hasMore);
                         setFailed(false);
                         setActive(0);
@@ -93,7 +93,7 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
                 <DialogHeader
                     titleId={titleId}
                     title="تسجيل دفعة"
-                    description="ابحث عن المشترك، ثم سجّل دفعته دون مغادرة الصفحة."
+                    description="ابحث عن المشترك، ثم سجّل دفعته من كشف حسابه دون مغادرة الصفحة."
                     descriptionId={`${titleId}-description`}
                     icon="banknotes"
                     onClose={onClose}
@@ -144,7 +144,7 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
                                             onClick={() => onPick(subscriber)}
                                             onPointerEnter={() => setActive(index)}
                                             className={`flex w-full items-center gap-3 rounded-row border px-4 py-3 text-start transition active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 ${
-                                                index === active ? 'border-transparent bg-gray-100' : 'border-transparent hover:bg-gray-50'
+                                                index === active ? 'border-brand-500/30 bg-brand-500/[0.06]' : 'border-transparent hover:bg-gray-50'
                                             }`}
                                         >
                                             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-graphite-gradient text-white">

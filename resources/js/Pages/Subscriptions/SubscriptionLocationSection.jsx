@@ -21,8 +21,6 @@ function ReadOnlyField({ id, label, value, dir }) {
 export default function SubscriptionLocationSection({
     branches,
     canChooseBranch,
-    compact = false,
-    setupField,
     data,
     errors,
     isEdit,
@@ -37,72 +35,59 @@ export default function SubscriptionLocationSection({
     subAreaId,
     subAreasInArea,
 }) {
-    const branchField = canChooseBranch && (
-        <FormField id="branch_id" label="الفرع" required error={errors.branch_id}>
-            {branches.length === 0 ? (
-                <p className="text-sm text-gray-500">لا توجد فروع بعد — أنشئ فرعًا أولاً.</p>
-            ) : (
-                <select required className="block w-full" value={data.branch_id} onChange={(e) => onBranchChange(e.target.value)}>
-                    <option value="">— اختر فرعًا —</option>
-                    {branches.map((branch) => (
-                        <option key={branch.id} value={branch.id}>
-                            {branch.name}
-                        </option>
-                    ))}
-                </select>
-            )}
-        </FormField>
-    );
-
-    const areaField = (compact || Boolean(resolvedAreaId)) && (
-        <FormField
-            id="sub_area_id"
-            label={compact ? 'المنطقة' : 'منطقة 2'}
-            error={errors.sub_area_id}
-            hint={compact && subAreasInArea.length ? 'تُحدّد تلقائيًا عند اختيار الطبلون.' : undefined}
-        >
-            {!compact && subAreasInArea.length === 0 ? (
-                <p className="text-sm text-gray-500">لا توجد منطقة 2 في هذه المنطقة بعد.</p>
-            ) : (
-                <SearchableSelect
-                    id="sub_area_id"
-                    value={subAreaId}
-                    onChange={onSubAreaChange}
-                    options={subAreasInArea.map((subArea) => ({ value: String(subArea.id), label: subArea.name }))}
-                    placeholder={compact && !subAreasInArea.length ? (resolvedAreaName || "—") : isEdit ? "— بلا منطقة 2 —" : "— اختر منطقة 2 —"}
-                    disabled={compact && !subAreasInArea.length}
-                    searchPlaceholder="بحث في المناطق..."
-                    emptyLabel="لا توجد مناطق مطابقة"
-                    active={Boolean(subAreaId)}
-                />
-            )}
-        </FormField>
-    );
-
-    const boxField = (compact || showMeterBoxField) && (
-        <FormField id="meter_box_id" label={compact ? 'الطبلون' : 'الطبلون (الاسم والرقم)'} error={errors.meter_box_id}>
-            <SearchableSelect
-                value={data.meter_box_id}
-                onChange={onMeterBoxChange}
-                options={selectedBox ? [selectedBox] : []}
-                loadOptions={loadMeterBoxes}
-                disabled={!showMeterBoxField}
-                placeholder={showMeterBoxField ? 'اختر طبلونًا' : 'اختر الفرع أولًا'}
-                searchPlaceholder="بحث عن طبلون..."
-                emptyLabel="لا توجد طبلونات مطابقة"
-            />
-        </FormField>
-    );
-
-    if (compact) return <>{branchField}{setupField}{boxField}{areaField}</>;
-
     return (
         <FormSection icon="pin" title="الموقع والعداد">
             <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:col-span-2 sm:grid-cols-2 lg:col-span-3">
-                {branchField}
+                {canChooseBranch && (
+                    <FormField id="branch_id" label="الفرع" required error={errors.branch_id}>
+                        {branches.length === 0 ? (
+                            <p className="text-sm text-gray-500">لا توجد فروع بعد — أنشئ فرعًا أولاً.</p>
+                        ) : (
+                            <select required className="block w-full" value={data.branch_id} onChange={(e) => onBranchChange(e.target.value)}>
+                                <option value="">— اختر فرعًا —</option>
+                                {branches.map((branch) => (
+                                    <option key={branch.id} value={branch.id}>
+                                        {branch.name}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                    </FormField>
+                )}
+
                 {canChooseBranch && <ReadOnlyField id="branch_area" label="المنطقة" value={resolvedAreaName || 'اختر فرعًا أولاً لعرض منطقته.'} />}
-                {areaField}
-                {boxField}
+
+                {Boolean(resolvedAreaId) && (
+                    <FormField id="sub_area_id" label="منطقة 2" error={errors.sub_area_id}>
+                        {subAreasInArea.length === 0 ? (
+                            <p className="text-sm text-gray-500">لا توجد منطقة 2 في هذه المنطقة بعد.</p>
+                        ) : (
+                            <SearchableSelect
+                                id="sub_area_id"
+                                value={subAreaId}
+                                onChange={onSubAreaChange}
+                                options={subAreasInArea.map((subArea) => ({ value: String(subArea.id), label: subArea.name }))}
+                                placeholder={isEdit ? '— بلا منطقة 2 —' : '— اختر منطقة 2 —'}
+                                searchPlaceholder="بحث في المناطق..."
+                                emptyLabel="لا توجد مناطق مطابقة"
+                                active={Boolean(subAreaId)}
+                            />
+                        )}
+                    </FormField>
+                )}
+
+                {showMeterBoxField && (
+                    <FormField id="meter_box_id" label="الطبلون (الاسم والرقم)" error={errors.meter_box_id}>
+                        <SearchableSelect
+                            value={data.meter_box_id}
+                            onChange={onMeterBoxChange}
+                            options={selectedBox ? [selectedBox] : []}
+                            loadOptions={loadMeterBoxes}
+                            searchPlaceholder="بحث عن طبلون..."
+                            emptyLabel="لا توجد طبلونات مطابقة"
+                        />
+                    </FormField>
+                )}
             </div>
         </FormSection>
     );

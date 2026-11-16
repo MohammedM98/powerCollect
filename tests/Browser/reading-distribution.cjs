@@ -20,7 +20,7 @@ const { readFileSync } = require('node:fs');
         await page.goto('/login');
         await page.locator('#username').fill('owner');
         await page.locator('#password').fill('Strong-Pass-2026');
-        await page.getByRole('button', { name: 'تسجيل الدخول إلى النظام', exact: true }).click();
+        await page.getByRole('button', { name: 'تسجيل الدخول', exact: true }).click();
         await page.waitForURL((url) => !url.pathname.startsWith('/login'));
         await page.goto(`/reading-cycles/${fixture.cycleId}`);
         await page.getByRole('button', { name: 'يوم القراءة', exact: true }).click();

@@ -165,7 +165,6 @@ class BrandDesign
             'large' => 'Larger',
         ]],
         'bodyFont' => ['label' => 'Body font', 'options' => [
-            'zain' => 'Zain',
             'plex' => 'IBM Plex Sans Arabic',
             'alexandria' => 'Alexandria',
             'cairo' => 'Cairo',
@@ -175,7 +174,6 @@ class BrandDesign
         'headingFont' => ['label' => 'Heading font', 'options' => [
             'messiri' => 'El Messiri',
             'alexandria' => 'Alexandria',
-            'zain' => 'Zain',
             'plex' => 'IBM Plex Sans Arabic',
             'cairo' => 'Cairo',
             'tajawal' => 'Tajawal',
@@ -275,7 +273,7 @@ class BrandDesign
         'superpower' => [
             'label' => 'Charcoal super power',
             'description' => 'Solid cards in neutral charcoal greys, light grey in the light theme, a top bar with the section pages under it, tables inside solid panels, gradient buttons and filled fields.',
-            'design' => ['background' => 'graphite', 'neutral' => 'graphite', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'bodyFont' => 'zain', 'headingFont' => 'zain', 'rowHover' => 'tint', 'focusRing' => 'brand'],
+            'design' => ['background' => 'graphite', 'neutral' => 'graphite', 'tables' => 'boxed', 'tableToolbar' => 'plain', 'searchStyle' => 'filled', 'inputs' => 'filled', 'headingFont' => 'cairo', 'rowHover' => 'tint', 'focusRing' => 'brand'],
         ],
         'classic' => [
             'label' => 'Classic premium',

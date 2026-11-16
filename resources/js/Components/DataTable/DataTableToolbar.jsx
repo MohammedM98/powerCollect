@@ -65,12 +65,7 @@ export default function DataTableToolbar({
                         placeholder={placeholder}
                         className="block w-full py-2.5 pe-10 ps-10 text-sm"
                     />
-                    {search ? (
-                        <button type="button" className="absolute inset-y-0 end-0 grid w-10 place-items-center rounded-control text-gray-500 hover:text-gray-900"
-                            aria-label="مسح البحث" onClick={() => { onSearchChange(''); searchRef.current?.focus(); }}>
-                            <Icon name="close" className="h-4 w-4" />
-                        </button>
-                    ) : <span className="kbd pointer-events-none absolute inset-y-0 end-3 my-auto h-fit">/</span>}
+                    <span className="kbd pointer-events-none absolute inset-y-0 end-3 my-auto h-fit">/</span>
                 </div>
             ) : (
                 <div />

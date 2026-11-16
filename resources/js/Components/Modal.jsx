@@ -1,16 +1,9 @@
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 // The modals open right now, oldest first. Escape closes only the newest,
 // so a confirmation shown over a form doesn't close the form with it.
 const openModals = [];
-let appWasInert = false;
-
-function updateBackground(appRoot) {
-    const newest = openModals.at(-1);
-    if (appRoot) appRoot.inert = Boolean(newest) || appWasInert;
-    openModals.forEach((modal) => { modal.layer.inert = modal !== newest; });
-}
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -52,18 +45,15 @@ export default function Modal({ show, onClose, children, maxWidth = 'md', panelC
         onCloseRef.current = onClose;
     });
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (!show) {
             return;
         }
 
-        const modal = { layer: panelRef.current.parentElement };
-        const appRoot = document.getElementById('app');
-        if (openModals.length === 0) appWasInert = appRoot?.inert ?? false;
+        const modal = {};
         const opener = openerRef.current;
         const root = document.documentElement;
         openModals.push(modal);
-        updateBackground(appRoot);
         // The page behind stays still while any window is open (see app.css).
         root.dataset.modalOpen = '';
 
@@ -80,9 +70,7 @@ export default function Modal({ show, onClose, children, maxWidth = 'md', panelC
 
         // Focus moves inside, unless something in the window already took it (an autofocus field).
         if (panel && !panel.contains(document.activeElement)) {
-            const items = focusables(panel);
-            const field = items.find((item) => item.matches('input, textarea, select, [role="combobox"]'));
-            (panel.querySelector('[autofocus]') ?? field ?? items[0] ?? panel).focus({ preventScroll: true });
+            (panel.querySelector('[autofocus]') ?? focusables(panel)[0] ?? panel).focus({ preventScroll: true });
         }
 
         function onKeyDown(e) {
@@ -90,7 +78,7 @@ export default function Modal({ show, onClose, children, maxWidth = 'md', panelC
                 return;
             }
 
-            if (e.key === 'Escape' && !e.defaultPrevented) {
+            if (e.key === 'Escape') {
                 onCloseRef.current?.();
                 return;
             }
@@ -125,7 +113,6 @@ export default function Modal({ show, onClose, children, maxWidth = 'md', panelC
         return () => {
             document.removeEventListener('keydown', onKeyDown);
             openModals.splice(openModals.indexOf(modal), 1);
-            updateBackground(appRoot);
 
             if (openModals.length === 0) {
                 delete root.dataset.modalOpen;
@@ -143,19 +130,19 @@ export default function Modal({ show, onClose, children, maxWidth = 'md', panelC
     }
 
     // Four window sizes only, each with its use: small (420) for a field or two and confirmations,
-    // medium (640) for most forms, large (980) for a form beside a preview or two columns of fields,
-    // extra large (980) for long forms with an index and statements. The older names map onto them.
+    // medium (560) for most forms, large (820) for a form beside a preview or two columns of fields,
+    // extra large (1040) for long forms with an index and statements. The older names map onto them.
     const maxWidthClass = {
         sm: 'sm:max-w-[420px]',
         md: 'sm:max-w-[420px]',
-        lg: 'sm:max-w-[640px]',
-        xl: 'sm:max-w-[640px]',
-        '2xl': 'sm:max-w-[980px]',
-        '3xl': 'sm:max-w-[980px]',
-        '4xl': 'sm:max-w-[980px]',
-        '5xl': 'sm:max-w-[980px]',
-        '6xl': 'sm:max-w-[980px]',
-        '7xl': 'sm:max-w-[980px]',
+        lg: 'sm:max-w-[560px]',
+        xl: 'sm:max-w-[560px]',
+        '2xl': 'sm:max-w-[820px]',
+        '3xl': 'sm:max-w-[820px]',
+        '4xl': 'sm:max-w-[820px]',
+        '5xl': 'sm:max-w-[1040px]',
+        '6xl': 'sm:max-w-[1040px]',
+        '7xl': 'sm:max-w-[1040px]',
         full: 'sm:max-w-none',
     }[maxWidth];
 

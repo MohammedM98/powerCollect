@@ -1,4 +1,3 @@
-import MaMark from '@/Components/MaMark';
 import { SuperPowerMark } from '@/Components/SuperPowerMark';
 import { useBrand } from '@/hooks/useBrand';
 
@@ -13,11 +12,7 @@ export default function BrandLogo({ className = '', alt, markSize = 36, ...props
     const { main, light } = brand.logos;
     const label = alt ?? `شعار ${brand.name}`;
 
-    if (main === '/images/logo-ma.svg') {
-        return <MaMark className={className} size={markSize} label={label} />;
-    }
-
-    if (main === '/images/logo-superpower.svg') {
+    if (brand.animatedLogo) {
         return <SuperPowerMark size={markSize} label={label} />;
     }
 

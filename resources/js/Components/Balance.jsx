@@ -22,9 +22,8 @@ export default function Balance({ value, colored = true, chip = false, unit = '�
             <span title={BALANCE_HINTS[tone]} className={`inline-block whitespace-nowrap font-display tabular-nums ${colors} ${className}`}>
                 <bdi dir="ltr">
                     {'\u2066'}
-                    {unit === '₪' && '₪ '}
                     {signedBalance(value)}
-                    {unit && !wordUnit && unit !== '₪' && ` ${unit}`}
+                    {unit && !wordUnit && ` ${unit}`}
                     {'\u2069'}
                 </bdi>
                 {wordUnit && ` ${unit}`}

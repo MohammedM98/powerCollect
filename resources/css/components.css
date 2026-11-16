@@ -40,7 +40,7 @@
 .gl-card {
     background: rgb(var(--panel-bg));
     border: 1px solid var(--gl-line);
-    border-radius: calc(22px * var(--radius-scale, 1));
+    border-radius: calc(20px * var(--radius-scale, 1));
     box-shadow: var(--panel-shadow);
     color: var(--gl-ink);
 }
@@ -51,9 +51,9 @@
     flex-direction: column;
     gap: 14px;
     color: var(--gl-ink);
-    font-size: 15.5px;
-    line-height: 1.55;
-    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 500;
 }
 
 .gl-page :is(h1, h2, h3) {
@@ -1178,272 +1178,253 @@
     white-space: nowrap;
 }
 
-/* The walnut stage is exclusive to the guest screens. */
+/* ── The sign-in screen (Layouts/GuestLayout.jsx) ─────────────────────── */
+/* Two halves: the company's charcoal panel (its mark, the field of current, today's date on a meter) and the form. */
 .gl-auth {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
-    gap: clamp(28px, 5vw, 88px);
+    --auth-panel: 21 25 30;
     min-height: 100dvh;
-    padding: 28px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(380px, 46%);
+    background-color: rgb(var(--panel-bg));
     color: var(--gl-ink);
-    background: radial-gradient(70% 73% at 100% 0%, rgb(var(--brand-glow) / 0.13), transparent 74%), rgb(var(--panel-page));
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* In the dark theme the panel goes a shade deeper than the page, with a hairline edge. */
+.dark .gl-auth {
+    --auth-panel: 11 14 17;
+}
+
+.dark .gl-auth-panel {
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06);
+}
+
+.gl-auth-panel {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 32px;
+    margin: 12px;
+    margin-inline-end: 0;
+    padding: 36px 40px;
+    border-radius: 28px;
+    background:
+        radial-gradient(120% 80% at 85% 100%, rgb(var(--brand-solid) / 0.16), transparent 60%),
+        rgb(var(--auth-panel));
+    color: rgb(236 240 243);
+}
+
+.gl-auth-field {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.gl-auth-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: rgb(236 240 243);
+}
+
+.gl-auth-brand .gl-halo::before {
+    display: none;
+}
+
+.gl-auth-brand .gl-halo svg {
+    width: 52px;
+    height: 52px;
+}
+
+.gl-auth-brand b {
+    display: block;
+    font: 700 20px/1.25 var(--gl-head);
+}
+
+.gl-auth-brand span {
+    display: block;
+    color: rgb(236 240 243 / 0.55);
+    font-size: 12.5px;
+}
+
+.gl-auth-line {
+    max-width: 34ch;
+    margin: 0;
+    color: rgb(236 240 243 / 0.62);
+    font-size: 15px;
+}
+
+/* Today's date on digit wheels, the way a meter shows its reading. */
+.gl-meter {
+    align-self: center;
+    justify-self: start;
+    display: grid;
+    gap: 14px;
+    margin: 0;
+}
+
+.gl-meter-face {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px;
+    border-radius: 18px;
+    background: rgb(0 0 0 / 0.35);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), inset 0 0 0 1px rgb(255 255 255 / 0.07);
+}
+
+.gl-meter-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.gl-meter-dot {
+    width: 6px;
+    height: 6px;
+    margin-inline: 6px;
+    border-radius: 50%;
+    background: rgb(var(--brand-solid));
+}
+
+.gl-meter-wheel {
+    --wheel: clamp(46px, 5.4vw, 72px);
+    position: relative;
+    overflow: hidden;
+    width: calc(var(--wheel) * 0.72);
+    height: var(--wheel);
+    border-radius: 10px;
+    background: linear-gradient(rgb(255 255 255 / 0.02), rgb(255 255 255 / 0.08) 50%, rgb(255 255 255 / 0.02));
+}
+
+/* The wheel's curve: the digits fade at its top and bottom edges. */
+.gl-meter-wheel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgb(var(--auth-panel) / 0.85), transparent 28%, transparent 72%, rgb(var(--auth-panel) / 0.85));
+}
+
+.gl-meter-strip {
+    display: grid;
+    transform: translateY(calc(var(--digit) * -10%));
+    animation: gl-meter-turn 1.4s cubic-bezier(0.2, 0.8, 0.15, 1) both;
+}
+
+.gl-meter-strip span {
+    display: grid;
+    place-items: center;
+    height: var(--wheel);
+    color: rgb(244 247 249);
+    font: 600 calc(var(--wheel) * 0.6) / 1 Alexandria, var(--gl-head), sans-serif;
+    font-variant-numeric: tabular-nums;
+}
+
+.gl-meter-group:last-child .gl-meter-strip span {
+    color: rgb(var(--brand-solid));
+}
+
+@keyframes gl-meter-turn {
+    from {
+        transform: translateY(0);
+    }
+}
+
+.gl-meter figcaption {
+    color: rgb(236 240 243 / 0.55);
+    font-size: 13px;
 }
 
 .gl-auth-main {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: 30px;
-    padding: 20px clamp(16px, 3vw, 52px);
-}
-
-.gl-auth-top,
-.gl-auth-mobile-brand {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    color: var(--gl-muted);
-}
-
-.gl-auth-mobile-brand > span {
+    position: relative;
     display: grid;
-    width: 42px;
-    height: 42px;
-    place-items: center;
-    border-radius: 13px;
-    background: rgb(var(--panel-bg));
-    box-shadow: inset 0 0 0 1px var(--gl-line), var(--panel-shadow);
+    grid-template-rows: 1fr auto;
+    justify-items: center;
+    padding: 32px max(24px, env(safe-area-inset-left, 0px)) 20px;
+}
+
+.gl-auth-corner {
+    position: absolute;
+    top: calc(20px + env(safe-area-inset-top, 0px));
+    inset-inline-end: 20px;
+    z-index: 2;
 }
 
 .gl-auth-card {
-    display: flex;
-    width: min(100%, 440px);
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-    gap: 22px;
     align-self: center;
+    width: min(380px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    animation: gl-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s both;
 }
 
 .gl-auth-head h1 {
-    margin: 0 0 10px;
-    font: 900 clamp(40px, 4vw, 62px) / 1.02 var(--gl-head);
-}
-
-.gl-auth-head h1 span {
-    display: block;
-    color: rgb(var(--brand-600));
-}
-
-.dark .gl-auth-head h1 span {
-    background: linear-gradient(180deg, #ed945f, #c2531f);
-    background-clip: text;
-    color: transparent;
+    margin: 0 0 6px;
+    font: 700 28px/1.25 var(--gl-head);
 }
 
 .gl-auth-head p {
     margin: 0;
     color: var(--gl-muted);
-    font-size: 17px;
-    line-height: 1.35;
 }
 
 .gl-auth-foot {
-    align-self: center;
+    width: min(380px, 100%);
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
     color: var(--gl-faint);
-    font-size: 13px;
-    text-align: center;
+    font-size: 12px;
 }
 
-.gl-auth-input {
-    position: relative;
-    margin-top: 4px;
-}
+@media (max-width: 860px) {
+    .gl-auth {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto 1fr;
+    }
 
-.gl-auth-input > svg {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 14px;
-    width: 18px;
-    height: 18px;
-    color: var(--gl-faint);
-    pointer-events: none;
-    translate: 0 -50%;
-}
+    .gl-auth-panel {
+        margin: 10px 10px 0;
+        padding: 20px;
+        gap: 18px;
+        border-radius: 22px;
+        grid-template-rows: auto auto;
+    }
 
-.gl-auth-input input {
-    width: 100%;
-    min-height: 52px;
-    padding-right: 42px;
-    border-radius: 14px;
-    text-align: right;
-}
+    .gl-auth-line {
+        display: none;
+    }
 
-.gl-auth-remember {
-    width: 40px;
-    height: 22px;
-    appearance: none;
-    border: 1px solid var(--gl-line-strong);
-    border-radius: 16px;
-    background: rgb(var(--panel-field));
-    background-image: radial-gradient(circle at 72% 50%, rgb(var(--gray-500)) 0 7px, transparent 8px);
-}
+    .gl-meter-wheel {
+        --wheel: 40px;
+    }
 
-.gl-auth-remember:checked,
-.gl-auth-remember:checked:hover,
-.gl-auth-remember:checked:focus {
-    background: radial-gradient(circle at 27% 50%, #fff 0 7px, transparent 8px), var(--ma-action);
-}
+    .gl-auth-corner {
+        top: 24px;
+    }
 
-.gl-auth-forgot {
-    min-height: 40px;
-    color: rgb(var(--gl-brand));
-    font-weight: 700;
-}
+    .gl-auth-main {
+        padding-top: 28px;
+    }
 
-.gl-auth-forgot:hover { text-decoration: underline; }
-
-.gl-auth-stage {
-    display: grid;
-    overflow: hidden;
-    min-height: min(710px, calc(100dvh - 56px));
-    place-items: center;
-    border-radius: 34px;
-    background:
-        radial-gradient(ellipse at 50% 24%, rgb(222 149 85 / .17), transparent 64%),
-        repeating-linear-gradient(92deg, transparent 0 11px, rgb(25 12 6 / .15) 12px 13px, rgb(255 203 155 / .05) 15px 16px, transparent 18px 31px),
-        repeating-linear-gradient(0deg, transparent 0 4px, rgb(255 208 155 / .035) 5px 6px, transparent 7px 13px),
-        linear-gradient(100deg, #3b2417, #755035 26%, #4b3020 49%, #6b462c 74%, #352216);
-    color: #fff4e7;
-    box-shadow: inset 0 0 0 1px rgb(255 213 166 / .22), inset 0 -28px 70px rgb(20 8 2 / .55), var(--panel-shadow);
-}
-
-.gl-auth-emblem {
-    --arc-radius: clamp(140px, 15.6vw, 235px);
-    position: relative;
-    display: grid;
-    width: 100%;
-    justify-items: center;
-    gap: 24px;
-    padding: 16px;
-    isolation: isolate;
-    text-align: center;
-}
-
-.gl-auth-arc {
-    position: absolute;
-    z-index: -1;
-    inset-block-start: 32%;
-    inset-inline-start: 50%;
-    pointer-events: none;
-}
-
-.gl-auth-arc i {
-    position: absolute;
-    inset: 0 auto auto 0;
-    width: clamp(11px, 1.3vw, 19px);
-    height: clamp(24px, 3.25vw, 48px);
-    border: 1px solid rgb(255 225 192 / .18);
-    border-radius: 24px;
-    background: linear-gradient(#f4b27f, #b84e20 56%, #733411);
-    box-shadow: inset 0 1px 3px rgb(255 226 194 / .32), 0 0 14px rgb(240 140 74 / .4);
-    transform: translate(-50%, -50%) rotate(var(--angle)) translateY(calc(0px - var(--arc-radius)));
-    opacity: .4;
-    animation: gl-auth-arc-wave 4s ease-in-out infinite both;
-    animation-delay: calc(var(--i) * 65ms);
-}
-
-@keyframes gl-auth-arc-wave {
-    0%, 55%, 100% { opacity: .25; scale: .94; }
-    20% { opacity: 1; scale: 1.04; }
-}
-
-.gl-auth-replay,
-.gl-auth-custom-logo {
-    display: block;
-    width: min(340px, 65%);
-}
-
-.gl-auth-replay .gl-ma-mark { width: 100%; }
-
-.gl-auth-lockup {
-    display: grid;
-    gap: 6px;
-    font: 800 clamp(15px, 1.45vw, 22px) / 1.4 Alexandria, Zain, sans-serif;
-    animation: gl-auth-lockup-in .6s 1.15s var(--ma-spring) both;
-}
-
-.gl-auth-lockup span {
-    color: #ffc59a;
-    font-size: .78em;
-}
-
-@keyframes gl-auth-lockup-in {
-    from { opacity: 0; translate: 12px 0; }
-}
-
-.gl-auth-error { animation: gl-auth-error .27s ease-out; }
-
-@keyframes gl-auth-error {
-    30% { translate: -4px 0; }
-    60% { translate: 4px 0; }
-}
-
-.gl-ma-mark-draw .gl-ma-mark-part {
-    fill-opacity: 1;
-    stroke: #fff1d9;
-    stroke-width: 1.3;
-    stroke-dasharray: 1;
-    stroke-opacity: 0;
-    animation: gl-ma-draw 1.2s ease-out both;
-}
-
-.gl-ma-mark-draw .gl-ma-mark-part-1 { stroke: #ff9c56; animation-delay: .18s; }
-.gl-ma-mark-draw .gl-ma-mark-part-2 { animation-delay: .55s; }
-
-@keyframes gl-ma-draw {
-    0% { stroke-dashoffset: 1; fill-opacity: 0; stroke-opacity: 1; }
-    72% { stroke-dashoffset: 0; fill-opacity: 0; stroke-opacity: 1; }
-    100% { stroke-dashoffset: 0; fill-opacity: 1; stroke-opacity: 0; }
-}
-
-.gl-ma-mark-spark {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: gl-ma-spark .4s 1.55s var(--ma-spring) both;
-}
-
-@keyframes gl-ma-spark {
-    0%, 100% { opacity: 0; scale: 0; }
-    40% { opacity: 1; scale: 1.6; }
-}
-
-.gl-ma-mark-shine { animation: gl-ma-shine 7s 1.4s ease-in-out infinite; }
-
-@keyframes gl-ma-shine {
-    0% { translate: 0; opacity: 0; }
-    5% { opacity: .45; }
-    23%, 100% { translate: 280px; opacity: 0; }
-}
-
-@media (max-width: 1099px) {
-    .gl-auth { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 12px; }
-    .gl-auth-main { padding: 10px clamp(6px, 4vw, 30px) 18px; }
-    .gl-auth-stage { min-height: 280px; border-radius: 22px; padding-top: 54px; }
-    .gl-auth-emblem { --arc-radius: 95px; gap: 14px; }
-    .gl-auth-arc i { width: 8px; height: 18px; }
-    .gl-auth-replay, .gl-auth-custom-logo { width: min(148px, 55%); }
+    .gl-auth-foot {
+        margin-top: 32px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .gl-auth-arc i,
-    .gl-auth-lockup,
-    .gl-auth-error,
-    .gl-ma-mark-draw .gl-ma-mark-part,
-    .gl-ma-mark-spark,
-    .gl-ma-mark-shine { animation: none; }
-    .gl-ma-mark-spark, .gl-ma-mark-shine { display: none; }
+    .gl-meter-strip,
+    .gl-auth-card {
+        animation: none;
+    }
 }
 
 .gl-spin {
@@ -2840,740 +2821,4 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     color: rgb(var(--gray-700));
     font-size: 13.5px;
     font-weight: 600;
-}
-
-/* MA application shell */
-.gl-app-shell {
-    --tn-gutter: 0px;
-    display: grid;
-    grid-template-columns: 214px minmax(0, 1fr);
-    align-items: start;
-    gap: 22px;
-    padding: 22px;
-}
-
-.gl-app-shell[data-sidebar-collapsed] {
-    grid-template-columns: 84px minmax(0, 1fr);
-}
-
-.gl-shell-content {
-    grid-column: 2;
-}
-
-.gl-sidebar,
-.tn-drawer .gl-sidebar-surface {
-    color: var(--gl-ink);
-    background: var(--ma-sidebar);
-    border: 1px solid var(--gl-line);
-    box-shadow: inset 0 1px 0 rgb(var(--panel-highlight)), var(--panel-shadow);
-}
-
-.gl-sidebar {
-    position: sticky;
-    top: 22px;
-    flex-direction: column;
-    gap: 14px;
-    height: calc(100dvh - 44px);
-    min-height: 0;
-    padding: 14px 10px 10px;
-    border-radius: 22px;
-}
-
-.gl-sidebar-brand {
-    display: flex;
-    min-width: 0;
-    min-height: 58px;
-    flex: none;
-    align-items: center;
-    gap: 10px;
-    padding-inline: 6px;
-}
-
-.gl-sidebar-identity {
-    min-width: 0;
-    padding-inline-start: 10px;
-    border-inline-start: 1px solid var(--gl-line-strong);
-    font-family: Alexandria, Zain, sans-serif;
-    line-height: 1.45;
-}
-
-.gl-sidebar-identity b {
-    display: block;
-    font-size: 12px;
-    font-weight: 800;
-}
-
-.gl-sidebar-identity small {
-    display: block;
-    margin-top: 4px;
-    color: rgb(var(--gl-brand));
-    font-size: 10px;
-    font-weight: 700;
-}
-
-.gl-sidebar-links {
-    position: relative;
-    display: flex;
-    min-height: 0;
-    flex: 1;
-    flex-direction: column;
-    gap: 3px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-}
-
-.gl-sidebar-entry {
-    flex: none;
-}
-
-@keyframes gl-sidebar-in {
-    from { opacity: 0; translate: 10px; }
-}
-
-.gl-sidebar-glide {
-    position: absolute;
-    inset: 0 0 auto;
-    height: 46px;
-    pointer-events: none;
-    border-radius: 12px;
-    background: var(--ma-hover);
-    opacity: 0;
-    transition: transform .32s var(--ma-spring), opacity .15s;
-}
-
-.gl-sidebar-link {
-    position: relative;
-    display: flex;
-    width: 100%;
-    min-height: 46px;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 10px;
-    overflow: hidden;
-    border-radius: 12px;
-    color: rgb(var(--gray-600));
-    font-size: 17px;
-    font-weight: 800;
-    text-align: start;
-}
-
-.gl-sidebar-link:hover,
-.gl-sidebar-link:focus-visible {
-    background: var(--ma-hover);
-    color: var(--gl-ink);
-}
-
-.gl-sidebar-links:has(.gl-sidebar-glide[style]) .gl-sidebar-link:hover {
-    background: transparent;
-}
-
-.gl-sidebar-link[aria-current] {
-    background: var(--ma-hover);
-    color: var(--gl-ink);
-}
-
-.gl-sidebar-link[aria-current] > svg {
-    color: rgb(var(--gl-brand));
-}
-
-.gl-sidebar-link .tn-badge,
-.gl-section-tabs .tn-badge {
-    margin-inline-start: auto;
-    background: var(--ma-badge);
-    color: var(--ma-badge-ink);
-}
-
-.gl-sidebar-tip {
-    display: none;
-}
-
-.gl-sidebar-footer {
-    display: grid;
-    gap: 4px;
-    padding-top: 8px;
-    border-top: 1px solid var(--gl-line);
-}
-
-.gl-sidebar-online {
-    display: flex;
-    min-height: 28px;
-    align-items: center;
-    gap: 9px;
-    padding-inline: 10px;
-    color: var(--gl-muted);
-}
-
-.gl-sidebar-online i {
-    width: 8px;
-    height: 8px;
-    flex: none;
-    background: var(--gl-ok);
-    border-radius: 50%;
-    box-shadow: 0 0 0 4px rgb(var(--panel-success) / 0.1);
-}
-
-.gl-sidebar-footer .gl-sidebar-link {
-    min-height: 40px;
-    font-size: 15px;
-}
-
-.gl-sidebar-logout,
-.gl-sidebar-logout:hover {
-    color: var(--gl-bad);
-    background: rgb(var(--panel-danger) / 0.09);
-}
-
-.gl-sidebar-collapse {
-    position: absolute;
-    inset-block-start: 33px;
-    inset-inline-end: -14px;
-    display: grid;
-    width: 28px;
-    height: 28px;
-    place-items: center;
-    border: 1px solid var(--gl-line-strong);
-    border-radius: 50%;
-    background: rgb(var(--panel-bg));
-    color: var(--gl-muted);
-    box-shadow: var(--panel-shadow);
-}
-
-[data-sidebar-collapsed] .gl-sidebar :is(.gl-sidebar-identity, .gl-sidebar-label, .tn-badge) {
-    display: none;
-}
-
-[data-sidebar-collapsed] .gl-sidebar :is(.gl-sidebar-link, .gl-sidebar-brand, .gl-sidebar-online) {
-    justify-content: center;
-    padding-inline: 0;
-}
-
-@media (min-height: 810px) and (hover: hover) {
-    [data-sidebar-collapsed] .gl-sidebar-links { overflow: visible; }
-    [data-sidebar-collapsed] .gl-sidebar-entry { position: relative; }
-
-    [data-sidebar-collapsed] .gl-sidebar-entry:is(:hover, :focus-within) .gl-sidebar-tip {
-        position: absolute;
-        z-index: 42;
-        inset-block-start: 0;
-        inset-inline-start: 100%;
-        display: grid;
-        width: max-content;
-        min-width: 160px;
-        max-width: 220px;
-        gap: 4px;
-        padding: 10px;
-        border: 1px solid var(--gl-line);
-        border-radius: 12px;
-        background: rgb(var(--panel-bg));
-        box-shadow: var(--panel-shadow);
-    }
-
-    .gl-sidebar-tip a {
-        padding: 6px 8px;
-        border-radius: 8px;
-    }
-
-    .gl-sidebar-tip a:hover { background: var(--ma-hover); }
-}
-
-.gl-shell-header {
-    position: sticky;
-    top: 12px;
-    z-index: 40;
-    display: grid;
-    gap: 9px;
-    min-width: 0;
-}
-
-html:has(.gl-shell-header[data-subnav]) {
-    --tn-sticky-top: 156px;
-    scroll-padding-top: 156px;
-}
-
-.gl-topbar,
-.gl-section-bar {
-    display: flex;
-    min-width: 0;
-    align-items: center;
-    gap: 12px;
-    border: 1px solid var(--gl-line);
-    border-radius: 20px;
-    background: rgb(var(--panel-bg) / var(--panel-opacity));
-    box-shadow: inset 0 1px 0 rgb(var(--panel-highlight)), var(--panel-shadow);
-    backdrop-filter: var(--panel-frost);
-}
-
-.gl-topbar {
-    min-height: 64px;
-    padding: 8px 12px;
-}
-
-.gl-top-greeting {
-    flex: 1;
-    line-height: 1.1;
-}
-
-.gl-top-greeting strong { font-size: 21px; font-weight: 800; }
-.gl-top-greeting small { margin-top: 4px; font-size: 13px; }
-
-.gl-top-tools,
-.gl-top-toggles {
-    display: flex;
-    min-width: 0;
-    flex: none;
-    align-items: center;
-    gap: 6px;
-}
-
-.gl-top-toggles {
-    padding: 2px;
-    border: 1px solid var(--gl-line);
-    border-radius: 40px;
-    background: rgb(var(--panel-field));
-}
-
-.gl-topbar .tn-tool {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-
-.gl-topbar .tn-search {
-    min-width: 200px;
-    height: 44px;
-    border: 1px solid var(--gl-line);
-    background: rgb(var(--panel-field));
-}
-
-.gl-topbar .tn-avatar {
-    background: var(--ma-action);
-    color: white;
-    box-shadow: none;
-}
-
-.gl-topbar .gl-mobile-menu { display: none; }
-.gl-topbar .gl-quick-trigger { min-height: 44px; }
-.gl-topbar .gl-quick-trigger span { white-space: nowrap; }
-
-.gl-section-bar {
-    min-height: 62px;
-    padding: 10px 10px 10px 12px;
-    gap: 18px;
-}
-
-.gl-section-title {
-    display: flex;
-    flex: 0 1 175px;
-    min-width: 120px;
-    align-items: center;
-    gap: 8px;
-    line-height: 1.15;
-}
-
-.gl-section-title strong {
-    font-size: 17px;
-    font-weight: 800;
-}
-
-.gl-section-title small { font-size: 12px; margin-top: 3px; }
-
-.gl-section-icon {
-    display: grid;
-    width: 40px;
-    height: 40px;
-    flex: none;
-    place-items: center;
-    border-radius: 12px;
-    color: #ee7740;
-    background: var(--ma-selected);
-}
-
-/* The scroll strip owns its tab styles, including the active foreground. */
-.gl-section-tabs {
-    position: relative;
-    min-width: 0;
-    flex: 1;
-    padding: 4px;
-    border-radius: 15px;
-    background: rgb(var(--panel-field));
-    box-shadow: inset 0 1px 3px rgb(0 0 0 / .1);
-    line-height: 1.2;
-}
-
-.gl-section-tabs[data-fade='end'] {
-    mask-image: linear-gradient(to right, transparent, #000 14px);
-}
-
-.gl-section-tabs[data-fade='start'] {
-    mask-image: linear-gradient(to left, transparent, #000 14px);
-}
-
-.gl-section-tabs[data-fade='both'] {
-    mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 14px), transparent);
-}
-
-.gl-section-tabs a {
-    position: relative;
-    z-index: 1;
-    display: inline-flex;
-    min-height: 42px;
-    flex: none;
-    align-items: center;
-    gap: 8px;
-    padding-inline: 16px;
-    border-radius: 12px;
-    color: var(--gl-muted);
-    font-size: 14.5px;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.gl-section-tabs a:hover {
-    background: var(--ma-hover);
-    color: var(--gl-ink);
-}
-
-.gl-section-tabs a > svg {
-    opacity: .8;
-}
-
-.gl-section-tabs a:focus-visible {
-    outline-offset: -2px;
-}
-
-.gl-section-tabs a[aria-selected='true'] {
-    color: white;
-    background: var(--ma-selected);
-}
-
-.gl-section-tabs[data-indicator] a[aria-selected='true'] {
-    background: transparent;
-}
-
-.gl-section-tabs .tn-badge {
-    min-width: 19px;
-    border-radius: 100px;
-    padding: 0 5px;
-    font-size: 12px;
-    line-height: 19px;
-    text-align: center;
-}
-
-.gl-section-indicator {
-    position: absolute;
-    z-index: 0;
-    left: 0;
-    inset-block: 4px;
-    pointer-events: none;
-    overflow: hidden;
-    border-radius: 12px;
-    background: var(--ma-selected);
-    transition: transform .35s var(--ma-spring), width .35s var(--ma-spring);
-}
-
-.gl-section-indicator:not([style]) { display: none; }
-
-.gl-section-action {
-    display: flex;
-    min-height: 40px;
-    flex: none;
-    align-items: center;
-    gap: 5px;
-    padding-inline: 10px;
-    border: 1px dashed rgb(var(--brand-glow) / .65);
-    border-radius: 10px;
-    font-weight: 800;
-}
-
-.gl-section-action:hover { background: var(--ma-hover); }
-
-:where(.gl-app-shell, .gl-mobile-drawer, .gl-auth, .modal-sheet-panel, .tn-popover) :focus-visible {
-    outline: 2px solid var(--ma-selection-line);
-    outline-offset: 2px;
-}
-
-/* One selection treatment for navigational and form choices. */
-:where(.gl-sidebar-link[aria-current], .gl-section-indicator, .gl-chip:is([aria-pressed='true'], [aria-checked='true']), .gl-seg button[aria-pressed='true'], .gl-tabs :is(button[aria-selected='true'], a[aria-current='page']), .tn-palette [aria-selected='true'], .modal-sheet-panel [role='option'][aria-selected='true'], .gl-selected) {
-    position: relative;
-    overflow: hidden;
-}
-
-.gl-section-indicator { position: absolute; }
-
-:where(.gl-sidebar-link[aria-current], .gl-section-indicator, .gl-chip:is([aria-pressed='true'], [aria-checked='true']), .gl-seg button[aria-pressed='true'], .gl-tabs :is(button[aria-selected='true'], a[aria-current='page']), .tn-palette [aria-selected='true'], .modal-sheet-panel [role='option'][aria-selected='true'], .gl-selected)::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 0;
-    height: 3px;
-    pointer-events: none;
-    border-radius: 3px 3px 0 0;
-    background: linear-gradient(105deg, transparent 30%, #ffddbd 49%, transparent 68%) 170% 0 / 45% 100% no-repeat, var(--ma-selection-line);
-    box-shadow: 0 -1px 8px rgb(var(--brand-glow) / 0.6);
-    animation: gl-selection-shine 2.8s linear infinite;
-}
-
-@keyframes gl-selection-shine {
-    0%, 20% { background-position: 170% 0; }
-    68%, 100% { background-position: -70% 0; }
-}
-
-.gl-chip:is([aria-pressed='true'], [aria-checked='true']),
-.gl-seg button[aria-pressed='true'],
-.gl-tabs :is(button[aria-selected='true'], .gl-tab[aria-current='page']) {
-    background: var(--ma-selected);
-    color: white;
-    border-color: transparent;
-}
-
-@media (max-width: 1379px) {
-    .gl-top-search-key { display: none; }
-}
-
-@media (max-width: 1120px) {
-    .gl-topbar .tn-search { width: 42px; min-width: 42px; justify-content: center; padding: 0; }
-    .gl-top-search-text, .gl-topbar .tn-account-text { display: none; }
-}
-
-@media (max-width: 899px) {
-    .gl-app-shell,
-    .gl-app-shell[data-sidebar-collapsed] {
-        --tn-gutter: 0px;
-        display: block;
-        padding: 12px;
-    }
-
-    .gl-shell-header { top: 5px; }
-    .gl-topbar { min-height: 54px; gap: 6px; padding: 4px 7px; }
-    .gl-topbar .gl-mobile-menu { display: inline-flex; }
-    .gl-top-tools { margin-inline-start: auto; gap: 4px; }
-    .gl-top-toggles { gap: 0; }
-    .gl-topbar .gl-style-toggle, .gl-top-branch { display: none; }
-    .gl-topbar .tn-search { width: 40px; min-width: 40px; }
-    .gl-topbar .tn-chevron { display: none; }
-    .gl-topbar .tn-account { min-width: 40px; padding: 0; }
-    .gl-section-title { display: none; }
-    .gl-section-bar { min-height: 54px; gap: 10px; padding: 8px; }
-}
-
-@media (max-width: 599px) {
-    .gl-topbar .gl-quick-trigger { min-width: 40px; padding-inline: 9px; }
-    .gl-topbar .gl-quick-trigger > :not(svg:first-child) { display: none; }
-    .gl-section-action { width: 40px; justify-content: center; padding: 0; }
-    .gl-section-action span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-}
-
-@media (max-width: 419px) {
-    .gl-top-greeting { display: none; }
-}
-
-.gl-mobile-drawer .gl-sidebar-surface {
-    gap: 12px;
-    width: min(318px, 90vw);
-    padding: 12px;
-}
-
-.gl-theme-reveal::view-transition-old(root),
-.gl-theme-reveal::view-transition-new(root) {
-    animation: none;
-    mix-blend-mode: normal;
-}
-
-.gl-theme-reveal::view-transition-new(root) { z-index: 1; }
-
-.gl-ma-mark {
-    display: block;
-    height: auto;
-    overflow: visible;
-}
-
-.gl-ma-mark-part { fill: #2a2d34; }
-.gl-ma-mark-part-1 { fill: #e2642a; }
-.dark .gl-ma-mark-part,
-.gl-auth-stage .gl-ma-mark-part { fill: white; }
-.dark .gl-ma-mark-part-1,
-.gl-auth-stage .gl-ma-mark-part-1 { fill: #ee7740; }
-
-@media (prefers-reduced-motion: reduce) {
-    .gl-sidebar-entry,
-    .gl-section-indicator,
-    .gl-sidebar-glide {
-        animation: none;
-        transition: none;
-    }
-
-    :where(.gl-sidebar-link[aria-current], .gl-section-indicator, .gl-chip, .gl-seg button, .gl-tabs :is(button, a), .tn-palette [aria-selected], .modal-sheet-panel [role='option'], .gl-selected)::after {
-        animation: none;
-    }
-}
-
-/* Creation sheets and subscriber preview */
-.gl-resource-create-dialog {
-    --control-h: 48px;
-    background: linear-gradient(180deg, rgb(var(--panel-bg)), rgb(var(--panel-bg) / .92));
-}
-
-.gl-resource-create-dialog > .gl-dialog-head {
-    align-items: center;
-    border-bottom: 1px solid var(--gl-line);
-    gap: 14px;
-    padding-block: 22px 18px;
-}
-
-.gl-resource-create-dialog .gl-dialog-icon {
-    background: var(--ma-action);
-    color: #fff;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / .24), 0 8px 18px -9px rgb(var(--brand-glow) / .68);
-}
-
-.gl-resource-create-dialog .gl-dialog-icon > svg {
-    width: 24px;
-    height: 24px;
-}
-
-.gl-resource-create-dialog .gl-dialog-head > button {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-}
-
-.gl-resource-create-dialog .gl-dialog-head .gl-sub {
-    line-height: 1.45;
-}
-
-.gl-resource-create-dialog > .gl-resource-create-body {
-    padding-block: 22px;
-}
-
-.gl-resource-create-dialog > .gl-dialog-foot {
-    border-top: 1px solid var(--gl-line);
-    gap: 10px;
-    padding-block: 14px;
-}
-
-.gl-resource-create-dialog .gl-dialog-foot > .gl-btn {
-    min-height: 42px;
-}
-
-.gl-resource-create-dialog .gl-dialog-foot > .gl-ghost {
-    border: 1px solid var(--gl-line);
-    background: rgb(var(--panel-field));
-}
-
-/* Solid, inset controls against the sheet surface, with a visible field outline in light mode. */
-.gl-resource-create :is(input:not([type='checkbox'], [type='radio'], [aria-hidden]), select, textarea, button[id][aria-expanded]) {
-    border-color: var(--gl-line-strong);
-    background: rgb(var(--panel-field));
-    font-size: 14px;
-}
-
-.gl-resource-create :is(input:not([aria-hidden]), select, textarea, button[id][aria-expanded]):is(:focus-visible, [aria-expanded='true']) {
-    border-color: var(--ma-selection-line);
-}
-
-.gl-resource-create :is([aria-invalid='true'], button[data-invalid]) {
-    border-color: rgb(var(--danger-500));
-}
-
-.gl-resource-create label[for] {
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.gl-resource-create textarea {
-    min-height: 94px;
-}
-
-.gl-subscriber-additional {
-    border-top: 1px solid var(--gl-line);
-}
-
-.gl-subscriber-additional > summary {
-    width: fit-content;
-    min-height: 40px;
-    padding-block: 9px 4px;
-    color: var(--gl-muted);
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.gl-subscriber-additional > summary:hover {
-    color: var(--gl-ink);
-}
-
-.gl-subscriber-preview {
-    border: 1px solid var(--gl-line);
-    border-radius: 20px;
-    background: rgb(var(--panel-field));
-    box-shadow: inset 0 1px 3px rgb(0 0 0 / .08);
-}
-
-.gl-subscriber-preview-tag {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 100px;
-    background: var(--ma-badge);
-    color: var(--ma-badge-ink);
-    font-size: 11.5px;
-    font-weight: 700;
-}
-
-.gl-subscriber-preview-avatar {
-    border-radius: 20px;
-    background: var(--ma-action);
-    color: #fff;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / .24), 0 8px 18px -9px rgb(var(--brand-glow) / .68);
-}
-
-.gl-subscriber-preview-details > div {
-    display: grid;
-    min-width: 0;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
-    gap: 8px 12px;
-    border-top: 1px solid var(--gl-line);
-    padding-block: 8px;
-    font-size: 13px;
-}
-
-.gl-subscriber-preview-details dt {
-    color: var(--gl-muted);
-}
-
-.gl-subscriber-preview-details dd {
-    justify-self: end;
-    min-width: 0;
-    font-weight: 700;
-    overflow-wrap: anywhere;
-}
-
-.gl-subscriber-preview-details dd[dir='ltr'] {
-    font-variant-numeric: tabular-nums;
-}
-
-@media (max-width: 639px) {
-    .gl-resource-create-dialog > .gl-dialog-head {
-        padding: 18px 18px 14px;
-    }
-
-    .gl-resource-create-dialog > .gl-resource-create-body {
-        padding: 18px;
-    }
-
-    .gl-resource-create-dialog > .gl-dialog-foot {
-        padding: 12px 18px;
-        gap: 6px;
-    }
-
-    .gl-resource-create-dialog > .gl-dialog-foot > :is(kbd, span.flex-1) {
-        display: none;
-    }
-
-    .gl-resource-create-dialog > .gl-dialog-foot > .gl-btn {
-        min-width: 0;
-        padding-inline: 10px;
-    }
-
-    .gl-resource-create-dialog > .gl-dialog-foot > .gl-btn:last-child {
-        flex: 1 1 auto;
-    }
 }

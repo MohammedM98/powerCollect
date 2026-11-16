@@ -25,10 +25,6 @@ html {
     scrollbar-gutter: stable;
 }
 
-@media (max-width: 639px) {
-    html { scrollbar-gutter: auto; }
-}
-
 html:has(.tn-header[data-subnav]) {
     --tn-sticky-top: calc(var(--tn-bar-rest-height) + var(--tn-subnav-height) + 1.5rem);
     scroll-padding-top: 170px;

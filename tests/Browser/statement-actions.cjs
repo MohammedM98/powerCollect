@@ -13,7 +13,7 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await page.goto('/login');
         await page.locator('#username').fill('owner');
         await page.locator('#password').fill('Strong-Pass-2026');
-        await page.getByRole('button', { name: 'تسجيل الدخول إلى النظام', exact: true }).click();
+        await page.getByRole('button', { name: 'تسجيل الدخول', exact: true }).click();
         await page.waitForURL((url) => !url.pathname.startsWith('/login'));
         await page.goto(`/subscriptions?statement=${fixture.credited}`);
         const statement = page.getByRole('dialog', { name: /^كشف حساب/ });

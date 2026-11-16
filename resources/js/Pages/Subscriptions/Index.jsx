@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import AddButton from '@/Components/AddButton';
 import { BranchFilterBanner, splitBranchFilter } from '@/Components/BranchBanner';
@@ -23,7 +23,6 @@ import SubscriptionWindows from './SubscriptionWindows';
 import SubscriptionsTable from './SubscriptionsTable';
 import { useSubscriptionSelection } from './useSubscriptionSelection';
 import { needsPermission } from '@/lib/permissions';
-import { queryValue, urlWithout } from '@/lib/pageUrl';
 import { statementHeader } from '@/lib/accountStatement';
 
 /**
@@ -60,14 +59,7 @@ export default function Index({
     // Looked up from the current page props (not kept as a copy) so the
     // statement refreshes after a reading is saved from inside it.
     const viewingSubscription = subscriptions.data.find((subscription) => subscription.id === viewingSubscriptionId) ?? null;
-    const { url: modalUrl } = usePage();
-    const createFromAddress = queryValue(modalUrl, 'create') === '1' && canCreate;
     const [creating, setCreating] = useState(false);
-
-    function closeCreate() {
-        setCreating(false);
-        if (createFromAddress) router.replace({ url: urlWithout(modalUrl, 'create'), preserveState: true, preserveScroll: true });
-    }
     const [subscriptionSource, setSubscriptionSource] = useState(null);
     const [personalDetailsSubscription, setPersonalDetailsSubscription] = useState(null);
     const [readingSubscription, setReadingSubscription] = useState(null);
@@ -88,15 +80,6 @@ export default function Index({
     // Whoever sees every branch picks the branch in the banner above the table, not among the other filters; clearing those keeps it.
     const branchFilter = splitBranchFilter(branchScope, filterOptions, standardFilterValues);
     const keptOnClear = [...(showArchived ? ['archived'] : []), ...branchFilter.kept];
-    function clearSubscriptionFilters() {
-        if (keptOnClear.length) {
-            setSearch('');
-            setFilters(Object.fromEntries(Object.keys(filterValues).filter((key) => !keptOnClear.includes(key)).map((key) => [key, ''])));
-        } else {
-            clearFilters();
-        }
-    }
-
     const canSelect = !showArchived && (bulkActions.minimumCharge || bulkActions.status || bulkActions.message || bulkActions.meterBox);
     const {
         selectedIds,
@@ -285,13 +268,6 @@ export default function Index({
 
             {canViewArchived && <div className="mb-5 flex flex-wrap items-end gap-2"><UnderlineTabs label="قائمة الاشتراكات" value={showArchived ? 'archived' : 'current'} options={[{ value: 'current', label: 'الاشتراكات الحالية' }, { value: 'archived', label: 'الاشتراكات المؤرشفة' }]} onChange={(value) => setFilter('archived', value === 'archived' ? '1' : '')} /><InfoTip label="عن الأرشيف">{showArchived ? 'ملفات محفوظة بعد إنهاء الخدمة؛ الأرصدة والحركات السابقة باقية.' : 'أرشفة الاشتراك المنتهي متاحة من قائمة إجراءاته حسب الصلاحية.'}</InfoTip></div>}
 
-            <div className="mb-3 flex flex-wrap gap-2" role="group" aria-label="حالة الاشتراك">
-                {[{ value: '', label: 'الكل' }, ...statusOptions].map((option) => (
-                    <button key={option.value} type="button" className="gl-chip" aria-pressed={(filterValues.status ?? '') === option.value}
-                        onClick={() => setFilter('status', option.value)}>{option.label}</button>
-                ))}
-            </div>
-
             <DataTableToolbar
                 search={search}
                 onSearchChange={setSearch}
@@ -306,7 +282,7 @@ export default function Index({
                         values={branchFilter.values}
                         onChange={setFilter}
                         onChangeMany={setFilters}
-                        onClear={clearSubscriptionFilters}
+                        onClear={() => keptOnClear.length ? setFilters(Object.fromEntries(Object.keys(filterValues).filter((key) => !keptOnClear.includes(key)).map((key) => [key, '']))) : clearFilters()}
                     >
                         <BalanceFilter values={filterValues} onChange={setFilters} errors={errors} />
                     </DataTableFilterMenu>
@@ -340,7 +316,6 @@ export default function Index({
                     filters={filters}
                     headerCheckbox={headerCheckbox}
                     openStatement={openStatement}
-                    onClearFilters={clearSubscriptionFilters}
                     pageIds={pageIds}
                     pageSelectedCount={pageSelectedCount}
                     requestDelete={requestDelete}
@@ -382,7 +357,7 @@ export default function Index({
                 can={can}
                 clearSelection={clearSelection}
                 closeProfile={closeProfile}
-                creating={creating || createFromAddress}
+                creating={creating}
                 deleteDialog={deleteDialog}
                 historySubscription={historySubscription}
                 messageSubscription={messageSubscription}
@@ -396,7 +371,7 @@ export default function Index({
                 selectionCount={selectionCount}
                 setArchiveSubscription={setArchiveSubscription}
                 setBulkField={setBulkField}
-                onCloseCreate={closeCreate}
+                setCreating={setCreating}
                 setHistorySubscriptionId={setHistorySubscriptionId}
                 setMessageSubscription={setMessageSubscription}
                 setModalSubscription={setModalSubscription}

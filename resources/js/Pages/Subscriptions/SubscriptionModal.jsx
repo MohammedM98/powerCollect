@@ -1,8 +1,5 @@
-import { useState } from 'react';
-import { router } from '@inertiajs/react';
 import FormModal from '@/Components/FormModal';
 import { useResourceForm } from '@/hooks/useResourceForm';
-import { urlWith } from '@/lib/pageUrl';
 import SubscriptionForm, { SUBSCRIPTION_OUTLINE } from './SubscriptionForm';
 import { subscriptionFormData } from '@/lib/subscriptionForm';
 
@@ -23,44 +20,21 @@ export default function SubscriptionModal({
     canEditKilowattPrice,
     visitOptions,
 }) {
-    // The preview reads the same values that are submitted to the server.
-    const initialData = subscriptionFormData(subscription, sourceSubscription);
-    const form = useResourceForm('/subscriptions', subscription, initialData);
-    const [formVersion, setFormVersion] = useState(0);
-    const creating = !form.isEdit;
-
-    function saveAnother(page) {
-        if (page.component === 'Subscriptions/Index') {
-            const url = urlWith(page.url, { create: '1' });
-            if (url !== page.url) router.replace({ url, preserveScroll: true, preserveState: true });
-        }
-
-        form.setDefaults(initialData);
-        form.setData(initialData);
-        form.clearErrors();
-        setFormVersion((current) => current + 1);
-    }
+    const form = useResourceForm('/subscriptions', subscription, subscriptionFormData(subscription, sourceSubscription));
 
     return (
         <FormModal
             show={show}
             onClose={onClose}
             form={form}
-            title={form.isEdit ? 'تعديل المشترك' : sourceSubscription ? 'إضافة اشتراك' : 'إضافة مشترك'}
-            icon={creating ? 'user-plus' : 'user'}
-            description={form.isEdit ? 'التغييرات تظهر في كشف الحساب والقراءات القادمة.' : 'يُنشأ رقم الحساب تلقائيًا عند الحفظ.'}
+            title={form.isEdit ? 'تعديل المشترك' : sourceSubscription ? 'إضافة اشتراك' : 'إنشاء مشترك'}
+            icon="user"
+            description={form.isEdit ? 'التغييرات تظهر في كشف الحساب والقراءات القادمة.' : 'يُضاف إلى القوائم ويبدأ احتساب قراءاته فور حفظه.'}
             maxWidth="5xl"
             visitOptions={visitOptions}
-            outline={creating ? null : SUBSCRIPTION_OUTLINE}
-            bodyClassName={creating ? 'gl-resource-create-body' : undefined}
-            className={creating ? 'gl-resource-create-dialog' : undefined}
-            confirmBeforeSave={!creating || Boolean(sourceSubscription)}
-            validateOnBlur={creating}
-            action={creating && !sourceSubscription ? { submitLabel: 'حفظ المشترك' } : null}
-            onSaveAnother={creating && !sourceSubscription ? saveAnother : undefined}
+            outline={SUBSCRIPTION_OUTLINE}
         >
             <SubscriptionForm
-                key={formVersion}
                 data={form.data}
                 setData={form.setData}
                 errors={form.errors}
@@ -78,7 +52,6 @@ export default function SubscriptionModal({
                 canEditKilowattPrice={canEditKilowattPrice}
                 sharedPersonalDetails={Boolean(sourceSubscription)}
                 isEdit={form.isEdit}
-                sidePreview={creating}
                 subscriptionCount={subscription?.subscriptionCount ?? 1}
             />
         </FormModal>

@@ -33,9 +33,9 @@ export default {
         extend: {
             fontFamily: {
                 // The company's text and heading faces (`data-ui-body-font`, `data-ui-heading-font`).
-                sans: ['var(--font-body, Zain)', 'Zain', ...defaultTheme.fontFamily.sans],
-                luxe: ['var(--font-heading, Zain)', 'Zain', ...defaultTheme.fontFamily.serif],
-                display: ['var(--font-heading, Zain)', 'Zain', ...defaultTheme.fontFamily.sans],
+                sans: ['var(--font-body, "IBM Plex Sans Arabic")', '"IBM Plex Sans Arabic"', ...defaultTheme.fontFamily.sans],
+                luxe: ['var(--font-heading, "El Messiri")', '"IBM Plex Sans Arabic"', ...defaultTheme.fontFamily.serif],
+                display: ['Alexandria', '"IBM Plex Sans Arabic"', ...defaultTheme.fontFamily.sans],
             },
             /*
              * Arabic needs more room than Latin text to read comfortably, so
@@ -46,7 +46,7 @@ export default {
             fontSize: {
                 xs: ['0.875rem', { lineHeight: '1.6' }],
                 sm: ['1rem', { lineHeight: '1.6' }],
-                base: ['0.96875rem', { lineHeight: '1.55' }],
+                base: ['1.0625rem', { lineHeight: '1.7' }],
                 lg: ['1.25rem', { lineHeight: '1.6' }],
                 xl: ['1.375rem', { lineHeight: '1.5' }],
                 '2xl': ['1.625rem', { lineHeight: '1.4' }],
@@ -94,7 +94,7 @@ export default {
                 '3xl': corner('1.5rem'),
                 control: corner('12px'),
                 row: corner('18px'),
-                card: corner('22px'),
+                card: corner('24px'),
                 panel: corner('28px'),
                 hero: corner('32px'),
             },

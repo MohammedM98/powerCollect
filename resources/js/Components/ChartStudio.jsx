@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import BarChart from '@/Components/Charts/BarChart';
 import CountUp from '@/Components/CountUp';
 import { ChangePill } from '@/Components/StatStrip';
 
@@ -113,14 +112,11 @@ export default function ChartStudio({ title, total, change, unit = '₪', format
                     </div>
                 )}
             </div>
-            <BarChart
-                rightToLeft
-                cylindrical
-                formatValue={(value) => unit + ' ' + formatTotal(value)}
-                previous={comparing ? series.map((point) => Number(point.previous) || 0) : null}
+            <AreaChart
                 key={`${period}-${series.length}`}
-                data={series.map((day) => ({ ...day, value: Number(day.value) || 0 }))}
-                dayLabel={dayLabel}
+                values={series.map((day) => Number(day.value) || 0)}
+                labels={series.map((day) => dayLabel(day.date))}
+                previous={comparing ? series.map((day) => Number(day.previous) || 0) : null}
                 label={`${title}: ${unit} ${total}`}
             />
         </>

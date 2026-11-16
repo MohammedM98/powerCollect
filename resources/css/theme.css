@@ -26,52 +26,49 @@
 :root {
     /* The height of every field and list (inputs, selects, dates, search) and of the buttons beside them. */
     --control-h: 46px;
-    --ma-spring: cubic-bezier(0.22, 1.25, 0.36, 1);
-    --ma-hover: #efedea;
-    --ma-selected: #2a2d34;
-    --ma-selection-line: rgb(var(--brand-glow));
-    --ma-card-top: #fff;
-    --ma-card-bottom: #fff;
-    --ma-sidebar: #fff;
-    --ma-badge: #eceae6;
-    --ma-badge-ink: #585d69;
-    --ma-action: linear-gradient(180deg, rgb(var(--brand-hi)), rgb(var(--brand-solid)) 52%, rgb(var(--brand-lo)));
-    --ma-chart-bar: linear-gradient(90deg, #7a2c0e, #c2501c 24%, #e58a50 53%, #c2501c 78%, #82300f);
-    --ma-consumption: #2ec4b0;
-    --ma-hero: radial-gradient(110% 100% at 0% 0%, #71371f, transparent 70%), linear-gradient(135deg, #272930, #1c1d22);
 
     color-scheme: light;
 
     /* ── 1. Brand ─────────────────────────────────────────────────────────── */
 
-    /* Burnt orange for actions, focus and the collection chart. */
-    --brand-50: 255 244 237;
-    --brand-100: 251 228 214;
-    --brand-200: 243 196 169;
-    --brand-300: 233 161 121;
-    --brand-400: 210 99 44;
-    --brand-500: 184 70 26;
-    --brand-600: 154 58 18;
-    --brand-700: 130 48 15;
-    --brand-800: 97 35 11;
-    --brand-900: 69 25 9;
+    /*
+     * Power Collect's identity: a fresh teal-green (#20B2A0, `solid`) with
+     * black and white. As a fill (buttons, badges, the open page's pill) it
+     * carries dark ink (`--brand-ink`, 8:1), never white. Brand text, links
+     * and fills that carry white use 500 and darker (5.5:1 or more on white).
+     */
+    --brand-50: 240 253 250;
+    --brand-100: 204 246 239;
+    --brand-200: 153 233 220;
+    --brand-300: 94 214 194;
+    --brand-400: 32 178 160;
+    --brand-500: 15 118 110;
+    --brand-600: 13 100 93;
+    --brand-700: 17 94 89;
+    --brand-800: 19 78 74;
+    --brand-900: 4 47 46;
 
-    --brand-tint: 245 195 168;
-    --brand-soft: 210 99 44;
-    --brand-bright: 229 138 80;
-    --brand-glow: 210 99 44;
-    --brand-hi: 219 114 54;
-    --brand-solid: 194 83 31;
-    --brand-lo: 154 56 18;
-    --brand-deep: 138 50 16;
+    /*
+     * The brand colour where it must look the same in both themes: the
+     * buttons' teal (solid, with hi and lo for hover and press), the light
+     * teal used as text on dark panels (tint, soft) and the deep teal.
+     */
+    --brand-tint: 153 233 220;
+    --brand-soft: 94 214 194;
+    --brand-bright: 45 191 170;
+    --brand-glow: 32 178 160;
+    --brand-hi: 45 191 170;
+    --brand-solid: 32 178 160;
+    --brand-lo: 26 158 142;
+    --brand-deep: 15 118 110;
 
-    /* Text and icons drawn on a fill in the brand colour: white. */
-    --brand-ink: 255 255 255;
+    /* Text and icons drawn on a fill in the brand colour: a deep teal-black. A company with a colour of its own gets white (Brand::stylesheet). */
+    --brand-ink: 6 32 29;
 
-    /* Neutral selection surface and its foreground. */
-    --nav-active: 42 45 52;
-    --nav-active-ink: 255 255 255;
-    --nav-active-icon: 238 119 64;
+    /* The open page or section in the navigation: the identity's teal with dark ink, in both themes. */
+    --nav-active: 32 178 160;
+    --nav-active-ink: 6 32 29;
+    --nav-active-icon: 6 32 29;
 
     /* The logo's bolt (Components/SuperPowerMark.jsx); its S takes the text colour. */
     --logo-bolt: 20 160 143;
@@ -82,13 +79,13 @@
     /*
      * Button roles beside the main (brand) one, so each kind of action is
      * told apart at a glance (components.css `gl-add`, `gl-group`):
-     * adding something new uses the primary action colour, acting on a group of rows or managing a
+     * adding something new is blue, acting on a group of rows or managing a
      * list is charcoal (light grey in the dark theme). Each fill carries its
      * ink at 4.5:1 or more.
      */
-    --add-fill: 160 62 23;
-    --add-hover: 154 56 18;
-    --add-press: 110 39 9;
+    --add-fill: 37 99 235;
+    --add-hover: 29 78 216;
+    --add-press: 30 64 175;
     --add-ink: 255 255 255;
     --group-fill: 38 38 38;
     --group-hover: 64 64 64;
@@ -96,27 +93,27 @@
     --group-ink: 255 255 255;
 
 
-    /* Brand gradient for visual accents. */
+    /* The signature line: the logo's light blue into its deep blue. */
     --spectrum: linear-gradient(90deg, rgb(var(--brand-soft)), rgb(var(--brand-solid)) 55%, rgb(var(--brand-deep)));
 
     /* ── 2. Neutrals ──────────────────────────────────────────────────────── */
 
     /*
-     * Warm ivory, charcoal and neutral greys. Quiet
+     * Neutral greys, a touch cool so they sit well beside the teal. Quiet
      * text (400) reads at 5.1:1 on the page's soft gray (50) and muted
      * text (500) higher still, above the WCAG AA minimum of 4.5.
      */
-    --gray-50: 244 240 235;
-    --gray-100: 239 237 234;
-    --gray-200: 236 234 230;
-    --gray-300: 214 208 202;
-    --gray-400: 110 113 122;
-    --gray-500: 88 93 105;
-    --gray-600: 80 83 94;
-    --gray-700: 66 69 79;
-    --gray-800: 42 45 52;
-    --gray-900: 30 32 38;
-    --gray-950: 18 19 23;
+    --gray-50: 246 247 249;
+    --gray-100: 240 242 245;
+    --gray-200: 228 231 236;
+    --gray-300: 205 211 219;
+    --gray-400: 96 104 114;
+    --gray-500: 89 98 109;
+    --gray-600: 72 79 89;
+    --gray-700: 55 61 70;
+    --gray-800: 38 43 50;
+    --gray-900: 19 23 28;
+    --gray-950: 12 14 17;
 
     /* Cards, tables, dialogs and fields. */
     --surface: 255 255 255;
@@ -152,10 +149,10 @@
     --success-100: 209 250 229;
     --success-200: 167 243 208;
     --success-300: 110 231 183;
-    --success-400: 47 196 140;
+    --success-400: 52 211 153;
     --success-500: 16 185 129;
     --success-600: 5 150 105;
-    --success-700: 15 138 95;
+    --success-700: 4 120 87;
     --success-800: 6 95 70;
     --success-900: 6 78 59;
     --success-950: 2 44 34;
@@ -165,10 +162,10 @@
     --warning-100: 254 243 199;
     --warning-200: 253 230 138;
     --warning-300: 252 211 77;
-    --warning-400: 232 178 58;
+    --warning-400: 251 191 36;
     --warning-500: 245 158 11;
     --warning-600: 217 119 6;
-    --warning-700: 154 106 0;
+    --warning-700: 180 83 9;
     --warning-800: 146 64 14;
     --warning-900: 120 53 15;
     --warning-950: 69 26 3;
@@ -178,9 +175,9 @@
     --danger-100: 254 226 226;
     --danger-200: 254 202 202;
     --danger-300: 252 165 165;
-    --danger-400: 240 96 106;
+    --danger-400: 248 113 113;
     --danger-500: 239 68 68;
-    --danger-600: 201 54 54;
+    --danger-600: 220 38 38;
     --danger-700: 185 28 28;
     --danger-800: 153 27 27;
     --danger-900: 127 29 29;
@@ -283,40 +280,33 @@
 }
 
 .dark {
-    --ma-hover: #26282e;
-    --ma-selected: #2e3037;
-    --ma-card-top: #202127;
-    --ma-card-bottom: #1c1d22;
-    --ma-sidebar: linear-gradient(150deg, rgb(184 70 26 / 0.12), transparent 42%), linear-gradient(#1b1c21, #141519);
-    --ma-badge: #2e3037;
-    --ma-badge-ink: #c9cbd2;
     color-scheme: dark;
 
-    --brand-50: 40 27 22;
-    --brand-100: 53 35 27;
-    --brand-200: 71 41 29;
-    --brand-300: 122 44 14;
-    --brand-400: 210 99 44;
-    --brand-500: 184 70 26;
-    --brand-600: 210 99 44;
-    --brand-700: 237 153 111;
-    --brand-800: 245 195 168;
-    --brand-900: 251 230 217;
+    --brand-50: 14 32 30;
+    --brand-100: 17 42 39;
+    --brand-200: 19 61 56;
+    --brand-300: 15 118 110;
+    --brand-400: 32 178 160;
+    --brand-500: 15 118 110;
+    --brand-600: 94 214 194;
+    --brand-700: 153 233 220;
+    --brand-800: 204 246 239;
+    --brand-900: 230 251 247;
 
     --logo-bolt: 45 200 178;
     --switch-on: 34 197 94;
 
-    --gray-50: 18 19 23;
-    --gray-100: 38 40 46;
-    --gray-200: 48 50 58;
-    --gray-300: 70 73 81;
-    --gray-400: 150 153 163;
-    --gray-500: 166 168 176;
-    --gray-600: 183 186 194;
-    --gray-700: 205 208 214;
-    --gray-800: 228 228 233;
-    --gray-900: 243 243 245;
-    --gray-950: 250 250 252;
+    --gray-50: 20 23 27;
+    --gray-100: 34 39 45;
+    --gray-200: 44 50 58;
+    --gray-300: 60 67 76;
+    --gray-400: 133 142 153;
+    --gray-500: 163 171 181;
+    --gray-600: 188 194 202;
+    --gray-700: 208 213 219;
+    --gray-800: 229 232 236;
+    --gray-900: 236 239 243;
+    --gray-950: 248 249 250;
 
     --blue-500: 37 99 235;
     --blue-600: 96 165 250;
@@ -327,7 +317,7 @@
     --excel-600: 110 220 150;
     --excel-700: 20 96 54;
 
-    --surface: 32 33 39;
+    --surface: 28 32 37;
 
 
 
@@ -401,21 +391,21 @@
  * lines, the open section) reads on the dark panel. A neutral tone of the
  * company's own redraws these greys too (Brand::stylesheet()).
  */
-:root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) :is(.tn-bar, .gl-topbar, .gl-section-bar, .gl-sidebar, .gl-sidebar-surface) {
+:root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) .tn-bar {
     color-scheme: dark;
 
-    --gray-50: 18 19 23;
-    --gray-100: 38 40 46;
-    --gray-200: 48 50 58;
-    --gray-300: 70 73 81;
-    --gray-400: 150 153 163;
-    --gray-500: 166 168 176;
-    --gray-600: 183 186 194;
-    --gray-700: 205 208 214;
-    --gray-800: 228 228 233;
-    --gray-900: 243 243 245;
-    --gray-950: 250 250 252;
-    --surface: 32 33 39;
+    --gray-50: 20 23 27;
+    --gray-100: 34 39 45;
+    --gray-200: 44 50 58;
+    --gray-300: 60 67 76;
+    --gray-400: 133 142 153;
+    --gray-500: 163 171 181;
+    --gray-600: 188 194 202;
+    --gray-700: 208 213 219;
+    --gray-800: 229 232 236;
+    --gray-900: 236 239 243;
+    --gray-950: 248 249 250;
+    --surface: 28 32 37;
 }
 
 /*
@@ -429,63 +419,64 @@
  */
 :root {
     /* Fields: the deepest layer, where one types (white on a light page, darker than the tile on a dark one). */
-    --panel-field: 248 245 241;
-    --panel-tile: 239 237 234;
+    --panel-field: 255 255 255;
+    --panel-tile: 243 245 248;
     --panel-field-line: 205 211 219;
-    --panel-page: 244 240 235;
-    --panel-ink: 30 32 38;
-    --panel-muted: 88 93 105;
-    --panel-faint: 104 109 119;
+    --panel-page: 236 238 241;
+    --panel-ink: 19 23 28;
+    --panel-muted: 89 98 109;
+    --panel-faint: 96 104 114;
     --panel-bg: 255 255 255;
-    --panel-line: 42 45 52 / 0.07;
+    --panel-line: 0 0 0 / 0.09;
     --panel-line-strong: 0 0 0 / 0.16;
     --panel-fill: 0 0 0 / 0.04;
     --panel-fill-strong: 0 0 0 / 0.07;
     --panel-shadow: 0 24px 40px -28px rgb(20 24 30 / 0.45);
     --panel-highlight: 255 255 255 / 0.9;
-    --panel-ambient: radial-gradient(650px 420px at 100% 0%, rgb(var(--brand-glow) / 0.12), transparent 75%),
-        radial-gradient(650px 420px at 0% 100%, rgb(var(--brand-glow) / 0.08), transparent 75%);
+    --panel-ambient:
+        radial-gradient(1200px 640px at 85% -12%, rgb(255 255 255 / 0.75), transparent 62%),
+        radial-gradient(900px 600px at 0% 112%, rgb(20 25 35 / 0.04), transparent 62%);
     --panel-opacity: 1;
     --panel-frost: none;
 
-    --panel-success: 15 138 95;
-    --panel-warning: 154 106 0;
-    --panel-danger: 201 54 54;
+    --panel-success: 8 105 66;
+    --panel-warning: 146 86 4;
+    --panel-danger: 180 32 48;
     --panel-info: 3 105 161;
 }
 
 .dark {
-    --panel-field: 20 21 25;
-    --panel-tile: 38 40 46;
+    --panel-field: 24 27 31;
+    --panel-tile: 34 39 45;
     --panel-field-line: 62 68 76;
-    --panel-page: 18 19 23;
-    --panel-ink: 243 243 245;
-    --panel-muted: 166 168 176;
-    --panel-faint: 150 153 163;
-    --panel-bg: 32 33 39;
-    --panel-line: 255 255 255 / 0.055;
+    --panel-page: 10 11 13;
+    --panel-ink: 236 239 243;
+    --panel-muted: 163 171 181;
+    --panel-faint: 133 142 153;
+    --panel-bg: 24 26 30;
+    --panel-line: 255 255 255 / 0.08;
     --panel-line-strong: 255 255 255 / 0.16;
     --panel-fill: 255 255 255 / 0.05;
     --panel-fill-strong: 255 255 255 / 0.09;
-    --panel-shadow: 0 24px 44px -26px rgb(0 0 0 / 0.85), 0 2px 6px rgb(0 0 0 / 0.35);
-    --panel-highlight: 255 255 255 / 0.035;
-    --panel-ambient: radial-gradient(850px 480px at 100% 0%, rgb(var(--brand-glow) / 0.07), transparent 75%);
+    --panel-shadow: 0 26px 50px -30px rgb(0 0 0 / 0.95);
+    --panel-highlight: 255 255 255 / 0.16;
+    --panel-ambient: radial-gradient(1300px 720px at 85% -12%, rgb(255 255 255 / 0.05), transparent 62%);
 
-    --panel-success: 47 196 140;
-    --panel-warning: 232 178 58;
-    --panel-danger: 240 96 106;
+    --panel-success: 60 207 145;
+    --panel-warning: 234 168 66;
+    --panel-danger: 242 100 111;
     --panel-info: 56 189 248;
 }
 
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    :root[data-ma-style="glass"] {
+    :root {
         --panel-opacity: 0.6;
         --panel-frost: blur(18px) saturate(1.25);
     }
 }
 
 @media (prefers-reduced-transparency: reduce), (forced-colors: active) {
-    :root[data-ma-style="glass"] {
+    :root {
         --panel-opacity: 1;
         --panel-frost: none;
     }

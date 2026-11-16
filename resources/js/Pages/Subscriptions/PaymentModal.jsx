@@ -33,7 +33,6 @@ export { inputClass };
 export default function PaymentModal({
     show,
     onClose,
-    onAnotherPayment,
     subscription,
     balance,
     paymentMethods,
@@ -258,7 +257,7 @@ export default function PaymentModal({
                             receipt={receipt}
                             subscriptionName={subscription.fullName}
                             title={correcting ? 'صُحّحت الدفعة' : 'سُجّلت الدفعة'}
-                            onAnother={correcting ? null : (onAnotherPayment ?? (() => setReceipt(null)))}
+                            onAnother={correcting ? null : () => setReceipt(null)}
                             onDone={close}
                         />
                     </div>

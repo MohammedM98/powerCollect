@@ -9,7 +9,7 @@ const DEFAULT_BRAND = {
     nameEnglish: defaults.company.nameEnglish,
     shortName: defaults.company.shortName,
     tagline: defaults.company.tagline,
-    logos: { main: defaults.logos.main, light: defaults.logos.light, icon: defaults.logos.icon, print: defaults.logos.main },
+    logos: { main: defaults.logos.main, light: defaults.logos.main, icon: defaults.logos.icon, print: defaults.logos.main },
     animatedLogo: true,
     printColor: defaults.colors.print,
     primaryColor: defaults.colors.primary,
