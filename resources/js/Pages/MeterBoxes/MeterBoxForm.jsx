@@ -21,7 +21,7 @@ export function meterBoxFormData(meterBox) {
     };
 }
 
-export default function MeterBoxForm({ data, setData, errors, branches, canChooseBranch, canCreateSubArea, governorates, areas, subAreas, currentBranchAreaId }) {
+export default function MeterBoxForm({ data, setData, errors, branches, canChooseBranch, canCreateSubArea, governorates, areas, subAreas, currentBranchAreaId, compact = false }) {
     const selectedBranch = canChooseBranch ? branches.find((branch) => String(branch.id) === String(data.branch_id)) : null;
 
     const [governorateId, setGovernorateId] = useState(selectedBranch?.governorate_id ?? '');
@@ -55,27 +55,45 @@ export default function MeterBoxForm({ data, setData, errors, branches, canChoos
         setData((current) => ({ ...current, branch_id: '', sub_area_id: '' }));
     }
 
-    return (
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_260px]">
-            <div className="min-w-0 space-y-5">
+    const nameField = (
+        <FormField
+            id="name"
+            label="اسم الطبلون"
+            required
+            error={errors.name}
+            hint={compact ? 'أدخل الاسم كما يظهر على الطبلون.' : undefined}
+            span={compact ? 'col-span-full' : 'min-w-0 flex-1'}
+        >
+            <TextInput
+                className="block w-full"
+                value={data.name}
+                autoFocus
+                required
+                placeholder={compact ? 'مثال: الشمالي' : undefined}
+                onChange={(event) => setData('name', event.target.value)}
+            />
+        </FormField>
+    );
+    const suffixField = (
+        <FormField id="name_suffix" label="لاحقة (اختياري)" error={errors.name_suffix} span={compact ? undefined : 'w-28 shrink-0'}>
+            <TextInput
+                name="name_suffix"
+                maxLength={50}
+                placeholder="2 / 2A"
+                dir="auto"
+                className="block w-full"
+                value={data.name_suffix}
+                onChange={(event) => setData('name_suffix', event.target.value)}
+            />
+        </FormField>
+    );
 
-            <FormSection icon="grid" title="بيانات الطبلون" columns={2}>
-                <div className="flex items-start gap-3 sm:col-span-2">
-                    <FormField id="name" label="اسم الطبلون" required error={errors.name} span="min-w-0 flex-1">
-                        <TextInput className="block w-full" value={data.name} autoFocus onChange={(e) => setData('name', e.target.value)} />
-                    </FormField>
-                    <FormField id="name_suffix" label="لاحقة (اختياري)" error={errors.name_suffix} span="w-28 shrink-0">
-                        <TextInput
-                            name="name_suffix"
-                            maxLength={50}
-                            placeholder="2 / 2A"
-                            dir="auto"
-                            className="block w-full text-center"
-                            value={data.name_suffix}
-                            onChange={(e) => setData('name_suffix', e.target.value)}
-                        />
-                    </FormField>
-                </div>
+    return (
+        <div className={compact ? 'gl-resource-create grid min-w-0 gap-x-[18px] gap-y-4 min-[600px]:grid-cols-2' : 'grid gap-5 lg:grid-cols-[minmax(0,1fr)_260px]'}>
+            <div className={compact ? 'contents' : 'min-w-0 space-y-5'}>
+
+            <FormSection icon="grid" title="بيانات الطبلون" columns={2} bare={compact}>
+                {compact ? nameField : <div className="flex items-start gap-3 sm:col-span-2">{nameField}{suffixField}</div>}
 
                 <FormField
                     id="box_number"
@@ -90,15 +108,16 @@ export default function MeterBoxForm({ data, setData, errors, branches, canChoos
                         ) : undefined
                     }
                 >
-                    <TextInput dir="ltr" className="block w-full" value={data.box_number} onChange={(e) => setData('box_number', e.target.value)} />
+                    <TextInput dir="ltr" required className="block w-full" value={data.box_number} onChange={(e) => setData('box_number', e.target.value)} />
                 </FormField>
+                {compact && suffixField}
             </FormSection>
 
             <FormSection
                 icon="pin"
                 title="الموقع"
-               
                 columns={2}
+                bare={compact}
             >
                 {canChooseBranch ? (
                     <>
@@ -134,7 +153,7 @@ export default function MeterBoxForm({ data, setData, errors, branches, canChoos
                             error={errors.branch_id}
                         />
                     </>
-                ) : (
+                ) : !compact && (
                     <p className="text-sm text-gray-500 sm:col-span-2">سينتمي هذا الطبلون إلى فرعك.</p>
                 )}
 
@@ -156,7 +175,7 @@ export default function MeterBoxForm({ data, setData, errors, branches, canChoos
             </FormSection>
             </div>
 
-            <FormPreview
+            {!compact && <FormPreview
                 aside
                 avatar={data.box_number.trim() || <Icon name="grid" className="h-6 w-6" />}
                 title={displayName || 'طبلون جديد'}
@@ -166,7 +185,7 @@ export default function MeterBoxForm({ data, setData, errors, branches, canChoos
                 filled={countFilled(data, requiredFields)}
                 total={requiredFields.length}
                 note="يُعرض الرقم مع اللاحقة كما هو في الإيصالات وكشوف القراءة."
-            />
+            />}
         </div>
     );
 }

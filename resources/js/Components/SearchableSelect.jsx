@@ -38,6 +38,8 @@ export default function SearchableSelect({
     onDark = false,
     onCreate = null,
     createLabel = 'إضافة جديد',
+    'aria-invalid': ariaInvalid,
+    'aria-describedby': ariaDescribedBy,
 }) {
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState('');
@@ -189,6 +191,8 @@ export default function SearchableSelect({
                 type="button"
                 id={id}
                 disabled={disabled}
+                data-invalid={ariaInvalid || undefined}
+                aria-describedby={ariaDescribedBy}
                 aria-expanded={open}
                 data-active={active ? '' : undefined}
                 onClick={() => setOpen((current) => !current)}

@@ -5,7 +5,7 @@ import { DialogHeader } from '@/Components/DialogFrame';
 import Icon from '@/Components/Icon';
 import PrimaryButton from '@/Components/PrimaryButton';
 import FormOutline from '@/Components/Form/FormOutline';
-import { clearErrorOnInput, submitOnCtrlEnter, validateFormFields } from '@/lib/formValidation';
+import { clearErrorOnInput, focusInvalidControl, submitOnCtrlEnter, validateFieldOnBlur, validateFormFields } from '@/lib/formValidation';
 
 /**
  * The create/edit modal every resource uses: a header with an icon, the
@@ -38,17 +38,21 @@ export default function FormModal({
     maxWidth = 'lg',
     visitOptions = {},
     bodyClassName = '',
+    className = '',
     confirmBeforeSave = true,
+    validateOnBlur = false,
     saveConfirmMessage = null,
     action = null,
     outline = null,
+    onSaveAnother,
     children,
 }) {
     const id = useId();
-    // The question shown over the form: 'save' before sending it, 'discard' before throwing away unsaved input.
+    // A confirmation can keep either submit action pending, or discard unsaved input.
     const [pendingConfirmation, setPendingConfirmation] = useState(null);
     const [readingSection, setReadingSection] = useState(outline?.[0]?.id ?? null);
     const bodyRef = useRef(null);
+    const formRef = useRef(null);
 
     // The index lights the section being read as the form scrolls.
     useEffect(() => {
@@ -90,6 +94,7 @@ export default function FormModal({
     }
 
     function requestClose() {
+        if (form.processing) return;
         if (form.isDirty) {
             setPendingConfirmation('discard');
         } else {
@@ -97,22 +102,30 @@ export default function FormModal({
         }
     }
 
-    function save() {
+    function save(another = false) {
         setPendingConfirmation(null);
-        form.save({ preserveScroll: true, onSuccess: close, ...visitOptions });
+        form.save({
+            preserveScroll: true,
+            ...visitOptions,
+            onSuccess: another ? onSaveAnother : (visitOptions.onSuccess ?? close),
+            onError: (errors) => {
+                if (validateOnBlur && formRef.current) {
+                    focusInvalidControl([...formRef.current.elements].find((field) => field.willValidate && errors[field.name || field.id]));
+                }
+                visitOptions.onError?.(errors);
+            },
+        });
     }
 
-    function submit(e) {
-        e.preventDefault();
-
-        if (!validateFormFields(e.currentTarget, form)) {
+    function submitForm(element, another = false) {
+        if (form.processing || !validateFormFields(element, form)) {
             return;
         }
 
         if (confirmBeforeSave) {
-            setPendingConfirmation('save');
+            setPendingConfirmation(another ? 'save-another' : 'save');
         } else {
-            save();
+            save(another);
         }
     }
 
@@ -120,12 +133,17 @@ export default function FormModal({
         <>
             <Modal show={show} onClose={requestClose} maxWidth={maxWidth}>
                 <form
+                    ref={formRef}
                     aria-labelledby={`${id}-title`}
                     noValidate
-                    onSubmit={submit}
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        submitForm(e.currentTarget);
+                    }}
                     onInput={(e) => clearErrorOnInput(e, form)}
+                    onBlur={validateOnBlur ? (e) => validateFieldOnBlur(e, form) : undefined}
                     onKeyDown={submitOnCtrlEnter}
-                    className="flex max-h-[94dvh] flex-col"
+                    className={`flex max-h-[var(--gl-modal-height)] min-h-0 flex-col ${className}`}
                 >
                     <DialogHeader
                         titleId={`${id}-title`}
@@ -134,6 +152,7 @@ export default function FormModal({
                         icon={icon}
                         tone={headerTone}
                         onClose={requestClose}
+                        closeDisabled={form.processing}
                     />
                     {outline ? (
                             <div className="gl-outline-layout">
@@ -147,9 +166,14 @@ export default function FormModal({
                     <div className={`gl-dialog-foot flex shrink-0 flex-wrap items-center gap-3 px-5 sm:px-6 ${outline ? 'border-t border-[color:var(--gl-line)]' : ''}`}>
                         <kbd className="tn-kbd hidden sm:inline-flex" dir="ltr">Ctrl + Enter</kbd>
                         <span className="flex-1" />
-                        <button type="button" onClick={requestClose} className="gl-btn gl-ghost">إلغاء</button>
+                        <button type="button" onClick={requestClose} disabled={form.processing} className="gl-btn gl-ghost">إلغاء</button>
                         {form.isEdit && form.isDirty && <span className="gl-unsaved" role="status">تغييرات غير محفوظة</span>}
-                        <PrimaryButton disabled={form.processing} className="gl-lg min-w-[148px]">
+                        {onSaveAnother && (
+                            <button type="button" disabled={form.processing} className="gl-btn gl-sec" onClick={() => submitForm(formRef.current, true)}>
+                                حفظ وإضافة آخر
+                            </button>
+                        )}
+                        <PrimaryButton type="submit" disabled={form.processing} className="gl-lg min-w-[148px]">
                             <Icon name="check" className="h-[18px] w-[18px]" />
                             {form.processing ? 'جارٍ الحفظ...' : (action?.submitLabel ?? 'حفظ')}
                         </PrimaryButton>
@@ -158,11 +182,11 @@ export default function FormModal({
             </Modal>
 
             <SaveConfirmDialog
-                show={show && pendingConfirmation === 'save'}
+                show={show && (pendingConfirmation === 'save' || pendingConfirmation === 'save-another')}
                 isEdit={form.isEdit}
                 message={saveConfirmMessage}
                 action={action}
-                onConfirm={save}
+                onConfirm={() => save(pendingConfirmation === 'save-another')}
                 onCancel={() => setPendingConfirmation(null)}
             />
 

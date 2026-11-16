@@ -57,11 +57,12 @@ async function addInColumn(page, columnTitle, noun, name) {
 
 
 /** Opens a page's "add" window, fills its fields by their labels and saves it. */
-async function addThroughWindow(page, path, addButton, fields, { submit = 'حفظ' } = {}) {
+async function addThroughWindow(page, path, addButton, fields, { submit = 'حفظ', details } = {}) {
     await page.goto(path);
     await page.getByRole('button', { name: addButton }).first().click();
     const dialog = page.getByRole('dialog').last();
     await dialog.waitFor();
+    if (details) await dialog.getByText(details, { exact: true }).click();
     await fillFields(dialog, fields);
     await dialog.getByRole('button', { name: submit, exact: true }).click();
     await confirmIfAsked(page);
@@ -173,7 +174,7 @@ step('the branch and its three tablons', async () => {
         await addThroughWindow(page, '/meter-boxes', 'طبلون جديد', {
             'اسم الطبلون': name, 'لاحقة (اختياري)': suffix, 'رقم الطبلون': number,
             'المحافظة': { select: 'المحافظة الوسطى' }, 'المنطقة': { select: 'مخيم النصيرات' }, 'الفرع': { select: 'فرع النصيرات' }, 'منطقة الطبلون (منطقة 2)': { select: block, search: block },
-        });
+        }, { submit: 'حفظ الطبلون' });
     }
     for (const number of ['T-101', 'T-102', 'T-103']) {
         await page.getByText(number).first().waitFor();
@@ -253,16 +254,16 @@ step('the branch manager registers subscribers on the tablons, one an old record
     people.manager = await signIn(staff.manager.username);
     const page = people.manager;
     const subscriber = (fields) => addThroughWindow(page, '/subscriptions', 'مشترك جديد', {
-        'الحالة': { chip: 'نشط' }, 'نوع الاشتراك': { select: 'منزلي' }, 'القاطع': { select: '10' }, 'القراءة السابقة': '1000',
+        'تفعيل المشترك': { switch: true }, 'نوع الاشتراك': { select: 'منزلي' }, 'القاطع': { select: '10' }, 'القراءة السابقة': '1000',
         'تحميل رسوم اشتراك': { switch: true }, 'رسوم الاشتراك': '300', ...fields,
-    });
-    await subscriber({ 'الاسم': 'سالم عبد الله', 'رقم الهوية': '401234567', 'رقم الجوال': '0599123456', 'الطبلون (الاسم والرقم)': { select: 'T-101' } });
+    }, { submit: 'حفظ المشترك', details: 'تفاصيل الاشتراك' });
+    await subscriber({ 'الاسم الكامل': 'سالم عبد الله', 'رقم الهوية': '401234567', 'رقم الجوال': '0599123456', 'الطبلون': { select: 'T-101' } });
     await subscriber({
-        'الاسم': 'خالد يوسف', 'رقم الهوية': '402345678', 'رقم الجوال': '0599765432', 'نوع الاشتراك': { select: 'تجاري' },
-        'الطبلون (الاسم والرقم)': { select: 'T-103' }, 'القراءة السابقة': '500', 'رسوم الاشتراك': '400',
+        'الاسم الكامل': 'خالد يوسف', 'رقم الهوية': '402345678', 'رقم الجوال': '0599765432', 'نوع الاشتراك': { select: 'تجاري' },
+        'الطبلون': { select: 'T-103' }, 'القراءة السابقة': '500', 'رسوم الاشتراك': '400',
     });
     // An old record brought in without an identity or mobile number.
-    await subscriber({ 'الاسم': 'حاج قديم بلا هوية', 'الطبلون (الاسم والرقم)': { select: 'T-102' }, 'تحميل رسوم اشتراك': { switch: false }, 'رسوم الاشتراك': null });
+    await subscriber({ 'الاسم الكامل': 'حاج قديم بلا هوية', 'الطبلون': { select: 'T-102' }, 'تحميل رسوم اشتراك': { switch: false }, 'رسوم الاشتراك': null });
     await page.goto('/subscriptions');
     for (const account of ['202600001', '202600002', '202600003']) {
         await page.getByText(account).first().waitFor();

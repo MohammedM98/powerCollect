@@ -129,9 +129,10 @@ export function SectionPages({ trail, url, badges, action, onAction }) {
                 ref={stripRef}
                 data-tour="subnav"
                 data-fade={fade ?? undefined}
+                data-indicator={line ? true : undefined}
                 role="tablist"
                 aria-label={'صفحات ' + trail.group.label}
-                className="tn-subnav gl-section-tabs flex gap-1 overflow-x-auto [scrollbar-width:none]"
+                className="gl-section-tabs flex gap-1 overflow-x-auto [scrollbar-width:none]"
             >
                 {links.map((link) => {
                     const selected = link.href === trail.link.href;
@@ -148,7 +149,8 @@ export function SectionPages({ trail, url, badges, action, onAction }) {
                             tabIndex={selected ? 0 : -1}
                             onKeyDown={moveFocus}
                         >
-                            {link.label}
+                            <Icon name={link.icon ?? trail.group.icon} className="h-4 w-4 shrink-0" />
+                            <span>{link.label}</span>
                             {badges[link.href] > 0 && <span className="tn-badge">{badges[link.href]}</span>}
                         </Link>
                     );

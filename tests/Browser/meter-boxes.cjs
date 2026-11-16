@@ -189,10 +189,9 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await form.locator('#box_number').fill('250');
         await form.locator('#sub_area_id').click();
         await page.locator('ul button').filter({ hasText: /^حي ألف الجديد/ }).click();
-        await form.getByRole('button', { name: 'حفظ', exact: true }).click();
         const [saved] = await Promise.all([
             page.waitForResponse((response) => response.url().endsWith('/meter-boxes') && response.request().method() === 'POST'),
-            page.getByRole('button', { name: 'نعم، أضف', exact: true }).click(),
+            form.getByRole('button', { name: 'حفظ الطبلون', exact: true }).click(),
         ]);
         assert.equal(saved.status(), 302);
         await expect(form).not.toBeVisible();
@@ -225,8 +224,7 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         assert.equal(secondCreated.status(), 201);
         assert.notEqual((await secondCreated.json()).area_id, createdArea.area_id);
         await expect(form.locator('#sub_area_id')).toContainText('حي باء الجديد');
-        await form.getByRole('button', { name: 'حفظ', exact: true }).click();
-        await page.getByRole('button', { name: 'نعم، أضف', exact: true }).click();
+        await form.locator('#name').press('Enter');
         await expect(form).not.toBeVisible();
         const secondBox = table.locator('tbody > tr').filter({ hasText: 'طبلون الفرع الثاني' });
         await expect(secondBox).toContainText('فرع باء');

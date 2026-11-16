@@ -57,9 +57,26 @@ export function validateFormFields(formElement, form) {
     form.setError(
         Object.fromEntries(invalidFields.filter((field) => field.name || field.id).map((field) => [field.name || field.id, messageFor(field)])),
     );
-    invalidFields[0].focus();
+    focusInvalidControl(invalidFields[0]);
 
     return false;
+}
+
+/** Show client-side validation beneath a standard field when the user leaves it. */
+export function validateFieldOnBlur(event, form) {
+    const field = event.target;
+    const key = field.name || field.id;
+
+    if (key && field.willValidate && !field.validity.valid) {
+        form.setError(key, messageFor(field));
+    }
+}
+
+/** A validation error inside an expandable section needs a visible focus target. */
+export function focusInvalidControl(field) {
+    const details = field?.closest('details');
+    if (details) details.open = true;
+    field?.focus();
 }
 
 /**

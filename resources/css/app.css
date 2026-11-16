@@ -1433,6 +1433,7 @@ html[data-modal-open] {
  * scrollbar keeps it from showing as a bright bar beside the dimmed page.
  */
 .modal-scroll {
+    --gl-modal-height: min(94dvh, calc(100dvh - 50px));
     scrollbar-width: thin;
     scrollbar-color: rgb(255 255 255 / 0.35) transparent;
 }
@@ -1452,6 +1453,7 @@ html[data-modal-open] {
 
 @media (max-width: 639px) {
     .modal-scroll {
+        --gl-modal-height: min(94dvh, calc(100dvh - 14px - env(safe-area-inset-bottom, 0px)));
         padding: 12px 0 0;
     }
 
@@ -4096,4 +4098,11 @@ html:not(.dark)[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg 
 }
 
 :root[data-ui-nav-highlight='underline'] :is(.gl-sidebar-link[aria-current], .gl-section-indicator) { background: transparent; }
-:root[data-ui-nav-highlight='underline'] .gl-section-tabs a[aria-current] { color: var(--gl-ink); }
+:root[data-ui-nav-highlight='underline'] .gl-section-tabs a[aria-current] {
+    background: transparent;
+    color: var(--gl-ink);
+}
+
+:root:is([data-ui-nav-highlight='brand'], [data-ui-nav-highlight='secondary'], [data-ui-nav-highlight='accent']) .gl-section-tabs:not([data-indicator]) a[aria-current] {
+    background: rgb(var(--nav-role-solid));
+}

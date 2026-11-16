@@ -1275,9 +1275,9 @@
 .gl-auth-input input {
     width: 100%;
     min-height: 52px;
-    padding-inline-start: 42px;
+    padding-right: 42px;
     border-radius: 14px;
-    text-align: start;
+    text-align: right;
 }
 
 .gl-auth-remember {
@@ -3157,8 +3157,8 @@ html:has(.gl-shell-header[data-subnav]) {
 
 .gl-section-bar {
     min-height: 62px;
-    padding: 6px 10px;
-    gap: 10px;
+    padding: 10px 10px 10px 12px;
+    gap: 18px;
 }
 
 .gl-section-title {
@@ -3188,37 +3188,85 @@ html:has(.gl-shell-header[data-subnav]) {
     background: var(--ma-selected);
 }
 
+/* The scroll strip owns its tab styles, including the active foreground. */
 .gl-section-tabs {
     position: relative;
+    min-width: 0;
     flex: 1;
-    padding: 3px 2px;
+    padding: 4px;
+    border-radius: 15px;
+    background: rgb(var(--panel-field));
+    box-shadow: inset 0 1px 3px rgb(0 0 0 / .1);
+    line-height: 1.2;
+}
+
+.gl-section-tabs[data-fade='end'] {
+    mask-image: linear-gradient(to right, transparent, #000 14px);
+}
+
+.gl-section-tabs[data-fade='start'] {
+    mask-image: linear-gradient(to left, transparent, #000 14px);
+}
+
+.gl-section-tabs[data-fade='both'] {
+    mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 14px), transparent);
 }
 
 .gl-section-tabs a {
     position: relative;
     z-index: 1;
+    display: inline-flex;
     min-height: 42px;
     flex: none;
-    overflow: hidden;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 700;
+    align-items: center;
+    gap: 8px;
+    padding-inline: 16px;
+    border-radius: 12px;
+    color: var(--gl-muted);
+    font-size: 14.5px;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
-.gl-section-tabs a:hover { background: var(--ma-hover); }
-.gl-section-tabs a[aria-current='page'],
-.gl-section-tabs a[aria-current='page']:hover {
-    color: #fff;
+.gl-section-tabs a:hover {
+    background: var(--ma-hover);
+    color: var(--gl-ink);
+}
+
+.gl-section-tabs a > svg {
+    opacity: .8;
+}
+
+.gl-section-tabs a:focus-visible {
+    outline-offset: -2px;
+}
+
+.gl-section-tabs a[aria-selected='true'] {
+    color: white;
+    background: var(--ma-selected);
+}
+
+.gl-section-tabs[data-indicator] a[aria-selected='true'] {
     background: transparent;
+}
+
+.gl-section-tabs .tn-badge {
+    min-width: 19px;
+    border-radius: 100px;
+    padding: 0 5px;
+    font-size: 12px;
+    line-height: 19px;
+    text-align: center;
 }
 
 .gl-section-indicator {
     position: absolute;
     z-index: 0;
     left: 0;
-    inset-block: 3px;
+    inset-block: 4px;
+    pointer-events: none;
     overflow: hidden;
-    border-radius: 10px;
+    border-radius: 12px;
     background: var(--ma-selected);
     transition: transform .35s var(--ma-spring), width .35s var(--ma-spring);
 }
@@ -3304,7 +3352,7 @@ html:has(.gl-shell-header[data-subnav]) {
     .gl-topbar .tn-chevron { display: none; }
     .gl-topbar .tn-account { min-width: 40px; padding: 0; }
     .gl-section-title { display: none; }
-    .gl-section-bar { min-height: 54px; }
+    .gl-section-bar { min-height: 54px; gap: 10px; padding: 8px; }
 }
 
 @media (max-width: 599px) {
@@ -3355,5 +3403,177 @@ html:has(.gl-shell-header[data-subnav]) {
 
     :where(.gl-sidebar-link[aria-current], .gl-section-indicator, .gl-chip, .gl-seg button, .gl-tabs :is(button, a), .tn-palette [aria-selected], .modal-sheet-panel [role='option'], .gl-selected)::after {
         animation: none;
+    }
+}
+
+/* Creation sheets and subscriber preview */
+.gl-resource-create-dialog {
+    --control-h: 48px;
+    background: linear-gradient(180deg, rgb(var(--panel-bg)), rgb(var(--panel-bg) / .92));
+}
+
+.gl-resource-create-dialog > .gl-dialog-head {
+    align-items: center;
+    border-bottom: 1px solid var(--gl-line);
+    gap: 14px;
+    padding-block: 22px 18px;
+}
+
+.gl-resource-create-dialog .gl-dialog-icon {
+    background: var(--ma-action);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .24), 0 8px 18px -9px rgb(var(--brand-glow) / .68);
+}
+
+.gl-resource-create-dialog .gl-dialog-icon > svg {
+    width: 24px;
+    height: 24px;
+}
+
+.gl-resource-create-dialog .gl-dialog-head > button {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+}
+
+.gl-resource-create-dialog .gl-dialog-head .gl-sub {
+    line-height: 1.45;
+}
+
+.gl-resource-create-dialog > .gl-resource-create-body {
+    padding-block: 22px;
+}
+
+.gl-resource-create-dialog > .gl-dialog-foot {
+    border-top: 1px solid var(--gl-line);
+    gap: 10px;
+    padding-block: 14px;
+}
+
+.gl-resource-create-dialog .gl-dialog-foot > .gl-btn {
+    min-height: 42px;
+}
+
+.gl-resource-create-dialog .gl-dialog-foot > .gl-ghost {
+    border: 1px solid var(--gl-line);
+    background: rgb(var(--panel-field));
+}
+
+/* Solid, inset controls against the sheet surface, with a visible field outline in light mode. */
+.gl-resource-create :is(input:not([type='checkbox'], [type='radio'], [aria-hidden]), select, textarea, button[id][aria-expanded]) {
+    border-color: var(--gl-line-strong);
+    background: rgb(var(--panel-field));
+    font-size: 14px;
+}
+
+.gl-resource-create :is(input:not([aria-hidden]), select, textarea, button[id][aria-expanded]):is(:focus-visible, [aria-expanded='true']) {
+    border-color: var(--ma-selection-line);
+}
+
+.gl-resource-create :is([aria-invalid='true'], button[data-invalid]) {
+    border-color: rgb(var(--danger-500));
+}
+
+.gl-resource-create label[for] {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.gl-resource-create textarea {
+    min-height: 94px;
+}
+
+.gl-subscriber-additional {
+    border-top: 1px solid var(--gl-line);
+}
+
+.gl-subscriber-additional > summary {
+    width: fit-content;
+    min-height: 40px;
+    padding-block: 9px 4px;
+    color: var(--gl-muted);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.gl-subscriber-additional > summary:hover {
+    color: var(--gl-ink);
+}
+
+.gl-subscriber-preview {
+    border: 1px solid var(--gl-line);
+    border-radius: 20px;
+    background: rgb(var(--panel-field));
+    box-shadow: inset 0 1px 3px rgb(0 0 0 / .08);
+}
+
+.gl-subscriber-preview-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: var(--ma-badge);
+    color: var(--ma-badge-ink);
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+.gl-subscriber-preview-avatar {
+    border-radius: 20px;
+    background: var(--ma-action);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / .24), 0 8px 18px -9px rgb(var(--brand-glow) / .68);
+}
+
+.gl-subscriber-preview-details > div {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 8px 12px;
+    border-top: 1px solid var(--gl-line);
+    padding-block: 8px;
+    font-size: 13px;
+}
+
+.gl-subscriber-preview-details dt {
+    color: var(--gl-muted);
+}
+
+.gl-subscriber-preview-details dd {
+    justify-self: end;
+    min-width: 0;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.gl-subscriber-preview-details dd[dir='ltr'] {
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 639px) {
+    .gl-resource-create-dialog > .gl-dialog-head {
+        padding: 18px 18px 14px;
+    }
+
+    .gl-resource-create-dialog > .gl-resource-create-body {
+        padding: 18px;
+    }
+
+    .gl-resource-create-dialog > .gl-dialog-foot {
+        padding: 12px 18px;
+        gap: 6px;
+    }
+
+    .gl-resource-create-dialog > .gl-dialog-foot > :is(kbd, span.flex-1) {
+        display: none;
+    }
+
+    .gl-resource-create-dialog > .gl-dialog-foot > .gl-btn {
+        min-width: 0;
+        padding-inline: 10px;
+    }
+
+    .gl-resource-create-dialog > .gl-dialog-foot > .gl-btn:last-child {
+        flex: 1 1 auto;
     }
 }

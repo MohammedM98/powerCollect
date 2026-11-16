@@ -13,7 +13,9 @@ const COLUMNS = {
  * a grey tile, white on the tile, in a grid of `columns` (1, 2 or 3 across
  * on wide screens).
  */
-export default function FormSection({ icon, title, info, columns = 3, children, className = '' }) {
+export default function FormSection({ icon, title, info, columns = 3, children, className = '', bare = false }) {
+    if (bare) return children;
+
     return (
         <section className={`gl-section ${className}`}>
             <h2 className="gl-group-name">
