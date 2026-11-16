@@ -1,35 +1,28 @@
 import { Link } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import ChartStudio from '@/Components/ChartStudio';
-import KpiTile from '@/Components/KpiTile';
 import Panel from '@/Components/Panel';
 import SplitBar from '@/Components/SplitBar';
 import StatStrip, { ChangePill, Spark, Stat } from '@/Components/StatStrip';
-import { formatMoney, formatNumber, formatShortDay, percentOf } from '@/lib/format';
-import { TileLink } from './DashboardParts';
+import { formatMoney, formatNumber, formatShortDay } from '@/lib/format';
 
-/** The home page's main column: collections, subscriptions, boxes, readings and disconnections for the period. */
+/** The home page's main column: the period's collections and chart, what waits on someone, the largest debtors and how people paid. */
 export default function DashboardFiguresColumn({
     attention,
     can,
     collections,
     debts,
     filters,
-    meterBoxes,
     methodParts,
     openStatement,
     period,
     periodOptions,
-    readings,
-    subscriptions,
-    tiles,
-    topBreaker,
     visit,
 }) {
     return (
         <div className="gl-col">
             {collections && (
-                <section className="gl-card gl-panel gl-rise" style={{ '--i': 1 }} aria-label="التحصيل">
+                <section className="gl-card gl-panel gl-rise" style={{ '--i': 6 }} aria-label="التحصيل">
                     <StatStrip>
                         <Stat
                             label="المحصّل اليوم"
@@ -85,24 +78,24 @@ export default function DashboardFiguresColumn({
             {(attention.length > 0 || debts !== null || collections) && (
                 <div className="gl-grid gl-g3">
                     {attention.length > 0 && (
-                        <Panel index={2} title="بانتظارك" sub="ما يحتاج متابعة اليوم">
+                        <Panel index={7} title="بانتظارك" sub="ما يحتاج متابعة اليوم">
                             {attention.map(({ key, icon, title, subtitle, count, href, tone }) => (
                                 <Link key={key} href={href} prefetch={false} className="gl-attn">
-                                    <span className="gl-dot" style={{ '--gl-c': tone === 'red' ? 'var(--gl-bad)' : 'var(--gl-warn)' }} />
+                                    <span className="gl-ico">
+                                        <Icon name={icon} className="h-4 w-4" />
+                                    </span>
                                     <span className="min-w-0 flex-1">
                                         <b className="block truncate font-semibold">{title}</b>
                                         <small className="gl-sub">{subtitle}</small>
                                     </span>
-                                    <b className="gl-num">{formatNumber(count)}</b>
-                                    <span className="!text-[color:var(--gl-faint)]">
-                                        <Icon name={icon} className="h-4 w-4" />
-                                    </span>
+                                    {/* Nothing waiting reads green and quiet; something waiting takes its tone, so the eye lands on it first. */}
+                                    <span className={`gl-pill gl-num ${count > 0 ? (tone === 'red' ? 'gl-bad' : 'gl-warn') : 'gl-ok'}`}>{formatNumber(count)}</span>
                                 </Link>
                             ))}
                         </Panel>
                     )}
                     {debts === undefined ? (
-                        <Panel index={3} title="أكبر المدينين">
+                        <Panel index={8} title="أكبر المدينين">
                             <div className="space-y-3 py-2">
                                 <div className="gl-skel" />
                                 <div className="gl-skel w-2/3" />
@@ -112,7 +105,7 @@ export default function DashboardFiguresColumn({
                     ) : (
                         debts && (
                             <Panel
-                                index={3}
+                                index={8}
                                 title="أكبر المدينين"
                                 sub={`${formatNumber(debts.count)} مدين · ₪ ${formatMoney(debts.total)}`}
                                 right={
@@ -153,87 +146,9 @@ export default function DashboardFiguresColumn({
                         )
                     )}
                     {collections && (
-                        <Panel index={4} title="طرق الدفع" sub={`آخر ${period} · ₪ ${formatMoney(collections.total)}`}>
+                        <Panel index={9} title="طرق الدفع" sub={`آخر ${period} · ₪ ${formatMoney(collections.total)}`}>
                             <SplitBar parts={methodParts} label="النقد والحوالات" formatValue={(value) => `₪ ${formatMoney(value)}`} />
                         </Panel>
-                    )}
-                </div>
-            )}
-
-            {tiles > 0 && (
-                <div className="gl-grid gl-g4">
-                    {subscriptions && (
-                        <TileLink href="/subscriptions">
-                            <KpiTile
-                                hero
-                                index={5}
-                                icon="users"
-                                label="المشتركون النشطون"
-                                value={subscriptions.active}
-                                hint={`من ${formatNumber(subscriptions.total)} · ${formatNumber(subscriptions.newInPeriod)} جديد في آخر ${period}`}
-                            >
-                                <div className="gl-split" role="img" aria-label="حالات المشتركين">
-                                    {[
-                                        [subscriptions.active, 'var(--gl-ok)'],
-                                        [subscriptions.suspended, 'var(--gl-warn)'],
-                                        [subscriptions.disconnected, 'var(--gl-faint)'],
-                                    ].map(
-                                        ([count, color], index) =>
-                                            subscriptions.total > 0 &&
-                                            count > 0 && (
-                                                <i
-                                                    key={color}
-                                                    style={{ '--i': index, width: `${(count / subscriptions.total) * 100}%`, background: color }}
-                                                />
-                                            ),
-                                    )}
-                                </div>
-                            </KpiTile>
-                        </TileLink>
-                    )}
-                    {meterBoxes && (
-                        <TileLink href="/meter-boxes">
-                            <KpiTile
-                                index={6}
-                                icon="table"
-                                label="الطبلونات"
-                                value={meterBoxes.total}
-                                hint={
-                                    readings
-                                        ? `قُرئ ${percentOf(readings.approved + readings.pending, readings.total)}% من العدادات هذا الأسبوع`
-                                        : `${formatNumber(meterBoxes.empty)} بلا مشتركين نشطين`
-                                }
-                            />
-                        </TileLink>
-                    )}
-                    {subscriptions && (
-                        <KpiTile
-                            index={7}
-                            icon="bolt"
-                            label="الأمبير المتعاقد عليه"
-                            value={subscriptions.contractedAmperes}
-                            unit="أمبير"
-                            hint={topBreaker ? `الأكثر: قاطع ${topBreaker.ampere} أمبير (${topBreaker.share}%)` : 'لا قواطع للمشتركين النشطين'}
-                        />
-                    )}
-                    {debts === undefined ? (
-                        <div className="gl-card gl-kpi">
-                            <div className="gl-skel w-1/2" />
-                            <div className="gl-skel mt-6 h-8 w-2/3" />
-                        </div>
-                    ) : (
-                        debts && (
-                            <TileLink href="/receivables">
-                                <KpiTile
-                                    index={8}
-                                    icon="clock"
-                                    label="الديون المستحقة"
-                                    value={formatMoney(debts.total)}
-                                    unit="₪"
-                                    hint={`${formatNumber(debts.count)} مدين · أكثر من 90 يومًا ${debts.olderShare}%`}
-                                />
-                            </TileLink>
-                        )
                     )}
                 </div>
             )}

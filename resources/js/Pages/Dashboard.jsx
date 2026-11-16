@@ -9,21 +9,24 @@ import Panel from '@/Components/Panel';
 import { GoalRing } from '@/Components/StatRing';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
 import { formatNumber, percentOf } from '@/lib/format';
-import { shouldPrefetchPage } from '@/lib/navigation';
 import { formatWeekDay } from '@/lib/weekDays';
 import { LatestPayments } from './Dashboard/DashboardPanels';
 import DashboardWindows from './Dashboard/DashboardWindows';
 import DashboardHeader from './Dashboard/DashboardHeader';
 import DashboardFiguresColumn from './Dashboard/DashboardFiguresColumn';
+import DashboardActions from './Dashboard/DashboardActions';
+import DashboardTiles from './Dashboard/DashboardTiles';
 
 /** The period's name on the tabs and in sentences. */
 const periodLabel = (days) => (days === 7 ? '7 أيام' : `${days} يومًا`);
 
 /**
  * The home page: the figures of the branches the user looks after over
- * the chosen period — the collections, subscribers, meter boxes, weekly
- * readings and debts — what waits on someone, the quick actions and the
- * latest payments. The head of the company sees every branch and can
+ * the chosen period. The quick actions lead, recording a payment first;
+ * then the overview tiles (subscribers, meter boxes, amperes, debts), the
+ * collections with their chart, what waits on someone, the weekly readings
+ * and the latest payments. It follows Park UI's visual language (`gl-park`):
+ * flat outlined cards, subtle badges and a raised segment thumb. The head of the company sees every branch and can
  * narrow to a governorate or a branch; everyone else sees their own
  * branch. Each part shows only to those who may open its page.
  *
@@ -192,7 +195,6 @@ export default function Dashboard({
     const hasBreakers = subscriptions?.byBreaker.length > 0;
     const breakerMax = Math.max(0, ...(subscriptions?.byBreaker ?? []).map((breaker) => breaker.count));
     const payments = latestPayments?.rows;
-    const tiles = [subscriptions, meterBoxes, subscriptions, debts !== null].filter(Boolean).length;
 
     const greet = `${greeting}،`;
     const periodOptions = periods.map((days) => ({ value: days, label: periodLabel(days) }));
@@ -206,13 +208,12 @@ export default function Dashboard({
         <AuthenticatedLayout scope={branchScope?.name ?? null}>
             <Head title="لوحة التحكم" />
 
-            <div className="gl-page">
+            <div className="gl-page gl-park">
                 <DashboardHeader
                     auth={auth}
                     branchOptions={branchOptions}
                     branchScope={branchScope}
                     branchView={branchView}
-                    can={can}
                     canCreateBranch={canCreateBranch}
                     canCreateUser={canCreateUser}
                     filters={filters}
@@ -221,9 +222,10 @@ export default function Dashboard({
                     openCreateForm={openCreateForm}
                     scope={scope}
                     scopeLine={scopeLine}
-                    setFindingPayer={setFindingPayer}
                     visit={visit}
                 />
+
+                <DashboardActions actions={quickActions} />
 
                 {!hasAnyData ? (
                     <Panel index={1} className="py-14 text-center">
@@ -242,6 +244,8 @@ export default function Dashboard({
                     </Panel>
                 ) : (
                     <>
+                        <DashboardTiles debts={debts} meterBoxes={meterBoxes} period={period} readings={readings} subscriptions={subscriptions} topBreaker={topBreaker} />
+
                         <div className="gl-dash">
                             <DashboardFiguresColumn
                                 attention={attention}
@@ -249,21 +253,16 @@ export default function Dashboard({
                                 collections={collections}
                                 debts={debts}
                                 filters={filters}
-                                meterBoxes={meterBoxes}
                                 methodParts={methodParts}
                                 openStatement={openStatement}
                                 period={period}
                                 periodOptions={periodOptions}
-                                readings={readings}
-                                subscriptions={subscriptions}
-                                tiles={tiles}
-                                topBreaker={topBreaker}
                                 visit={visit}
                             />
 
                             <div className="gl-col">
                                 {readings && (
-                                    <Panel index={2} title="قراءات الأسبوع" sub={readings.week ? `بدأ ${formatWeekDay(readings.week)}` : 'آخر أسبوع قراءة'} right={can?.viewMeterReadings && <Link href="/meter-readings" className="gl-pill gl-info">فتح</Link>}>
+                                    <Panel index={10} title="قراءات الأسبوع" sub={readings.week ? `بدأ ${formatWeekDay(readings.week)}` : 'آخر أسبوع قراءة'} right={can?.viewMeterReadings && <Link href="/meter-readings" className="gl-pill gl-info">فتح</Link>}>
                                         <GoalRing percent={readShare} caption="معتمدة" />
                                         <div className="gl-kv"><span>معتمدة</span><b className="gl-num">{formatNumber(readings.approved)}</b></div>
                                         <div className="gl-kv"><span>بانتظار الاعتماد</span><b className="gl-num">{formatNumber(readings.pending)}</b></div>
@@ -271,7 +270,7 @@ export default function Dashboard({
                                     </Panel>
                                 )}
                                 {rankList && (
-                                    <Panel index={3} title={collections.byBranch ? 'التحصيل حسب الفرع' : 'المحصّلون'} sub={`آخر ${period}`}>
+                                    <Panel index={11} title={collections.byBranch ? 'التحصيل حسب الفرع' : 'المحصّلون'} sub={`آخر ${period}`}>
                                         <LiveBars value={formatNumber(rankList.length)} bars={rankList.map((item) => Number(item.total) || 0)} label={collections.byBranch ? 'تحصيل كل فرع' : 'تحصيل كل موظف'}>
                                             {boxes && <div className="gl-kv"><span>صناديق مفتوحة</span><b className="gl-num">{formatNumber(boxes.open)}</b></div>}
                                             <div className="gl-kv"><span>دفعات اليوم</span><b className="gl-num">{formatNumber(collections.today.count)}</b></div>
@@ -279,19 +278,8 @@ export default function Dashboard({
                                         </LiveBars>
                                     </Panel>
                                 )}
-                                {quickActions.length > 0 && (
-                                    <Panel index={4} title="إجراءات سريعة">
-                                        <div className="gl-qa">
-                                            {quickActions.map((action) => action.onClick ? (
-                                                <button key={action.href} type="button" className="gl-qbtn" onClick={action.onClick} aria-haspopup="dialog"><Icon name={action.icon} className="h-[18px] w-[18px]" />{action.title}</button>
-                                            ) : (
-                                                <Link key={action.href} href={action.href} prefetch={shouldPrefetchPage(action.href)} className="gl-qbtn"><Icon name={action.icon} className="h-[18px] w-[18px]" />{action.title}</Link>
-                                            ))}
-                                        </div>
-                                    </Panel>
-                                )}
                                 {hasBreakers && (
-                                    <Panel index={5} title="المشتركون حسب القاطع">
+                                    <Panel index={12} title="المشتركون حسب القاطع">
                                         {subscriptions.byBreaker.map((breaker, index) => (
                                             <div key={breaker.ampere} className="py-2">
                                                 <div className="gl-kv"><b>{breaker.ampere} أمبير</b><span className="gl-num">{formatNumber(breaker.count)} · {breaker.share}%</span></div>
