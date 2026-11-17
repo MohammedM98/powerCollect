@@ -1,16 +1,14 @@
-import { Link } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import SearchableSelect from '@/Components/SearchableSelect';
 import WordReveal from '@/Components/WordReveal';
 import { formatWeekDay } from '@/lib/weekDays';
 
-/** The home page's heading: the greeting, the period tabs and the quick actions. */
+/** The home page's heading: the greeting, the governorate and branch filters and the button that adds a branch or a user. */
 export default function DashboardHeader({
     auth,
     branchOptions,
     branchScope,
     branchView,
-    can,
     canCreateBranch,
     canCreateUser,
     filters,
@@ -19,7 +17,6 @@ export default function DashboardHeader({
     openCreateForm,
     scope,
     scopeLine,
-    setFindingPayer,
     visit,
 }) {
     return (
@@ -83,18 +80,6 @@ export default function DashboardHeader({
                         مستخدم جديد
                     </button>
                 ) : null}
-                {can?.recordPayments &&
-                    (can?.viewSubscriptions ? (
-                        <button type="button" className="gl-btn" onClick={() => setFindingPayer(true)} aria-haspopup="dialog">
-                            <Icon name="plus" className="h-4 w-4" />
-                            تسجيل دفعة
-                        </button>
-                    ) : (
-                        <Link href="/payments" className="gl-btn">
-                            <Icon name="plus" className="h-4 w-4" />
-                            تسجيل دفعة
-                        </Link>
-                    ))}
             </div>
         </div>
     );
