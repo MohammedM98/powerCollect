@@ -142,7 +142,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                 </button>
 
                 {open && (
-                    <div className="absolute inset-e-0 z-20 mt-2 w-60 rounded-2xl border border-gray-100 bg-surface p-2 shadow-lift">
+                    <div className="absolute inset-e-0 z-20 mt-2 w-60 rounded-2xl p-2 gl-pop">
                         {hideable.map((group) => (
                             <label
                                 key={group.key}

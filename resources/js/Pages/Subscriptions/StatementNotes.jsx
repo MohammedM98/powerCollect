@@ -139,7 +139,7 @@ export function AmendmentBadge({ amendments }) {
             </button>
             <span
                 role="tooltip"
-                className="pointer-events-none invisible absolute inset-e-0 top-full z-40 mt-2 grid w-[min(360px,calc(100vw-2rem))] gap-3 rounded-2xl border border-gray-200 bg-surface p-4 text-start opacity-0 shadow-lift transition group-hover/amend:visible group-hover/amend:opacity-100 group-focus-within/amend:visible group-focus-within/amend:opacity-100"
+                className="pointer-events-none invisible absolute inset-e-0 top-full z-40 mt-2 grid w-[min(360px,calc(100vw-2rem))] gap-3 rounded-2xl p-4 text-start opacity-0 gl-pop transition group-hover/amend:visible group-hover/amend:opacity-100 group-focus-within/amend:visible group-focus-within/amend:opacity-100"
             >
                 {amendments.map((amendment) => (
                     <span key={amendment.id} className="grid gap-1.5 border-b border-gray-100 pb-3 last:border-0 last:pb-0">

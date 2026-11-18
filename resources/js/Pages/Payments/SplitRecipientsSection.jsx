@@ -138,7 +138,7 @@ export default function SplitRecipientsSection({
                         className={`${inputClass} ps-11`}
                     />
                     {found.searched && (
-                        <ul className="animate-modal-panel absolute inset-x-0 z-30 mt-2 max-h-80 overflow-y-auto rounded-2xl border border-gray-100 bg-surface p-1.5 shadow-lift">
+                        <ul className="animate-modal-panel absolute inset-x-0 z-30 mt-2 max-h-80 overflow-y-auto rounded-2xl p-1.5 gl-pop">
                             {found.subscriptions.length === 0 && (
                                 <li className="px-3 py-3 text-center text-sm text-gray-500">لا يوجد مشترك يطابق بحثك.</li>
                             )}

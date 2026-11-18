@@ -227,7 +227,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
             className={
                 phone
                     ? 'animate-sheet fixed inset-x-0 bottom-0 z-50 max-h-[80dvh] overflow-y-auto rounded-t-[24px] border-t border-gray-200 bg-surface p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-lift'
-                    : 'animate-menu fixed z-50 overflow-y-auto rounded-[20px] border border-gray-200 bg-surface p-2 shadow-lift'
+                    : 'animate-menu fixed z-50 overflow-y-auto rounded-[20px] p-2 gl-pop'
             }
         >
             {phone && <div className="mx-auto mb-1 mt-1 h-1 w-10 rounded-full bg-gray-200" aria-hidden="true" />}

@@ -136,7 +136,7 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
                     id={listboxId}
                     role="listbox"
                     aria-label="البنك المرسل"
-                    className="animate-modal-panel absolute inset-x-0 z-30 mt-2 max-h-80 overflow-y-auto rounded-2xl border border-gray-100 bg-surface p-1.5 shadow-lift"
+                    className="animate-modal-panel absolute inset-x-0 z-30 mt-2 max-h-80 overflow-y-auto rounded-2xl p-1.5 gl-pop"
                 >
                     <li role="none">
                         <button

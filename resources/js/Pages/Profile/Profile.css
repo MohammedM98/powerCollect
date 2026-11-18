@@ -28,16 +28,16 @@
 .profile-page .pp-hero::before{content:"";position:absolute;inset-inline:0;top:0;height:3px;background:var(--spectrum)}
 .profile-page .pp-hero::after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:rgb(var(--brand-solid));opacity:.22;filter:blur(80px);inset-inline-end:-60px;bottom:-180px;pointer-events:none}
 .profile-page .pp-hero>*{position:relative;z-index:1}
-.profile-page .pp-avatar{width:76px;height:76px;border-radius:calc(24px * var(--radius-scale, 1));display:grid;place-items:center;font:800 26px Alexandria;background:linear-gradient(135deg,rgb(var(--brand-bright)),rgb(var(--brand-lo)));box-shadow:0 14px 30px -12px rgb(var(--brand-solid)),inset 0 1px 0 #ffffff40;flex:none}
+.profile-page .pp-avatar{width:76px;height:76px;border-radius:calc(24px * var(--radius-scale, 1));display:grid;place-items:center;font:800 26px var(--font-body, 'Zain');background:linear-gradient(135deg,rgb(var(--brand-bright)),rgb(var(--brand-lo)));box-shadow:0 14px 30px -12px rgb(var(--brand-solid)),inset 0 1px 0 #ffffff40;flex:none}
 .profile-page .pp-hero h2{margin:0;font:700 26px var(--font-heading, 'El Messiri'),serif}
-.profile-page .pp-hero .pp-username{font:600 14px Alexandria;color:rgb(var(--silver-400));direction:ltr;display:inline-block}
+.profile-page .pp-hero .pp-username{font:600 14px var(--font-body, 'Zain');color:rgb(var(--silver-400));direction:ltr;display:inline-block}
 .profile-page .pp-hero .pp-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .profile-page .pp-hero .pp-tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;border-radius:calc(99px * var(--radius-scale, 1));padding:3px 11px;background:#ffffff12;border:1px solid #ffffff1f;color:rgb(var(--silver-100))}
 .profile-page .pp-hero .pp-tag svg{width:14px;height:14px}
 .profile-page .pp-hero .pp-tag.role{background:rgb(var(--brand-solid) / 0.251);border-color:rgb(var(--brand-solid) / 0.502);color:#fff}
 .profile-page .pp-hero .pp-facts{margin-inline-start:auto;display:grid;grid-template-columns:repeat(3,auto);gap:22px}
 .profile-page .pp-hero .pp-facts small{display:block;font-size:12.5px;color:rgb(var(--silver-600))}
-.profile-page .pp-hero .pp-facts b{display:block;font:700 15px Alexandria;margin-top:2px}
+.profile-page .pp-hero .pp-facts b{display:block;font:700 15px var(--font-body, 'Zain');margin-top:2px}
 .profile-page .pp-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;margin-top:16px;align-items:start}
 .profile-page .pp-grid>div{min-width:0;display:grid;gap:16px}
 .profile-page .pp-panel{background:var(--pp-surface);border:1px solid var(--pp-line2);border-radius:calc(24px * var(--radius-scale, 1));box-shadow:var(--pp-shadow);padding:18px 20px}
@@ -54,8 +54,8 @@
 .profile-page .pp-input input:hover:not(:disabled){border-color:rgb(var(--brand-500) / 0.45)}
 .profile-page .pp-input input:focus{outline:none;border-color: rgb(var(--brand-500)); box-shadow: 0 0 0 4px rgb(var(--brand-500) / 0.15);}
 .profile-page .pp-input input:disabled{background:var(--pp-sunken);color:var(--pp-muted);border-style:dashed;cursor:not-allowed}
-.profile-page .pp-input input[dir=ltr]{text-align:right;font-family:Alexandria}
-.profile-page .pp-input input[type=password],.profile-page .pp-input input.pw{padding-left:48px;padding-right:14px;direction:ltr;text-align:right;font-family:Alexandria;letter-spacing:.5px}
+.profile-page .pp-input input[dir=ltr]{text-align:right;font-family:var(--font-body, 'Zain')}
+.profile-page .pp-input input[type=password],.profile-page .pp-input input.pw{padding-left:48px;padding-right:14px;direction:ltr;text-align:right;font-family:var(--font-body, 'Zain');letter-spacing:.5px}
 .profile-page .pp-input .eye{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;background:transparent;border-radius:calc(12px * var(--radius-scale, 1));display:grid;place-items:center;color:var(--pp-faint);cursor:pointer}
 .profile-page .pp-input .eye:hover{background:var(--pp-sunken);color:var(--pp-ink)}
 .profile-page .pp-input .eye svg{width:18px;height:18px}
@@ -90,7 +90,7 @@
 .profile-page .pp-permissions{margin-top:12px;display:grid;gap:10px}
 .profile-page .pp-permissions .pp-permission-group{border:1px solid var(--pp-line2);border-radius:calc(18px * var(--radius-scale, 1));padding:10px 12px}
 .profile-page .pp-permissions .pp-permission-group b{display:flex;align-items:center;gap:8px;font-size:14px}
-.profile-page .pp-permissions .pp-permission-group b span{margin-inline-start:auto;font:600 12px Alexandria;color:var(--pp-faint)}
+.profile-page .pp-permissions .pp-permission-group b span{margin-inline-start:auto;font:600 12px var(--font-body, 'Zain');color:var(--pp-faint)}
 .profile-page .pp-permissions .pp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
 .profile-page .pp-permissions .pp-chips span{font-size:12.5px;font-weight:600;border-radius:calc(8px * var(--radius-scale, 1));padding:2px 9px;background:var(--pp-success-t);color:var(--pp-success)}
 .profile-page .pp-permissions .pp-chips span.no{background:var(--pp-sunken);color:var(--pp-faint);text-decoration:line-through;font-weight:500}
@@ -114,7 +114,7 @@
 .profile-page .t-ok{background:var(--pp-success-t);color:var(--pp-success)}.t-info{background:var(--pp-info-t);color:var(--pp-info)}.t-warn{background:var(--pp-warn-t);color:var(--pp-warn)}.t-ink{background:var(--pp-sunken);color:var(--pp-ink2)}
 .profile-page .pp-feed-item b{font-size:14px;font-weight:600;display:block}
 .profile-page .pp-feed-item small{font-size:12.5px;color:var(--pp-faint)}
-.profile-page .pp-feed-item .pp-time{margin-inline-start:auto;font:500 12px Alexandria;color:var(--pp-faint);white-space:nowrap}
+.profile-page .pp-feed-item .pp-time{margin-inline-start:auto;font:500 12px var(--font-body, 'Zain');color:var(--pp-faint);white-space:nowrap}
 .profile-page .pp-theme{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .profile-page .pp-theme button{border:1.5px solid var(--pp-line);background:var(--pp-surface);border-radius:calc(18px * var(--radius-scale, 1));padding:10px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:700;font-size:13.5px;color:var(--pp-ink2)}
 .profile-page .pp-theme button:hover{border-color:color-mix(in srgb,var(--pp-brand) 40%,var(--pp-line))}
@@ -131,7 +131,7 @@
 .profile-page .pp-button:disabled { opacity: .45; cursor: not-allowed; filter: none; box-shadow: none; }
 .profile-page .pp-input button { position: absolute; inset-inline-end: 6px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; padding: 0; border-radius: calc(12px * var(--radius-scale, 1)); display: grid; place-items: center; color: var(--pp-faint); }
 .profile-page .pp-input button:hover { background: color-mix(in srgb, var(--pp-brand) 8%, transparent); color: var(--pp-brand); }
-.profile-page .pp-input input[type=password], .profile-page .pp-input input[autocomplete=new-password], .profile-page .pp-input input[autocomplete=current-password] { padding-left: 48px; padding-right: 14px; direction: ltr; text-align: left; font-family: Alexandria, sans-serif; }
+.profile-page .pp-input input[type=password], .profile-page .pp-input input[autocomplete=new-password], .profile-page .pp-input input[autocomplete=current-password] { padding-left: 48px; padding-right: 14px; direction: ltr; text-align: left; font-family: var(--font-body, 'Zain'), sans-serif; }
 .profile-page .pp-tag i { width: 7px; height: 7px; border-radius: 50%; background: rgb(var(--silver-600)); }
 .profile-page .pp-tag i.active { background: rgb(var(--success-400)); }
 .profile-page .pp-readonly { margin-top: 14px; }
@@ -148,7 +148,7 @@
 .profile-page .pp-devices, .profile-page .pp-feed { margin-top: 6px; }
 .profile-page .pp-device > div { flex: 1; min-width: 0; }
 .profile-page .pp-feed-item > div { flex: 1; min-width: 0; }
-.profile-page .pp-feed-item time { margin-inline-start: auto; font: 500 12px Alexandria, sans-serif; color: var(--pp-faint); white-space: nowrap; }
+.profile-page .pp-feed-item time { margin-inline-start: auto; font: 500 12px var(--font-body, 'Zain'), sans-serif; color: var(--pp-faint); white-space: nowrap; }
 .profile-page .pp-feed-icon { background: var(--pp-sunken); color: var(--pp-ink2); }
 .profile-page .pp-feed-icon.warn { background: var(--pp-warn-t); color: var(--pp-warn); }
 .profile-page .pp-feed-icon.info { background: var(--pp-info-t); color: var(--pp-info); }

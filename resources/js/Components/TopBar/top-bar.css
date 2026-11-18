@@ -74,7 +74,7 @@ html.tn-locked {
 }
 
 .tn-num {
-    font-family: Alexandria, var(--font-body, 'IBM Plex Sans Arabic'), sans-serif;
+    font-family: var(--font-body, 'Zain'), sans-serif;
     font-variant-numeric: tabular-nums;
 }
 
@@ -426,7 +426,7 @@ html.tn-locked {
     border-radius: calc(99px * var(--radius-scale, 1));
     background: rgb(var(--brand-solid));
     color: rgb(var(--brand-ink));
-    font: 700 11px/19px Alexandria, sans-serif;
+    font: 700 11px/19px var(--font-body, 'Zain'), sans-serif;
     text-align: center;
     box-shadow: 0 0 0 2px rgb(var(--surface) / 0.9);
 }
@@ -484,7 +484,7 @@ html.tn-locked {
     border-radius: calc(99px * var(--radius-scale, 1));
     background: rgb(var(--brand-solid));
     color: rgb(var(--brand-ink));
-    font: 700 10.5px/17px Alexandria, sans-serif;
+    font: 700 10.5px/17px var(--font-body, 'Zain'), sans-serif;
     box-shadow: 0 0 0 2px rgb(var(--surface));
 }
 
@@ -547,7 +547,7 @@ html.tn-locked {
     border-radius: calc(6px * var(--radius-scale, 1));
     border: 1px solid rgb(var(--gray-200));
     background: rgb(var(--surface));
-    font: 600 12px Alexandria, sans-serif;
+    font: 600 12px var(--font-body, 'Zain'), sans-serif;
     color: rgb(var(--gray-500));
     white-space: nowrap;
 }
@@ -585,7 +585,7 @@ html.tn-locked {
     border-radius: calc(12px * var(--radius-scale, 1));
     background: var(--tn-graphite);
     color: var(--tn-graphite-ink);
-    font: 700 15px Alexandria, var(--font-body, 'IBM Plex Sans Arabic'), sans-serif;
+    font: 700 15px var(--font-body, 'Zain'), sans-serif;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.15), 0 0 0 1px rgb(255 255 255 / 0.06);
     flex: none;
     position: relative;
@@ -686,9 +686,12 @@ html.tn-locked {
 .tn-branch-chip select {
     appearance: none;
     max-width: 14rem;
+    height: auto;
+    min-height: 0;
     padding: 0;
     border: 0;
     background: none;
+    box-shadow: none;
     color: inherit;
     font: inherit;
     cursor: pointer;
@@ -939,7 +942,7 @@ html.tn-locked {
     border-radius: calc(99px * var(--radius-scale, 1));
     background: rgb(var(--brand-solid));
     color: rgb(var(--brand-ink));
-    font: 700 12px/22px Alexandria, sans-serif;
+    font: 700 12px/22px var(--font-body, 'Zain'), sans-serif;
     text-align: center;
 }
 
@@ -999,16 +1002,8 @@ html.tn-locked {
     position: fixed;
     z-index: 60;
     border-radius: calc(22px * var(--radius-scale, 1));
-    background: rgb(var(--surface) / 0.97);
-    border: 1px solid rgb(var(--gray-200) / 0.8);
-    box-shadow: 0 30px 60px -24px rgb(var(--shadow-ink) / 0.45);
     animation: tn-pop-in 0.22s var(--tn-ease);
     overflow: hidden;
-}
-
-.dark .tn-popover {
-    border-color: rgb(255 255 255 / 0.08);
-    box-shadow: 0 30px 60px -20px #000;
 }
 
 @keyframes tn-pop-in {
@@ -1422,7 +1417,7 @@ html.tn-locked {
     border-radius: calc(99px * var(--radius-scale, 1));
     background: rgb(var(--brand-solid));
     color: rgb(var(--brand-ink));
-    font: 700 11px/19px Alexandria, sans-serif;
+    font: 700 11px/19px var(--font-body, 'Zain'), sans-serif;
     text-align: center;
 }
 
@@ -1846,9 +1841,18 @@ html.tn-locked {
     }
 }
 
+/* The working branch: a soft grey pill among the tools. */
+:root[data-ui-navigation] .tn-branch-chip,
+:root[data-ui-background='graphite'][data-ui-navigation] .tn-branch-chip {
+    border: 0;
+    border-radius: 999px;
+    background: rgb(var(--group-fill));
+    padding-inline: 14px 12px;
+}
+
 /* A section's pages: frosted glass that floats clearly above the page. */
-:root[data-ui-navigation] .tn-mega,
-:root[data-ui-background='graphite'][data-ui-navigation] .tn-mega {
+:root[data-ui-navigation] :is(.tn-mega, .tn-popover),
+:root[data-ui-background='graphite'][data-ui-navigation] :is(.tn-mega, .tn-popover) {
     border: 0;
     border-radius: 22px;
     background: rgb(var(--panel-bg) / 0.74);
@@ -1860,7 +1864,7 @@ html.tn-locked {
     backdrop-filter: blur(22px) saturate(1.7);
 }
 
-.dark:root[data-ui-navigation] .tn-mega {
+.dark:root[data-ui-navigation] :is(.tn-mega, .tn-popover) {
     background: rgb(var(--panel-bg) / 0.7);
     box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1), 0 24px 56px -12px rgb(0 0 0 / 0.7);
 }
@@ -1870,7 +1874,7 @@ html.tn-locked {
 }
 
 @media (prefers-reduced-transparency: reduce) {
-    :root[data-ui-navigation] .tn-mega {
+    :root[data-ui-navigation] :is(.tn-mega, .tn-popover) {
         background: rgb(var(--panel-bg));
         -webkit-backdrop-filter: none;
         backdrop-filter: none;

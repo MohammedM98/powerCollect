@@ -43,7 +43,7 @@
         "density": "comfortable",
         "tableToolbar": "plain",
         "searchStyle": "filled",
-        "inputs": "filled",
+        "inputs": "outlined",
         "inputFocus": "ring",
         "checkboxes": "square",
         "switches": "pill",

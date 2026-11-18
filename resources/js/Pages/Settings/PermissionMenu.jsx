@@ -77,7 +77,7 @@ export function MenuButton({ icon, label, children, className = '' }) {
                         role="menu"
                         dir="rtl"
                         style={{ top: position.top, left: position.left, width: position.width }}
-                        className="animate-dropdown fixed z-60 max-h-80 overflow-y-auto rounded-2xl border border-gray-100 bg-surface p-1.5 text-gray-900 shadow-lift"
+                        className="animate-dropdown fixed z-60 max-h-80 overflow-y-auto rounded-2xl p-1.5 text-gray-900 gl-pop"
                     >
                         {children(() => setOpen(false))}
                     </div>,

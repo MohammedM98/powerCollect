@@ -440,13 +440,17 @@
     margin-block: 6px;
     max-height: min(320px, 50vh);
     padding: 6px;
-    border: 1px solid var(--gl-line);
-    border-radius: 14px;
-    background: rgb(var(--panel-bg));
+    border: 0;
+    border-radius: 16px;
+    /* Frosted glass, like every floating list (components.css gl-pop). */
+    background: rgb(var(--panel-bg) / 0.74);
     color: var(--gl-ink);
     box-shadow:
-      0 2px 6px rgb(0 0 0 / 0.07),
-      0 30px 60px -24px rgb(0 0 0 / 0.42);
+      0 0 0 1px rgb(var(--gray-900) / 0.1),
+      0 24px 48px -12px rgb(0 0 0 / 0.35),
+      0 8px 16px -8px rgb(0 0 0 / 0.2);
+    -webkit-backdrop-filter: blur(22px) saturate(1.7);
+    backdrop-filter: blur(22px) saturate(1.7);
   }
 
   select:not([multiple], [size]) option {
@@ -538,11 +542,12 @@ select:not([multiple], [size]) {
     }
 
     /*
-     * Fields: the deepest layer, white on a light page and darker than the
-     * tile on a dark one, with a clear line, 12px corners and 44px height.
-     * The line darkens under the pointer and, while typing, turns the
-     * company's colour with a soft ring, so the user always sees which field
-     * they are on. Utility classes still win: they sit in a later layer.
+     * Fields (HeroUI's): the deepest layer, white on a light page and darker
+     * than the tile on a dark one, with no line but a soft shadow, 14px
+     * corners and one height (--control-h). The pointer draws a fine ring
+     * round it and typing a ring in the company's colour, so the user always
+     * sees which field they are on. Utility classes still win: they sit
+     * outside this layer.
      * `select` and `textarea` carry `:not([hidden])` so they outrank the forms
      * plugin's equally specific rules, which Tailwind 4 emits after this layer.
      */
@@ -556,9 +561,10 @@ select:not([multiple], [size]) {
     [type='date'],
     select:not([hidden]),
     textarea:not([hidden]) {
-        border-color: rgb(var(--panel-field-line));
-        border-radius: calc(12px * var(--radius-scale, 1));
+        border-color: transparent;
+        border-radius: calc(14px * var(--radius-scale, 1));
         background-color: rgb(var(--panel-field));
+        box-shadow: var(--field-shadow);
         color: var(--gl-ink);
         transition: border-color 0.15s, box-shadow 0.15s;
     }
@@ -581,7 +587,7 @@ select:not([multiple], [size]) {
     }
 
     :is(input:not([type], [hidden]), [type='text'], [type='email'], [type='password'], [type='number'], [type='search'], [type='tel'], [type='date'], select, textarea):hover:not(:focus, :disabled) {
-        border-color: rgb(var(--gray-400) / 0.6);
+        box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
     }
 
     /*
@@ -612,8 +618,8 @@ select:not([multiple], [size]) {
     [type='date']:focus,
     select:not([hidden]):focus,
     textarea:not([hidden]):focus {
-        border-color: rgb(var(--gl-brand));
-        box-shadow: 0 0 0 4px rgb(var(--gl-brand) / 0.16);
+        border-color: transparent;
+        box-shadow: 0 0 0 2px rgb(var(--brand-solid));
         outline: none;
     }
 
@@ -629,12 +635,13 @@ select:not([multiple], [size]) {
             select,
             textarea
         ):hover:not(:disabled, [readonly], :focus) {
-        border-color: var(--gl-line-strong);
+        box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
     }
 
-    /* A field with an error shown under it gets a red border. */
+    /* A field with an error shown under it gets a red ring. */
     :where(div):has(> [data-input-error]) :is(input:not([type='checkbox'], [type='radio']), select, textarea) {
-        border-color: var(--gl-bad);
+        border-color: transparent;
+        box-shadow: 0 0 0 2px var(--gl-bad);
     }
 
     /*
@@ -1842,10 +1849,10 @@ html[data-modal-open] {
 
 .modal-sheet-panel {
     border: 1px solid var(--gl-line);
-    border-radius: calc(22px * var(--radius-scale, 1));
+    border-radius: calc(28px * var(--radius-scale, 1));
     background: rgb(var(--panel-bg));
     color: var(--gl-ink);
-    box-shadow: 0 2px 6px rgb(0 0 0 / 0.07), 0 30px 70px -24px rgb(0 0 0 / 0.5);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.06), 0 40px 90px -20px rgb(0 0 0 / 0.55);
 }
 
 /*
@@ -1879,7 +1886,7 @@ html[data-modal-open] {
         margin: auto 0 0;
         max-width: none;
         border-bottom: 0;
-        border-radius: calc(22px * var(--radius-scale, 1)) calc(22px * var(--radius-scale, 1)) 0 0;
+        border-radius: calc(28px * var(--radius-scale, 1)) calc(28px * var(--radius-scale, 1)) 0 0;
         padding-bottom: env(safe-area-inset-bottom, 0px);
         animation: modal-sheet-in 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
     }
@@ -2590,8 +2597,9 @@ input[type='radio'] {
     /* Shadows scale by the company's shadow strength (`tokens.shadowStrength`). */
     --shadow-card: 0 1px 2px rgb(var(--shadow-ink) / calc(0.04 * var(--shadow-strength, 1))), 0 14px 34px -18px rgb(var(--shadow-ink) / calc(0.18 * var(--shadow-strength, 1)));
     --shadow-lift: 0 2px 6px rgb(var(--shadow-ink) / calc(0.06 * var(--shadow-strength, 1))), 0 24px 44px -20px rgb(var(--shadow-ink) / calc(0.32 * var(--shadow-strength, 1)));
-    --shadow-glow: 0 10px 24px -12px rgb(var(--brand-solid) / 0.9);
-    --brand-fill: linear-gradient(180deg, rgb(var(--brand-hi)), rgb(var(--brand-lo)));
+    /* The main action's fill (bg-brand-gradient, the floating bars, a chosen tab): charcoal, never the company's colour. */
+    --shadow-glow: 0 10px 22px -14px rgb(var(--action) / 0.7);
+    --brand-fill: linear-gradient(rgb(var(--action)), rgb(var(--action)));
 }
 
 /* Corners: every rounded-* class and the tables' corners scale by this. */
@@ -3019,6 +3027,11 @@ input[type='radio'] {
 :root[data-ui-background='graphite'] :is(.tn-shell .gl-card, .modal-sheet-panel) {
     border-color: rgb(var(--panel-line));
     box-shadow: inset 0 1px 0 rgb(var(--panel-highlight)), var(--panel-shadow);
+}
+
+/* A window floats well above the dimmed page (HeroUI's modal). */
+:root[data-ui-background='graphite'] .modal-sheet-panel {
+    box-shadow: inset 0 1px 0 rgb(var(--panel-highlight)), 0 2px 8px rgb(0 0 0 / 0.06), 0 40px 90px -20px rgb(0 0 0 / 0.55);
 }
 
 :root[data-ui-background='graphite'] .tn-shell .gl-card {

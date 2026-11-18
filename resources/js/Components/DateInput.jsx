@@ -210,7 +210,7 @@ export default function DateInput({
                         // Lets a popover holding this field (the ledger's custom range) treat the calendar as its own.
                         data-date-picker=""
                         dir="rtl"
-                        className="animate-menu fixed z-70 w-78 rounded-2xl border border-gray-100 bg-surface p-3 text-gray-900 shadow-lift"
+                        className="animate-menu fixed z-70 w-78 rounded-2xl p-3 text-gray-900 gl-pop"
                     >
                         <div className="mb-2 flex items-center justify-between gap-2">
                             <button

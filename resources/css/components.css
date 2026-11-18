@@ -17,7 +17,7 @@
     --gl-warn: rgb(var(--panel-warning));
     --gl-bad: rgb(var(--panel-danger));
     --gl-info: rgb(var(--panel-info));
-    /* The company's colour as text and lines (brand), and as a filled button (btn). */
+    /* The company's colour as text and lines (brand), and as a fill for a choice (btn); buttons use `--action`. */
     --gl-brand: var(--brand-600);
     --gl-btn: var(--brand-solid);
     --gl-head: var(--font-heading, 'Cairo'), 'IBM Plex Sans Arabic', system-ui, sans-serif;
@@ -34,6 +34,36 @@
 .gl-num {
     font-variant-numeric: tabular-nums;
     font-feature-settings: 'tnum';
+}
+
+/*
+ * Floating surfaces (menus, lists, the calendar, a row's actions): HeroUI's
+ * frosted glass, so they sit clearly above the page and the user tells
+ * apart what they are choosing from. Solid where the system asks for less
+ * transparency.
+ */
+.gl-pop {
+    border: 0;
+    background: rgb(var(--panel-bg) / 0.74);
+    box-shadow:
+        0 0 0 1px rgb(var(--gray-900) / 0.1),
+        0 24px 48px -12px rgb(0 0 0 / 0.35),
+        0 8px 16px -8px rgb(0 0 0 / 0.2);
+    -webkit-backdrop-filter: blur(22px) saturate(1.7);
+    backdrop-filter: blur(22px) saturate(1.7);
+}
+
+.dark .gl-pop {
+    background: rgb(var(--panel-bg) / 0.7);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1), 0 24px 56px -12px rgb(0 0 0 / 0.7);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    .gl-pop {
+        background: rgb(var(--panel-bg));
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
 }
 
 /* ── Panels and layout ─────────────────────────────────────────────────── */
@@ -303,10 +333,11 @@
 .gl-pill {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 2px 9px;
+    gap: 6px;
+    min-height: 24px;
+    padding: 1px 10px;
     border-radius: 99px;
-    font-size: 12px;
+    font-size: 12.5px;
     font-weight: 700;
     white-space: nowrap;
     color: var(--gl-c, var(--gl-muted));
@@ -390,31 +421,38 @@
     display: inline-flex;
     gap: 2px;
     padding: 3px;
-    border-radius: 12px;
-    background: var(--gl-fill);
-    border: 1px solid var(--gl-line);
+    border-radius: calc(20px * var(--radius-scale, 1));
+    background: rgb(var(--group-fill));
+    border: 0;
 }
 
 .gl-seg button {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 11px;
-    border-radius: 9px;
+    min-height: 32px;
+    padding: 0 12px;
+    border-radius: calc(17px * var(--radius-scale, 1));
     color: var(--gl-muted);
     font-weight: 600;
     font-size: 13px;
     white-space: nowrap;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.gl-seg button:not([aria-pressed='true']):hover {
+    color: var(--gl-ink);
+    background: rgb(var(--gray-900) / 0.06);
 }
 
 .gl-seg button[aria-pressed='true'] {
     background: rgb(var(--panel-bg));
     color: var(--gl-ink);
-    box-shadow: 0 4px 10px -6px rgb(0 0 0 / 0.6);
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.04), 0 1px 2px 0 rgb(0 0 0 / 0.06), 0 0 1px 0 rgb(0 0 0 / 0.06);
 }
 
 .dark .gl-seg button[aria-pressed='true'] {
-    background: rgb(255 255 255 / 0.14);
+    background: rgb(var(--gray-200));
 }
 
 .gl-tog {
@@ -422,8 +460,8 @@
     border-radius: 99px;
     font-size: 12px;
     font-weight: 700;
-    background: rgb(var(--gl-btn));
-    color: rgb(var(--brand-ink));
+    background: rgb(var(--action));
+    color: rgb(var(--action-ink));
 }
 
 .gl-tog[aria-pressed='false'] {
@@ -433,17 +471,24 @@
 
 .gl-chip {
     padding: 8px 14px;
-    border-radius: 12px;
-    background: var(--gl-fill);
-    border: 1px solid var(--gl-line);
+    border-radius: calc(14px * var(--radius-scale, 1));
+    background: rgb(var(--panel-field));
+    border: 0;
+    box-shadow: var(--field-shadow);
     font-weight: 600;
     color: var(--gl-muted);
+    transition: background-color 0.15s, box-shadow 0.15s, color 0.15s;
 }
 
+.gl-chip:hover {
+    box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+}
+
+/* A chosen chip: HeroUI's ring in the company's colour, with its soft halo. */
 .gl-chip:is([aria-pressed='true'], [aria-checked='true']) {
     color: var(--gl-ink);
-    background: rgb(var(--gl-brand) / 0.2);
-    border-color: rgb(var(--gl-brand) / 0.5);
+    background: rgb(var(--brand-solid) / 0.06);
+    box-shadow: 0 0 0 2px rgb(var(--brand-solid)), 0 0 0 5px rgb(var(--brand-solid) / 0.12);
 }
 
 .gl-tabs {
@@ -706,15 +751,20 @@
     min-width: 0;
     height: 40px;
     padding: 0 12px;
-    border-radius: 12px;
-    background: var(--gl-fill);
-    border: 1px solid var(--gl-line);
+    border-radius: calc(12px * var(--radius-scale, 1));
+    background: rgb(var(--panel-field));
+    border: 0;
+    box-shadow: var(--field-shadow);
     color: var(--gl-muted);
+    transition: box-shadow 0.15s;
+}
+
+.gl-field:hover {
+    box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
 }
 
 .gl-field:focus-within {
-    border-color: rgb(var(--gl-brand) / 0.6);
-    box-shadow: 0 0 0 3px rgb(var(--gl-brand) / 0.16);
+    box-shadow: 0 0 0 2px rgb(var(--brand-solid));
 }
 
 .gl-field :is(input, select) {
@@ -1241,29 +1291,30 @@
     place-items: center;
     width: 40px;
     height: 40px;
-    border-radius: var(--park-r2, 10px);
-    background: rgb(var(--gl-brand) / 0.1);
-    color: rgb(var(--gl-brand));
+    border-radius: var(--park-r2, 12px);
+    background: rgb(var(--group-fill));
+    color: rgb(var(--panel-ink));
 }
 
+/* The dashboard's main action is recording a payment: the payment's green, never the company's colour. */
 .gl-action.gl-main {
     grid-column: span 2;
     border-color: transparent;
-    background: rgb(var(--gl-btn));
-    color: rgb(var(--brand-ink));
+    background: rgb(var(--tone-pay-solid));
+    color: #fff;
 }
 
 .gl-action.gl-main:hover {
-    background: color-mix(in srgb, rgb(var(--gl-btn)) 84%, rgb(var(--brand-lo)));
+    background: color-mix(in srgb, rgb(var(--tone-pay-solid)) 86%, #000);
 }
 
 .gl-action.gl-main small {
-    color: rgb(var(--brand-ink) / 0.75);
+    color: rgb(255 255 255 / 0.8);
 }
 
 .gl-action.gl-main .gl-action-ico {
-    background: rgb(var(--brand-ink) / 0.12);
-    color: rgb(var(--brand-ink));
+    background: rgb(255 255 255 / 0.16);
+    color: #fff;
 }
 
 .gl-action.gl-main b {
@@ -1587,7 +1638,7 @@
     place-items: center;
     height: var(--wheel);
     color: rgb(244 247 249);
-    font: 600 calc(var(--wheel) * 0.6) / 1 Alexandria, var(--gl-head), sans-serif;
+    font: 600 calc(var(--wheel) * 0.6) / 1 var(--font-body, 'Zain'), var(--gl-head), sans-serif;
     font-variant-numeric: tabular-nums;
 }
 
@@ -2830,37 +2881,36 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 
 /*
  * ── The button system ───────────────────────────────────────────────────
- * Flat, crisp buttons that sit on the panels instead of floating over them:
- * one solid fill per role, a thin light along the top edge like the panel
- * panels' rim, no gradient, glow or drop shadow. Hover deepens the fill a
- * step (its ink, `--brand-ink`, keeps 4.5:1 on the company's colour), a press deepens it
- * further and nudges it down, focus shows a ring in the company's colour.
- *   gl-btn          main action: the company's colour
- *   gl-btn gl-sec   side action: the soft tint with a thin line
+ * HeroUI's buttons: rounded pills, one solid fill per role, no gradient,
+ * glow or drop shadow. Hover deepens the fill a step, a press shrinks it a
+ * touch, focus shows a ring in the company's colour. The company's colour
+ * never fills a button: it marks choice and focus.
+ *   gl-btn          main action: the logo's charcoal (a quiet slate in the dark theme)
+ *   gl-btn gl-sec   side action: a soft grey
  *   gl-btn gl-ghost quiet action: text only until hovered
- *   gl-btn gl-danger destructive: a red tint that fills on hover
- *   gl-sm / gl-lg   32px and 44px (38px by default); a page's own sizes win
+ *   gl-btn gl-danger destructive: a soft red tint
+ *   gl-sm / gl-lg   34px and 48px (40px by default); a page's own sizes win
  */
 .gl-btn {
-    --gl-btn-fill: rgb(var(--gl-btn));
-    --gl-btn-hover: color-mix(in srgb, rgb(var(--gl-btn)) 84%, rgb(var(--brand-lo)));
-    --gl-btn-press: color-mix(in srgb, rgb(var(--gl-btn)) 68%, rgb(var(--brand-lo)));
-    --gl-btn-ink: rgb(var(--brand-ink));
+    --gl-btn-fill: rgb(var(--action));
+    --gl-btn-hover: rgb(var(--action-hover));
+    --gl-btn-press: color-mix(in srgb, rgb(var(--action)) 86%, #000);
+    --gl-btn-ink: rgb(var(--action-ink));
     --gl-btn-line: transparent;
-    --gl-btn-rim: rgb(255 255 255 / 0.18);
+    --gl-btn-rim: transparent;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    min-height: 38px;
+    min-height: 40px;
     padding: 0 16px;
     border: 1px solid var(--gl-btn-line);
-    border-radius: 10px;
+    border-radius: calc(20px * var(--radius-scale, 1));
     background: var(--gl-btn-fill);
     color: var(--gl-btn-ink);
     box-shadow: inset 0 1px 0 var(--gl-btn-rim);
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.2;
     white-space: nowrap;
     cursor: pointer;
@@ -2877,7 +2927,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 
 .gl-btn:active:not(:disabled) {
     background: var(--gl-btn-press);
-    transform: translateY(1px);
+    transform: scale(0.985);
 }
 
 /* Dimmed, not faded out: its words still read (about 3:1), so the user sees what it would do. */
@@ -2887,16 +2937,12 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-btn.gl-sec {
-    --gl-btn-fill: var(--gl-fill-2);
-    --gl-btn-hover: color-mix(in srgb, var(--gl-fill-2) 70%, var(--gl-line-strong));
-    --gl-btn-press: var(--gl-fill);
-    --gl-btn-ink: var(--gl-ink);
-    --gl-btn-line: var(--gl-line);
-    --gl-btn-rim: var(--gl-line-strong);
-}
-
-.gl-btn.gl-sec:hover:not(:disabled) {
-    border-color: var(--gl-line-strong);
+    --gl-btn-fill: rgb(var(--group-fill));
+    --gl-btn-hover: rgb(var(--group-hover));
+    --gl-btn-press: rgb(var(--group-press));
+    --gl-btn-ink: rgb(var(--group-ink));
+    --gl-btn-line: transparent;
+    --gl-btn-rim: transparent;
 }
 
 .gl-btn.gl-ghost {
@@ -2911,7 +2957,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     color: var(--gl-ink);
 }
 
-/* Adding something new (Components/AddButton.jsx): teal, apart from the main action's blue. */
+/* Adding something new (Components/AddButton.jsx): a main action, in its charcoal. */
 .gl-btn.gl-add {
     --gl-btn-fill: rgb(var(--add-fill));
     --gl-btn-hover: rgb(var(--add-hover));
@@ -2919,7 +2965,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     --gl-btn-ink: rgb(var(--add-ink));
 }
 
-/* Acting on a group of rows or managing a list (Components/GroupActionButton.jsx): charcoal, light grey in the dark theme. */
+/* Acting on a group of rows or managing a list (Components/GroupActionButton.jsx): a quiet grey button. */
 .gl-btn.gl-group {
     --gl-btn-fill: rgb(var(--group-fill));
     --gl-btn-hover: rgb(var(--group-hover));
@@ -2929,17 +2975,12 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-btn.gl-danger {
-    --gl-btn-fill: color-mix(in srgb, var(--gl-bad) 12%, transparent);
-    --gl-btn-hover: var(--gl-bad);
-    --gl-btn-press: color-mix(in srgb, var(--gl-bad) 85%, #000);
+    --gl-btn-fill: color-mix(in srgb, var(--gl-bad) 12%, rgb(var(--panel-bg)));
+    --gl-btn-hover: color-mix(in srgb, var(--gl-bad) 20%, rgb(var(--panel-bg)));
+    --gl-btn-press: color-mix(in srgb, var(--gl-bad) 26%, rgb(var(--panel-bg)));
     --gl-btn-ink: var(--gl-bad);
-    --gl-btn-line: color-mix(in srgb, var(--gl-bad) 35%, transparent);
+    --gl-btn-line: transparent;
     --gl-btn-rim: transparent;
-}
-
-.gl-btn.gl-danger:hover:not(:disabled) {
-    border-color: transparent;
-    color: #fff;
 }
 
 .gl-btn.gl-correcting {
@@ -2949,31 +2990,31 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-btn.gl-sm {
-    min-height: 32px;
+    min-height: 34px;
     padding: 0 12px;
-    border-radius: 8px;
+    border-radius: calc(17px * var(--radius-scale, 1));
     font-size: 13px;
 }
 
 .gl-btn.gl-lg {
-    min-height: 44px;
-    padding: 0 20px;
-    border-radius: 12px;
-    font-size: 15px;
+    min-height: 48px;
+    padding: 0 22px;
+    border-radius: calc(24px * var(--radius-scale, 1));
+    font-size: 15.5px;
 }
 
 /* The main button's look split into parts (a button and its menu). */
 .gl-btn-surface {
-    --gl-surface-fill: rgb(var(--gl-btn));
-    --gl-surface-hover: color-mix(in srgb, rgb(var(--gl-btn)) 84%, rgb(var(--brand-lo)));
-    --gl-surface-ink: rgb(var(--brand-ink));
+    --gl-surface-fill: rgb(var(--action));
+    --gl-surface-hover: rgb(var(--action-hover));
+    --gl-surface-ink: rgb(var(--action-ink));
     display: inline-flex;
     overflow: hidden;
-    border-radius: 10px;
+    border-radius: calc(20px * var(--radius-scale, 1));
     background: var(--gl-surface-fill);
     color: var(--gl-surface-ink);
-    font-weight: 600;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+    font-weight: 700;
+    box-shadow: none;
 }
 
 /* The split button in the group actions' charcoal (Pages/Subscriptions/BulkActionsMenu.jsx). */
@@ -2988,7 +3029,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    min-height: 38px;
+    min-height: 40px;
     padding: 0 14px;
     transition: background-color 0.15s;
 }

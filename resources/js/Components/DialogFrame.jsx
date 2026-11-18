@@ -22,7 +22,7 @@ export function DialogHeader({ titleId, title, description = null, descriptionId
         <header className="gl-dialog-head flex shrink-0 items-start gap-3 px-5 py-5 sm:gap-4 sm:px-6">
             <span className={`gl-tone hidden h-11 w-11 shrink-0 items-center justify-center rounded-[14px] sm:flex ${DIALOG_TONES[tone] ?? DIALOG_TONES.primary}`}><Icon name={icon} className="h-[22px] w-[22px]" /></span>
             <div className="min-w-0 flex-1 self-center">
-                <h2 id={titleId} className="wrap-break-word text-lg font-bold leading-snug font-(family-name:--gl-head)!">{title}</h2>
+                <h2 id={titleId} className="wrap-break-word text-xl font-extrabold leading-snug font-(family-name:--gl-head)!">{title}</h2>
                 {description && <p id={descriptionId} className="gl-sub mt-1 wrap-break-word text-sm!">{description}</p>}
             </div>
             <button type="button" onClick={onClose} disabled={closeDisabled} aria-label="إغلاق النافذة" className="gl-ib disabled:opacity-40"><Icon name="close" className="h-4 w-4" /></button>

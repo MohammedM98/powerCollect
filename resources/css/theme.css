@@ -25,7 +25,11 @@
 
 :root {
     /* The height of every field and list (inputs, selects, dates, search) and of the buttons beside them. */
-    --control-h: 46px;
+    --control-h: 48px;
+
+    /* HeroUI's field: a soft shadow instead of a line, and a fine ring under the pointer. */
+    --field-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.04), 0 1px 2px 0 rgb(0 0 0 / 0.06), 0 0 1px 0 rgb(0 0 0 / 0.06);
+    --field-hover-ring: rgb(var(--gray-900) / 0.18);
 
     color-scheme: light;
 
@@ -77,20 +81,19 @@
     --switch-on: 22 163 74;
 
     /*
-     * Button roles beside the main (brand) one, so each kind of action is
-     * told apart at a glance (components.css `gl-add`, `gl-group`):
-     * adding something new is blue, acting on a group of rows or managing a
-     * list is charcoal (light grey in the dark theme). Each fill carries its
-     * ink at 4.5:1 or more.
+     * Button roles beside the main one (components.css `gl-add`, `gl-group`):
+     * adding something new is a main action, in the same charcoal; acting on
+     * a group of rows or managing a list is a quiet grey button. Each fill
+     * carries its ink at 4.5:1 or more.
      */
-    --add-fill: 37 99 235;
-    --add-hover: 29 78 216;
-    --add-press: 30 64 175;
+    --add-fill: 42 45 52;
+    --add-hover: 59 63 72;
+    --add-press: 30 32 38;
     --add-ink: 255 255 255;
-    --group-fill: 38 38 38;
-    --group-hover: 64 64 64;
-    --group-press: 82 82 82;
-    --group-ink: 255 255 255;
+    --group-fill: 237 235 234;
+    --group-hover: 226 224 222;
+    --group-press: 216 214 211;
+    --group-ink: 32 35 41;
 
     /*
      * The main action of a page or window (its one solid button): the logo's
@@ -315,6 +318,9 @@
 .dark {
     color-scheme: dark;
 
+    --field-shadow: 0 0 #0000;
+    --field-hover-ring: rgb(255 255 255 / 0.22);
+
     --brand-50: 14 32 30;
     --brand-100: 17 42 39;
     --brand-200: 19 61 56;
@@ -354,10 +360,13 @@
 
 
 
-    --group-fill: 229 229 229;
-    --group-hover: 245 245 245;
-    --group-press: 212 212 212;
-    --group-ink: 23 23 23;
+    --add-fill: 65 78 96;
+    --add-hover: 77 92 114;
+    --add-press: 55 66 82;
+    --group-fill: 37 38 41;
+    --group-hover: 48 49 53;
+    --group-press: 58 59 63;
+    --group-ink: 247 246 245;
 
     --action: 65 78 96;
     --action-hover: 77 92 114;
