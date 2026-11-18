@@ -1487,3 +1487,398 @@ html.tn-locked {
         min-height: 44px;
     }
 }
+
+/*
+ * ── The HeroUI shell ─────────────────────────────────────────────────────
+ *
+ * A side bar flush with the screen's edge: a narrow rail of icons (84px) by
+ * default, or wide (272px) with the sections' names once the user widens it
+ * (html[data-side], TopBar.jsx). The company's logo is the largest thing in
+ * it; once the page scrolls the logo shrinks to the middle of the bar and the
+ * company's name slides into the top bar beside the tools. The current
+ * section carries a short line in the company's colour at the screen's edge.
+ * `:root[data-ui-navigation]` (always on <html>) lets these rules meet the
+ * look's own choices (app.css) at their strength; this file comes after it.
+ */
+:root[data-ui-navigation] {
+    --tn-bar-height: 68px;
+    --tn-bar-rest-height: 68px;
+    --tn-dock-gap: 0px;
+    --tn-dock-width: 84px;
+    --tn-line: rgb(var(--gray-900) / 0.08);
+}
+
+:root[data-ui-navigation][data-side='wide'] {
+    --tn-dock-width: 272px;
+}
+
+.dark:root[data-ui-navigation] {
+    --tn-line: rgb(255 255 255 / 0.07);
+}
+
+:root[data-ui-navigation] .tn-header,
+:root[data-ui-navigation] .tn-header.is-scrolled {
+    height: var(--tn-bar-rest-height);
+    padding: 0;
+}
+
+:root[data-ui-navigation] .tn-header[data-subnav] {
+    height: calc(var(--tn-bar-rest-height) + var(--tn-subnav-height));
+}
+
+/* The top bar: the page's own colour, frosted, across the page; no card. */
+:root[data-ui-navigation] .tn-bar,
+:root[data-ui-navigation] .tn-header.is-scrolled .tn-bar {
+    max-width: none;
+    padding-inline: var(--tn-gutter);
+    border: 0;
+    border-bottom: 1px solid transparent;
+    border-radius: 0;
+    background: rgb(var(--panel-page) / 0.82);
+    box-shadow: none;
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    backdrop-filter: blur(16px) saturate(1.4);
+    transition: border-color 0.3s;
+}
+
+:root[data-ui-navigation] .tn-header.is-scrolled .tn-bar {
+    border-bottom-color: var(--tn-line);
+}
+
+:root[data-ui-navigation] .tn-bar::before {
+    display: none;
+}
+
+:root[data-ui-navigation] .tn-bar-tabs {
+    margin-inline: calc(var(--tn-gutter) * -1);
+    padding-inline: var(--tn-gutter);
+    border-top: 0;
+    border-bottom: 1px solid var(--tn-line);
+}
+
+/* The company's name: beside the tools once the page scrolls (the logo already leads the side bar). */
+@media (min-width: 1024px) {
+    :root[data-ui-navigation] .tn-brand {
+        max-width: 0;
+        padding-inline: 0;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(-10px);
+        pointer-events: none;
+        transition: max-width 0.36s var(--tn-ease), opacity 0.24s, transform 0.32s var(--tn-ease), padding 0.36s var(--tn-ease);
+    }
+
+    :root[data-ui-navigation] .tn-header.is-scrolled .tn-brand {
+        max-width: 420px;
+        padding-inline: 8px;
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+    }
+}
+
+:root[data-ui-navigation] .tn-brand-name {
+    font: 800 17px/1.25 Alexandria, var(--font-body, 'Zain'), sans-serif;
+}
+
+:root[data-ui-navigation] .tn-brand-branch {
+    font: 700 13.5px/1.35 var(--font-body, 'Zain'), sans-serif;
+    color: rgb(var(--brand-600));
+}
+
+/* The tools: quiet round buttons and a search pill that fills on hover. */
+:root[data-ui-navigation] :is(.tn-tool, .tn-search),
+:root[data-ui-background='graphite'][data-ui-navigation] :is(.tn-tool, .tn-search) {
+    border: 0;
+    background: none;
+    box-shadow: none;
+}
+
+:root[data-ui-navigation] .tn-tool {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+}
+
+:root[data-ui-navigation] .tn-search {
+    height: 40px;
+    border-radius: 999px;
+}
+
+:root[data-ui-navigation] :is(.tn-tool, .tn-search):hover,
+:root[data-ui-navigation] .tn-tool[aria-expanded='true'],
+:root[data-ui-background='graphite'][data-ui-navigation] :is(.tn-tool, .tn-search):hover,
+:root[data-ui-background='graphite'][data-ui-navigation] .tn-tool[aria-expanded='true'] {
+    background: rgb(var(--gray-900) / 0.06);
+    color: rgb(var(--gray-900));
+}
+
+.dark:root[data-ui-navigation] :is(.tn-tool, .tn-search):hover,
+.dark:root[data-ui-navigation] .tn-tool[aria-expanded='true'] {
+    background: rgb(255 255 255 / 0.08);
+}
+
+@media (min-width: 1024px) {
+    /* The side bar: flush with the screen's edge, on the page's colour, a hairline toward the page. */
+    :root[data-ui-navigation] .tn-side,
+    :root[data-ui-background='graphite'][data-ui-navigation] .tn-side {
+        inset-block: 0;
+        inset-inline-start: 0;
+        align-items: stretch;
+        gap: 2px;
+        padding: 0 0 14px;
+        border: 0;
+        border-inline-end: 1px solid var(--tn-line);
+        border-radius: 0;
+        background: rgb(var(--panel-page));
+        box-shadow: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        overflow: hidden;
+        transition: width 0.22s var(--tn-ease);
+    }
+
+    :root[data-ui-navigation] :is(.tn-header, .tn-content) {
+        transition: margin 0.22s var(--tn-ease);
+    }
+}
+
+/* The logo: the largest thing in the bar; once the page scrolls it shrinks into the bar's middle. */
+:root[data-ui-navigation] .tn-side-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: 104px;
+    margin: 0 0 6px;
+    padding-inline: 12px;
+    border-bottom: 1px solid transparent;
+    border-radius: 0;
+    transition: height 0.32s var(--tn-ease), border-color 0.32s;
+}
+
+:root[data-ui-navigation] .tn-side-logo :is(img, svg) {
+    width: 60px;
+    max-width: none;
+    height: auto;
+    transition: width 0.32s var(--tn-ease);
+}
+
+:root[data-ui-navigation][data-side='wide'] .tn-side-logo {
+    justify-content: flex-start;
+    padding-inline: 22px;
+}
+
+:root[data-ui-navigation][data-side='wide'] .tn-side-logo :is(img, svg) {
+    width: 84px;
+}
+
+:root[data-ui-navigation] .tn-header.is-scrolled .tn-side-logo {
+    justify-content: center;
+    height: 68px;
+    padding-inline: 12px;
+    border-bottom-color: var(--tn-line);
+}
+
+:root[data-ui-navigation] .tn-header.is-scrolled .tn-side-logo :is(img, svg) {
+    width: 44px;
+}
+
+/* The sections: a quiet pill under the hovered one; the open one on a soft fill with the company's line at the edge. */
+:root[data-ui-navigation] {
+    /* The room between the bar's edge and its sections: the current section's line sits in it. */
+    --tn-side-inset: 6px;
+}
+
+:root[data-ui-navigation][data-side='wide'] {
+    --tn-side-inset: 12px;
+}
+
+:root[data-ui-navigation] .tn-sections {
+    gap: 2px;
+    padding: 2px var(--tn-side-inset);
+    overflow-x: hidden;
+}
+
+:root[data-ui-navigation] .tn-highlight,
+:root[data-ui-background='graphite'][data-ui-navigation] .tn-highlight {
+    inset-inline-start: var(--tn-side-inset);
+    border-radius: 16px;
+    background: rgb(var(--gray-900) / 0.06);
+    box-shadow: none;
+}
+
+.dark:root[data-ui-navigation] .tn-highlight {
+    background: rgb(255 255 255 / 0.08);
+}
+
+:root[data-ui-navigation] .tn-section {
+    min-height: 56px;
+    border-radius: 16px;
+    color: rgb(var(--panel-muted));
+    font-size: 12px;
+    font-weight: 700;
+}
+
+:root[data-ui-navigation] .tn-section .tn-section-icon,
+:root[data-ui-navigation] .tn-section[data-lit='true'] .tn-section-icon {
+    width: 20px;
+    height: 20px;
+    color: currentColor;
+}
+
+:root[data-ui-navigation] .tn-section[data-lit='true'],
+:root[data-ui-navigation] .tn-section[data-current='true'] {
+    color: rgb(var(--panel-ink));
+}
+
+:root[data-ui-navigation] .tn-section[data-current='true'] {
+    background: rgb(var(--gray-900) / 0.05);
+}
+
+.dark:root[data-ui-navigation] .tn-section[data-current='true'] {
+    background: rgb(255 255 255 / 0.06);
+}
+
+:root[data-ui-navigation] .tn-section[data-current='true']::after {
+    inset-block: 14px;
+    inset-inline: calc(var(--tn-side-inset) * -1) auto;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: rgb(var(--brand-solid));
+}
+
+/* The short name under the icon on the rail; the full name beside it when the bar is wide. */
+:root[data-ui-navigation] .tn-section-full {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+:root[data-ui-navigation][data-side='wide'] .tn-section {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    min-height: 44px;
+    padding: 0 13px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: start;
+    white-space: nowrap;
+}
+
+:root[data-ui-navigation][data-side='wide'] .tn-highlight {
+    border-radius: 999px;
+}
+
+:root[data-ui-navigation][data-side='wide'] .tn-section-short {
+    display: none;
+}
+
+:root[data-ui-navigation][data-side='wide'] .tn-section-full {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    clip-path: none;
+    text-overflow: ellipsis;
+}
+
+:root[data-ui-navigation][data-side='wide'] .tn-section .tn-badge {
+    position: static;
+    margin-inline-start: auto;
+}
+
+:root[data-ui-navigation] .tn-section .tn-badge {
+    font-family: var(--font-body, 'Zain'), sans-serif;
+    font-size: 11.5px;
+    box-shadow: 0 0 0 2px rgb(var(--panel-page));
+}
+
+/* Widening and narrowing the bar, and the account, at its foot. */
+.tn-side-pin {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    :root[data-ui-navigation] .tn-side-pin {
+        display: grid;
+        flex: none;
+        place-items: center;
+        align-self: center;
+        width: 40px;
+        height: 40px;
+        margin-top: 8px;
+        border: 0;
+        border-radius: 999px;
+        background: none;
+        color: rgb(var(--panel-muted));
+        cursor: pointer;
+        transition: background-color 0.15s, color 0.15s;
+    }
+
+    :root[data-ui-navigation][data-side='wide'] .tn-side-pin {
+        align-self: flex-end;
+    }
+
+    :root[data-ui-navigation] .tn-side-pin:hover {
+        background: rgb(var(--gray-900) / 0.06);
+        color: rgb(var(--panel-ink));
+    }
+
+    :root[data-ui-navigation] .tn-side-pin:focus-visible {
+        outline: 2px solid rgb(var(--brand-solid));
+        outline-offset: 2px;
+    }
+
+    :root[data-ui-navigation] .tn-side-pin svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    :root[data-ui-navigation] .tn-side-account {
+        align-self: center;
+    }
+}
+
+/* A section's pages: frosted glass that floats clearly above the page. */
+:root[data-ui-navigation] .tn-mega,
+:root[data-ui-background='graphite'][data-ui-navigation] .tn-mega {
+    border: 0;
+    border-radius: 22px;
+    background: rgb(var(--panel-bg) / 0.74);
+    box-shadow:
+        0 0 0 1px rgb(var(--gray-900) / 0.1),
+        0 24px 48px -12px rgb(0 0 0 / 0.35),
+        0 8px 16px -8px rgb(0 0 0 / 0.2);
+    -webkit-backdrop-filter: blur(22px) saturate(1.7);
+    backdrop-filter: blur(22px) saturate(1.7);
+}
+
+.dark:root[data-ui-navigation] .tn-mega {
+    background: rgb(var(--panel-bg) / 0.7);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1), 0 24px 56px -12px rgb(0 0 0 / 0.7);
+}
+
+:root[data-ui-navigation] .tn-mega::before {
+    display: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    :root[data-ui-navigation] .tn-mega {
+        background: rgb(var(--panel-bg));
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root[data-ui-navigation] :is(.tn-side, .tn-side-logo, .tn-side-logo img, .tn-side-logo svg, .tn-brand, .tn-header, .tn-content) {
+        transition: none;
+    }
+}

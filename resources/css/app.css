@@ -24,14 +24,14 @@
 
 @theme {
   --font-sans:
-    var(--font-body, 'IBM Plex Sans Arabic'), 'IBM Plex Sans Arabic',
+    var(--font-body, 'Zain'), 'Zain', 'IBM Plex Sans Arabic',
     ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
   --font-luxe:
     var(--font-heading, 'El Messiri'), 'IBM Plex Sans Arabic', ui-serif,
     Georgia, Cambria, 'Times New Roman', Times, serif;
   --font-display:
-    Alexandria, 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif,
+    var(--font-body, 'Zain'), 'Zain', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif,
     'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
   --text-xs: 0.875rem;
@@ -528,9 +528,9 @@ select:not([multiple], [size]) {
     }
 
     /*
-     * El Messiri is kept for page titles only; smaller headings stay in
-     * IBM Plex Sans Arabic, which reads better at card and dialog sizes.
-     * Numbers and amounts use Alexandria (`font-display`).
+     * Page titles take the heading face (`font-luxe`); text, headings and
+     * numbers are all Zain by default (`font-display` follows the body face).
+     * Alexandria is kept for the company's name beside its logo.
      */
     h1,
     h2 {
@@ -2584,8 +2584,8 @@ input[type='radio'] {
  */
 :root {
     --radius-scale: 1;
-    --font-body: 'IBM Plex Sans Arabic';
-    --font-heading: 'El Messiri';
+    --font-body: 'Zain';
+    --font-heading: 'Zain';
     --ui-content-width: 1720px;
     /* Shadows scale by the company's shadow strength (`tokens.shadowStrength`). */
     --shadow-card: 0 1px 2px rgb(var(--shadow-ink) / calc(0.04 * var(--shadow-strength, 1))), 0 14px 34px -18px rgb(var(--shadow-ink) / calc(0.18 * var(--shadow-strength, 1)));
@@ -2608,6 +2608,10 @@ input[type='radio'] {
 }
 
 /* Faces (resources/css/fonts.css): each loads only once a page uses it. */
+:root[data-ui-body-font='plex'] {
+    --font-body: 'IBM Plex Sans Arabic';
+}
+
 :root[data-ui-body-font='alexandria'] {
     --font-body: 'Alexandria';
 }
@@ -2622,6 +2626,10 @@ input[type='radio'] {
 
 :root[data-ui-body-font='kufi'] {
     --font-body: 'Noto Kufi Arabic';
+}
+
+:root[data-ui-heading-font='messiri'] {
+    --font-heading: 'El Messiri';
 }
 
 :root[data-ui-heading-font='alexandria'] {

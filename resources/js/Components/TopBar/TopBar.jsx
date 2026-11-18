@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import BrandLogo from '@/Components/BrandLogo';
@@ -9,6 +10,31 @@ import AccountMenu, { Avatar } from './AccountMenu';
 import { useTheme } from '@/hooks/useTheme';
 import './top-bar.css';
 import { useMegaMenu } from './useMegaMenu';
+
+const SIDE_KEY = 'side';
+
+/** The side bar's width the user chose: a narrow rail of icons (the default) or wide with the sections' names. */
+function useSideWidth() {
+    const [wide, setWide] = useState(() => {
+        try {
+            return localStorage.getItem(SIDE_KEY) === 'wide';
+        } catch {
+            return false;
+        }
+    });
+
+    useEffect(() => {
+        document.documentElement.dataset.side = wide ? 'wide' : 'rail';
+
+        try {
+            localStorage.setItem(SIDE_KEY, wide ? 'wide' : 'rail');
+        } catch {
+            // A browser that keeps nothing still gets the chosen width for this visit.
+        }
+    }, [wide]);
+
+    return [wide, setWide];
+}
 
 /** How many things wait in a section's pages, from the page's badges. */
 function badgeOf(group, badges) {
@@ -38,6 +64,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
     const current = currentGroup(groups, url);
     const currentScope = props.branchView?.current ? branchLabel : where?.scope;
     const pageLabel = where ? (currentScope ? [where.page, currentScope] : [where.section, where.page]).filter(Boolean).join(' · ') : null;
+    const [wideSide, setWideSide] = useSideWidth();
     const searchText = props.can?.recordPayments && props.can?.viewSubscriptions ? 'ابحث عن صفحة أو مشترك…' : 'ابحث عن صفحة أو أمر…';
 
     const { scrolled, clearTimers, closeMega, currentKey, geometry, highlightRef, hoverItem, itemRefs, leaveZone, litKey, megaRef, navRef, onMegaKeyDown, onSectionClick, onSectionKeyDown, openGroup, openId, panelRef, panels, pointerType, popover, setHoverKey, setPopover, still, togglePopover } = useMegaMenu({ current, groups, items, layerOpen, url });
@@ -97,7 +124,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                                         onKeyDown={(event) => onSectionKeyDown(event, item)}
                                     >
                                         <Icon name={item.link.icon} className="tn-section-icon" />
-                                        <span>{item.link.label}</span>
+                                        <span className="tn-section-label">{item.link.label}</span>
                                         {badges[item.link.href] > 0 && <span className="tn-badge" aria-hidden="true">{badges[item.link.href]}</span>}
                                     </Link>
                                 );
@@ -124,8 +151,8 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                                     onKeyDown={(event) => onSectionKeyDown(event, item)}
                                 >
                                     <Icon name={item.group.icon} className="tn-section-icon" />
-                                    <span aria-hidden="true">{item.group.shortLabel}</span>
-                                    <span className="sr-only">{item.group.label}</span>
+                                    <span className="tn-section-short" aria-hidden="true">{item.group.shortLabel}</span>
+                                    <span className="tn-section-full">{item.group.label}</span>
                                     {badge > 0 && (
                                         <>
                                             <span className="tn-badge" aria-hidden="true">{badge}</span>
@@ -136,6 +163,17 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             );
                         })}
                     </nav>
+
+                    <button
+                        type="button"
+                        className="tn-side-pin"
+                        onClick={() => setWideSide(!wideSide)}
+                        aria-pressed={wideSide}
+                        aria-label={wideSide ? 'تضييق الشريط الجانبي' : 'توسيع الشريط الجانبي'}
+                        title={wideSide ? 'تضييق الشريط الجانبي' : 'توسيع الشريط الجانبي'}
+                    >
+                        <Icon name={wideSide ? 'chevron-right' : 'chevron-left'} />
+                    </button>
 
                     <Link href="/profile" prefetch={shouldPrefetchPage('/profile')} className="tn-side-account" aria-label={`${user?.name ?? ''}، الملف الشخصي`}>
                         <Avatar name={user?.name} />
