@@ -44,8 +44,8 @@ export function BankRow({ bank, checked, name, onChange, required = false }) {
 
     return (
         <label
-            className={`relative flex min-h-[58px] cursor-pointer items-center gap-3 rounded-[14px] border-[1.5px] px-3 py-2 transition focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-gray-900 ${
-                checked ? 'border-brand-500 bg-brand-500/[0.06] shadow-[0_0_0_3px_rgb(var(--brand-500)/0.12)]' : 'border-gray-100 bg-surface hover:border-gray-300'
+            className={`relative flex min-h-[58px] cursor-pointer items-center gap-3 rounded-[14px] border-[1.5px] px-3 py-2 transition focus-within:outline-solid focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-gray-900 ${
+                checked ? 'border-brand-500 bg-brand-500/6 shadow-[0_0_0_3px_rgb(var(--brand-500)/0.12)]' : 'border-gray-100 bg-surface hover:border-gray-300'
             }`}
         >
             <input type="radio" name={name} value={bank} required={required} checked={checked} onChange={() => onChange(bank)} className="sr-only" />
@@ -113,7 +113,7 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
                 aria-expanded={open}
                 aria-haspopup="listbox"
                 onClick={() => setOpen((current) => !current)}
-                className={`flex min-h-[58px] w-full items-center gap-3 rounded-[14px] border-[1.5px] bg-surface px-3 py-2 text-start transition focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15 ${
+                className={`flex min-h-[58px] w-full items-center gap-3 rounded-[14px] border-[1.5px] bg-surface px-3 py-2 text-start transition focus:outline-hidden focus-visible:ring-4 focus-visible:ring-brand-500/15 ${
                     open ? 'border-brand-500 ring-4 ring-brand-500/15' : 'border-gray-200 hover:border-brand-500/45'
                 }`}
             >

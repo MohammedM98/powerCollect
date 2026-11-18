@@ -207,7 +207,7 @@ export default function PrintSortSection({ fieldOptions, layout, onChange, set, 
                                     value={level.key}
                                     onChange={(e) => setSortLevel(index, { key: e.target.value })}
                                     aria-label={`حقل الترتيب ${index + 1}`}
-                                    className="block min-w-0 flex-1 !py-1 text-sm"
+                                    className="block min-w-0 flex-1 py-1! text-sm"
                                 >
                                     {fieldOptions}
                                 </select>

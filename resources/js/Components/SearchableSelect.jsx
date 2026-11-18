@@ -194,10 +194,10 @@ export default function SearchableSelect({
                 onClick={() => setOpen((current) => !current)}
                 className={
                     onDark
-                        ? `flex h-[46px] w-full items-center justify-between gap-2 rounded-control border bg-white/10 px-3.5 text-start text-base leading-6 text-white transition focus:outline-none focus-visible:border-white/50 focus-visible:ring-4 focus-visible:ring-white/15 disabled:cursor-not-allowed disabled:opacity-50 ${
+                        ? `flex h-[46px] w-full items-center justify-between gap-2 rounded-control border bg-white/10 px-3.5 text-start text-base leading-6 text-white transition focus:outline-hidden focus-visible:border-white/50 focus-visible:ring-4 focus-visible:ring-white/15 disabled:cursor-not-allowed disabled:opacity-50 ${
                               open ? 'border-white/50 ring-4 ring-white/15' : active ? 'border-white/35' : 'border-white/15 hover:border-white/35 hover:bg-white/15'
                           }`
-                        : `flex h-[var(--control-h)] w-full items-center justify-between gap-2 rounded-control border bg-surface px-3 text-start text-base leading-6 transition focus:outline-none focus-visible:border-brand-500 focus-visible:ring-4 focus-visible:ring-brand-500/15 disabled:cursor-not-allowed disabled:border-dashed disabled:bg-gray-50 disabled:text-gray-500 ${
+                        : `flex h-(--control-h) w-full items-center justify-between gap-2 rounded-control border bg-surface px-3 text-start text-base leading-6 transition focus:outline-hidden focus-visible:border-brand-500 focus-visible:ring-4 focus-visible:ring-brand-500/15 disabled:cursor-not-allowed disabled:border-dashed disabled:bg-gray-50 disabled:text-gray-500 ${
                               open ? 'border-brand-500 ring-4 ring-brand-500/15' : active ? 'border-brand-500/60' : 'border-gray-200 hover:border-brand-500/45'
                           }`
                 }
@@ -226,7 +226,7 @@ export default function SearchableSelect({
             )}
 
             {open && renderPopup(
-                <div ref={popupRef} style={portal ? popupStyle : undefined} className="animate-modal-panel absolute z-20 mt-2 flex w-full min-w-[12rem] flex-col overflow-hidden rounded-2xl border border-gray-100 bg-surface shadow-lift">
+                <div ref={popupRef} style={portal ? popupStyle : undefined} className="animate-modal-panel absolute z-20 mt-2 flex w-full min-w-48 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-surface shadow-lift">
                     {searchable && (
                         <div className="shrink-0 border-b border-gray-100 p-2">
                             <input
@@ -242,7 +242,7 @@ export default function SearchableSelect({
                     {onCreate && <button
                         type="button"
                         onClick={() => { const name = query.trim(); setOpen(false); setQuery(''); onCreate(name); }}
-                        className="mx-1.5 mt-1.5 flex items-center gap-2 rounded-lg bg-brand-500/10 px-3 py-2.5 text-start text-sm font-bold text-brand-600 transition hover:bg-brand-500/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-500"
+                        className="mx-1.5 mt-1.5 flex items-center gap-2 rounded-lg bg-brand-500/10 px-3 py-2.5 text-start text-sm font-bold text-brand-600 transition hover:bg-brand-500/15 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand-500"
                     >
                         <Icon name="plus" className="h-4 w-4 shrink-0" />
                         <span className="min-w-0 truncate">{createLabel}{query.trim() && <>: <bdi>{query.trim()}</bdi></>}</span>

@@ -56,7 +56,7 @@ export default function PermissionMatrixView({
             <section className="pm-card pm-matrix" aria-label="جدول الصلاحيات">
                 <div className="pm-tools">
                     <div className="pm-search">
-                        <Icon name="search" className="pointer-events-none absolute inset-y-0 start-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
+                        <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
                         <input
                             type="search"
                             value={query}

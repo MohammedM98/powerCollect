@@ -100,7 +100,7 @@ export default function FlashNotifications({ initialStatus }) {
                             </span>
                             <div className="min-w-0 flex-1">
                                 {appearance.title && <p className="font-bold leading-7">{appearance.title}</p>}
-                                <p className={`break-words leading-7 ${appearance.title ? '' : 'font-bold'}`}>
+                                <p className={`wrap-break-word leading-7 ${appearance.title ? '' : 'font-bold'}`}>
                                     {notification.message}
                                 </p>
                             </div>

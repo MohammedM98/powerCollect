@@ -201,7 +201,7 @@ export default function Editor({ template, defaultLayout, fields }) {
                         <FormSection columns={1} icon="document-plus" title="استيراد نموذج قديم" info="PDF أو صورة، حتى 10 ميجابايت و10 صفحات. يبقى التصميم الأصلي خلف الحقول التي تضيفها.">
                             <input ref={fileInput} type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" className="sr-only" onChange={(event) => { chooseFile(event.target.files?.[0]); event.target.value = ''; }} />
                             <SecondaryButton onClick={() => fileInput.current.click()}><Icon name="document-plus" className="h-4 w-4" />{source ? 'اختيار ملف بديل' : 'اختيار الملف'}</SecondaryButton>
-                            {source && <p className="break-words rounded-control bg-gray-50 px-3 py-2 text-sm text-gray-700">{source.name}</p>}<InputError message={fileError || sourceState.error} />
+                            {source && <p className="wrap-break-word rounded-control bg-gray-50 px-3 py-2 text-sm text-gray-700">{source.name}</p>}<InputError message={fileError || sourceState.error} />
                         </FormSection>
                         {source?.url && <FormSection columns={1} icon="pin" title="الحقول فوق الملف" info="اختر الحقل، ثم اضغط تحديد مكانه وانقر على الورقة. تستطيع تعديل الموضع بالأرقام.">
                             <SearchableSelect options={[...fieldOptions, { value: 'custom', label: 'حقل يدوي مخصص' }]} value={fieldKey} onChange={setFieldKey} clearable={false} />

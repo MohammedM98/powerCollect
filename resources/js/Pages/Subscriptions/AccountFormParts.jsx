@@ -29,12 +29,12 @@ const TONES = {
     },
     green: {
         tile: 'border-emerald-600 shadow-[0_0_0_4px_rgb(var(--success-600)/0.12)]',
-        icon: 'bg-gradient-to-br from-emerald-600 to-emerald-800 text-white',
+        icon: 'bg-linear-to-br from-emerald-600 to-emerald-800 text-white',
         dot: 'border-emerald-600 bg-emerald-600',
     },
     amber: {
         tile: 'border-amber-600 shadow-[0_0_0_4px_rgb(var(--warning-600)/0.12)]',
-        icon: 'bg-gradient-to-br from-amber-500 to-amber-700 text-white',
+        icon: 'bg-linear-to-br from-amber-500 to-amber-700 text-white',
         dot: 'border-amber-600 bg-amber-600',
     },
     graphite: {
@@ -184,7 +184,7 @@ export function ChoiceTile({ name, value, checked, onChange, icon, title, hint, 
 
     return (
         <label
-            className={`relative flex cursor-pointer gap-3 rounded-[18px] border-[1.5px] bg-surface px-4 py-3.5 text-start transition focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-gray-900 ${
+            className={`relative flex cursor-pointer gap-3 rounded-[18px] border-[1.5px] bg-surface px-4 py-3.5 text-start transition focus-within:outline-solid focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-gray-900 ${
                 stacked ? 'items-center sm:flex-col sm:items-start sm:gap-2 sm:px-3.5' : 'items-center'
             } ${checked ? look.tile : 'border-gray-200 hover:border-gray-300'}`}
         >
@@ -200,7 +200,7 @@ export function ChoiceTile({ name, value, checked, onChange, icon, title, hint, 
             </span>
             <span
                 className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full border-[1.5px] transition ${
-                    stacked ? 'ms-auto sm:absolute sm:end-3 sm:top-3 sm:ms-0' : 'ms-auto'
+                    stacked ? 'ms-auto sm:absolute sm:inset-e-3 sm:top-3 sm:ms-0' : 'ms-auto'
                 } ${checked ? look.dot : 'border-gray-300'}`}
                 aria-hidden="true"
             >
@@ -208,7 +208,7 @@ export function ChoiceTile({ name, value, checked, onChange, icon, title, hint, 
             </span>
             {shortcut && (
                 <span
-                    className="absolute end-11 top-3 hidden rounded-md border border-gray-100 bg-surface px-1.5 font-display text-[11px] font-semibold leading-5 text-gray-500 sm:inline-block"
+                    className="absolute inset-e-11 top-3 hidden rounded-md border border-gray-100 bg-surface px-1.5 font-display text-[11px] font-semibold leading-5 text-gray-500 sm:inline-block"
                     aria-hidden="true"
                 >
                     {shortcut}
@@ -263,7 +263,7 @@ export function QuickPick({ onClick, tone = null, children }) {
         <button
             type="button"
             onClick={onClick}
-            className={`rounded-full border px-3 py-1 text-[13.5px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
+            className={`rounded-full border px-3 py-1 text-[13.5px] font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
                 tone === 'green'
                     ? 'border-emerald-600/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
                     : 'border-gray-100 bg-gray-50 text-gray-700 hover:border-gray-200 hover:bg-surface hover:text-gray-900'
@@ -345,10 +345,10 @@ export function FormHeader({ titleId, icon, tone = 'graphite', title, subtitle, 
                 <Icon name={icon} className="h-5 w-5" strokeWidth={1.8} />
             </span>
             <div className="min-w-0">
-                <h3 id={titleId} className="text-[20px] font-extrabold leading-tight !font-[family-name:var(--gl-head)]">
+                <h3 id={titleId} className="text-[20px] font-extrabold leading-tight font-(family-name:--gl-head)!">
                     {title}
                 </h3>
-                <p className="gl-sub mt-0.5 !text-[13px]">{subtitle}</p>
+                <p className="gl-sub mt-0.5 text-[13px]!">{subtitle}</p>
             </div>
             <button type="button" onClick={onClose} aria-label="إغلاق" className="gl-ib ms-auto">
                 <Icon name="close" className="h-[18px] w-[18px]" strokeWidth={2} />
@@ -367,7 +367,7 @@ export function FormFooter({ onCancel, submitLabel, disabled, processing, tone =
             <SecondaryButton onClick={onCancel} className="gl-lg">
                 إلغاء
             </SecondaryButton>
-            <span className="gl-sub hidden items-center gap-1.5 !text-[12.5px] xl:flex">
+            <span className="gl-sub hidden items-center gap-1.5 text-[12.5px]! xl:flex">
                 <span className="kbd" dir="ltr">
                     Ctrl + Enter
                 </span>

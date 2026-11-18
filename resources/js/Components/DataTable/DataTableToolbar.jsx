@@ -50,7 +50,7 @@ export default function DataTableToolbar({
         <div className="data-table-toolbar flex flex-wrap items-center justify-between gap-3">
             {showSearch ? (
                 <div className="relative w-full sm:max-w-sm">
-                    <Icon name="search" className="pointer-events-none absolute inset-y-0 start-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
+                    <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
                     <input
                         ref={searchRef}
                         type="text"
@@ -65,7 +65,7 @@ export default function DataTableToolbar({
                         placeholder={placeholder}
                         className="block w-full py-2.5 pe-10 ps-10 text-sm"
                     />
-                    <span className="kbd pointer-events-none absolute inset-y-0 end-3 my-auto h-fit">/</span>
+                    <span className="kbd pointer-events-none absolute inset-y-0 inset-e-3 my-auto h-fit">/</span>
                 </div>
             ) : (
                 <div />
@@ -90,8 +90,8 @@ export default function DataTableToolbar({
                             type="button"
                             aria-pressed={perPage === size}
                             onClick={() => onPerPageChange(size)}
-                            className={`rounded-lg px-2.5 py-1 font-display text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 ${
-                                perPage === size ? 'bg-surface text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'
+                            className={`rounded-lg px-2.5 py-1 font-display text-xs font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${
+                                perPage === size ? 'bg-surface text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-900'
                             }`}
                         >
                             {size}

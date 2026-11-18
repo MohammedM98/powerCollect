@@ -71,7 +71,7 @@ export default function StatementModal({ subscription, statement, initialForm = 
                                         />
                                     )}
                                 </StatementTitle>
-                                <p className="gl-sub mt-1.5 !text-[13.5px]">
+                                <p className="gl-sub mt-1.5 text-[13.5px]!">
                                     {header.subscriberNumber && (
                                         <>
                                             مشترك <span dir="ltr">{header.subscriberNumber}</span> ·{' '}

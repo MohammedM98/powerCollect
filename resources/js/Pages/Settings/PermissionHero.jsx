@@ -46,7 +46,7 @@ export default function PermissionHero({
             <div className="pm-hero-main">
                 <EmployeeAvatar name={employee.name} color={color} size="lg" />
                 <div className="min-w-0 flex-1">
-                    <h3 className="break-words text-2xl font-bold">{employee.name}</h3>
+                    <h3 className="wrap-break-word text-2xl font-bold">{employee.name}</h3>
                     <p className="pm-hero-meta">
                         <RoleChip label={employee.roleLabel} color={color} className="on-dark" />
                         <span className="inline-flex items-center gap-1">

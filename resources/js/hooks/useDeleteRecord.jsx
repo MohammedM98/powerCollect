@@ -40,8 +40,8 @@ export function useDeleteRecord(noun) {
         >
             {pending && (
                 <div className="mt-4 grid gap-2">
-                    <label htmlFor="delete-record-name" className="text-sm text-[color:var(--gl-muted)]">
-                        اكتب <b className="text-[color:var(--gl-bad)]">{pending.name}</b> للتأكيد
+                    <label htmlFor="delete-record-name" className="text-sm text-(--gl-muted)">
+                        اكتب <b className="text-(--gl-bad)">{pending.name}</b> للتأكيد
                     </label>
                     <TextInput
                         id="delete-record-name"

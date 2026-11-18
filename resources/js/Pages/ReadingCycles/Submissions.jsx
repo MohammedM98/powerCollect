@@ -87,7 +87,7 @@ export default function Submissions({ cycle, submissions, canReview, filters, fi
                                     {canReview && (
                                         <td data-label="المراجعة">
                                             {submission.status === 'needs_review' ? (
-                                                <div className="flex min-w-[14rem] flex-col gap-2">
+                                                <div className="flex min-w-56 flex-col gap-2">
                                                     <input type="text" placeholder="ملاحظة (اختياري)" value={notes[submission.id] ?? ''} onChange={(event) => setNotes((current) => ({ ...current, [submission.id]: event.target.value }))} className="block w-full text-xs" />
                                                     <div className="flex gap-2">
                                                         <button type="button" onClick={() => review(submission, 'accept')} className="rounded-control bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700">قبول كقراءة الأسبوع</button>

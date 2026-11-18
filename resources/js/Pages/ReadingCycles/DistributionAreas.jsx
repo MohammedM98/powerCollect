@@ -25,7 +25,7 @@ export default function DistributionAreas({ areas, chosen, onChange, disabled, f
                         { value: '', label: 'الكل', count: counts.all },
                         { value: 'assigned', label: 'موزع', count: counts.assigned },
                         { value: 'available', label: 'غير موزع', count: counts.available },
-                    ].map((status) => <button key={status.value} type="button" disabled={disabled} aria-pressed={activeStatus === status.value} onClick={() => onFilterChange(status.value)} className={`flex flex-col items-center gap-1 rounded-lg px-1 py-2 text-xs font-semibold transition ${activeStatus === status.value ? 'bg-surface text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>
+                    ].map((status) => <button key={status.value} type="button" disabled={disabled} aria-pressed={activeStatus === status.value} onClick={() => onFilterChange(status.value)} className={`flex flex-col items-center gap-1 rounded-lg px-1 py-2 text-xs font-semibold transition ${activeStatus === status.value ? 'bg-surface text-brand-600 shadow-xs' : 'text-gray-500 hover:text-gray-900'}`}>
                         <span>{status.label}</span><span className="font-display text-sm">{formatNumber(status.count)}</span>
                     </button>)}
                 </div>
@@ -36,7 +36,7 @@ export default function DistributionAreas({ areas, chosen, onChange, disabled, f
                     {matching.length > 0 && <button type="button" disabled={disabled} onClick={() => onChange([...new Set([...chosen, ...matching.map((area) => area.id)])])} className="font-semibold text-brand-600 hover:underline">اختيار كل نتائج المناطق</button>}
                 </div>
             </div>
-            <div className="max-h-60 overflow-y-auto p-2 lg:max-h-[30rem]">
+            <div className="max-h-60 overflow-y-auto p-2 lg:max-h-120">
                 {matching.length === 0 && <p className="px-3 py-6 text-center text-sm text-gray-500">لا توجد مناطق مطابقة للبحث وحالة التوزيع. غيّر البحث أو اختر «الكل».</p>}
                 {matching.map((area) => <label key={area.id} className={`flex cursor-pointer items-start gap-3 rounded-control px-3 py-3 hover:bg-gray-50 ${chosen.includes(area.id) ? 'bg-brand-500/5' : ''}`}>
                     <input type="checkbox" checked={chosen.includes(area.id)} disabled={disabled} onChange={() => toggle(area.id)} aria-label={`عرض منطقة ${area.name}`} className="mt-1 rounded border-gray-300 text-brand-600" />

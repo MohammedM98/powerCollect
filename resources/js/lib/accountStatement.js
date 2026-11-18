@@ -443,7 +443,7 @@ export function rowClass(entry, highlighted, isHistory, isRelated, focused) {
         focused && 'ledger-focused',
         isRelated && 'ledger-related',
         isHistory ? 'ledger-history' : followsLineAbove(entry) && 'ledger-follow-up',
-        highlighted && 'outline outline-2 outline-offset-[-2px] outline-amber-400',
+        highlighted && 'outline-solid outline-2 -outline-offset-2 outline-amber-400',
     ]
         .filter(Boolean)
         .join(' ') || undefined;

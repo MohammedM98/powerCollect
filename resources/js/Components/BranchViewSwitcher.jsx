@@ -66,7 +66,7 @@ export default function BranchViewSwitcher() {
                 <span aria-hidden="true" className="gl-scope-ico"><Icon name="building" className="h-5 w-5" /></span>
                 <div className="min-w-0 flex-1">
                     <p className="gl-scope-eyebrow">يبقى اختيارك معك أثناء التنقل حتى تغيّره. صلاحيات المدير العام محفوظة.</p>
-                    <h2 className="gl-scope-name !text-base">{branchView.current ? `تعمل الآن ضمن فرع ${branchView.current.name}` : 'تعرض الآن جميع الفروع'}</h2>
+                    <h2 className="gl-scope-name text-base!">{branchView.current ? `تعمل الآن ضمن فرع ${branchView.current.name}` : 'تعرض الآن جميع الفروع'}</h2>
                 </div>
                 <label className="flex w-full flex-col gap-1.5 sm:w-60">
                     <span className="gl-label">تغيير فرع العمل</span>

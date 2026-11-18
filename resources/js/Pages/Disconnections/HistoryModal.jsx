@@ -55,7 +55,7 @@ export default function HistoryModal({ history, loading, reasonOptions, onClose 
                         <ol className="relative space-y-5 border-s border-gray-200 ps-6">
                             {history.events.map((event) => (
                                 <li key={event.id} className="relative">
-                                    <span className="absolute -start-[35px] flex h-7 w-7 items-center justify-center rounded-full bg-graphite-gradient text-white">
+                                    <span className="absolute inset-s-[-35px] flex h-7 w-7 items-center justify-center rounded-full bg-graphite-gradient text-white">
                                         <Icon name={EVENT_ICONS[event.type] ?? 'history'} className="h-3.5 w-3.5" />
                                     </span>
                                     <p className="font-semibold text-gray-900">{event.typeLabel}</p>

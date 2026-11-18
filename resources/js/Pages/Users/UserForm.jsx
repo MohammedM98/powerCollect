@@ -13,7 +13,7 @@ import { initials } from '@/lib/format';
 import UserTypeSelect from './UserTypeSelect';
 
 function DeviceResetCheckbox({ id, checked, onChange }) {
-    return <label htmlFor={id} className="flex min-h-[2.75rem] cursor-pointer items-center gap-3 rounded-control border border-gray-200 px-3 py-2 text-sm leading-6">
+    return <label htmlFor={id} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-control border border-gray-200 px-3 py-2 text-sm leading-6">
         <input id={id} type="checkbox" checked={checked} onChange={onChange} className="h-4 w-4 shrink-0 rounded border-gray-300 text-brand-600" />
         <span>إنهاء كل جلسات هذا المستخدم عند الحفظ</span>
     </label>;

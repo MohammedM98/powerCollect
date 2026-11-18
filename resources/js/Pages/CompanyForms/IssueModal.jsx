@@ -105,7 +105,7 @@ export default function IssueModal({ templateId = null, mode = 'blank', onClose 
                             <FormField id="company-paper-date" label="تاريخ الطلب الورقي" required error={errors.paper_date}><DateInput name="paper_date" value={data.paper_date} onChange={(value) => setData('paper_date', value)} required /></FormField>
                             <input ref={fileInput} type="file" className="sr-only" accept=".pdf,.png,.jpg,.jpeg,.webp" onChange={(event) => { selectAttachment(event.target.files?.[0]); event.target.value = ''; }} />
                             <SecondaryButton onClick={() => fileInput.current.click()}><Icon name="document-plus" className="h-4 w-4" />{data.attachment ? 'استبدال الملف' : 'اختيار صورة الطلب أو PDF'}</SecondaryButton>
-                            <p className="break-words text-xs text-gray-500">{data.attachment?.name ?? 'حتى 10 ميجابايت و10 صفحات.'}</p><InputError message={errors.attachment || fileError} />
+                            <p className="wrap-break-word text-xs text-gray-500">{data.attachment?.name ?? 'حتى 10 ميجابايت و10 صفحات.'}</p><InputError message={errors.attachment || fileError} />
                         </>}
                         <FormField id="company-document-notes" label="ملاحظات داخلية" error={errors.notes}><textarea value={data.notes} onChange={(event) => setData('notes', event.target.value)} className="w-full" rows={3} maxLength={2000} /></FormField>
                         {Object.entries(errors).filter(([key]) => !['notes', 'title', 'paper_reference', 'paper_date', 'attachment'].includes(key)).map(([key, message]) => <InputError key={key} message={message} />)}

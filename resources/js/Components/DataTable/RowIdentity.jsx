@@ -21,7 +21,7 @@ export default function RowIdentity({ icon, name, subtitle, status, subtitleDir,
             <span className="row-identity-avatar relative flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] bg-graphite-gradient font-display text-[13px] font-bold text-white dark:ring-1 dark:ring-white/10">
                 {icon ? <Icon name={icon} className="h-[18px] w-[18px]" /> : initials(name)}
                 {status && (
-                    <span className={`absolute -bottom-0.5 -start-0.5 h-3 w-3 rounded-full border-[2.5px] border-surface ${DOT_CLASSES[status]}`} />
+                    <span className={`absolute -bottom-0.5 -inset-s-0.5 h-3 w-3 rounded-full border-[2.5px] border-surface ${DOT_CLASSES[status]}`} />
                 )}
             </span>
             <span className="row-identity-text min-w-0">
@@ -30,7 +30,7 @@ export default function RowIdentity({ icon, name, subtitle, status, subtitleDir,
                         type="button"
                         onClick={onNameClick}
                         title={nameTitle}
-                        className="block min-h-6 max-w-full truncate text-start font-semibold text-gray-900 underline-offset-4 transition hover:text-brand-600 hover:underline focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+                        className="block min-h-6 max-w-full truncate text-start font-semibold text-gray-900 underline-offset-4 transition hover:text-brand-600 hover:underline focus-visible:rounded focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
                     >
                         {name}
                     </button>

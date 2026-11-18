@@ -25,7 +25,7 @@ const STATUS_OPTIONS = [
  */
 const REQUIRED_FIELDS = ['full_name', 'status', 'tariff_id', 'minimum_charge'];
 
-/** The form's sections, for the index down the side of its window (FormModal `outline`). */
+/** The form's sections, for the index down the side of its window (FormModal `outline-solid`). */
 export const SUBSCRIPTION_OUTLINE = [
     { id: 'subscription-subscriber', title: 'بيانات المشترك', icon: 'user' },
     { id: 'subscription-tariff', title: 'الاشتراك والقاطع', icon: 'bolt' },

@@ -233,7 +233,7 @@ export function PermissionEditor({
     const before = riskCounts(sections, saved);
 
     return (
-        <div className="min-w-0 space-y-4">
+        <div className="flex min-w-0 flex-col gap-4">
             <PermissionHero
                 activeTab={activeTab}
                 allCount={allCount}

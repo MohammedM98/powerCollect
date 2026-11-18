@@ -75,7 +75,7 @@ export default function BoxBreakdown({ type, entries, className = '' }) {
         <ul className="flex flex-wrap gap-2">
             {groups.map((group) => <li key={group.key} className="inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-gray-200 bg-surface py-1 pe-3 ps-1.5 text-xs">
                 <GroupMark type={type} label={group.key} />
-                <span className="min-w-0 break-words font-semibold text-gray-700">{group.key}</span>
+                <span className="min-w-0 wrap-break-word font-semibold text-gray-700">{group.key}</span>
                 <span className="text-gray-500"><b className="font-display">{group.count}</b> حركة</span>
                 <span className="text-gray-900"><bdi dir="ltr" className="font-display font-bold">{formatMoney(group.total)}</bdi> شيكل</span>
                 {group.foreign && <span className="text-gray-500">دُفع <bdi dir="ltr" className="font-display">{formatMoney(group.paid)}</bdi></span>}

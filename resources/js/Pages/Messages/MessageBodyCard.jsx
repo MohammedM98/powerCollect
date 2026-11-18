@@ -52,7 +52,7 @@ export default function MessageBodyCard({
                         onClick={() => setConfirmingTemplateDelete(true)}
                         aria-label={`حذف القالب «${selectedTemplate.name}»`}
                         title="حذف القالب"
-                        className="text-brand-600 hover:!border-brand-500/40"
+                        className="text-brand-600 hover:border-brand-500/40!"
                     >
                         <Icon name="trash" className="h-4 w-4" />
                         <span className="hidden sm:inline">حذف</span>

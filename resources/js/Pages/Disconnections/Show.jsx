@@ -23,7 +23,7 @@ import { secondaryButtonClass } from '@/Components/SecondaryButton';
 import PageHeader from '@/Components/PageHeader';
 import { urlWithout } from '@/lib/pageUrl';
 
-const FOCUS_RING = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white';
+const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white';
 
 const PRINT_FIELDS = [
     { key: 'name', label: 'المشترك' },
@@ -309,7 +309,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
                     <div className="h-24" aria-hidden="true" />
                     <div role="region" aria-label="إجراءات على المشتركين المحددين" className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[calc(100%-2rem)] max-w-4xl flex-wrap items-center gap-2 rounded-2xl bg-brand-gradient px-4 py-3 text-white shadow-lift ring-1 ring-white/10">
                         <span className="me-2 flex items-center gap-2 text-sm" aria-live="polite">
-                            <span className="flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-white px-2 font-display text-sm font-bold text-gray-900">{selectionCount.toLocaleString('en')}</span>
+                            <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-white px-2 font-display text-sm font-bold text-gray-900">{selectionCount.toLocaleString('en')}</span>
                             {allMatching ? 'مشترك (كل النتائج المطابقة)' : 'مشترك محدد'}
                         </span>
                         <div className="flex flex-1 flex-wrap items-center gap-2">

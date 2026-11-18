@@ -10,8 +10,8 @@ export default function PrintHeader({ header, context, meta, accent }) {
     />;
     const company = <div key="company" dir="rtl" className="min-w-0 whitespace-pre-line" style={{ textAlign: header.companyAlign, overflowWrap: 'anywhere', fontFamily: printFont(header.companyFont), fontSize: `${header.companySize ?? 16}px` }}>
         {header.company && <div style={{ fontWeight: header.companyBold === false ? 400 : 700 }}>{header.company}</div>}
-        {header.companyDetails && <div className="mt-1 !text-[0.85em]">{header.companyDetails}</div>}
-        {header.branch && context.branchName && <div className="mt-1 text-gray-600 !text-[0.85em]">{context.branchName}</div>}
+        {header.companyDetails && <div className="mt-1 text-[0.85em]!">{header.companyDetails}</div>}
+        {header.branch && context.branchName && <div className="mt-1 text-gray-600 text-[0.85em]!">{context.branchName}</div>}
     </div>;
     const english = <div key="english" dir="ltr" className="min-w-0 whitespace-pre-line" style={{ textAlign: header.englishAlign, overflowWrap: 'anywhere', fontFamily: printFont(header.englishFont), fontSize: `${header.englishSize ?? 14}px`, fontWeight: header.englishBold ? 700 : 400 }}>{header.companyEnglish}</div>;
     const heading = <div style={{ textAlign: header.titleAlign ?? (header.centered ? 'center' : 'end') }}>

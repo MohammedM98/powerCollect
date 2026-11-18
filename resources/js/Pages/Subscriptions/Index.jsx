@@ -302,7 +302,7 @@ export default function Index({
                     <button
                         type="button"
                         onClick={() => setAllMatching(true)}
-                        className="rounded font-semibold text-brand-600 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+                        className="rounded font-semibold text-brand-600 hover:underline focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
                     >
                         تحديد كل النتائج المطابقة ({subscriptions.total.toLocaleString('en')})
                     </button>

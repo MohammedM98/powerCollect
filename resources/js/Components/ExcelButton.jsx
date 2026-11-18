@@ -4,7 +4,7 @@ import { excelUrl } from '@/lib/tableExcel';
 
 const ExcelStudio = lazy(() => import('@/Components/ExcelStudio'));
 
-export const tableExportButtonClass = 'inline-flex h-[34px] items-center gap-1.5 rounded-control border px-3 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-50';
+export const tableExportButtonClass = 'inline-flex h-[34px] items-center gap-1.5 rounded-control border px-3 text-sm font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-50';
 
 /** The same small action beside every table's print button; the editor loads on demand. */
 export default function ExcelButton({ title, base, loadParts, storageKey, templateKind = 'tables', meta, disabled = false, className = tableExportButtonClass, label = 'Excel' }) {

@@ -57,7 +57,7 @@ export default function UserTypeSelect({ value, options, onChange, onCreated, ca
                 portal
             />
         </FormField>
-        {adding && <div role="group" aria-label="إضافة مسمى وظيفي" className="space-y-3 rounded-control border border-brand-500/25 bg-brand-500/[0.04] p-3">
+        {adding && <div role="group" aria-label="إضافة مسمى وظيفي" className="space-y-3 rounded-control border border-brand-500/25 bg-brand-500/4 p-3">
             <label htmlFor="new_user_type_name" className="flex items-center gap-2 text-xs font-bold text-brand-600"><Icon name="plus" className="h-4 w-4" />نوع مستخدم / مسمى وظيفي جديد</label>
             <TextInput id="new_user_type_name" value={http.data.name} autoFocus maxLength={255} disabled={http.processing} placeholder="مثلاً: فني صيانة" className="w-full text-sm"
                 onChange={(event) => { http.setData('name', event.target.value); http.clearErrors('name'); setFailed(false); }}

@@ -49,7 +49,7 @@ export default function BulkActionsMenu({ abilities, onChoose }) {
                 title="سجل التعديلات الجماعية"
                 aria-haspopup="menu"
                 aria-expanded={menu?.kind === 'history'}
-                className="inline-flex items-center justify-center rounded-e-control border-s border-white/25 px-3 transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+                className="inline-flex items-center justify-center rounded-e-control border-s border-white/25 px-3 transition hover:bg-white/10 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
             >
                 <Icon name="chevron-down" className="h-4 w-4" />
             </button>

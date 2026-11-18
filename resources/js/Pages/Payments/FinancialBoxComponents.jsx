@@ -26,7 +26,7 @@ export function BoxPersonAvatar({ name, small = false }) {
 
 export function FinancialBoxIdentity({ box, period, card = false }) {
     return <div className="flex min-w-0 items-center gap-3">
-        <span className="relative shrink-0"><BoxTypeIcon type={box.type} className={card ? 'h-11 w-11' : 'h-10 w-10'} /><span className={`absolute -bottom-0.5 -start-0.5 h-3 w-3 rounded-full border-[2.5px] border-surface ${dotOf(box)}`} /></span>
+        <span className="relative shrink-0"><BoxTypeIcon type={box.type} className={card ? 'h-11 w-11' : 'h-10 w-10'} /><span className={`absolute -bottom-0.5 -inset-s-0.5 h-3 w-3 rounded-full border-[2.5px] border-surface ${dotOf(box)}`} /></span>
         <span className="min-w-0"><span className="block truncate font-semibold text-gray-900">صندوق <bdi dir="ltr" className="font-display">{box.number}</bdi></span><span className="block truncate text-xs text-gray-400">{boxTypeStyles[box.type].label}{period && period !== '—' ? ` · ${period}` : ''}</span></span>
     </div>;
 }
@@ -34,7 +34,7 @@ export function FinancialBoxIdentity({ box, period, card = false }) {
 /** A box's type, its icon carrying the box's state as a dot: نقدي, حوالات بنكية or مقاصة. */
 export function FinancialBoxType({ box }) {
     return <>
-        <span className="relative shrink-0"><BoxTypeIcon type={box.type} className="h-10 w-10" /><span className={`absolute -bottom-0.5 -start-0.5 h-3 w-3 rounded-full border-[2.5px] border-surface ${dotOf(box)}`} /></span>
+        <span className="relative shrink-0"><BoxTypeIcon type={box.type} className="h-10 w-10" /><span className={`absolute -bottom-0.5 -inset-s-0.5 h-3 w-3 rounded-full border-[2.5px] border-surface ${dotOf(box)}`} /></span>
         <span className="text-[15px] font-semibold text-gray-900">{boxTypeStyles[box.type].label}</span>
     </>;
 }
@@ -110,7 +110,7 @@ export function FinancialBoxCard({ box, period, onOpen }) {
         <div className="flex items-center gap-2.5 rounded-control px-3 py-2" style={{ background: 'var(--gl-fill)', border: '1px solid var(--gl-line)' }}><span className="min-w-0 flex-1 truncate text-[15px] font-semibold text-gray-900">{boxPersonName(box)}</span><span className="shrink-0 text-[13px] text-gray-600"><b className="font-display text-gray-900">{count}</b> حركة</span></div>
         <div><p className="text-[13.5px] font-semibold text-gray-700">إجمالي الحركات السارية</p><div className="mt-0.5"><FinancialBoxAmount box={box} large /></div></div>
         <FinancialBoxEntries box={box} card />
-        <footer className="mt-auto space-y-3 border-t pt-3 !border-[color:var(--gl-line)]"><div className="flex flex-wrap items-start justify-between gap-2"><FinancialBoxStatus box={box} />{!('closedAt' in box) ? <span className="inline-flex items-center gap-1.5"><Icon name="clock" className="h-3.5 w-3.5 text-gray-500" /><FinancialBoxDates box={box} /></span> : <FinancialBoxTimes box={box} />}</div><FinancialBoxButton box={box} onOpen={onOpen} className="w-full" /></footer>
+        <footer className="mt-auto space-y-3 border-t pt-3 border-(--gl-line)!"><div className="flex flex-wrap items-start justify-between gap-2"><FinancialBoxStatus box={box} />{!('closedAt' in box) ? <span className="inline-flex items-center gap-1.5"><Icon name="clock" className="h-3.5 w-3.5 text-gray-500" /><FinancialBoxDates box={box} /></span> : <FinancialBoxTimes box={box} />}</div><FinancialBoxButton box={box} onOpen={onOpen} className="w-full" /></footer>
     </article>;
 }
 

@@ -41,7 +41,7 @@ function BranchCard({ branch, style }) {
                 <BranchMark isActive={branch.isActive} />
                 <div className="min-w-0 flex-1">
                     <h2 className="font-sans truncate text-xl font-bold text-gray-900">
-                        <Link href={`/branch-performance/${branch.id}`} className="outline-none after:absolute after:inset-0 after:rounded-panel">
+                        <Link href={`/branch-performance/${branch.id}`} className="outline-hidden after:absolute after:inset-0 after:rounded-panel">
                             {branch.name}
                         </Link>
                     </h2>

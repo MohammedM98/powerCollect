@@ -1,4 +1,4 @@
-export const FOCUS_RING = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
+export const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
 
 export const ORIENTATIONS = [
     { value: 'portrait', label: 'طولي', icon: 'portrait' },

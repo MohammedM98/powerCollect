@@ -75,7 +75,7 @@ function RateEditor({ tariff, dark, onDone }) {
 
     return (
         <div
-            className={`relative grid min-w-0 gap-3 rounded-[20px] border-[1.5px] p-4 ${dark ? 'border-white/15 bg-white/[0.04]' : 'border-gray-200 bg-gray-50'}`}
+            className={`relative grid min-w-0 gap-3 rounded-[20px] border-[1.5px] p-4 ${dark ? 'border-white/15 bg-white/4' : 'border-gray-200 bg-gray-50'}`}
         >
             <div className="flex flex-wrap items-center gap-3">
                 <label
@@ -188,7 +188,7 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
                 <>
                     <span className="absolute inset-x-0 top-0 h-[3px] bg-spectrum" aria-hidden="true" />
                     <span
-                        className="pointer-events-none absolute -bottom-36 -start-16 h-[340px] w-[340px] rounded-full bg-[radial-gradient(closest-side,rgb(var(--brand-solid)/0.22),transparent)]"
+                        className="pointer-events-none absolute -bottom-36 -inset-s-16 h-[340px] w-[340px] rounded-full bg-[radial-gradient(closest-side,rgb(var(--brand-solid)/0.22),transparent)]"
                         aria-hidden="true"
                     />
                 </>

@@ -49,7 +49,7 @@ export function Preview({ sheet, sheets, sheetIndex, onSheet, shownCell, onCell,
             <div className="min-h-0 flex-1 overflow-auto" dir={settings.rtl ? 'rtl' : 'ltr'}>
                 <table className="border-collapse" style={{ width, tableLayout: 'fixed', fontFamily: 'Arial, sans-serif', fontSize: px(font.body) }}>
                     <colgroup>
-                        <col className="!w-[40px]" />
+                        <col className="w-[40px]!" />
                         {sheet.widths.map((columnWidth, index) => (
                             <col key={index} style={{ width: columnWidth * 7.5 }} />
                         ))}
@@ -90,7 +90,7 @@ export function Preview({ sheet, sheets, sheetIndex, onSheet, shownCell, onCell,
                                                 <td
                                                     key={index}
                                                     onClick={() => onCell({ address, formula: cell.f, text })}
-                                                    className={`cursor-cell truncate border border-gray-200 px-2 ${numeric ? 'font-display tabular-nums' : ''} ${shownCell?.address === address ? 'outline outline-2 -outline-offset-2 outline-excel-500' : ''}`}
+                                                    className={`cursor-cell truncate border border-gray-200 px-2 ${numeric ? 'font-display tabular-nums' : ''} ${shownCell?.address === address ? 'outline-solid outline-2 -outline-offset-2 outline-excel-500' : ''}`}
                                                     style={{ textAlign: numeric ? (settings.rtl ? 'left' : 'right') : undefined }}
                                                 >
                                                     {cell.f && <span className="me-1 text-[9px] italic text-excel-600">ƒ</span>}

@@ -18,7 +18,7 @@ const SEARCH_DELAY = 300;
 /** The panel shown once the split is recorded: what was saved, and each part's receipt. */
 function RecordedSplit({ recorded, onAnother }) {
     return (
-        <div className="space-y-5 rounded-panel border border-emerald-500/30 bg-emerald-500/[0.06] p-6">
+        <div className="space-y-5 rounded-panel border border-emerald-500/30 bg-emerald-500/6 p-6">
             <div className="flex items-center gap-3">
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white">
                     <Icon name="check" className="h-6 w-6" />
@@ -227,7 +227,7 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, bare = fa
         return <RecordedSplit recorded={recorded} onAnother={() => setRecorded(null)} />;
     }
 
-    const meterTone = distributed ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'border-amber-500/40 bg-amber-500/[0.08] text-gray-800';
+    const meterTone = distributed ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'border-amber-500/40 bg-amber-500/8 text-gray-800';
 
     return (
         <div className={`grid gap-[22px] ${bare ? '' : 'rounded-panel border border-gray-100 bg-surface p-5 shadow-card sm:p-6'}`}>
@@ -255,7 +255,7 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, bare = fa
                                 setData('total_amount', normalizeDecimalInput(event.target.value));
                                 form.clearErrors('total_amount', 'parts');
                             }}
-                            className="min-w-0 flex-1 border-0 bg-transparent p-0 text-end font-display text-[38px] font-extrabold leading-tight text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-0 sm:text-[44px]"
+                            className="min-w-0 flex-1 border-0 bg-transparent p-0 text-end font-display text-[38px] font-extrabold leading-tight text-gray-900 placeholder:text-gray-300 focus:outline-hidden focus:ring-0 sm:text-[44px]"
                         />
                         <span className="shrink-0 font-display text-[28px] font-bold text-gray-400" aria-hidden="true">
                             ₪

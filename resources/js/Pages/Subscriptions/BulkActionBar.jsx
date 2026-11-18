@@ -5,7 +5,7 @@ import { openQuickMessage } from '@/lib/quickMessage';
 /** The most ticked subscriptions a printout carries in its address. */
 export const MAX_LINKED_IDS = 400;
 
-const FOCUS_RING = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white';
+const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white';
 
 function BarButton({ icon, label, onClick, disabled = false, hint, className = '' }) {
     return (
@@ -46,7 +46,7 @@ export default function BulkActionBar({ count, selection, abilities, onAction, o
             className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[calc(100%-2rem)] max-w-4xl flex-wrap items-center gap-2 rounded-2xl bg-brand-gradient px-4 py-3 text-white shadow-lift ring-1 ring-white/10"
         >
             <span className="me-2 flex items-center gap-2 text-sm" aria-live="polite">
-                <span className="flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-white px-2 font-display text-sm font-bold text-gray-900">
+                <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-white px-2 font-display text-sm font-bold text-gray-900">
                     {count.toLocaleString('en')}
                 </span>
                 {selection.all ? 'اشتراك (كل النتائج المطابقة)' : 'اشتراك محدد'}

@@ -16,7 +16,7 @@ export function DistributionSummary({ boxes }) {
     return (
         <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]">
             <KpiTile hero icon="table" label="الطبلونات ضمن نتائج البحث والتصفية" value={formatNumber(boxes.length)} unit="طبلون">
-                <div className="gl-kv mt-3 border-t pt-3 !border-[color:var(--gl-line)]">
+                <div className="gl-kv mt-3 border-t pt-3 border-(--gl-line)!">
                     <span className="inline-flex items-center gap-1.5">
                         <Icon name="users" className="h-4 w-4" />
                         المشتركون

@@ -326,7 +326,7 @@ export default function ReadingHistoryModal({ subscription, onClose, readingWeek
     const liveRowShown = newLine || (editableId !== null && visibleReadings.some((reading) => reading.id === editableId));
 
     return (
-        <Modal show={Boolean(subscription)} onClose={onClose} maxWidth="full" panelClassName="!my-0">
+        <Modal show={Boolean(subscription)} onClose={onClose} maxWidth="full" panelClassName="my-0!">
             {subscription && <div data-excel-source="custom" className="reading-history" role="dialog" aria-modal="true" aria-labelledby={titleId} dir="rtl">
                 <header className="rh-header">
                     <img className="rh-print-logo" src={brand.logos.print} alt={`شعار ${brand.name}`} />

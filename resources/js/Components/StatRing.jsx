@@ -26,7 +26,7 @@ export default function StatRing({ percent = 0, color = 'text-brand-500', size =
                     strokeWidth="3"
                     strokeLinecap="round"
                     strokeDasharray={`${drawn} 100`}
-                    className={`transition-[stroke-dasharray] duration-[1100ms] ease-out ${color}`}
+                    className={`transition-[stroke-dasharray] duration-1100 ease-out ${color}`}
                 />
             </svg>
             <div className={`absolute inset-0 flex items-center justify-center font-display text-xs font-bold ${labelClass}`}>

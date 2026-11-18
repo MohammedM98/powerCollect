@@ -6,7 +6,7 @@ const NUMBER = 'font-display tabular-nums';
 const FACT = 'flex flex-col items-start gap-[7px]';
 const FACT_LABEL = 'flex items-center gap-1.5 text-[13px] text-gray-500';
 const FACT_ICON = 'h-[15px] w-[15px] flex-none';
-const factValue = (empty) => `max-w-full text-right leading-normal [overflow-wrap:anywhere] ${empty ? 'text-[14px] font-normal text-gray-500' : 'text-[15px] font-semibold text-gray-900'}`;
+const factValue = (empty) => `max-w-full text-right leading-normal wrap-anywhere ${empty ? 'text-[14px] font-normal text-gray-500' : 'text-[15px] font-semibold text-gray-900'}`;
 
 const STATUS_TONES = {
     active: 'green',
@@ -57,7 +57,7 @@ export default function SubscriptionSwitcher({ subscriberNumber, subscriptions, 
                             aria-label={`عرض كشف الاشتراك ${subscription.accountNumber}`}
                             disabled={current}
                             onClick={() => onSelect(subscription)}
-                            className={`relative flex min-w-0 cursor-pointer flex-col overflow-hidden border border-gray-200 bg-surface px-5 pb-0 pt-[21px] text-start text-gray-900 transition-[border-color,box-shadow] duration-150 ease-[ease] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gray-900 disabled:cursor-default motion-reduce:transition-none max-[1050px]:px-4 [&:hover:not(:disabled)]:border-gray-400 [&:hover:not(:disabled)]:shadow-[0_12px_26px_-22px_rgb(var(--shadow-ink)/0.4)] aria-[current=true]:border-brand-500 aria-[current=true]:bg-[linear-gradient(180deg,rgb(var(--brand-500)/.035),rgb(var(--surface))_57%)] aria-[current=true]:shadow-[0_0_0_1px_rgb(var(--brand-500)/.08)] aria-[current=true]:before:absolute aria-[current=true]:before:inset-x-0 aria-[current=true]:before:top-0 aria-[current=true]:before:h-[3px] aria-[current=true]:before:bg-brand-500 aria-[current=true]:before:content-[''] rounded-[calc(20px*var(--radius-scale,1))]`}
+                            className={`relative flex min-w-0 cursor-pointer flex-col overflow-hidden border border-gray-200 bg-surface px-5 pb-0 pt-[21px] text-start text-gray-900 transition-[border-color,box-shadow] duration-150 ease-[ease] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gray-900 disabled:cursor-default motion-reduce:transition-none max-[1050px]:px-4 [&:hover:not(:disabled)]:border-gray-400 [&:hover:not(:disabled)]:shadow-[0_12px_26px_-22px_rgb(var(--shadow-ink)/0.4)] aria-current:border-brand-500 aria-current:bg-[linear-gradient(180deg,rgb(var(--brand-500)/.035),rgb(var(--surface))_57%)] aria-current:shadow-[0_0_0_1px_rgb(var(--brand-500)/.08)] aria-current:before:absolute aria-current:before:inset-x-0 aria-current:before:top-0 aria-current:before:h-[3px] aria-current:before:bg-brand-500 aria-current:before:content-[''] rounded-[calc(20px*var(--radius-scale,1))]`}
                         >
                             <span className="flex items-start justify-between gap-3">
                                 <span className="flex flex-col items-start gap-1">
@@ -66,7 +66,7 @@ export default function SubscriptionSwitcher({ subscriberNumber, subscriptions, 
                                 </span>
                                 <StatusPill tone={STATUS_TONES[subscription.status]} label={subscription.statusLabel} />
                             </span>
-                            <strong className="mt-[17px] block min-h-[58px] text-[17px] font-semibold leading-[1.7] [overflow-wrap:anywhere] max-[1050px]:min-h-[62px] max-[740px]:mt-[13px] max-[740px]:min-h-0">{subscription.fullName}</strong>
+                            <strong className="mt-[17px] block min-h-[58px] text-[17px] font-semibold leading-[1.7] wrap-anywhere max-[1050px]:min-h-[62px] max-[740px]:mt-[13px] max-[740px]:min-h-0">{subscription.fullName}</strong>
                             <span className="mt-3 grid grid-cols-2 gap-3 pb-[18px] max-[740px]:mt-[17px]">
                                 <span className={FACT}>
                                     <span className={FACT_LABEL}><Icon name="grid" className={FACT_ICON} />الطبلون</span>

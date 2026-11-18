@@ -24,7 +24,7 @@ import './financial-boxes.css';
 
 /** A small action in an entry's row. */
 const rowButton = 'inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold transition hover:bg-gray-100';
-const auditEditButton = `${rowButton} border border-brand-500/25 bg-brand-500/5 text-brand-700 hover:border-brand-500/40 hover:bg-brand-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:text-brand-300`;
+const auditEditButton = `${rowButton} border border-brand-500/25 bg-brand-500/5 text-brand-700 hover:border-brand-500/40 hover:bg-brand-500/10 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:text-brand-300`;
 
 const isActive = (entry) => !entry.transaction || entry.transaction.status === 'active';
 const subscriberName = (entry) => entry.transaction?.subscription?.subscription_name || entry.transaction?.subscription?.full_name || '—';
@@ -157,7 +157,7 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
                 <div className="data-table-toolbar flex flex-wrap items-center justify-between gap-3">
                     <div className="flex w-full min-w-0 flex-wrap items-end gap-3 sm:w-auto sm:flex-1">
                         <div className="relative min-w-0 w-full sm:max-w-sm sm:flex-1">
-                            <Icon name="search" className="pointer-events-none absolute inset-y-0 start-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
+                            <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
                             <input type="text" aria-label="ابحث في حركات الصندوق" placeholder="ابحث بالمشترك أو رقم الحساب أو السند أو الحوالة" value={search} onChange={(event) => setSearch(event.target.value)} className="block w-full py-2.5 pe-4 ps-10 text-sm" />
                         </div>
                         {type === 'bank_transfer' && <div className="w-full sm:w-80">
@@ -185,14 +185,14 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
                                 return <tr key={entry.id} className={live ? undefined : 'opacity-60'}>
                                     <BoxNumberCell number={box.number} position={entries.indexOf(entry) + 1} />
                                     <LedgerLeadCells ledger={ledger} />
-                                    <td title={subscriberName(entry)} className="!whitespace-normal">
+                                    <td title={subscriberName(entry)} className="whitespace-normal!">
                                         {entry.statement_url ? <Link href={entry.statement_url} prefetch className="font-semibold text-gray-900 hover:text-brand-600">{subscriberName(entry)}</Link> : <span className="font-semibold text-gray-900">{subscriberName(entry)}</span>}
                                         <span className="block font-display text-xs text-gray-400"><bdi dir="ltr">{entry.transaction?.subscription?.account_number ?? '—'}</bdi></span>
                                     </td>
                                     <LedgerTrailCells ledger={ledger} amount={entry.amount} currency={entry.currency} cancelled={!live} />
-                                    <td className="!whitespace-normal"><StatusPill tone={tone} label={label} /></td>
-                                    {bankAudit && <td className="!whitespace-normal">{entry.audit ? <div className="space-y-1"><StatusPill tone={entry.audit.outcome === 'missing' ? 'red' : entry.audit.outcome === 'matched' ? 'green' : 'amber'} label={{ matched: 'مطابقة', missing: 'غير موجودة', short: 'نقص في المبلغ', over: 'زيادة لصالح المشترك' }[entry.audit.outcome]} /><p className="text-xs font-semibold text-gray-600">{entry.audit.posted_at || entry.audit.adjustment_transaction_id ? 'معتمدة نهائيًا' : 'مسودة · لم تُرحّل ماليًا'}</p><p className="text-xs text-gray-600">المثبت: {formatMoney(entry.audit.bank_amount)} {ledger.currencyLabel}</p><p className="text-xs text-gray-500">{entry.audit.auditor?.name} · {dateTime(entry.audit.audited_at)}</p>{entry.audit.reason && <p className="text-xs text-gray-600">{entry.audit.reason}</p>}</div> : <StatusPill tone="gray" label={live ? 'تُطابق عند اعتماد الصندوق' : 'حركة غير سارية'} />}</td>}
-                                    <td className="!whitespace-normal"><div className="flex flex-wrap items-center gap-1">
+                                    <td className="whitespace-normal!"><StatusPill tone={tone} label={label} /></td>
+                                    {bankAudit && <td className="whitespace-normal!">{entry.audit ? <div className="space-y-1"><StatusPill tone={entry.audit.outcome === 'missing' ? 'red' : entry.audit.outcome === 'matched' ? 'green' : 'amber'} label={{ matched: 'مطابقة', missing: 'غير موجودة', short: 'نقص في المبلغ', over: 'زيادة لصالح المشترك' }[entry.audit.outcome]} /><p className="text-xs font-semibold text-gray-600">{entry.audit.posted_at || entry.audit.adjustment_transaction_id ? 'معتمدة نهائيًا' : 'مسودة · لم تُرحّل ماليًا'}</p><p className="text-xs text-gray-600">المثبت: {formatMoney(entry.audit.bank_amount)} {ledger.currencyLabel}</p><p className="text-xs text-gray-500">{entry.audit.auditor?.name} · {dateTime(entry.audit.audited_at)}</p>{entry.audit.reason && <p className="text-xs text-gray-600">{entry.audit.reason}</p>}</div> : <StatusPill tone="gray" label={live ? 'تُطابق عند اعتماد الصندوق' : 'حركة غير سارية'} />}</td>}
+                                    <td className="whitespace-normal!"><div className="flex flex-wrap items-center gap-1">
                                         {bankAudit && (box.canReviewTransfers ?? box.canAudit) && live && !entry.audit?.posted_at && !entry.audit?.adjustment_transaction_id && <button type="button" onClick={() => setAuditingEntry(entry)} className={auditEditButton}><Icon name="pencil" className="h-3.5 w-3.5" />تعديل الحوالة</button>}
                                         {box.canPrint !== false && entry.receipt_url && <a href={entry.receipt_url} target="_blank" rel="noopener noreferrer" className={`${rowButton} tone-print border`}><Icon name="printer" className="h-3.5 w-3.5" />السند</a>}
                                     </div></td>

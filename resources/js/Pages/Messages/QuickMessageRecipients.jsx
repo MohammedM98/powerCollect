@@ -43,7 +43,7 @@ export default function QuickMessageRecipients({
                     بحث عن مشترك
                 </label>
                 <div className="relative">
-                    <Icon name="search" className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Icon name="search" className="pointer-events-none absolute inset-s-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <input
                         ref={searchRef}
                         id={`${id}-search`}

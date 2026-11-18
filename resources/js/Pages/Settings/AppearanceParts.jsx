@@ -52,13 +52,13 @@ export function LogoSlot({ slot, current, own, file, removed, error, onFile, onR
                         aria-label={`ملف ${slot.label}`}
                         onChange={(event) => onFile(event.target.files?.[0] ?? null)}
                     />
-                    <SecondaryButton className="!px-3 !py-1.5 text-[13px]" onClick={() => input.current?.click()}>
+                    <SecondaryButton className="px-3! py-1.5! text-[13px]" onClick={() => input.current?.click()}>
                         <Icon name="arrow-up" className="h-4 w-4" />
                         {own || file ? 'تغيير' : 'رفع صورة'}
                     </SecondaryButton>
                     {file && (
                         <SecondaryButton
-                            className="!px-3 !py-1.5 text-[13px]"
+                            className="px-3! py-1.5! text-[13px]"
                             onClick={() => {
                                 onFile(null);
                                 input.current.value = '';
@@ -71,11 +71,11 @@ export function LogoSlot({ slot, current, own, file, removed, error, onFile, onR
                         own &&
                         !file &&
                         (removed ? (
-                            <SecondaryButton className="!px-3 !py-1.5 text-[13px]" onClick={onUndo}>
+                            <SecondaryButton className="px-3! py-1.5! text-[13px]" onClick={onUndo}>
                                 إبقاء الشعار
                             </SecondaryButton>
                         ) : (
-                            <SecondaryButton className="!px-3 !py-1.5 text-[13px]" onClick={onRemove}>
+                            <SecondaryButton className="px-3! py-1.5! text-[13px]" onClick={onRemove}>
                                 إزالة
                             </SecondaryButton>
                         ))}

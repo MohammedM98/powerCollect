@@ -82,7 +82,7 @@ export function PermissionSaveBar({ dirty, errors, changes, auditChanges, firstN
                 </p>
             )}
             <p className="flex min-w-0 flex-1 flex-wrap items-center gap-2 text-sm" role="status">
-                <span className="flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-white px-2 font-display text-sm font-bold text-gray-900">
+                <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-white px-2 font-display text-sm font-bold text-gray-900">
                     {changes.length + auditChanges.length}
                 </span>
                 <span>تغييرات لم تُحفظ لـ {firstName}</span>
@@ -98,7 +98,7 @@ export function PermissionSaveBar({ dirty, errors, changes, auditChanges, firstN
                 type="button"
                 onClick={onDiscard}
                 disabled={processing || !dirty}
-                className="inline-flex items-center gap-1.5 rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white disabled:opacity-40"
+                className="inline-flex items-center gap-1.5 rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-white disabled:opacity-40"
             >
                 <Icon name="undo" className="h-4 w-4" />
                 تراجع

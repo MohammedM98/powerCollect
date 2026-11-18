@@ -44,7 +44,7 @@ const emptyPlace = {
 
 /** One type of box above the boxes: their total and how many there are; a click narrows the list to it. */
 function SummaryTile({ icon, label, boxes, hint, active, onClick }) {
-    return <button type="button" onClick={onClick} aria-pressed={active} className={`flex min-w-0 items-center gap-3 rounded-card border bg-surface p-4 text-start shadow-card transition hover:-translate-y-0.5 hover:shadow-lift focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 motion-reduce:transform-none ${active ? 'border-gray-900' : 'border-gray-100'}`}>
+    return <button type="button" onClick={onClick} aria-pressed={active} className={`flex min-w-0 items-center gap-3 rounded-card border bg-surface p-4 text-start shadow-card transition hover:-translate-y-0.5 hover:shadow-lift focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 motion-reduce:transform-none ${active ? 'border-gray-900' : 'border-gray-100'}`}>
         {icon}
         <span className="min-w-0"><span className="block text-sm font-semibold text-gray-600">{label}</span><span className="mt-0.5 flex flex-wrap items-baseline gap-1.5"><span dir="ltr" className="font-display text-xl font-bold text-gray-900">{formatMoney(financialBoxesTotals(boxes).ILS)}</span><span className="text-xs text-gray-500">₪</span></span><span className="block text-xs text-gray-500">{boxes.length} {hint}</span></span>
     </button>;
@@ -136,7 +136,7 @@ export default function BranchCashBoxes({ branch, branches, branchScope = null, 
             <section aria-label="الصناديق">
                 <div className="data-table-toolbar flex flex-wrap items-center justify-between gap-3">
                     <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
-                        <div className="relative w-full sm:w-72"><Icon name="search" className="pointer-events-none absolute inset-y-0 start-3.5 my-auto h-[18px] w-[18px] text-gray-400" /><input type="text" aria-label="ابحث بالصندوق أو المشترك أو السند أو مرجع الحوالة" placeholder="ابحث بالصندوق أو المشترك أو السند أو مرجع الحوالة" value={search} onChange={(event) => setSearch(event.target.value)} className="block w-full py-2.5 pe-4 ps-10 text-sm" /></div>
+                        <div className="relative w-full sm:w-72"><Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-[18px] w-[18px] text-gray-400" /><input type="text" aria-label="ابحث بالصندوق أو المشترك أو السند أو مرجع الحوالة" placeholder="ابحث بالصندوق أو المشترك أو السند أو مرجع الحوالة" value={search} onChange={(event) => setSearch(event.target.value)} className="block w-full py-2.5 pe-4 ps-10 text-sm" /></div>
                         <select aria-label="الموظف" value={person} onChange={(event) => setPerson(event.target.value)} className="w-full py-2.5 text-sm sm:w-56"><option value="">كل الموظفين</option>{people.map(([id, name]) => <option key={id} value={String(id)}>{name}</option>)}</select>
                         <select aria-label="ترتيب الصناديق" value={`${sort.key}:${sort.direction}`} onChange={(event) => { const [key, direction] = event.target.value.split(':'); setSort({ key, direction }); }} className="w-full py-2.5 text-sm sm:w-72">{sortOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select>
                     </div>

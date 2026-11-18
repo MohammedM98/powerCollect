@@ -157,7 +157,7 @@ export default function DateInput({
     const canGoForward = !max || nextMonth.slice(0, 7) <= max.slice(0, 7);
 
     const headerButton =
-        'flex h-9 w-9 items-center justify-center rounded-lg text-gray-600 transition hover:bg-gray-100 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 disabled:pointer-events-none disabled:opacity-30';
+        'flex h-9 w-9 items-center justify-center rounded-lg text-gray-600 transition hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 disabled:pointer-events-none disabled:opacity-30';
 
     const fieldColors = onDark
         ? `bg-white/10 text-white disabled:opacity-40 focus-visible:ring-4 focus-visible:ring-white/15 ${open ? 'border-white/50 ring-4 ring-white/15' : 'border-white/20 hover:border-white/40'}`
@@ -180,7 +180,7 @@ export default function DateInput({
                         openCalendar();
                     }
                 }}
-                className={`flex h-[var(--control-h)] w-full items-center justify-between gap-2 rounded-control border px-3 text-start text-base leading-6 transition focus:outline-none disabled:cursor-not-allowed ${fieldColors}`}
+                className={`flex h-(--control-h) w-full items-center justify-between gap-2 rounded-control border px-3 text-start text-base leading-6 transition focus:outline-hidden disabled:cursor-not-allowed ${fieldColors}`}
             >
                 <span className={`truncate ${onDark ? (hasValue ? 'text-white' : 'text-white/60') : (hasValue ? 'text-gray-900' : 'text-gray-400/60')}`}>{hasValue ? formatWeekDay(value) : placeholder}</span>
                 <Icon name="calendar" className={`h-[18px] w-[18px] shrink-0 ${onDark ? 'text-white/60' : 'text-gray-400'}`} />
@@ -210,7 +210,7 @@ export default function DateInput({
                         // Lets a popover holding this field (the ledger's custom range) treat the calendar as its own.
                         data-date-picker=""
                         dir="rtl"
-                        className="animate-menu fixed z-[70] w-[19.5rem] rounded-2xl border border-gray-100 bg-surface p-3 text-gray-900 shadow-lift"
+                        className="animate-menu fixed z-70 w-78 rounded-2xl border border-gray-100 bg-surface p-3 text-gray-900 shadow-lift"
                     >
                         <div className="mb-2 flex items-center justify-between gap-2">
                             <button
@@ -226,7 +226,7 @@ export default function DateInput({
                                 type="button"
                                 aria-label={view === 'days' ? 'اختيار الشهر والسنة' : 'العودة إلى الأيام'}
                                 onClick={() => setView(view === 'days' ? 'months' : 'days')}
-                                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[15px] font-bold transition hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900"
+                                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[15px] font-bold transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"
                             >
                                 {view === 'days' && formatMonthName(shownMonth)}
                                 <span className="font-display">{year}</span>
@@ -277,9 +277,9 @@ export default function DateInput({
                                                             pick(day);
                                                         }
                                                     }}
-                                                    className={`relative flex h-10 items-center justify-center rounded-lg font-display text-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-25 ${
+                                                    className={`relative flex h-10 items-center justify-center rounded-lg font-display text-sm transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-25 ${
                                                         selected
-                                                            ? 'bg-gray-900 font-bold text-surface shadow-sm'
+                                                            ? 'bg-gray-900 font-bold text-surface shadow-xs'
                                                             : `${inMonth ? 'text-gray-800' : 'text-gray-400'} hover:bg-gray-100 ${day === today ? 'font-bold text-brand-600' : ''}`
                                                     }`}
                                                 >
@@ -308,7 +308,7 @@ export default function DateInput({
                                                 setFocusedDay(clampDay(addMonths(shownMonth, index + 1 - Number(shownMonth.slice(5, 7))), min, max));
                                                 setView('days');
                                             }}
-                                            className={`h-11 rounded-lg text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-25 ${
+                                            className={`h-11 rounded-lg text-sm font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-25 ${
                                                 current ? 'bg-gray-900 text-surface' : 'text-gray-700 hover:bg-gray-100'
                                             }`}
                                         >
@@ -324,7 +324,7 @@ export default function DateInput({
                                 type="button"
                                 disabled={isOutOfRange(today, min, max)}
                                 onClick={() => pick(today)}
-                                className="rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 transition hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 disabled:opacity-30"
+                                className="rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 disabled:opacity-30"
                             >
                                 اليوم
                             </button>
@@ -335,7 +335,7 @@ export default function DateInput({
                                         onChange('');
                                         close();
                                     }}
-                                    className="rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900"
+                                    className="rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"
                                 >
                                     مسح
                                 </button>

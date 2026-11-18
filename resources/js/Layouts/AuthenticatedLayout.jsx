@@ -21,7 +21,7 @@ const KeyboardShortcuts = lazy(() => import('@/Components/TopBar/KeyboardShortcu
 const QuickTour = lazy(() => import('@/Components/TopBar/QuickTour'));
 const QuickMessageModal = lazy(() => import('@/Pages/Messages/QuickMessageModal'));
 
-const loadingTool = <p role="status" className="fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 rounded-control border border-gray-200 bg-surface px-4 py-3 text-sm text-gray-600 shadow-card">جارٍ تحميل الأدوات…</p>;
+const loadingTool = <p role="status" className="fixed bottom-6 left-1/2 z-100 -translate-x-1/2 rounded-control border border-gray-200 bg-surface px-4 py-3 text-sm text-gray-600 shadow-card">جارٍ تحميل الأدوات…</p>;
 
 const NO_BADGES = {};
 
@@ -210,7 +210,7 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
     return (
         <div className="tn-shell min-h-screen text-gray-900">
             <div className="tn-backdrop" aria-hidden="true" />
-            <a href="#main-content" className="fixed start-4 -top-24 z-[100] rounded-xl bg-surface px-4 py-3 font-semibold tn-lift focus:top-3">
+            <a href="#main-content" className="fixed inset-s-4 -top-24 z-100 rounded-xl bg-surface px-4 py-3 font-semibold tn-lift focus:top-3">
                 تخطي إلى المحتوى
             </a>
 
@@ -232,7 +232,7 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
             />
 
             <div className="tn-content">
-                <main id="main-content" tabIndex={-1} className="mx-auto max-w-[var(--ui-content-width)] px-[var(--tn-gutter)] pb-16 pt-7 outline-none">
+                <main id="main-content" tabIndex={-1} className="mx-auto max-w-(--ui-content-width) px-(--tn-gutter) pb-16 pt-7 outline-hidden">
                     <BranchViewSwitcher />
                     <Breadcrumb trail={trail} />
                     {header && <div className="gl-page-head rise-in mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">{header}</div>}

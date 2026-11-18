@@ -43,20 +43,20 @@ export default function ForceDeleteTransactionModal({ onClose, subscription, bal
             <OriginalLine entry={entry} tone="erase" />
 
             {isSplit && (
-                <div className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] px-4 py-3 text-sm leading-7 text-gray-700">
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/6 px-4 py-3 text-sm leading-7 text-gray-700">
                     <p className="font-semibold text-gray-900">الإجراء يشمل الحوالة المقسّمة كاملة</p>
                     <p>يُعكس الأثر المالي المتبقي لكل حصة بقيد مرتبط بها، وتبقى الحصص والحركات السابقة محفوظة. إذا تعذّر تنفيذ الإجراء على أحد الأجزاء، فلن يتغيّر أي جزء.</p>
                 </div>
             )}
 
             {!isSplit && action === 'delete' && entry.isCorrection && entry.corrects && (
-                <p className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] px-4 py-3 text-sm text-gray-700">
+                <p className="rounded-xl border border-amber-500/30 bg-amber-500/6 px-4 py-3 text-sm text-gray-700">
                     هذه الحركة صحّحت الحركة رقم <b className="font-display">{entry.corrects.lineNumber}</b>. يُعكس أثر الحركة الحالية بقيد جديد، وتبقى سلسلة التصحيح السابقة محفوظة.
                 </p>
             )}
 
             {action === 'delete' && entry.readingDiscount && (
-                <p className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] px-4 py-3 text-sm text-gray-700">
+                <p className="rounded-xl border border-amber-500/30 bg-amber-500/6 px-4 py-3 text-sm text-gray-700">
                     لهذه القراءة خصم أسبوعي بقيمة <b className="font-display">{entry.readingDiscount}</b> شيكل. يُلغى أثره بقيد عكسي مرتبط به عند إلغاء فاتورة القراءة.
                 </p>
             )}

@@ -43,7 +43,7 @@ export default function HoldToConfirm({ count, disabled, busy, onConfirm, label,
         window.addEventListener('blur', reset);
         document.addEventListener('visibilitychange', hide);
         return () => {
-            window.removeEventListener('blur', reset);
+            window.removeEventListener('blur-sm', reset);
             document.removeEventListener('visibilitychange', hide);
         };
     }, []);
@@ -130,9 +130,9 @@ export default function HoldToConfirm({ count, disabled, busy, onConfirm, label,
                 onKeyUp={onKeyUp}
                 onBlur={reset}
                 onContextMenu={(event) => event.preventDefault()}
-                className={`relative flex w-full touch-none select-none items-center justify-center gap-2 overflow-hidden ${tone === 'primary' ? 'py-3.5 !text-base' : 'rounded-control bg-red-700 px-5 py-3.5 text-base font-bold text-white shadow-card transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700'}`}
+                className={`relative flex w-full touch-none select-none items-center justify-center gap-2 overflow-hidden ${tone === 'primary' ? 'py-3.5 text-base!' : 'rounded-control bg-red-700 px-5 py-3.5 text-base font-bold text-white shadow-card transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700'}`}
             >
-                <span aria-hidden="true" className="absolute inset-y-0 start-0 bg-red-950/45" style={{ width: `${progress}%` }} />
+                <span aria-hidden="true" className="absolute inset-y-0 inset-s-0 bg-red-950/45" style={{ width: `${progress}%` }} />
                 <span className="relative flex items-center gap-2">
                     <Icon name={icon} className="h-5 w-5" />
                     {busy ? 'جارٍ التنفيذ…' : progress > 0 ? `استمر بالضغط… ${progress}%` : label}

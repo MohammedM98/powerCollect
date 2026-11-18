@@ -23,8 +23,8 @@ export default function DensityToggle() {
                     aria-label={option.label}
                     title={option.label}
                     onClick={() => setDensity(option.value)}
-                    className={`flex h-7 w-8 items-center justify-center rounded-lg transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 ${
-                        density === option.value ? 'bg-surface text-gray-900 shadow-sm' : 'text-gray-400 hover:text-gray-900'
+                    className={`flex h-7 w-8 items-center justify-center rounded-lg transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${
+                        density === option.value ? 'bg-surface text-gray-900 shadow-xs' : 'text-gray-400 hover:text-gray-900'
                     }`}
                 >
                     <Icon name={option.icon} className="h-4 w-4" />

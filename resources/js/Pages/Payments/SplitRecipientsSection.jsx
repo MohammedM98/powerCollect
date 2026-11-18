@@ -17,12 +17,12 @@ function PartRow({ part, onAmount, onRemove, error }) {
                     <span className="relative flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[14px] bg-graphite-gradient font-display text-[15px] font-bold text-white">
                         {initials(part.subscription.fullName)}
                         <span
-                            className={`absolute -bottom-0.5 -start-0.5 h-[13px] w-[13px] rounded-full border-[2.5px] border-gray-50 ${STATUS_DOTS[part.subscription.status] ?? 'bg-gray-400'}`}
+                            className={`absolute -bottom-0.5 -inset-s-0.5 h-[13px] w-[13px] rounded-full border-[2.5px] border-gray-50 ${STATUS_DOTS[part.subscription.status] ?? 'bg-gray-400'}`}
                             aria-hidden="true"
                         />
                     </span>
                     <div className="min-w-0">
-                        <p className="break-words text-[16.5px] font-bold text-gray-900">{part.subscription.fullName}</p>
+                        <p className="wrap-break-word text-[16.5px] font-bold text-gray-900">{part.subscription.fullName}</p>
                         <p className="text-[13.5px] text-gray-500">
                             حساب{' '}
                             <span dir="ltr" className="font-display">
@@ -59,7 +59,7 @@ function PartRow({ part, onAmount, onRemove, error }) {
                             className={`${inputClass} pe-9 text-end font-display text-lg font-bold`}
                         />
                         <span
-                            className="pointer-events-none absolute inset-y-0 end-3.5 flex items-center font-display text-base font-bold text-gray-400"
+                            className="pointer-events-none absolute inset-y-0 inset-e-3.5 flex items-center font-display text-base font-bold text-gray-400"
                             aria-hidden="true"
                         >
                             ₪
@@ -80,7 +80,7 @@ function PartRow({ part, onAmount, onRemove, error }) {
                     type="button"
                     onClick={onRemove}
                     aria-label={`إزالة ${part.subscription.fullName}`}
-                    className="rounded-xl p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900"
+                    className="rounded-xl p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"
                 >
                     <Icon name="close" className="h-[18px] w-[18px]" />
                 </button>
@@ -125,7 +125,7 @@ export default function SplitRecipientsSection({
 
             <div className="flex flex-wrap items-start gap-3">
                 <div className="relative min-w-0 flex-1 basis-72">
-                    <Icon name="search" className="pointer-events-none absolute inset-y-0 start-4 my-auto h-[18px] w-[18px] text-gray-400" />
+                    <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-4 my-auto h-[18px] w-[18px] text-gray-400" />
                     <input
                         id="split_search"
                         type="search"

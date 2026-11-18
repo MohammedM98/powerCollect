@@ -29,7 +29,7 @@ export default function PageHeader({ title, eyebrow = null, info = null, meta = 
 /** The way back to the page above, as a page header's `eyebrow`. */
 export function BackLink({ href, children }) {
     return (
-        <Link href={href} prefetch className="inline-flex items-center gap-1 rounded transition hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900">
+        <Link href={href} prefetch className="inline-flex items-center gap-1 rounded transition hover:text-gray-900 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900">
             <Icon name="chevron-right" className="h-4 w-4" />
             {children}
         </Link>

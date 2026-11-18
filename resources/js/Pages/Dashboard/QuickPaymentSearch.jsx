@@ -100,7 +100,7 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
                 />
                 <div className="shrink-0 px-5 pt-5 sm:px-7">
                     <div className="relative">
-                        <Icon name="search" className="pointer-events-none absolute inset-y-0 start-3.5 my-auto h-5 w-5 text-gray-400" />
+                        <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-5 w-5 text-gray-400" />
                         <input
                             type="search"
                             autoFocus
@@ -114,7 +114,7 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
                             className="block w-full py-3 pe-4 ps-11 text-base"
                         />
                         {loading && (
-                            <span className="absolute inset-y-0 end-3.5 my-auto h-5 w-5 animate-spin rounded-full border-2 border-gray-200 border-t-brand-500" aria-hidden="true" />
+                            <span className="absolute inset-y-0 inset-e-3.5 my-auto h-5 w-5 animate-spin rounded-full border-2 border-gray-200 border-t-brand-500" aria-hidden="true" />
                         )}
                     </div>
                 </div>
@@ -143,8 +143,8 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
                                             type="button"
                                             onClick={() => onPick(subscriber)}
                                             onPointerEnter={() => setActive(index)}
-                                            className={`flex w-full items-center gap-3 rounded-row border px-4 py-3 text-start transition active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 ${
-                                                index === active ? 'border-brand-500/30 bg-brand-500/[0.06]' : 'border-transparent hover:bg-gray-50'
+                                            className={`flex w-full items-center gap-3 rounded-row border px-4 py-3 text-start transition active:scale-[0.99] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${
+                                                index === active ? 'border-brand-500/30 bg-brand-500/6' : 'border-transparent hover:bg-gray-50'
                                             }`}
                                         >
                                             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-graphite-gradient text-white">

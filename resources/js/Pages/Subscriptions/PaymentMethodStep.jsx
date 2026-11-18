@@ -67,7 +67,7 @@ export default function PaymentMethodStep({
                 )}
 
                 {!throughBank && (
-                    <div className="animate-menu gl-receipt mt-3 grid gap-4 !border-solid p-4">
+                    <div className="animate-menu gl-receipt mt-3 grid gap-4 border-solid! p-4">
                         <div>
                             <FieldLabel htmlFor="manual_voucher_number" hint="رقم الوصل الورقي">
                                 رقم السند اليدوي

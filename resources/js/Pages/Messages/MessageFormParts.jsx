@@ -13,7 +13,7 @@ export function Field({ label, htmlFor, children, className = '' }) {
 }
 
 /** The keyboard focus ring every custom button here uses, like the app's own buttons. */
-export const FOCUS_RING = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
+export const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
 
 /** One step of the page as a card, named by its title for screen readers. */
 export function Card({ icon, title, description, children, actions = null }) {

@@ -4,7 +4,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 
 /** The text input style inside an inline add row. */
 export const inlineInputClass =
-    'h-11 w-full rounded-xl border-[1.5px] border-gray-200 bg-surface px-3 text-[15px] text-gray-900 transition placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15';
+    'h-11 w-full rounded-xl border-[1.5px] border-gray-200 bg-surface px-3 text-[15px] text-gray-900 transition placeholder:text-gray-400 focus:border-brand-500 focus:outline-hidden focus:ring-4 focus:ring-brand-500/15';
 
 /** One labelled field in an inline add row, with its error under it. */
 export function InlineField({ id, label, error, className = '', children }) {
@@ -45,7 +45,7 @@ export default function InlineAddRow({
                 <button
                     type="button"
                     onClick={onOpen}
-                    className="inline-flex h-11 items-center gap-2 rounded-[13px] border border-dashed border-gray-300 bg-surface px-4 text-[15px] font-bold text-gray-700 transition hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+                    className="inline-flex h-11 items-center gap-2 rounded-[13px] border border-dashed border-gray-300 bg-surface px-4 text-[15px] font-bold text-gray-700 transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
                 >
                     <Icon name="plus" className="h-[18px] w-[18px]" strokeWidth={2.2} />
                     {openLabel}

@@ -97,7 +97,7 @@ export default function SubscriptionLocationSection({
 // derived from another selection, like the branch's area).
 export function FieldLock() {
     return (
-        <span className="pointer-events-none absolute inset-y-0 end-3 flex items-center text-gray-400" aria-hidden="true">
+        <span className="pointer-events-none absolute inset-y-0 inset-e-3 flex items-center text-gray-400" aria-hidden="true">
             <Icon name="lock" className="h-4 w-4" />
         </span>
     );

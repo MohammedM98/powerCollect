@@ -77,7 +77,7 @@ export function MenuButton({ icon, label, children, className = '' }) {
                         role="menu"
                         dir="rtl"
                         style={{ top: position.top, left: position.left, width: position.width }}
-                        className="animate-dropdown fixed z-[60] max-h-80 overflow-y-auto rounded-2xl border border-gray-100 bg-surface p-1.5 text-gray-900 shadow-lift"
+                        className="animate-dropdown fixed z-60 max-h-80 overflow-y-auto rounded-2xl border border-gray-100 bg-surface p-1.5 text-gray-900 shadow-lift"
                     >
                         {children(() => setOpen(false))}
                     </div>,
@@ -93,7 +93,7 @@ export function MenuItem({ title, subtitle, trailing, onSelect, leading }) {
             type="button"
             role="menuitem"
             onClick={onSelect}
-            className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-start text-sm transition hover:bg-gray-50 focus-visible:bg-gray-50 focus-visible:outline-none"
+            className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-start text-sm transition hover:bg-gray-50 focus-visible:bg-gray-50 focus-visible:outline-hidden"
         >
             {leading}
             <span className="min-w-0 flex-1">

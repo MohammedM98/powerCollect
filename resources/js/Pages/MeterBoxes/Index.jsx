@@ -54,14 +54,14 @@ function MeterBoxSummary({ summary }) {
     return (
         <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <KpiTile hero icon="table" label="إجمالي الطبلونات" value={formatNumber(summary.total)} unit="طبلون" hint="ضمن نتائج البحث والتصفية">
-                <div className="gl-kv mt-3 border-t pt-3 !border-[color:var(--gl-line)]"><span className="inline-flex items-center gap-1.5"><Icon name="users" className="h-4 w-4" />المشتركون</span><b className="gl-num">{formatNumber(summary.subscriptions)}</b></div>
+                <div className="gl-kv mt-3 border-t pt-3 border-(--gl-line)!"><span className="inline-flex items-center gap-1.5"><Icon name="users" className="h-4 w-4" />المشتركون</span><b className="gl-num">{formatNumber(summary.subscriptions)}</b></div>
             </KpiTile>
             {[
                 { icon: 'pin', label: 'مناطق الطبلونات', unit: 'منطقة', value: formatNumber(summary.regions), hint: `${formatNumber(summary.located)} طبلون ضمن هذه المناطق${summary.total > summary.located ? ` · ${formatNumber(summary.total - summary.located)} بلا منطقة` : ''}` },
                 { icon: 'users', label: 'المشتركون الفعّالون', unit: 'مشترك', value: formatNumber(summary.active), hint: 'المشتركون بحالة فعّال ضمن نتائج البحث' },
                 { icon: 'table', label: 'طبلونات بلا مشتركين', unit: 'طبلون', value: formatNumber(summary.empty), hint: 'طبلونات لا يرتبط بها أي مشترك' },
             ].map((stat) => <div key={stat.label} role="group" aria-label={`إحصائية ${stat.label}`} className="rounded-card border border-gray-100 bg-surface p-5 shadow-card">
-                <div className="mb-4 flex items-center gap-2.5 rounded-control bg-brand-500/[0.06] px-3 py-2.5">
+                <div className="mb-4 flex items-center gap-2.5 rounded-control bg-brand-500/6 px-3 py-2.5">
                     <Icon name={stat.icon} className="h-5 w-5 shrink-0 text-brand-600" />
                     <p className="text-base font-bold leading-6 text-gray-900">{stat.label}</p>
                 </div>
@@ -228,7 +228,7 @@ export default function Index({
                     <SecondaryButton onClick={expandAll} disabled={meterBoxes.data.length === 0 || allExpanded}><Icon name="chevron-down" className="h-4 w-4" />توسيع الكل</SecondaryButton>
                     <SecondaryButton onClick={collapseAll} disabled={!anyExpanded}><Icon name="chevron-down" className="h-4 w-4 rotate-180" />طي الكل</SecondaryButton>
                 </>}
-                <SecondaryButton aria-pressed={groupByRegion} onClick={toggleGroupByRegion} className={groupByRegion ? '!border-brand-500/30 !bg-brand-500/10 !text-brand-600' : ''}><Icon name="pin" className="h-4 w-4" />تجميع حسب المنطقة</SecondaryButton>
+                <SecondaryButton aria-pressed={groupByRegion} onClick={toggleGroupByRegion} className={groupByRegion ? 'border-brand-500/30! bg-brand-500/10! text-brand-600!' : ''}><Icon name="pin" className="h-4 w-4" />تجميع حسب المنطقة</SecondaryButton>
                 {canViewSubscriptions && canPrint && <a href={subscriptionsPrintHref()} onClick={(event) => { event.currentTarget.href = subscriptionsPrintHref(); }} target="_blank" rel="noopener noreferrer" className={`${secondaryButtonClass} tone-print`} title="طباعة كل طبلون تحت منطقته ومشتركوه تحته، بنفس البحث والتصفية وترتيب المشتركين"><Icon name="printer" className="h-4 w-4" />طباعة الطبلونات مع المشتركين</a>}
                 {canViewSubscriptions && <span className="text-xs text-gray-500">التوسيع يعرض مشتركي طبلونات الصفحة الحالية، ويستمر عند الانتقال للصفحة التالية.</span>}
             </div>

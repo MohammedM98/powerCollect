@@ -95,7 +95,7 @@ export default function HierarchyColumn({
                         </div>
                     )}
 
-                    <div className="flex-1 overflow-y-auto px-2 pb-2.5 pt-1 lg:max-h-[34rem]">
+                    <div className="flex-1 overflow-y-auto px-2 pb-2.5 pt-1 lg:max-h-136">
                         {adding && <InlineNameEditor placeholder={`اسم ${noun}`} request={createRequest} onDone={() => setAdding(false)} />}
 
                         {visible.map((item) =>
@@ -170,7 +170,7 @@ function Row({ item, selected, onPick, subtitle, onEdit, onDelete }) {
                     type="button"
                     aria-pressed={selected}
                     onClick={pick}
-                    className="min-w-0 flex-1 self-stretch rounded text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                    className="min-w-0 flex-1 self-stretch rounded text-start focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                 >
                     {name}
                 </button>

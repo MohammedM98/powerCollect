@@ -23,7 +23,7 @@ import { clearErrorOnInput, submitOnCtrlEnter, validateFormFields } from '@/lib/
  * button, and the question before it: `{ submitLabel, title,
  * confirmLabel, icon, tone }`.
  *
- * A long form passes `outline` ([{ id, title, icon }]): an index of its
+ * A long form passes `outline-solid` ([{ id, title, icon }]): an index of its
  * sections down the side, the one being read lit, a click scrolling to it.
  * An edited record with unsaved changes says so beside the save button.
  */
@@ -144,7 +144,7 @@ export default function FormModal({
                             <div ref={bodyRef} className={`min-h-0 flex-1 space-y-5 overflow-y-auto px-5 pb-2 pt-4 sm:px-6 ${bodyClassName}`}>{children}</div>
                     )}
 
-                    <div className={`gl-dialog-foot flex shrink-0 flex-wrap items-center gap-3 px-5 sm:px-6 ${outline ? 'border-t border-[color:var(--gl-line)]' : ''}`}>
+                    <div className={`gl-dialog-foot flex shrink-0 flex-wrap items-center gap-3 px-5 sm:px-6 ${outline ? 'border-t border-(--gl-line)' : ''}`}>
                         <button type="button" onClick={requestClose} className="gl-btn gl-ghost">إلغاء</button>
                         <span className="flex-1" />
                         {form.isEdit && form.isDirty && <span className="gl-unsaved" role="status">تغييرات غير محفوظة</span>}

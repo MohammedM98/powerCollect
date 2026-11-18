@@ -132,14 +132,14 @@ export function AmendmentBadge({ amendments }) {
             <button
                 type="button"
                 aria-label={`سجل تعديلات البيانات، ${amendments.length}`}
-                className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-blue-500/25 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-blue-500/25 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-600 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             >
                 <Icon name="history" className="h-3.5 w-3.5" />
                 معدّلة
             </button>
             <span
                 role="tooltip"
-                className="pointer-events-none invisible absolute end-0 top-full z-40 mt-2 grid w-[min(360px,calc(100vw-2rem))] gap-3 rounded-2xl border border-gray-200 bg-surface p-4 text-start opacity-0 shadow-lift transition group-hover/amend:visible group-hover/amend:opacity-100 group-focus-within/amend:visible group-focus-within/amend:opacity-100"
+                className="pointer-events-none invisible absolute inset-e-0 top-full z-40 mt-2 grid w-[min(360px,calc(100vw-2rem))] gap-3 rounded-2xl border border-gray-200 bg-surface p-4 text-start opacity-0 shadow-lift transition group-hover/amend:visible group-hover/amend:opacity-100 group-focus-within/amend:visible group-focus-within/amend:opacity-100"
             >
                 {amendments.map((amendment) => (
                     <span key={amendment.id} className="grid gap-1.5 border-b border-gray-100 pb-3 last:border-0 last:pb-0">

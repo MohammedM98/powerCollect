@@ -282,7 +282,7 @@ export default function AccountStatement({ subscription, entries, summary, payme
                     <table className="data-table data-table-ledger w-full text-start text-sm" style={{ '--statement-table-width': `${COLUMN_WIDTHS.reduce((total, width) => total + width, hasLineMenus ? 64 : 0)}px` }}>
                         <colgroup>
                             {COLUMN_WIDTHS.map((width, index) => <col key={index} style={{ width: `${width}px` }} />)}
-                            {hasLineMenus && <col className="statement-screen-only !w-[64px]" />}
+                            {hasLineMenus && <col className="statement-screen-only w-[64px]!" />}
                         </colgroup>
                         <thead>
                             <tr>

@@ -160,7 +160,7 @@ export function HeadingStyles({ levels, styles, onChange }) {
                         </div>
                         {(look.size || look.background || look.color) && (
                             <SecondaryButton
-                                className="w-full !py-1 text-xs"
+                                className="w-full py-1! text-xs"
                                 onClick={() => setLevel(index, { size: null, background: null, color: null })}
                             >
                                 إرجاع الشكل الافتراضي
@@ -188,7 +188,7 @@ export function Highlights({ rules, columns, onChange }) {
                             aria-label={`عمود القاعدة ${index + 1}`}
                             value={rule.key}
                             onChange={(event) => setRule(index, { key: event.target.value })}
-                            className="block min-w-0 flex-1 !py-1 text-sm"
+                            className="block min-w-0 flex-1 py-1! text-sm"
                         >
                             {columns.map((column) => (
                                 <option key={column.key} value={column.key}>
@@ -208,7 +208,7 @@ export function Highlights({ rules, columns, onChange }) {
                             aria-label={`شرط القاعدة ${index + 1}`}
                             value={rule.operator}
                             onChange={(event) => setRule(index, { operator: event.target.value })}
-                            className="block w-32 shrink-0 !py-1 text-sm"
+                            className="block w-32 shrink-0 py-1! text-sm"
                         >
                             {Object.entries(HIGHLIGHT_OPERATORS).map(([value, label]) => (
                                 <option key={value} value={value}>
@@ -223,7 +223,7 @@ export function Highlights({ rules, columns, onChange }) {
                                 maxLength={100}
                                 value={rule.value ?? ''}
                                 onChange={(event) => setRule(index, { value: event.target.value })}
-                                className="block min-w-0 flex-1 !py-1 text-sm"
+                                className="block min-w-0 flex-1 py-1! text-sm"
                             />
                         )}
                     </div>
@@ -236,7 +236,7 @@ export function Highlights({ rules, columns, onChange }) {
                                 aria-pressed={rule.color === color.value}
                                 title={color.label}
                                 onClick={() => setRule(index, { color: color.value })}
-                                className={`h-7 w-7 rounded-full border-2 ${rule.color === color.value ? 'border-gray-900' : 'border-white shadow'} ${FOCUS_RING}`}
+                                className={`h-7 w-7 rounded-full border-2 ${rule.color === color.value ? 'border-gray-900' : 'border-white shadow-sm'} ${FOCUS_RING}`}
                                 style={{ backgroundColor: color.value }}
                             />
                         ))}

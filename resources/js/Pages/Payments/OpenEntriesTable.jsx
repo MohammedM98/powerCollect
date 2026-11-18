@@ -53,12 +53,12 @@ export default function OpenEntriesTable({ table, entries, filters, counts, url,
                         const ledger = ledgerOf(entry);
 
                         return <tr key={entry.id} className={cancelled ? 'opacity-60' : undefined}>
-                            <td className="!whitespace-normal">
+                            <td className="whitespace-normal!">
                                 <Link href={entry.box.url} prefetch className="font-semibold text-brand-600 hover:underline">صندوق <bdi dir="ltr" className="font-display">{entry.box.number}</bdi></Link>
                                 <span className="block text-xs text-gray-400">{boxTypeStyles[entry.box.type].label}</span>
                             </td>
                             <LedgerLeadCells ledger={ledger} />
-                            <td title={entry.subscriber} className="!whitespace-normal">
+                            <td title={entry.subscriber} className="whitespace-normal!">
                                 {entry.statementUrl ? (
                                     <Link href={entry.statementUrl} prefetch title="فتح كشف الحساب عند هذه الحركة" className="font-semibold text-gray-900 hover:text-brand-600 hover:underline">{entry.subscriber}</Link>
                                 ) : (
@@ -67,7 +67,7 @@ export default function OpenEntriesTable({ table, entries, filters, counts, url,
                                 <span className="block font-display text-xs text-gray-400"><bdi dir="ltr">{entry.accountNumber}</bdi></span>
                             </td>
                             <LedgerTrailCells ledger={ledger} amount={entry.amount} currency={entry.currency} cancelled={cancelled} />
-                            <td className="!whitespace-normal"><StatusPill tone={tone} label={status} />{entry.isLate && <span className="mt-1 block"><StatusPill tone="amber" label="متأخرة" /></span>}</td>
+                            <td className="whitespace-normal!"><StatusPill tone={tone} label={status} />{entry.isLate && <span className="mt-1 block"><StatusPill tone="amber" label="متأخرة" /></span>}</td>
                             <td className="text-end">{(entry.receiptUrl || entry.statementUrl) && (
                                 <RowActionsMenu>
                                     {entry.statementUrl && <button onClick={() => router.visit(entry.statementUrl)}>كشف الحساب</button>}

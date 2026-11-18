@@ -111,7 +111,7 @@ export default function Index({
                 )}
             </nav>
 
-            <div className="mt-3 grid grid-cols-1 overflow-hidden rounded-card border border-gray-100 bg-surface shadow-card lg:min-h-[35rem] lg:grid-cols-3">
+            <div className="mt-3 grid grid-cols-1 overflow-hidden rounded-card border border-gray-100 bg-surface shadow-card lg:min-h-140 lg:grid-cols-3">
                 <HierarchyColumn
                     title="المحافظات"
                     noun="المحافظة"

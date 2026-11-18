@@ -250,7 +250,7 @@ export default function PaymentModal({
 
     return (
         <>
-            <Modal show={show} onClose={requestClose} maxWidth="5xl" panelClassName="!overflow-clip">
+            <Modal show={show} onClose={requestClose} maxWidth="5xl" panelClassName="overflow-clip!">
                 {receipt ? (
                     <div role="dialog" aria-modal="true" aria-label={correcting ? 'صُحّحت الدفعة' : 'سُجّلت الدفعة'}>
                         <PaymentReceipt

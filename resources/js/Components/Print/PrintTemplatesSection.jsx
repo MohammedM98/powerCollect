@@ -113,7 +113,7 @@ export function TemplatesSection({ templates, onReset, onPreset }) {
                                 <div className="flex gap-2">
                                     <SecondaryButton
                                         onClick={() => actions.setDefault(active.id, !active.isDefault)}
-                                        className="flex-1 !px-2 text-xs"
+                                        className="flex-1 px-2! text-xs"
                                     >
                                         <Icon name={active.isDefault ? 'close' : 'check'} className="h-4 w-4" />
                                         {active.isDefault ? 'إلغاء كونه الافتراضي' : 'جعله الافتراضي لهذه القائمة'}

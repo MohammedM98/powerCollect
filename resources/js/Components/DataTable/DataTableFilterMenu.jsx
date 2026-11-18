@@ -106,7 +106,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                         role="group"
                         aria-label={group.label}
                         className={`flex w-full min-w-0 flex-col gap-3 sm:w-auto sm:flex-row sm:items-end ${
-                            value ? '-my-2 rounded-2xl bg-brand-500/[0.04] px-2.5 py-2 ring-1 ring-inset ring-brand-500/20' : ''
+                            value ? '-my-2 rounded-2xl bg-brand-500/4 px-2.5 py-2 ring-1 ring-inset ring-brand-500/20' : ''
                         }`}
                     >
                         <FilterField
@@ -132,7 +132,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                     type="button"
                     onClick={() => setOpen((current) => !current)}
                     aria-expanded={open}
-                    className="flex h-[var(--control-h)] items-center gap-2 rounded-control border border-gray-200 bg-surface px-3.5 text-sm font-semibold text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
+                    className="flex h-(--control-h) items-center gap-2 rounded-control border border-gray-200 bg-surface px-3.5 text-sm font-semibold text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
                 >
                     <Icon name="filter" className="h-4 w-4" />
                     الفلاتر الظاهرة
@@ -142,7 +142,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                 </button>
 
                 {open && (
-                    <div className="absolute end-0 z-20 mt-2 w-60 rounded-2xl border border-gray-100 bg-surface p-2 shadow-lift">
+                    <div className="absolute inset-e-0 z-20 mt-2 w-60 rounded-2xl border border-gray-100 bg-surface p-2 shadow-lift">
                         {hideable.map((group) => (
                             <label
                                 key={group.key}
@@ -158,7 +158,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                                 />
                                 <span
                                     aria-hidden="true"
-                                    className="relative h-5 w-9 shrink-0 rounded-full bg-gray-200 transition after:absolute after:start-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-surface after:shadow after:transition-all peer-checked:bg-brand-500 peer-checked:after:start-[18px] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-gray-900"
+                                    className="relative h-5 w-9 shrink-0 rounded-full bg-gray-200 transition after:absolute after:inset-s-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-surface after:shadow-sm after:transition-all peer-checked:bg-brand-500 peer-checked:after:inset-s-[18px] peer-focus-visible:outline-solid peer-focus-visible:outline-2 peer-focus-visible:outline-gray-900"
                                 />
                             </label>
                         ))}
@@ -170,7 +170,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                 <button
                     type="button"
                     onClick={onClear}
-                    className="h-[var(--control-h)] rounded-control px-3 text-sm font-semibold text-brand-600 transition hover:bg-brand-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900"
+                    className="h-(--control-h) rounded-control px-3 text-sm font-semibold text-brand-600 transition hover:bg-brand-500/10 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"
                 >
                     مسح الفلاتر ({activeCount})
                 </button>

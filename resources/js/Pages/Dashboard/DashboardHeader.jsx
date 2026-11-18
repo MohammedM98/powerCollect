@@ -24,7 +24,7 @@ export default function DashboardHeader({
             <div className="min-w-0">
                 <h1>
                     <WordReveal text={greet}>
-                        <span className="!text-[rgb(var(--gl-brand))]">{auth.user.name}</span>
+                        <span className="text-[rgb(var(--gl-brand))]!">{auth.user.name}</span>
                     </WordReveal>
                 </h1>
                 <p>{[scopeLine, formatWeekDay(scope.today)].filter(Boolean).join(' · ')}</p>

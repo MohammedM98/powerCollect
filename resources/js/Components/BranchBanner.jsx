@@ -90,12 +90,12 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
                                     </option>
                                 ))}
                             </select>
-                            <Icon name="chevron-down" className="pointer-events-none absolute end-3.5 top-1/2 h-4 w-4 -translate-y-1/2" />
+                            <Icon name="chevron-down" className="pointer-events-none absolute inset-e-3.5 top-1/2 h-4 w-4 -translate-y-1/2" />
                         </span>
                     </label>
                 )}
             </div>
-            {children && <div className="mt-3 flex flex-wrap gap-2 border-t pt-3 print:hidden !border-[color:var(--gl-line)]">{children}</div>}
+            {children && <div className="mt-3 flex flex-wrap gap-2 border-t pt-3 print:hidden border-(--gl-line)!">{children}</div>}
         </section>
     );
 }

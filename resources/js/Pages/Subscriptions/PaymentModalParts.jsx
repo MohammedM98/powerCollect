@@ -21,7 +21,7 @@ export function MethodTile({ value, checked, onChange, icon, title, hint }) {
             </span>
             <span className="min-w-0">
                 <b className="block text-[15px]">{title}</b>
-                <small className="gl-sub block !m-0 !text-[12.5px]">{hint}</small>
+                <small className="gl-sub block m-0! text-[12.5px]!">{hint}</small>
             </span>
             <span className="gl-method-dot" aria-hidden="true" />
         </label>
@@ -44,15 +44,15 @@ export function PaymentReceipt({ receipt, subscriptionName, title, onAnother, on
             <span className="gl-tone mx-auto mb-3.5 flex h-[76px] w-[76px] items-center justify-center rounded-3xl" style={{ '--gl-c': 'var(--gl-ok)' }}>
                 <Icon name="check" className="h-10 w-10" strokeWidth={2.2} />
             </span>
-            <h3 className="text-[24px] font-extrabold !font-[family-name:var(--gl-head)]">{title}</h3>
-            <p className="gl-sub mt-1.5 !text-sm">
+            <h3 className="text-[24px] font-extrabold font-(family-name:--gl-head)!">{title}</h3>
+            <p className="gl-sub mt-1.5 text-sm!">
                 {formatMoney(receipt.currency === 'ILS' ? receipt.amount : receipt.inShekels)} شيكل من {subscriptionName} · الرصيد الجديد {balanceText(after)}
             </p>
             <dl className="gl-receipt gl-receipt-cut mx-auto mt-6 w-full max-w-[420px] text-start">
                 {rows.map(([label, value]) => (
                     <div key={label} className="gl-kv">
                         <dt>{label}</dt>
-                        <dd className="gl-num font-semibold !text-[color:var(--gl-ink)]">{value}</dd>
+                        <dd className="gl-num font-semibold text-(--gl-ink)!">{value}</dd>
                     </div>
                 ))}
             </dl>
@@ -88,7 +88,7 @@ export function PaymentReceipt({ receipt, subscriptionName, title, onAnother, on
  */
 export function TransferFields({ data, setData, errors, transferBanks, senderBanks, senderIsSubscriber, onSenderToggle, checkingReference, referenceStatus }) {
     return (
-        <div className="animate-menu gl-receipt mt-3 grid gap-4 !border-solid p-4">
+        <div className="animate-menu gl-receipt mt-3 grid gap-4 border-solid! p-4">
             <fieldset>
                 <legend className="mb-2 text-[14.5px] font-semibold text-gray-700">
                     البنك المستلم <span className="text-brand-600">*</span>

@@ -80,7 +80,7 @@ export default function DeleteTransactionModal({ onClose, subscription, balance,
             <OriginalLine entry={entry} tone="cancel" />
 
             {isSplit && (
-                <div className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] px-4 py-3 text-sm leading-7 text-gray-700">
+                <div className="rounded-xl border border-amber-500/30 bg-amber-500/6 px-4 py-3 text-sm leading-7 text-gray-700">
                     <p className="font-semibold text-gray-900">الإرجاع يشمل الحوالة المقسّمة كاملة</p>
                     <p>تُرجع جميع الحصص القائمة من حسابات المشتركين المرتبطين بالحوالة بالسبب نفسه، وتُحدّث أرصدتهم والصناديق المفتوحة تلقائيًا. إذا تعذّر إرجاع أحد الأجزاء، فلن يُرجع أي جزء.</p>
                 </div>
@@ -91,7 +91,7 @@ export default function DeleteTransactionModal({ onClose, subscription, balance,
             </p>
 
             {discountReturned > 0 && (
-                <p className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] px-4 py-3 text-sm text-gray-700">
+                <p className="rounded-xl border border-amber-500/30 bg-amber-500/6 px-4 py-3 text-sm text-gray-700">
                     لهذه القراءة خصم أسبوعي بقيمة <b className="font-display">{entry.readingDiscount}</b> شيكل. يُلغى معها تلقائيًا بالسبب نفسه، لأنه لا يقوم
                     إلا على فاتورة القراءة.
                 </p>
