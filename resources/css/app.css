@@ -6842,3 +6842,127 @@ body {
     background: color-mix(in oklab, var(--mt-fill) 38%, var(--ma-solid)) !important;
     color: #fff !important;
 }
+
+/*
+ * ── Every other window and form, as the MA prototype ─────────────────────
+ * (new subscriber, branch, user, meter box, breaker… and their edits.)
+ * The window is glass with a 28px corner and a floating shadow; its close
+ * key has no frame; fields are grey tiles that turn white with the
+ * company's ring while typed in; «حفظ» is the dark key, «إلغاء» a soft one.
+ * The money windows (data-ledger-tone, the checkout) keep their own.
+ */
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)),
+:root[data-ui-background='graphite'] .modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) {
+    border: 0;
+    border-radius: 28px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: blur(28px) saturate(1.6);
+    backdrop-filter: blur(28px) saturate(1.6);
+    box-shadow: var(--ma-float);
+    color: var(--ma-ink);
+}
+
+:root:not([data-surface='glass']) .modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) {
+    background: var(--ma-solid);
+}
+
+.modal-sheet-panel .gl-ib,
+.modal-sheet-panel .gl-ib:hover {
+    border: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--ma-muted);
+}
+
+.modal-sheet-panel .gl-ib:hover {
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+}
+
+/* Fields: grey tiles, white with the company's ring while typed in. */
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color']), textarea, select),
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) button.rounded-control.border {
+    min-height: 48px;
+    border: 0 !important;
+    border-radius: 14px;
+    background-color: var(--ma-tile) !important;
+    box-shadow: inset 0 0 0 1px transparent, inset 0 1px 2px rgb(16 20 26 / 0.04) !important;
+    color: var(--ma-ink);
+    font-size: 16px;
+    transition: box-shadow 0.15s, background-color 0.15s;
+}
+
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) textarea {
+    min-height: 76px;
+}
+
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color']), textarea, select):hover:not(:disabled, [readonly]),
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) button.rounded-control.border:hover:not(:disabled) {
+    box-shadow: inset 0 0 0 1px var(--ma-line) !important;
+}
+
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color']), textarea, select):focus,
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) button.rounded-control.border:is(:focus-visible, [aria-expanded='true']) {
+    background-color: var(--ma-solid) !important;
+    box-shadow: inset 0 0 0 1.5px var(--ma-brand), 0 0 0 4px color-mix(in oklab, var(--ma-brand) 14%, transparent) !important;
+    outline: none;
+}
+
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) :is(input, textarea, select):is(:disabled, [readonly]) {
+    color: var(--ma-muted);
+    background-color: color-mix(in oklab, var(--ma-tile) 70%, transparent) !important;
+}
+
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) :is(input[aria-invalid='true'], textarea[aria-invalid='true'], select[aria-invalid='true']) {
+    box-shadow: inset 0 0 0 1.5px var(--ma-owe) !important;
+}
+
+/* The window's footer: a hairline, then cancel and the dark save key. */
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) :is(.gl-dialog-foot, .gl-fm-foot) {
+    border-top: 1px solid var(--ma-line);
+}
+
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) :is(.gl-dialog-foot, .gl-fm-foot) .ui-btn-primary,
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) :is(.gl-dialog-foot, .gl-fm-foot) .ui-btn-primary:hover:not(:disabled) {
+    height: 46px;
+    padding-inline: 22px;
+    border: 0;
+    border-radius: 14px;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--ma-act) 88%, white), var(--ma-act));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 8px 18px -10px rgb(16 20 26 / 0.6);
+    color: #fff;
+    font-weight: 700;
+}
+
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) :is(.gl-dialog-foot, .gl-fm-foot) .ui-btn-primary:hover:not(:disabled) {
+    filter: brightness(1.08);
+}
+
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) :is(.gl-dialog-foot, .gl-fm-foot) .gl-sec,
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) :is(.gl-dialog-foot, .gl-fm-foot) .gl-sec:hover:not(:disabled) {
+    height: 46px;
+    padding-inline: 18px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+    color: var(--ma-ink);
+    font-weight: 700;
+}
+
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) :is(.gl-dialog-foot, .gl-fm-foot) .gl-sec:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--ma-tile) 82%, var(--ma-ink) 7%);
+}
+
+/* Choices in a form (status, billing kind): the chosen one white and raised, ringed in ink, in both themes. */
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) .gl-chip[aria-checked='true'],
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) .gl-chip[aria-pressed='true'] {
+    background: var(--ma-solid) !important;
+    box-shadow: inset 0 0 0 2px var(--ma-ink), var(--ma-depth) !important;
+    color: var(--ma-ink) !important;
+}
+
+.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co)) .gl-chip:not([aria-checked='true'], [aria-pressed='true']) {
+    background: var(--ma-tile);
+    color: var(--ma-muted);
+}
