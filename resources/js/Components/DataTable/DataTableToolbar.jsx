@@ -4,7 +4,7 @@ import Icon from '@/Components/Icon';
 import DensityToggle from './DensityToggle';
 import TableExportActions from './TableExportActions';
 
-const PAGE_SIZES = [15, 25, 50, 100];
+export const PAGE_SIZES = [15, 25, 50, 100];
 
 /**
  * The top of a table card: search (press / to jump to it, Esc to clear),

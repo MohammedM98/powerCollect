@@ -5,38 +5,32 @@ import Icon from '@/Components/Icon';
 const TAB_ICONS = { open: 'unlock', closed: 'lock', sent: 'send', entries: 'list' };
 
 /**
- * The financial boxes page's tabs in
+ * The financial boxes page's places as the redesign's segmented control, in
  * the order work goes through them: the entries of the branch's open boxes,
- * its open boxes, its closed boxes not sent yet, and those sent to audit,
- * each with how many there are. The tab shown carries the line in the
- * company's colour; closed boxes waiting to be sent are counted in red.
- * `tabs` come from the server with their links; `current` is the key of
- * the one shown.
+ * its open boxes, and its closed boxes, each with how many there are. The
+ * place shown is white on the grey track; closed boxes waiting are counted
+ * in red. `tabs` come from the server with their links; `current` is the
+ * key of the one shown; `hint` says what the place holds, under it.
  */
-export default function BoxTabs({ tabs, current }) {
+export default function BoxTabs({ tabs, current, hint = null }) {
     return (
-        <nav aria-label="الصناديق المالية" className="gl-tabs max-w-full">
-            {tabs.map((tab) => {
-                const active = tab.key === current;
-                const waiting = tab.key === 'closed' && tab.count > 0;
+        <div className="gl-cb-top">
+            <nav aria-label="الصناديق المالية" className="gl-cb-tabs">
+                {tabs.map((tab) => {
+                    const active = tab.key === current;
 
-                return (
-                    <Link
-                        key={tab.key}
-                        href={tab.url}
-                        prefetch
-                        preserveScroll
-                        aria-current={active ? 'page' : undefined}
-                        className="gl-tab"
-                    >
-                        <Icon name={TAB_ICONS[tab.key] ?? 'wallet'} className="h-4 w-4" />
-                        {tab.label}
-                        <span className="gl-cnt gl-num" style={waiting ? { background: 'var(--gl-bad)', color: '#fff' } : undefined}>
-                            {tab.count.toLocaleString('en')}
-                        </span>
-                    </Link>
-                );
-            })}
-        </nav>
+                    return (
+                        <Link key={tab.key} href={tab.url} prefetch preserveScroll aria-current={active ? 'page' : undefined} className="gl-cb-tab">
+                            <Icon name={TAB_ICONS[tab.key] ?? 'wallet'} className="h-4 w-4" />
+                            {tab.label}
+                            <span className="gl-cb-count gl-num" data-waiting={tab.key === 'closed' && tab.count > 0 ? '' : undefined}>
+                                {tab.count.toLocaleString('en')}
+                            </span>
+                        </Link>
+                    );
+                })}
+            </nav>
+            {hint && <p className="gl-cb-info">{hint}</p>}
+        </div>
     );
 }

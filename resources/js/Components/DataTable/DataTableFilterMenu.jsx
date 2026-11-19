@@ -5,7 +5,7 @@ import Icon from '@/Components/Icon';
 import { childOptions, nestFilterGroups, parentChange, parentValue, scopedOptions, withStaleCleared } from '@/lib/filterGroups';
 
 /** One filter as HeroUI's compact pill: its name (and the choice, once made) on a soft grey pill, in the company's colour while it narrows the table. */
-export function FilterField({ group, value, onChange, placeholder = '', clearable = true, icon = 'filter' }) {
+export function FilterField({ group, value, onChange, placeholder = '', clearable = true, icon = 'filter', isDefault = !value }) {
     return (
         <SearchableSelect
             variant="pill"
@@ -13,7 +13,7 @@ export function FilterField({ group, value, onChange, placeholder = '', clearabl
                 <span className="gl-filter-name">
                     <Icon name={icon} className="h-[15px] w-[15px]" />
                     {group.label}
-                    {value ? ':' : ''}
+                    {isDefault ? '' : ':'}
                 </span>
             }
             value={value}
@@ -22,7 +22,7 @@ export function FilterField({ group, value, onChange, placeholder = '', clearabl
             placeholder={placeholder}
             searchPlaceholder={`بحث في ${group.label}...`}
             emptyLabel="لا توجد نتائج"
-            active={Boolean(value)}
+            active={!isDefault}
             clearable={clearable}
             className="gl-filter-item"
         />

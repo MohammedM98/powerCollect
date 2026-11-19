@@ -11,8 +11,8 @@ function tableContainer(table) {
 
 function tableToolbar(table, container) {
     const previous = container.previousElementSibling;
-    return (previous?.matches('.data-table-toolbar') ? previous : null)
-        ?? container.parentElement.querySelector(':scope > .data-table-toolbar')
+    return (previous?.matches('.data-table-toolbar, [data-table-toolbar]') ? previous : null)
+        ?? container.parentElement.querySelector(':scope > .data-table-toolbar, :scope > [data-table-toolbar]')
         ?? table.closest('section, article, [role="dialog"]')?.querySelector(':scope > .data-table-toolbar');
 }
 

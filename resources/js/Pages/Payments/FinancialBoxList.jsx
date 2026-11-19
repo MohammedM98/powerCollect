@@ -1,17 +1,60 @@
+import { Fragment, useState } from 'react';
 import Icon from '@/Components/Icon';
 import { useRowClick } from '@/hooks/useRowClick';
-import { BoxStage } from './CollectorCashBox';
-import { FinancialBoxAmount, FinancialBoxButton, FinancialBoxDates, FinancialBoxEntries, FinancialBoxStatus, FinancialBoxTimes, FinancialBoxType, financialAmountsLine } from './FinancialBoxComponents';
+import { formatMoney } from '@/lib/format';
+import { activeBoxEntries, financialBoxTotals, isFlaggedEntry } from '@/lib/financialBoxes';
+import { BoxStage, boxTypeStyles, currencies } from './CollectorCashBox';
+import { BoxPerson, FinancialBoxButton, FinancialBoxDates, FinancialBoxEntries, FinancialBoxMark, FinancialBoxStatus, FinancialBoxTimes, financialAmountsLine } from './FinancialBoxComponents';
 import './financial-boxes.css';
 
+/** A box's entries in a word: how many, and how many were cancelled or found wrong. */
+function EntriesCount({ box }) {
+    const entries = activeBoxEntries(box);
+    const count = box.paymentCount ?? entries.length;
+    const cancelled = box.payments ? box.payments.length - entries.length : 0;
+    const flagged = box.type !== 'cash' && box.payments ? entries.filter(isFlaggedEntry).length : 0;
+    const notes = [cancelled > 0 && `${cancelled} ملغاة`, flagged > 0 && `${flagged} ${box.type === 'clearing' ? 'مرفوضة' : 'غير موجودة'}`, box.rejectedCount > 0 && `${box.rejectedCount} مرفوضة`].filter(Boolean);
+
+    return (
+        <>
+            <b className="gl-num">{count}</b> حركة
+            {notes.length > 0 && <small>{notes.join('، ')}</small>}
+        </>
+    );
+}
+
+/** A box's total in shekels, and what it holds in other currencies under it. */
+function BoxTotal({ box }) {
+    const totals = financialBoxTotals(box);
+    const others = Object.keys(currencies).filter((currency) => currency !== 'ILS' && Number(totals[currency] ?? 0) !== 0).map((currency) => `${formatMoney(totals[currency])} ${currencies[currency]}`);
+
+    return (
+        <>
+            <bdi dir="ltr" className="gl-cb-money">{formatMoney(totals.ILS)}</bdi> <span className="gl-cb-muted">شيكل</span>
+            {others.length > 0 && <small>و{others.join('، ')}</small>}
+        </>
+    );
+}
+
 /**
- * The same aligned box rows for the branch and the collector's history: the
- * box's number and week, its type, then whose it is, its entries, total,
- * dates and state. The branch sees when each box was opened and closed,
- * and who confirmed its closure.
+ * The boxes as the redesign's calm table, for the branch and the
+ * collector's history alike: the box (its type's icon with a dot for its
+ * state, its number and week), whose it is, its entries, its total, its
+ * state and one action. The chevron opens the rest: when it was opened,
+ * closed and audited, and by whom. The whole row opens the box.
  */
 export default function FinancialBoxList({ boxes, onOpen, periodFor, sortState, onSort, collector = false, renderActions }) {
     const rowClick = useRowClick();
+    const [opened, setOpened] = useState(() => new Set());
+
+    function toggle(boxId) {
+        setOpened((current) => {
+            const next = new Set(current);
+            next.has(boxId) ? next.delete(boxId) : next.add(boxId);
+
+            return next;
+        });
+    }
 
     function heading(column, label) {
         if (!onSort) {
@@ -20,32 +63,95 @@ export default function FinancialBoxList({ boxes, onOpen, periodFor, sortState, 
 
         const active = sortState?.sort === column;
 
-        return <button type="button" onClick={() => onSort(column)} className="inline-flex items-center gap-1 rounded-md hover:text-gray-900" aria-label={`${label}${active ? sortState.direction === 'asc' ? '، ترتيب تصاعدي' : '، ترتيب تنازلي' : '، ترتيب'}`}>
-            {label}<Icon name="chevron-down" className={`h-3.5 w-3.5 ${active ? 'text-brand-500' : 'opacity-40'} ${active && sortState.direction === 'asc' ? 'rotate-180' : ''}`} />
-        </button>;
+        return (
+            <button type="button" onClick={() => onSort(column)} className="gl-cb-sort" aria-label={`${label}${active ? (sortState.direction === 'asc' ? '، ترتيب تصاعدي' : '، ترتيب تنازلي') : '، ترتيب'}`}>
+                {label}
+                <Icon name="chevron-down" className={`h-3.5 w-3.5 ${active ? 'is-active' : ''} ${active && sortState.direction === 'asc' ? 'rotate-180' : ''}`} />
+            </button>
+        );
     }
 
     if (!boxes.length) {
-        return <p className="px-4 py-14 text-center text-sm text-gray-500">لا توجد صناديق بهذه الفلاتر.</p>;
+        return null;
     }
 
-    return <div className="financial-box-list">
-        <table className="financial-box-list-table"><caption className="sr-only">الصناديق المالية</caption><thead><tr className="financial-box-list-heading">
-            <th><span className="inline-flex items-center gap-2">{heading('number', 'رقم الصندوق')}</span></th><th>النوع</th><th>{collector ? 'أغلقه / المستلم' : 'الموظف'}</th><th>الحركات</th><th>{heading('total', 'الإجمالي')}</th><th>{collector ? heading('dates', 'فُتح ← أُغلق') : heading('dates', 'الأوقات')}</th><th>{heading('status', 'الحالة')}</th><th data-actions=""><span className="sr-only">الإجراءات</span></th>
-        </tr></thead>
-        <tbody className="financial-box-list-rows">
-            {boxes.map((box) => <tr key={box.id} className="financial-box-list-row" {...rowClick(() => onOpen(box))}>
-                <td className="financial-box-list-number flex items-center gap-3"><button type="button" className="min-w-0 text-start" onClick={() => onOpen(box)} aria-label={`عرض صندوق ${box.number}`}><b dir="ltr" className="block font-display text-lg text-gray-900">{box.number}</b>{periodFor && periodFor(box) !== '—' && <span className="block text-[13px] text-gray-600">{periodFor(box)}</span>}</button></td>
-                <td className="financial-box-list-type"><FinancialBoxType box={box} /></td>
-                <td className="financial-box-list-person">
-                    {collector ? <div><span className="block text-[15px] font-semibold text-gray-900">{box.closedBy ?? '—'}</span>{box.receivedAt && <small className="block text-[13px] text-gray-600">المستلم: {financialAmountsLine(box.receivedAmounts ?? {})}</small>}</div> : <span className="min-w-0 wrap-break-word text-[15px] font-semibold text-gray-900">{box.user?.name ?? '—'}{box.isOwn && <span className="text-sm font-normal text-gray-600"> (أنت)</span>}{box.branchName && <small className="block text-xs font-normal text-gray-500">{box.branchName}</small>}</span>}
-                </td>
-                <td className="financial-box-list-entries"><FinancialBoxEntries box={box} /></td>
-                <td className="financial-box-list-amount"><FinancialBoxAmount box={box} /></td>
-                <td className="financial-box-list-dates">{collector ? <FinancialBoxDates box={box} /> : <FinancialBoxTimes box={box} />}</td>
-                <td className="financial-box-list-status">{collector ? <BoxStage box={box} /> : <FinancialBoxStatus box={box} />}</td>
-                <td className="financial-box-list-actions">{renderActions ? renderActions(box) : <FinancialBoxButton box={box} onOpen={onOpen} />}</td>
-            </tr>)}
-        </tbody></table>
-    </div>;
+    return (
+        <div className="gl-cb-scroll">
+            <table className="gl-cb-table">
+                <caption className="sr-only">الصناديق المالية</caption>
+                <thead>
+                    <tr>
+                        <th className="gl-cb-x"><span className="sr-only">تفاصيل</span></th>
+                        <th>{heading('number', 'الصندوق')}</th>
+                        <th>{collector ? 'أغلقه / المستلم' : 'الموظف'}</th>
+                        <th>الحركات</th>
+                        <th className="gl-cb-cash">{heading('total', 'الإجمالي')}</th>
+                        <th>{heading('status', 'الحالة')}</th>
+                        <th className="gl-cb-act"><span className="sr-only">الإجراءات</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {boxes.map((box) => {
+                        const open = opened.has(box.id);
+                        const period = periodFor ? periodFor(box) : null;
+
+                        return (
+                            <Fragment key={box.id}>
+                                <tr className={open ? 'is-open' : undefined} {...rowClick(() => onOpen(box))}>
+                                    <td className="gl-cb-x">
+                                        <button type="button" className="gl-st-exp" aria-expanded={open} aria-label={`تفاصيل صندوق ${box.number}`} onClick={() => toggle(box.id)}>
+                                            <Icon name="chevron-down" className="h-4 w-4" />
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <span className="gl-cb-box">
+                                            <FinancialBoxMark box={box} />
+                                            <span className="min-w-0">
+                                                <button type="button" className="gl-cb-no" onClick={() => onOpen(box)} aria-label={`عرض صندوق ${box.number}`}>
+                                                    <bdi dir="ltr">{box.number}</bdi>
+                                                </button>
+                                                <small>{boxTypeStyles[box.type].label}{period && period !== '—' ? `، ${period}` : ''}</small>
+                                            </span>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {collector ? (
+                                            <BoxPerson name={box.closedBy} note={box.receivedAt ? `المستلم: ${financialAmountsLine(box.receivedAmounts ?? {})}` : null} />
+                                        ) : (
+                                            <BoxPerson name={box.user?.name} suffix={box.isOwn ? '(أنت)' : null} note={box.branchName} />
+                                        )}
+                                    </td>
+                                    <td className="gl-cb-n"><EntriesCount box={box} /></td>
+                                    <td className="gl-cb-cash"><BoxTotal box={box} /></td>
+                                    <td>{collector ? <BoxStage box={box} /> : <FinancialBoxStatus box={box} />}</td>
+                                    <td className="gl-cb-act">{renderActions ? renderActions(box) : <FinancialBoxButton box={box} onOpen={onOpen} />}</td>
+                                </tr>
+                                {open && (
+                                    <tr className="gl-st-detail gl-cb-detail">
+                                        <td />
+                                        <td colSpan={6}>
+                                            <dl>
+                                                <div>
+                                                    <dt>{collector ? 'فُتح ← أُغلق' : 'الأوقات'}</dt>
+                                                    <dd>{collector ? <FinancialBoxDates box={box} /> : <FinancialBoxTimes box={box} />}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt>الحركات</dt>
+                                                    <dd><FinancialBoxEntries box={box} /></dd>
+                                                </div>
+                                                <div>
+                                                    <dt>الإجمالي بكل العملات</dt>
+                                                    <dd>{financialAmountsLine(financialBoxTotals(box))}</dd>
+                                                </div>
+                                            </dl>
+                                        </td>
+                                    </tr>
+                                )}
+                            </Fragment>
+                        );
+                    })}
+                </tbody>
+            </table>
+        </div>
+    );
 }
