@@ -7651,3 +7651,14 @@ body {
         display: none;
     }
 }
+
+/* The balance column fits a six-figure balance; the amount column likewise. */
+@media (min-width: 641px) {
+    .account-statement .gl-st-table :is(th, td):nth-child(13) {
+        min-width: 150px;
+    }
+
+    .account-statement .gl-st-table :is(th, td):nth-child(8) {
+        min-width: 120px;
+    }
+}
