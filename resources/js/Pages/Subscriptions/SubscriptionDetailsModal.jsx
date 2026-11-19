@@ -207,7 +207,7 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
                     </div>
                 </header>
                 <div className="sp-body" ref={bodyRef}>
-                    <div id={`${tabsId}-details-panel`} role="tabpanel" aria-labelledby={`${tabsId}-details`} hidden={activeTab !== 'details'}>
+                    <div id={`${tabsId}-details-panel`} className="sp-details" role="tabpanel" aria-labelledby={`${tabsId}-details`} hidden={activeTab !== 'details'}>
                         <div className="sp-columns">
                             <ArchiveNotice subscription={subscription} />
                             {!subscription.archivedAt && subscription.status !== 'active' && <div className="sp-notice"><Icon name="warning" /><div><b>الاشتراك {subscription.statusLabel}</b><span>{`الرصيد \u2066${balance.signed} ₪\u2069.`} راجع بيانات الاشتراك وحالته قبل تسجيل قراءة جديدة.</span></div></div>}
