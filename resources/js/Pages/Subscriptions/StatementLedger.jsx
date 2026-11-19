@@ -36,7 +36,7 @@ function LineAmount({ entry }) {
 }
 
 /** The line's kind as a HeroUI chip in its colour, with what has happened to it since. */
-function LineKind({ entry }) {
+export function LineKind({ entry }) {
     const tone = lineTone(entry);
 
     return (
