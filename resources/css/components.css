@@ -6677,3 +6677,134 @@ button.gl-cb-tile:hover {
     font-size: 13.5px;
     font-weight: 700;
 }
+
+/*
+ * The heroes that were dark cards (the employee on the permissions screen,
+ * the profile's header) as the redesign's white cards: the same content
+ * and layout, in the page's ink, with no washes or glows.
+ */
+html:root .pm-hero,
+html:root[data-ui-background='graphite'] .pm-hero {
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--panel-shadow);
+    color: var(--gl-ink);
+}
+
+:root .pm-hero h3,
+:root .pm-hero-stats b,
+:root .pm-hero-template b {
+    color: var(--gl-ink);
+}
+
+:root .pm-hero-meta,
+:root .pm-hero-stats,
+:root .pm-hero-template {
+    color: var(--gl-muted);
+}
+
+:root .pm-hero-stats .is-danger,
+:root .pm-hero-stats .is-danger b {
+    color: rgb(var(--danger-700));
+}
+
+:root .pm-hero-stats .is-sensitive,
+:root .pm-hero-stats .is-sensitive b {
+    color: rgb(var(--warning-700));
+}
+
+:root .pm-hero-button {
+    border-color: transparent;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+}
+
+:root .pm-hero-button:hover,
+:root .pm-hero-button[aria-expanded='true'] {
+    border-color: transparent;
+    background: rgb(var(--group-hover));
+}
+
+:root .pm-hero-button:focus-visible {
+    outline-color: rgb(var(--brand-solid));
+}
+
+:root .pm-hero-template {
+    background: rgb(var(--panel-tile));
+}
+
+:root .pm-hero-flag {
+    background: var(--warning-soft);
+    color: var(--warning-soft-foreground);
+}
+
+:root .profile-page .pp-hero {
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--panel-shadow);
+    color: var(--gl-ink);
+}
+
+:root .profile-page .pp-hero::before,
+:root .profile-page .pp-hero::after {
+    content: none;
+}
+
+:root .profile-page .pp-hero .pp-username,
+:root .profile-page .pp-hero .pp-facts small {
+    color: var(--gl-muted);
+}
+
+:root .profile-page .pp-hero .pp-tag {
+    border-color: transparent;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+}
+
+:root .profile-page .pp-hero .pp-tag.role {
+    border-color: transparent;
+    background: rgb(var(--brand-solid) / 0.12);
+    color: rgb(var(--brand-600));
+}
+
+.dark .pm-hero-stats .is-danger,
+.dark .pm-hero-stats .is-danger b {
+    color: rgb(var(--danger-400));
+}
+
+.dark .pm-hero-stats .is-sensitive,
+.dark .pm-hero-stats .is-sensitive b {
+    color: rgb(var(--warning-400));
+}
+
+:root .pm-gauge.on-dark .pm-gauge-track {
+    stroke: rgb(var(--group-fill));
+}
+
+:root .pm-gauge.on-dark p b {
+    color: var(--gl-ink);
+}
+
+:root .pm-gauge.on-dark p span {
+    color: var(--gl-muted);
+}
+
+:root .pm-tabs {
+    border-top-color: var(--gl-line);
+}
+
+:root .pm-tab {
+    color: var(--gl-muted);
+}
+
+:root .pm-tab:hover,
+:root .pm-tab.is-active {
+    color: var(--gl-ink);
+}
+
+:root .pm-tab::after {
+    background: rgb(var(--brand-solid));
+    box-shadow: none;
+}
+
+:root .pm-tab:focus-visible {
+    outline-color: rgb(var(--brand-solid));
+}

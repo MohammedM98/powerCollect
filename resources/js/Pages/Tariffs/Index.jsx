@@ -357,11 +357,11 @@ export default function Index({ tariffs, segments, canCreate, canCreateSegment, 
             ) : (
                 <>
                     <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-                        {tariffs.map((tariff, index) => (
+                        {tariffs.map((tariff) => (
                             <TariffCard
                                 key={tariff.id}
                                 tariff={tariff}
-                                dark={index === 0}
+                                dark={false}
                                 editing={editingId === tariff.id}
                                 onEdit={() => setEditingId(tariff.id)}
                                 onDoneEditing={() => setEditingId(null)}
