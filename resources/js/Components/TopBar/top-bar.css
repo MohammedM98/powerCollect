@@ -2035,6 +2035,58 @@ html.tn-locked {
     color: rgb(var(--panel-ink));
 }
 
+/* The section's pages, on the page under its title: HeroUI's tabs over a fine line. */
+.tn-page-tabs {
+    border-bottom: 1px solid var(--tn-line, rgb(var(--gray-200)));
+}
+
+.tn-page-tabs .tn-subnav a {
+    height: 44px;
+    border-radius: calc(10px * var(--radius-scale, 1)) calc(10px * var(--radius-scale, 1)) 0 0;
+    font-weight: 600;
+    color: rgb(var(--panel-muted));
+}
+
+.tn-page-tabs .tn-subnav a[aria-current='page'] {
+    color: rgb(var(--panel-ink));
+}
+
+/* Recording a payment, among the tools: the payment's green pill. */
+.tn-pay {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .tn-pay {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 40px;
+        padding: 0 16px;
+        margin-inline-end: 4px;
+        border-radius: 999px;
+        background: rgb(var(--tone-pay-solid));
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        white-space: nowrap;
+        transition: background-color 0.15s, transform 0.1s;
+    }
+
+    .tn-pay:hover {
+        background: color-mix(in srgb, rgb(var(--tone-pay-solid)) 86%, #000);
+    }
+
+    .tn-pay:active {
+        transform: scale(0.985);
+    }
+
+    .tn-pay svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
 /* The working branch: a soft grey pill among the tools. */
 :root[data-ui-navigation] .tn-branch-chip,
 :root[data-ui-background='graphite'][data-ui-navigation] .tn-branch-chip {

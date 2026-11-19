@@ -29,9 +29,8 @@ const NO_BADGES = {};
 let openedOnce = false;
 let cachedBranchKey;
 
-// How far down the bar reaches (with the section's pages under it), so content under it counts as scrolled away.
+// How far down the bar reaches, so content under it counts as scrolled away.
 const BAR_CLEARANCE = 90;
-const BAR_WITH_PAGES_CLEARANCE = 150;
 
 /** Whether the user is typing, so a single-key shortcut must not fire. */
 function isTyping(target) {
@@ -75,7 +74,7 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
     const groups = navigationGroups(can);
     const trail = pageTrail(groups, url);
     const hasSectionPages = sectionLinks(trail?.group).length > 0;
-    const barClearance = hasSectionPages ? BAR_WITH_PAGES_CLEARANCE : BAR_CLEARANCE;
+    const barClearance = BAR_CLEARANCE;
     const searchesSubscribers = Boolean(can?.recordPayments && can?.viewSubscriptions);
     const anyLayerOpen = drawerOpen || paletteOpen || shortcutsOpen || tourOpen;
 
@@ -216,7 +215,6 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
 
             <TopBar
                 groups={groups}
-                subnav={hasSectionPages ? <SectionPages trail={trail} url={url} badges={badges} /> : null}
                 branchChip={<WorkingBranchChip />}
                 badges={badges}
                 where={pastTitle && trail ? { section: trail.group?.shortLabel, page: trail.link.label, scope } : null}
@@ -236,6 +234,8 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
                     <BranchViewSwitcher />
                     <Breadcrumb trail={trail} />
                     {header && <div className="gl-page-head rise-in mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">{header}</div>}
+                    {/* The section's pages: tabs on the page, under its title (HeroUI's tabs, as in the redesign). */}
+                    {hasSectionPages && <div className="tn-page-tabs mb-6"><SectionPages trail={trail} url={url} badges={badges} /></div>}
                     <div ref={titleEndRef} aria-hidden="true" />
                     {children}
                 </main>

@@ -10,13 +10,13 @@ import DiscountModal from './DiscountModal';
 import PaymentModal from './PaymentModal';
 import SplitPaymentModal from '@/Pages/Payments/SplitPaymentModal';
 
-/** Each action's colour, from components.css: the company's colour as text for payments, red for what is added on, green for what comes off. */
+/** Each action's colour (theme.css section 4, components.css `gl-act`): one calm colour per kind of money movement. */
 const ACTION_TONES = {
-    payment: 'rgb(var(--gl-brand))',
-    split_payment: 'rgb(var(--gl-brand))',
-    charge: 'var(--gl-bad)',
-    discount: 'var(--gl-ok)',
-    clearing: 'var(--gl-info)',
+    payment: 'pay',
+    split_payment: 'split',
+    charge: 'charge',
+    discount: 'discount',
+    clearing: 'clearing',
 };
 
 /**
@@ -41,7 +41,7 @@ export function StatementActions({ canRecordPayment, canRecordSplitPayment, canA
     return (
         <div role="group" aria-label="إضافة حركة" className="gl-acts">
             {actions.map((item) => (
-                <button key={item.action} type="button" onClick={() => onOpen(item.action)} className="gl-act" style={{ '--gl-c': ACTION_TONES[item.action] }}>
+                <button key={item.action} type="button" onClick={() => onOpen(item.action)} className={`gl-act ${item.action === 'payment' ? 'is-solid' : ''}`} data-tone={ACTION_TONES[item.action]}>
                     <Icon name={item.icon} className="h-[17px] w-[17px]" />
                     {item.label}
                 </button>

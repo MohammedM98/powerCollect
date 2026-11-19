@@ -206,6 +206,12 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
 
                     <div className="tn-tools flex items-center gap-1">
                         {branchChip}
+                        {props.can?.recordPayments && (
+                            <Link href="/payments" prefetch={shouldPrefetchPage('/payments')} className="tn-pay" aria-keyshortcuts="N" title="تسجيل دفعة · N">
+                                <Icon name="banknotes" />
+                                تسجيل دفعة
+                            </Link>
+                        )}
                         {/* Named by the words it shows, so a voice command that says them reaches it, even when the narrow bar hides them. */}
                         <button type="button" className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label={`${searchText} Ctrl K`} aria-keyshortcuts="Control+K" title="بحث وأوامر · Ctrl K">
                             <Icon name="search" />

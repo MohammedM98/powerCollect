@@ -18,7 +18,7 @@ const DOT_CLASSES = {
 export default function RowIdentity({ icon, name, subtitle, status, subtitleDir, onNameClick, nameTitle, wrapName = false }) {
     return (
         <div className="flex items-center gap-3">
-            <span className="row-identity-avatar relative flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] bg-graphite-gradient font-display text-[13px] font-bold text-white dark:ring-1 dark:ring-white/10">
+            <span className="row-identity-avatar gl-avatar relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-display text-[14px] font-extrabold">
                 {icon ? <Icon name={icon} className="h-[18px] w-[18px]" /> : initials(name)}
                 {status && (
                     <span className={`absolute -bottom-0.5 -inset-s-0.5 h-3 w-3 rounded-full border-[2.5px] border-surface ${DOT_CLASSES[status]}`} />

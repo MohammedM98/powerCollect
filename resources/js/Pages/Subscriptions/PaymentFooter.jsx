@@ -19,7 +19,7 @@ export default function PaymentFooter({ correcting, currencyMark, data, form, in
                     (Boolean(referenceStatus?.conflict) && !data.confirm_duplicate_reference) ||
                     (overpayment === 'confirm' && !data.confirm_overpayment)
                 }
-                className={`gl-lg ms-auto min-w-0 flex-1 sm:min-w-[230px] sm:flex-none ${correcting ? 'gl-correcting' : ''}`}
+                className={`gl-lg ms-auto min-w-0 flex-1 sm:min-w-[230px] sm:flex-none ${correcting ? 'gl-correcting' : 'gl-pay'}`}
             >
                 <Icon name="check" className="h-[18px] w-[18px]" strokeWidth={2.2} />
                 {form.processing

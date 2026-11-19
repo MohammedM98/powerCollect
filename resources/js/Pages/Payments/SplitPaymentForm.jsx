@@ -335,7 +335,7 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, bare = fa
                 <p className="max-w-xl text-[13.5px] text-gray-500">
                     تُسجَّل <b className="text-gray-800">دفعة منفصلة لكل مشترك</b> في كشفه، وتُحفظ كلها معًا أو لا تُحفظ أيٌّ منها.
                 </p>
-                <PrimaryButton type="button" disabled={!canSave} onClick={() => setConfirmingSave(true)} className="h-12 px-6 text-[15px]">
+                <PrimaryButton type="button" disabled={!canSave} onClick={() => setConfirmingSave(true)} className="gl-pay h-12 px-6 text-[15px]">
                     {parts.length >= 2 ? `تسجيل الدفعة على ${parts.length} مشتركين` : 'تسجيل الدفعة'}
                     <Icon name="check" className="h-[18px] w-[18px]" />
                 </PrimaryButton>

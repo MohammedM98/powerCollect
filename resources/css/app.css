@@ -2595,7 +2595,8 @@ input[type='radio'] {
     --font-heading: 'Zain';
     --ui-content-width: 1720px;
     /* Shadows scale by the company's shadow strength (`tokens.shadowStrength`). */
-    --shadow-card: 0 1px 2px rgb(var(--shadow-ink) / calc(0.04 * var(--shadow-strength, 1))), 0 14px 34px -18px rgb(var(--shadow-ink) / calc(0.18 * var(--shadow-strength, 1)));
+    /* HeroUI's card shadow, barely there (scaled by the company's shadow strength). */
+    --shadow-card: 0 2px 4px 0 rgb(var(--shadow-ink) / calc(0.04 * var(--shadow-strength, 1))), 0 1px 2px 0 rgb(var(--shadow-ink) / calc(0.06 * var(--shadow-strength, 1))), 0 0 1px 0 rgb(var(--shadow-ink) / calc(0.06 * var(--shadow-strength, 1)));
     --shadow-lift: 0 2px 6px rgb(var(--shadow-ink) / calc(0.06 * var(--shadow-strength, 1))), 0 24px 44px -20px rgb(var(--shadow-ink) / calc(0.32 * var(--shadow-strength, 1)));
     /* The main action's fill (bg-brand-gradient, the floating bars, a chosen tab): charcoal, never the company's colour. */
     --shadow-glow: 0 10px 22px -14px rgb(var(--action) / 0.7);
@@ -3024,9 +3025,15 @@ input[type='radio'] {
     display: none;
 }
 
-:root[data-ui-background='graphite'] :is(.tn-shell .gl-card, .modal-sheet-panel) {
+:root[data-ui-background='graphite'] .modal-sheet-panel {
     border-color: rgb(var(--panel-line));
     box-shadow: inset 0 1px 0 rgb(var(--panel-highlight)), var(--panel-shadow);
+}
+
+/* Cards (HeroUI's): their surface and a barely-there shadow, no line. */
+:root[data-ui-background='graphite'] .tn-shell .gl-card {
+    border-color: transparent;
+    box-shadow: var(--panel-shadow);
 }
 
 /* A window floats well above the dimmed page (HeroUI's modal). */
@@ -3984,6 +3991,137 @@ input[type='radio'] {
     }
 }
 
+/*
+ * HeroUI's table, in the default look (docs/redesign): the toolbar, the
+ * table and its foot on one card with 24px corners; the column titles on a
+ * soft rounded band, rows 56px tall (44px compact) parted by a fine line,
+ * tinted under the pointer and in the company's colour when chosen; the
+ * pages as small round buttons, the current one in the text's colour.
+ */
+:root[data-ui-background='graphite'][data-ui-navigation] :is(.data-table-toolbar, .data-table-container, .data-table-totals, .data-table-pagination) {
+    border-color: transparent;
+    background: rgb(var(--panel-bg));
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-toolbar {
+    padding: 16px 20px 12px;
+    border-radius: calc(24px * var(--radius-scale, 1)) calc(24px * var(--radius-scale, 1)) 0 0;
+    box-shadow: var(--panel-shadow);
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-container {
+    padding: 0 12px 6px;
+    border-radius: calc(24px * var(--radius-scale, 1));
+    box-shadow: var(--panel-shadow);
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-toolbar + .data-table-container {
+    border-top: 0;
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-pagination {
+    padding: 12px 20px 16px;
+    border-top: 1px solid var(--gl-line);
+    border-radius: 0 0 calc(24px * var(--radius-scale, 1)) calc(24px * var(--radius-scale, 1));
+    box-shadow: var(--panel-shadow);
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-totals:not(:has(+ .data-table-pagination)) {
+    border-radius: 0 0 calc(24px * var(--radius-scale, 1)) calc(24px * var(--radius-scale, 1));
+}
+
+@container (min-width: 641px) {
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table th,
+    :root[data-ui-background='graphite'][data-ui-navigation][data-ui-table-header] .data-table th {
+        height: 42px;
+        padding: 0 12px;
+        background: rgb(var(--panel-tile));
+        color: rgb(var(--panel-muted));
+        font-size: 12.5px;
+        font-weight: 700;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table th:first-child {
+        padding-inline-start: 16px;
+        border-start-start-radius: 12px;
+        border-end-start-radius: 12px;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table th:last-child {
+        border-start-end-radius: 12px;
+        border-end-end-radius: 12px;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table td,
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table td:first-child,
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table td:last-child {
+        height: 56px;
+        padding: 8px 12px;
+        border-top: 0;
+        border-bottom: 1px solid var(--gl-line);
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table td:first-child {
+        padding-inline-start: 16px;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation][data-table-density='compact'] .data-table td {
+        height: 44px;
+        padding-block: 4px;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:hover td,
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:focus-within td {
+        border-color: var(--gl-line);
+        background: rgb(var(--gray-900) / 0.035);
+    }
+
+    .dark:root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:hover td,
+    .dark:root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:focus-within td {
+        background: rgb(255 255 255 / 0.04);
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr.bg-brand-50 td {
+        background: rgb(var(--brand-solid) / 0.07);
+    }
+}
+
+/* The pages under a table: small round buttons, the current one in the text's colour. */
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager {
+    gap: 4px;
+    padding: 0;
+    background: none;
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager button {
+    min-width: 34px;
+    min-height: 34px;
+    padding: 0 8px;
+    border-radius: 10px;
+    color: var(--gl-ink);
+    font-weight: 700;
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager button:hover:not(:disabled, [aria-current='page']) {
+    background: rgb(var(--group-fill));
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager button[aria-current='page'] {
+    background: rgb(var(--panel-ink));
+    color: rgb(var(--panel-bg));
+    box-shadow: none;
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager button:disabled {
+    opacity: 0.35;
+}
+
 @container (max-width: 640px) {
     :root[data-ui-background='graphite'] .data-table tbody tr {
         border-color: var(--gl-line);
@@ -4180,10 +4318,10 @@ html:not(.dark)[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg 
     background: rgb(var(--brand-solid));
 }
 
-/* Under the panel look the company's colour fills flat, with no glow under it, like the panel buttons. */
+/* Under the panel look a main fill (bg-brand-gradient) is the main action's flat charcoal, with no glow under it, like the panel buttons. */
 :root[data-ui-background='graphite'] {
-    --brand-fill: linear-gradient(rgb(var(--brand-solid)), rgb(var(--brand-solid)));
-    --shadow-glow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+    --brand-fill: linear-gradient(rgb(var(--action)), rgb(var(--action)));
+    --shadow-glow: none;
 }
 
 /* The SMS page's segmented choices pick in the company's colour, like the panel segments. */

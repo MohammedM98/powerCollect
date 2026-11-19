@@ -69,8 +69,8 @@
 /* ── Panels and layout ─────────────────────────────────────────────────── */
 .gl-card {
     background: rgb(var(--panel-bg));
-    border: 1px solid var(--gl-line);
-    border-radius: calc(20px * var(--radius-scale, 1));
+    border: 1px solid transparent;
+    border-radius: calc(24px * var(--radius-scale, 1));
     box-shadow: var(--panel-shadow);
     color: var(--gl-ink);
 }
@@ -348,6 +348,12 @@
 .gl-pill.gl-warn { --gl-c: var(--gl-warn); }
 .gl-pill.gl-bad { --gl-c: var(--gl-bad); }
 .gl-pill.gl-info { --gl-c: var(--gl-info); }
+
+/* A person's initial in a table or a list (HeroUI's avatar): a soft grey circle. */
+.gl-avatar {
+    background: rgb(var(--group-fill));
+    color: rgb(var(--panel-ink));
+}
 
 .gl-av {
     width: 34px;
@@ -1760,9 +1766,9 @@
 
 /* ── Shared controls drawn in the panel look (PrimaryButton, DangerButton, InputLabel, InputError, Switch…) ── */
 .gl-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: rgb(var(--gray-700));
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--gl-ink);
 }
 
 .gl-error {
@@ -1987,7 +1993,7 @@
 }
 
 /* ── Form groups (Components/Form/FormSection.jsx) and setting rows (Components/Form/SettingRow.jsx) ── */
-/* A form's group: a small quiet name above a grey tile holding its fields (white on the tile). */
+/* A form's group: its name above a card holding its fields (on a page), or a plain group between lines (in a window). */
 .gl-section {
     min-width: 0;
 }
@@ -1996,8 +2002,8 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin: 0 4px 10px;
-    color: rgb(var(--gray-800));
+    margin: 0 4px 14px;
+    color: var(--gl-ink);
     font-size: 15px;
     font-weight: 700;
 }
@@ -2188,10 +2194,28 @@
 
 .gl-tile {
     min-width: 0;
-    padding: 16px;
-    border: 1px solid rgb(var(--panel-ink) / 0.055);
-    border-radius: 16px;
-    background: rgb(var(--panel-tile));
+    padding: 20px 22px;
+    border: 0;
+    border-radius: calc(24px * var(--radius-scale, 1));
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--panel-shadow);
+}
+
+/*
+ * Inside a window (HeroUI's modal) a form's groups are not cards of their
+ * own: each is its name and its fields, a fine line between one group and
+ * the next, as in the redesign.
+ */
+.modal-sheet-panel .gl-tile {
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+}
+
+.modal-sheet-panel .gl-section + .gl-section {
+    padding-top: 24px;
+    border-top: 1px solid var(--gl-line);
 }
 
 .gl-section-ico {
@@ -2534,24 +2558,47 @@
 }
 
 .gl-act {
+    --gl-c: rgb(var(--group-ink));
+    --gl-c-ink: rgb(var(--group-ink));
+    --gl-c-solid: rgb(var(--action));
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    height: 38px;
-    padding: 0 13px;
-    border-radius: 11px;
-    border: 1px solid color-mix(in srgb, var(--gl-c) 35%, transparent);
-    background: color-mix(in srgb, var(--gl-c) 10%, transparent);
-    color: var(--gl-c);
+    height: 40px;
+    padding: 0 15px;
+    border: 0;
+    border-radius: calc(20px * var(--radius-scale, 1));
+    background: color-mix(in srgb, var(--gl-c) 13%, rgb(var(--panel-bg)));
+    color: var(--gl-c-ink);
     font-size: 13.5px;
     font-weight: 700;
     white-space: nowrap;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.15s, color 0.15s, transform 0.1s;
 }
 
+/* Each kind of money movement in its own calm colour (theme.css section 4). */
+.gl-act[data-tone='pay'] { --gl-c: rgb(var(--tone-pay)); --gl-c-ink: rgb(var(--tone-pay-ink)); --gl-c-solid: rgb(var(--tone-pay-solid)); }
+.gl-act[data-tone='charge'] { --gl-c: rgb(var(--tone-charge)); --gl-c-ink: rgb(var(--tone-charge-ink)); --gl-c-solid: rgb(var(--tone-charge-solid)); }
+.gl-act[data-tone='discount'] { --gl-c: rgb(var(--tone-discount)); --gl-c-ink: rgb(var(--tone-discount-ink)); --gl-c-solid: rgb(var(--tone-discount-solid)); }
+.gl-act[data-tone='clearing'] { --gl-c: rgb(var(--tone-clearing)); --gl-c-ink: rgb(var(--tone-clearing-ink)); --gl-c-solid: rgb(var(--tone-clearing-solid)); }
+.gl-act[data-tone='split'] { --gl-c: rgb(var(--tone-split)); --gl-c-ink: rgb(var(--tone-split-ink)); --gl-c-solid: rgb(var(--tone-split-solid)); }
+
 .gl-act:hover {
-    background: var(--gl-c);
+    background: color-mix(in srgb, var(--gl-c) 21%, rgb(var(--panel-bg)));
+}
+
+.gl-act:active {
+    transform: scale(0.985);
+}
+
+/* The page's main movement (recording a payment): solid in its colour. */
+.gl-act.is-solid {
+    background: var(--gl-c-solid);
     color: #fff;
+}
+
+.gl-act.is-solid:hover {
+    background: color-mix(in srgb, var(--gl-c-solid) 86%, #000);
 }
 
 .gl-act:focus-visible {
@@ -2983,6 +3030,14 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     --gl-btn-rim: transparent;
 }
 
+/* Recording a payment: the payment's green (theme.css `--tone-pay`), as on every payment action. */
+.gl-btn.gl-pay {
+    --gl-btn-fill: rgb(var(--tone-pay-solid));
+    --gl-btn-hover: color-mix(in srgb, rgb(var(--tone-pay-solid)) 86%, #000);
+    --gl-btn-press: color-mix(in srgb, rgb(var(--tone-pay-solid)) 76%, #000);
+    --gl-btn-ink: #fff;
+}
+
 .gl-btn.gl-correcting {
     --gl-btn-fill: var(--gl-warn);
     --gl-btn-hover: color-mix(in srgb, var(--gl-warn) 85%, #000);
@@ -3071,13 +3126,19 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     }
 }
 
-/* ── Page head (Layouts/AuthenticatedLayout.jsx): the page's title and its actions as one card ── */
+/* ── Page head (Layouts/AuthenticatedLayout.jsx): the page's title and its actions, straight on the page ── */
 .gl-page-head {
-    padding: 18px 22px;
-    border: 1px solid var(--gl-line);
-    border-radius: 20px;
-    background: rgb(var(--panel-bg));
-    box-shadow: var(--panel-shadow);
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+}
+
+/* The page's title: large and heavy, straight on the page as in the redesign. */
+.gl-page-head .ui-page-title {
+    font-size: clamp(28px, 3vw, 44px);
+    font-weight: 800;
+    line-height: 1.25;
 }
 
 @media print {
