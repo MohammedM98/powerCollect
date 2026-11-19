@@ -197,3 +197,94 @@
 @media (max-width: 640px) { .re-context-count { display: none; } .re-context-edit { padding: 0 9px; font-size: 0; gap: 0; } .re-context-edit svg { width: 18px; height: 18px; } }
 @media (prefers-reduced-motion: reduce) { .re-context { transition: none; } }
 @media print { .re-context { display: none; } }
+
+/*
+ * The page in the MA redesign's look: the week's progress on a dark card
+ * (as the statement's account card), the approval bar lighter, and the
+ * reading's − / value / + joined into one field.
+ */
+.reading-entry .re-kpi-dark.gl-card {
+    border: 0;
+    background:
+        radial-gradient(120% 90% at 0% 100%, rgb(var(--brand-solid) / 0.28), transparent 60%),
+        linear-gradient(160deg, rgb(44 49 58), rgb(18 21 26));
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.08) inset, 0 18px 36px -20px rgb(0 0 0 / 0.55);
+    color: #fff;
+}
+
+.reading-entry .re-kpi-dark :is(.gl-lbl, .gl-hint) {
+    color: rgb(255 255 255 / 0.65);
+}
+
+.reading-entry .re-kpi-dark .gl-val {
+    color: #fff;
+}
+
+.reading-entry .re-kpi-dark .gl-val small {
+    color: rgb(255 255 255 / 0.6);
+}
+
+.reading-entry .re-kpi-dark .re-progress-track {
+    background: rgb(255 255 255 / 0.14);
+}
+
+.reading-entry .re-approval {
+    gap: 12px 16px;
+    padding: 12px 14px 12px 16px;
+    border: 0;
+    border-radius: calc(20px * var(--radius-scale, 1));
+    background: rgb(var(--panel-bg) / var(--panel-opacity, 1));
+    box-shadow: var(--panel-shadow);
+}
+
+.reading-entry .re-approval .re-unusual-note {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: color-mix(in srgb, var(--ui-danger) 10%, transparent);
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+
+.reading-entry .re-approval button {
+    border-radius: 999px;
+}
+
+/* One field: the − and + inside its frame, the value between them. */
+.reading-entry .re-input {
+    gap: 0;
+    overflow: hidden;
+    border: 1.5px solid var(--re-line);
+    border-radius: calc(13px * var(--radius-scale, 1));
+    background: var(--re-surface);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.reading-entry .re-input:focus-within {
+    border-color: var(--re-brand);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--re-brand) 12%, transparent);
+}
+
+.reading-entry .re-input .re-step {
+    width: 38px;
+    height: 42px;
+    border: 0;
+    border-radius: 0;
+    background: var(--re-sunken);
+    color: var(--re-ink2, var(--re-ink));
+    font-size: 18px;
+}
+
+.reading-entry .re-input .re-step:hover:not(:disabled) {
+    background: var(--re-ink);
+    color: var(--re-surface);
+}
+
+.reading-entry .re-input input,
+.reading-entry .re-input input:focus {
+    height: 42px;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
