@@ -7694,3 +7694,56 @@ body {
         padding: 0 12px 16px;
     }
 }
+
+/*
+ * Floating surfaces on glass: every drop-down, menu, list, calendar and the
+ * side bar's flyout is near-solid frosted glass, so what is under it never
+ * shows through and the layers never mix. Near-solid on purpose: a
+ * popover inside another blurred surface (a table's toolbar, a window)
+ * cannot blur the page behind that surface, so its own colour must cover.
+ */
+:root {
+    --ma-pop: var(--ma-solid);
+    --ma-pop-blur: blur(30px) saturate(1.6);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    :root[data-surface='glass'] {
+        --ma-pop: color-mix(in oklab, var(--ma-solid) 94%, transparent);
+    }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    :root[data-surface='glass'] {
+        --ma-pop: var(--ma-solid);
+    }
+}
+
+:root
+    :is(
+        .gl-pop,
+        .tn-mega,
+        .tn-popover,
+        .popover,
+        .dropdown__popover,
+        .select__popover,
+        .combo-box__popover,
+        .autocomplete__popover,
+        .date-picker__popover,
+        .date-range-picker__popover
+    ) {
+    background: var(--ma-pop) !important;
+    -webkit-backdrop-filter: var(--ma-pop-blur) !important;
+    backdrop-filter: var(--ma-pop-blur) !important;
+}
+
+/*
+ * A blurred surface cannot be blurred again by a menu inside it: the menu
+ * would only frost the toolbar and let the rows under it through. While one
+ * of its menus is open, a table's toolbar drops its own frost so the menu's
+ * reaches the table and the page.
+ */
+:root .data-table-toolbar:has(.gl-pop) {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+}
