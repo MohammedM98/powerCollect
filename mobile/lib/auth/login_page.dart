@@ -65,6 +65,36 @@ class _LoginPageState extends State<LoginPage> {
       borderRadius: BorderRadius.circular(17),
       borderSide: BorderSide(color: color, width: 1.5));
 
+  /// The company's logo and name on the website's dark panel, as its sign-in page shows them.
+  Widget companyCard() {
+    final company = AppIdentity.company;
+    final logo = company.logo(onDark: true);
+    return AppHero(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
+        child: Row(children: [
+          Expanded(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text(company.name,
+                    key: const ValueKey('login-company'),
+                    style: AppIdentity.heading(22, color: AppIdentity.heroInk)),
+                if (company.tagline != null)
+                  Text(company.tagline!,
+                      style: AppIdentity.body(13.5,
+                          color: AppIdentity.heroFaint)),
+              ])),
+          if (logo != null) ...[
+            const SizedBox(width: 14),
+            Image.memory(logo,
+                key: const ValueKey('login-logo'),
+                height: 64,
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) => const SizedBox.shrink()),
+          ],
+        ]));
+  }
+
   @override
   Widget build(BuildContext context) => AppKeyboardBackScope(
           child: Scaffold(
@@ -75,17 +105,17 @@ class _LoginPageState extends State<LoginPage> {
           child: ListView(
               padding: const EdgeInsets.fromLTRB(22, 30, 22, 30),
               children: [
+                companyCard(),
                 Padding(
-                    padding: const EdgeInsets.only(top: 20, bottom: 6),
-                    child: Image.asset('assets/images/brand.webp', width: 170)),
-                Text('تطبيق الميدان',
-                    textAlign: TextAlign.center,
-                    style: AppIdentity.heading(27)),
+                    padding: const EdgeInsets.only(top: 22),
+                    child: Text('تسجيل الدخول',
+                        key: const ValueKey('login-title'),
+                        style: AppIdentity.heading(27))),
                 Padding(
-                    padding: const EdgeInsets.only(top: 2, bottom: 22),
-                    child: Text('سجّل الدخول للبدء',
-                        textAlign: TextAlign.center,
-                        style: AppIdentity.body(14, color: AppIdentity.faint))),
+                    padding: const EdgeInsets.only(top: 2, bottom: 20),
+                    child: Text(
+                        'تطبيق الميدان: ادخل باسم المستخدم الذي أعطاك إياه مدير النظام.',
+                        style: AppIdentity.body(14, color: AppIdentity.muted))),
                 AutofillGroup(
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -142,6 +172,7 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 12),
                       ],
                       AppAction(
+                          key: const ValueKey('login-submit'),
                           label: busy ? 'جارٍ الدخول...' : 'تسجيل الدخول',
                           icon: 'login',
                           busy: busy,

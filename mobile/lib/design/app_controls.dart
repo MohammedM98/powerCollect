@@ -162,7 +162,7 @@ class AppAction extends StatelessWidget {
   final double height;
   @override
   Widget build(BuildContext context) {
-    final foreground = primary ? Colors.white : AppIdentity.ink;
+    final foreground = primary ? AppIdentity.actionInk : AppIdentity.ink;
     return Opacity(
       opacity: onPressed == null ? .5 : 1,
       child: DecoratedBox(
@@ -173,9 +173,9 @@ class AppAction extends StatelessWidget {
               primary ? null : Border.all(color: AppIdentity.line, width: 1.5),
           borderRadius: BorderRadius.circular(height > 50 ? 18 : 14),
           boxShadow: primary
-              ? const [
+              ? [
                   BoxShadow(
-                      color: Color(0xFFA51D26),
+                      color: AppIdentity.actionFill,
                       blurRadius: 24,
                       offset: Offset(0, 12),
                       spreadRadius: -14)

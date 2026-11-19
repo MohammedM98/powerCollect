@@ -177,7 +177,7 @@ void main() {
     await tester.pump(const Duration(seconds: 31));
     await tester.pumpAndSettle();
     expect(find.text('Private details'), findsNothing);
-    expect(find.text('تسجيل الدخول'), findsOneWidget);
+    expect(find.byKey(const ValueKey('login-title')), findsOneWidget);
     expect(
         store.queuedReadings.single['mobile_operation_id'], 'unsent-reading');
     expect(store.remembersSession, false);
@@ -194,7 +194,7 @@ void main() {
     final api = SessionApi();
     await tester.pumpWidget(PowerCollectApp(apiClient: api, fieldStore: store));
     await tester.pumpAndSettle();
-    expect(find.text('تسجيل الدخول'), findsOneWidget);
+    expect(find.byKey(const ValueKey('login-title')), findsOneWidget);
     expect(api.token, 'temporary');
     expect(tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value,
         false);
@@ -202,9 +202,9 @@ void main() {
     await tester.enterText(find.byType(TextField).at(0), 'reader');
     await tester.enterText(find.byType(TextField).at(1), 'password');
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('تسجيل الدخول'));
+    await tester.ensureVisible(find.byKey(const ValueKey('login-submit')));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('تسجيل الدخول'));
+    await tester.tap(find.byKey(const ValueKey('login-submit')));
     await tester.pumpAndSettle();
     expect(api.remembered, true);
     expect(store.remembersSession, true);
@@ -222,7 +222,7 @@ void main() {
     await tester.pumpWidget(
         PowerCollectApp(apiClient: SessionApi(), fieldStore: store));
     await tester.pumpAndSettle();
-    expect(find.text('تسجيل الدخول'), findsNothing);
+    expect(find.byKey(const ValueKey('login-title')), findsNothing);
     await tester.pumpWidget(const SizedBox());
   });
 }

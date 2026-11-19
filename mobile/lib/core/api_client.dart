@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import '../readings/reading_assignments.dart';
 import 'trusted_clock.dart';
 
@@ -45,6 +46,43 @@ class ApiClient {
   }
 
   Future<Map<String, dynamic>> me() => _request('GET', '/api/mobile/me');
+
+  /// The company's identity as the website draws it (names, logos, fonts,
+  /// colours); public, so the sign-in screen has it too.
+  Future<Map<String, dynamic>> brand() => _request('GET', '/api/mobile/brand');
+
+  /// A logo the identity points to, from this app's own server only (never
+  /// with the session token), at most 3 MB.
+  Future<Uint8List> downloadLogo(String url) async {
+    final uri = Uri.tryParse(url);
+    final server = Uri.tryParse(apiBaseUrl);
+    if (uri == null || server == null || uri.host != server.host || uri.scheme != server.scheme) {
+      throw const ApiException('عنوان الشعار ليس على خادم التطبيق.', 0);
+    }
+    try {
+      final request = await _client.getUrl(uri).timeout(const Duration(seconds: 12));
+      request.followRedirects = false;
+      final response = await request.close().timeout(const Duration(seconds: 18));
+      if (response.statusCode != 200 || response.contentLength > 3 * 1024 * 1024) {
+        await response.drain<void>();
+        throw ApiException('تعذر تنزيل الشعار.', response.statusCode);
+      }
+      final bytes = BytesBuilder(copy: false);
+      await for (final chunk in response.timeout(const Duration(seconds: 18))) {
+        bytes.add(chunk);
+        if (bytes.length > 3 * 1024 * 1024) {
+          throw const ApiException('الشعار أكبر من المسموح.', 0);
+        }
+      }
+      return bytes.takeBytes();
+    } on SocketException {
+      throw const ApiException('لا يوجد اتصال بالإنترنت.', 0);
+    } on TimeoutException {
+      throw const ApiException('انتهت مهلة الاتصال بالخادم.', 0);
+    } on HttpException {
+      throw const ApiException('استجابة غير صالحة من الخادم.', 0);
+    }
+  }
 
   /// Send the app's error log (see Diagnostics) to the server's log.
   Future<Map<String, dynamic>> sendDiagnostics(String log) =>

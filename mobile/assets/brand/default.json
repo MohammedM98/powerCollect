@@ -1,0 +1,72 @@
+{
+    "company": {
+        "name": "سوبر باور",
+        "short_name": "سوبر باور",
+        "tagline": "نظام التحصيل الكهربائي"
+    },
+    "logos": {
+        "main": null,
+        "light": null,
+        "icon": null
+    },
+    "fonts": {
+        "body": "zain",
+        "heading": "zain"
+    },
+    "colors": {
+        "light": {
+            "page": "#ECEEF1",
+            "surface": "#FFFFFF",
+            "raised": "#F4F5F7",
+            "field": "#FFFFFF",
+            "line": "#E2E5E9",
+            "line_soft": "#EEF0F3",
+            "ink": "#1F2329",
+            "ink2": "#373C44",
+            "muted": "#59606A",
+            "faint": "#606670",
+            "brand": "#0F766E",
+            "brand_strong": "#0D645D",
+            "brand_tint": "#F0FDFA",
+            "brand_fill": "#20B2A0",
+            "brand_fill_ink": "#06201D",
+            "action": "#24272E",
+            "action_hover": "#343841",
+            "action_ink": "#FFFFFF",
+            "success": "#047857",
+            "warning": "#B45309",
+            "danger": "#DC2626",
+            "info": "#1D4ED8",
+            "hero_from": "#2B2E34",
+            "hero_via": "#202329",
+            "hero_to": "#13161C"
+        },
+        "dark": {
+            "page": "#0C0E11",
+            "surface": "#15181D",
+            "raised": "#1C2026",
+            "field": "#1E2228",
+            "line": "#262B32",
+            "line_soft": "#1C2026",
+            "ink": "#EEF0F3",
+            "ink2": "#D2D6DC",
+            "muted": "#A2A9B3",
+            "faint": "#8D949E",
+            "brand": "#5ED6C2",
+            "brand_strong": "#99E9DC",
+            "brand_tint": "#112A27",
+            "brand_fill": "#20B2A0",
+            "brand_fill_ink": "#06201D",
+            "action": "#39404A",
+            "action_hover": "#444C58",
+            "action_ink": "#FFFFFF",
+            "success": "#34D399",
+            "warning": "#FBBF24",
+            "danger": "#F87171",
+            "info": "#60A5FA",
+            "hero_from": "#2B2E34",
+            "hero_via": "#202329",
+            "hero_to": "#13161C"
+        }
+    }
+}

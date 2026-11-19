@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'app_brand.dart';
+
+export 'app_brand.dart';
 export 'app_choices.dart';
 export 'app_controls.dart';
 export 'app_feedback.dart';
@@ -45,40 +48,56 @@ class AppKeyboardBackScope extends StatelessWidget {
   }
 }
 
-/// Colours, type and numbers used everywhere. The palette follows the
-/// phone's light or dark setting: [dark] is set once per frame by the app
-/// root, so every colour here is a getter rather than a constant.
+/// Colours, type and numbers used everywhere, taken from the company's
+/// identity on the server ([AppBrand]), so the app looks like the website.
+/// The palette follows the phone's light or dark setting: [dark] and
+/// [company] are set by the app root, so every colour here is a getter
+/// rather than a constant.
 abstract final class AppIdentity {
   static bool dark = false;
 
-  static Color _pick(int light, int night) => Color(dark ? night : light);
+  /// The identity in use; the fallbacks below are the website's default.
+  static AppBrand company = AppBrand(const {});
 
-  static Color get background => _pick(0xFFF3F4F6, 0xFF0B1016);
-  static Color get surface => _pick(0xFFFFFFFF, 0xFF131B23);
-  static Color get raised => _pick(0xFFF7F8FA, 0xFF18212B);
-  static Color get sunken => _pick(0xFFEEF0F3, 0xFF0F161D);
-  static Color get line => _pick(0xFFE2E5E9, 0xFF27323D);
-  static Color get lineSoft => _pick(0xFFECEEF1, 0xFF1E2832);
-  static Color get ink => _pick(0xFF111820, 0xFFEEF2F6);
-  static Color get ink2 => _pick(0xFF2C3540, 0xFFCFD6DE);
-  static Color get muted => _pick(0xFF4C5460, 0xFFA3ADB8);
-  static Color get faint => _pick(0xFF7A838E, 0xFF76828F);
-  static Color get brand => _pick(0xFFA51D26, 0xFFF0646B);
-  static Color get brand2 => _pick(0xFFC8323B, 0xFFFF7C82);
-  static Color get brandTint => _pick(0x12A51D26, 0x1CF0646B);
-  static Color get brandSoft => _pick(0xFFF9EEF0, 0x18F0646B);
-  static Color get good => _pick(0xFF047857, 0xFF34C78F);
-  static Color get goodTint => _pick(0x14047857, 0x1C34C78F);
-  static Color get warning => _pick(0xFFB45309, 0xFFF3A34A);
-  static Color get warningTint => _pick(0x14B45309, 0x1CF3A34A);
-  static Color get bad => _pick(0xFFC81E1E, 0xFFFF6B70);
-  static Color get badTint => _pick(0x12C81E1E, 0x1CFF6B70);
-  static Color get info => _pick(0xFF1F5FD1, 0xFF6AA1FF);
-  static Color get infoTint => _pick(0x121F5FD1, 0x1C6AA1FF);
-  static Color get selected => _pick(0xFF111820, 0xFFEEF2F6);
-  static Color get selectedInk => _pick(0xFFFFFFFF, 0xFF0B1016);
-  static Color get keyFill => _pick(0xFFFFFFFF, 0xFF1C2630);
-  static Color get keypad => _pick(0xFFE7E9ED, 0xFF0F161D);
+  static Color _pick(String name, int light, int night) =>
+      company.color(name, dark: dark, fallback: Color(dark ? night : light));
+
+  static Color get background => _pick('page', 0xFFECEEF1, 0xFF0C0E11);
+  static Color get surface => _pick('surface', 0xFFFFFFFF, 0xFF15181D);
+  static Color get raised => _pick('raised', 0xFFF4F5F7, 0xFF1C2026);
+  static Color get sunken => background;
+  static Color get line => _pick('line', 0xFFE2E5E9, 0xFF262B32);
+  static Color get lineSoft => _pick('line_soft', 0xFFEEF0F3, 0xFF1C2026);
+  static Color get ink => _pick('ink', 0xFF1F2329, 0xFFEEF0F3);
+  static Color get ink2 => _pick('ink2', 0xFF373C44, 0xFFD2D6DC);
+  static Color get muted => _pick('muted', 0xFF59606A, 0xFFA2A9B3);
+  static Color get faint => _pick('faint', 0xFF606670, 0xFF8D949E);
+  static Color get brand => _pick('brand', 0xFF0F766E, 0xFF5ED6C2);
+  static Color get brand2 => _pick('brand_strong', 0xFF0D645D, 0xFF99E9DC);
+  static Color get brandTint => brand.withAlpha(dark ? 0x1C : 0x12);
+  static Color get brandSoft => _pick('brand_tint', 0xFFF0FDFA, 0xFF112A27);
+
+  /// A fill in the company's colour and the text on it.
+  static Color get brandFill => _pick('brand_fill', 0xFF20B2A0, 0xFF20B2A0);
+  static Color get onBrandFill =>
+      _pick('brand_fill_ink', 0xFF06201D, 0xFF06201D);
+  static Color get good => _pick('success', 0xFF047857, 0xFF34D399);
+  static Color get goodTint => good.withAlpha(dark ? 0x1C : 0x14);
+  static Color get warning => _pick('warning', 0xFFB45309, 0xFFFBBF24);
+  static Color get warningTint => warning.withAlpha(dark ? 0x1C : 0x14);
+  static Color get bad => _pick('danger', 0xFFDC2626, 0xFFF87171);
+  static Color get badTint => bad.withAlpha(dark ? 0x1F : 0x12);
+  static Color get info => _pick('info', 0xFF1D4ED8, 0xFF60A5FA);
+  static Color get infoTint => info.withAlpha(dark ? 0x1C : 0x12);
+  static Color get selected => ink;
+  static Color get selectedInk => surface;
+  static Color get keyFill => _pick('field', 0xFFFFFFFF, 0xFF1E2228);
+  static Color get keypad => lineSoft;
+
+  /// The page's main action (its one solid button): the website's charcoal,
+  /// never the company's colour.
+  static Color get actionFill => _pick('action', 0xFF24272E, 0xFF39404A);
+  static Color get actionInk => _pick('action_ink', 0xFFFFFFFF, 0xFFFFFFFF);
 
   /// Text on the dark hero panels, which look the same in both modes.
   static const heroInk = Color(0xFFFFFFFF);
@@ -87,29 +106,35 @@ abstract final class AppIdentity {
   static const heroWarn = Color(0xFFFCD34D);
   static const heroBad = Color(0xFFFCA5A5);
 
+  /// The hero panel's three greys, as the website's dark figure card.
+  static List<Color> get heroColors => [
+        _pick('hero_from', 0xFF2B2E34, 0xFF2B2E34),
+        _pick('hero_via', 0xFF202329, 0xFF202329),
+        _pick('hero_to', 0xFF13161C, 0xFF13161C),
+      ];
+
   /// The plain dark gradient, for small tiles; big panels use [AppHero].
-  static const hero = LinearGradient(
-    begin: Alignment(-.42, -.9),
-    end: Alignment(.42, .9),
-    colors: [Color(0xFF262C34), Color(0xFF1C2127), Color(0xFF111418)],
-    stops: [0, .55, 1],
-  );
-  static const action = LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [Color(0xFFB8232C), Color(0xFF7D121B)],
-  );
+  static LinearGradient get hero => LinearGradient(
+        begin: const Alignment(-.42, -.9),
+        end: const Alignment(.42, .9),
+        colors: heroColors,
+        stops: const [0, .55, 1],
+      );
+  static LinearGradient get action =>
+      LinearGradient(colors: [actionFill, actionFill]);
 
   static TextStyle body(double size,
           {FontWeight weight = FontWeight.normal, Color? color}) =>
       TextStyle(
-          fontFamily: 'PlexArabic',
+          fontFamily: company.bodyFont,
+          fontFamilyFallback: const ['PlexArabic'],
           fontSize: size,
           height: 1.4,
           fontWeight: weight,
           color: color ?? ink);
   static TextStyle heading(double size, {Color? color}) => TextStyle(
-      fontFamily: 'ElMessiri',
+      fontFamily: company.headingFont,
+      fontFamilyFallback: const ['PlexArabic'],
       fontSize: size,
       height: 1.3,
       fontWeight: FontWeight.w700,
@@ -118,7 +143,7 @@ abstract final class AppIdentity {
           {Color? color, FontWeight weight = FontWeight.w700}) =>
       TextStyle(
           fontFamily: 'Alexandria',
-          fontFamilyFallback: const ['PlexArabic'],
+          fontFamilyFallback: [company.bodyFont, 'PlexArabic'],
           fontSize: size,
           height: 1.2,
           fontWeight: weight,
@@ -146,7 +171,7 @@ abstract final class AppIdentity {
 
   static ThemeData get theme {
     final scheme = ColorScheme.fromSeed(
-        seedColor: const Color(0xFFA51D26),
+        seedColor: brand,
         brightness: dark ? Brightness.dark : Brightness.light,
         primary: brand,
         surface: surface);
@@ -156,14 +181,14 @@ abstract final class AppIdentity {
     return ThemeData(
       useMaterial3: true,
       brightness: dark ? Brightness.dark : Brightness.light,
-      fontFamily: 'PlexArabic',
+      fontFamily: company.bodyFont,
       colorScheme: scheme,
       scaffoldBackgroundColor: background,
       canvasColor: background,
       splashFactory: InkRipple.splashFactory,
-      textTheme: const TextTheme(
+      textTheme: TextTheme(
         titleLarge:
-            TextStyle(fontFamily: 'ElMessiri', fontWeight: FontWeight.w700),
+            TextStyle(fontFamily: company.headingFont, fontWeight: FontWeight.w700),
       ),
       textSelectionTheme: TextSelectionThemeData(cursorColor: brand),
       inputDecorationTheme: InputDecorationTheme(

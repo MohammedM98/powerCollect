@@ -69,10 +69,12 @@ class AppNavBar extends StatelessWidget {
               width: 58,
               height: 32,
               alignment: Alignment.center,
+              // The open page as the website's pill: filled in the company's colour.
               decoration: BoxDecoration(
-                  color: on ? AppIdentity.brandTint : Colors.transparent,
+                  color: on ? AppIdentity.brandFill : Colors.transparent,
                   borderRadius: BorderRadius.circular(16)),
-              child: AppIcon(item.icon, color: color),
+              child: AppIcon(item.icon,
+                  color: on ? AppIdentity.onBrandFill : color),
             ),
             const SizedBox(height: 3),
             Text(item.label,

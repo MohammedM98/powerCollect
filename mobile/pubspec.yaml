@@ -32,7 +32,26 @@ flutter:
     - family: Alexandria
       fonts:
         - asset: assets/fonts/Alexandria[wght].ttf
+    - family: Zain
+      fonts:
+        - asset: assets/fonts/Zain-Regular.ttf
+        - asset: assets/fonts/Zain-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Zain-ExtraBold.ttf
+          weight: 800
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo[slnt,wght].ttf
+    - family: Tajawal
+      fonts:
+        - asset: assets/fonts/Tajawal-Regular.ttf
+        - asset: assets/fonts/Tajawal-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Tajawal-Bold.ttf
+          weight: 700
+    - family: NotoKufi
+      fonts:
+        - asset: assets/fonts/NotoKufiArabic[wght].ttf
   assets:
-    - assets/images/brand.webp
-    - assets/images/brand-mark.webp
+    - assets/brand/default.json
     - assets/images/banks/

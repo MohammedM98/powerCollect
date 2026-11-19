@@ -456,6 +456,21 @@ paths:
           description: Validation failed
         '426':
           description: App build below MOBILE_APP_MIN_BUILD
+  /brand:
+    get:
+      operationId: brand
+      summary: MobileBrandController@show
+      description: The company's names, logos, fonts and colours as the website draws them, for the app to look the same. Public, so the sign-in screen has it.
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Brand'
+        '426':
+          description: App build below MOBILE_APP_MIN_BUILD
   /diagnostics:
     post:
       operationId: storeDiagnostics
@@ -851,6 +866,43 @@ components:
         transfer_banks: {type: array, items: {type: string}}
         sender_banks: {type: array, items: {type: string}}
         currencies: {type: array, items: {type: object}}
+    Brand:
+      description: MobileBrand::payload()
+      type: object
+      required: [fingerprint, company, logos, fonts, colors]
+      properties:
+        fingerprint: {type: string, description: Changes whenever anything below changes.}
+        company:
+          type: object
+          required: [name, short_name, tagline]
+          properties:
+            name: {type: string}
+            short_name: {type: string}
+            tagline: {type: [string, 'null']}
+        logos:
+          type: object
+          required: [main, light, icon]
+          properties:
+            main: {type: string, format: uri, description: On a light background.}
+            light: {type: string, format: uri, description: On a dark background.}
+            icon: {type: string, format: uri}
+        fonts:
+          type: object
+          required: [body, heading]
+          properties:
+            body: {type: string, enum: [zain, plex, alexandria, cairo, tajawal, kufi, messiri]}
+            heading: {type: string, enum: [zain, plex, alexandria, cairo, tajawal, kufi, messiri]}
+        colors:
+          type: object
+          required: [light, dark]
+          properties:
+            light: {$ref: '#/components/schemas/BrandColors'}
+            dark: {$ref: '#/components/schemas/BrandColors'}
+    BrandColors:
+      type: object
+      description: Each colour as '#RRGGBB'.
+      required: [page, surface, raised, field, line, line_soft, ink, ink2, muted, faint, brand, brand_strong, brand_tint, brand_fill, brand_fill_ink, action, action_hover, action_ink, success, warning, danger, info, hero_from, hero_via, hero_to]
+      additionalProperties: {type: string, pattern: '^#[0-9A-F]{6}$'}
     SessionResponse:
       type: object
       required: [user, token]

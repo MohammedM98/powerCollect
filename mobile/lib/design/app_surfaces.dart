@@ -87,22 +87,22 @@ class _HeroPainter extends CustomPainter {
           ..shader = ui.Gradient.linear(
               centre - direction * (length / 2),
               centre + direction * (length / 2),
-              const [Color(0xFF262C34), Color(0xFF1C2127), Color(0xFF111418)],
+              AppIdentity.heroColors,
               const [0, .55, 1]));
     canvas.drawRect(
         rect,
         Paint()
           ..shader = _glow(Offset(size.width * .9, 0), size.width * 1.2,
-              size.height * .9, const Color(0x50A51D26), .55));
+              size.height * .9, AppIdentity.brandFill.withAlpha(0x50), .55));
     canvas.drawRect(
         rect,
         Paint()
           ..shader = _glow(Offset(0, size.height * 1.1), size.width * .9,
-              size.height * .8, const Color(0x2EB98A3E), .6));
+              size.height * .8, AppIdentity.brandFill.withAlpha(0x1E), .6));
   }
 
   @override
-  bool shouldRepaint(_HeroPainter old) => false;
+  bool shouldRepaint(_HeroPainter old) => true;
 }
 
 /// The previous reading, the new one and the consumption between them,

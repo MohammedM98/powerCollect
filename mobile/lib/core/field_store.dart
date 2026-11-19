@@ -26,7 +26,7 @@ class FieldStore {
   static const _session = MethodChannel('powercollect.session');
   String? _persistedToken;
 
-  Future<File> _file() async {
+  Future<File> _file([String name = 'field_state.json']) async {
     _directory ??= Directory(await const MethodChannel('powercollect.storage')
             .invokeMethod<String>('filesDirectory') ??
         '');
@@ -34,7 +34,26 @@ class FieldStore {
       throw StateError('Local storage is unavailable');
     }
     await _directory!.create(recursive: true);
-    return File('${_directory!.path}${Platform.pathSeparator}field_state.json');
+    return File('${_directory!.path}${Platform.pathSeparator}$name');
+  }
+
+  /// A file kept beside the state, such as the company's logos; null when
+  /// there is none or it cannot be read.
+  Future<Uint8List?> readKept(String name) async {
+    try {
+      final file = await _file(name);
+      return await file.exists() ? await file.readAsBytes() : null;
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'field_store'));
+      return null;
+    }
+  }
+
+  Future<void> keep(String name, Uint8List bytes) async {
+    final file = await _file(name);
+    final temporary = File('${file.path}.tmp');
+    await temporary.writeAsBytes(bytes, flush: true);
+    await temporary.rename(file.path);
   }
 
   /// The prefix of a state file sealed with the phone's Keystore key.
