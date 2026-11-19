@@ -4,6 +4,7 @@ import { Button, Card, SearchField } from '@heroui/react';
 import { FilterField } from '@/Components/DataTable/DataTableFilterMenu';
 import Icon from '@/Components/Icon';
 import Balance from '@/Components/Balance';
+import BrandLogo from '@/Components/BrandLogo';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
 import { statementExcelParts } from '@/lib/detailExcelParts';
 import StatementViewTabs from './StatementViewTabs';
@@ -46,7 +47,7 @@ const EMPTY_FILTERS = { search: '', type: '', method: '', dateFrom: '', dateTo: 
  * with the company and `subscription` (the statement's header) above them
  * and only the statement on the page, light whatever the app's theme.
  */
-export default function AccountStatement({ subscription, entries, summary, paymentMethods = [], transactionTypes = [], onAction, focusLineId = null, printOptions = null, toolsSlot = null, between = null }) {
+export default function AccountStatement({ subscription, entries, summary, paymentMethods = [], transactionTypes = [], onAction, focusLineId = null, printOptions = null, toolsSlot = null, between = null, actions = null }) {
     const [filters, setFilters] = useState(() => printOptions?.filters ?? EMPTY_FILTERS);
     const [view, setView] = useState(() => printOptions?.view ?? 'compact');
     const [openHistories, setOpenHistories] = useState(() => new Set(printOptions?.openHistories ?? []));
@@ -228,16 +229,17 @@ export default function AccountStatement({ subscription, entries, summary, payme
             <PrintHeading subscription={subscription} caption={printCaption} />
             {toolsSlot && createPortal(exportTools, toolsSlot)}
 
-            <div className="statement-summary gl-st-kpis">
-                <Card className="gl-kpi gl-kpi-balance" data-tone={balanceTone(summary.balance)}>
-                    <small>الرصيد الحالي</small>
-                    <b><Balance value={summary.balance} colored={false} unit="₪" paperWord={false} /></b>
-                    <span>{describeBalance(summary.balance).label === 'مسدّد' ? 'الحساب مسدّد بالكامل' : 'بعد آخر حركة على الحساب'}</span>
-                </Card>
-                <SummaryKpi label="مجموع ما عليه (تحميل)" value={summary.charged} hint="القراءات المعتمدة والرسوم والغرامات" />
-                <SummaryKpi label="مجموع ما دفعه (تسديد)" value={summary.paid} hint={`عدد الدفعات: ${summary.paymentsCount}`} />
-                <SummaryKpi label="مجموع الخصومات" value={summary.discounted} hint={`عدد الخصومات: ${summary.discountsCount}`} />
-                <SummaryKpi label="مجموع المقاصات" value={summary.cleared} hint={`عدد المقاصات: ${summary.clearingsCount}`} />
+            <div className="statement-summary gl-st-top">
+                <BalanceCard subscription={subscription} summary={summary} entries={entries} />
+                <div className="gl-st-side">
+                    <div className="gl-st-kpis">
+                        <SummaryKpi label="مجموع ما عليه (تحميل)" value={summary.charged} hint="القراءات المعتمدة والرسوم والغرامات" />
+                        <SummaryKpi label="مجموع ما دفعه (تسديد)" value={summary.paid} hint={`عدد الدفعات: ${summary.paymentsCount}`} />
+                        <SummaryKpi label="مجموع الخصومات" value={summary.discounted} hint={`عدد الخصومات: ${summary.discountsCount}`} />
+                        <SummaryKpi label="مجموع المقاصات" value={summary.cleared} hint={`عدد المقاصات: ${summary.clearingsCount}`} />
+                    </div>
+                    {actions && <div className="gl-st-side-actions statement-screen-only">{actions}</div>}
+                </div>
             </div>
 
             {between}
@@ -313,6 +315,54 @@ export default function AccountStatement({ subscription, entries, summary, payme
 }
 
 /** A total on its own HeroUI card: the amount in shekels and what it counts. */
+/** Whole days from a statement line's date to today. */
+function daysSince(date) {
+    const day = new Date(`${String(date).slice(0, 10)}T00:00:00`);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return Math.max(0, Math.round((today - day) / 86400000));
+}
+
+function lastPaymentText(entries) {
+    const last = entries
+        .filter((entry) => entry.type === 'payment' && !entry.cancellation && entry.date)
+        .reduce((latest, entry) => (!latest || entry.date > latest.date ? entry : latest), null);
+
+    if (!last) {
+        return null;
+    }
+
+    const days = daysSince(last.date);
+
+    return days === 0 ? 'اليوم' : days === 1 ? 'أمس' : days === 2 ? 'قبل يومين' : days <= 10 ? `قبل ${days} أيام` : `قبل ${days} يومًا`;
+}
+
+/**
+ * The balance as the redesign's account card: dark, with the company's
+ * mark, the balance large (signed, its colour on the dot by its name), the
+ * week's minimum and how long since the last payment.
+ */
+function BalanceCard({ subscription, summary, entries }) {
+    const settled = describeBalance(summary.balance).label === 'مسدّد';
+    const lastPayment = lastPaymentText(entries);
+
+    return (
+        <Card className="gl-kpi gl-kpi-balance gl-st-acard" data-tone={balanceTone(summary.balance)}>
+            <small><i aria-hidden="true" />الرصيد الحالي</small>
+            <b><Balance value={summary.balance} colored={false} unit="₪" paperWord={false} /></b>
+            <span>{settled ? 'الحساب مسدّد بالكامل' : 'بعد آخر حركة على الحساب'}</span>
+            <dl className="gl-st-acard-facts">
+                {Number(subscription.minimumPayment) > 0 && (
+                    <div><dt>الحد الأدنى</dt><dd><bdi dir="ltr">{formatAmount(subscription.minimumPayment)}</bdi> ₪</dd></div>
+                )}
+                <div><dt>آخر دفعة</dt><dd>{lastPayment ?? 'لا دفعات بعد'}</dd></div>
+            </dl>
+            <BrandLogo alt="" onDark markSize={36} className="gl-st-acard-mark" />
+        </Card>
+    );
+}
+
 function SummaryKpi({ label, value, hint }) {
     return (
         <Card className="gl-kpi">

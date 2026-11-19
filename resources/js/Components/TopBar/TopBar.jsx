@@ -8,32 +8,45 @@ import { shouldPrefetchPage, HOME_LINK, currentGroup, topBarItems } from '@/lib/
 import MegaMenu, { megaWidth } from './MegaMenu';
 import AccountMenu, { LogoutForm } from './AccountMenu';
 import { useTheme } from '@/hooks/useTheme';
+import SurfaceToggle from '@/Components/SurfaceToggle';
 import './top-bar.css';
 import { useMegaMenu } from './useMegaMenu';
 
 const SIDE_KEY = 'side';
 
-/** The side bar's width the user chose: a narrow rail of icons (the default) or wide with the sections' names. */
-function useSideWidth() {
-    const [wide, setWide] = useState(() => {
+/**
+ * The side bar's mode, as in the redesign: a narrow rail of icons (the
+ * default) that slides open under the pointer, wide with the sections'
+ * names, or hidden off the screen's edge (it slides back in while the
+ * pointer rests on that edge). Kept in this browser; app.blade.php applies
+ * it before the page paints.
+ */
+const SIDE_MODES = ['rail', 'wide', 'hidden'];
+/** The top bar's button walks the modes in the redesign's order. */
+const NEXT_MODE = { rail: 'hidden', hidden: 'wide', wide: 'rail' };
+const MODE_LABELS = { wide: 'موسّعة', rail: 'أيقونات', hidden: 'مخفية' };
+
+function useSideMode() {
+    const [mode, setMode] = useState(() => {
         try {
-            return localStorage.getItem(SIDE_KEY) === 'wide';
+            const saved = localStorage.getItem(SIDE_KEY);
+            return SIDE_MODES.includes(saved) ? saved : 'rail';
         } catch {
-            return false;
+            return 'rail';
         }
     });
 
     useEffect(() => {
-        document.documentElement.dataset.side = wide ? 'wide' : 'rail';
+        document.documentElement.dataset.side = mode;
 
         try {
-            localStorage.setItem(SIDE_KEY, wide ? 'wide' : 'rail');
+            localStorage.setItem(SIDE_KEY, mode);
         } catch {
-            // A browser that keeps nothing still gets the chosen width for this visit.
+            // A browser that keeps nothing still gets the chosen mode for this visit.
         }
-    }, [wide]);
+    }, [mode]);
 
-    return [wide, setWide];
+    return [mode, setMode];
 }
 
 /** How many things wait in a section's pages, from the page's badges. */
@@ -64,7 +77,8 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
     const current = currentGroup(groups, url);
     const currentScope = props.branchView?.current ? branchLabel : where?.scope;
     const pageLabel = where ? (currentScope ? [where.page, currentScope] : [where.section, where.page]).filter(Boolean).join('، ') : null;
-    const [wideSide, setWideSide] = useSideWidth();
+    const [sideMode, setSideMode] = useSideMode();
+    const wideSide = sideMode === 'wide';
     const searchText = props.can?.recordPayments && props.can?.viewSubscriptions ? 'ابحث عن صفحة أو مشترك…' : 'ابحث عن صفحة أو أمر…';
 
     const { scrolled, clearTimers, closeMega, currentKey, geometry, highlightRef, hoverItem, itemRefs, leaveZone, litKey, megaRef, navRef, onMegaKeyDown, onSectionClick, onSectionKeyDown, openGroup, openId, panelRef, panels, pointerType, popover, setHoverKey, setPopover, still, togglePopover } = useMegaMenu({ current, groups, items, layerOpen, url });
@@ -72,6 +86,8 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
     return (
         <>
             <header className={`tn-header ${scrolled ? 'is-scrolled' : ''}`} data-subnav={subnav ? true : undefined}>
+                {/* With the bar hidden, resting the pointer on the screen's edge slides it back in. */}
+                <div className="tn-side-edge" aria-hidden="true" />
                 <aside className="tn-side" aria-label="الشريط الجانبي">
                     <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-side-logo" aria-label={`${companyName}، الصفحة الرئيسية`}>
                         <BrandLogo alt="" markSize={40} className="h-10 w-auto max-w-[56px] object-contain" />
@@ -79,7 +95,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                     <button
                         type="button"
                         className="tn-side-pin"
-                        onClick={() => setWideSide(!wideSide)}
+                        onClick={() => setSideMode(wideSide ? 'rail' : 'wide')}
                         aria-pressed={wideSide}
                         aria-label={wideSide ? 'إلغاء تثبيت الشريط الجانبي' : 'تثبيت الشريط الجانبي مفتوحًا'}
                         title={wideSide ? 'إلغاء التثبيت' : 'تثبيت الشريط مفتوحًا'}
@@ -170,6 +186,8 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                                             <span className="sr-only">، {badge} بانتظارك</span>
                                         </>
                                     )}
+                                    {/* The section opens a menu of its pages (MegaMenu): its arrow points toward it, once the bar is open. */}
+                                    <Icon name="chevron-left" className="tn-section-chev" />
                                 </button>
                             );
                         })}
@@ -191,6 +209,15 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
 
                 <div className="tn-bar">
                     <div className="tn-context flex min-w-0 items-center">
+                        <button
+                            type="button"
+                            className="tn-tool tn-side-mode tn-desktop-only"
+                            onClick={() => setSideMode(NEXT_MODE[sideMode])}
+                            aria-label={`وضع القائمة الجانبية: ${MODE_LABELS[sideMode]}، التالي ${MODE_LABELS[NEXT_MODE[sideMode]]}`}
+                            title="وضع القائمة: موسّعة ← أيقونات ← مخفية"
+                        >
+                            <Icon name="layout-side" />
+                        </button>
                         <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-brand" data-tour="brand" aria-label={`${companyName}، ${branchLabel ?? tagline}، الصفحة الرئيسية`}>
                             <span className="tn-top-logo"><BrandLogo alt="" markSize={38} /></span>
                             <span className="tn-brand-divider" aria-hidden="true" />
@@ -218,6 +245,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             <span className="tn-search-text flex-1 text-start">{searchText}</span>
                             <span className="tn-kbd" dir="ltr">Ctrl K</span>
                         </button>
+                        <SurfaceToggle className="tn-desktop-only" />
                         <button type="button" className="tn-tool" onClick={() => changePreference(dark ? 'light' : 'dark')} aria-label={dark ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
                             <Icon name={dark ? 'sun' : 'moon'} />
                         </button>

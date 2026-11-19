@@ -1349,14 +1349,33 @@ select:not([multiple], [size]) {
     }
 
     .account-statement .statement-summary {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: 1fr 4fr;
         gap: 6px;
         margin-bottom: 8px;
     }
 
-    .account-statement .statement-summary > div {
+    .account-statement .statement-summary .gl-st-kpis {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .account-statement .statement-summary :is(> div, .gl-st-kpis > div) {
         padding: 6px 8px;
         break-inside: avoid;
+    }
+
+    .account-statement .statement-summary .gl-st-acard {
+        background: none !important;
+        box-shadow: none !important;
+        color: inherit !important;
+    }
+
+    .account-statement .statement-summary .gl-st-acard :is(b, small, span, dt, dd) {
+        color: inherit !important;
+    }
+
+    .account-statement .statement-summary :is(.gl-st-acard-mark, .gl-st-acard-facts) {
+        display: none !important;
     }
 
     .account-statement .statement-summary > div > p:nth-child(2) {
@@ -4363,4 +4382,78 @@ html:not(.dark)[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg 
 [type='checkbox']:checked,
 [type='radio']:checked {
     border-color: transparent;
+}
+
+/*
+ * ── The table as in the redesign (Components/DataTable) ─────────────────
+ * One card: the toolbar (search with the table's tools at the line's end,
+ * the filter pills under them, no rule between) runs straight into a soft band of column
+ * titles, then rows divided by hairlines and tinted under the pointer.
+ * Filters are soft rounded keys (not round pills), tinted in the company's
+ * colour while they narrow the table; a status carries a dot before its
+ * word; the current page is the dark key. Comes last, so it meets every
+ * look's own table rules (above) at their strength.
+ */
+:root[data-ui-navigation] .data-table-toolbar {
+    gap: 8px;
+    padding: 14px 16px 10px;
+    border-radius: calc(22px * var(--radius-scale, 1)) calc(22px * var(--radius-scale, 1)) 0 0;
+}
+
+:root[data-ui-navigation] .data-table-toolbar > .gl-filter-row {
+    padding-top: 2px;
+    border-top: 0;
+}
+
+:root[data-ui-navigation] .data-table-toolbar > .data-table-tools {
+    margin-inline-start: auto;
+}
+
+:root[data-ui-navigation] .data-table-toolbar + .data-table-container {
+    border-top-color: transparent;
+}
+
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger,
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-clear {
+    height: 36px;
+    border-radius: calc(11px * var(--radius-scale, 1));
+}
+
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger {
+    background: rgb(var(--panel-tile));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 0 0 1px var(--gl-line);
+}
+
+.dark:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger {
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 0 0 1px var(--gl-line);
+}
+
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger:hover {
+    background: rgb(var(--group-hover));
+}
+
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger[data-active] {
+    background: rgb(var(--brand-solid) / 0.12);
+    box-shadow: none;
+}
+
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger:is(.is-open, [aria-expanded='true']) {
+    box-shadow: 0 0 0 2px rgb(var(--brand-solid));
+}
+
+/* A status: its dot before its word, so the colour reads at a glance. */
+:root[data-ui-navigation] .data-table .gl-pill::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    flex: none;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* The pages: the current one is the dark key. */
+:root[data-ui-navigation] .gl-pager button[aria-current='page'] {
+    background: rgb(var(--action));
+    color: rgb(255 255 255);
+    box-shadow: none;
 }

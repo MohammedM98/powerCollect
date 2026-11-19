@@ -102,6 +102,7 @@ export function balanceCells({ balance, balanceLabel = 'الرصيد الحال�
 export function MovementCard({ subscription, tone = 'payment', tag = null, cells, ops = [], children = null }) {
     return (
         <section className="gl-mv" aria-live="polite" aria-label="بطاقة الحركة" style={{ '--gl-t': MOVEMENT_TONES[tone] ?? tone }}>
+            <p className="gl-mv-title" aria-hidden="true">بعد التسجيل</p>
             <div className="gl-mv-who">
                 <span className="gl-mv-avatar" aria-hidden="true">
                     {initials(subscription.fullName)}

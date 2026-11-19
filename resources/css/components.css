@@ -3146,30 +3146,37 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 
 .gl-co {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 300px;
-    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+        'head head'
+        'body aside'
+        'foot foot';
     height: min(820px, calc(100dvh - 48px));
 }
 
-.gl-co-main {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    min-height: 0;
+/* The title across the window's whole width, over the form and the receipt. */
+.gl-co-head {
+    grid-area: head;
+    border-bottom: 1px solid var(--gl-line);
 }
 
 .gl-co-body {
+    grid-area: body;
     display: flex;
-    flex: 1;
     flex-direction: column;
     gap: 26px;
     min-height: 0;
     overflow-y: auto;
-    padding: 8px 24px 24px;
+    padding: 20px 24px 24px;
     scrollbar-width: thin;
 }
 
 .gl-co-aside {
+    grid-area: aside;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
     min-height: 0;
     overflow-y: auto;
     padding: 20px;
@@ -3191,6 +3198,13 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     font-weight: 800;
 }
 
+.gl-co-h-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
 .gl-co-opt {
     color: var(--gl-muted);
     font-size: 12px;
@@ -3198,13 +3212,22 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 /* The amount: large in the middle, its currency beside it, the quick amounts under it. */
+/* On a soft card of its own, ringed in the payment's green while it is being typed. */
 .gl-co-amount {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    padding-top: 6px;
+    padding: 16px 18px;
+    border-radius: 22px;
+    background: rgb(var(--panel-tile));
+    box-shadow: 0 0 0 1px var(--gl-line);
     text-align: center;
+    transition: box-shadow 0.18s;
+}
+
+.gl-co-amount:has(.gl-co-amount-input:focus) {
+    box-shadow: 0 0 0 1.5px rgb(var(--tone-pay-solid) / 0.7), 0 0 0 5px rgb(var(--tone-pay-solid) / 0.1);
 }
 
 .gl-co-amount-label {
@@ -3277,12 +3300,17 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-co .gl-co-chip.is-accent {
-    background: rgb(var(--brand-solid) / 0.12);
-    color: rgb(var(--brand-600));
+    background: rgb(var(--tone-pay-solid) / 0.12);
+    color: rgb(var(--tone-pay-solid));
+    box-shadow: 0 0 0 1px rgb(var(--tone-pay-solid) / 0.22);
 }
 
 .gl-co .gl-co-chip.is-accent:hover {
-    background: rgb(var(--brand-solid) / 0.2);
+    background: rgb(var(--tone-pay-solid) / 0.2);
+}
+
+.dark .gl-co .gl-co-chip.is-accent {
+    color: rgb(var(--tone-pay));
 }
 
 .gl-co-note {
@@ -3290,7 +3318,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     font-size: 13px;
 }
 
-/* The ways of paying: two big cards (HeroUI's radio group); the chosen one ringed in the company's colour. */
+/* The ways of paying: two big cards (HeroUI's radio group); the chosen one ringed in the payment's green. */
 .gl-co .gl-co-methods {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3322,8 +3350,8 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-co .gl-co-method-content[data-selected] {
-    background: rgb(var(--brand-solid) / 0.05);
-    box-shadow: 0 0 0 2px rgb(var(--brand-solid)), 0 0 0 5px rgb(var(--brand-solid) / 0.12);
+    background: rgb(var(--tone-pay-solid) / 0.05);
+    box-shadow: 0 0 0 2px rgb(var(--tone-pay-solid)), 0 0 0 5px rgb(var(--tone-pay-solid) / 0.12);
 }
 
 .gl-co .gl-co-method-content[data-focus-visible] {
@@ -3373,7 +3401,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     height: 22px;
     border: 0;
     border-radius: 50%;
-    background: rgb(var(--brand-solid));
+    background: rgb(var(--tone-pay-solid));
     color: #fff;
 }
 
@@ -3523,19 +3551,55 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     font-weight: 600;
 }
 
-/* One green button carrying the amount. */
+/*
+ * The footer across the whole window: the keys at its start; at its end
+ * what will be recorded, the way out, and one green button carrying the amount.
+ */
 .gl-co-foot {
+    grid-area: foot;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    padding: 14px 24px;
+    border-top: 1px solid var(--gl-line);
+}
+
+.gl-co-foot-sum {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 24px 18px;
-    border-top: 1px solid var(--gl-line);
+    justify-content: center;
+    padding-inline-end: 6px;
+    line-height: 1.15;
+    text-align: end;
+}
+
+.gl-co-foot-sum small {
+    color: var(--gl-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.gl-co-foot-sum b {
+    color: var(--gl-ink);
+    font-size: 19px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.gl-co-foot-sep {
+    width: 1px;
+    height: 14px;
+    margin-inline: 4px;
+    background: var(--gl-line);
 }
 
 .gl-co .gl-co-pay {
     gap: 8px;
+    min-width: 200px;
     height: 52px;
+    padding-inline: 26px;
     border-radius: 999px;
     background: rgb(var(--tone-pay-solid));
     color: #fff;
@@ -3553,6 +3617,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 
 .gl-co-foot-row {
     display: flex;
+    align-items: center;
     gap: 10px;
 }
 
@@ -3586,11 +3651,14 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    padding: 20px 18px 18px;
-    border-radius: 16px;
+    padding: 20px 18px 26px;
+    border-radius: 16px 16px 0 0;
     background: rgb(var(--panel-bg));
     box-shadow: var(--panel-shadow), 0 18px 36px -24px rgb(0 0 0 / 0.35);
     color: var(--gl-ink);
+    /* The torn edge of a printed receipt along its foot. */
+    -webkit-mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 0 / 16px 100% repeat-x;
+    mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 0 / 16px 100% repeat-x;
 }
 
 .gl-co-paper::before {
@@ -3733,10 +3801,34 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     transition: width 0.3s;
 }
 
+/* A barcode, as on the printed receipt. */
+.gl-co-paper-code {
+    display: block;
+    height: 34px;
+    margin: 2px 24px 0;
+    background: repeating-linear-gradient(90deg, var(--gl-ink) 0 2px, transparent 2px 4px, var(--gl-ink) 4px 5px, transparent 5px 8px, var(--gl-ink) 8px 11px, transparent 11px 13px);
+    opacity: 0.85;
+}
+
 .gl-co-paper-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px 12px;
     margin: 0;
     color: var(--gl-muted);
     font-size: 12px;
+}
+
+.gl-co-aside-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    padding-inline: 4px;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    line-height: 1.5;
 }
 
 @media (max-width: 899px) {
@@ -3745,8 +3837,33 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
         height: calc(100dvh - 24px);
     }
 
+    .gl-co {
+        grid-template-areas:
+            'head'
+            'body'
+            'foot';
+    }
+
     .gl-co-aside {
         display: none;
+    }
+
+    .gl-co-foot {
+        padding-inline: 16px;
+    }
+
+    .gl-co-foot-hint,
+    .gl-co-h-row .gl-co-opt {
+        display: none;
+    }
+
+    .gl-co-foot-row {
+        flex: 1;
+    }
+
+    .gl-co .gl-co-pay {
+        flex: 1;
+        min-width: 0;
     }
 
     .gl-co-body {
@@ -4452,40 +4569,43 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     color: rgb(var(--danger-400));
 }
 
-/* The movements on their own card, named on its start. */
-.gl-st-actions {
-    align-items: center;
-    padding: 10px;
-    border-radius: calc(22px * var(--radius-scale, 1));
-    background: rgb(var(--panel-bg));
-    box-shadow: var(--panel-shadow);
-}
-
-.gl-st-actions-label {
-    padding: 0 8px;
-    color: var(--gl-muted);
-    font-size: 13px;
-    font-weight: 700;
-}
-
 .gl-acts .gl-act.button {
     min-width: 0;
     height: 40px;
     padding: 0 15px;
 }
 
-/* Five totals: the balance first and wider, in red while owed and green in credit. */
+/*
+ * The statement's top, as in the redesign: the balance on a dark account
+ * card with the company's mark, beside four totals with the movements one
+ * can add under them.
+ */
+.gl-st-top {
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+    gap: 14px;
+    align-items: stretch;
+    margin-bottom: 18px;
+}
+
+.gl-st-side {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+}
+
 .gl-st-kpis {
     display: grid;
-    grid-template-columns: 1.3fr repeat(4, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 18px;
+    flex: 1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
 }
 
 .gl-kpi.card {
     gap: 6px;
-    padding: 18px 20px;
-    border-radius: calc(22px * var(--radius-scale, 1));
+    padding: 16px 18px;
+    border-radius: calc(20px * var(--radius-scale, 1));
 }
 
 .gl-kpi > small {
@@ -4496,7 +4616,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 
 .gl-kpi > b {
     color: var(--gl-ink);
-    font: 800 26px / 1.2 var(--gl-head);
+    font: 800 24px / 1.2 var(--gl-head);
     font-variant-numeric: tabular-nums;
 }
 
@@ -4511,41 +4631,103 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     font-size: 12.5px;
 }
 
-.gl-kpi-balance > b {
-    font-size: 32px;
+/* The account card: dark in both themes, white figures, the tone on the dot by its name. */
+.gl-kpi.card.gl-st-acard {
+    position: relative;
+    overflow: hidden;
+    gap: 4px;
+    padding: 18px 20px 16px;
+    border-radius: calc(22px * var(--radius-scale, 1));
+    background:
+        radial-gradient(120% 90% at 0% 100%, rgb(var(--brand-solid) / 0.28), transparent 60%),
+        linear-gradient(160deg, rgb(44 49 58), rgb(18 21 26));
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.08) inset, 0 18px 36px -20px rgb(0 0 0 / 0.55);
+    color: rgb(255 255 255);
 }
 
-.gl-kpi-balance[data-tone='owes'] {
-    background: color-mix(in srgb, rgb(var(--danger-600)) 9%, rgb(var(--panel-bg)));
+.gl-st-acard > small {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgb(255 255 255 / 0.7);
 }
 
-.gl-kpi-balance[data-tone='owes'] > b {
-    color: rgb(var(--danger-700));
+.gl-st-acard > small i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.5);
 }
 
-.gl-kpi-balance[data-tone='credit'] {
-    background: color-mix(in srgb, rgb(var(--success-600)) 10%, rgb(var(--panel-bg)));
+.gl-st-acard[data-tone='owes'] > small i {
+    background: rgb(248 113 113);
+    box-shadow: 0 0 0 3px rgb(248 113 113 / 0.2);
 }
 
-.gl-kpi-balance[data-tone='credit'] > b {
-    color: rgb(var(--success-700));
+.gl-st-acard[data-tone='credit'] > small i {
+    background: rgb(74 222 128);
+    box-shadow: 0 0 0 3px rgb(74 222 128 / 0.2);
 }
 
-.dark .gl-kpi-balance[data-tone='owes'] > b {
-    color: rgb(var(--danger-400));
+.gl-st-acard > b {
+    color: rgb(255 255 255);
+    font-size: 38px;
+    letter-spacing: -0.01em;
 }
 
-.dark .gl-kpi-balance[data-tone='credit'] > b {
-    color: rgb(var(--success-400));
+.gl-st-acard > span {
+    color: rgb(255 255 255 / 0.6);
+}
+
+.gl-st-acard-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    margin: auto 0 0;
+    padding-top: 12px;
+    padding-inline-end: 64px;
+    font-size: 13px;
+}
+
+.gl-st-acard-facts > div {
+    display: flex;
+    gap: 6px;
+}
+
+.gl-st-acard-facts dt {
+    color: rgb(255 255 255 / 0.6);
+    font-weight: 600;
+}
+
+.gl-st-acard-facts dd {
+    margin: 0;
+    color: rgb(255 255 255);
+    font-weight: 800;
+}
+
+/* The company's mark at the card's corner, in its light version. */
+.gl-st-acard :is(img, svg).gl-st-acard-mark {
+    position: absolute;
+    bottom: 14px;
+    inset-inline-end: 18px;
+    width: auto;
+    height: 34px;
+    max-width: 64px;
+    object-fit: contain;
+    opacity: 0.95;
+}
+
+.gl-st-side-actions .gl-acts {
+    justify-content: flex-start;
 }
 
 @media (max-width: 1100px) {
-    .gl-st-kpis {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+    .gl-st-top {
+        grid-template-columns: minmax(0, 1fr);
     }
 
-    .gl-st-kpis > :first-child {
-        grid-column: 1 / -1;
+    .gl-st-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -5200,7 +5382,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     .gl-st-act,
     .gl-st-x,
     .gl-st-tools,
-    .gl-st-actions,
+    .gl-st-side-actions,
     .gl-st-filters,
     .gl-seg-group {
         display: none !important;
@@ -6987,4 +7169,199 @@ html:root[data-ui-background='graphite'] .pm-hero {
     line-height: 40px;
     font-size: 13.5px;
     font-weight: 600;
+}
+
+/*
+ * ── The money windows side by side (charge, discount, clearing, split) ──
+ * As in the redesign: from 900px the title and the footer span the window,
+ * the form fills its start and the movement card becomes a column at its
+ * end ("after recording"): who, the balance now and the movement as lines,
+ * and the balance it leaves large in the movement's colour. A split
+ * payment's column shows its distribution instead. Narrower, the card stays
+ * over the form as before (and the split's column is left out: its meter and
+ * footer already say the same).
+ */
+.gl-mv-title,
+.gl-split-aside {
+    display: none;
+}
+
+@media (min-width: 900px) {
+    .modal-sheet-panel:has(.gl-sheet > :is(.gl-mv, .gl-split-aside)) {
+        max-width: min(940px, 100%);
+    }
+
+    .gl-sheet:has(> :is(.gl-mv, .gl-split-aside)) {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 300px;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        grid-template-areas:
+            'head head'
+            'body side'
+            'foot foot';
+        height: min(680px, calc(100dvh - 3rem));
+    }
+
+    .gl-sheet:has(> :is(.gl-mv, .gl-split-aside)) > .gl-dialog-head {
+        grid-area: head;
+        border-bottom: 1px solid var(--gl-line);
+    }
+
+    .gl-sheet:has(> :is(.gl-mv, .gl-split-aside)) > .gl-sheet-body {
+        grid-area: body;
+    }
+
+    .gl-sheet:has(> :is(.gl-mv, .gl-split-aside)) > .gl-dialog-foot {
+        grid-area: foot;
+    }
+
+    .gl-sheet > :is(.gl-mv, .gl-split-aside) {
+        display: grid;
+        grid-area: side;
+        align-content: start;
+        gap: 16px;
+        min-height: 0;
+        margin: 0;
+        padding: 20px;
+        overflow-y: auto;
+        border-radius: 0;
+        border-inline-start: 1px solid var(--gl-line);
+        background: rgb(var(--panel-tile));
+    }
+
+    .gl-sheet > :is(.gl-mv, .gl-split-aside) > .gl-mv-title {
+        display: block;
+        margin: 0;
+        color: var(--gl-ink);
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-who {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 10px 12px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--gl-line);
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-tag {
+        grid-column: 1 / -1;
+        justify-self: start;
+        margin-inline-start: 0;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cells {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+        text-align: start;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-op {
+        display: none;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 2px 10px;
+        padding: 8px 0;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell small {
+        font-size: 13px;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell b {
+        font-size: 16px;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell em {
+        flex-basis: 100%;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell.is-result {
+        display: grid;
+        gap: 2px;
+        margin-top: 8px;
+        padding: 14px 0 0;
+        border-top: 1px dashed var(--gl-line-strong, var(--gl-line));
+        text-align: end;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell.is-result small {
+        text-align: start;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell.is-result b {
+        font-size: 30px;
+        line-height: 1.2;
+    }
+}
+
+/* The split payment's distribution, in its column. */
+.gl-split-bar {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: rgb(var(--group-fill));
+}
+
+.gl-split-bar i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--gl-t, rgb(var(--tone-split)));
+    transition: width 0.3s;
+}
+
+.gl-split-bar[data-done] i {
+    background: rgb(var(--tone-pay-solid));
+}
+
+.gl-split-rows {
+    display: grid;
+    margin: 0;
+}
+
+.gl-split-rows > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 13.5px;
+}
+
+.gl-split-rows dt {
+    color: var(--gl-muted);
+}
+
+.gl-split-rows dd {
+    margin: 0;
+    color: var(--gl-ink);
+    font: 800 16px / 1.3 var(--gl-head);
+    white-space: nowrap;
+}
+
+.gl-split-rows > [data-tone='left'] dd {
+    color: var(--gl-warn);
+}
+
+.gl-split-rows > [data-tone='over'] dd {
+    color: var(--gl-bad);
+}
+
+.gl-split-rows > .is-count {
+    margin-top: 4px;
+    border-top: 1px dashed var(--gl-line);
+}
+
+.gl-split-note {
+    margin: 0;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    line-height: 1.6;
 }

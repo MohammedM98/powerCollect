@@ -57,9 +57,11 @@ export default function BalanceFilter({ values, onChange, errors = {} }) {
 
     return (
         <div ref={root} className="relative w-full sm:w-auto">
-            <button ref={trigger} type="button" onClick={toggle} aria-expanded={open} aria-controls={`${id}-panel`} className={`flex min-h-[42px] w-full items-center justify-between gap-2 rounded-control border bg-surface px-3.5 py-2 text-sm font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${label ? 'border-brand-500/30 text-brand-600' : 'border-gray-200 text-gray-700 hover:border-gray-300'}`}>
-                <Icon name="wallet" className="h-4 w-4 shrink-0" />
-                {label || 'الرصيد'}
+            <button ref={trigger} type="button" onClick={toggle} aria-expanded={open} aria-controls={`${id}-panel`} data-active={label ? '' : undefined} className="gl-filter-trigger w-full justify-between sm:w-auto">
+                <span className="gl-filter-name">
+                    <Icon name="wallet" className="h-[15px] w-[15px] shrink-0" />
+                    {label || 'الرصيد'}
+                </span>
                 <Icon name="chevron-down" className={`h-4 w-4 shrink-0 transition ${open ? 'rotate-180' : ''}`} />
             </button>
             {open && (
