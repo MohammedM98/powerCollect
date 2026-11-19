@@ -23,7 +23,8 @@ const expect = browserExpect.configure({ timeout: 15_000 });
             const statement = page.getByRole('dialog', { name: /^كشف حساب/ });
             const profile = page.locator('.subscription-profile[role="dialog"]');
 
-            for (const target of [row.locator('td').nth(path === '/subscriptions' ? 1 : 0), name]) {
+            // A plain cell: on /subscriptions the account number, after the details chevron and the checkbox.
+            for (const target of [row.locator('td').nth(path === '/subscriptions' ? 2 : 0), name]) {
                 await target.click();
                 await expect(statement).toBeVisible();
                 await expect(statement).toContainText(subscriberName);

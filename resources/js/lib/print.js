@@ -170,7 +170,8 @@ export function extractTable(root, table = printedTable(root)) {
         .filter((field) => field && field.key && field.label)
         .map((field) => ({ key: `field:${field.key}`, label: field.label, field: field.key, extra: field.default !== true, after: field.after }));
 
-    const rows = [...table.querySelectorAll('tbody tr')]
+    // A row's on-screen details (data-print-skip) repeat what the export already holds.
+    const rows = [...table.querySelectorAll('tbody tr:not([data-print-skip])')]
         .map((row) => {
             const cells = [...row.children];
 

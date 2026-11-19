@@ -16,7 +16,7 @@ import BulkActionBar from './BulkActionBar';
 import BulkActionsMenu from './BulkActionsMenu';
 import BalanceFilter from './BalanceFilter';
 import { BALANCE_FILTER_KEYS, balanceFilterLabel, subscriptionFilterKey } from '@/lib/subscriptionBalance';
-import UnderlineTabs from '@/Components/UnderlineTabs';
+import SegmentedTabs from '@/Components/SegmentedTabs';
 import PageHeader from '@/Components/PageHeader';
 import InfoTip from '@/Components/InfoTip';
 import SubscriptionWindows from './SubscriptionWindows';
@@ -253,6 +253,7 @@ export default function Index({
             header={
                 <PageHeader
                     title="المشتركون"
+                    info="ابحث عن مشترك، وأضفه وعدّل بياناته، وافتح كشف حسابه."
                     actions={
                         <>
                             {!showArchived && <BulkActionsMenu abilities={bulkActions} onChoose={chooseBulkAction} />}
@@ -266,7 +267,7 @@ export default function Index({
 
             {branchScope && <BranchFilterBanner scope={branchScope} eyebrow="تعرض الآن مشتركي" group={branchFilter.branch} value={filterValues.branch_id} onChange={(value) => setFilter('branch_id', value)} />}
 
-            {canViewArchived && <div className="mb-5 flex flex-wrap items-end gap-2"><UnderlineTabs label="قائمة الاشتراكات" value={showArchived ? 'archived' : 'current'} options={[{ value: 'current', label: 'الاشتراكات الحالية' }, { value: 'archived', label: 'الاشتراكات المؤرشفة' }]} onChange={(value) => setFilter('archived', value === 'archived' ? '1' : '')} /><InfoTip label="عن الأرشيف">{showArchived ? 'ملفات محفوظة بعد إنهاء الخدمة؛ الأرصدة والحركات السابقة باقية.' : 'أرشفة الاشتراك المنتهي متاحة من قائمة إجراءاته حسب الصلاحية.'}</InfoTip></div>}
+            {canViewArchived && <div className="mb-5 flex flex-wrap items-center gap-2"><SegmentedTabs label="قائمة الاشتراكات" value={showArchived ? 'archived' : 'current'} options={[{ value: 'current', label: 'الاشتراكات الحالية' }, { value: 'archived', label: 'الاشتراكات المؤرشفة' }]} onChange={(value) => setFilter('archived', value === 'archived' ? '1' : '')} /><InfoTip label="عن الأرشيف">{showArchived ? 'ملفات محفوظة بعد إنهاء الخدمة؛ الأرصدة والحركات السابقة باقية.' : 'أرشفة الاشتراك المنتهي متاحة من قائمة إجراءاته حسب الصلاحية.'}</InfoTip></div>}
 
             <DataTableToolbar
                 search={search}
