@@ -6227,7 +6227,7 @@ button.gl-cb-tile:hover {
 
 .gl-dash-hero {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.65fr);
+    grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
     gap: 16px;
 }
 
@@ -6237,7 +6237,7 @@ button.gl-cb-tile:hover {
 
 .gl-dash-pair {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.65fr);
+    grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
     gap: 16px;
 }
 

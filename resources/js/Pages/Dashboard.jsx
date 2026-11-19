@@ -265,8 +265,9 @@ export default function Dashboard({
                     <>
                         {(collections || attention.length > 0) && (
                             <div className={`gl-dash-hero ${collections && attention.length > 0 ? '' : 'is-single'}`}>
-                                {attention.length > 0 && <AttentionPanel attention={attention} />}
+                                {/* As in the redesign: the collections lead on the right, what waits on you beside them. */}
                                 {collections && <CollectionsHero collections={collections} period={period} filters={filters} />}
+                                {attention.length > 0 && <AttentionPanel attention={attention} />}
                             </div>
                         )}
 
@@ -294,7 +295,6 @@ export default function Dashboard({
 
                         {(collections || hasBreakers) && (
                             <div className={`gl-dash-pair ${collections && hasBreakers ? '' : 'is-single'}`}>
-                                {collections && <MethodsPanel collections={collections} methodParts={methodParts} period={period} />}
                                 {hasBreakers && (
                                     <Panel index={12} title="المشتركون حسب القاطع">
                                         {subscriptions.byBreaker.map((breaker, index) => (
@@ -305,6 +305,7 @@ export default function Dashboard({
                                         ))}
                                     </Panel>
                                 )}
+                                {collections && <MethodsPanel collections={collections} methodParts={methodParts} period={period} />}
                             </div>
                         )}
 
