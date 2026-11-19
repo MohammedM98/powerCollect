@@ -1,3 +1,4 @@
+import { Chip } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import { BALANCE_HINTS, BALANCE_TEXT_CLASSES } from '@/lib/balance';
 
@@ -13,14 +14,13 @@ export function BalanceText({ balance }) {
 /** The subscription's standing discount, taken off each weekly reading, beside their name. */
 export function StandingDiscountBadge({ discount }) {
     return (
-        <span
-            title={discount.notes ?? undefined}
-            className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400"
-        >
-            <Icon name="discount" className="h-3.5 w-3.5" />
-            خصم القراءات الأسبوعية: {discount.terms}
-            {discount.segment && ` · ${discount.segment}`}
-        </span>
+        <Chip size="sm" title={discount.notes ?? undefined} className="gl-st-chip" data-tone="discount">
+            <Icon name="repeat" className="h-3.5 w-3.5" />
+            <Chip.Label>
+                خصم القراءات الأسبوعية: {discount.terms}
+                {discount.segment && `، ${discount.segment}`}
+            </Chip.Label>
+        </Chip>
     );
 }
 

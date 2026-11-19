@@ -9,15 +9,15 @@
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
         <link rel="icon" href="{{ $brand->logoUrl('icon') }}">
 
-        <!-- The faces every page shows at once (body text, bold labels and titles, and the figures' Alexandria) load before
-             the first paint, so text doesn't change width and move the page when a face arrives. -->
-        <link rel="preload" href="{{ Vite::asset('resources/fonts/ibm-plex-sans-arabic-arabic-400.woff2') }}" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="{{ Vite::asset('resources/fonts/ibm-plex-sans-arabic-arabic-600.woff2') }}" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="{{ Vite::asset('resources/fonts/ibm-plex-sans-arabic-arabic-700.woff2') }}" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="{{ Vite::asset('resources/fonts/alexandria-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
+        <!-- The faces every page shows at once (Zain for text, titles and figures; Alexandria for the company's name)
+             load before the first paint, so text doesn't change width and move the page when a face arrives. -->
+        <link rel="preload" href="{{ Vite::asset('resources/fonts/zain-arabic-400.woff2') }}" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="{{ Vite::asset('resources/fonts/zain-arabic-700.woff2') }}" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="{{ Vite::asset('resources/fonts/zain-arabic-800.woff2') }}" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="{{ Vite::asset('resources/fonts/zain-latin-700.woff2') }}" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="{{ Vite::asset('resources/fonts/alexandria-arabic.woff2') }}" as="font" type="font/woff2" crossorigin>
 
-        <!-- Theme and table density: apply the saved choices before the page paints, so there is no flash. -->
+        <!-- Theme, table density and the side bar's width: apply the saved choices before the page paints, so there is no flash. -->
         <script nonce="{{ Vite::cspNonce() }}">
             try {
                 const theme = localStorage.getItem('theme');
@@ -25,6 +25,7 @@
                     document.documentElement.classList.add('dark');
                 }
                 // The density chosen in this browser, else the company's (data-ui-density).
+                document.documentElement.dataset.side = localStorage.getItem('side') === 'wide' ? 'wide' : 'rail';
                 if ((localStorage.getItem('table-density') ?? document.documentElement.dataset.uiDensity) === 'compact') {
                     document.documentElement.dataset.tableDensity = 'compact';
                 }

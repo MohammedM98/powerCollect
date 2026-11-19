@@ -12,7 +12,7 @@ test('a one-off discount asks for shekels; a standing one by its method', () => 
 test('standing terms read with their unit, and with the segment when there is one', () => {
     assert.equal(standingTerms('percentage', 10), '10%');
     assert.equal(standingTerms('kilowatt', 3), '3 كيلو');
-    assert.equal(withSegment(standingTerms('percentage', 10), 'شريحة 2'), '10% · شريحة 2');
+    assert.equal(withSegment(standingTerms('percentage', 10), 'شريحة 2'), '10%، شريحة 2');
     assert.equal(withSegment('10%', null), '10%');
 });
 

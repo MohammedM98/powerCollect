@@ -17,7 +17,7 @@ const FIELD_ICONS = { minimum_charge: 'wallet', status: 'flag', meter_box_id: 'g
 
 const DATE_TIME_FORMAT = new Intl.DateTimeFormat('ar-EG-u-nu-latn', { dateStyle: 'medium', timeStyle: 'short' });
 
-const FOCUS_RING = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
+const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
 
 /** One change's subscriptions: each one's value before, after, and now. */
 function DetailsModal({ change, details, onClose }) {
@@ -148,14 +148,14 @@ export default function BulkChanges({ changes, filters, details }) {
                                     </td>
                                     <td className="text-end">
                                         <div className="flex justify-end gap-1.5">
-                                            <SecondaryButton onClick={() => view(change)} className="!px-3 !py-1.5 text-xs" aria-label={`عرض مشتركي «${change.description}»`}>
+                                            <SecondaryButton onClick={() => view(change)} className="px-3! py-1.5! text-xs" aria-label={`عرض مشتركي «${change.description}»`}>
                                                 <Icon name="eye" className="h-4 w-4" />
                                                 المشتركون
                                             </SecondaryButton>
                                             {change.canUndo && (
                                                 <SecondaryButton
                                                     onClick={() => setUndoing(change)}
-                                                    className="!px-3 !py-1.5 text-xs text-brand-600"
+                                                    className="px-3! py-1.5! text-xs text-brand-600"
                                                     aria-label={`التراجع عن «${change.description}»`}
                                                 >
                                                     <Icon name="undo" className="h-4 w-4" />

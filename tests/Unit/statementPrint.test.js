@@ -121,14 +121,14 @@ test('print totals subtract credits, net the reading discount and exclude folded
     assert.equal(rowColumnTotal(rows, 'الرصيد (شيكل)'), null);
     assert.equal(statementRowTotals(entries[0], true)['المبلغ'], null);
     assert.equal(statementRowTotals({ amount: '60', isCredit: false, discountLine: { amount: '15' } })['المبلغ'], 45);
-    assert.equal(rowColumnTotal([...rows, { cells: {}, currency: 'دولار', totals: { 'المبلغ': -5 } }], 'المبلغ'), '20 شيكل · -5 دولار');
+    assert.equal(rowColumnTotal([...rows, { cells: {}, currency: 'دولار', totals: { 'المبلغ': -5 } }], 'المبلغ'), '20 شيكل، -5 دولار');
 });
 
 test('statement metadata comes from the current subscriber and presents filter labels', () => {
     const details = statementPrintDetails({ subscription, printOptions: { view: 'full', filters: { ...filters, type: 'payment', method: 'bank_transfer' } }, transactionTypes: [{ value: 'payment', label: 'دفعة' }], paymentMethods: [{ value: 'bank_transfer', label: 'تحويل بنكي' }] });
     assert.equal(details.find((field) => field.key === 'subscriber').value, 'أحمد');
     assert.equal(details.find((field) => field.key === 'branch').value, 'الفرع الأول');
-    assert.equal(details.find((field) => field.key === 'filters').value, 'دفعة · تحويل بنكي');
+    assert.equal(details.find((field) => field.key === 'filters').value, 'دفعة، تحويل بنكي');
     assert.deepEqual(statementPrintDetails({ subscription: null }), []);
 });
 

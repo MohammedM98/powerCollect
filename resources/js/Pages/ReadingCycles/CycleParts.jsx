@@ -16,7 +16,7 @@ export function DistributionSummary({ boxes }) {
     return (
         <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]">
             <KpiTile hero icon="table" label="الطبلونات ضمن نتائج البحث والتصفية" value={formatNumber(boxes.length)} unit="طبلون">
-                <div className="gl-kv mt-3 border-t pt-3 !border-[color:var(--gl-line)]">
+                <div className="gl-kv mt-3 border-t pt-3 border-(--gl-line)!">
                     <span className="inline-flex items-center gap-1.5">
                         <Icon name="users" className="h-4 w-4" />
                         المشتركون
@@ -68,7 +68,7 @@ export function AllocationReport({ result, onConfirmDownloaded, onClose }) {
                 <p className="font-bold text-gray-900">
                     {result.action === 'approve' ? 'اعتُمد' : result.action === 'copy' ? 'نُسخ من الدورة السابقة' : 'نُقل'}{' '}
                     {formatNumber(result.moved)} طبلون
-                    {result.conflicts.length > 0 && <> · راجع الطبلونات التي تعذّر تحديثها أدناه</>}
+                    {result.conflicts.length > 0 && <>، راجع الطبلونات التي تعذّر تحديثها أدناه</>}
                 </p>
                 <button type="button" onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-1.5 text-gray-500 hover:bg-gray-100">
                     <Icon name="close" className="h-4 w-4" />
@@ -185,7 +185,7 @@ export function BoxCard({ box }) {
                 </span>
                 <span className="gl-tag">
                     {box.status === 'approved' ? 'معتمد' : box.status ? 'بانتظار الاعتماد' : 'غير موزع'}
-                    {box.downloaded ? ' · نُزّلت' : ''}
+                    {box.downloaded ? '، نُزّلت' : ''}
                 </span>
             </div>
             <div className="gl-progress" role="img" aria-label={`قُرئ ${box.read} من ${box.subscribers}`}>

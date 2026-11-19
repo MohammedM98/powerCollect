@@ -75,7 +75,7 @@ function RateEditor({ tariff, dark, onDone }) {
 
     return (
         <div
-            className={`relative grid min-w-0 gap-3 rounded-[20px] border-[1.5px] p-4 ${dark ? 'border-white/15 bg-white/[0.04]' : 'border-gray-200 bg-gray-50'}`}
+            className={`relative grid min-w-0 gap-3 rounded-[20px] border-[1.5px] p-4 ${dark ? 'border-white/15 bg-white/4' : 'border-gray-200 bg-gray-50'}`}
         >
             <div className="flex flex-wrap items-center gap-3">
                 <label
@@ -188,7 +188,7 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
                 <>
                     <span className="absolute inset-x-0 top-0 h-[3px] bg-spectrum" aria-hidden="true" />
                     <span
-                        className="pointer-events-none absolute -bottom-36 -start-16 h-[340px] w-[340px] rounded-full bg-[radial-gradient(closest-side,rgb(var(--brand-solid)/0.22),transparent)]"
+                        className="pointer-events-none absolute -bottom-36 -inset-s-16 h-[340px] w-[340px] rounded-full bg-[radial-gradient(closest-side,rgb(var(--brand-solid)/0.22),transparent)]"
                         aria-hidden="true"
                     />
                 </>
@@ -224,11 +224,7 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
                         <button
                             type="button"
                             onClick={onEdit}
-                            className={`inline-flex h-11 items-center gap-2 whitespace-nowrap rounded-[13px] border px-4 text-[15px] font-bold transition ${
-                                dark
-                                    ? 'border-white/15 bg-white/5 text-white hover:bg-white/10'
-                                    : 'border-blue-500/30 bg-blue-500/10 text-blue-600 hover:border-transparent hover:bg-blue-500 hover:text-white'
-                            }`}
+                            className={dark ? 'inline-flex h-11 items-center gap-2 whitespace-nowrap rounded-full border border-white/15 bg-white/5 px-4 text-[15px] font-bold text-white transition hover:bg-white/10' : 'gl-btn gl-sec whitespace-nowrap'}
                         >
                             <Icon name="pencil" className="h-[17px] w-[17px]" />
                             تعديل السعر
@@ -317,7 +313,7 @@ function QuickCalculator({ tariffs }) {
                 {tariffs.map((tariff) => (
                     <div key={tariff.id} className="min-w-[150px] flex-1 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-2.5">
                         <small className="block text-[12.5px] text-gray-500">
-                            {tariff.categoryLabel} · {price(tariff.rate)} ₪
+                            {tariff.categoryLabel}، {price(tariff.rate)} ₪
                         </small>
                         <b className="font-display text-[22px] font-extrabold text-gray-900">{price(amount * Number(tariff.rate))} ₪</b>
                     </div>
@@ -357,11 +353,11 @@ export default function Index({ tariffs, segments, canCreate, canCreateSegment, 
             ) : (
                 <>
                     <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-                        {tariffs.map((tariff, index) => (
+                        {tariffs.map((tariff) => (
                             <TariffCard
                                 key={tariff.id}
                                 tariff={tariff}
-                                dark={index === 0}
+                                dark={false}
                                 editing={editingId === tariff.id}
                                 onEdit={() => setEditingId(tariff.id)}
                                 onDoneEditing={() => setEditingId(null)}

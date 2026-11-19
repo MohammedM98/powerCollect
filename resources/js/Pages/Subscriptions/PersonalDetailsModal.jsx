@@ -56,7 +56,7 @@ function ChangeHistory({ subscriptionId }) {
                             <li key={change.id} className="border-b border-gray-100 pb-2 last:border-0">
                                 <p className="text-xs text-gray-500">
                                     <span dir="ltr" className="font-display">{change.at}</span>
-                                    {' · '}
+                                    {'، '}
                                     {change.userName ?? 'النظام'}
                                     {change.branchName ? ` (${change.branchName})` : ''}
                                 </p>

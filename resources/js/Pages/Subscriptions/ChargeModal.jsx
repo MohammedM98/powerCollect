@@ -12,14 +12,14 @@ import {
     AmountBox,
     balanceCells,
     balanceText,
-    ChoiceTile,
+    ChoiceCards,
     DoneScreen,
     FieldWarning,
     FormFooter,
     FormHeader,
     FormStep,
     MovementCard,
-    MOVEMENT_TONES,
+    movementStyle,
     QuickPick,
     SheetBody,
     SHEET_FORM_CLASS,
@@ -38,7 +38,7 @@ const TYPE_LOOKS = {
 const LARGE_CHARGE = 500;
 
 const notesClass =
-    'block min-h-[76px] w-full resize-y rounded-[14px] border-[1.5px] bg-surface px-4 py-3 text-base leading-relaxed text-gray-900 transition placeholder:text-gray-400 hover:border-brand-500/45 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15';
+    'block min-h-[76px] w-full resize-y rounded-[14px] border-[1.5px] bg-surface px-4 py-3 text-base leading-relaxed text-gray-900 transition placeholder:text-gray-400 hover:border-brand-500/45 focus:border-brand-500 focus:outline-hidden focus:ring-4 focus:ring-brand-500/15';
 
 /**
  * Charge a subscription by hand (تحميل): a financial penalty (which must say
@@ -143,7 +143,7 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
 
     return (
         <>
-            <Modal show={show} onClose={requestClose} maxWidth="5xl">
+            <Modal show={show} onClose={requestClose} maxWidth="2xl">
                 {receipt ? (
                     <DoneScreen
                         tone={correcting ? 'amber' : 'red'}
@@ -169,12 +169,12 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                         onInput={(e) => clearErrorOnInput(e, form)}
                         onKeyDown={onKeyDown}
                         className={SHEET_FORM_CLASS}
-                        style={{ '--gl-t': MOVEMENT_TONES[tone], '--gl-t-ink': 'var(--gl-tone-ink)' }}
+                        style={movementStyle(tone)}
                     >
                         <FormHeader
                             titleId={titleId}
-                            icon={correcting ? 'repeat' : 'arrow-down-tray'}
-                            tone={correcting ? 'amber' : 'red'}
+                            icon={correcting ? 'repeat' : 'receipt'}
+                            tone={correcting ? 'amber' : 'charge'}
                             title={correcting ? 'تصحيح تحميل' : 'تحميل حركة'}
                             subtitle={correcting ? 'صحّح التحميل؛ يبقى الأصلي في الكشف ملغى مع سبب التصحيح.' : 'مبلغ يُضاف على حساب المشترك.'}
                             onClose={requestClose}
@@ -199,27 +199,18 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                         <SheetBody>
                             {correcting && <OriginalLine entry={correcting} />}
 
-                            <FormStep number={1} title="نوع التحميل" hint={`بالأرقام ${chargeTypes.map((_, index) => index + 1).join(' · ')}`} done={Boolean(type)}>
-                                <fieldset>
-                                    <legend className="sr-only">نوع التحميل</legend>
-                                    <div className="grid gap-3 sm:grid-cols-2">
-                                        {chargeTypes.map((option, index) => (
-                                            <ChoiceTile
-                                                key={option.value}
-                                                name="type"
-                                                value={option.value}
-                                                checked={data.type === option.value}
-                                                onChange={chooseType}
-                                                icon={TYPE_LOOKS[option.value]?.icon ?? 'document-plus'}
-                                                title={option.label}
-                                                hint={TYPE_LOOKS[option.value]?.hint}
-                                                tone="red"
-                                                shortcut={index + 1}
-                                            />
-                                        ))}
-                                    </div>
+                            <FormStep number={1} title="نوع التحميل" hint={`بالأرقام ${chargeTypes.map((_, index) => index + 1).join('، ')}`} done={Boolean(type)}>
+                                <div>
+                                    <ChoiceCards
+                                        name="type"
+                                        label="نوع التحميل"
+                                        isRequired
+                                        value={data.type}
+                                        onChange={chooseType}
+                                        options={chargeTypes.map((option) => ({ value: option.value, icon: TYPE_LOOKS[option.value]?.icon ?? 'document-plus', title: option.label, hint: TYPE_LOOKS[option.value]?.hint }))}
+                                    />
                                     <InputError message={errors.type} className="mt-2" />
-                                </fieldset>
+                                </div>
                             </FormStep>
 
                             <FormStep number={2} title="المبلغ" done={amount > 0}>
@@ -297,11 +288,10 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
 
                         <FormFooter
                             onCancel={requestClose}
-                            tone={correcting ? 'amber' : 'red'}
                             disabled={amount <= 0 || missingReason}
                             processing={form.processing}
                             submitLabel={correcting ? 'حفظ التصحيح' : amount > 0 ? `تحميل ${formatMoney(amount)} ₪ على الحساب` : 'إضافة التحميل'}
-                            shortcuts={`${chargeTypes.map((_, index) => index + 1).join(' · ')} للنوع`}
+                            shortcuts={`${chargeTypes.map((_, index) => index + 1).join('، ')} للنوع`}
                         />
                     </form>
                 )}

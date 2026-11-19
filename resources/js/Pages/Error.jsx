@@ -29,7 +29,7 @@ export default function Error({ status, blank = false }) {
             <AuthenticatedLayout>
                 <Head title={appName} />
                 <div className="mx-auto flex max-w-md flex-col items-center gap-4 py-16 text-center" role="status">
-                    <span className="gl-ico !h-12 !w-12 !rounded-full">
+                    <span className="gl-ico h-12! w-12! rounded-full!">
                         <Icon name="lock" className="h-6 w-6" />
                     </span>
                     <p className="text-base font-semibold">هذه الصفحة غير متاحة لحسابك</p>
@@ -48,13 +48,13 @@ export default function Error({ status, blank = false }) {
     const body = (
         <div className="mx-auto flex max-w-md flex-col items-center py-16 text-center" role="alert">
             <Head title={message.title} />
-            <span className="gl-ico !h-16 !w-16 !rounded-full !text-[rgb(var(--gl-brand))]">
+            <span className="gl-ico h-16! w-16! rounded-full! text-[rgb(var(--gl-brand))]!">
                 <Icon name={message.icon} className="h-8 w-8" />
             </span>
             <p className="gl-num mt-6 text-sm font-semibold gl-text-muted" dir="ltr">
                 {status}
             </p>
-            <h1 className="mt-2 text-2xl font-extrabold !font-[family-name:var(--gl-head)]">{message.title}</h1>
+            <h1 className="mt-2 text-2xl font-extrabold font-(family-name:--gl-head)!">{message.title}</h1>
             <p className="mt-3 text-sm leading-7 gl-text-muted">{message.text}</p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
                 <RecoveryLink href={branchContext?.recoveryUrl ?? (signedIn ? '/dashboard' : '/login')} className="gl-btn">

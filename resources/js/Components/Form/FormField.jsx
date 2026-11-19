@@ -21,7 +21,7 @@ export default function FormField({ id, label, required, error, hint, span = '',
                 {required && <span className="text-brand-500"> *</span>}
             </InputLabel>
             {cloneElement(children, { id, 'aria-invalid': error ? true : undefined, 'aria-describedby': describedBy })}
-            {error ? <InputError id={errorId} message={error} /> : hint && <p id={hintId} className="m-0 text-[13.5px] leading-6 text-[color:var(--gl-muted)]">{hint}</p>}
+            {error ? <InputError id={errorId} message={error} /> : hint && <p id={hintId} className="m-0 text-[13.5px] leading-6 text-(--gl-muted)">{hint}</p>}
         </div>
     );
 }

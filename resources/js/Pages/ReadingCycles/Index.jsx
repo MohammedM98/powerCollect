@@ -56,7 +56,7 @@ function BranchOverview({ branches, canCreate }) {
 
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                 <div className="relative w-full sm:max-w-sm">
-                    <Icon name="search" className="pointer-events-none absolute inset-y-0 start-3.5 my-auto h-5 w-5 text-gray-400" />
+                    <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-5 w-5 text-gray-400" />
                     <TextInput type="search" aria-label="بحث عن فرع" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="بحث عن فرع..." className="w-full py-3 pe-4 ps-11 text-sm" />
                 </div>
                 <div className="max-w-full overflow-x-auto pb-1 [&_button]:whitespace-nowrap">

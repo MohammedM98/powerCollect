@@ -76,7 +76,7 @@ function TeamTable({ team }) {
 
     return (
         <section className="mt-5">
-            <TableHeading title="فريق الفرع" caption={`${formatNumber(team.length)} موظف · مرتبون حسب عدد الإدخالات`} />
+            <TableHeading title="فريق الفرع" caption={`${formatNumber(team.length)} موظف، مرتبون حسب عدد الإدخالات`} />
             <div className="data-table-container">
                 <table className="data-table w-full text-start text-sm">
                     <thead>
@@ -208,15 +208,15 @@ function LatestRegistrations({ subscriptions }) {
             {subscriptions.length === 0 ? (
                 <p className="py-12 text-center text-sm text-gray-500">لا مشتركين في هذا الفرع بعد.</p>
             ) : (
-                <ol className="relative mt-5 space-y-5 before:absolute before:inset-y-2 before:start-[5px] before:w-px before:bg-gray-200">
+                <ol className="relative mt-5 space-y-5 before:absolute before:inset-y-2 before:inset-s-[5px] before:w-px before:bg-gray-200">
                     {subscriptions.map((subscription) => (
                         <li key={subscription.id} className="relative ps-7">
                             <span
-                                className={`absolute start-0 top-2 h-[11px] w-[11px] rounded-full ring-4 ring-surface ${TIMELINE_DOTS[subscription.status]}`}
+                                className={`absolute inset-s-0 top-2 h-[11px] w-[11px] rounded-full ring-4 ring-surface ${TIMELINE_DOTS[subscription.status]}`}
                                 aria-hidden="true"
                             />
                             <div className="flex items-baseline justify-between gap-3">
-                                <p className="min-w-0 break-words font-semibold text-gray-900">{subscription.name}</p>
+                                <p className="min-w-0 wrap-break-word font-semibold text-gray-900">{subscription.name}</p>
                                 <time dateTime={subscription.createdAt} className="shrink-0 whitespace-nowrap text-xs text-gray-500">
                                     {timeAgo(subscription.createdAt)}
                                 </time>
@@ -260,7 +260,7 @@ export default function Show({ branch, canCompareBranches, dailyRegistrations, d
                             details.length > 0 &&
                             details.map((detail, index) => (
                                 <span key={detail}>
-                                    {index > 0 && ' · '}
+                                    {index > 0 && '، '}
                                     <span dir={detail === branch.phone ? 'ltr' : undefined}>{detail}</span>
                                 </span>
                             ))
@@ -293,7 +293,7 @@ export default function Show({ branch, canCompareBranches, dailyRegistrations, d
                     icon="chart"
                     label="إدخالات اليوم"
                     value={formatNumber(branch.todayEntries)}
-                    hint={`${formatNumber(branch.weekEntries)} آخر 7 أيام · ${formatNumber(branch.monthEntries)} آخر 30 يوم`}
+                    hint={`${formatNumber(branch.weekEntries)} آخر 7 أيام، ${formatNumber(branch.monthEntries)} آخر 30 يوم`}
                 />
             </div>
 
@@ -305,7 +305,7 @@ export default function Show({ branch, canCompareBranches, dailyRegistrations, d
                         formatValue={(value) => `${formatNumber(value)} مشترك جديد`}
                     />
                 </ChartCard>
-                <ChartCard title="القيود اليومية" caption={`بالشيكل · آخر ${formatNumber(dailyCharges.length)} يوم`}>
+                <ChartCard title="القيود اليومية" caption={`بالشيكل، آخر ${formatNumber(dailyCharges.length)} يوم`}>
                     <BarChart
                         data={dailyCharges}
                         label={`قيود ${branch.name} لكل يوم، بالشيكل`}

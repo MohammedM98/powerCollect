@@ -36,7 +36,7 @@ export default function SubscriptionLocationSection({
     subAreasInArea,
 }) {
     return (
-        <FormSection icon="pin" title="الموقع والعداد">
+        <FormSection icon="pin" title="الموقع والعداد" description="الفرع والمنطقة والطبلون">
             <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:col-span-2 sm:grid-cols-2 lg:col-span-3">
                 {canChooseBranch && (
                     <FormField id="branch_id" label="الفرع" required error={errors.branch_id}>
@@ -97,7 +97,7 @@ export default function SubscriptionLocationSection({
 // derived from another selection, like the branch's area).
 export function FieldLock() {
     return (
-        <span className="pointer-events-none absolute inset-y-0 end-3 flex items-center text-gray-400" aria-hidden="true">
+        <span className="pointer-events-none absolute inset-y-0 inset-e-3 flex items-center text-gray-400" aria-hidden="true">
             <Icon name="lock" className="h-4 w-4" />
         </span>
     );

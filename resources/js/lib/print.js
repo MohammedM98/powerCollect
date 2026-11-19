@@ -40,6 +40,11 @@ export function isPrintMode() {
  * list's address), with its search, sort and filters — every matching row
  * from the first one.
  */
+/** The page's own name for a printout or an Excel file: its main heading (never a branch banner's line above a list), else the tab's title. */
+export function pageTitle() {
+    return document.querySelector('h1')?.textContent.trim() || document.title;
+}
+
 export function printUrl(title, base = window.location.href) {
     const url = new URL(base, window.location.origin);
     const params = url.searchParams;
@@ -165,7 +170,8 @@ export function extractTable(root, table = printedTable(root)) {
         .filter((field) => field && field.key && field.label)
         .map((field) => ({ key: `field:${field.key}`, label: field.label, field: field.key, extra: field.default !== true, after: field.after }));
 
-    const rows = [...table.querySelectorAll('tbody tr')]
+    // A row's on-screen details (data-print-skip) repeat what the export already holds.
+    const rows = [...table.querySelectorAll('tbody tr:not([data-print-skip])')]
         .map((row) => {
             const cells = [...row.children];
 
@@ -202,7 +208,7 @@ export function extractSummary(root) {
     // The readings sheet's footer also holds keyboard hints; only its first part is the total.
     const summary = root?.querySelector('.data-table-totals, .re-footer > :first-child');
 
-    return summary ? summary.innerText.trim().replace(/\s*\n\s*/g, ' · ') : '';
+    return summary ? summary.innerText.trim().replace(/\s*\n\s*/g, '، ') : '';
 }
 
 /**

@@ -121,7 +121,7 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
                                     <td dir="ltr" className="text-gray-700">
                                         {message.phone}
                                     </td>
-                                    <td className="min-w-[260px] max-w-lg !whitespace-normal text-gray-700">{message.body}</td>
+                                    <td className="min-w-[260px] max-w-lg whitespace-normal! text-gray-700">{message.body}</td>
                                     <td>
                                         <MessageStatusPill status={message.status} label={message.statusLabel} />
                                         {message.error && <div className="mt-1 max-w-xs text-xs text-brand-600">{message.error}</div>}
@@ -137,7 +137,7 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
                                                 onClick={() => openWhatsApp(message)}
                                                 aria-label={`${message.status === 'sent' ? 'فتح المحادثة مجددًا مع' : 'إرسال عبر واتساب إلى'} ${message.subscriptionName ?? message.phone}`}
                                                 title={message.status === 'sent' ? 'أُرسلت — افتح المحادثة مجددًا' : 'افتح واتساب والرسالة مكتوبة'}
-                                                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-control px-3 py-1.5 text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
+                                                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-control px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
                                                     message.status === 'sent'
                                                         ? 'border border-gray-200 text-gray-600 hover:text-gray-900'
                                                         : 'bg-emerald-600 text-white hover:bg-emerald-700'

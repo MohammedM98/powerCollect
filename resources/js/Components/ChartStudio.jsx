@@ -89,8 +89,24 @@ export function AreaChart({ values, labels, previous = null, label }) {
  * tabs (`periods`, `period`, `onPeriodChange`), then the chart. `series` is
  * `[{ date, value, previous }]`, oldest first; `dayLabel` writes a day.
  */
-export default function ChartStudio({ title, total, change, unit = '₪', formatTotal, series, dayLabel, periods = [], period, onPeriodChange }) {
+export default function ChartStudio({ title, total, change, unit = '₪', formatTotal, series, dayLabel, periods = [], period, onPeriodChange, bare = false }) {
     const [comparing, setComparing] = useState(true);
+
+    // Bare: only the chart and the previous-period switch, for a card that already says what and how much (the dashboard's hero).
+    if (bare) {
+        return (
+            <div className="gl-chart-bare">
+                <button type="button" className="gl-tog" aria-pressed={comparing} onClick={() => setComparing(!comparing)}>الفترة السابقة</button>
+                <AreaChart
+                    key={`${period}-${series.length}`}
+                    values={series.map((day) => Number(day.value) || 0)}
+                    labels={series.map((day) => dayLabel(day.date))}
+                    previous={comparing ? series.map((day) => Number(day.previous) || 0) : null}
+                    label={`${title}: ${unit} ${total}`}
+                />
+            </div>
+        );
+    }
 
     return (
         <>
@@ -99,7 +115,7 @@ export default function ChartStudio({ title, total, change, unit = '₪', format
                     <h2>{title}</h2>
                     <span className="gl-meta gl-num">
                         {unit} <CountUp value={total} format={formatTotal} /> في هذه الفترة
-                        {change !== null && change !== undefined && <> · <ChangePill change={change} /> عن الفترة السابقة</>}
+                        {change !== null && change !== undefined && <>، <ChangePill change={change} /> عن الفترة السابقة</>}
                     </span>
                 </div>
                 <div className="gl-sp" />

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { usePage } from '@inertiajs/react';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
-import { extractTable } from '@/lib/print';
+import { extractTable, pageTitle } from '@/lib/print';
 import { tableExcelPart } from '@/lib/tableExcel';
 
 function tableContainer(table) {
@@ -11,8 +11,8 @@ function tableContainer(table) {
 
 function tableToolbar(table, container) {
     const previous = container.previousElementSibling;
-    return (previous?.matches('.data-table-toolbar') ? previous : null)
-        ?? container.parentElement.querySelector(':scope > .data-table-toolbar')
+    return (previous?.matches('.data-table-toolbar, [data-table-toolbar]') ? previous : null)
+        ?? container.parentElement.querySelector(':scope > .data-table-toolbar, :scope > [data-table-toolbar]')
         ?? table.closest('section, article, [role="dialog"]')?.querySelector(':scope > .data-table-toolbar');
 }
 
@@ -51,7 +51,7 @@ export default function TableExcelActions() {
                 const slot = toolbar?.querySelector('[data-table-export-slot]');
                 if (slot?.querySelector('[data-auto-table-exports]')) return;
                 const section = table.closest('section, article, [role="dialog"]');
-                const title = table.getAttribute('aria-label') || section?.querySelector('h2, h3')?.textContent.trim() || document.querySelector('#main-content h1, #main-content h2')?.textContent.trim() || document.title;
+                const title = table.getAttribute('aria-label') || section?.querySelector('h2, h3')?.textContent.trim() || pageTitle();
                 const host = document.createElement('div');
                 host.dataset.autoTableExports = '';
                 host.className = slot ? 'flex items-center gap-2' : 'data-table-toolbar mb-2 flex justify-end gap-2';

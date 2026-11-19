@@ -22,13 +22,13 @@ export function PrintHeading({ subscription, caption }) {
                     <p className="text-sm text-gray-700">
                         {subscription.subscriberNumber && (
                             <>
-                                مشترك <bdi dir="ltr">{subscription.subscriberNumber}</bdi> ·{' '}
+                                مشترك <bdi dir="ltr">{subscription.subscriberNumber}</bdi>،{' '}
                             </>
                         )}
                         حساب <bdi dir="ltr">{subscription.accountNumber}</bdi>
-                        {subscription.tariffCategoryLabel && ` · ${subscription.tariffCategoryLabel}`}
+                        {subscription.tariffCategoryLabel && `، ${subscription.tariffCategoryLabel}`}
                         {subscription.tariffSegmentName && ` (${subscription.tariffSegmentName})`}
-                        {subscription.meterBoxNumber && ` · طبلون ${subscription.meterBoxNumber}`}
+                        {subscription.meterBoxNumber && `، طبلون ${subscription.meterBoxNumber}`}
                     </p>
                     <p className="text-xs text-gray-600">طُبع في {PRINTED_AT_FORMAT.format(new Date())}</p>
                 </div>

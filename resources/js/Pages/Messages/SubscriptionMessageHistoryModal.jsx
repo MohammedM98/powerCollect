@@ -42,10 +42,10 @@ export default function SubscriptionMessageHistoryModal({ subscription, onClose 
                         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600"><Icon name="messages" /></span>
                         <div className="min-w-0">
                             <h3 id={titleId} className="text-xl font-bold text-gray-900">سجل رسائل المشترك</h3>
-                            <p className="mt-1 text-sm text-gray-600">{subscription.display_name ?? subscription.fullName} · الاشتراك <bdi dir="ltr">{subscription.account_number ?? subscription.accountNumber}</bdi></p>
+                            <p className="mt-1 text-sm text-gray-600">{subscription.display_name ?? subscription.fullName}، الاشتراك <bdi dir="ltr">{subscription.account_number ?? subscription.accountNumber}</bdi></p>
                         </div>
                     </div>
-                    <button type="button" onClick={onClose} aria-label="إغلاق سجل الرسائل" className="rounded-control p-2 text-gray-500 transition hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900"><Icon name="close" className="h-5 w-5" /></button>
+                    <button type="button" onClick={onClose} aria-label="إغلاق سجل الرسائل" className="rounded-control p-2 text-gray-500 transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"><Icon name="close" className="h-5 w-5" /></button>
                 </header>
 
                 <div className="min-h-0 flex-1 overflow-y-auto bg-gray-50 px-5 py-5 sm:px-7" aria-busy={!current}>
@@ -74,7 +74,7 @@ export default function SubscriptionMessageHistoryModal({ subscription, onClose 
                                         <div className="flex flex-wrap items-center gap-3"><KindPill kind={message.kind} label={message.kindLabel} /><ChannelLabel channel={message.channel} label={message.channelLabel} /></div>
                                         <MessageStatusPill status={message.status} label={message.statusLabel} />
                                     </div>
-                                    <p className="whitespace-pre-wrap break-words py-4 text-base leading-8 text-gray-900">{message.body}</p>
+                                    <p className="whitespace-pre-wrap wrap-break-word py-4 text-base leading-8 text-gray-900">{message.body}</p>
                                     <dl className="grid gap-x-5 gap-y-3 border-t border-gray-100 pt-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
                                         <div><dt className="text-gray-500">رقم المستلم وقت الإرسال</dt><dd className="mt-1 font-semibold text-gray-800"><bdi dir="ltr">{message.phone}</bdi></dd></div>
                                         <div><dt className="text-gray-500">تاريخ التسجيل</dt><dd className="mt-1 text-gray-800">{dateTime(message.createdAt)}</dd></div>

@@ -41,13 +41,13 @@ function BranchCard({ branch, style }) {
                 <BranchMark isActive={branch.isActive} />
                 <div className="min-w-0 flex-1">
                     <h2 className="font-sans truncate text-xl font-bold text-gray-900">
-                        <Link href={`/branch-performance/${branch.id}`} className="outline-none after:absolute after:inset-0 after:rounded-panel">
+                        <Link href={`/branch-performance/${branch.id}`} className="outline-hidden after:absolute after:inset-0 after:rounded-panel">
                             {branch.name}
                         </Link>
                     </h2>
                     <p className="truncate text-xs text-gray-500">
                         {branchPlace(branch) || '—'}
-                        {!branch.isActive && ' · فرع متوقف'}
+                        {!branch.isActive && '، فرع متوقف'}
                     </p>
                 </div>
                 <span
@@ -117,7 +117,7 @@ export default function Index({ sort, summary, branches }) {
         <AuthenticatedLayout
             header={
                 <PageHeader
-                    eyebrow={`${formatNumber(summary.branches)} فروع · ${formatNumber(summary.activeBranches)} نشطة`}
+                    eyebrow={`${formatNumber(summary.branches)} فروع، ${formatNumber(summary.activeBranches)} نشطة`}
                     title="أداء الفروع"
                     info="إيرادات ونشاط وفريق كل فرع. اضغط على أي فرع لتفاصيل عمله اليومية."
                     actions={
@@ -132,7 +132,7 @@ export default function Index({ sort, summary, branches }) {
             <Head title="أداء الفروع" />
 
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-                <KpiTile icon="folder" label="إجمالي القيود" value={formatMoney(summary.chargesTotal)} unit="₪" hint="كل الفروع · منذ البداية" />
+                <KpiTile icon="folder" label="إجمالي القيود" value={formatMoney(summary.chargesTotal)} unit="₪" hint="كل الفروع، منذ البداية" />
                 <KpiTile
                     icon="users"
                     label="المشتركون النشطون"
@@ -143,7 +143,7 @@ export default function Index({ sort, summary, branches }) {
                     icon="chart"
                     label="إدخالات آخر 7 أيام"
                     value={formatNumber(summary.weekEntries)}
-                    hint={`${formatNumber(summary.todayEntries)} اليوم · مشتركون جدد وقراءات`}
+                    hint={`${formatNumber(summary.todayEntries)} اليوم، مشتركون جدد وقراءات`}
                 />
                 <KpiTile
                     icon="user"

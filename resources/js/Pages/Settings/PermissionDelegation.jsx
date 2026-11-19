@@ -154,7 +154,7 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                                                         يملكها
                                                         {grantsGiven[entry.id] > 0 && (
                                                             <>
-                                                                {' · '}
+                                                                {'، '}
                                                                 <b className="pm-grant-given">منحها لـ {grantsGiven[entry.id]}</b>
                                                             </>
                                                         )}

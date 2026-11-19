@@ -179,7 +179,7 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
                                 title={accent.label}
                                 onClick={() => setIn('table', 'accent', accent.value)}
                                 className={`h-8 w-8 rounded-full border-2 ${
-                                    layout.table.accent.toLowerCase() === accent.value.toLowerCase() ? 'border-gray-900 ring-2 ring-white ring-offset-2 ring-offset-gray-900' : 'border-white shadow'
+                                    layout.table.accent.toLowerCase() === accent.value.toLowerCase() ? 'border-gray-900 ring-2 ring-white ring-offset-2 ring-offset-gray-900' : 'border-white shadow-sm'
                                 } ${FOCUS_RING}`}
                                 style={{ backgroundColor: accent.value }}
                             />

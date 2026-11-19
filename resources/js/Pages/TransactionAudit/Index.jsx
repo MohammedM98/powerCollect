@@ -119,7 +119,7 @@ export default function Index({ events, period, counts, today, scopeLabel, filte
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 <KpiTile
                     hero
-                    label={`إجراءات على الحركات · ${caption}`}
+                    label={`إجراءات على الحركات، ${caption}`}
                     value={formatNumber(total)}
                     unit="إجراء"
                     hint={`منها ${formatNumber(counts.refund)} إرجاع`}
@@ -129,7 +129,7 @@ export default function Index({ events, period, counts, today, scopeLabel, filte
                     icon="repeat"
                     label="إلغاءات وتصحيحات"
                     value={formatNumber(counts.cancellation + counts.correction)}
-                    hint={`${formatNumber(counts.correction)} تصحيح · ${formatNumber(counts.cancellation)} إلغاء`}
+                    hint={`${formatNumber(counts.correction)} تصحيح، ${formatNumber(counts.cancellation)} إلغاء`}
                 />
                 <KpiTile icon="trash" label="حذف نهائي" value={formatNumber(counts.deletion)} hint="حركات أُزيلت من الكشف" />
             </div>
@@ -198,7 +198,7 @@ export default function Index({ events, period, counts, today, scopeLabel, filte
                                                     {event.subscription ? (
                                                         <RowIdentity
                                                             name={event.subscription.name}
-                                                            subtitle={`${event.subscription.accountNumber} · ${event.subscription.branchName}`}
+                                                            subtitle={`${event.subscription.accountNumber}، ${event.subscription.branchName}`}
                                                             status={STATUS_DOTS[event.subscription.status]}
                                                         />
                                                     ) : (
@@ -215,7 +215,7 @@ export default function Index({ events, period, counts, today, scopeLabel, filte
                                                                 {line.voucherNumber && (
                                                                     <span className="text-xs text-gray-500">
                                                                         {' '}
-                                                                        · سند <bdi dir="ltr">{line.voucherNumber}</bdi>
+                                                                       ، سند <bdi dir="ltr">{line.voucherNumber}</bdi>
                                                                     </span>
                                                                 )}
                                                             </span>

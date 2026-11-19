@@ -55,7 +55,7 @@ export default function PaperSheet({ sheet, cycle, boxes }) {
                     <div className="text-end">
                         <p>يوم القراءة: <b dir="ltr">{formatDate(cycle.readingDate)}</b></p>
                         <p>أسبوع: <span dir="ltr">{formatDate(cycle.weekStart)} → {formatDate(cycle.weekEnd)}</span></p>
-                        <p>{formatNumber(boxes.length)} طبلون · {formatNumber(total)} مشترك</p>
+                        <p>{formatNumber(boxes.length)} طبلون، {formatNumber(total)} مشترك</p>
                     </div>
                 </header>
 

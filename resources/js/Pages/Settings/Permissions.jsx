@@ -183,7 +183,7 @@ export default function Permissions({
                             }}
                         />
                     ) : (
-                        <div className="flex min-h-[20rem] flex-col items-center justify-center rounded-card border border-dashed border-gray-200 bg-surface p-8 text-center">
+                        <div className="flex min-h-80 flex-col items-center justify-center rounded-card border border-dashed border-gray-200 bg-surface p-8 text-center">
                             <Icon name="shield" className="h-10 w-10 text-gray-300" />
                             <p className="mt-3 text-sm font-medium text-gray-600">لا يوجد موظفون لإدارة صلاحياتهم.</p>
                         </div>

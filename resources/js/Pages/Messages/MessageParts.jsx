@@ -47,7 +47,7 @@ export function MessageStatusPill({ status, label }) {
     return <StatusPill tone={STATUS_TONES[status] ?? 'gray'} label={label} />;
 }
 
-/** "12 أُرسلت · 3 بانتظار الإرسال · 1 فشلت" for a send, leaving out the empty ones. */
+/** "12 أُرسلت، 3 بانتظار الإرسال، 1 فشلت" for a send, leaving out the empty ones. */
 export function DeliveryCounts({ batch }) {
     const parts = [
         { count: batch.sent, label: 'أُرسلت', className: 'text-emerald-700 dark:text-emerald-400' },

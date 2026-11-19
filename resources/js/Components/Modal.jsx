@@ -165,7 +165,7 @@ export default function Modal({ show, onClose, children, maxWidth = 'md', panelC
             <div
                 ref={panelRef}
                 tabIndex={-1}
-                className={`modal-sheet-panel animate-modal-panel relative m-auto w-full overflow-hidden rounded-panel outline-none ${maxWidthClass} ${panelClassName}`}
+                className={`modal-sheet-panel animate-modal-panel relative m-auto w-full overflow-hidden rounded-panel outline-hidden ${maxWidthClass} ${panelClassName}`}
             >
                 {children}
             </div>

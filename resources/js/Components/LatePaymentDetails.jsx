@@ -8,6 +8,6 @@ export default function LatePaymentDetails({ paidOn, recordedAt, reason, compact
         <StatusPill tone="amber" label="تسجيل متأخر" />
         <span className="block text-gray-700">الدفع الفعلي: <bdi dir="ltr" className="font-display">{formatDate(paidOn)}</bdi></span>
         <span className="block text-gray-500">التسجيل بالنظام: <bdi dir="ltr" className="font-display">{formatDate(recordedAt)}</bdi></span>
-        {!compact && reason && <span className="block break-words text-gray-600">سبب التأخير: {reason}</span>}
+        {!compact && reason && <span className="block wrap-break-word text-gray-600">سبب التأخير: {reason}</span>}
     </span>;
 }

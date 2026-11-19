@@ -3,10 +3,10 @@ import { useForm, useHttp } from '@inertiajs/react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
-import PrimaryButton from '@/Components/PrimaryButton';
+import { Button } from '@heroui/react';
 import { describeBalance } from '@/lib/accountStatement';
 import { formatMoney, normalizeDecimalInput } from '@/lib/format';
-import { balanceText, FieldLabel } from '@/Pages/Subscriptions/AccountFormParts';
+import { AmountBox, balanceText, FieldLabel } from '@/Pages/Subscriptions/AccountFormParts';
 import { inputClass } from '@/Pages/Subscriptions/PaymentModal';
 import { toCents, fromCents } from '@/lib/currency';
 import SplitAllocationMeter from './SplitAllocationMeter';
@@ -18,7 +18,7 @@ const SEARCH_DELAY = 300;
 /** The panel shown once the split is recorded: what was saved, and each part's receipt. */
 function RecordedSplit({ recorded, onAnother }) {
     return (
-        <div className="space-y-5 rounded-panel border border-emerald-500/30 bg-emerald-500/[0.06] p-6">
+        <div className="space-y-5 rounded-panel border border-emerald-500/30 bg-emerald-500/6 p-6">
             <div className="flex items-center gap-3">
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white">
                     <Icon name="check" className="h-6 w-6" />
@@ -26,7 +26,7 @@ function RecordedSplit({ recorded, onAnother }) {
                 <div>
                     <h3 className="text-xl font-bold text-gray-900">سُجّلت الدفعة المقسّمة</h3>
                     <p className="text-sm text-gray-600">
-                        {formatMoney(recorded.total)} ₪ · {recorded.bankName} · مرجع{' '}
+                        {formatMoney(recorded.total)} ₪، {recorded.bankName}، مرجع{' '}
                         <span dir="ltr" className="font-display font-semibold">
                             {recorded.reference}
                         </span>
@@ -53,10 +53,10 @@ function RecordedSplit({ recorded, onAnother }) {
                 ))}
             </ul>
 
-            <PrimaryButton type="button" onClick={onAnother}>
+            <Button onPress={onAnother} className="gl-sheet-btn is-primary">
                 <Icon name="plus" className="h-4 w-4" />
                 دفعة مقسّمة جديدة
-            </PrimaryButton>
+            </Button>
         </div>
     );
 }
@@ -68,7 +68,7 @@ function RecordedSplit({ recorded, onAnother }) {
  * transferred; the server records a payment on each subscription together,
  * or none.
  */
-export default function SplitPaymentForm({ transferBanks, senderBanks, bare = false, onDirtyChange, initialSubscription = null }) {
+export default function SplitPaymentForm({ transferBanks, senderBanks, onCancel = null, onDirtyChange, initialSubscription = null }) {
     const form = useForm({
         total_amount: '',
         bank_name: '',
@@ -224,46 +224,37 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, bare = fa
     }, [dirty, onDirtyChange]);
 
     if (recorded) {
-        return <RecordedSplit recorded={recorded} onAnother={() => setRecorded(null)} />;
+        return (
+            <div className="gl-sheet-body">
+                <RecordedSplit recorded={recorded} onAnother={() => setRecorded(null)} />
+            </div>
+        );
     }
 
-    const meterTone = distributed ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'border-amber-500/40 bg-amber-500/[0.08] text-gray-800';
+    const meterTone = distributed ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' : 'border-amber-500/40 bg-amber-500/8 text-gray-800';
 
     return (
-        <div className={`grid gap-[22px] ${bare ? '' : 'rounded-panel border border-gray-100 bg-surface p-5 shadow-card sm:p-6'}`}>
+        <>
+        <div className="gl-sheet-body">
             <div>
                 <FieldLabel htmlFor="split_total" required>
                     المبلغ المحوَّل (الإجمالي)
                 </FieldLabel>
-                <div
-                    className={`rounded-[22px] border-[1.5px] bg-surface px-[18px] py-4 transition ${
-                        errors.total_amount
-                            ? 'border-brand-500 shadow-[0_0_0_5px_rgb(var(--brand-500)/0.08)]'
-                            : 'border-gray-200 focus-within:border-brand-500 focus-within:shadow-[0_0_0_5px_rgb(var(--brand-500)/0.12)]'
-                    }`}
-                >
-                    <div className="flex items-center gap-3.5">
-                        <input
-                            id="split_total"
-                            autoFocus
-                            inputMode="decimal"
-                            autoComplete="off"
-                            placeholder="0.00"
-                            dir="ltr"
-                            value={data.total_amount}
-                            onChange={(event) => {
-                                setData('total_amount', normalizeDecimalInput(event.target.value));
-                                form.clearErrors('total_amount', 'parts');
-                            }}
-                            className="min-w-0 flex-1 border-0 bg-transparent p-0 text-end font-display text-[38px] font-extrabold leading-tight text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-0 sm:text-[44px]"
-                        />
-                        <span className="shrink-0 font-display text-[28px] font-bold text-gray-400" aria-hidden="true">
-                            ₪
-                        </span>
-                    </div>
-                </div>
+                <AmountBox
+                    id="split_total"
+                    autoFocus
+                    label="المبلغ المحوَّل (الإجمالي)"
+                    placeholder="0.00"
+                    unit="₪"
+                    value={data.total_amount}
+                    error={Boolean(errors.total_amount)}
+                    onChange={(event) => {
+                        setData('total_amount', normalizeDecimalInput(event.target.value));
+                        form.clearErrors('total_amount', 'parts');
+                    }}
+                />
                 {errors.total_amount && (
-                    <p role="alert" className="mt-2 flex items-center gap-1.5 text-[13.5px] text-brand-600">
+                    <p role="alert" className="mt-2 flex items-center gap-1.5 text-[13.5px] text-red-600">
                         <Icon name="info" className="h-[18px] w-[18px]" />
                         {errors.total_amount}
                     </p>
@@ -331,15 +322,26 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, bare = fa
                 <InputError message={errors.notes} className="mt-2" />
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-4">
-                <p className="max-w-xl text-[13.5px] text-gray-500">
-                    تُسجَّل <b className="text-gray-800">دفعة منفصلة لكل مشترك</b> في كشفه، وتُحفظ كلها معًا أو لا تُحفظ أيٌّ منها.
-                </p>
-                <PrimaryButton type="button" disabled={!canSave} onClick={() => setConfirmingSave(true)} className="h-12 px-6 text-[15px]">
-                    {parts.length >= 2 ? `تسجيل الدفعة على ${parts.length} مشتركين` : 'تسجيل الدفعة'}
-                    <Icon name="check" className="h-[18px] w-[18px]" />
-                </PrimaryButton>
-            </div>
+            <p className="flex items-start gap-2 text-[13px] text-gray-500">
+                <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>تُسجَّل <b className="text-gray-800">دفعة منفصلة لكل مشترك</b> في كشفه، وتُحفظ كلها معًا أو لا تُحفظ أيٌّ منها.</span>
+            </p>
+        </div>
+
+        <div className="gl-dialog-foot gl-sheet-foot">
+            <span className="gl-sheet-keys">
+                <b className="gl-num">{parts.length}</b> {parts.length === 1 ? 'مشترك' : 'مشتركين'}، موزّع <b className="gl-num">{formatMoney(fromCents(allocatedCents))}</b> من <b className="gl-num">{formatMoney(fromCents(totalCents))}</b> ₪
+            </span>
+            {onCancel && (
+                <Button onPress={onCancel} className="gl-sheet-btn">
+                    إلغاء
+                </Button>
+            )}
+            <Button isDisabled={!canSave} onPress={() => setConfirmingSave(true)} className="gl-sheet-btn is-submit">
+                <Icon name="check" className="h-[18px] w-[18px]" />
+                {parts.length >= 2 ? `تسجيل الدفعة على ${parts.length} مشتركين` : 'تسجيل الدفعة'}
+            </Button>
+        </div>
 
             <ConfirmDialog
                 show={confirmingSave}
@@ -350,6 +352,6 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, bare = fa
                 confirmLabel="نعم، سجّل"
                 icon="check"
             />
-        </div>
+        </>
     );
 }

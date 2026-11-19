@@ -4,24 +4,28 @@ import SearchableSelect from '@/Components/SearchableSelect';
 import Icon from '@/Components/Icon';
 import { childOptions, nestFilterGroups, parentChange, parentValue, scopedOptions, withStaleCleared } from '@/lib/filterGroups';
 
-/** One labelled dropdown in the filter row. */
-function FilterField({ group, value, onChange, placeholder = 'الكل', className = 'sm:w-44' }) {
+/** One filter as HeroUI's compact pill: its name (and the choice, once made) on a soft grey pill, in the company's colour while it narrows the table. */
+export function FilterField({ group, value, onChange, placeholder = '', clearable = true, icon = 'filter', isDefault = !value }) {
     return (
-        <div className={`flex w-full min-w-0 flex-col gap-1.5 ${className}`}>
-            <span className={`flex items-center gap-1.5 text-[13.5px] font-semibold ${value ? 'text-gray-900' : 'text-gray-700'}`}>
-                {group.label}
-                {value && <span className="h-1.5 w-1.5 rounded-full bg-brand-500" aria-hidden="true" />}
-            </span>
-            <SearchableSelect
-                value={value}
-                onChange={onChange}
-                options={group.options}
-                placeholder={placeholder}
-                searchPlaceholder={`بحث في ${group.label}...`}
-                emptyLabel="لا توجد نتائج"
-                active={Boolean(value)}
-            />
-        </div>
+        <SearchableSelect
+            variant="pill"
+            prefix={
+                <span className="gl-filter-name">
+                    <Icon name={icon} className="h-[15px] w-[15px]" />
+                    {group.label}
+                    {isDefault ? '' : ':'}
+                </span>
+            }
+            value={value}
+            onChange={onChange}
+            options={group.options}
+            placeholder={placeholder}
+            searchPlaceholder={`بحث في ${group.label}...`}
+            emptyLabel="لا توجد نتائج"
+            active={!isDefault}
+            clearable={clearable}
+            className="gl-filter-item"
+        />
     );
 }
 
@@ -83,7 +87,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
     const visibleGroups = topLevel.filter((group) => childOf[group.key] || visibleKeys.includes(group.key));
 
     return (
-        <div className="flex w-full flex-wrap items-end gap-3 border-t border-gray-100 pt-4">
+        <div className="gl-filter-row">
             {visibleGroups.map((group) => {
                 const child = childOf[group.key];
 
@@ -105,9 +109,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                         key={group.key}
                         role="group"
                         aria-label={group.label}
-                        className={`flex w-full min-w-0 flex-col gap-3 sm:w-auto sm:flex-row sm:items-end ${
-                            value ? '-my-2 rounded-2xl bg-brand-500/[0.04] px-2.5 py-2 ring-1 ring-inset ring-brand-500/20' : ''
-                        }`}
+                        className="gl-filter-pair"
                     >
                         <FilterField
                             group={{ ...group, options: scopedOptions(group, values) }}
@@ -132,17 +134,17 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                     type="button"
                     onClick={() => setOpen((current) => !current)}
                     aria-expanded={open}
-                    className="flex h-[var(--control-h)] items-center gap-2 rounded-control border border-gray-200 bg-surface px-3.5 text-sm font-semibold text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
+                    className="gl-filter-trigger"
                 >
-                    <Icon name="filter" className="h-4 w-4" />
+                    <Icon name="columns" className="h-4 w-4" />
                     الفلاتر الظاهرة
-                    <span className="rounded-md bg-gray-100 px-1.5 py-0.5 font-display text-[13px] text-gray-500">
+                    <span className="gl-filter-count gl-num">
                         {visibleKeys.length}/{hideable.length}
                     </span>
                 </button>
 
                 {open && (
-                    <div className="absolute end-0 z-20 mt-2 w-60 rounded-2xl border border-gray-100 bg-surface p-2 shadow-lift">
+                    <div className="absolute inset-e-0 z-20 mt-2 w-60 rounded-2xl p-2 gl-pop">
                         {hideable.map((group) => (
                             <label
                                 key={group.key}
@@ -158,7 +160,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                                 />
                                 <span
                                     aria-hidden="true"
-                                    className="relative h-5 w-9 shrink-0 rounded-full bg-gray-200 transition after:absolute after:start-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-surface after:shadow after:transition-all peer-checked:bg-brand-500 peer-checked:after:start-[18px] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-gray-900"
+                                    className="relative h-5 w-9 shrink-0 rounded-full bg-gray-200 transition after:absolute after:inset-s-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-surface after:shadow-sm after:transition-all peer-checked:bg-brand-500 peer-checked:after:inset-s-[18px] peer-focus-visible:outline-solid peer-focus-visible:outline-2 peer-focus-visible:outline-gray-900"
                                 />
                             </label>
                         ))}
@@ -170,7 +172,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                 <button
                     type="button"
                     onClick={onClear}
-                    className="h-[var(--control-h)] rounded-control px-3 text-sm font-semibold text-brand-600 transition hover:bg-brand-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900"
+                    className="gl-filter-clear"
                 >
                     مسح الفلاتر ({activeCount})
                 </button>

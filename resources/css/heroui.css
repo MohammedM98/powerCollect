@@ -1,0 +1,138 @@
+/*
+ * HeroUI v3 (docs/redesign/HEROUI-REDESIGN-GUIDE.md): the names its
+ * components read, drawn from this site's own palette (theme.css), so a
+ * HeroUI button, radio, switch or field looks like the rest of the site in
+ * both themes and in the company's colour.
+ *
+ * HeroUI's own theme file is not imported: it would redefine the colour
+ * and corner scales every page uses (`--color-surface`, `--radius-*`).
+ * Only the components each window needs are imported, in app.css.
+ */
+@theme inline {
+    --color-background: rgb(var(--panel-page));
+    --color-foreground: rgb(var(--panel-ink));
+
+    --color-surface-foreground: rgb(var(--panel-ink));
+    --color-surface-secondary: rgb(var(--panel-tile));
+    --color-surface-secondary-foreground: rgb(var(--panel-ink));
+    --color-surface-tertiary: rgb(var(--group-fill));
+    --color-surface-tertiary-foreground: rgb(var(--panel-ink));
+
+    --color-overlay: rgb(var(--panel-bg));
+    --color-overlay-foreground: rgb(var(--panel-ink));
+    --color-muted: rgb(var(--panel-muted));
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent-hover: var(--accent-hover);
+    --color-accent-soft: var(--accent-soft);
+    --color-accent-soft-foreground: var(--accent-soft-foreground);
+    --color-accent-soft-hover: var(--accent-soft-hover);
+
+    --color-default: var(--default);
+    --color-default-foreground: var(--default-foreground);
+    --color-default-hover: var(--default-hover);
+
+    --color-segment: rgb(var(--panel-bg));
+    --color-segment-foreground: rgb(var(--panel-ink));
+    --color-border: rgb(var(--gray-900) / 0.1);
+    --color-separator: rgb(var(--panel-line));
+    --color-focus: rgb(var(--brand-solid));
+    --color-link: rgb(var(--panel-ink));
+
+    --color-success: rgb(var(--success-600));
+    --color-success-foreground: #fff;
+    --color-warning: rgb(var(--warning-500));
+    --color-warning-foreground: rgb(var(--gray-900));
+    --color-danger: var(--danger);
+    --color-danger-foreground: var(--danger-foreground);
+    --color-danger-hover: var(--danger-hover);
+    --color-danger-soft: var(--danger-soft);
+    --color-danger-soft-foreground: var(--danger-soft-foreground);
+    --color-danger-soft-hover: var(--danger-soft-hover);
+    --color-success-soft: var(--success-soft);
+    --color-success-soft-foreground: var(--success-soft-foreground);
+    --color-warning-soft: var(--warning-soft);
+    --color-warning-soft-foreground: var(--warning-soft-foreground);
+    --color-default-soft: var(--default-soft);
+    --color-default-soft-foreground: var(--default-soft-foreground);
+
+    --color-backdrop: rgb(10 13 17 / 0.5);
+
+    --shadow-surface: var(--panel-shadow);
+    --shadow-overlay: 0 0 0 1px rgb(var(--gray-900) / 0.1), 0 24px 48px -12px rgb(0 0 0 / 0.35);
+    --shadow-field: var(--field-shadow);
+
+    --color-field: var(--field-background);
+    --color-field-hover: var(--field-hover);
+    --color-field-foreground: var(--field-foreground);
+    --color-field-placeholder: var(--field-placeholder);
+    --color-field-border: var(--field-border);
+    --color-field-focus: var(--field-focus);
+    --color-field-border-hover: var(--field-border-hover);
+    --color-field-border-focus: var(--field-border-focus);
+    --radius-field: calc(14px * var(--radius-scale, 1));
+    --border-width-field: var(--field-border-width);
+
+    --ease-smooth: ease;
+    --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+    --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+    --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-out-fluid: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root {
+    /* The company's colour marks a choice and keyboard focus (palette C); it never fills a button. */
+    --accent: rgb(var(--brand-solid));
+    --accent-foreground: #fff;
+    --accent-hover: color-mix(in oklab, rgb(var(--brand-solid)) 88%, #000);
+    --accent-soft: rgb(var(--brand-solid) / 0.12);
+    --accent-soft-foreground: rgb(var(--brand-600));
+    --accent-soft-hover: rgb(var(--brand-solid) / 0.18);
+
+    /* A quiet grey for side actions, tracks and tiles. */
+    --default: rgb(var(--group-fill));
+    --default-foreground: rgb(var(--group-ink));
+    --default-hover: rgb(var(--group-hover));
+
+    --danger: rgb(var(--danger-600));
+    --danger-foreground: #fff;
+    --danger-hover: color-mix(in oklab, rgb(var(--danger-600)) 86%, #000);
+    --danger-soft: rgb(var(--danger-600) / 0.12);
+    --danger-soft-foreground: rgb(var(--danger-700));
+    --danger-soft-hover: rgb(var(--danger-600) / 0.2);
+
+    /* Fields: white on the card with a soft shadow, a fine ring under the pointer, the company's ring while typing. */
+    --field-background: rgb(var(--panel-field));
+    --field-hover: rgb(var(--panel-field));
+    --field-focus: rgb(var(--panel-field));
+    --field-foreground: rgb(var(--panel-ink));
+    --field-placeholder: rgb(var(--gray-400) / 0.7);
+    --field-border: transparent;
+    --field-border-hover: var(--field-hover-ring);
+    --field-border-focus: rgb(var(--brand-solid));
+    --field-border-width: 0px;
+    --field-radius: calc(14px * var(--radius-scale, 1));
+
+    /* Soft fills for chips: a status in its colour, a quiet grey otherwise. */
+    --success-soft: rgb(var(--success-600) / 0.14);
+    --success-soft-foreground: rgb(var(--success-700));
+    --warning-soft: rgb(var(--warning-500) / 0.2);
+    --warning-soft-foreground: rgb(var(--warning-700));
+    --default-soft: rgb(var(--group-fill));
+    --default-soft-foreground: rgb(var(--panel-muted));
+
+    --ring-offset-width: 2px;
+    --disabled-opacity: 0.5;
+    --cursor-interactive: pointer;
+    --cursor-disabled: not-allowed;
+    --border-width: 1px;
+}
+
+.dark {
+    --success-soft-foreground: rgb(var(--success-400));
+    --warning-soft-foreground: rgb(var(--warning-400));
+    --danger: rgb(var(--danger-500));
+    --danger-soft-foreground: rgb(var(--danger-300));
+}

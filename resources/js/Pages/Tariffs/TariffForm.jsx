@@ -38,7 +38,7 @@ export default function TariffForm({ data, setData, errors, categoryOptions }) {
                 <InsetRow label="سعر الكيلوواط" htmlFor="rate" hint="بالشيكل، لكل وحدة مستهلكة" required error={errors.rate}>
                     <div className="flex w-full items-center gap-2">
                         <TextInput id="rate" type="number" step="0.01" inputMode="decimal" dir="ltr" placeholder="0.00" className="block w-full gl-num" value={data.rate} onChange={(e) => setData('rate', e.target.value)} />
-                        <span className="text-[color:var(--gl-faint)]">₪</span>
+                        <span className="text-(--gl-faint)">₪</span>
                     </div>
                 </InsetRow>
             </InsetList>

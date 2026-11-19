@@ -170,7 +170,7 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                         eyebrow={showBranchSelector ? <><Link href="/reading-cycles" className="hover:underline">الفروع</Link> / {cycle.branchName}</> : 'توزيع القراءة القادمة'}
                         title={<>قراءة {cycle.readingDayName} <span dir="ltr" className="font-display">{formatDate(cycle.readingDate)}</span></>}
                         titleAddon={<StatusPill tone={stage.tone} label={stage.label} />}
-                        meta={<>أسبوع القراءة <span dir="ltr">{formatDate(cycle.weekStart)}</span> — <span dir="ltr">{formatDate(cycle.weekEnd)}</span> · إتاحة المهام <span dir="ltr">{formatDate(cycle.availableOn)}</span>{cycle.readingDate !== cycle.weekEnd && ' · يوم القراءة مؤجل لهذه الدورة'}</>}
+                        meta={<>أسبوع القراءة <span dir="ltr">{formatDate(cycle.weekStart)}</span> — <span dir="ltr">{formatDate(cycle.weekEnd)}</span>، إتاحة المهام <span dir="ltr">{formatDate(cycle.availableOn)}</span>{cycle.readingDate !== cycle.weekEnd && '، يوم القراءة مؤجل لهذه الدورة'}</>}
                     />
                     <div className="flex shrink-0 flex-wrap items-center gap-2">
                         <SecondaryButton disabled={busy} onClick={() => setSummaryOpen(true)}>ملخّص توزيع الفرع</SecondaryButton>
@@ -211,7 +211,7 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                     filter={assignmentFilter} counts={{ all: boards.length, assigned: counters.mobile + counters.paper, available: counters.available }} onFilterChange={(value) => { setAssignmentFilter(value); setPage(1); }} />
                 <div className="flex min-w-0 flex-col gap-4">
                     {selectedBoxes.length > 0 && <section aria-label="الطبلونات المحددة" className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-brand-500/30 bg-surface p-4">
-                        <div><p role="status" className="text-sm text-gray-700"><b className="font-display text-lg text-brand-600">{formatNumber(selectedTotals.boxes)}</b> طبلون محدد · {formatNumber(selectedTotals.subscribers)} مشترك</p>{hiddenSelected > 0 && <p className="mt-1 text-xs text-amber-700">منها {formatNumber(hiddenSelected)} خارج النتائج الظاهرة.</p>}</div>
+                        <div><p role="status" className="text-sm text-gray-700"><b className="font-display text-lg text-brand-600">{formatNumber(selectedTotals.boxes)}</b> طبلون محدد، {formatNumber(selectedTotals.subscribers)} مشترك</p>{hiddenSelected > 0 && <p className="mt-1 text-xs text-amber-700">منها {formatNumber(hiddenSelected)} خارج النتائج الظاهرة.</p>}</div>
                         <div className="flex flex-wrap items-center gap-3"><button type="button" disabled={busy} onClick={() => setSelected(new Set())} className="text-[13.5px] font-semibold text-gray-700 hover:underline">إلغاء التحديد كله</button><PrimaryButton disabled={busy} onClick={() => setActionsOpen(true)}>{abilities.manage ? 'توزيع المحدد' : 'إجراء على المحدد'} ({formatNumber(selectedTotals.boxes)})</PrimaryButton></div>
                     </section>}
                     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -255,7 +255,7 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                         ) : <>
                         <DistributionTable boxes={pageBoxes} allBoxes={visibleBoxes} readers={readers} selected={selected} canSelect={abilities.manage || abilities.printSheets} busy={busy} onToggle={toggle} onToggleGroup={toggleColumn} />
                         {totalPages > 1 && <nav aria-label="صفحات الطبلونات" className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-gray-500">
-                            <span>الصفحة {formatNumber(currentPage)} من {formatNumber(totalPages)} · التحديد يشمل جميع صفحات النتائج</span>
+                            <span>الصفحة {formatNumber(currentPage)} من {formatNumber(totalPages)}، التحديد يشمل جميع صفحات النتائج</span>
                             <div className="flex gap-2"><SecondaryButton disabled={busy || currentPage === 1} onClick={() => setPage(currentPage - 1)}>السابق</SecondaryButton><SecondaryButton disabled={busy || currentPage === totalPages} onClick={() => setPage(currentPage + 1)}>التالي</SecondaryButton></div>
                         </nav>}
                         </>}
@@ -288,10 +288,10 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                             {paperSheets.map((sheet) => (
                                 <li key={sheet.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
                                     <span>
-                                        <b className="font-display" dir="ltr">{sheet.number}</b> · {formatNumber(sheet.boxes)} طبلون
+                                        <b className="font-display" dir="ltr">{sheet.number}</b>، {formatNumber(sheet.boxes)} طبلون
                                     </span>
                                     <span className="text-xs text-gray-500">
-                                        {sheet.printCount > 0 ? `طُبع ${formatNumber(sheet.printCount)} مرة · آخرها ${sheet.lastPrintedAt} (${sheet.lastPrintedBy})` : 'لم يُطبع بعد'}
+                                        {sheet.printCount > 0 ? `طُبع ${formatNumber(sheet.printCount)} مرة، آخرها ${sheet.lastPrintedAt} (${sheet.lastPrintedBy})` : 'لم يُطبع بعد'}
                                     </span>
                                     {abilities.printSheets && <Link href={`/paper-sheets/${sheet.id}?print=1`} className="text-sm font-semibold text-brand-600 hover:underline">طباعة وتخصيص</Link>}
                                 </li>
@@ -306,7 +306,7 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
             <ConfirmDialog
                 show={Boolean(pendingMove)}
                 title={pendingMove ? `نقل الطبلون ${pendingMove.box.number} إلى ${pendingMove.column.label}؟` : ''}
-                message={pendingMove && <><bdi>{pendingMove.box.name}</bdi> · {formatNumber(pendingMove.box.subscribers)} مشترك{pendingMove.box.downloaded && '. نزّل القارئ مهام هذا الطبلون؛ إن كان ذلك مانعًا ستظهر لك التفاصيل قبل النقل.'}</>}
+                message={pendingMove && <><bdi>{pendingMove.box.name}</bdi>، {formatNumber(pendingMove.box.subscribers)} مشترك{pendingMove.box.downloaded && '. نزّل القارئ مهام هذا الطبلون؛ إن كان ذلك مانعًا ستظهر لك التفاصيل قبل النقل.'}</>}
                 confirmLabel="نقل"
                 icon="layers"
                 onCancel={() => setPendingMove(null)}

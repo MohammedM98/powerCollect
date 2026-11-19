@@ -13,13 +13,13 @@ function eventDetails(event, reasonLabels) {
 
     switch (event.type) {
         case 'added':
-            return [`السبب: ${reasonLabels[after.reason] ?? after.reason}`, `الموعد: ${formatDate(after.scheduled_for)}`, `الرصيد عند الإدراج: ${balanceInText(after.balance)}`, after.note && `ملاحظة: ${after.note}`].filter(Boolean).join(' · ');
+            return [`السبب: ${reasonLabels[after.reason] ?? after.reason}`, `الموعد: ${formatDate(after.scheduled_for)}`, `الرصيد عند الإدراج: ${balanceInText(after.balance)}`, after.note && `ملاحظة: ${after.note}`].filter(Boolean).join('، ');
         case 'extended':
             return `من ${formatDate(before.scheduled_for)} إلى ${formatDate(after.scheduled_for)}`;
         case 'warned':
             return after.channel === 'whatsapp' ? 'عبر واتساب' : 'رسالة SMS';
         case 'disconnected':
-            return `رسوم القطع: ${formatMoney(after.fee)} ₪ · الخدمة: مفصول`;
+            return `رسوم القطع: ${formatMoney(after.fee)} ₪، الخدمة: مفصول`;
         default:
             return '';
     }
@@ -55,12 +55,12 @@ export default function HistoryModal({ history, loading, reasonOptions, onClose 
                         <ol className="relative space-y-5 border-s border-gray-200 ps-6">
                             {history.events.map((event) => (
                                 <li key={event.id} className="relative">
-                                    <span className="absolute -start-[35px] flex h-7 w-7 items-center justify-center rounded-full bg-graphite-gradient text-white">
+                                    <span className="absolute inset-s-[-35px] flex h-7 w-7 items-center justify-center rounded-full bg-graphite-gradient text-white">
                                         <Icon name={EVENT_ICONS[event.type] ?? 'history'} className="h-3.5 w-3.5" />
                                     </span>
                                     <p className="font-semibold text-gray-900">{event.typeLabel}</p>
                                     <p className="text-xs text-gray-500">
-                                        {event.userName} · <span dir="ltr">{event.at}</span>
+                                        {event.userName}، <span dir="ltr">{event.at}</span>
                                     </p>
                                     {eventDetails(event, reasonLabels) && <p className="mt-1 text-sm text-gray-700">{eventDetails(event, reasonLabels)}</p>}
                                     {event.reason && <p className="mt-1 text-sm text-gray-600">السبب: {event.reason}</p>}

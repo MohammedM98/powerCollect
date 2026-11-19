@@ -36,7 +36,7 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await expect(menu).toBeVisible();
         await expect(menu.locator('b').first()).toHaveText('دفعة');
         const description = menu.locator('b + span').first();
-        await expect(description).toHaveText(await payment.locator('td[data-label="البيان"]').innerText());
+        await expect(description).toHaveText(await payment.locator('td[data-label="البيان"] [data-line-description]').innerText());
         assert.equal(await description.evaluate((element) => getComputedStyle(element).whiteSpace), 'pre-wrap');
         const paymentActions = await menu.getByRole('menuitem').allTextContents();
         assert.ok(paymentActions.some((label) => label.startsWith('تعديل بيانات الدفعة')));
@@ -74,7 +74,7 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await charge.locator('td[data-label="البيان"]').click({ button: 'right' });
         await expect(menu).toHaveCount(1);
         await expect(menu.getByRole('menuitem', { name: /^إرجاع الدفعة|^تعديل بيانات الدفعة/ })).toHaveCount(0);
-        await charge.locator('td[data-label="اسم المستخدم"]').click();
+        await charge.locator('td[data-label="تاريخ الحركة"]').click();
         await expect(menu).toHaveCount(0);
 
         await page.setViewportSize({ width: 390, height: 844 });

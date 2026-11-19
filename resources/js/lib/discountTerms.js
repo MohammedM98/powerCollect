@@ -3,7 +3,7 @@ import { formatMoney } from './format.js';
 import { discountAmount } from './accountStatement.js';
 import { weeklyCharges } from './readings.js';
 
-/** The standing discount's methods, in the order they are offered (and picked with 1 · 2 · 3). */
+/** The standing discount's methods, in the order they are offered (and picked with 1، 2، 3). */
 export const METHOD_ORDER = ['percentage', 'kilowatt', 'shekel'];
 
 /** What the value field asks for: shekels off the balance once, or by method for the weekly readings discount. */
@@ -40,9 +40,9 @@ export function standingTerms(method, value) {
     return { percentage: `${amount}%`, kilowatt: `${amount} كيلو`, shekel: `${amount} شيكل من سعر الكيلو` }[method];
 }
 
-/** A standing discount's terms with the customer segment it is given to: "3 كيلو · موظفو أبو زايد". */
+/** A standing discount's terms with the customer segment it is given to: "3 كيلو، موظفو أبو زايد". */
 export function withSegment(terms, segment) {
-    return segment ? `${terms} · ${segment}` : terms;
+    return segment ? `${terms}، ${segment}` : terms;
 }
 
 /**

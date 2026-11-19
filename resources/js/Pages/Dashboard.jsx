@@ -4,31 +4,50 @@ import { urlWithout } from '@/lib/pageUrl';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useBranchView } from '@/hooks/useBranchView';
 import Icon from '@/Components/Icon';
-import LiveBars from '@/Components/LiveBars';
 import Panel from '@/Components/Panel';
 import { GoalRing } from '@/Components/StatRing';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
-import { formatNumber, percentOf } from '@/lib/format';
+import { formatMoney, formatNumber, percentOf } from '@/lib/format';
 import { formatWeekDay } from '@/lib/weekDays';
 import { LatestPayments } from './Dashboard/DashboardPanels';
 import DashboardWindows from './Dashboard/DashboardWindows';
 import DashboardHeader from './Dashboard/DashboardHeader';
-import DashboardFiguresColumn from './Dashboard/DashboardFiguresColumn';
+import { AttentionPanel, CollectionsHero, DebtorsPanel, MethodsPanel } from './Dashboard/DashboardFigures';
 import DashboardActions from './Dashboard/DashboardActions';
 import DashboardTiles from './Dashboard/DashboardTiles';
+
+/** Each branch's (or collector's) collections in the period, as a ranked list with a bar each. */
+function RankBars({ items }) {
+    const top = Math.max(0, ...items.map((item) => Number(item.total) || 0));
+
+    return (
+        <ol className="gl-rank">
+            {items.slice(0, 6).map((item, index) => (
+                <li key={item.name ?? index}>
+                    <span className="gl-rank-n gl-num">{index + 1}</span>
+                    <span className="gl-rank-name">{item.name}</span>
+                    <b className="gl-num">{formatMoney(item.total)} ₪</b>
+                    <i aria-hidden="true"><span style={{ width: `${top > 0 ? ((Number(item.total) || 0) / top) * 100 : 0}%` }} /></i>
+                </li>
+            ))}
+        </ol>
+    );
+}
 
 /** The period's name on the tabs and in sentences. */
 const periodLabel = (days) => (days === 7 ? '7 أيام' : `${days} يومًا`);
 
 /**
  * The home page: the figures of the branches the user looks after over
- * the chosen period. The quick actions lead, recording a payment first;
- * then the overview tiles (subscribers, meter boxes, amperes, debts), the
- * collections with their chart, what waits on someone, the weekly readings
- * and the latest payments. It follows Park UI's visual language (`gl-park`):
- * flat outlined cards, subtle badges and a raised segment thumb. The head of the company sees every branch and can
- * narrow to a governorate or a branch; everyone else sees their own
- * branch. Each part shows only to those who may open its page.
+ * the chosen period, laid out as in the redesign (docs/redesign): the
+ * greeting with the governorate, branch and period; the quick actions as
+ * pills, recording a payment first; what waits on someone beside the
+ * period's collections and their chart; the overview tiles (subscribers,
+ * meter boxes, amperes, debts); the largest debtors, the week's readings
+ * and the collections by branch; how people paid beside the subscribers by
+ * breaker; and the latest payments. The head of the company sees every
+ * branch and can narrow to a governorate or a branch; everyone else sees
+ * their own branch. Each part shows only to those who may open its page.
  *
  * @param {import('@/types/pages').DashboardProps} props
  */
@@ -125,7 +144,7 @@ export default function Dashboard({
     }
 
     const scopeLine = scope.company
-        ? `${scope.label} · ${formatNumber(scope.branches)} ${scope.branches === 1 ? 'فرع' : 'فروع'} في ${formatNumber(scope.governorates)} ${scope.governorates === 1 ? 'محافظة' : 'محافظات'}`
+        ? `${scope.label}، ${formatNumber(scope.branches)} ${scope.branches === 1 ? 'فرع' : 'فروع'} في ${formatNumber(scope.governorates)} ${scope.governorates === 1 ? 'محافظة' : 'محافظات'}`
         : scope.label;
 
     // "تسجيل دفعة" and "مشترك جديد" open over the dashboard; someone who can't open a statement records payments on the payments page.
@@ -143,6 +162,8 @@ export default function Dashboard({
         can?.sendMessages && { href: '/messages/create', icon: 'send', title: 'رسالة جديدة', subtitle: 'لمشترك أو مجموعة' },
         can?.viewReports && { href: '/reports', icon: 'receipt', title: 'التقارير', subtitle: 'تقرير الفترة وتنزيله' },
         can?.viewMeterBoxes && { href: '/meter-boxes', icon: 'table', title: 'الطبلونات', subtitle: 'أماكنها ومشتركوها' },
+        canCreateBranch ? { href: '/branches/create', onClick: () => openCreateForm('branch'), icon: 'building', title: 'فرع جديد', subtitle: 'إضافة فرع' }
+            : canCreateUser && { href: '/users/create', onClick: () => openCreateForm('user'), icon: 'user', title: 'مستخدم جديد', subtitle: 'إضافة مستخدم' },
     ].filter(Boolean);
 
     const attention = [
@@ -214,12 +235,10 @@ export default function Dashboard({
                     branchOptions={branchOptions}
                     branchScope={branchScope}
                     branchView={branchView}
-                    canCreateBranch={canCreateBranch}
-                    canCreateUser={canCreateUser}
                     filters={filters}
                     governorateOptions={governorateOptions}
                     greet={greet}
-                    openCreateForm={openCreateForm}
+                    periodOptions={periodOptions}
                     scope={scope}
                     scopeLine={scopeLine}
                     visit={visit}
@@ -231,7 +250,7 @@ export default function Dashboard({
                     <Panel index={1} className="py-14 text-center">
                         {fieldApp ? (
                             <>
-                                <span className="gl-ico mx-auto !w-[56px] !h-[56px] !text-[rgb(var(--gl-brand))]"><Icon name="phone" className="h-7 w-7" /></span>
+                                <span className="gl-ico mx-auto w-[56px]! h-[56px]! text-[rgb(var(--gl-brand))]!"><Icon name="phone" className="h-7 w-7" /></span>
                                 <h2 className="mt-4">حسابك للعمل الميداني</h2>
                                 <p className="gl-sub mx-auto mt-2 max-w-md leading-7">
                                     تُسجَّل الدفعات والقراءات من تطبيق التحصيل على الهاتف، وتدخل إليه بنفس اسم المستخدم وكلمة المرور. لا تظهر لك بيانات في الموقع.
@@ -244,52 +263,50 @@ export default function Dashboard({
                     </Panel>
                 ) : (
                     <>
+                        {(collections || attention.length > 0) && (
+                            <div className={`gl-dash-hero ${collections && attention.length > 0 ? '' : 'is-single'}`}>
+                                {attention.length > 0 && <AttentionPanel attention={attention} />}
+                                {collections && <CollectionsHero collections={collections} period={period} filters={filters} />}
+                            </div>
+                        )}
+
                         <DashboardTiles debts={debts} meterBoxes={meterBoxes} period={period} readings={readings} subscriptions={subscriptions} topBreaker={topBreaker} />
 
-                        <div className="gl-dash">
-                            <DashboardFiguresColumn
-                                attention={attention}
-                                can={can}
-                                collections={collections}
-                                debts={debts}
-                                filters={filters}
-                                methodParts={methodParts}
-                                openStatement={openStatement}
-                                period={period}
-                                periodOptions={periodOptions}
-                                visit={visit}
-                            />
+                        <div className="gl-grid gl-g3">
+                            <DebtorsPanel debts={debts} can={can} openStatement={openStatement} />
+                            {readings && (
+                                <Panel index={10} title="قراءات الأسبوع" sub={readings.week ? `بدأ ${formatWeekDay(readings.week)}` : 'آخر أسبوع قراءة'} right={can?.viewMeterReadings && <Link href="/meter-readings" className="gl-btn gl-sec gl-sm">فتح</Link>}>
+                                    <GoalRing percent={readShare} caption="معتمدة" />
+                                    <div className="gl-kv"><span>معتمدة</span><b className="gl-num">{formatNumber(readings.approved)}</b></div>
+                                    <div className="gl-kv"><span>بانتظار الاعتماد</span><b className="gl-num">{formatNumber(readings.pending)}</b></div>
+                                    <div className="gl-kv"><span>لم تُقرأ</span><b className="gl-num" style={{ color: readings.missing > 0 ? 'var(--gl-bad)' : undefined }}>{formatNumber(readings.missing)}</b></div>
+                                </Panel>
+                            )}
+                            {rankList && (
+                                <Panel index={11} title={collections.byBranch ? 'التحصيل حسب الفرع' : 'المحصّلون'} sub={`آخر ${period}`}>
+                                    <RankBars items={rankList} />
+                                    {boxes && <div className="gl-kv"><span>صناديق مفتوحة</span><b className="gl-num">{formatNumber(boxes.open)}</b></div>}
+                                    <div className="gl-kv"><span>دفعات اليوم</span><b className="gl-num">{formatNumber(collections.today.count)}</b></div>
+                                    {rankList[0] && <div className="gl-kv"><span>الأعلى</span><b className="truncate">{rankList[0].name}</b></div>}
+                                </Panel>
+                            )}
+                        </div>
 
-                            <div className="gl-col">
-                                {readings && (
-                                    <Panel index={10} title="قراءات الأسبوع" sub={readings.week ? `بدأ ${formatWeekDay(readings.week)}` : 'آخر أسبوع قراءة'} right={can?.viewMeterReadings && <Link href="/meter-readings" className="gl-pill gl-info">فتح</Link>}>
-                                        <GoalRing percent={readShare} caption="معتمدة" />
-                                        <div className="gl-kv"><span>معتمدة</span><b className="gl-num">{formatNumber(readings.approved)}</b></div>
-                                        <div className="gl-kv"><span>بانتظار الاعتماد</span><b className="gl-num">{formatNumber(readings.pending)}</b></div>
-                                        <div className="gl-kv"><span>لم تُقرأ</span><b className="gl-num" style={{ color: readings.missing > 0 ? 'var(--gl-bad)' : undefined }}>{formatNumber(readings.missing)}</b></div>
-                                    </Panel>
-                                )}
-                                {rankList && (
-                                    <Panel index={11} title={collections.byBranch ? 'التحصيل حسب الفرع' : 'المحصّلون'} sub={`آخر ${period}`}>
-                                        <LiveBars value={formatNumber(rankList.length)} bars={rankList.map((item) => Number(item.total) || 0)} label={collections.byBranch ? 'تحصيل كل فرع' : 'تحصيل كل موظف'}>
-                                            {boxes && <div className="gl-kv"><span>صناديق مفتوحة</span><b className="gl-num">{formatNumber(boxes.open)}</b></div>}
-                                            <div className="gl-kv"><span>دفعات اليوم</span><b className="gl-num">{formatNumber(collections.today.count)}</b></div>
-                                            {rankList[0] && <div className="gl-kv"><span>الأعلى</span><b className="truncate">{rankList[0].name}</b></div>}
-                                        </LiveBars>
-                                    </Panel>
-                                )}
+                        {(collections || hasBreakers) && (
+                            <div className={`gl-dash-pair ${collections && hasBreakers ? '' : 'is-single'}`}>
+                                {collections && <MethodsPanel collections={collections} methodParts={methodParts} period={period} />}
                                 {hasBreakers && (
                                     <Panel index={12} title="المشتركون حسب القاطع">
                                         {subscriptions.byBreaker.map((breaker, index) => (
                                             <div key={breaker.ampere} className="py-2">
-                                                <div className="gl-kv"><b>{breaker.ampere} أمبير</b><span className="gl-num">{formatNumber(breaker.count)} · {breaker.share}%</span></div>
+                                                <div className="gl-kv"><b>{breaker.ampere} أمبير</b><span className="gl-num">{formatNumber(breaker.count)}، {breaker.share}%</span></div>
                                                 <div className="gl-bar mt-2"><i style={{ width: `${breakerMax > 0 ? (breaker.count / breakerMax) * 100 : 0}%`, '--i': index }} /></div>
                                             </div>
                                         ))}
                                     </Panel>
                                 )}
                             </div>
-                        </div>
+                        )}
 
                         {payments && (
                             <LatestPayments

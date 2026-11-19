@@ -80,7 +80,7 @@ test('the unassigned sidebar provides status filters and shows the remaining box
     assert.match(html, /aria-pressed="true"[^>]*><span>غير موزع<\/span>/);
     assert.match(html, /الحي الشرقي/);
     assert.doesNotMatch(html, /الحي الغربي/);
-    assert.match(html, /1 طبلون مطابق · 5 مشترك/);
+    assert.match(html, /1 طبلون مطابق، 5 مشترك/);
     assert.match(html, /إجمالي المنطقة: 1 موزع، 1 غير موزع/);
 });
 

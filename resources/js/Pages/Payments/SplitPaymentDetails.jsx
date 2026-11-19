@@ -10,7 +10,7 @@ function Detail({ label, children, ltr = false }) {
     return (
         <div className="min-w-0 text-start">
             <dt className="text-[13px] font-semibold text-gray-500">{label}</dt>
-            <dd className="mt-0.5 break-words text-[15px] font-semibold text-gray-900">
+            <dd className="mt-0.5 wrap-break-word text-[15px] font-semibold text-gray-900">
                 {ltr ? <bdi dir="ltr">{children || '—'}</bdi> : children || '—'}
             </dd>
         </div>
@@ -89,7 +89,7 @@ export default function SplitPaymentDetails({ id, onClose }) {
                                             <div className="flex min-w-0 items-start gap-3">
                                                 <span className="w-5 shrink-0 pt-0.5 font-display text-xs text-gray-400">{index + 1}</span>
                                                 <div className="min-w-0">
-                                                    <b className={`block break-words ${part.isCancelled ? 'line-through' : 'text-gray-900'}`}>{part.subscriptionName}</b>
+                                                    <b className={`block wrap-break-word ${part.isCancelled ? 'line-through' : 'text-gray-900'}`}>{part.subscriptionName}</b>
                                                     <bdi dir="ltr" className="mt-1 block text-end font-display text-xs text-gray-500">{part.accountNumber}</bdi>
                                                     {part.isCancelled && <span className="mt-1 inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs font-bold text-gray-600">{part.cancellationLabel ?? 'ملغاة'}</span>}
                                                 </div>

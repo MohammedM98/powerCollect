@@ -35,7 +35,7 @@
 .subscription-profile button:disabled { opacity: .4; cursor: not-allowed; }
 .subscription-profile button:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
 .subscription-profile svg { width: 18px; height: 18px; flex: none; }
-.subscription-profile .sp-number { font-family: Alexandria, sans-serif; font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }
+.subscription-profile .sp-number { font-family: var(--font-body, 'Zain'), sans-serif; font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }
 .sp-header { position: relative; flex: none; padding: 14px 20px 0; background: linear-gradient(150deg, rgb(var(--gl-brand) / 0.22), transparent 62%); color: var(--gl-ink); border-bottom: 1px solid var(--gl-line); isolation: isolate; }
 .sp-top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .sp-avatar { position: relative; width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--gl-fill-2); border: 1px solid var(--gl-line); font: 700 16px var(--gl-head); }
@@ -74,8 +74,8 @@
 .sp-quick-actions { display: flex; gap: 6px; margin: 0 0 8px auto; }
 .sp-quick-actions button { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 10px; border: 1px solid var(--gl-line); border-radius: calc(11px * var(--radius-scale, 1)); color: var(--gl-ink); background: var(--gl-fill); font-weight: 700; font-size: 14px; }
 .sp-quick-actions svg { width: 16px; height: 16px; }
-.sp-quick-actions .sp-pay { padding: 0 14px; border: 0; color: rgb(var(--brand-ink)); background: rgb(var(--gl-btn)); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18); border-radius: calc(10px * var(--radius-scale, 1)); }
-.sp-quick-actions .sp-pay:hover { background: color-mix(in srgb, rgb(var(--gl-btn)) 84%, rgb(var(--brand-lo))); }
+.sp-quick-actions .sp-pay { padding: 0 14px; border: 0; color: #fff; background: rgb(var(--tone-pay-solid)); box-shadow: none; border-radius: calc(20px * var(--radius-scale, 1)); }
+.sp-quick-actions .sp-pay:hover { background: color-mix(in srgb, rgb(var(--tone-pay-solid)) 86%, #000); }
 .sp-body { flex: 1; min-height: 0; overflow: auto; padding: 20px 22px 24px; }
 .sp-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .sp-section { border: 1px solid var(--sp-line-soft); border-radius: calc(20px * var(--radius-scale, 1)); padding: 14px 16px; background: var(--sp-surface); min-width: 0; }
@@ -103,16 +103,16 @@
 .sp-notice b { display: block; }
 .sp-footer { display: flex; align-items: center; gap: 10px; flex: none; padding: 12px 22px; border-top: 1px solid var(--sp-line-soft); background: var(--sp-raised); }
 .sp-shortcuts { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12.5px; color: var(--sp-muted); }
-.sp-shortcuts kbd { font: 600 12px Alexandria, sans-serif; border: 1px solid var(--sp-line); border-bottom-width: 2px; border-radius: calc(6px * var(--radius-scale, 1)); padding: 0 6px; background: var(--sp-surface); }
+.sp-shortcuts kbd { font: 600 12px var(--font-body, 'Zain'), sans-serif; border: 1px solid var(--sp-line); border-bottom-width: 2px; border-radius: calc(6px * var(--radius-scale, 1)); padding: 0 6px; background: var(--sp-surface); }
 .sp-footer-actions { margin-inline-start: auto; display: flex; gap: 8px; flex: none; }
 .sp-button { height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 16px; border: 1px solid var(--sp-line); border-radius: calc(13px * var(--radius-scale, 1)); background: var(--sp-surface); color: var(--sp-ink-secondary); font: 700 15px var(--font-body, 'IBM Plex Sans Arabic'), sans-serif; }
 .sp-button:hover { background: var(--sp-sunken); }
-.sp-button.sp-primary { border: 0; color: rgb(var(--brand-ink)); background: rgb(var(--gl-btn)); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18); border-radius: calc(10px * var(--radius-scale, 1)); }
+.sp-button.sp-primary { border: 0; color: rgb(var(--action-ink)); background: rgb(var(--action)); box-shadow: none; border-radius: calc(20px * var(--radius-scale, 1)); }
 .sp-button.sp-primary:hover { filter: brightness(1.07); }
 .sp-account-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .sp-account-summary > div { border: 1px solid var(--sp-line-soft); border-radius: calc(16px * var(--radius-scale, 1)); padding: 12px 14px; background: var(--sp-raised); }
 .sp-account-summary small { display: block; font-size: 12.5px; color: var(--sp-muted); font-weight: 600; }
-.sp-account-summary b { display: inline-block; direction: ltr; font: 800 20px/1.7 Alexandria, sans-serif; }
+.sp-account-summary b { display: inline-block; direction: ltr; font: 800 20px/1.7 var(--font-body, 'Zain'), sans-serif; }
 .sp-credit { color: var(--sp-success); }
 .sp-owes { color: var(--sp-danger); }
 .sp-account-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 16px 0 10px; }
@@ -127,7 +127,7 @@
 .sp-statement tr:hover td { background: var(--sp-raised); }
 .sp-statement .sp-amount-column { text-align: left; white-space: nowrap; }
 .sp-statement .sp-number { display: inline-block; font-size: 13.5px; }
-.sp-date { display: block; direction: ltr; font: 600 12px/1.6 Alexandria, sans-serif; white-space: nowrap; }
+.sp-date { display: block; direction: ltr; font: 600 12px/1.6 var(--font-body, 'Zain'), sans-serif; white-space: nowrap; }
 .sp-date small, .sp-cancellation { display: block; color: var(--sp-muted); font-size: 12px; }
 /* Lines that belong together (a line, its cancellation, its correction, a reading's discount) share a colour, lit together on hover. */
 .sp-statement tr[data-chain] td { background: rgb(var(--sp-chain) / 0.05); }
@@ -153,7 +153,7 @@
 .sp-chart i { display: block; width: 100%; max-width: 34px; border-radius: calc(7px * var(--radius-scale, 1)) calc(7px * var(--radius-scale, 1)) calc(3px * var(--radius-scale, 1)) calc(3px * var(--radius-scale, 1)); background: linear-gradient(180deg, rgb(var(--brand-bright)), rgb(var(--brand-lo))); opacity: .6; }
 .sp-chart > div:last-child i { opacity: 1; }
 .sp-chart small { font-size: 12px; color: var(--sp-muted); }
-.sp-chart b { font: 700 12px Alexandria, sans-serif; color: var(--sp-ink-secondary); }
+.sp-chart b { font: 700 12px var(--font-body, 'Zain'), sans-serif; color: var(--sp-ink-secondary); }
 .sp-reading-footer { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; color: var(--sp-muted); font-size: 12.5px; }
 @media (max-width: 1000px) { .sp-tools { margin-inline-start: auto; } .sp-balance > b { font-size: 20px; } }
 @media (max-width: 860px) { .sp-columns { grid-template-columns: 1fr; } .sp-account-summary { grid-template-columns: 1fr 1fr; } .sp-shortcuts { display: none; } .sp-top { gap: 10px; } .sp-identity { flex-basis: calc(100% - 70px); } }

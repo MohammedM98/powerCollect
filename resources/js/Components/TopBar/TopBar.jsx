@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import BrandLogo from '@/Components/BrandLogo';
@@ -5,10 +6,35 @@ import ActivityBell from '@/Components/ActivityBell';
 import { useBrand } from '@/hooks/useBrand';
 import { shouldPrefetchPage, HOME_LINK, currentGroup, topBarItems } from '@/lib/navigation';
 import MegaMenu, { megaWidth } from './MegaMenu';
-import AccountMenu, { Avatar } from './AccountMenu';
+import AccountMenu, { LogoutForm } from './AccountMenu';
 import { useTheme } from '@/hooks/useTheme';
 import './top-bar.css';
 import { useMegaMenu } from './useMegaMenu';
+
+const SIDE_KEY = 'side';
+
+/** The side bar's width the user chose: a narrow rail of icons (the default) or wide with the sections' names. */
+function useSideWidth() {
+    const [wide, setWide] = useState(() => {
+        try {
+            return localStorage.getItem(SIDE_KEY) === 'wide';
+        } catch {
+            return false;
+        }
+    });
+
+    useEffect(() => {
+        document.documentElement.dataset.side = wide ? 'wide' : 'rail';
+
+        try {
+            localStorage.setItem(SIDE_KEY, wide ? 'wide' : 'rail');
+        } catch {
+            // A browser that keeps nothing still gets the chosen width for this visit.
+        }
+    }, [wide]);
+
+    return [wide, setWide];
+}
 
 /** How many things wait in a section's pages, from the page's badges. */
 function badgeOf(group, badges) {
@@ -37,7 +63,8 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
     const items = topBarItems(groups);
     const current = currentGroup(groups, url);
     const currentScope = props.branchView?.current ? branchLabel : where?.scope;
-    const pageLabel = where ? (currentScope ? [where.page, currentScope] : [where.section, where.page]).filter(Boolean).join(' · ') : null;
+    const pageLabel = where ? (currentScope ? [where.page, currentScope] : [where.section, where.page]).filter(Boolean).join('، ') : null;
+    const [wideSide, setWideSide] = useSideWidth();
     const searchText = props.can?.recordPayments && props.can?.viewSubscriptions ? 'ابحث عن صفحة أو مشترك…' : 'ابحث عن صفحة أو أمر…';
 
     const { scrolled, clearTimers, closeMega, currentKey, geometry, highlightRef, hoverItem, itemRefs, leaveZone, litKey, megaRef, navRef, onMegaKeyDown, onSectionClick, onSectionKeyDown, openGroup, openId, panelRef, panels, pointerType, popover, setHoverKey, setPopover, still, togglePopover } = useMegaMenu({ current, groups, items, layerOpen, url });
@@ -49,6 +76,16 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                     <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-side-logo" aria-label={`${companyName}، الصفحة الرئيسية`}>
                         <BrandLogo alt="" markSize={40} className="h-10 w-auto max-w-[56px] object-contain" />
                     </Link>
+                    <button
+                        type="button"
+                        className="tn-side-pin"
+                        onClick={() => setWideSide(!wideSide)}
+                        aria-pressed={wideSide}
+                        aria-label={wideSide ? 'إلغاء تثبيت الشريط الجانبي' : 'تثبيت الشريط الجانبي مفتوحًا'}
+                        title={wideSide ? 'إلغاء التثبيت' : 'تثبيت الشريط مفتوحًا'}
+                    >
+                        <Icon name="thumbtack" />
+                    </button>
                     <nav
                         ref={navRef}
                         className="tn-sections"
@@ -82,7 +119,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             const register = (element) => (element ? itemRefs.current.set(item.key, element) : itemRefs.current.delete(item.key));
 
                             if (item.link) {
-                                return (
+                                return [
                                     <Link
                                         key={item.key}
                                         ref={register}
@@ -97,10 +134,11 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                                         onKeyDown={(event) => onSectionKeyDown(event, item)}
                                     >
                                         <Icon name={item.link.icon} className="tn-section-icon" />
-                                        <span>{item.link.label}</span>
+                                        <span className="tn-section-label">{item.link.label}</span>
                                         {badges[item.link.href] > 0 && <span className="tn-badge" aria-hidden="true">{badges[item.link.href]}</span>}
-                                    </Link>
-                                );
+                                    </Link>,
+                                    index === 0 && items.length > 1 ? <span key="heading" className="tn-side-heading" aria-hidden="true">الأقسام</span> : null,
+                                ];
                             }
 
                             const badge = badgeOf(item.group, badges);
@@ -118,14 +156,14 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                                     aria-expanded={openId === item.group.id}
                                     aria-controls="tn-mega"
                                     aria-current={isCurrent ? 'true' : undefined}
-                                    title={`${item.group.label} · Alt+${index + 1}`}
+                                    title={`${item.group.label}، Alt+${index + 1}`}
                                     onPointerDown={(event) => { pointerType.current = event.pointerType; }}
                                     onClick={(event) => onSectionClick(event, item.group)}
                                     onKeyDown={(event) => onSectionKeyDown(event, item)}
                                 >
                                     <Icon name={item.group.icon} className="tn-section-icon" />
-                                    <span aria-hidden="true">{item.group.shortLabel}</span>
-                                    <span className="sr-only">{item.group.label}</span>
+                                    <span className="tn-section-short" aria-hidden="true">{item.group.shortLabel}</span>
+                                    <span className="tn-section-full">{item.group.label}</span>
                                     {badge > 0 && (
                                         <>
                                             <span className="tn-badge" aria-hidden="true">{badge}</span>
@@ -137,9 +175,18 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                         })}
                     </nav>
 
-                    <Link href="/profile" prefetch={shouldPrefetchPage('/profile')} className="tn-side-account" aria-label={`${user?.name ?? ''}، الملف الشخصي`}>
-                        <Avatar name={user?.name} />
-                    </Link>
+                    <div className="tn-side-foot">
+                        <Link href="/profile" prefetch={shouldPrefetchPage('/profile')} className="tn-section" aria-current={url.startsWith('/profile') ? 'page' : undefined} data-current={url.startsWith('/profile') || undefined} title="الملف الشخصي">
+                            <Icon name="user-circle" className="tn-section-icon" />
+                            <span className="tn-section-label">الملف الشخصي</span>
+                        </Link>
+                        <LogoutForm>
+                            <button type="submit" className="tn-section" title="تسجيل الخروج">
+                                <Icon name="door" className="tn-section-icon" />
+                                <span className="tn-section-label">خارج النظام</span>
+                            </button>
+                        </LogoutForm>
+                    </div>
                 </aside>
 
                 <div className="tn-bar">
@@ -154,13 +201,19 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                                 </span>
                             </span>
                         </Link>
-                        {where && <span key={where.page} className="tn-where" aria-hidden="true">{[where.page, where.scope].filter(Boolean).join(' · ')}</span>}
+                        {where && <span key={where.page} className="tn-where" aria-hidden="true">{[where.page, where.scope].filter(Boolean).join('، ')}</span>}
                     </div>
 
                     <div className="tn-tools flex items-center gap-1">
                         {branchChip}
+                        {props.can?.recordPayments && (
+                            <Link href="/payments" prefetch={shouldPrefetchPage('/payments')} className="tn-pay" aria-keyshortcuts="N" title="تسجيل دفعة، N">
+                                <Icon name="banknotes" />
+                                تسجيل دفعة
+                            </Link>
+                        )}
                         {/* Named by the words it shows, so a voice command that says them reaches it, even when the narrow bar hides them. */}
-                        <button type="button" className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label={`${searchText} Ctrl K`} aria-keyshortcuts="Control+K" title="بحث وأوامر · Ctrl K">
+                        <button type="button" className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label={`${searchText} Ctrl K`} aria-keyshortcuts="Control+K" title="بحث وأوامر، Ctrl K">
                             <Icon name="search" />
                             <span className="tn-search-text flex-1 text-start">{searchText}</span>
                             <span className="tn-kbd" dir="ltr">Ctrl K</span>

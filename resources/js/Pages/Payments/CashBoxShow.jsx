@@ -18,7 +18,7 @@ const destinations = { cash: 'خزنة الفرع', bank_transfer: 'حساب ا�
 function otherCurrencies(amounts) {
     const lines = Object.keys(currencies).filter((currency) => currency !== 'ILS' && Number(amounts?.[currency] ?? 0) !== 0).map((currency) => `${formatMoney(amounts[currency])} ${currencies[currency]}`);
 
-    return lines.length ? lines.join(' · ') : undefined;
+    return lines.length ? lines.join('، ') : undefined;
 }
 
 /**
@@ -64,7 +64,7 @@ export default function CashBoxShow({ box, entries, collectionUrls, pendingCount
                 {box.rejectedCount > 0 && <p className="rounded-control bg-red-500/5 p-3 text-sm leading-7 text-red-700">{box.type === 'clearing' ? 'رفض الفرع بعض المقاصات في هذا الصندوق.' : 'لم يجد الفرع بعض هذه الحوالات في البنك.'} يراجعها مسؤول الفرع وقد يتواصل معك بشأنها؛ لا يلزمك إجراء هنا.</p>}
                 {/* The printout reads the page's first table, which must be the entries. */}
                 {cash && !printing && <CountSummary box={box} />}
-                {printing && <p className="data-table-totals">{`صندوق ${box.number} · ${boxTypes[box.type]} · فُتح ${dateTime(box.openedAt)} · أُغلق ${dateTime(box.closedAt)} · ${box.paymentCount} حركات · الإجمالي ${formatMoney(box.totals?.ILS ?? 0)} شيكل · المستلم ${formatMoney(box.receivedAmounts?.ILS ?? 0)} شيكل${box.closedBy ? ` · أغلقه ${box.closedBy}` : ''}`}</p>}
+                {printing && <p className="data-table-totals">{`صندوق ${box.number}، ${boxTypes[box.type]}، فُتح ${dateTime(box.openedAt)}، أُغلق ${dateTime(box.closedAt)}، ${box.paymentCount} حركات، الإجمالي ${formatMoney(box.totals?.ILS ?? 0)} شيكل، المستلم ${formatMoney(box.receivedAmounts?.ILS ?? 0)} شيكل${box.closedBy ? `، أغلقه ${box.closedBy}` : ''}`}</p>}
             </section>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <KpiTile icon="wallet" label="إجمالي الصندوق" value={formatMoney(box.totals?.ILS ?? 0)} unit="₪" hint={otherCurrencies(box.totals)} />

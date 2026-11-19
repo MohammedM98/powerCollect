@@ -20,7 +20,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                             layout.columns.map((column) => ({ ...column, visible: true })),
                         )
                     }
-                    className="flex-1 !px-2 !py-1.5 text-xs"
+                    className="flex-1 px-2! py-1.5! text-xs"
                 >
                     إظهار الكل
                 </SecondaryButton>
@@ -31,7 +31,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                             layout.columns.map((column) => ({ ...column, visible: false })),
                         )
                     }
-                    className="flex-1 !px-2 !py-1.5 text-xs"
+                    className="flex-1 px-2! py-1.5! text-xs"
                 >
                     إخفاء الكل
                 </SecondaryButton>
@@ -67,7 +67,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                     value={column.label}
                                     onChange={(e) => setColumn(index, { label: e.target.value })}
                                     aria-label={`اسم العمود «${column.key}» في الطباعة`}
-                                    className={`block min-w-0 flex-1 !py-1 text-sm ${column.visible ? '' : 'text-gray-400'}`}
+                                    className={`block min-w-0 flex-1 py-1! text-sm ${column.visible ? '' : 'text-gray-400'}`}
                                 />
                                 {column.extra && (
                                     <span className="shrink-0 rounded-full bg-sky-500/10 px-2 py-0.5 text-[11px] font-semibold text-sky-800">
@@ -111,7 +111,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                             step="1"
                                             value={column.width ?? 0}
                                             onChange={(event) => setColumn(index, { width: Math.max(0, Math.min(120, Number(event.target.value))) })}
-                                            className="w-20 !py-0.5 text-xs"
+                                            className="w-20 py-0.5! text-xs"
                                             aria-label={`عرض عمود ${column.label}`}
                                         />
                                         <span>0 تلقائي</span>
@@ -132,7 +132,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                                 aria-label={`السطر الإضافي لعمود ${column.label}`}
                                                 value={column.secondaryKey ?? ''}
                                                 onChange={(event) => setColumn(index, { secondaryKey: event.target.value })}
-                                                className="max-w-44 !py-0.5 text-xs"
+                                                className="max-w-44 py-0.5! text-xs"
                                             >
                                                 <option value="">بدون</option>
                                                 {layout.columns
@@ -150,7 +150,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                         <select
                                             value={column.align}
                                             onChange={(e) => setColumn(index, { align: e.target.value })}
-                                            className="!py-0.5 text-xs"
+                                            className="py-0.5! text-xs"
                                         >
                                             {ALIGNMENTS.map((alignment) => (
                                                 <option key={alignment.value} value={alignment.value}>

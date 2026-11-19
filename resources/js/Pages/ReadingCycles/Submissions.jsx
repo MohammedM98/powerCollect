@@ -29,7 +29,7 @@ export default function Submissions({ cycle, submissions, canReview, filters, fi
         <AuthenticatedLayout
             header={
                 <PageHeader
-                    eyebrow={<><Link href="/reading-cycles" className="hover:underline">توزيع القراءات</Link> / <Link href={`/reading-cycles/${cycle.id}`} className="hover:underline">{cycle.branchName} · {cycle.readingDate}</Link></>}
+                    eyebrow={<><Link href="/reading-cycles" className="hover:underline">توزيع القراءات</Link> / <Link href={`/reading-cycles/${cycle.id}`} className="hover:underline">{cycle.branchName}، {cycle.readingDate}</Link></>}
                     title="القراءات الميدانية"
                     info="كل قراءة رفعها التطبيق ومصيرها. المحفوظة للمراجعة لا تُحتسب حتى يقبلها مشرف."
                 />
@@ -87,7 +87,7 @@ export default function Submissions({ cycle, submissions, canReview, filters, fi
                                     {canReview && (
                                         <td data-label="المراجعة">
                                             {submission.status === 'needs_review' ? (
-                                                <div className="flex min-w-[14rem] flex-col gap-2">
+                                                <div className="flex min-w-56 flex-col gap-2">
                                                     <input type="text" placeholder="ملاحظة (اختياري)" value={notes[submission.id] ?? ''} onChange={(event) => setNotes((current) => ({ ...current, [submission.id]: event.target.value }))} className="block w-full text-xs" />
                                                     <div className="flex gap-2">
                                                         <button type="button" onClick={() => review(submission, 'accept')} className="rounded-control bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700">قبول كقراءة الأسبوع</button>

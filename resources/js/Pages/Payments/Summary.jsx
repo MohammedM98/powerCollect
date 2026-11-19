@@ -67,7 +67,7 @@ function TodaysPayments({ today }) {
                             <span className="min-w-0 flex-1 basis-48 font-semibold text-gray-900">{payment.subscriptionName}</span>
                             <span className="text-gray-500">
                                 {payment.methodLabel}
-                                {payment.bankName && ` · ${payment.bankName}`}
+                                {payment.bankName && `، ${payment.bankName}`}
                             </span>
                             {payment.voucherNumber && (
                                 <span dir="ltr" className="font-display text-xs text-gray-500">
@@ -129,7 +129,7 @@ export default function Summary({ today, cashBox, current, entries, filters, cou
         {cashBox.started ? <div className="space-y-8">
             {needsAction.length > 0 && <section className="space-y-3 rounded-panel border border-amber-500/25 bg-amber-500/5 p-5">
                 <h3 className="font-bold text-gray-900">تحتاج إجراء منك</h3>
-                {needsAction.map((box) => <div key={box.id} className="flex flex-wrap items-center justify-between gap-3 border-t border-amber-500/15 pt-3"><div className="flex items-center gap-3"><BoxTypeIcon type={box.type} className="h-10 w-10" /><div className="space-y-2"><Link href={box.urls.show} prefetch className="font-semibold text-gray-900">{boxTypes[box.type]} · <bdi dir="ltr" className="font-display text-xs">{box.number}</bdi></Link><BoxStage box={box} /></div></div><PrimaryButton onClick={() => setSelected({ box, action: boxAction(box) })}>{actionLabel(box)}</PrimaryButton></div>)}
+                {needsAction.map((box) => <div key={box.id} className="flex flex-wrap items-center justify-between gap-3 border-t border-amber-500/15 pt-3"><div className="flex items-center gap-3"><BoxTypeIcon type={box.type} className="h-10 w-10" /><div className="space-y-2"><Link href={box.urls.show} prefetch className="font-semibold text-gray-900">{boxTypes[box.type]}، <bdi dir="ltr" className="font-display text-xs">{box.number}</bdi></Link><BoxStage box={box} /></div></div><PrimaryButton onClick={() => setSelected({ box, action: boxAction(box) })}>{actionLabel(box)}</PrimaryButton></div>)}
             </section>}
             <CollectorAuditNotes notes={cashBox.auditNotes} onSaved={() => setSaved('أُرسل ردّك إلى الفرع.')} />
             <CollectorDebts debts={cashBox.debts} />

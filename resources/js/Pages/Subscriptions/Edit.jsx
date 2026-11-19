@@ -1,6 +1,6 @@
 import FormPage from '@/Components/FormPage';
 import { useResourceForm } from '@/hooks/useResourceForm';
-import SubscriptionForm from './SubscriptionForm';
+import SubscriptionForm, { SUBSCRIPTION_OUTLINE } from './SubscriptionForm';
 import { subscriptionFormData } from '@/lib/subscriptionForm';
 
 export default function Edit({
@@ -19,7 +19,7 @@ export default function Edit({
     const form = useResourceForm('/subscriptions', subscription, subscriptionFormData(subscription));
 
     return (
-        <FormPage title="تعديل المشترك" form={form} cancelHref="/subscriptions" widthClass="max-w-6xl">
+        <FormPage title="تعديل المشترك" form={form} cancelHref="/subscriptions" widthClass="max-w-6xl" outline={SUBSCRIPTION_OUTLINE} asideNote="رقم الحساب لا يتغيّر بالتعديل.">
             <SubscriptionForm
                 data={form.data}
                 setData={form.setData}

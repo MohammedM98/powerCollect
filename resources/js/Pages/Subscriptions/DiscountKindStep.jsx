@@ -1,5 +1,5 @@
 import Icon from '@/Components/Icon';
-import { ChoiceTile, FormStep } from './AccountFormParts';
+import { ChoiceCards, FormStep } from './AccountFormParts';
 import { withSegment } from '@/lib/discountTerms';
 
 /** A discount comes off the balance once, in shekels, or off every weekly reading from now on. */
@@ -12,24 +12,7 @@ const KINDS = [
 export default function DiscountKindStep({ changeKind, data, isStanding, setConfirmingStop, standingDiscount, steps, stopping }) {
     return (
         <FormStep number={steps.kind} title="نوع الخصم" done>
-            <fieldset>
-                <legend className="sr-only">نوع الخصم</legend>
-                <div className="grid gap-3 sm:grid-cols-2">
-                    {KINDS.map((kind) => (
-                        <ChoiceTile
-                            key={kind.value}
-                            name="kind"
-                            value={kind.value}
-                            checked={data.kind === kind.value}
-                            onChange={changeKind}
-                            icon={kind.icon}
-                            title={kind.title}
-                            hint={kind.hint}
-                            tone="green"
-                        />
-                    ))}
-                </div>
-            </fieldset>
+            <ChoiceCards name="kind" label="نوع الخصم" value={data.kind} onChange={changeKind} options={KINDS} />
             {isStanding && standingDiscount && (
                 <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-emerald-600/45 bg-emerald-500/10 px-3.5 py-3 text-sm">
                     <Icon name="repeat" className="h-[18px] w-[18px] shrink-0 text-emerald-700 dark:text-emerald-400" />
@@ -39,7 +22,7 @@ export default function DiscountKindStep({ changeKind, data, isStanding, setConf
                         </b>
                         <small className="block text-[12.5px] text-gray-500">
                             منذ <bdi dir="ltr">{standingDiscount.grantedAt}</bdi>
-                            {standingDiscount.grantedByName && ` · أعطاه ${standingDiscount.grantedByName}`}. الخصم الجديد يحلّ محلّه.
+                            {standingDiscount.grantedByName && `، أعطاه ${standingDiscount.grantedByName}`}. الخصم الجديد يحلّ محلّه.
                         </small>
                     </div>
                     <button

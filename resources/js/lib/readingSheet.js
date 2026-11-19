@@ -37,3 +37,15 @@ export function activeFilterChips(groups, values, search = '') {
 
     return search?.trim() ? [...chips, { key: 'search', label: 'بحث', value: search.trim() }] : chips;
 }
+
+/**
+ * A number of readings in correct Arabic: 1 قراءة، 2 قراءتان، 3–10
+ * قراءات، 11 and on قراءة (and 103–110 قراءات again).
+ */
+export function countReadings(count) {
+    const number = Number(count) || 0;
+    const lastTwo = number % 100;
+    const noun = number === 2 ? 'قراءتان' : number >= 3 && lastTwo >= 3 && lastTwo <= 10 ? 'قراءات' : 'قراءة';
+
+    return `${number.toLocaleString('en')} ${noun}`;
+}

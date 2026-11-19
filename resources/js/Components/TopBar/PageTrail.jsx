@@ -119,7 +119,7 @@ export function SectionPages({ trail, url, badges }) {
             data-fade={fade ?? undefined}
             role="navigation"
             aria-label={`صفحات ${trail.group.label}`}
-            className="tn-subnav flex gap-1 overflow-x-auto [scrollbar-width:none]"
+            className="tn-subnav flex gap-1 overflow-x-auto scrollbar-none"
         >
             {links.map((link) => (
                 <Link key={link.href} href={link.href} prefetch={shouldPrefetchPage(link.href)} aria-current={isActiveLink(link, url) ? 'page' : undefined}>

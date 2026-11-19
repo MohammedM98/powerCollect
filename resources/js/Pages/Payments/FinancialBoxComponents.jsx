@@ -1,47 +1,74 @@
+import { Avatar, Button, Chip } from '@heroui/react';
 import Icon from '@/Components/Icon';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import { formatMoney } from '@/lib/format';
 import { activeBoxEntries, boxPersonName, boxStatus, financialBoxTotals, financialBoxesTotals, isFlaggedEntry } from '@/lib/financialBoxes';
-import { boxTypes, boxTypeStyles, currencies, BoxTypeIcon } from './CollectorCashBox';
+import { boxTypes, boxTypeStyles, currencies } from './CollectorCashBox';
 import './financial-boxes.css';
 
-const dots = { open: 'bg-blue-500', pending: 'bg-blue-500', received: 'bg-emerald-500' };
-const dotOf = (box) => dots[box.status];
 const date = (value) => value ? new Intl.DateTimeFormat('ar-u-nu-latn', { day: 'numeric', month: 'short', timeZone: 'Asia/Gaza' }).format(new Date(value)) : '—';
 const dateTimeShort = (value) => value ? new Intl.DateTimeFormat('ar-u-nu-latn', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Gaza' }).format(new Date(value)) : '—';
 
 export function financialAmountsLine(amounts) {
-    return Object.keys(currencies).filter((currency) => currency === 'ILS' || Number(amounts?.[currency] ?? 0) !== 0).map((currency) => `${formatMoney(amounts?.[currency] ?? 0)} ${currencies[currency]}`).join(' · ');
+    return Object.keys(currencies).filter((currency) => currency === 'ILS' || Number(amounts?.[currency] ?? 0) !== 0).map((currency) => `${formatMoney(amounts?.[currency] ?? 0)} ${currencies[currency]}`).join('، ');
 }
 
 function foreignAmounts(amounts) {
-    return Object.keys(currencies).filter((currency) => currency !== 'ILS' && amounts[currency]).map((currency) => `${formatMoney(amounts[currency])} ${currencies[currency]}`).join(' · ');
+    return Object.keys(currencies).filter((currency) => currency !== 'ILS' && amounts[currency]).map((currency) => `${formatMoney(amounts[currency])} ${currencies[currency]}`).join('، ');
 }
 
 export function BoxPersonAvatar({ name, small = false }) {
     return <span aria-hidden="true" className={`flex shrink-0 items-center justify-center bg-gray-900 font-semibold text-surface ${small ? 'h-7 w-7 rounded-[9px] text-[11px]' : 'h-8 w-8 rounded-[10px] text-xs'}`}>{name ? name.trim().split(/\s+/).slice(0, 2).map((word) => word[0]).join('') : <Icon name="bank" className="h-4 w-4" />}</span>;
 }
 
-export function FinancialBoxIdentity({ box, period, card = false }) {
-    return <div className="flex min-w-0 items-center gap-3">
-        <span className="relative shrink-0"><BoxTypeIcon type={box.type} className={card ? 'h-11 w-11' : 'h-10 w-10'} /><span className={`absolute -bottom-0.5 -start-0.5 h-3 w-3 rounded-full border-[2.5px] border-surface ${dotOf(box)}`} /></span>
-        <span className="min-w-0"><span className="block truncate font-semibold text-gray-900">صندوق <bdi dir="ltr" className="font-display">{box.number}</bdi></span><span className="block truncate text-xs text-gray-400">{boxTypeStyles[box.type].label}{period && period !== '—' ? ` · ${period}` : ''}</span></span>
-    </div>;
+/** Each type of box in its movement's colour (theme.css section 4): cash green, transfers blue, clearings teal. */
+export const BOX_TONES = { cash: 'pay', bank_transfer: 'split', clearing: 'clearing' };
+
+/** A box's type as its tinted icon, with a dot for its state: blue while open, green once closed. */
+export function FinancialBoxMark({ box, large = false }) {
+    return (
+        <span className={`gl-cb-mark ${large ? 'is-large' : ''}`} data-tone={BOX_TONES[box.type]} aria-hidden="true">
+            <Icon name={boxTypeStyles[box.type].icon} className={large ? 'h-5 w-5' : 'h-[18px] w-[18px]'} />
+            <i data-state={box.status === 'received' ? 'closed' : 'open'} />
+        </span>
+    );
 }
 
-/** A box's type, its icon carrying the box's state as a dot: نقدي, حوالات بنكية or مقاصة. */
-export function FinancialBoxType({ box }) {
-    return <>
-        <span className="relative shrink-0"><BoxTypeIcon type={box.type} className="h-10 w-10" /><span className={`absolute -bottom-0.5 -start-0.5 h-3 w-3 rounded-full border-[2.5px] border-surface ${dotOf(box)}`} /></span>
-        <span className="text-[15px] font-semibold text-gray-900">{boxTypeStyles[box.type].label}</span>
-    </>;
+/** Whose box it is, by their initials on a HeroUI avatar, or a bank for a box with no person. */
+export function BoxPerson({ name, suffix = null, note = null }) {
+    const initials = name ? name.trim().split(/\s+/).slice(0, 2).map((word) => word[0]).join('') : null;
+
+    return (
+        <span className="gl-cb-person">
+            <Avatar size="sm" className="gl-cb-avatar">
+                <Avatar.Fallback>{initials ?? <Icon name="bank" className="h-4 w-4" />}</Avatar.Fallback>
+            </Avatar>
+            <span className="min-w-0">
+                <b>{name ?? '—'}{suffix && <span className="gl-cb-muted"> {suffix}</span>}</b>
+                {note && <small>{note}</small>}
+            </span>
+        </span>
+    );
 }
 
+/** A box's state as HeroUI chips: open or closed, and for a closed box whether its audit is approved. */
 export function FinancialBoxStatus({ box }) {
-    const [label, tone] = boxStatus(box);
-    return <span className="flex flex-wrap gap-1"><StatusPill tone={tone} label={label} />{box.status === 'received' && 'audit' in box && <StatusPill tone={box.audit ? 'green' : 'amber'} label={box.audit ? 'معتمد تدقيقيًا' : 'قيد التدقيق'} />}</span>;
+    const [label] = boxStatus(box);
+    const closed = box.status === 'received';
+
+    return (
+        <span className="gl-cb-status">
+            <Chip size="sm" className="gl-cb-chip" data-state={closed ? 'closed' : 'open'}>
+                <i aria-hidden="true" />
+                {label}
+            </Chip>
+            {closed && 'audit' in box && (
+                <Chip size="sm" className="gl-cb-chip" data-state={box.audit ? 'audited' : 'waiting'}>
+                    <i aria-hidden="true" />
+                    {box.audit ? 'معتمد تدقيقيًا' : 'قيد التدقيق'}
+                </Chip>
+            )}
+        </span>
+    );
 }
 
 export function FinancialBoxAmount({ box, large = false }) {
@@ -56,14 +83,14 @@ export function FinancialBoxEntries({ box, card = false }) {
     const cancelled = box.payments ? box.payments.length - entries.length : 0;
     if (box.type === 'cash') {
         const foreign = entries.filter((entry) => entry.currency !== 'ILS').length;
-        return <>{!card && <p><b className="font-display text-gray-900">{count}</b> <span className="text-[13px] text-gray-600">حركة{cancelled > 0 ? ` · ${cancelled} ملغاة` : ''}</span></p>}<p className="mt-1 flex items-center gap-2 text-[13px] text-gray-600"><Icon name="banknotes" className="h-4 w-4" />{card ? (box.status === 'received' ? 'أُغلق بإجمالي حركاته السارية' : 'يجمع المحصّل النقد') : foreign ? `${foreign} بعملة أجنبية` : 'نقد بالشيكل'}</p></>;
+        return <>{!card && <p><b className="font-display text-gray-900">{count}</b> <span className="text-[13px] text-gray-600">حركة{cancelled > 0 ? `، ${cancelled} ملغاة` : ''}</span></p>}<p className="mt-1 flex items-center gap-2 text-[13px] text-gray-600"><Icon name="banknotes" className="h-4 w-4" />{card ? (box.status === 'received' ? 'أُغلق بإجمالي حركاته السارية' : 'يجمع المحصّل النقد') : foreign ? `${foreign} بعملة أجنبية` : 'نقد بالشيكل'}</p></>;
     }
     if (!box.payments) {
-        return <p className="text-[13px] text-gray-600"><b className="font-display text-gray-900">{count}</b> حركة{box.rejectedCount ? ` · ${box.rejectedCount} مرفوضة` : ''}</p>;
+        return <p className="text-[13px] text-gray-600"><b className="font-display text-gray-900">{count}</b> حركة{box.rejectedCount ? `، ${box.rejectedCount} مرفوضة` : ''}</p>;
     }
     const flagged = entries.filter(isFlaggedEntry).length;
     const note = <p className="mt-1 flex items-center gap-2 text-[13px] text-gray-600"><Icon name={box.type === 'clearing' ? 'scale' : 'bank'} className="h-4 w-4" />{flagged ? <b className="font-semibold text-brand-600">{flagged} {box.type === 'clearing' ? 'مرفوضة' : 'غير موجودة'}</b> : 'يدقّقها قسم التدقيق بعد الإغلاق'}</p>;
-    return card ? note : <><p><b className="font-display text-gray-900">{count}</b> <span className="text-[13px] text-gray-600">حركة{cancelled ? ` · ${cancelled} ملغاة` : ''}</span></p>{note}</>;
+    return card ? note : <><p><b className="font-display text-gray-900">{count}</b> <span className="text-[13px] text-gray-600">حركة{cancelled ? `، ${cancelled} ملغاة` : ''}</span></p>{note}</>;
 }
 
 export function FinancialBoxDates({ box }) {
@@ -98,24 +125,68 @@ export function canCloseBox(box) {
 /** The box's main action: review and close an open box, or inspect a closed box. */
 export function FinancialBoxButton({ box, onOpen, className = '' }) {
     if (canCloseBox(box)) {
-        return <PrimaryButton type="button" onClick={() => onOpen(box)} className={`whitespace-nowrap px-3 py-1.5 ${className}`}><Icon name="check" className="h-4 w-4" />مراجعة وإغلاق</PrimaryButton>;
+        return (
+            <Button variant="outline" size="sm" onPress={() => onOpen(box)} className={`gl-cb-btn is-close ${className}`}>
+                <Icon name="lock" className="h-4 w-4" />
+                مراجعة وإغلاق
+            </Button>
+        );
     }
-    return <SecondaryButton type="button" onClick={() => onOpen(box)} className={`whitespace-nowrap px-3 py-1.5 ${className}`}>عرض الصندوق</SecondaryButton>;
+
+    return (
+        <Button variant="secondary" size="sm" onPress={() => onOpen(box)} className={`gl-cb-btn ${className}`}>
+            <Icon name="eye" className="h-4 w-4" />
+            عرض الصندوق
+        </Button>
+    );
 }
 
+/** A box as a tile, for the cards view: its type and number, whose it is, its total, its state and its button. */
 export function FinancialBoxCard({ box, period, onOpen }) {
     const count = box.paymentCount ?? activeBoxEntries(box).length;
-    return <article className="financial-box-card flex flex-col gap-4 rounded-card border border-gray-100 bg-surface p-5 shadow-card" data-status={box.status}>
-        <header className="flex items-start justify-between gap-3"><FinancialBoxIdentity box={box} period={period} card />{box.branchName && <span className="text-xs text-gray-500">{box.branchName}</span>}</header>
-        <div className="flex items-center gap-2.5 rounded-control px-3 py-2" style={{ background: 'var(--gl-fill)', border: '1px solid var(--gl-line)' }}><span className="min-w-0 flex-1 truncate text-[15px] font-semibold text-gray-900">{boxPersonName(box)}</span><span className="shrink-0 text-[13px] text-gray-600"><b className="font-display text-gray-900">{count}</b> حركة</span></div>
-        <div><p className="text-[13.5px] font-semibold text-gray-700">إجمالي الحركات السارية</p><div className="mt-0.5"><FinancialBoxAmount box={box} large /></div></div>
-        <FinancialBoxEntries box={box} card />
-        <footer className="mt-auto space-y-3 border-t pt-3 !border-[color:var(--gl-line)]"><div className="flex flex-wrap items-start justify-between gap-2"><FinancialBoxStatus box={box} />{!('closedAt' in box) ? <span className="inline-flex items-center gap-1.5"><Icon name="clock" className="h-3.5 w-3.5 text-gray-500" /><FinancialBoxDates box={box} /></span> : <FinancialBoxTimes box={box} />}</div><FinancialBoxButton box={box} onOpen={onOpen} className="w-full" /></footer>
-    </article>;
+    const totals = financialBoxTotals(box);
+    const others = foreignAmounts(totals);
+
+    return (
+        <article className="gl-cb-card" data-status={box.status}>
+            <header>
+                <FinancialBoxMark box={box} large />
+                <span className="min-w-0">
+                    <b>صندوق <bdi dir="ltr">{box.number}</bdi></b>
+                    <small>{boxTypeStyles[box.type].label}{period && period !== '—' ? `، ${period}` : ''}{box.branchName ? `، ${box.branchName}` : ''}</small>
+                </span>
+            </header>
+            <BoxPerson name={boxPersonName(box)} note={`${count} حركة`} />
+            <div className="gl-cb-card-amount">
+                <small>إجمالي الحركات السارية</small>
+                <b><bdi dir="ltr">{formatMoney(totals.ILS)}</bdi> <span>شيكل</span></b>
+                {others && <small>و{others}</small>}
+            </div>
+            <FinancialBoxEntries box={box} card />
+            <footer>
+                <FinancialBoxStatus box={box} />
+                {!('closedAt' in box) ? <FinancialBoxDates box={box} /> : <FinancialBoxTimes box={box} />}
+            </footer>
+            <FinancialBoxButton box={box} onOpen={onOpen} className="gl-cb-full" />
+        </article>
+    );
 }
 
+/** The collector's open boxes above their history: all of them, then each type, as tiles in its colour. */
 export function FinancialBoxSummary({ boxes, pageOnly = false }) {
     const open = boxes.filter((box) => box.status !== 'received');
-    const cells = [{ icon: <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] bg-blue-500/10 text-blue-600 dark:text-blue-400"><Icon name="unlock" className="h-5 w-5" /></span>, label: 'الصناديق المفتوحة', boxes: open }, ...Object.keys(boxTypes).map((type) => ({ icon: <BoxTypeIcon type={type} className="h-10 w-10" />, label: boxTypes[type], boxes: open.filter((box) => box.type === type), unconfirmed: true }))];
-    return <section aria-label="ملخص الصناديق" className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{cells.map((cell) => <article key={cell.label} className="flex min-w-0 items-center gap-3 rounded-card border border-gray-100 bg-surface p-4 shadow-card">{cell.icon}<div className="min-w-0"><p className="text-sm font-semibold text-gray-600">{cell.label}</p><p className="mt-0.5 flex flex-wrap items-baseline gap-1.5"><span dir="ltr" className="font-display text-xl font-bold text-gray-900">{formatMoney(financialBoxesTotals(cell.boxes).ILS)}</span><span className="text-xs text-gray-500">₪</span></p><p className="text-xs text-gray-500">{cell.boxes.length} صناديق{cell.unconfirmed ? ' لم تُغلق بعد' : ''}{pageOnly ? ' في هذه الصفحة' : ''}</p></div></article>)}</section>;
+    const cells = [{ key: 'open', icon: 'unlock', tone: null, label: 'الصناديق المفتوحة', boxes: open }, ...Object.keys(boxTypes).map((type) => ({ key: type, icon: boxTypeStyles[type].icon, tone: BOX_TONES[type], label: boxTypes[type], boxes: open.filter((box) => box.type === type), unconfirmed: true }))];
+
+    return (
+        <section aria-label="ملخص الصناديق" className="gl-cb-tiles is-four">
+            {cells.map((cell) => (
+                <article key={cell.key} className="gl-cb-tile" data-tone={cell.tone ?? undefined}>
+                    <span className="gl-cb-tile-icon" aria-hidden="true"><Icon name={cell.icon} className="h-5 w-5" /></span>
+                    <small>{cell.label}</small>
+                    <b><bdi dir="ltr">{formatMoney(financialBoxesTotals(cell.boxes).ILS)}</bdi> <span>₪</span></b>
+                    <span>{cell.boxes.length} صناديق{cell.unconfirmed ? ' لم تُغلق بعد' : ''}{pageOnly ? ' في هذه الصفحة' : ''}</span>
+                </article>
+            ))}
+        </section>
+    );
 }

@@ -25,7 +25,7 @@ export function statementPrintDetails({ subscription, printOptions, transactionT
         { key: 'meterBox', label: 'الطبلون', value: subscription.meterBoxNumber ?? '—' },
         { key: 'view', label: 'طريقة العرض', value: STATEMENT_VIEWS.find((item) => item.value === printOptions.view)?.label ?? 'كل الحركات' },
         ...(sort ? [{ key: 'sort', label: 'ترتيب الحركات', value: sort }] : []),
-        { key: 'filters', label: 'التصفية', value: [type, method, filters.dateFrom && `من ${filters.dateFrom}`, filters.dateTo && `إلى ${filters.dateTo}`, filters.search && `بحث: ${filters.search}`].filter(Boolean).join(' · ') || 'كل الحركات ضمن طريقة العرض المختارة' },
+        { key: 'filters', label: 'التصفية', value: [type, method, filters.dateFrom && `من ${filters.dateFrom}`, filters.dateTo && `إلى ${filters.dateTo}`, filters.search && `بحث: ${filters.search}`].filter(Boolean).join('، ') || 'كل الحركات ضمن طريقة العرض المختارة' },
     ];
 }
 

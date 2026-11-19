@@ -14,7 +14,7 @@ import { timeAgo } from '@/lib/format';
 import PageHeader from '@/Components/PageHeader';
 import AddButton from '@/Components/AddButton';
 
-const FOCUS_RING = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
+const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
 
 /** Open the print designer on a list, with one of its templates (an id) or a new one. */
 function openDesigner(page, template) {
@@ -134,7 +134,7 @@ function NewTemplateModal({ pages, onClose }) {
 function templateSummary(template) {
     const paper = PAPER_SIZES[template.paper]?.label ?? template.paper;
 
-    return `${paper} ${template.orientation === 'landscape' ? 'عرضي' : 'طولي'} · ${template.columnCount} أعمدة`;
+    return `${paper} ${template.orientation === 'landscape' ? 'عرضي' : 'طولي'}، ${template.columnCount} أعمدة`;
 }
 
 /**

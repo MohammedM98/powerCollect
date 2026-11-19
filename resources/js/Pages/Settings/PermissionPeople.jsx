@@ -65,7 +65,7 @@ export default function EmployeeList({
                     <span className="ms-auto font-display text-sm font-semibold text-gray-500">{users.total.toLocaleString('en')} موظف</span>
                 </h2>
                 <div className="relative mt-3">
-                    <Icon name="search" className="pointer-events-none absolute inset-y-0 start-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
+                    <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
                     <input
                         ref={searchRef}
                         type="text"
@@ -75,7 +75,7 @@ export default function EmployeeList({
                         aria-label="البحث عن موظف بالاسم أو اسم المستخدم"
                         className="block w-full py-2.5 pe-10 ps-10 text-sm"
                     />
-                    <span className="kbd pointer-events-none absolute inset-y-0 end-3 my-auto h-fit">/</span>
+                    <span className="kbd pointer-events-none absolute inset-y-0 inset-e-3 my-auto h-fit">/</span>
                 </div>
                 {roleGroup && (
                     <div className="mt-3 flex flex-wrap gap-1.5" role="group" aria-label={roleGroup.label}>

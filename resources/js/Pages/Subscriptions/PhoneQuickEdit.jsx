@@ -3,7 +3,7 @@ import { router } from '@inertiajs/react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import Icon from '@/Components/Icon';
 
-const FOCUS_RING = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
+const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
 
 /**
  * A subscription's mobile number in the list, changed in place: the pencil
@@ -111,7 +111,7 @@ export default function PhoneQuickEdit({ subscription }) {
                     aria-describedby={error ? `${id}-error` : undefined}
                     maxLength={14}
                     placeholder="05XXXXXXXX"
-                    className="block w-32 !rounded-lg !px-2 !py-1 text-sm"
+                    className="block w-32 rounded-lg! px-2! py-1! text-sm"
                 />
                 <button
                     type="button"

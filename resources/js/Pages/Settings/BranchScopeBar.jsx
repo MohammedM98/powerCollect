@@ -34,7 +34,7 @@ export default function BranchScopeBar({ path, scope, branch, branches, followsC
                         {branches.map((item) => (
                             <option key={item.value} value={item.value}>
                                 {item.label}
-                                {item.hasOwn ? ' · إعدادات محفوظة' : ''}
+                                {item.hasOwn ? '، إعدادات محفوظة' : ''}
                             </option>
                         ))}
                     </select>

@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { usePage } from '@inertiajs/react';
+import { Radio, RadioGroup } from '@heroui/react';
 import Icon from '@/Components/Icon';
 
 /**
@@ -38,31 +39,24 @@ export function BankMark({ bank, className = 'h-10 w-10 rounded-xl' }) {
     );
 }
 
-/** A bank or e-wallet as a radio row: brand mark, name, kind, and the choice indicator. */
-export function BankRow({ bank, checked, name, onChange, required = false }) {
-    const look = useBankLook(bank);
-
+/**
+ * The company's banks and e-wallets as chips on HeroUI's radio group, as
+ * in the redesign: each with its mark and name, the chosen one ringed in
+ * the company's colour. `name` is the field's name in the form.
+ */
+export function BankChips({ banks, name, label, value, onChange, isRequired = false }) {
     return (
-        <label
-            className={`relative flex min-h-[58px] cursor-pointer items-center gap-3 rounded-[14px] border-[1.5px] px-3 py-2 transition focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-gray-900 ${
-                checked ? 'border-brand-500 bg-brand-500/[0.06] shadow-[0_0_0_3px_rgb(var(--brand-500)/0.12)]' : 'border-gray-100 bg-surface hover:border-gray-300'
-            }`}
-        >
-            <input type="radio" name={name} value={bank} required={required} checked={checked} onChange={() => onChange(bank)} className="sr-only" />
-            <BankMark bank={bank} />
-            <span className="min-w-0">
-                <b className={`block truncate text-[14.5px] ${checked ? 'text-brand-600' : 'text-gray-900'}`}>{bank}</b>
-                <small className="block text-xs font-medium text-gray-500">{look?.kind ?? 'تحويل'}</small>
-            </span>
-            <span
-                className={`ms-auto flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full border-[1.5px] transition ${
-                    checked ? 'border-brand-500 bg-brand-500' : 'border-gray-300'
-                }`}
-                aria-hidden="true"
-            >
-                {checked && <span className="h-2 w-2 rounded-full bg-surface" />}
-            </span>
-        </label>
+        <RadioGroup name={name} aria-label={label} isRequired={isRequired} value={value || null} onChange={onChange} className="gl-bank-chips">
+            {banks.map((bank) => (
+                <Radio key={bank} value={bank} className="gl-bank-chip">
+                    <Radio.Content className="gl-bank-chip-content">
+                        <BankMark bank={bank} className="h-7 w-7 rounded-lg" />
+                        <span>{bank}</span>
+                        <Radio.Control className="sr-only"><Radio.Indicator /></Radio.Control>
+                    </Radio.Content>
+                </Radio>
+            ))}
+        </RadioGroup>
     );
 }
 
@@ -113,7 +107,7 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
                 aria-expanded={open}
                 aria-haspopup="listbox"
                 onClick={() => setOpen((current) => !current)}
-                className={`flex min-h-[58px] w-full items-center gap-3 rounded-[14px] border-[1.5px] bg-surface px-3 py-2 text-start transition focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/15 ${
+                className={`flex min-h-[58px] w-full items-center gap-3 rounded-[14px] border-[1.5px] bg-surface px-3 py-2 text-start transition focus:outline-hidden focus-visible:ring-4 focus-visible:ring-brand-500/15 ${
                     open ? 'border-brand-500 ring-4 ring-brand-500/15' : 'border-gray-200 hover:border-brand-500/45'
                 }`}
             >
@@ -136,7 +130,7 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
                     id={listboxId}
                     role="listbox"
                     aria-label="البنك المرسل"
-                    className="animate-modal-panel absolute inset-x-0 z-30 mt-2 max-h-80 overflow-y-auto rounded-2xl border border-gray-100 bg-surface p-1.5 shadow-lift"
+                    className="animate-modal-panel absolute inset-x-0 z-30 mt-2 max-h-80 overflow-y-auto rounded-2xl p-1.5 gl-pop"
                 >
                     <li role="none">
                         <button

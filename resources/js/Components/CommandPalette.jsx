@@ -117,7 +117,7 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
                 kind: 'subscriber',
                 id: subscriber.id,
                 label: subscriber.fullName,
-                description: `حساب ${subscriber.accountNumber}${balanceTone(subscriber.balance) !== 'settled' ? ` · الرصيد ${balanceInText(subscriber.balance)}` : ''}`,
+                description: `حساب ${subscriber.accountNumber}${balanceTone(subscriber.balance) !== 'settled' ? `، الرصيد ${balanceInText(subscriber.balance)}` : ''}`,
                 icon: 'user',
             }))]);
         }
@@ -206,7 +206,7 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
                         aria-expanded="true"
                         aria-controls="tn-palette-list"
                         aria-activedescendant={items.length ? `tn-palette-item-${active}` : undefined}
-                        className="min-w-0 flex-1 border-0 bg-transparent p-0 text-[17px] shadow-none outline-none placeholder:text-gray-400 focus:border-0 focus:ring-0"
+                        className="min-w-0 flex-1 border-0 bg-transparent p-0 text-[17px] shadow-none outline-hidden placeholder:text-gray-400 focus:border-0 focus:ring-0"
                     />
                     <span className="tn-kbd">Esc</span>
                 </div>

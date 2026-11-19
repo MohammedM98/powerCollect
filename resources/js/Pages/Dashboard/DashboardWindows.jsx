@@ -32,7 +32,7 @@ export default function DashboardWindows({
             fallback={
                 <p
                     role="status"
-                    className="fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 rounded-control border border-gray-200 bg-surface px-4 py-3 text-sm text-gray-600 shadow-card"
+                    className="fixed bottom-6 left-1/2 z-100 -translate-x-1/2 rounded-control border border-gray-200 bg-surface px-4 py-3 text-sm text-gray-600 shadow-card"
                 >
                     جارٍ تحميل النافذة…
                 </p>

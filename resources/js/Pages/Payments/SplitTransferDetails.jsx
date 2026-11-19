@@ -2,7 +2,7 @@ import { BankReceivedDateField } from '@/Components/BankReceivedDate';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import { FieldLabel } from '@/Pages/Subscriptions/AccountFormParts';
-import { BankDropdown, BankRow } from '@/Components/Banks';
+import { BankChips, BankDropdown } from '@/Components/Banks';
 import { inputClass } from '@/Pages/Subscriptions/PaymentModal';
 
 /** The bank transfer itself: amount, currency, bank, reference, sender and arrival date, with the duplicate-reference warning. */
@@ -18,41 +18,32 @@ export default function SplitTransferDetails({
     transferBanks,
 }) {
     return (
-        <div className="grid gap-4 rounded-[20px] border border-gray-100 bg-gray-50 p-4">
-            <fieldset>
-                <legend className="mb-2 text-[14.5px] font-semibold text-gray-700">
-                    البنك المستلم <span className="text-brand-600">*</span>
-                </legend>
-                <div className="grid gap-2">
-                    {transferBanks.map((bank) => (
-                        <BankRow
-                            key={bank}
-                            bank={bank}
-                            checked={data.bank_name === bank}
-                            name="bank_name"
-                            onChange={(value) => setData('bank_name', value)}
-                        />
-                    ))}
-                </div>
-                <InputError message={errors.bank_name} className="mt-2" />
-            </fieldset>
-
+        <section className="gl-split-panel" aria-labelledby="split-transfer-title">
+            <h4 id="split-transfer-title" className="gl-split-panel-title">بيانات التحويل</h4>
             <div>
-                <FieldLabel htmlFor="sender_bank_name">البنك المرسل</FieldLabel>
-                <BankDropdown
-                    banks={senderBanks}
-                    id="sender_bank_name"
-                    name="sender_bank_name"
-                    value={data.sender_bank_name}
-                    onChange={(value) => setData('sender_bank_name', value)}
-                />
-                <InputError message={errors.sender_bank_name} className="mt-2" />
+                <p className="gl-label mb-2">البنك المستلم <span className="text-brand-600">*</span></p>
+                <BankChips banks={transferBanks} name="bank_name" label="البنك المستلم" isRequired value={data.bank_name} onChange={(value) => setData('bank_name', value)} />
+                <InputError message={errors.bank_name} className="mt-2" />
             </div>
-            <BankReceivedDateField
-                value={data.bank_received_on}
-                onChange={(value) => setData('bank_received_on', value)}
-                error={errors.bank_received_on}
-            />
+
+            <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                    <FieldLabel htmlFor="sender_bank_name">البنك المرسل</FieldLabel>
+                    <BankDropdown
+                        banks={senderBanks}
+                        id="sender_bank_name"
+                        name="sender_bank_name"
+                        value={data.sender_bank_name}
+                        onChange={(value) => setData('sender_bank_name', value)}
+                    />
+                    <InputError message={errors.sender_bank_name} className="mt-2" />
+                </div>
+                <BankReceivedDateField
+                    value={data.bank_received_on}
+                    onChange={(value) => setData('bank_received_on', value)}
+                    error={errors.bank_received_on}
+                />
+            </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
                 <div>
@@ -127,6 +118,6 @@ export default function SplitTransferDetails({
                 <Icon name="info" className="h-4 w-4 shrink-0" />
                 تُكتب بيانات التحويل مرة واحدة، وتُحفظ كما هي على دفعة كل مشترك.
             </p>
-        </div>
+        </section>
     );
 }

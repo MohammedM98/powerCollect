@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { router } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import { groupActionSurfaceClass, groupActionControlClass } from '@/Components/GroupActionButton';
 import RowMenu from '@/Components/DataTable/RowMenu';
@@ -15,53 +15,49 @@ export function bulkActionOptions(abilities) {
     return ACTIONS.filter((action) => abilities[action.permission]);
 }
 
+/**
+ * The list's group actions, as in the redesign: «إجراءات جماعية» opens the
+ * actions to pick before choosing subscriptions, and «سجل التعديلات
+ * الجماعية» beside it opens the log of changes already made.
+ */
 export default function BulkActionsMenu({ abilities, onChoose }) {
-    const [menu, setMenu] = useState(null);
+    const [anchor, setAnchor] = useState(null);
     const actions = bulkActionOptions(abilities);
 
-    function toggle(event, kind) {
-        const anchor = event.currentTarget;
-        setMenu((current) => current?.kind === kind ? null : { kind, anchor });
-    }
-
     function close(restoreFocus) {
-        if (restoreFocus) menu?.anchor.focus();
-        setMenu(null);
+        if (restoreFocus) anchor?.focus();
+        setAnchor(null);
     }
 
     return (
-        <div className={`${groupActionSurfaceClass} items-stretch`}>
-            <button
-                type="button"
-                onClick={(event) => toggle(event, 'actions')}
-                disabled={actions.length === 0}
-                aria-haspopup="menu"
-                aria-expanded={menu?.kind === 'actions'}
-                className={`${groupActionControlClass} rounded-s-control`}
-            >
-                <Icon name="layers" className="h-4 w-4" />
-                إجراءات جماعية
-            </button>
-            <button
-                type="button"
-                onClick={(event) => toggle(event, 'history')}
-                aria-label="سجل التعديلات الجماعية"
-                title="سجل التعديلات الجماعية"
-                aria-haspopup="menu"
-                aria-expanded={menu?.kind === 'history'}
-                className="inline-flex items-center justify-center rounded-e-control border-s border-white/25 px-3 transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-            >
-                <Icon name="chevron-down" className="h-4 w-4" />
-            </button>
-            {menu && (
-                <RowMenu
-                    anchor={menu.anchor}
-                    onClose={close}
-                    menu={{ title: menu.kind === 'history' ? 'سجل الإجراءات' : 'إجراءات جماعية', groups: [{ label: menu.kind === 'history' ? 'السجل' : 'اختر الإجراء ثم حدّد الاشتراكات', items: menu.kind === 'history'
-                        ? [{ label: 'سجل التعديلات الجماعية', icon: 'history', tone: 'graphite', onSelect: () => router.visit('/subscriptions/bulk-changes') }]
-                        : actions.map((action) => ({ ...action, onSelect: () => onChoose(action) })) }] }}
-                />
-            )}
-        </div>
+        <>
+            <div className={`${groupActionSurfaceClass} items-stretch`}>
+                <button
+                    type="button"
+                    onClick={(event) => {
+                        const opener = event.currentTarget;
+                        setAnchor((current) => (current ? null : opener));
+                    }}
+                    disabled={actions.length === 0}
+                    aria-haspopup="menu"
+                    aria-expanded={Boolean(anchor)}
+                    className={`${groupActionControlClass} rounded-control`}
+                >
+                    <Icon name="layers" className="h-4 w-4" />
+                    إجراءات جماعية
+                </button>
+                {anchor && (
+                    <RowMenu
+                        anchor={anchor}
+                        onClose={close}
+                        menu={{ title: 'إجراءات جماعية', groups: [{ label: 'اختر الإجراء ثم حدّد الاشتراكات', items: actions.map((action) => ({ ...action, onSelect: () => onChoose(action) })) }] }}
+                    />
+                )}
+            </div>
+            <Link href="/subscriptions/bulk-changes" prefetch className="gl-btn gl-sec">
+                <Icon name="history" className="h-4 w-4" />
+                سجل التعديلات الجماعية
+            </Link>
+        </>
     );
 }

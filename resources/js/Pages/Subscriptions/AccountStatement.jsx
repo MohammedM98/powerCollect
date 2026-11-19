@@ -1,10 +1,13 @@
-import { FilterBar, FilterField } from '@/Components/Form/FilterBar';
 import { Fragment, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { Button, Card, SearchField } from '@heroui/react';
+import { FilterField } from '@/Components/DataTable/DataTableFilterMenu';
+import Icon from '@/Components/Icon';
 import Balance from '@/Components/Balance';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
 import { statementExcelParts } from '@/lib/detailExcelParts';
 import StatementViewTabs from './StatementViewTabs';
-import { COLUMN_WIDTHS, compactStatementEntries, filtersCaption, filterStatementEntries, hasLineMenu, relatedLineChains, STATEMENT_COLUMNS, STATEMENT_SORT_OPTIONS, withReadingDiscounts } from '@/lib/accountStatement';
+import { COLUMN_WIDTHS, compactStatementEntries, describeBalance, filtersCaption, filterStatementEntries, hasLineMenu, relatedLineChains, STATEMENT_COLUMNS, STATEMENT_SORT_OPTIONS, STATEMENT_VIEWS, withReadingDiscounts } from '@/lib/accountStatement';
 import { balanceTone } from '@/lib/balance';
 import { formatAmount } from '@/lib/currency';
 import { notify } from '@/lib/notify';
@@ -12,7 +15,8 @@ import { statementPrintUrl } from '@/lib/statementPrint';
 import './AccountStatement.css';
 import DateInput from '@/Components/DateInput';
 import { StatementRow } from './StatementRow';
-import { PrintHeading, SummaryCard } from './StatementParts';
+import { PrintHeading } from './StatementParts';
+import StatementLedger from './StatementLedger';
 
 const EMPTY_FILTERS = { search: '', type: '', method: '', dateFrom: '', dateTo: '', sort: '' };
 
@@ -31,11 +35,18 @@ const EMPTY_FILTERS = { search: '', type: '', method: '', dateFrom: '', dateTo: 
  * `onAction` receives one of the server-provided canonical actions and the
  * line to change. Used by the statement page and the subscriptions-list window.
  *
+ * On screen it is the redesign's layout (docs/redesign): five totals on
+ * HeroUI cards, `between` under them (the person's subscriptions), then
+ * the lines on a card with the filters as pills and the slim ledger of
+ * StatementLedger.jsx. Its Excel and print buttons go into `toolsSlot`
+ * when the page gives one (beside the name), else on the ledger's card.
+ * Printed (`printOptions`), it keeps every column of the full statement.
+ *
  * The lines shown, in the view shown, can be saved for Excel or printed — on landscape paper,
  * with the company and `subscription` (the statement's header) above them
  * and only the statement on the page, light whatever the app's theme.
  */
-export default function AccountStatement({ subscription, entries, summary, paymentMethods, transactionTypes, onAction, focusLineId = null, printOptions = null }) {
+export default function AccountStatement({ subscription, entries, summary, paymentMethods = [], transactionTypes = [], onAction, focusLineId = null, printOptions = null, toolsSlot = null, between = null }) {
     const [filters, setFilters] = useState(() => printOptions?.filters ?? EMPTY_FILTERS);
     const [view, setView] = useState(() => printOptions?.view ?? 'compact');
     const [openHistories, setOpenHistories] = useState(() => new Set(printOptions?.openHistories ?? []));
@@ -55,7 +66,9 @@ export default function AccountStatement({ subscription, entries, summary, payme
     const isFiltered = Object.values(filters).some(Boolean);
     const invalidDates = Boolean(filters.dateFrom && filters.dateTo && filters.dateFrom > filters.dateTo);
     const hasLineMenus = !printOptions && entries.some(hasLineMenu);
-    const columns = hasLineMenus ? [...STATEMENT_COLUMNS, ''] : STATEMENT_COLUMNS;
+    const columns = STATEMENT_COLUMNS;
+    const typeOptions = [{ value: 'debit', label: 'كل ما عليه (تحميل)' }, { value: 'credit', label: 'كل ما له (تسديد وخصم)' }, ...transactionTypes];
+    const methodOptions = paymentMethods;
 
     function setFilter(key, value) {
         setFilters((current) => ({ ...current, [key]: value }));
@@ -172,205 +185,179 @@ export default function AccountStatement({ subscription, entries, summary, payme
         filtersCaption(filters, transactionTypes, paymentMethods),
     ]
         .filter(Boolean)
-        .join(' · ');
+        .join('، ');
+
+    const exportTools = (
+        <TableExportActions
+            title={`كشف حساب ${subscription.fullName}`}
+            excelProps={{ storageKey: 'statements', templateKind: 'statements', loadParts: async () => statementExcelParts(rows.flatMap((entry) => [entry, ...(openHistories.has(entry.id) ? entry.history ?? [] : [])]), summary), meta: { lines: [`رقم الحساب: ${subscription.accountNumber}`, subscription.branchName, printCaption].filter(Boolean), criteria: [['المشترك', subscription.fullName], ['رقم الحساب', subscription.accountNumber], ['التصفية', printCaption || 'كل الحركات ضمن العرض المختار']] } }}
+            showPrint={subscription.canPrint !== false}
+            onPrint={() => window.open(statementPrintUrl(subscription.id, { view, filters, openHistories }), '_blank', 'noopener')}
+            disabled={visibleEntries.length === 0}
+        />
+    );
+
+    const emptyMessage = !entries.length ? (
+        'لا توجد حركات على هذا الحساب بعد.'
+    ) : isCompact && !compact.entries.length ? (
+        <>
+            كل حركات هذا الحساب ملغاة مع قيودها العكسية (مجموعها صفر) فلا شيء يُعرض في العرض المختصر.{' '}
+            <button type="button" onClick={() => chooseView('full')} className="font-medium text-brand-600 hover:underline">
+                عرض كل الحركات
+            </button>
+        </>
+    ) : (
+        'لا توجد حركات تطابق البحث والتصفية.'
+    );
+
+    if (printOptions) {
+        return (
+            <div data-excel-source="custom" className="statement-print-source">
+                <p className="data-table-totals">
+                    ملخص الحساب الكامل: الرصيد {formatAmount(summary.balance)} شيكل، التحميلات {formatAmount(summary.charged)} شيكل، التسديدات {formatAmount(summary.paid)} شيكل، الخصومات {formatAmount(summary.discounted)} شيكل، المقاصات {formatAmount(summary.cleared)} شيكل.
+                    {printCaption && ` نطاق الطباعة: ${printCaption}.`}
+                    {' مجموع عمود المبلغ هو صافي عليه ناقص له، لكل عملة على حدة. الأرصدة بعد الحركات ليست قابلة للجمع.'}
+                </p>
+                <PrintLedger rows={rows} columns={columns} isCompact={isCompact} openHistories={openHistories} chains={chains} focusedLineId={focusedLineId} empty={emptyMessage} printOptions={printOptions} />
+            </div>
+        );
+    }
 
     return (
-        <div data-excel-source="custom" className={printOptions ? 'statement-print-source' : 'account-statement'}>
-            {!printOptions && <PrintHeading subscription={subscription} caption={printCaption} />}
-            {printOptions && <p className="data-table-totals">
-                ملخص الحساب الكامل: الرصيد {formatAmount(summary.balance)} شيكل · التحميلات {formatAmount(summary.charged)} شيكل · التسديدات {formatAmount(summary.paid)} شيكل · الخصومات {formatAmount(summary.discounted)} شيكل · المقاصات {formatAmount(summary.cleared)} شيكل.
-                {printCaption && ` نطاق الطباعة: ${printCaption}.`}
-                {' مجموع عمود المبلغ هو صافي عليه ناقص له، لكل عملة على حدة. الأرصدة بعد الحركات ليست قابلة للجمع.'}
-            </p>}
+        <div data-excel-source="custom" className="account-statement">
+            <PrintHeading subscription={subscription} caption={printCaption} />
+            {toolsSlot && createPortal(exportTools, toolsSlot)}
 
-            <div className="statement-summary mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-                <SummaryCard
-                    label="الرصيد الحالي"
-                    value={<Balance value={summary.balance} colored={false} unit="₪" paperWord={false} />}
-                    tone={balanceTone(summary.balance)}
-                    className="sm:col-span-2 lg:col-span-1"
-                />
-                <SummaryCard
-                    label="مجموع ما عليه (تحميل)"
-                    value={`${formatAmount(summary.charged)} ₪`}
-                    hint="القراءات المعتمدة والرسوم والغرامات"
-                />
-                <SummaryCard
-                    label="مجموع ما دفعه (تسديد)"
-                    value={`${formatAmount(summary.paid)} ₪`}
-                    hint={`عدد الدفعات: ${summary.paymentsCount}`}
-                />
-                <SummaryCard
-                    label="مجموع الخصومات"
-                    value={`${formatAmount(summary.discounted)} ₪`}
-                    hint={`عدد الخصومات: ${summary.discountsCount}`}
-                />
-                <SummaryCard
-                    label="مجموع المقاصات"
-                    value={`${formatAmount(summary.cleared)} ₪`}
-                    hint={`عدد المقاصات: ${summary.clearingsCount}`}
-                />
+            <div className="statement-summary gl-st-kpis">
+                <Card className="gl-kpi gl-kpi-balance" data-tone={balanceTone(summary.balance)}>
+                    <small>الرصيد الحالي</small>
+                    <b><Balance value={summary.balance} colored={false} unit="₪" paperWord={false} /></b>
+                    <span>{describeBalance(summary.balance).label === 'مسدّد' ? 'الحساب مسدّد بالكامل' : 'بعد آخر حركة على الحساب'}</span>
+                </Card>
+                <SummaryKpi label="مجموع ما عليه (تحميل)" value={summary.charged} hint="القراءات المعتمدة والرسوم والغرامات" />
+                <SummaryKpi label="مجموع ما دفعه (تسديد)" value={summary.paid} hint={`عدد الدفعات: ${summary.paymentsCount}`} />
+                <SummaryKpi label="مجموع الخصومات" value={summary.discounted} hint={`عدد الخصومات: ${summary.discountsCount}`} />
+                <SummaryKpi label="مجموع المقاصات" value={summary.cleared} hint={`عدد المقاصات: ${summary.clearingsCount}`} />
             </div>
 
-            <section className="statement-ledger-panel">
-                <div className="data-table-toolbar">
-                    <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
-                        <div className="me-auto">
-                            <StatementViewTabs value={view} onChange={chooseView} />
-                        </div>
-                        <TableExportActions
-                            title={`كشف حساب ${subscription.fullName}`}
-                            excelProps={{ storageKey: 'statements', templateKind: 'statements', loadParts: async () => statementExcelParts(rows.flatMap((entry) => [entry, ...(openHistories.has(entry.id) ? entry.history ?? [] : [])]), summary), meta: { lines: [`رقم الحساب: ${subscription.accountNumber}`, subscription.branchName, printCaption].filter(Boolean), criteria: [['المشترك', subscription.fullName], ['رقم الحساب', subscription.accountNumber], ['التصفية', printCaption || 'كل الحركات ضمن العرض المختار']] } }}
-                            showPrint={subscription.canPrint !== false}
-                            onPrint={() => window.open(statementPrintUrl(subscription.id, { view, filters, openHistories }), '_blank', 'noopener')}
-                            disabled={visibleEntries.length === 0}
-                        />
+            {between}
+
+            <Card className="gl-st-ledger statement-ledger-panel">
+                <div className="gl-st-bar">
+                    <div className="me-auto min-w-0">
+                        <h3 className="gl-st-ledger-title">الحركات</h3>
+                        <p className="gl-st-ledger-hint">{STATEMENT_VIEWS.find((option) => option.value === view)?.hint}</p>
                     </div>
-                    <FilterBar label="تصفية الحركات">
-                        <FilterField label="بحث">
-                            <input
-                                type="search"
-                                value={filters.search}
-                                onChange={(e) => setFilter('search', e.target.value)}
-                                placeholder="البيان، رقم السند، المبلغ أو البنك"
-                                className="block w-full text-sm"
-                            />
-                        </FilterField>
-                        <FilterField label="نوع الحركة">
-                            <select value={filters.type} onChange={(e) => setFilter('type', e.target.value)} className="block w-full text-sm">
-                                <option value="">الكل</option>
-                                <option value="debit">كل ما عليه (تحميل)</option>
-                                <option value="credit">كل ما له (تسديد وخصم)</option>
-                                {transactionTypes.map((type) => (
-                                    <option key={type.value} value={type.value}>
-                                        {type.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </FilterField>
-                        <FilterField label="طريقة الدفع">
-                            <select value={filters.method} onChange={(e) => setFilter('method', e.target.value)} className="block w-full text-sm">
-                                <option value="">الكل</option>
-                                {paymentMethods.map((method) => (
-                                    <option key={method.value} value={method.value}>
-                                        {method.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </FilterField>
-                        <FilterField label="من تاريخ">
-                            <DateInput aria-label="من تاريخ" value={filters.dateFrom} max={filters.dateTo || undefined} onChange={(value) => setFilter('dateFrom', value)} />
-                        </FilterField>
-                        <FilterField label="إلى تاريخ">
-                            <DateInput aria-label="إلى تاريخ" value={filters.dateTo} min={filters.dateFrom || undefined} onChange={(value) => setFilter('dateTo', value)} />
-                        </FilterField>
-                        <FilterField label="ترتيب الحركات">
-                            <select value={filters.sort ?? ''} onChange={(event) => setFilter('sort', event.target.value)} className="block w-full text-sm">
-                                {STATEMENT_SORT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                            </select>
-                        </FilterField>
-                    </FilterBar>
-                    {filters.sort?.startsWith('bank_') && <p className="mt-2 text-sm text-gray-500">الحركات دون تاريخ وصول للبنك تظهر أخيرًا. الرصيد بجانب كل حركة هو رصيدها وقت التسجيل.</p>}
-                    {invalidDates && (
-                        <p role="alert" className="mt-2 text-sm text-red-600">
-                            تاريخ البداية يجب أن يسبق تاريخ النهاية.
-                        </p>
-                    )}
+                    <StatementViewTabs value={view} onChange={chooseView} />
+                    {!toolsSlot && exportTools}
                 </div>
 
-                <div className="data-table-container">
-                    <table className="data-table data-table-ledger w-full text-start text-sm" style={{ '--statement-table-width': `${COLUMN_WIDTHS.reduce((total, width) => total + width, hasLineMenus ? 64 : 0)}px` }}>
-                        <colgroup>
-                            {COLUMN_WIDTHS.map((width, index) => <col key={index} style={{ width: `${width}px` }} />)}
-                            {hasLineMenus && <col className="statement-screen-only !w-[64px]" />}
-                        </colgroup>
-                        <thead>
-                            <tr>
-                                {columns.map((column) => (
-                                    <th key={column} className={column === '' ? 'statement-screen-only' : undefined}>
-                                        {column}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {rows.length === 0 ? (
-                                <tr>
-                                    <td colSpan={columns.length}>
-                                        {!entries.length ? (
-                                            'لا توجد حركات على هذا الحساب بعد.'
-                                        ) : isCompact && !compact.entries.length ? (
-                                            <>
-                                                كل حركات هذا الحساب ملغاة مع قيودها العكسية (مجموعها صفر) فلا شيء يُعرض في العرض المختصر.{' '}
-                                                <button type="button" onClick={() => chooseView('full')} className="font-medium text-brand-600 hover:underline">
-                                                    عرض كل الحركات
-                                                </button>
-                                            </>
-                                        ) : (
-                                            'لا توجد حركات تطابق البحث والتصفية.'
-                                        )}
-                                    </td>
-                                </tr>
-                            ) : (
-                                rows.map((entry) => {
-                                    const historyOpen = isCompact && openHistories.has(entry.id);
-                                    const rowProps = { isCompact, hasLineMenus, hoveredChain, onHoverChain: setHoveredChain, onJump: jumpToLine, onAction: actOn, fullPaymentDetails: printOptions !== null };
-
-                                    return (
-                                        <Fragment key={entry.id}>
-                                            <StatementRow
-                                                {...rowProps}
-                                                entry={entry}
-                                                chain={chains.get(entry.id) ?? null}
-                                                highlighted={highlightedLineId === entry.id}
-                                                focused={focusedLineId === entry.id || entry.discountLine?.id === focusedLineId}
-                                                historyOpen={historyOpen}
-                                                onToggleHistory={() => toggleHistory(entry.id)}
-                                            />
-                                            {historyOpen &&
-                                                entry.history.map((folded) => (
-                                                    <StatementRow
-                                                        key={folded.id}
-                                                        {...rowProps}
-                                                        entry={folded}
-                                                        chain={chains.get(folded.id) ?? null}
-                                                        isHistory
-                                                        highlighted={highlightedLineId === folded.id}
-                                                        focused={focusedLineId === folded.id}
-                                                    />
-                                                ))}
-                                        </Fragment>
-                                    );
-                                })
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-
-                <div className="statement-ledger-footer flex flex-wrap items-center justify-between gap-3 text-sm text-gray-500">
-                    <p aria-live="polite">
-                        الحركات المعروضة: {visibleEntries.length} من {entries.length} · الأقدم أولًا، والرصيد بعد كل حركة
-                        {isCompact && compact.hiddenCount > 0 && (
-                            <>
-                                {' '}
-                                · أُخفيت {compact.hiddenCount} حركة ملغاة مع قيودها العكسية (مجموعها صفر){' '}
-                                <button type="button" onClick={() => chooseView('full')} className="statement-screen-only font-medium text-brand-600 hover:underline">
-                                    عرض كل الحركات
-                                </button>
-                            </>
-                        )}
-                    </p>
+                <div className="gl-st-bar gl-st-filters" role="group" aria-label="تصفية الحركات">
+                    <SearchField aria-label="بحث" value={filters.search} onChange={(value) => setFilter('search', value)} className="gl-st-search">
+                        <SearchField.Group>
+                            <SearchField.SearchIcon />
+                            <SearchField.Input placeholder="البيان، رقم السند، المبلغ أو البنك" />
+                            <SearchField.ClearButton />
+                        </SearchField.Group>
+                    </SearchField>
+                    <FilterField group={{ label: 'نوع الحركة', options: typeOptions }} value={filters.type} onChange={(value) => setFilter('type', value ?? '')} />
+                    <FilterField group={{ label: 'طريقة الدفع', options: methodOptions }} value={filters.method} onChange={(value) => setFilter('method', value ?? '')} icon="wallet" />
+                    <DateInput variant="pill" prefix="من تاريخ" aria-label="من تاريخ" placeholder="" value={filters.dateFrom} max={filters.dateTo || undefined} onChange={(value) => setFilter('dateFrom', value)} />
+                    <DateInput variant="pill" prefix="إلى تاريخ" aria-label="إلى تاريخ" placeholder="" value={filters.dateTo} min={filters.dateFrom || undefined} onChange={(value) => setFilter('dateTo', value)} />
+                    <FilterField group={{ label: 'الترتيب', options: STATEMENT_SORT_OPTIONS }} value={filters.sort ?? ''} onChange={(value) => setFilter('sort', value ?? '')} placeholder={STATEMENT_SORT_OPTIONS[0].label} clearable={false} icon="sort" />
                     {isFiltered && (
-                        <button
-                            type="button"
-                            onClick={() => setFilters(EMPTY_FILTERS)}
-                            className="statement-screen-only font-medium text-brand-600 hover:underline"
-                        >
+                        <button type="button" onClick={() => setFilters(EMPTY_FILTERS)} className="gl-filter-clear">
+                            <Icon name="close" className="h-3.5 w-3.5" />
                             مسح عوامل التصفية
                         </button>
                     )}
                 </div>
-            </section>
+                {filters.sort?.startsWith('bank_') && <p className="gl-st-note">الحركات دون تاريخ وصول للبنك تظهر أخيرًا. الرصيد بجانب كل حركة هو رصيدها وقت التسجيل.</p>}
+                {invalidDates && (
+                    <p role="alert" className="gl-st-note text-red-600">
+                        تاريخ البداية يجب أن يسبق تاريخ النهاية.
+                    </p>
+                )}
+
+                <StatementLedger
+                    rows={rows}
+                    empty={emptyMessage}
+                    banded={!filters.sort?.startsWith('bank_')}
+                    isCompact={isCompact}
+                    openHistories={openHistories}
+                    onToggleHistory={toggleHistory}
+                    chains={chains}
+                    hoveredChain={hoveredChain}
+                    onHoverChain={setHoveredChain}
+                    highlightedLineId={highlightedLineId}
+                    focusedLineId={focusedLineId}
+                    hasLineMenus={hasLineMenus}
+                    onJump={jumpToLine}
+                    onAction={actOn}
+                />
+
+                <div className="gl-st-foot statement-ledger-footer">
+                    <p aria-live="polite">
+                        الحركات المعروضة: <b>{visibleEntries.length}</b> من <b>{entries.length}</b>، الأقدم أولًا، والرصيد بعد كل حركة
+                        {isCompact && compact.hiddenCount > 0 && <>، أُخفيت {compact.hiddenCount} حركة ملغاة مع قيودها العكسية (مجموعها صفر)</>}
+                    </p>
+                    {isCompact && compact.hiddenCount > 0 && (
+                        <Button variant="ghost" size="sm" onPress={() => chooseView('full')} className="gl-st-foot-btn statement-screen-only">
+                            عرض كل الحركات
+                        </Button>
+                    )}
+                </div>
+            </Card>
+        </div>
+    );
+}
+
+/** A total on its own HeroUI card: the amount in shekels and what it counts. */
+function SummaryKpi({ label, value, hint }) {
+    return (
+        <Card className="gl-kpi">
+            <small>{label}</small>
+            <b><bdi dir="ltr">{formatAmount(value)}</bdi> <span className="gl-kpi-unit">₪</span></b>
+            <span>{hint}</span>
+        </Card>
+    );
+}
+
+/** Every column of the statement, for the printed page (Print Designer) and its preview. */
+function PrintLedger({ rows, columns, isCompact, openHistories, chains, focusedLineId, empty, printOptions }) {
+    const noop = () => {};
+
+    return (
+        <div className="data-table-container">
+            <table className="data-table data-table-ledger w-full text-start text-sm" style={{ '--statement-table-width': `${COLUMN_WIDTHS.reduce((total, width) => total + width, 0)}px` }}>
+                <colgroup>
+                    {COLUMN_WIDTHS.map((width, index) => <col key={index} style={{ width: `${width}px` }} />)}
+                </colgroup>
+                <thead>
+                    <tr>
+                        {columns.map((column) => <th key={column}>{column}</th>)}
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows.length === 0 ? (
+                        <tr>
+                            <td colSpan={columns.length}>{empty}</td>
+                        </tr>
+                    ) : (
+                        rows.map((entry) => {
+                            const historyOpen = isCompact && openHistories.has(entry.id);
+                            const rowProps = { isCompact, hasLineMenus: false, hoveredChain: null, onHoverChain: noop, onJump: noop, onAction: noop, fullPaymentDetails: printOptions !== null };
+
+                            return (
+                                <Fragment key={entry.id}>
+                                    <StatementRow {...rowProps} entry={entry} chain={chains.get(entry.id) ?? null} highlighted={false} focused={focusedLineId === entry.id || entry.discountLine?.id === focusedLineId} historyOpen={historyOpen} onToggleHistory={noop} />
+                                    {historyOpen && entry.history.map((folded) => <StatementRow key={folded.id} {...rowProps} entry={folded} chain={chains.get(folded.id) ?? null} isHistory highlighted={false} focused={focusedLineId === folded.id} />)}
+                                </Fragment>
+                            );
+                        })
+                    )}
+                </tbody>
+            </table>
         </div>
     );
 }

@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "company": {
+        "name": "مصعب العجل وأحمد الكفارنة",
+        "nameEnglish": null,
+        "shortName": "مصعب العجل وأحمد الكفارنة",
+        "tagline": "للتجارة العامة"
+    },
+    "logos": {
+        "main": "ma-logo.png",
+        "light": "ma-logo-light.png",
+        "icon": "ma-icon.png",
+        "print": null
+    },
+    "colors": {
+        "primary": "#E2642A",
+        "print": "#E2642A"
+    },
+    "design": {
+        "preset": "superpower"
+    }
+}

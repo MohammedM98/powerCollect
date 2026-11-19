@@ -58,16 +58,16 @@ const TONES = {
  * every action reads at a glance. Written out whole so Tailwind keeps them.
  */
 const COLORFUL = {
-    graphite: { row: 'bg-gray-500/[0.06] hover:bg-gray-500/[0.14] focus-visible:bg-gray-500/[0.14]', label: 'text-gray-900', tile: 'bg-graphite-gradient text-white' },
-    blue: { row: 'bg-blue-500/[0.07] hover:bg-blue-500/[0.15] focus-visible:bg-blue-500/[0.15]', label: 'text-blue-700 dark:text-blue-500', tile: 'bg-blue-600 text-white' },
-    indigo: { row: 'bg-indigo-500/[0.07] hover:bg-indigo-500/[0.15] focus-visible:bg-indigo-500/[0.15]', label: 'text-indigo-700 dark:text-indigo-300', tile: 'bg-indigo-600 text-white' },
-    sky: { row: 'bg-sky-500/[0.07] hover:bg-sky-500/[0.15] focus-visible:bg-sky-500/[0.15]', label: 'text-sky-700 dark:text-sky-300', tile: 'bg-sky-600 text-white' },
-    emerald: { row: 'bg-emerald-500/[0.07] hover:bg-emerald-500/[0.15] focus-visible:bg-emerald-500/[0.15]', label: 'text-emerald-700 dark:text-emerald-300', tile: 'bg-emerald-600 text-white' },
-    amber: { row: 'bg-amber-500/[0.08] hover:bg-amber-500/[0.16] focus-visible:bg-amber-500/[0.16]', label: 'text-amber-800 dark:text-amber-300', tile: 'bg-amber-500 text-white' },
-    red: { row: 'bg-red-500/[0.07] hover:bg-red-500/[0.15] focus-visible:bg-red-500/[0.15]', label: 'text-red-700 dark:text-red-400', tile: 'bg-red-600 text-white' },
-    violet: { row: 'bg-violet-500/[0.07] hover:bg-violet-500/[0.15] focus-visible:bg-violet-500/[0.15]', label: 'text-violet-700 dark:text-violet-300', tile: 'bg-violet-600 text-white' },
-    teal: { row: 'bg-teal-500/[0.07] hover:bg-teal-500/[0.15] focus-visible:bg-teal-500/[0.15]', label: 'text-teal-700 dark:text-teal-300', tile: 'bg-teal-600 text-white' },
-    brand: { row: 'bg-brand-500/[0.07] hover:bg-brand-500/[0.15] focus-visible:bg-brand-500/[0.15]', label: 'text-brand-600', tile: 'bg-brand-gradient text-white' },
+    graphite: { row: 'bg-gray-500/6 hover:bg-gray-500/[0.14] focus-visible:bg-gray-500/[0.14]', label: 'text-gray-900', tile: 'bg-graphite-gradient text-white' },
+    blue: { row: 'bg-blue-500/[0.07] hover:bg-blue-500/15 focus-visible:bg-blue-500/15', label: 'text-blue-700 dark:text-blue-500', tile: 'bg-blue-600 text-white' },
+    indigo: { row: 'bg-indigo-500/[0.07] hover:bg-indigo-500/15 focus-visible:bg-indigo-500/15', label: 'text-indigo-700 dark:text-indigo-300', tile: 'bg-indigo-600 text-white' },
+    sky: { row: 'bg-sky-500/[0.07] hover:bg-sky-500/15 focus-visible:bg-sky-500/15', label: 'text-sky-700 dark:text-sky-300', tile: 'bg-sky-600 text-white' },
+    emerald: { row: 'bg-emerald-500/[0.07] hover:bg-emerald-500/15 focus-visible:bg-emerald-500/15', label: 'text-emerald-700 dark:text-emerald-300', tile: 'bg-emerald-600 text-white' },
+    amber: { row: 'bg-amber-500/8 hover:bg-amber-500/16 focus-visible:bg-amber-500/16', label: 'text-amber-800 dark:text-amber-300', tile: 'bg-amber-500 text-white' },
+    red: { row: 'bg-red-500/[0.07] hover:bg-red-500/15 focus-visible:bg-red-500/15', label: 'text-red-700 dark:text-red-400', tile: 'bg-red-600 text-white' },
+    violet: { row: 'bg-violet-500/[0.07] hover:bg-violet-500/15 focus-visible:bg-violet-500/15', label: 'text-violet-700 dark:text-violet-300', tile: 'bg-violet-600 text-white' },
+    teal: { row: 'bg-teal-500/[0.07] hover:bg-teal-500/15 focus-visible:bg-teal-500/15', label: 'text-teal-700 dark:text-teal-300', tile: 'bg-teal-600 text-white' },
+    brand: { row: 'bg-brand-500/[0.07] hover:bg-brand-500/15 focus-visible:bg-brand-500/15', label: 'text-brand-600', tile: 'bg-brand-gradient text-white' },
 };
 const GAP = 6;
 
@@ -227,7 +227,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
             className={
                 phone
                     ? 'animate-sheet fixed inset-x-0 bottom-0 z-50 max-h-[80dvh] overflow-y-auto rounded-t-[24px] border-t border-gray-200 bg-surface p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-lift'
-                    : 'animate-menu fixed z-50 overflow-y-auto rounded-[20px] border border-gray-200 bg-surface p-2 shadow-lift'
+                    : 'animate-menu fixed z-50 overflow-y-auto rounded-[20px] p-2 gl-pop'
             }
         >
             {phone && <div className="mx-auto mb-1 mt-1 h-1 w-10 rounded-full bg-gray-200" aria-hidden="true" />}
@@ -237,10 +237,10 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
                     {initials(menu.title)}
                 </span>
                 <span className="min-w-0">
-                    <b className={`block text-sm text-gray-900 ${menu.description ? 'whitespace-normal break-words' : 'truncate'}`}>{menu.title}</b>
-                    {menu.description && <span className="mt-1 block whitespace-pre-wrap break-words text-sm leading-relaxed text-gray-700">{menu.description}</span>}
+                    <b className={`block text-sm text-gray-900 ${menu.description ? 'whitespace-normal wrap-break-word' : 'truncate'}`}>{menu.title}</b>
+                    {menu.description && <span className="mt-1 block whitespace-pre-wrap wrap-break-word text-sm leading-relaxed text-gray-700">{menu.description}</span>}
                     {menu.subtitle && (
-                        <span className="block truncate text-xs text-gray-500 !text-right" dir="ltr">
+                        <span className="block truncate text-xs text-gray-500 text-right!" dir="ltr">
                             {menu.subtitle}
                         </span>
                     )}
@@ -267,7 +267,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
                                 aria-keyshortcuts={item.shortcut}
                                 title={item.lockedReason ?? item.hint}
                                 onClick={() => run(item)}
-                                className={`group/item flex w-full items-center gap-2.5 rounded-xl px-2 py-1.5 text-start text-sm font-medium outline-none transition ${
+                                className={`group/item flex w-full items-center gap-2.5 rounded-xl px-2 py-1.5 text-start text-sm font-medium outline-hidden transition ${
                                     unavailable
                                         ? 'cursor-not-allowed opacity-55'
                                         : colorful
@@ -280,7 +280,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
                                         unavailable
                                             ? 'bg-gray-100 text-gray-500'
                                             : colorful
-                                              ? `${colorful.tile} shadow-sm`
+                                              ? `${colorful.tile} shadow-xs`
                                               : `${tone.rest} ${tone.active} group-hover/item:text-white group-focus-visible/item:text-white`
                                     }`}
                                 >

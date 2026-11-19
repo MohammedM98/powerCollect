@@ -66,7 +66,7 @@ export default function MeterBoxSubAreaSelect({ id, value, onChange, onCreated, 
                 onCreate={canCreate && areaId && !blockedMessage ? startAdding : null}
                 createLabel="إضافة منطقة جديدة"
             />
-            {adding && <div className="space-y-3 rounded-control border border-brand-500/25 bg-brand-500/[0.04] p-3" role="group" aria-label="إضافة منطقة الطبلون">
+            {adding && <div className="space-y-3 rounded-control border border-brand-500/25 bg-brand-500/4 p-3" role="group" aria-label="إضافة منطقة الطبلون">
                 <label htmlFor={`${id}-new`} className="flex items-center gap-2 text-xs font-bold text-brand-600"><Icon name="plus" className="h-4 w-4" />منطقة جديدة ضمن منطقة الفرع المختار</label>
                 <TextInput
                     id={`${id}-new`}

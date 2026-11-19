@@ -345,7 +345,7 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                         {settings && parts && (
                             <>
                                 <bdi className="block truncate font-display font-bold text-gray-900">{fileName}</bdi>
-                                <span className="block">{sheets.length} {sheets.length === 1 ? 'ورقة' : sheets.length === 2 ? 'ورقتان' : 'أوراق'} · {rowsCount.toLocaleString('en')} صف</span>
+                                <span className="block">{sheets.length} {sheets.length === 1 ? 'ورقة' : sheets.length === 2 ? 'ورقتان' : 'أوراق'}، {rowsCount.toLocaleString('en')} صف</span>
                             </>
                         )}
                         {error && <span role="alert" className="block text-red-700">{error}</span>}

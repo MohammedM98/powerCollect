@@ -16,7 +16,7 @@ import {
     FormHeader,
     FormStep,
     MovementCard,
-    MOVEMENT_TONES,
+    movementStyle,
     QuickPick,
     SheetBody,
     SHEET_FORM_CLASS,
@@ -30,7 +30,7 @@ const QUICK_AMOUNTS = [50, 100, 200];
 const LARGE_CLEARING = 500;
 
 const notesClass =
-    'block min-h-[76px] w-full resize-y rounded-[14px] border-[1.5px] border-gray-200 bg-surface px-4 py-3 text-base leading-relaxed text-gray-900 transition placeholder:text-gray-400 hover:border-brand-500/45 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15';
+    'block min-h-[76px] w-full resize-y rounded-[14px] border-[1.5px] border-gray-200 bg-surface px-4 py-3 text-base leading-relaxed text-gray-900 transition placeholder:text-gray-400 hover:border-brand-500/45 focus:border-brand-500 focus:outline-hidden focus:ring-4 focus:ring-brand-500/15';
 
 /**
  * Record a clearing (مقاصة): a service for a service. The subscription gets
@@ -69,7 +69,7 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
     const overBalance = amount > owed;
     const creditLeft = overBalance ? Math.round((amount - Number(balance)) * 100) / 100 : 0;
     const balanceAfter = amount > 0 ? Number(balance) - amount : null;
-    const tone = correcting ? 'correction' : 'credit';
+    const tone = correcting ? 'correction' : 'clearing';
 
     function close() {
         setDiscarding(false);
@@ -120,7 +120,7 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
 
     return (
         <>
-            <Modal show={show} onClose={requestClose} maxWidth="5xl">
+            <Modal show={show} onClose={requestClose} maxWidth="2xl">
                 {receipt ? (
                     <DoneScreen
                         tone={correcting ? 'amber' : 'green'}
@@ -147,12 +147,12 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
                         onInput={(e) => clearErrorOnInput(e, form)}
                         onKeyDown={submitOnCtrlEnter}
                         className={SHEET_FORM_CLASS}
-                        style={{ '--gl-t': MOVEMENT_TONES[tone] }}
+                        style={movementStyle(tone)}
                     >
                         <FormHeader
                             titleId={titleId}
                             icon={correcting ? 'repeat' : 'scale'}
-                            tone={correcting ? 'amber' : 'green'}
+                            tone={correcting ? 'amber' : 'clearing'}
                             title={correcting ? 'تصحيح مقاصة' : 'مقاصة'}
                             subtitle={
                                 correcting
@@ -269,7 +269,6 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
 
                         <FormFooter
                             onCancel={requestClose}
-                            tone={correcting ? 'amber' : 'green'}
                             disabled={amount <= 0 || missingService || (overBalance && !data.confirm_over_balance)}
                             processing={form.processing}
                             submitLabel={correcting ? 'حفظ التصحيح' : amount > 0 ? `مقاصة ${formatMoney(amount)} ₪ من الحساب` : 'تسجيل المقاصة'}

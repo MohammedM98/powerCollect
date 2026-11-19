@@ -1,10 +1,449 @@
-@import './fonts.css';
+/*
+ * One flat cascade, as under Tailwind 3: the theme's variables, the shared
+ * component styles, Tailwind's utilities and this file's own rules are all
+ * unlayered, in that order, so the more specific rule wins (`.gl-group-name
+ * svg` over `h-5`) and on a tie the later one does (`gl-tile p-0`). Only the
+ * browser reset, the forms plugin and the field rules below sit in the base
+ * layer, under everything else.
+ */
+@layer theme, base, components, utilities;
+
+@import './fonts.css' layer(base);
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
 @import './theme.css';
 @import './components.css';
+@import 'tailwindcss/utilities.css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/*
+ * HeroUI v3's components, in the components layer under the site's own
+ * styles: its prelude (the utilities and variants its styles use), the
+ * components the windows are built with, and their colours from this
+ * palette (heroui.css). Its theme file is left out on purpose (heroui.css).
+ */
+@import '@heroui/styles/utilities';
+@import '@heroui/styles/variants';
+@import '@heroui/styles/components/button.css' layer(components);
+@import '@heroui/styles/components/label.css' layer(components);
+@import '@heroui/styles/components/description.css' layer(components);
+@import '@heroui/styles/components/field-error.css' layer(components);
+@import '@heroui/styles/components/input.css' layer(components);
+@import '@heroui/styles/components/textfield.css' layer(components);
+@import '@heroui/styles/components/radio.css' layer(components);
+@import '@heroui/styles/components/radio-group.css' layer(components);
+@import '@heroui/styles/components/switch.css' layer(components);
+@import '@heroui/styles/components/card.css' layer(components);
+@import '@heroui/styles/components/chip.css' layer(components);
+@import '@heroui/styles/components/avatar.css' layer(components);
+@import '@heroui/styles/components/toggle-button.css' layer(components);
+@import '@heroui/styles/components/toggle-button-group.css' layer(components);
+@import '@heroui/styles/components/close-button.css' layer(components);
+@import '@heroui/styles/components/search-field.css' layer(components);
+@import './heroui.css';
+
+@plugin '@tailwindcss/forms';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans:
+    var(--font-body, 'Zain'), 'Zain', 'IBM Plex Sans Arabic',
+    ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-luxe:
+    var(--font-heading, 'El Messiri'), 'IBM Plex Sans Arabic', ui-serif,
+    Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-display:
+    var(--font-body, 'Zain'), 'Zain', 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  --text-xs: 0.875rem;
+  --text-xs--line-height: 1.6;
+  --text-sm: 1rem;
+  --text-sm--line-height: 1.6;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.7;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.6;
+  --text-xl: 1.375rem;
+  --text-xl--line-height: 1.5;
+  --text-2xl: 1.625rem;
+  --text-2xl--line-height: 1.4;
+  --text-3xl: 2rem;
+  --text-3xl--line-height: 1.3;
+
+  --color-brand-50: rgb(var(--brand-50));
+  --color-brand-100: rgb(var(--brand-100));
+  --color-brand-200: rgb(var(--brand-200));
+  --color-brand-300: rgb(var(--brand-300));
+  --color-brand-400: rgb(var(--brand-400));
+  --color-brand-500: rgb(var(--brand-500));
+  --color-brand-600: rgb(var(--brand-600));
+  --color-brand-700: rgb(var(--brand-700));
+  --color-brand-800: rgb(var(--brand-800));
+  --color-brand-900: rgb(var(--brand-900));
+
+  --color-gray-50: rgb(var(--gray-50));
+  --color-gray-100: rgb(var(--gray-100));
+  --color-gray-200: rgb(var(--gray-200));
+  --color-gray-300: rgb(var(--gray-300));
+  --color-gray-400: rgb(var(--gray-400));
+  --color-gray-500: rgb(var(--gray-500));
+  --color-gray-600: rgb(var(--gray-600));
+  --color-gray-700: rgb(var(--gray-700));
+  --color-gray-800: rgb(var(--gray-800));
+  --color-gray-900: rgb(var(--gray-900));
+  --color-gray-950: rgb(var(--gray-950));
+
+  --color-graphite-400: rgb(var(--graphite-400));
+  --color-graphite-500: rgb(var(--graphite-500));
+  --color-graphite-600: rgb(var(--graphite-600));
+  --color-graphite-700: rgb(var(--graphite-700));
+  --color-graphite-800: rgb(var(--graphite-800));
+  --color-graphite-900: rgb(var(--graphite-900));
+  --color-graphite-950: rgb(var(--graphite-950));
+
+  --color-silver-50: rgb(var(--silver-50));
+  --color-silver-100: rgb(var(--silver-100));
+  --color-silver-200: rgb(var(--silver-200));
+  --color-silver-300: rgb(var(--silver-300));
+  --color-silver-400: rgb(var(--silver-400));
+  --color-silver-500: rgb(var(--silver-500));
+  --color-silver-600: rgb(var(--silver-600));
+  --color-silver-700: rgb(var(--silver-700));
+  --color-silver-800: rgb(var(--silver-800));
+  --color-silver-900: rgb(var(--silver-900));
+
+  --color-blue-50: rgb(var(--blue-50));
+  --color-blue-100: rgb(var(--blue-100));
+  --color-blue-200: rgb(var(--blue-200));
+  --color-blue-300: rgb(var(--blue-300));
+  --color-blue-400: rgb(var(--blue-400));
+  --color-blue-500: rgb(var(--blue-500));
+  --color-blue-600: rgb(var(--blue-600));
+  --color-blue-700: rgb(var(--blue-700));
+  --color-blue-800: rgb(var(--blue-800));
+  --color-blue-900: rgb(var(--blue-900));
+  --color-blue-950: rgb(var(--blue-950));
+
+  --color-print-300: rgb(var(--print-300));
+  --color-print-500: rgb(var(--print-500));
+  --color-print-600: rgb(var(--print-600));
+  --color-print-700: rgb(var(--print-700));
+
+  --color-excel-300: rgb(var(--excel-300));
+  --color-excel-500: rgb(var(--excel-500));
+  --color-excel-600: rgb(var(--excel-600));
+  --color-excel-700: rgb(var(--excel-700));
+
+  --color-surface: rgb(var(--surface));
+
+  --color-success-50: rgb(var(--success-50));
+  --color-success-100: rgb(var(--success-100));
+  --color-success-200: rgb(var(--success-200));
+  --color-success-300: rgb(var(--success-300));
+  --color-success-400: rgb(var(--success-400));
+  --color-success-500: rgb(var(--success-500));
+  --color-success-600: rgb(var(--success-600));
+  --color-success-700: rgb(var(--success-700));
+  --color-success-800: rgb(var(--success-800));
+  --color-success-900: rgb(var(--success-900));
+  --color-success-950: rgb(var(--success-950));
+
+  --color-warning-50: rgb(var(--warning-50));
+  --color-warning-100: rgb(var(--warning-100));
+  --color-warning-200: rgb(var(--warning-200));
+  --color-warning-300: rgb(var(--warning-300));
+  --color-warning-400: rgb(var(--warning-400));
+  --color-warning-500: rgb(var(--warning-500));
+  --color-warning-600: rgb(var(--warning-600));
+  --color-warning-700: rgb(var(--warning-700));
+  --color-warning-800: rgb(var(--warning-800));
+  --color-warning-900: rgb(var(--warning-900));
+  --color-warning-950: rgb(var(--warning-950));
+
+  --color-danger-50: rgb(var(--danger-50));
+  --color-danger-100: rgb(var(--danger-100));
+  --color-danger-200: rgb(var(--danger-200));
+  --color-danger-300: rgb(var(--danger-300));
+  --color-danger-400: rgb(var(--danger-400));
+  --color-danger-500: rgb(var(--danger-500));
+  --color-danger-600: rgb(var(--danger-600));
+  --color-danger-700: rgb(var(--danger-700));
+  --color-danger-800: rgb(var(--danger-800));
+  --color-danger-900: rgb(var(--danger-900));
+  --color-danger-950: rgb(var(--danger-950));
+
+  --color-info-50: rgb(var(--info-50));
+  --color-info-100: rgb(var(--info-100));
+  --color-info-200: rgb(var(--info-200));
+  --color-info-300: rgb(var(--info-300));
+  --color-info-400: rgb(var(--info-400));
+  --color-info-500: rgb(var(--info-500));
+  --color-info-600: rgb(var(--info-600));
+  --color-info-700: rgb(var(--info-700));
+  --color-info-800: rgb(var(--info-800));
+  --color-info-900: rgb(var(--info-900));
+  --color-info-950: rgb(var(--info-950));
+
+  --color-emerald-50: rgb(var(--success-50));
+  --color-emerald-100: rgb(var(--success-100));
+  --color-emerald-200: rgb(var(--success-200));
+  --color-emerald-300: rgb(var(--success-300));
+  --color-emerald-400: rgb(var(--success-400));
+  --color-emerald-500: rgb(var(--success-500));
+  --color-emerald-600: rgb(var(--success-600));
+  --color-emerald-700: rgb(var(--success-700));
+  --color-emerald-800: rgb(var(--success-800));
+  --color-emerald-900: rgb(var(--success-900));
+  --color-emerald-950: rgb(var(--success-950));
+
+  --color-green-50: rgb(var(--success-50));
+  --color-green-100: rgb(var(--success-100));
+  --color-green-200: rgb(var(--success-200));
+  --color-green-300: rgb(var(--success-300));
+  --color-green-400: rgb(var(--success-400));
+  --color-green-500: rgb(var(--success-500));
+  --color-green-600: rgb(var(--success-600));
+  --color-green-700: rgb(var(--success-700));
+  --color-green-800: rgb(var(--success-800));
+  --color-green-900: rgb(var(--success-900));
+  --color-green-950: rgb(var(--success-950));
+
+  --color-amber-50: rgb(var(--warning-50));
+  --color-amber-100: rgb(var(--warning-100));
+  --color-amber-200: rgb(var(--warning-200));
+  --color-amber-300: rgb(var(--warning-300));
+  --color-amber-400: rgb(var(--warning-400));
+  --color-amber-500: rgb(var(--warning-500));
+  --color-amber-600: rgb(var(--warning-600));
+  --color-amber-700: rgb(var(--warning-700));
+  --color-amber-800: rgb(var(--warning-800));
+  --color-amber-900: rgb(var(--warning-900));
+  --color-amber-950: rgb(var(--warning-950));
+
+  --color-yellow-50: rgb(var(--warning-50));
+  --color-yellow-100: rgb(var(--warning-100));
+  --color-yellow-200: rgb(var(--warning-200));
+  --color-yellow-300: rgb(var(--warning-300));
+  --color-yellow-400: rgb(var(--warning-400));
+  --color-yellow-500: rgb(var(--warning-500));
+  --color-yellow-600: rgb(var(--warning-600));
+  --color-yellow-700: rgb(var(--warning-700));
+  --color-yellow-800: rgb(var(--warning-800));
+  --color-yellow-900: rgb(var(--warning-900));
+  --color-yellow-950: rgb(var(--warning-950));
+
+  --color-red-50: rgb(var(--danger-50));
+  --color-red-100: rgb(var(--danger-100));
+  --color-red-200: rgb(var(--danger-200));
+  --color-red-300: rgb(var(--danger-300));
+  --color-red-400: rgb(var(--danger-400));
+  --color-red-500: rgb(var(--danger-500));
+  --color-red-600: rgb(var(--danger-600));
+  --color-red-700: rgb(var(--danger-700));
+  --color-red-800: rgb(var(--danger-800));
+  --color-red-900: rgb(var(--danger-900));
+  --color-red-950: rgb(var(--danger-950));
+
+  --color-rose-50: rgb(var(--danger-50));
+  --color-rose-100: rgb(var(--danger-100));
+  --color-rose-200: rgb(var(--danger-200));
+  --color-rose-300: rgb(var(--danger-300));
+  --color-rose-400: rgb(var(--danger-400));
+  --color-rose-500: rgb(var(--danger-500));
+  --color-rose-600: rgb(var(--danger-600));
+  --color-rose-700: rgb(var(--danger-700));
+  --color-rose-800: rgb(var(--danger-800));
+  --color-rose-900: rgb(var(--danger-900));
+  --color-rose-950: rgb(var(--danger-950));
+
+  --color-sky-50: rgb(var(--info-50));
+  --color-sky-100: rgb(var(--info-100));
+  --color-sky-200: rgb(var(--info-200));
+  --color-sky-300: rgb(var(--info-300));
+  --color-sky-400: rgb(var(--info-400));
+  --color-sky-500: rgb(var(--info-500));
+  --color-sky-600: rgb(var(--info-600));
+  --color-sky-700: rgb(var(--info-700));
+  --color-sky-800: rgb(var(--info-800));
+  --color-sky-900: rgb(var(--info-900));
+  --color-sky-950: rgb(var(--info-950));
+
+  --color-cyan-50: rgb(var(--info-50));
+  --color-cyan-100: rgb(var(--info-100));
+  --color-cyan-200: rgb(var(--info-200));
+  --color-cyan-300: rgb(var(--info-300));
+  --color-cyan-400: rgb(var(--info-400));
+  --color-cyan-500: rgb(var(--info-500));
+  --color-cyan-600: rgb(var(--info-600));
+  --color-cyan-700: rgb(var(--info-700));
+  --color-cyan-800: rgb(var(--info-800));
+  --color-cyan-900: rgb(var(--info-900));
+  --color-cyan-950: rgb(var(--info-950));
+
+  --color-violet-50: rgb(var(--violet-50));
+  --color-violet-100: rgb(var(--violet-100));
+  --color-violet-200: rgb(var(--violet-200));
+  --color-violet-300: rgb(var(--violet-300));
+  --color-violet-400: rgb(var(--violet-400));
+  --color-violet-500: rgb(var(--violet-500));
+  --color-violet-600: rgb(var(--violet-600));
+  --color-violet-700: rgb(var(--violet-700));
+  --color-violet-800: rgb(var(--violet-800));
+  --color-violet-900: rgb(var(--violet-900));
+  --color-violet-950: rgb(var(--violet-950));
+
+  --color-purple-50: rgb(var(--violet-50));
+  --color-purple-100: rgb(var(--violet-100));
+  --color-purple-200: rgb(var(--violet-200));
+  --color-purple-300: rgb(var(--violet-300));
+  --color-purple-400: rgb(var(--violet-400));
+  --color-purple-500: rgb(var(--violet-500));
+  --color-purple-600: rgb(var(--violet-600));
+  --color-purple-700: rgb(var(--violet-700));
+  --color-purple-800: rgb(var(--violet-800));
+  --color-purple-900: rgb(var(--violet-900));
+  --color-purple-950: rgb(var(--violet-950));
+
+  --color-teal-50: rgb(var(--teal-50));
+  --color-teal-100: rgb(var(--teal-100));
+  --color-teal-200: rgb(var(--teal-200));
+  --color-teal-300: rgb(var(--teal-300));
+  --color-teal-400: rgb(var(--teal-400));
+  --color-teal-500: rgb(var(--teal-500));
+  --color-teal-600: rgb(var(--teal-600));
+  --color-teal-700: rgb(var(--teal-700));
+  --color-teal-800: rgb(var(--teal-800));
+  --color-teal-900: rgb(var(--teal-900));
+  --color-teal-950: rgb(var(--teal-950));
+
+  --color-indigo-50: rgb(var(--indigo-50));
+  --color-indigo-100: rgb(var(--indigo-100));
+  --color-indigo-200: rgb(var(--indigo-200));
+  --color-indigo-300: rgb(var(--indigo-300));
+  --color-indigo-400: rgb(var(--indigo-400));
+  --color-indigo-500: rgb(var(--indigo-500));
+  --color-indigo-600: rgb(var(--indigo-600));
+  --color-indigo-700: rgb(var(--indigo-700));
+  --color-indigo-800: rgb(var(--indigo-800));
+  --color-indigo-900: rgb(var(--indigo-900));
+  --color-indigo-950: rgb(var(--indigo-950));
+
+  --color-orange-50: rgb(var(--orange-50));
+  --color-orange-100: rgb(var(--orange-100));
+  --color-orange-200: rgb(var(--orange-200));
+  --color-orange-300: rgb(var(--orange-300));
+  --color-orange-400: rgb(var(--orange-400));
+  --color-orange-500: rgb(var(--orange-500));
+  --color-orange-600: rgb(var(--orange-600));
+  --color-orange-700: rgb(var(--orange-700));
+  --color-orange-800: rgb(var(--orange-800));
+  --color-orange-900: rgb(var(--orange-900));
+  --color-orange-950: rgb(var(--orange-950));
+
+  --radius-sm: calc(0.125rem * var(--radius-scale, 1));
+  --radius: calc(0.25rem * var(--radius-scale, 1));
+  --radius-md: calc(0.375rem * var(--radius-scale, 1));
+  --radius-lg: calc(0.5rem * var(--radius-scale, 1));
+  --radius-xl: calc(0.75rem * var(--radius-scale, 1));
+  --radius-2xl: calc(1rem * var(--radius-scale, 1));
+  --radius-3xl: calc(1.5rem * var(--radius-scale, 1));
+  --radius-control: calc(12px * var(--radius-scale, 1));
+  --radius-row: calc(18px * var(--radius-scale, 1));
+  --radius-card: calc(24px * var(--radius-scale, 1));
+  --radius-panel: calc(28px * var(--radius-scale, 1));
+  --radius-hero: calc(32px * var(--radius-scale, 1));
+
+  --shadow-card: var(--shadow-card);
+  --shadow-lift: var(--shadow-lift);
+  --shadow-glow: var(--shadow-glow);
+
+  --background-image-spectrum: var(--spectrum);
+  --background-image-brand-gradient: var(--brand-fill);
+  --background-image-graphite-gradient: linear-gradient(
+    135deg,
+    rgb(var(--graphite-700)),
+    rgb(var(--graphite-800)) 60%,
+    rgb(var(--graphite-900))
+  );
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility brand-spectrum {
+  /* A thin signature line. Use sparingly: under the logo, above tables and dialogs. */
+  @apply h-[3px] rounded-full bg-spectrum;
+}
+
+@utility data-chip {
+  /* Small monospace chip for codes like a meter box number. */
+  @apply inline-block whitespace-nowrap rounded-lg border border-gray-200 bg-gray-50 px-2 py-0.5 font-mono text-xs text-gray-700;
+}
+
+@utility login-brand-panel {
+  /* Login: the brand half — soft metal texture with a burgundy glow; follows the theme. */
+  background:
+    radial-gradient(
+      55% 45% at 15% 100%,
+      rgb(var(--brand-500) / 0.2),
+      transparent 70%
+    ),
+    repeating-linear-gradient(
+      135deg,
+      rgb(var(--gray-900) / 0.025) 0 1px,
+      transparent 1px 7px
+    ),
+    linear-gradient(
+      160deg,
+      rgb(var(--gray-100)),
+      rgb(var(--gray-200) / 0.75) 55%,
+      rgb(var(--gray-100))
+    );
+}
+
+@utility login-form-panel {
+  background:
+    radial-gradient(
+      40% 35% at 0% 0%,
+      rgb(var(--brand-500) / 0.07),
+      transparent 70%
+    ),
+    rgb(var(--gray-50));
+}
+
+/*
+ * A hidden outline is a clear 2px one, as Tailwind 3's `outline-none` was, so
+ * the chosen focus-ring colour (data-ui-focus-ring) still draws it on a
+ * keyboard focus; Tailwind 4's own removes the outline altogether.
+ */
+@utility outline-hidden {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+@utility kbd {
+  @apply inline-flex items-center rounded-md border border-gray-200 bg-surface px-1.5 py-0.5 font-display text-[12px] font-semibold text-gray-500;
+}
 
 /*
  * Lists (every single-choice <select>): where the browser lets a list be
@@ -14,62 +453,104 @@
  * their own list; the closed field already matches the other fields.
  */
 @supports (appearance: base-select) {
-    select:not([multiple], [size]) {
-        appearance: base-select;
-    }
+  select:not([multiple], [size]) {
+    appearance: base-select;
+  }
 
-    select:not([multiple], [size])::picker-icon {
-        display: none;
-    }
+  select:not([multiple], [size])::picker-icon {
+    display: none;
+  }
 
-    select:not([multiple], [size])::picker(select) {
-        appearance: base-select;
-        margin-block: 6px;
-        max-height: min(320px, 50vh);
-        padding: 6px;
-        border: 1px solid var(--gl-line);
-        border-radius: 14px;
-        background: rgb(var(--panel-bg));
-        color: var(--gl-ink);
-        box-shadow: 0 2px 6px rgb(0 0 0 / 0.07), 0 30px 60px -24px rgb(0 0 0 / 0.42);
-    }
+  select:not([multiple], [size])::picker(select) {
+    appearance: base-select;
+    margin-block: 6px;
+    max-height: min(320px, 50vh);
+    padding: 6px;
+    border: 0;
+    border-radius: 16px;
+    /* Frosted glass, like every floating list (components.css gl-pop). */
+    background: rgb(var(--panel-bg) / 0.74);
+    color: var(--gl-ink);
+    box-shadow:
+      0 0 0 1px rgb(var(--gray-900) / 0.1),
+      0 24px 48px -12px rgb(0 0 0 / 0.35),
+      0 8px 16px -8px rgb(0 0 0 / 0.2);
+    -webkit-backdrop-filter: blur(22px) saturate(1.7);
+    backdrop-filter: blur(22px) saturate(1.7);
+  }
 
-    select:not([multiple], [size]) option {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        min-height: 40px;
-        padding: 0 12px;
-        border-radius: 9px;
-        font-size: 14.5px;
-        cursor: pointer;
-    }
+  select:not([multiple], [size]) option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 40px;
+    padding: 0 12px;
+    border-radius: 9px;
+    font-size: 14.5px;
+    cursor: pointer;
+  }
 
-    select:not([multiple], [size]) option:hover,
-    select:not([multiple], [size]) option:focus-visible {
-        background: var(--gl-fill-2);
-        outline: none;
-    }
+  select:not([multiple], [size]) option:hover,
+  select:not([multiple], [size]) option:focus-visible {
+    background: var(--gl-fill-2);
+    outline: none;
+  }
 
-    select:not([multiple], [size]) option:checked {
-        background: none;
-        color: rgb(var(--gl-brand));
-        font-weight: 600;
-    }
+  select:not([multiple], [size]) option:checked {
+    background: none;
+    color: rgb(var(--gl-brand));
+    font-weight: 600;
+  }
 
-    select:not([multiple], [size]) option::checkmark {
-        order: 1;
-        margin-inline-start: auto;
-        color: rgb(var(--gl-brand));
-    }
+  select:not([multiple], [size]) option::checkmark {
+    order: 1;
+    margin-inline-start: auto;
+    color: rgb(var(--gl-brand));
+  }
 
-    select:not([multiple], [size]) option:disabled {
-        color: var(--gl-faint);
-        cursor: default;
-    }
+  select:not([multiple], [size]) option:disabled {
+    color: var(--gl-faint);
+    cursor: default;
+  }
+}
+
+/*
+ * Two field rules that outrank a utility on the same field, as they did under
+ * Tailwind 3: a list keeps the one field height (over an `h-10`), and a field
+ * written left to right sits on the right (over a `text-end` or a component's
+ * own alignment). They sit outside the layers because a layered rule always
+ * loses to a utility.
+ */
+select:not([multiple], [size]) {
+    height: var(--control-h);
+    min-height: var(--control-h);
+}
+
+:is(input:not([type='checkbox'], [type='radio']), textarea)[dir='ltr'] {
+    text-align: right;
 }
 
 @layer base {
+    /*
+     * Table cells keep the browser's 1px padding, as under Tailwind 3, whose
+     * preflight left it alone (v4 zeroes padding on every element). Padding
+     * utilities on a cell still win: they sit outside this layer.
+     */
+    th,
+    td {
+        padding: 1px;
+    }
+
+    /* Buttons show the hand pointer, and nothing disabled does, as in Tailwind 3's reset. */
+    button,
+    [role='button'] {
+        cursor: pointer;
+    }
+
+    :disabled {
+        cursor: default;
+    }
+
     /* Text with no size of its own takes the base size, with looser lines than the browser's 1.5. */
     body {
         font-size: 1.0625rem;
@@ -77,9 +558,9 @@
     }
 
     /*
-     * El Messiri is kept for page titles only; smaller headings stay in
-     * IBM Plex Sans Arabic, which reads better at card and dialog sizes.
-     * Numbers and amounts use Alexandria (`font-display`).
+     * Page titles take the heading face (`font-luxe`); text, headings and
+     * numbers are all Zain by default (`font-display` follows the body face).
+     * Alexandria is kept for the company's name beside its logo.
      */
     h1,
     h2 {
@@ -87,14 +568,16 @@
     }
 
     /*
-     * Fields: the deepest layer, white on a light page and darker than the
-     * tile on a dark one, with a clear line, 12px corners and 44px height.
-     * The line darkens under the pointer and, while typing, turns the
-     * company's colour with a soft ring, so the user always sees which field
-     * they are on. Selectors are kept as weak as the forms plugin's, so a
-     * utility class on a field still wins.
+     * Fields (HeroUI's): the deepest layer, white on a light page and darker
+     * than the tile on a dark one, with no line but a soft shadow, 14px
+     * corners and one height (--control-h). The pointer draws a fine ring
+     * round it and typing a ring in the company's colour, so the user always
+     * sees which field they are on. Utility classes still win: they sit
+     * outside this layer.
+     * `select` and `textarea` carry `:not([hidden])` so they outrank the forms
+     * plugin's equally specific rules, which Tailwind 4 emits after this layer.
      */
-    input:where(:not([type])),
+    input:not([type], [hidden]),
     [type='text'],
     [type='email'],
     [type='password'],
@@ -102,11 +585,12 @@
     [type='search'],
     [type='tel'],
     [type='date'],
-    select,
-    textarea {
-        border-color: rgb(var(--panel-field-line));
-        border-radius: calc(12px * var(--radius-scale, 1));
+    select:not([hidden]),
+    textarea:not([hidden]) {
+        border-color: transparent;
+        border-radius: calc(14px * var(--radius-scale, 1));
         background-color: rgb(var(--panel-field));
+        box-shadow: var(--field-shadow);
         color: var(--gl-ink);
         transition: border-color 0.15s, box-shadow 0.15s;
     }
@@ -116,21 +600,20 @@
      * field, list, date and search box is the same size wherever it is used
      * and fields side by side line up.
      */
-    input:where(:not([type])),
+    input:not([type], [hidden]),
     [type='text'],
     [type='email'],
     [type='password'],
     [type='number'],
     [type='search'],
     [type='tel'],
-    [type='date'],
-    select:not([multiple], [size]) {
+    [type='date'] {
         height: var(--control-h);
         min-height: var(--control-h);
     }
 
-    :is(input:where(:not([type])), [type='text'], [type='email'], [type='password'], [type='number'], [type='search'], [type='tel'], [type='date'], select, textarea):hover:not(:focus, :disabled) {
-        border-color: rgb(var(--gray-400) / 0.6);
+    :is(input:not([type], [hidden]), [type='text'], [type='email'], [type='password'], [type='number'], [type='search'], [type='tel'], [type='date'], select, textarea):hover:not(:focus, :disabled) {
+        box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
     }
 
     /*
@@ -147,13 +630,11 @@
     /*
      * A field written left to right (a username, a phone, an amount, a
      * code) keeps its characters in that order but sits on the right like
-     * every other field, its example text with it.
+     * every other field, its example text with it: see the unlayered rule
+     * after the lists above.
      */
-    :is(input:not([type='checkbox'], [type='radio']), textarea)[dir='ltr'] {
-        text-align: right;
-    }
 
-    input:where(:not([type])):focus,
+    input:not([type], [hidden]):focus,
     [type='text']:focus,
     [type='email']:focus,
     [type='password']:focus,
@@ -161,15 +642,15 @@
     [type='search']:focus,
     [type='tel']:focus,
     [type='date']:focus,
-    select:focus,
-    textarea:focus {
-        border-color: rgb(var(--gl-brand));
-        box-shadow: 0 0 0 4px rgb(var(--gl-brand) / 0.16);
+    select:not([hidden]):focus,
+    textarea:not([hidden]):focus {
+        border-color: transparent;
+        box-shadow: 0 0 0 2px rgb(var(--brand-solid));
         outline: none;
     }
 
     :is(
-            input:where(:not([type])),
+            input:not([type], [hidden]),
             [type='text'],
             [type='email'],
             [type='password'],
@@ -180,12 +661,13 @@
             select,
             textarea
         ):hover:not(:disabled, [readonly], :focus) {
-        border-color: var(--gl-line-strong);
+        box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
     }
 
-    /* A field with an error shown under it gets a red border. */
+    /* A field with an error shown under it gets a red ring. */
     :where(div):has(> [data-input-error]) :is(input:not([type='checkbox'], [type='radio']), select, textarea) {
-        border-color: var(--gl-bad);
+        border-color: transparent;
+        box-shadow: 0 0 0 2px var(--gl-bad);
     }
 
     /*
@@ -267,7 +749,7 @@
 
         select option:hover,
         select option:focus-visible {
-            @apply outline-none;
+            @apply outline-hidden;
             background: var(--gl-fill-2);
             color: var(--gl-ink);
         }
@@ -293,35 +775,6 @@
             fill 380ms ease,
             box-shadow 380ms ease !important;
     }
-}
-
-@layer components {
-    /* A thin signature line. Use sparingly: under the logo, above tables and dialogs. */
-    .brand-spectrum {
-        @apply h-[3px] rounded-full bg-spectrum;
-    }
-
-    /* Small monospace chip for codes like a meter box number. */
-    .data-chip {
-        @apply inline-block whitespace-nowrap rounded-lg border border-gray-200 bg-gray-50 px-2 py-0.5 font-mono text-xs text-gray-700;
-    }
-
-    /* Login: the brand half — soft metal texture with a burgundy glow; follows the theme. */
-    .login-brand-panel {
-        background:
-            radial-gradient(55% 45% at 15% 100%, rgb(var(--brand-500) / 0.2), transparent 70%),
-            repeating-linear-gradient(135deg, rgb(var(--gray-900) / 0.025) 0 1px, transparent 1px 7px),
-            linear-gradient(160deg, rgb(var(--gray-100)), rgb(var(--gray-200) / 0.75) 55%, rgb(var(--gray-100)));
-    }
-
-    .login-form-panel {
-        background: radial-gradient(40% 35% at 0% 0%, rgb(var(--brand-500) / 0.07), transparent 70%), rgb(var(--gray-50));
-    }
-
-    .kbd {
-        @apply inline-flex items-center rounded-md border border-gray-200 bg-surface px-1.5 py-0.5 font-display text-[12px] font-semibold text-gray-500;
-    }
-
 }
 
 /*
@@ -1422,10 +1875,10 @@ html[data-modal-open] {
 
 .modal-sheet-panel {
     border: 1px solid var(--gl-line);
-    border-radius: calc(22px * var(--radius-scale, 1));
+    border-radius: calc(28px * var(--radius-scale, 1));
     background: rgb(var(--panel-bg));
     color: var(--gl-ink);
-    box-shadow: 0 2px 6px rgb(0 0 0 / 0.07), 0 30px 70px -24px rgb(0 0 0 / 0.5);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.06), 0 40px 90px -20px rgb(0 0 0 / 0.55);
 }
 
 /*
@@ -1459,7 +1912,7 @@ html[data-modal-open] {
         margin: auto 0 0;
         max-width: none;
         border-bottom: 0;
-        border-radius: calc(22px * var(--radius-scale, 1)) calc(22px * var(--radius-scale, 1)) 0 0;
+        border-radius: calc(28px * var(--radius-scale, 1)) calc(28px * var(--radius-scale, 1)) 0 0;
         padding-bottom: env(safe-area-inset-bottom, 0px);
         animation: modal-sheet-in 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
     }
@@ -2164,14 +2617,16 @@ input[type='radio'] {
  */
 :root {
     --radius-scale: 1;
-    --font-body: 'IBM Plex Sans Arabic';
-    --font-heading: 'El Messiri';
+    --font-body: 'Zain';
+    --font-heading: 'Zain';
     --ui-content-width: 1720px;
     /* Shadows scale by the company's shadow strength (`tokens.shadowStrength`). */
-    --shadow-card: 0 1px 2px rgb(var(--shadow-ink) / calc(0.04 * var(--shadow-strength, 1))), 0 14px 34px -18px rgb(var(--shadow-ink) / calc(0.18 * var(--shadow-strength, 1)));
+    /* HeroUI's card shadow, barely there (scaled by the company's shadow strength). */
+    --shadow-card: 0 2px 4px 0 rgb(var(--shadow-ink) / calc(0.04 * var(--shadow-strength, 1))), 0 1px 2px 0 rgb(var(--shadow-ink) / calc(0.06 * var(--shadow-strength, 1))), 0 0 1px 0 rgb(var(--shadow-ink) / calc(0.06 * var(--shadow-strength, 1)));
     --shadow-lift: 0 2px 6px rgb(var(--shadow-ink) / calc(0.06 * var(--shadow-strength, 1))), 0 24px 44px -20px rgb(var(--shadow-ink) / calc(0.32 * var(--shadow-strength, 1)));
-    --shadow-glow: 0 10px 24px -12px rgb(var(--brand-solid) / 0.9);
-    --brand-fill: linear-gradient(180deg, rgb(var(--brand-hi)), rgb(var(--brand-lo)));
+    /* The main action's fill (bg-brand-gradient, the floating bars, a chosen tab): charcoal, never the company's colour. */
+    --shadow-glow: 0 10px 22px -14px rgb(var(--action) / 0.7);
+    --brand-fill: linear-gradient(rgb(var(--action)), rgb(var(--action)));
 }
 
 /* Corners: every rounded-* class and the tables' corners scale by this. */
@@ -2188,6 +2643,10 @@ input[type='radio'] {
 }
 
 /* Faces (resources/css/fonts.css): each loads only once a page uses it. */
+:root[data-ui-body-font='plex'] {
+    --font-body: 'IBM Plex Sans Arabic';
+}
+
 :root[data-ui-body-font='alexandria'] {
     --font-body: 'Alexandria';
 }
@@ -2202,6 +2661,10 @@ input[type='radio'] {
 
 :root[data-ui-body-font='kufi'] {
     --font-body: 'Noto Kufi Arabic';
+}
+
+:root[data-ui-heading-font='messiri'] {
+    --font-heading: 'El Messiri';
 }
 
 :root[data-ui-heading-font='alexandria'] {
@@ -2588,9 +3051,20 @@ input[type='radio'] {
     display: none;
 }
 
-:root[data-ui-background='graphite'] :is(.tn-shell .gl-card, .modal-sheet-panel) {
+:root[data-ui-background='graphite'] .modal-sheet-panel {
     border-color: rgb(var(--panel-line));
     box-shadow: inset 0 1px 0 rgb(var(--panel-highlight)), var(--panel-shadow);
+}
+
+/* Cards (HeroUI's): their surface and a barely-there shadow, no line. */
+:root[data-ui-background='graphite'] .tn-shell .gl-card {
+    border-color: transparent;
+    box-shadow: var(--panel-shadow);
+}
+
+/* A window floats well above the dimmed page (HeroUI's modal). */
+:root[data-ui-background='graphite'] .modal-sheet-panel {
+    box-shadow: inset 0 1px 0 rgb(var(--panel-highlight)), 0 2px 8px rgb(0 0 0 / 0.06), 0 40px 90px -20px rgb(0 0 0 / 0.55);
 }
 
 :root[data-ui-background='graphite'] .tn-shell .gl-card {
@@ -2641,7 +3115,7 @@ input[type='radio'] {
     background: rgb(255 255 255 / 0.14);
 }
 
-:root[data-ui-background='graphite'] :is(.tn-nav-search, .tn-drawer-panel .rounded-2xl.bg-gray-50) {
+:root[data-ui-background='graphite'] :is(.tn-nav-search, .tn-drawer-panel .rounded-2xl:is(.bg-gray-50, .data-chip)) {
     border-color: rgb(var(--panel-line));
     background: rgb(var(--panel-fill));
 }
@@ -2743,7 +3217,6 @@ input[type='radio'] {
 }
 
 :root[data-ui-background='graphite'] .ui-page-title {
-    font-size: 28px;
     font-weight: 800;
     line-height: 1.25;
 }
@@ -3543,6 +4016,137 @@ input[type='radio'] {
     }
 }
 
+/*
+ * HeroUI's table, in the default look (docs/redesign): the toolbar, the
+ * table and its foot on one card with 24px corners; the column titles on a
+ * soft rounded band, rows 56px tall (44px compact) parted by a fine line,
+ * tinted under the pointer and in the company's colour when chosen; the
+ * pages as small round buttons, the current one in the text's colour.
+ */
+:root[data-ui-background='graphite'][data-ui-navigation] :is(.data-table-toolbar, .data-table-container, .data-table-totals, .data-table-pagination) {
+    border-color: transparent;
+    background: rgb(var(--panel-bg));
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-toolbar {
+    padding: 16px 20px 12px;
+    border-radius: calc(24px * var(--radius-scale, 1)) calc(24px * var(--radius-scale, 1)) 0 0;
+    box-shadow: var(--panel-shadow);
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-container {
+    padding: 0 12px 6px;
+    border-radius: calc(24px * var(--radius-scale, 1));
+    box-shadow: var(--panel-shadow);
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-toolbar + .data-table-container {
+    border-top: 0;
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-pagination {
+    padding: 12px 20px 16px;
+    border-top: 1px solid var(--gl-line);
+    border-radius: 0 0 calc(24px * var(--radius-scale, 1)) calc(24px * var(--radius-scale, 1));
+    box-shadow: var(--panel-shadow);
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-totals:not(:has(+ .data-table-pagination)) {
+    border-radius: 0 0 calc(24px * var(--radius-scale, 1)) calc(24px * var(--radius-scale, 1));
+}
+
+@container (min-width: 641px) {
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table th,
+    :root[data-ui-background='graphite'][data-ui-navigation][data-ui-table-header] .data-table th {
+        height: 42px;
+        padding: 0 12px;
+        background: rgb(var(--panel-tile));
+        color: rgb(var(--panel-muted));
+        font-size: 12.5px;
+        font-weight: 700;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table th:first-child {
+        padding-inline-start: 16px;
+        border-start-start-radius: 12px;
+        border-end-start-radius: 12px;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table th:last-child {
+        border-start-end-radius: 12px;
+        border-end-end-radius: 12px;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table td,
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table td:first-child,
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table td:last-child {
+        height: 56px;
+        padding: 8px 12px;
+        border-top: 0;
+        border-bottom: 1px solid var(--gl-line);
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table td:first-child {
+        padding-inline-start: 16px;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation][data-table-density='compact'] .data-table td {
+        height: 44px;
+        padding-block: 4px;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:hover td,
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:focus-within td {
+        border-color: var(--gl-line);
+        background: rgb(var(--gray-900) / 0.035);
+    }
+
+    .dark:root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:hover td,
+    .dark:root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:focus-within td {
+        background: rgb(255 255 255 / 0.04);
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr.bg-brand-50 td {
+        background: rgb(var(--brand-solid) / 0.07);
+    }
+}
+
+/* The pages under a table: small round buttons, the current one in the text's colour. */
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager {
+    gap: 4px;
+    padding: 0;
+    background: none;
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager button {
+    min-width: 34px;
+    min-height: 34px;
+    padding: 0 8px;
+    border-radius: 10px;
+    color: var(--gl-ink);
+    font-weight: 700;
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager button:hover:not(:disabled, [aria-current='page']) {
+    background: rgb(var(--group-fill));
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager button[aria-current='page'] {
+    background: rgb(var(--panel-ink));
+    color: rgb(var(--panel-bg));
+    box-shadow: none;
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager button:disabled {
+    opacity: 0.35;
+}
+
 @container (max-width: 640px) {
     :root[data-ui-background='graphite'] .data-table tbody tr {
         border-color: var(--gl-line);
@@ -3706,7 +4310,7 @@ html:not(.dark)[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg 
     border-color: rgb(255 255 255 / 0.1);
 }
 
-:root[data-ui-background='graphite'] .bg-gray-50:not(body) {
+:root[data-ui-background='graphite'] :is(.bg-gray-50, .data-chip):not(body) {
     border-color: var(--gl-line);
     background-color: var(--gl-fill);
 }
@@ -3739,14 +4343,24 @@ html:not(.dark)[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg 
     background: rgb(var(--brand-solid));
 }
 
-/* Under the panel look the company's colour fills flat, with no glow under it, like the panel buttons. */
+/* Under the panel look a main fill (bg-brand-gradient) is the main action's flat charcoal, with no glow under it, like the panel buttons. */
 :root[data-ui-background='graphite'] {
-    --brand-fill: linear-gradient(rgb(var(--brand-solid)), rgb(var(--brand-solid)));
-    --shadow-glow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+    --brand-fill: linear-gradient(rgb(var(--action)), rgb(var(--action)));
+    --shadow-glow: none;
 }
 
 /* The SMS page's segmented choices pick in the company's colour, like the panel segments. */
 :root[data-ui-background='graphite'] .sm-segments button[aria-pressed='true'] {
     background: rgb(var(--brand-solid));
     color: rgb(var(--brand-ink));
+}
+
+/*
+ * A ticked checkbox or radio shows only its fill, as it did before Tailwind 4:
+ * the forms plugin clears the border when checked, but in v4 a border utility
+ * on the box (e.g. `border-gray-300`) sits in a later layer and would win.
+ */
+[type='checkbox']:checked,
+[type='radio']:checked {
+    border-color: transparent;
 }

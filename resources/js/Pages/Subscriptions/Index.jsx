@@ -16,7 +16,7 @@ import BulkActionBar from './BulkActionBar';
 import BulkActionsMenu from './BulkActionsMenu';
 import BalanceFilter from './BalanceFilter';
 import { BALANCE_FILTER_KEYS, balanceFilterLabel, subscriptionFilterKey } from '@/lib/subscriptionBalance';
-import UnderlineTabs from '@/Components/UnderlineTabs';
+import SegmentedTabs from '@/Components/SegmentedTabs';
 import PageHeader from '@/Components/PageHeader';
 import InfoTip from '@/Components/InfoTip';
 import SubscriptionWindows from './SubscriptionWindows';
@@ -253,6 +253,7 @@ export default function Index({
             header={
                 <PageHeader
                     title="المشتركون"
+                    info="ابحث عن مشترك، وأضفه وعدّل بياناته، وافتح كشف حسابه."
                     actions={
                         <>
                             {!showArchived && <BulkActionsMenu abilities={bulkActions} onChoose={chooseBulkAction} />}
@@ -266,7 +267,7 @@ export default function Index({
 
             {branchScope && <BranchFilterBanner scope={branchScope} eyebrow="تعرض الآن مشتركي" group={branchFilter.branch} value={filterValues.branch_id} onChange={(value) => setFilter('branch_id', value)} />}
 
-            {canViewArchived && <div className="mb-5 flex flex-wrap items-end gap-2"><UnderlineTabs label="قائمة الاشتراكات" value={showArchived ? 'archived' : 'current'} options={[{ value: 'current', label: 'الاشتراكات الحالية' }, { value: 'archived', label: 'الاشتراكات المؤرشفة' }]} onChange={(value) => setFilter('archived', value === 'archived' ? '1' : '')} /><InfoTip label="عن الأرشيف">{showArchived ? 'ملفات محفوظة بعد إنهاء الخدمة؛ الأرصدة والحركات السابقة باقية.' : 'أرشفة الاشتراك المنتهي متاحة من قائمة إجراءاته حسب الصلاحية.'}</InfoTip></div>}
+            {canViewArchived && <div className="mb-5 flex flex-wrap items-center gap-2"><SegmentedTabs label="قائمة الاشتراكات" value={showArchived ? 'archived' : 'current'} options={[{ value: 'current', label: 'الاشتراكات الحالية' }, { value: 'archived', label: 'الاشتراكات المؤرشفة' }]} onChange={(value) => setFilter('archived', value === 'archived' ? '1' : '')} /><InfoTip label="عن الأرشيف">{showArchived ? 'ملفات محفوظة بعد إنهاء الخدمة؛ الأرصدة والحركات السابقة باقية.' : 'أرشفة الاشتراك المنتهي متاحة من قائمة إجراءاته حسب الصلاحية.'}</InfoTip></div>}
 
             <DataTableToolbar
                 search={search}
@@ -291,7 +292,7 @@ export default function Index({
 
             {balanceLabel && (
                 <div role="status" className="flex flex-wrap items-center justify-between gap-3 border-x border-gray-100 bg-brand-500/5 px-5 py-3 text-sm text-gray-700">
-                    <span><b className="font-display text-gray-900">{subscriptions.total.toLocaleString('en')}</b> اشتراكًا · {balanceLabel}{filtersPending && ' · جارٍ تحديث النتائج…'}</span>
+                    <span><b className="font-display text-gray-900">{subscriptions.total.toLocaleString('en')}</b> اشتراكًا، {balanceLabel}{filtersPending && '، جارٍ تحديث النتائج…'}</span>
                     {canSelect && subscriptions.total > 0 && !allMatching && <button type="button" disabled={filtersPending} onClick={selectAllMatching} className="rounded-control border border-brand-500/20 bg-surface px-3 py-2 font-semibold text-brand-600 transition hover:bg-brand-500/10 disabled:opacity-40">تحديد جميع النتائج ({subscriptions.total.toLocaleString('en')})</button>}
                 </div>
             )}
@@ -302,7 +303,7 @@ export default function Index({
                     <button
                         type="button"
                         onClick={() => setAllMatching(true)}
-                        className="rounded font-semibold text-brand-600 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+                        className="rounded font-semibold text-brand-600 hover:underline focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
                     >
                         تحديد كل النتائج المطابقة ({subscriptions.total.toLocaleString('en')})
                     </button>

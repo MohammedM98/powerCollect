@@ -12,7 +12,6 @@ import RowIdentity from '@/Components/DataTable/RowIdentity';
 import SortableTh from '@/Components/DataTable/SortableTh';
 import StatusPill from '@/Components/DataTable/StatusPill';
 import Icon from '@/Components/Icon';
-import PrimaryButton from '@/Components/PrimaryButton';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useRowClick } from '@/hooks/useRowClick';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
@@ -104,14 +103,15 @@ export default function Index({
             badges={{ '/payments/summary': pendingCount }}
             header={
                 <PageHeader
-                    eyebrow={scopeLabel}
                     title="تسجيل الدفعات"
+                    info={`استلم دفعة من مشترك واطبع وصلها${scopeLabel && scopeLabel !== '—' ? `، في ${scopeLabel}` : ''}.`}
                     actions={
                         canSplitPayments && (
-                            <PrimaryButton type="button" onClick={() => setSplitting({})}>
+                            // A split payment in its own colour, as every split is across the site (the redesign's money tones).
+                            <button type="button" className="gl-act is-solid" data-tone="split" onClick={() => setSplitting({})}>
                                 <Icon name="layers" className="h-4 w-4" />
                                 دفعة مقسّمة على عدة مشتركين
-                            </PrimaryButton>
+                            </button>
                         )
                     }
                 />

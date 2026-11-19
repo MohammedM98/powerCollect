@@ -172,7 +172,7 @@ export function StatementRow({
                 {entry.recordedByName ?? <Dash />}
             </td>
             {hasLineMenus && (
-                <td className="statement-screen-only text-center !align-middle">
+                <td className="statement-screen-only text-center align-middle!">
                     {menu && <RowActionsMenu menu={menu} menuController={actionsMenu} />}
                 </td>
             )}

@@ -57,13 +57,13 @@ export default function BalanceFilter({ values, onChange, errors = {} }) {
 
     return (
         <div ref={root} className="relative w-full sm:w-auto">
-            <button ref={trigger} type="button" onClick={toggle} aria-expanded={open} aria-controls={`${id}-panel`} className={`flex min-h-[42px] w-full items-center justify-between gap-2 rounded-control border bg-surface px-3.5 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900 ${label ? 'border-brand-500/30 text-brand-600' : 'border-gray-200 text-gray-700 hover:border-gray-300'}`}>
+            <button ref={trigger} type="button" onClick={toggle} aria-expanded={open} aria-controls={`${id}-panel`} className={`flex min-h-[42px] w-full items-center justify-between gap-2 rounded-control border bg-surface px-3.5 py-2 text-sm font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${label ? 'border-brand-500/30 text-brand-600' : 'border-gray-200 text-gray-700 hover:border-gray-300'}`}>
                 <Icon name="wallet" className="h-4 w-4 shrink-0" />
                 {label || 'الرصيد'}
                 <Icon name="chevron-down" className={`h-4 w-4 shrink-0 transition ${open ? 'rotate-180' : ''}`} />
             </button>
             {open && (
-                <form id={`${id}-panel`} onSubmit={apply} aria-label="تصفية حسب الرصيد" className="fixed inset-x-4 bottom-4 z-50 max-h-[calc(100dvh-2rem)] space-y-4 overflow-y-auto rounded-2xl border border-gray-100 bg-surface p-5 shadow-lift sm:absolute sm:inset-x-auto sm:start-0 sm:bottom-auto sm:z-30 sm:mt-2 sm:max-h-none sm:w-96 sm:overflow-visible">
+                <form id={`${id}-panel`} onSubmit={apply} aria-label="تصفية حسب الرصيد" className="fixed inset-x-4 bottom-4 z-50 max-h-[calc(100dvh-2rem)] space-y-4 overflow-y-auto rounded-2xl border border-gray-100 bg-surface p-5 shadow-lift sm:absolute sm:inset-x-auto sm:inset-s-0 sm:bottom-auto sm:z-30 sm:mt-2 sm:max-h-none sm:w-96 sm:overflow-visible">
                     <div><h3 className="font-bold text-gray-900">تصفية حسب الرصيد</h3><p className="mt-1 text-xs text-gray-500">اختر جهة الرصيد وأدخل المبلغ بالشيكل. الحسابات المسدّدة خارج هذا الفلتر.</p></div>
                     <div className="grid grid-cols-2 gap-3">
                         <div><label htmlFor={`${id}-side`} className="mb-1.5 block text-xs font-semibold text-gray-700">جهة الرصيد</label><SearchableSelect id={`${id}-side`} value={side} onChange={setSide} options={BALANCE_SIDES} searchable={false} clearable={false} className="[&>div]:min-w-0" /></div>

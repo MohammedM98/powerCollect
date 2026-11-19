@@ -103,7 +103,7 @@ export default function Index({ batches, canSend, filters, filterOptions }) {
                                     <td>
                                         <KindPill kind={batch.kind} label={batch.kindLabel} />
                                     </td>
-                                    <td className="max-w-md !whitespace-normal text-gray-700">
+                                    <td className="max-w-md whitespace-normal! text-gray-700">
                                         <MessageText text={batch.excerpt} />
                                     </td>
                                     <td>

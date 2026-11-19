@@ -7,10 +7,13 @@ import { useMenuKeys } from './useMenuKeys';
 
 function menuPosition(button, width, height) {
     const bounds = button.getBoundingClientRect();
-    const dock = button.closest('.tn-side').getBoundingClientRect();
+    const side = button.closest('.tn-side');
+    const dock = side.getBoundingClientRect();
     const rtl = getComputedStyle(button).direction === 'rtl';
     const viewport = document.documentElement;
-    const besideDock = rtl ? dock.left - width - 10 : dock.right + 10;
+    // The rail slides open while the pointer is in it: place the panel beside its open width, not the width it has mid-slide.
+    const openWidth = Math.max(dock.width, parseFloat(getComputedStyle(side).getPropertyValue('--tn-side-open')) || 0);
+    const besideDock = rtl ? dock.right - openWidth - width - 10 : dock.left + openWidth + 10;
 
     return {
         x: Math.max(16, Math.min(viewport.clientWidth - width - 16, besideDock)),

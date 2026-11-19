@@ -12,7 +12,7 @@ export function LatestPayments({ payments, latestPayments, period, search, onSea
             <div className="gl-tools">
                 <form
                     role="search"
-                    className="gl-field !flex-[1_1_240px]"
+                    className="gl-field flex-[1_1_240px]!"
                    
                     onSubmit={(event) => {
                         event.preventDefault();
@@ -60,15 +60,15 @@ export function LatestPayments({ payments, latestPayments, period, search, onSea
                                 <td>
                                     <span className="inline-flex items-center gap-1.5">
                                         <Icon name={payment.isCash ? 'banknotes' : 'bank'} className="h-4 w-4" />
-                                        {payment.isCash ? 'نقدي' : `حوالة${payment.bankName ? ` · ${payment.bankName}` : ''}`}
+                                        {payment.isCash ? 'نقدي' : `حوالة${payment.bankName ? `، ${payment.bankName}` : ''}`}
                                     </span>
                                 </td>
                                 <td className={`gl-num font-bold ${payment.cancelled ? 'line-through opacity-50' : ''}`}>₪ {formatMoney(payment.amount)}</td>
-                                <td title={new Date(payment.recordedAt).toLocaleString('ar-EG-u-nu-latn')} className="!text-[color:var(--gl-muted)]">{timeAgo(payment.recordedAt)}</td>
+                                <td title={new Date(payment.recordedAt).toLocaleString('ar-EG-u-nu-latn')} className="text-(--gl-muted)!">{timeAgo(payment.recordedAt)}</td>
                                 <td><span className={`gl-pill ${payment.cancelled ? '' : 'gl-ok'}`}>{payment.cancelled ? 'ملغاة' : 'سارية'}</span></td>
                                 {canOpenReceipts && (
                                     <td className="text-center" onClick={(event) => event.stopPropagation()}>
-                                        <a href={`/subscriptions/${payment.subscriptionId}/payments/${payment.id}/receipt`} target="_blank" rel="noopener noreferrer" title="طباعة الوصل" aria-label={`طباعة وصل ${payment.subscriber}`} className="gl-ib mx-auto !w-[32px] !h-[32px]">
+                                        <a href={`/subscriptions/${payment.subscriptionId}/payments/${payment.id}/receipt`} target="_blank" rel="noopener noreferrer" title="طباعة الوصل" aria-label={`طباعة وصل ${payment.subscriber}`} className="gl-ib mx-auto w-[32px]! h-[32px]!">
                                             <Icon name="printer" className="h-4 w-4" />
                                         </a>
                                     </td>
@@ -81,7 +81,7 @@ export function LatestPayments({ payments, latestPayments, period, search, onSea
             {payments.total > 0 && (
                 <div className="gl-foot-line">
                     مجموع الدفعات السارية
-                    <b className="gl-num !text-[color:var(--gl-ink)]">₪ {formatMoney(latestPayments.sum)}</b>
+                    <b className="gl-num text-(--gl-ink)!">₪ {formatMoney(latestPayments.sum)}</b>
                 </div>
             )}
             <Pagination meta={payments} onPageChange={(page) => onVisit({ page }, ['latestPayments'])} />

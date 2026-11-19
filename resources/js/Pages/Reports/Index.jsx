@@ -49,7 +49,7 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
     }
 
     const excelMeta = useMemo(() => ({
-        lines: [`الفرع: ${scopeName}`, `الفترة: ${periodLabel(period?.mode, period)} · ${periodText}`],
+        lines: [`الفرع: ${scopeName}`, `الفترة: ${periodLabel(period?.mode, period)}، ${periodText}`],
         criteria: [
             ['الفرع', scopeName],
             ['الفترة', `${shortDate(filters.from, true)} – ${shortDate(filters.to, true)}`],
@@ -84,7 +84,7 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
             header={
                 <PageHeader
                     title="التقارير المالية"
-                    meta={`${branchScope ? '' : `${scopeLabel} · `}${periodLabel(period?.mode, period)} · ${periodText}${oneDay && filters.from === today ? ' · اليوم الجاري' : ''}`}
+                    meta={`${branchScope ? '' : `${scopeLabel}، `}${periodLabel(period?.mode, period)}، ${periodText}${oneDay && filters.from === today ? '، اليوم الجاري' : ''}`}
                 />
             }
         >
@@ -110,7 +110,7 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                         options={branches}
                         value={filters.branch}
                         onChange={(branch) => visit({ branch, page: undefined })}
-                        meta={`${periodLabel(period?.mode, period)} · ${periodText}`}
+                        meta={`${periodLabel(period?.mode, period)}، ${periodText}`}
                         className=""
                     >
                         {branchSummary?.length > 0 && (

@@ -25,7 +25,11 @@
 
 :root {
     /* The height of every field and list (inputs, selects, dates, search) and of the buttons beside them. */
-    --control-h: 46px;
+    --control-h: 48px;
+
+    /* HeroUI's field: a soft shadow instead of a line, and a fine ring under the pointer. */
+    --field-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.04), 0 1px 2px 0 rgb(0 0 0 / 0.06), 0 0 1px 0 rgb(0 0 0 / 0.06);
+    --field-hover-ring: rgb(var(--gray-900) / 0.18);
 
     color-scheme: light;
 
@@ -77,20 +81,52 @@
     --switch-on: 22 163 74;
 
     /*
-     * Button roles beside the main (brand) one, so each kind of action is
-     * told apart at a glance (components.css `gl-add`, `gl-group`):
-     * adding something new is blue, acting on a group of rows or managing a
-     * list is charcoal (light grey in the dark theme). Each fill carries its
-     * ink at 4.5:1 or more.
+     * Button roles beside the main one (components.css `gl-add`, `gl-group`):
+     * adding something new is a main action, in the same charcoal; acting on
+     * a group of rows or managing a list is a quiet grey button. Each fill
+     * carries its ink at 4.5:1 or more.
      */
-    --add-fill: 37 99 235;
-    --add-hover: 29 78 216;
-    --add-press: 30 64 175;
+    --add-fill: 42 45 52;
+    --add-hover: 59 63 72;
+    --add-press: 30 32 38;
     --add-ink: 255 255 255;
-    --group-fill: 38 38 38;
-    --group-hover: 64 64 64;
-    --group-press: 82 82 82;
-    --group-ink: 255 255 255;
+    --group-fill: 237 235 234;
+    --group-hover: 226 224 222;
+    --group-press: 216 214 211;
+    --group-ink: 32 35 41;
+
+    /*
+     * The main action of a page or window (its one solid button): the logo's
+     * charcoal in the light theme, a quiet slate in the dark one, never the
+     * company's colour, which is kept for choice, focus and the identity.
+     */
+    --action: 42 45 52;
+    --action-hover: 59 63 72;
+    --action-ink: 255 255 255;
+
+    /*
+     * One calm colour per kind of money movement, used the same way on its
+     * buttons, badges, menu items and table rows: the tone itself (tints),
+     * its solid fill (white text on it) and its ink (text on a tint).
+     */
+    --tone-pay: 42 151 84; /* recording a payment */
+    --tone-pay-solid: 26 118 63;
+    --tone-pay-ink: 19 92 48;
+    --tone-charge: 209 74 101; /* charging an amount */
+    --tone-charge-solid: 181 47 74;
+    --tone-charge-ink: 150 35 59;
+    --tone-discount: 138 95 201; /* a discount */
+    --tone-discount-solid: 115 71 175;
+    --tone-discount-ink: 96 59 147;
+    --tone-clearing: 43 143 154; /* a clearing (settlement) */
+    --tone-clearing-solid: 23 111 124;
+    --tone-clearing-ink: 8 87 98;
+    --tone-split: 73 114 192; /* a split payment */
+    --tone-split-solid: 51 90 166;
+    --tone-split-ink: 38 74 142;
+    --tone-reading: 108 114 126; /* a meter reading */
+    --tone-reading-solid: 73 77 86;
+    --tone-reading-ink: 62 66 75;
 
 
     /* The signature line: the logo's light blue into its deep blue. */
@@ -103,29 +139,29 @@
      * text (400) reads at 5.1:1 on the page's soft gray (50) and muted
      * text (500) higher still, above the WCAG AA minimum of 4.5.
      */
-    --gray-50: 246 247 249;
-    --gray-100: 240 242 245;
-    --gray-200: 228 231 236;
-    --gray-300: 205 211 219;
-    --gray-400: 96 104 114;
-    --gray-500: 89 98 109;
-    --gray-600: 72 79 89;
-    --gray-700: 55 61 70;
-    --gray-800: 38 43 50;
-    --gray-900: 19 23 28;
-    --gray-950: 12 14 17;
+    --gray-50: 248 247 245;
+    --gray-100: 243 242 240;
+    --gray-200: 232 231 229;
+    --gray-300: 211 210 208;
+    --gray-400: 100 103 110;
+    --gray-500: 94 97 104;
+    --gray-600: 75 78 85;
+    --gray-700: 57 61 67;
+    --gray-800: 40 43 49;
+    --gray-900: 20 23 28;
+    --gray-950: 11 14 19;
 
     /* Cards, tables, dialogs and fields. */
     --surface: 255 255 255;
 
     /* Dark graphite that stays dark in both themes: the active nav item, avatars, the dashboard's main card. */
-    --graphite-400: 66 66 66;
-    --graphite-500: 56 56 56;
-    --graphite-600: 46 46 46;
-    --graphite-700: 40 40 40;
-    --graphite-800: 30 30 30;
-    --graphite-900: 20 20 20;
-    --graphite-950: 12 12 12;
+    --graphite-400: 74 77 84;
+    --graphite-500: 63 66 73;
+    --graphite-600: 53 56 62;
+    --graphite-700: 43 46 52;
+    --graphite-800: 32 35 41;
+    --graphite-900: 19 22 28;
+    --graphite-950: 10 12 17;
 
     /* Silver that stays light in both themes: text and lines on the graphite panels. */
     --silver-50: 244 244 244;
@@ -282,6 +318,9 @@
 .dark {
     color-scheme: dark;
 
+    --field-shadow: 0 0 #0000;
+    --field-hover-ring: rgb(255 255 255 / 0.22);
+
     --brand-50: 14 32 30;
     --brand-100: 17 42 39;
     --brand-200: 19 61 56;
@@ -296,17 +335,17 @@
     --logo-bolt: 45 200 178;
     --switch-on: 34 197 94;
 
-    --gray-50: 20 23 27;
-    --gray-100: 34 39 45;
-    --gray-200: 44 50 58;
-    --gray-300: 60 67 76;
-    --gray-400: 133 142 153;
-    --gray-500: 163 171 181;
-    --gray-600: 188 194 202;
-    --gray-700: 208 213 219;
-    --gray-800: 229 232 236;
-    --gray-900: 236 239 243;
-    --gray-950: 248 249 250;
+    --gray-50: 15 16 19;
+    --gray-100: 37 38 41;
+    --gray-200: 48 49 52;
+    --gray-300: 65 66 69;
+    --gray-400: 139 141 144;
+    --gray-500: 168 170 173;
+    --gray-600: 192 193 197;
+    --gray-700: 211 212 216;
+    --gray-800: 230 232 235;
+    --gray-900: 237 239 242;
+    --gray-950: 247 249 252;
 
     --blue-500: 37 99 235;
     --blue-600: 96 165 250;
@@ -317,14 +356,32 @@
     --excel-600: 110 220 150;
     --excel-700: 20 96 54;
 
-    --surface: 28 32 37;
+    --surface: 22 23 25;
 
 
 
-    --group-fill: 229 229 229;
-    --group-hover: 245 245 245;
-    --group-press: 212 212 212;
-    --group-ink: 23 23 23;
+    --add-fill: 65 78 96;
+    --add-hover: 77 92 114;
+    --add-press: 55 66 82;
+    --group-fill: 37 38 41;
+    --group-hover: 48 49 53;
+    --group-press: 58 59 63;
+    --group-ink: 247 246 245;
+
+    --action: 65 78 96;
+    --action-hover: 77 92 114;
+    --tone-pay-solid: 34 124 69;
+    --tone-pay-ink: 134 219 157;
+    --tone-charge-solid: 188 54 80;
+    --tone-charge-ink: 255 157 166;
+    --tone-discount-solid: 119 80 177;
+    --tone-discount-ink: 200 174 250;
+    --tone-clearing-solid: 32 117 130;
+    --tone-clearing-ink: 131 212 221;
+    --tone-split-solid: 56 96 172;
+    --tone-split-ink: 161 197 255;
+    --tone-reading-solid: 81 85 94;
+    --tone-reading-ink: 192 196 204;
 }
 
 /*
@@ -394,18 +451,18 @@
 :root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) .tn-bar {
     color-scheme: dark;
 
-    --gray-50: 20 23 27;
-    --gray-100: 34 39 45;
-    --gray-200: 44 50 58;
-    --gray-300: 60 67 76;
-    --gray-400: 133 142 153;
-    --gray-500: 163 171 181;
-    --gray-600: 188 194 202;
-    --gray-700: 208 213 219;
-    --gray-800: 229 232 236;
-    --gray-900: 236 239 243;
-    --gray-950: 248 249 250;
-    --surface: 28 32 37;
+    --gray-50: 15 16 19;
+    --gray-100: 37 38 41;
+    --gray-200: 48 49 52;
+    --gray-300: 65 66 69;
+    --gray-400: 139 141 144;
+    --gray-500: 168 170 173;
+    --gray-600: 192 193 197;
+    --gray-700: 211 212 216;
+    --gray-800: 230 232 235;
+    --gray-900: 237 239 242;
+    --gray-950: 247 249 252;
+    --surface: 22 23 25;
 }
 
 /*
@@ -420,18 +477,19 @@
 :root {
     /* Fields: the deepest layer, where one types (white on a light page, darker than the tile on a dark one). */
     --panel-field: 255 255 255;
-    --panel-tile: 243 245 248;
-    --panel-field-line: 205 211 219;
-    --panel-page: 236 238 241;
-    --panel-ink: 19 23 28;
-    --panel-muted: 89 98 109;
-    --panel-faint: 96 104 114;
+    --panel-tile: 241 240 238;
+    --panel-field-line: 223 222 219;
+    --panel-page: 247 245 244;
+    --panel-ink: 32 35 41;
+    --panel-muted: 84 84 93;
+    --panel-faint: 94 97 104;
     --panel-bg: 255 255 255;
     --panel-line: 0 0 0 / 0.09;
     --panel-line-strong: 0 0 0 / 0.16;
     --panel-fill: 0 0 0 / 0.04;
     --panel-fill-strong: 0 0 0 / 0.07;
-    --panel-shadow: 0 24px 40px -28px rgb(20 24 30 / 0.45);
+    /* HeroUI's card shadow: barely there, so cards read by their surface, not a halo. */
+    --panel-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.04), 0 1px 2px 0 rgb(0 0 0 / 0.06), 0 0 1px 0 rgb(0 0 0 / 0.06);
     --panel-highlight: 255 255 255 / 0.9;
     --panel-ambient:
         radial-gradient(1200px 640px at 85% -12%, rgb(255 255 255 / 0.75), transparent 62%),
@@ -446,19 +504,19 @@
 }
 
 .dark {
-    --panel-field: 24 27 31;
-    --panel-tile: 34 39 45;
-    --panel-field-line: 62 68 76;
+    --panel-field: 35 35 37;
+    --panel-tile: 31 32 35;
+    --panel-field-line: 42 43 46;
     --panel-page: 10 11 13;
-    --panel-ink: 236 239 243;
-    --panel-muted: 163 171 181;
-    --panel-faint: 133 142 153;
-    --panel-bg: 24 26 30;
+    --panel-ink: 247 246 245;
+    --panel-muted: 179 179 188;
+    --panel-faint: 150 151 160;
+    --panel-bg: 22 23 25;
     --panel-line: 255 255 255 / 0.08;
     --panel-line-strong: 255 255 255 / 0.16;
     --panel-fill: 255 255 255 / 0.05;
     --panel-fill-strong: 255 255 255 / 0.09;
-    --panel-shadow: 0 26px 50px -30px rgb(0 0 0 / 0.95);
+    --panel-shadow: 0 0 0 1px rgb(255 255 255 / 0.04);
     --panel-highlight: 255 255 255 / 0.16;
     --panel-ambient: radial-gradient(1300px 720px at 85% -12%, rgb(255 255 255 / 0.05), transparent 62%);
 
@@ -511,8 +569,8 @@
     --ui-focus: rgb(var(--brand-solid));
     --ui-shadow: var(--panel-shadow);
     --ui-pop: var(--panel-shadow);
-    /* Cards with white text on the company's colour: its deep shade, darkened toward the corner, in both themes. */
-    --ui-hero: linear-gradient(135deg, rgb(var(--brand-deep)), color-mix(in srgb, rgb(var(--brand-deep)) 78%, #000) 55%, color-mix(in srgb, rgb(var(--brand-deep)) 62%, #000));
+    /* Cards and tiles with white text: the logo's charcoal, darkened toward the corner, in both themes (never the company's colour). */
+    --ui-hero: linear-gradient(135deg, rgb(var(--graphite-500)), rgb(var(--graphite-700)) 55%, rgb(var(--graphite-800)));
 }
 
 /*

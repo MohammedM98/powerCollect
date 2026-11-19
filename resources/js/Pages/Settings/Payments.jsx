@@ -33,7 +33,7 @@ export default function Payments({ currencies, banks, storeUrl, boxPeriod, canMa
                         <SearchableSelect name="week_starts_on" required clearable={false} searchable={false} value={form.data.week_starts_on} onChange={(value) => form.setData('week_starts_on', Number(value))} options={weekdays.map((label, value) => ({ value, label }))} />
                     </FormField>
                     <PrimaryButton type="submit" disabled={form.processing || (!form.isDirty && !boxPeriod.followsCompany)}>{form.processing ? 'جارٍ الحفظ…' : 'حفظ بداية الفترة'}</PrimaryButton>
-                    <p className="w-full text-sm text-gray-500">من {weekdays[form.data.week_starts_on]} إلى {weekdays[(Number(form.data.week_starts_on) + 6) % 7]} · {boxPeriod.branch ? `لفرع ${boxPeriod.branch.name} فقط` : 'الإعداد الافتراضي للفروع التي ليس لها إعداد خاص'}</p>
+                    <p className="w-full text-sm text-gray-500">من {weekdays[form.data.week_starts_on]} إلى {weekdays[(Number(form.data.week_starts_on) + 6) % 7]}، {boxPeriod.branch ? `لفرع ${boxPeriod.branch.name} فقط` : 'الإعداد الافتراضي للفروع التي ليس لها إعداد خاص'}</p>
                 </form>
             </FormSection>
             {canManagePaymentCatalog && <><CurrencyRatesSection currencies={currencies} /><BanksSection banks={banks} storeUrl={storeUrl} /></>}

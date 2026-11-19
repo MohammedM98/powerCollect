@@ -54,20 +54,13 @@ function MeterBoxSummary({ summary }) {
     return (
         <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <KpiTile hero icon="table" label="إجمالي الطبلونات" value={formatNumber(summary.total)} unit="طبلون" hint="ضمن نتائج البحث والتصفية">
-                <div className="gl-kv mt-3 border-t pt-3 !border-[color:var(--gl-line)]"><span className="inline-flex items-center gap-1.5"><Icon name="users" className="h-4 w-4" />المشتركون</span><b className="gl-num">{formatNumber(summary.subscriptions)}</b></div>
+                <div className="gl-kv mt-3 border-t pt-3 border-(--gl-line)!"><span className="inline-flex items-center gap-1.5"><Icon name="users" className="h-4 w-4" />المشتركون</span><b className="gl-num">{formatNumber(summary.subscriptions)}</b></div>
             </KpiTile>
             {[
-                { icon: 'pin', label: 'مناطق الطبلونات', unit: 'منطقة', value: formatNumber(summary.regions), hint: `${formatNumber(summary.located)} طبلون ضمن هذه المناطق${summary.total > summary.located ? ` · ${formatNumber(summary.total - summary.located)} بلا منطقة` : ''}` },
+                { icon: 'pin', label: 'مناطق الطبلونات', unit: 'منطقة', value: formatNumber(summary.regions), hint: `${formatNumber(summary.located)} طبلون ضمن هذه المناطق${summary.total > summary.located ? `، ${formatNumber(summary.total - summary.located)} بلا منطقة` : ''}` },
                 { icon: 'users', label: 'المشتركون الفعّالون', unit: 'مشترك', value: formatNumber(summary.active), hint: 'المشتركون بحالة فعّال ضمن نتائج البحث' },
                 { icon: 'table', label: 'طبلونات بلا مشتركين', unit: 'طبلون', value: formatNumber(summary.empty), hint: 'طبلونات لا يرتبط بها أي مشترك' },
-            ].map((stat) => <div key={stat.label} role="group" aria-label={`إحصائية ${stat.label}`} className="rounded-card border border-gray-100 bg-surface p-5 shadow-card">
-                <div className="mb-4 flex items-center gap-2.5 rounded-control bg-brand-500/[0.06] px-3 py-2.5">
-                    <Icon name={stat.icon} className="h-5 w-5 shrink-0 text-brand-600" />
-                    <p className="text-base font-bold leading-6 text-gray-900">{stat.label}</p>
-                </div>
-                <p className="flex items-baseline gap-2 text-gray-900"><b className="font-display text-3xl font-bold">{stat.value}</b><span className="text-sm font-semibold text-gray-500">{stat.unit}</span></p>
-                <p className="mt-2 text-xs leading-5 text-gray-500">{stat.hint}</p>
-            </div>)}
+            ].map((stat, index) => <KpiTile key={stat.label} role="group" aria-label={`إحصائية ${stat.label}`} index={index + 1} icon={stat.icon} label={stat.label} value={stat.value} unit={stat.unit} hint={stat.hint} />)}
         </div>
     );
 }
@@ -207,10 +200,13 @@ export default function Index({
                                 { value: 'created_at', label: 'تاريخ الإضافة' },
                             ]}
                         />
-                        {canViewSubscriptions && <div role="group" aria-label="ترتيب مشتركي جميع الطبلونات" className="flex w-full min-w-0 flex-col gap-1.5 sm:w-44">
-                            <label htmlFor="all-meter-box-subscriptions-direction" className="text-[13.5px] font-semibold text-gray-700">ترتيب المشتركين</label>
+                        {canViewSubscriptions && <div role="group" aria-label="ترتيب مشتركي جميع الطبلونات">
+                            <label htmlFor="all-meter-box-subscriptions-direction" className="sr-only">ترتيب المشتركين</label>
                             <SearchableSelect
                                 id="all-meter-box-subscriptions-direction"
+                                variant="pill"
+                                prefix={<span className="gl-filter-name" aria-hidden="true"><Icon name="users" className="h-[15px] w-[15px]" />ترتيب المشتركين:</span>}
+                                className="gl-filter-item"
                                 value={`${subscriptionOrder.sort}:${subscriptionOrder.direction}`}
                                 onChange={sortSubscriptions}
                                 options={SUBSCRIPTION_ORDERS}
@@ -228,7 +224,7 @@ export default function Index({
                     <SecondaryButton onClick={expandAll} disabled={meterBoxes.data.length === 0 || allExpanded}><Icon name="chevron-down" className="h-4 w-4" />توسيع الكل</SecondaryButton>
                     <SecondaryButton onClick={collapseAll} disabled={!anyExpanded}><Icon name="chevron-down" className="h-4 w-4 rotate-180" />طي الكل</SecondaryButton>
                 </>}
-                <SecondaryButton aria-pressed={groupByRegion} onClick={toggleGroupByRegion} className={groupByRegion ? '!border-brand-500/30 !bg-brand-500/10 !text-brand-600' : ''}><Icon name="pin" className="h-4 w-4" />تجميع حسب المنطقة</SecondaryButton>
+                <SecondaryButton aria-pressed={groupByRegion} onClick={toggleGroupByRegion} className={groupByRegion ? 'border-brand-500/30! bg-brand-500/10! text-brand-600!' : ''}><Icon name="pin" className="h-4 w-4" />تجميع حسب المنطقة</SecondaryButton>
                 {canViewSubscriptions && canPrint && <a href={subscriptionsPrintHref()} onClick={(event) => { event.currentTarget.href = subscriptionsPrintHref(); }} target="_blank" rel="noopener noreferrer" className={`${secondaryButtonClass} tone-print`} title="طباعة كل طبلون تحت منطقته ومشتركوه تحته، بنفس البحث والتصفية وترتيب المشتركين"><Icon name="printer" className="h-4 w-4" />طباعة الطبلونات مع المشتركين</a>}
                 {canViewSubscriptions && <span className="text-xs text-gray-500">التوسيع يعرض مشتركي طبلونات الصفحة الحالية، ويستمر عند الانتقال للصفحة التالية.</span>}
             </div>
@@ -276,7 +272,7 @@ export default function Index({
                                         <p className="text-sm font-semibold text-gray-900"><b className="font-display">{formatNumber(meterBox.subscriptionsCount)}</b> مشترك</p>
                                         {meterBox.subscriptionsCount > 0 && <>
                                             <div className="my-1.5 flex h-1.5 w-28 overflow-hidden rounded-full bg-gray-100" aria-hidden="true"><span className="bg-emerald-500" style={{ width: `${meterBox.activeSubscriptionsCount / meterBox.subscriptionsCount * 100}%` }} /></div>
-                                            <p className="text-xs text-gray-500">{meterBox.activeSubscriptionsCount} فعّال · {meterBox.subscriptionsCount - meterBox.activeSubscriptionsCount} غير فعّال</p>
+                                            <p className="text-xs text-gray-500">{meterBox.activeSubscriptionsCount} فعّال، {meterBox.subscriptionsCount - meterBox.activeSubscriptionsCount} غير فعّال</p>
                                         </>}
                                     </td>
                                     <td data-actions="" className="text-end">

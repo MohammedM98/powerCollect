@@ -43,7 +43,7 @@ export default function SubscriptionTariffSection({
     unlockMinimumCharge,
 }) {
     return (
-        <FormSection icon="bolt" title="نوع الاشتراك والقاطع" info="سعر الكيلو والحد الأدنى يُحسبان تلقائيًا من اختيارك" columns={2}>
+        <FormSection icon="bolt" title="نوع الاشتراك والقاطع" description="المحاسبة والتعرفة والقاطع والحد الأدنى" info="سعر الكيلو والحد الأدنى يُحسبان تلقائيًا من اختيارك" columns={2}>
             <FormField id="accounting_type" label="نوع المحاسبة" error={errors.accounting_type} span="sm:col-span-2">
                 <ChoiceChips
                     label="نوع المحاسبة"

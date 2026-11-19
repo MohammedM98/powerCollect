@@ -3,7 +3,7 @@ import { useId, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
-import StatusPill from '@/Components/DataTable/StatusPill';
+import { Chip } from '@heroui/react';
 import AccountStatement from './AccountStatement';
 import { StandingDiscountBadge } from './AccountSummary';
 import StopStandingDiscountButton from './StopStandingDiscountButton';
@@ -12,9 +12,9 @@ import SubscriptionSwitcher from './SubscriptionSwitcher';
 import ArchiveNotice from './ArchiveNotice';
 
 const STATUS_TONES = {
-    active: 'green',
-    suspended: 'amber',
-    disconnected: 'gray',
+    active: 'success',
+    suspended: 'warning',
+    disconnected: 'default',
 };
 
 /** Placeholder cards and rows while the statement loads. */
@@ -61,34 +61,39 @@ export default function StatementModal({ subscription, statement, initialForm = 
                             </span>
                             <div className="min-w-0 flex-1">
                                 <StatementTitle id={titleId} name={header.fullName} as="h3">
-                                    {header.statusLabel && <StatusPill tone={STATUS_TONES[header.status]} label={header.statusLabel} />}
+                                    {header.statusLabel && (
+                                        <Chip size="sm" variant="soft" color={STATUS_TONES[header.status] ?? 'default'} className="gl-st-status">
+                                            <i aria-hidden="true" />
+                                            {header.statusLabel}
+                                        </Chip>
+                                    )}
                                     {header.standingDiscount && <StandingDiscountBadge discount={header.standingDiscount} />}
                                     {header.standingDiscount && statement?.canAddDiscount && (
                                         <StopStandingDiscountButton
                                             subscriptionId={header.id}
                                             subscriptionName={header.fullName}
-                                            discountLabel={header.standingDiscount.segment ? `${header.standingDiscount.terms} · ${header.standingDiscount.segment}` : header.standingDiscount.terms}
+                                            discountLabel={header.standingDiscount.segment ? `${header.standingDiscount.terms}، ${header.standingDiscount.segment}` : header.standingDiscount.terms}
                                         />
                                     )}
                                 </StatementTitle>
-                                <p className="gl-sub mt-1.5 !text-[13.5px]">
+                                <p className="gl-sub mt-1.5 text-[13.5px]!">
                                     {header.subscriberNumber && (
                                         <>
-                                            مشترك <span dir="ltr">{header.subscriberNumber}</span> ·{' '}
+                                            مشترك <span dir="ltr">{header.subscriberNumber}</span>،{' '}
                                         </>
                                     )}
                                     {header.accountNumber && (
                                         <>
-                                            حساب <span dir="ltr">{header.accountNumber}</span> ·{' '}
+                                            حساب <span dir="ltr">{header.accountNumber}</span>،{' '}
                                         </>
                                     )}
                                     {header.tariffCategoryLabel && (
                                         <>
                                             {header.tariffCategoryLabel}
-                                            {header.tariffSegmentName && ` (${header.tariffSegmentName})`} ·{' '}
+                                            {header.tariffSegmentName && ` (${header.tariffSegmentName})`}،{' '}
                                         </>
                                     )}
-                                    {header.meterBoxNumber && `طبلون ${header.meterBoxNumber} · `}
+                                    {header.meterBoxNumber && `طبلون ${header.meterBoxNumber}، `}
                                     {header.branchName}
                                 </p>
                             </div>
@@ -127,12 +132,6 @@ export default function StatementModal({ subscription, statement, initialForm = 
                         <ArchiveNotice subscription={header} />
                         {statement ? (
                             <>
-                                <SubscriptionSwitcher
-                                    subscriberNumber={statement.subscription.subscriberNumber}
-                                    subscriptions={statement.subscriptions}
-                                    currentId={statement.subscription.id}
-                                    onSelect={onSwitch}
-                                />
                                 <AccountStatement
                                     key={statement.subscription.id}
                                     subscription={statement.subscription}
@@ -142,6 +141,14 @@ export default function StatementModal({ subscription, statement, initialForm = 
                                     transactionTypes={statement.transactionTypes}
                                     onAction={(action, entry) => setOpenForm({ action, entry })}
                                     focusLineId={focusLineId}
+                                    between={
+                                        <SubscriptionSwitcher
+                                            subscriberNumber={statement.subscription.subscriberNumber}
+                                            subscriptions={statement.subscriptions}
+                                            currentId={statement.subscription.id}
+                                            onSelect={onSwitch}
+                                        />
+                                    }
                                 />
                             </>
                         ) : (

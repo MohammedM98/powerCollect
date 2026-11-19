@@ -247,7 +247,7 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
                     <Icon name="printer" className="h-5 w-5 text-print-600" />
                     تصميم الطباعة
                 </span>
-                {readingContext && <span className="text-xs text-gray-600">{[readingContext.title, readingContext.branchName, [readingContext.readingDayName, readingContext.readingDate && formatDate(readingContext.readingDate)].filter(Boolean).join(' '), `${provided.rows.length.toLocaleString('en')} سجل`].filter(Boolean).join(' · ')}</span>}
+                {readingContext && <span className="text-xs text-gray-600">{[readingContext.title, readingContext.branchName, [readingContext.readingDayName, readingContext.readingDate && formatDate(readingContext.readingDate)].filter(Boolean).join(' '), `${provided.rows.length.toLocaleString('en')} سجل`].filter(Boolean).join('، ')}</span>}
                 {isCut && (
                     <span role="status" className="inline-flex items-center gap-1 text-sm font-semibold text-amber-700">
                         <Icon name="warning" className="h-4 w-4 shrink-0" />
@@ -255,7 +255,7 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
                     </span>
                 )}
                 <div className="ms-auto flex flex-wrap items-center gap-2">
-                    {supportsTemplates && <select aria-label="القالب المختار" className="max-w-52 !py-1.5 text-sm" value={activeTemplateId ?? ''} onChange={(event) => applyTemplate(event.target.value)}>
+                    {supportsTemplates && <select aria-label="القالب المختار" className="max-w-52 py-1.5! text-sm" value={activeTemplateId ?? ''} onChange={(event) => applyTemplate(event.target.value)}>
                         <option value="">تصميم غير محفوظ</option>
                         {templates.map((template) => <option key={template.id} value={template.id}>{template.name}{template.isDefault ? ' (افتراضي)' : ''}</option>)}
                     </select>}
@@ -267,21 +267,21 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
                     {statementPrint && <label className="flex items-center gap-2 text-sm text-gray-600">عرض الكشف
                         <select aria-label="عرض الكشف المطبوع" value={props.printOptions.view} onChange={(event) => {
                             router.get(urlWith(pageUrl, { view: event.target.value, subscription: props.subscription?.id }), {}, { preserveState: true, preserveScroll: true });
-                        }} className="!py-1.5 text-sm">
+                        }} className="py-1.5! text-sm">
                             {STATEMENT_VIEWS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                         </select>
                     </label>}
                     {report?.counts && <label className="flex items-center gap-2 text-sm text-gray-600">الحركات
                         <select aria-label="تصفية الحركات المطبوعة" value={report.filter} onChange={(event) => {
                             router.get(urlWith(pageUrl, { filter: event.target.value, box: report.boxId || null }), {}, { preserveState: true, preserveScroll: true });
-                        }} className="!py-1.5 text-sm">
+                        }} className="py-1.5! text-sm">
                             {Object.entries(reportFilters).map(([key, label]) => <option key={key} value={key}>{label} ({report.counts[key]})</option>)}
                         </select>
                     </label>}
                     <label className="flex items-center gap-2 text-sm text-gray-600">
                         <Icon name="search" className="h-4 w-4" />
                         <span className="sr-only sm:not-sr-only">التكبير</span>
-                        <select value={zoom} onChange={(e) => setZoom(e.target.value)} className="!py-1.5 text-sm" aria-label="تكبير المعاينة">
+                        <select value={zoom} onChange={(e) => setZoom(e.target.value)} className="py-1.5! text-sm" aria-label="تكبير المعاينة">
                             {ZOOMS.map((option) => (
                                 <option key={option.value} value={option.value}>
                                     {option.label}
@@ -311,7 +311,7 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
             <div className="pd-body lg:grid lg:grid-cols-[380px_minmax(0,1fr)]">
                 <aside
                     aria-label="إعدادات الطباعة"
-                    className="pd-panel border-e border-gray-200 bg-white lg:sticky lg:top-[var(--pd-toolbar-height)] lg:h-[calc(100vh-var(--pd-toolbar-height))] lg:overflow-y-auto"
+                    className="pd-panel border-e border-gray-200 bg-white lg:sticky lg:top-(--pd-toolbar-height) lg:h-[calc(100vh-var(--pd-toolbar-height))] lg:overflow-y-auto"
                 >
                     {layout ? (
                         <PrintSettingsPanel

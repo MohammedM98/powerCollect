@@ -91,7 +91,7 @@ export default function BarChart({ data, label, formatValue = formatNumber, coun
                         onFocus={() => setActive((current) => current ?? data.length - 1)}
                         onBlur={() => setActive(null)}
                         onPointerLeave={() => setActive(null)}
-                        className="relative flex items-end rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-4 focus-visible:ring-offset-surface"
+                        className="relative flex items-end rounded-sm outline-hidden focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-4 focus-visible:ring-offset-surface"
                         style={{ height }}
                     >
                         {data.map((day, index) => {
@@ -129,7 +129,7 @@ export default function BarChart({ data, label, formatValue = formatNumber, coun
                             <b className="block font-display text-sm text-gray-900">{formatValue(point.value)}</b>
                             <span className="text-gray-500">
                                 {formatShortDay(point.date)}
-                                {countLabel && point.count !== undefined && ` · ${formatNumber(point.count)} ${countLabel}`}
+                                {countLabel && point.count !== undefined && `، ${formatNumber(point.count)} ${countLabel}`}
                             </span>
                         </div>
                     )}

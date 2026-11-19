@@ -10,7 +10,7 @@ const STATUS_TONES = { active: 'green', suspended: 'amber', disconnected: 'red' 
 
 export function SubscriptionRows({ subscriptions, boxNumber }) {
     return (
-        <div role="table" tabIndex={0} aria-label={`مشتركو ${boxNumber}`} className="max-h-[480px] overflow-y-auto rounded-control border border-gray-100 bg-surface text-start focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900">
+        <div role="table" tabIndex={0} aria-label={`مشتركو ${boxNumber}`} className="max-h-[480px] overflow-y-auto rounded-control border border-gray-100 bg-surface text-start focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900">
             <div role="row" className="meter-box-subscription-columns sticky top-0 z-10 hidden border-b border-brand-500/10 bg-surface px-4 py-2.5 text-xs font-bold text-gray-700">
                 {['المشترك / رقم الاشتراك', 'القراءة السابقة', 'القاطع', 'الحالة', 'الكشف'].map((label) => <span role="columnheader" key={label}>{label}</span>)}
             </div>
@@ -19,7 +19,7 @@ export function SubscriptionRows({ subscriptions, boxNumber }) {
                     return (
                         <div role="row" key={subscription.id} className="meter-box-subscription-columns grid items-center gap-x-4 gap-y-2 px-4 py-3 hover:bg-gray-50/60">
                             <div role="cell" className="meter-box-subscription-name min-w-0">
-                                <Link href={subscription.statementUrl} className="block rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-gray-900">
+                                <Link href={subscription.statementUrl} className="block rounded-lg focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900">
                                     <RowIdentity name={subscription.display_name} subtitle={subscription.account_number} subtitleDir="ltr" />
                                 </Link>
                             </div>
@@ -75,7 +75,7 @@ export default function MeterBoxSubscriptions({ meterBox, sort, direction, canRe
 
     return (
         <section id={`meter-box-subscriptions-${meterBox.id}`} aria-label={`مشتركو ${meterBox.box_number}`} aria-busy={http.processing} className="overflow-hidden rounded-card border border-brand-500/20 bg-surface text-start shadow-card">
-            <div className="flex flex-wrap items-center gap-3 border-b border-brand-500/15 bg-brand-500/[0.045] p-4">
+            <div className="flex flex-wrap items-center gap-3 border-b border-brand-500/15 bg-brand-500/4.5 p-4">
                 <div className="flex min-w-0 items-center gap-3">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-brand-500/10 text-brand-600"><Icon name="users" className="h-5 w-5" /></span>
                     <div className="min-w-0">
@@ -101,7 +101,7 @@ export default function MeterBoxSubscriptions({ meterBox, sort, direction, canRe
                     <div className="grid gap-3 motion-safe:animate-pulse" aria-hidden="true">{[1, 2, 3].map((id) => <div key={id} className="h-10 rounded-lg bg-gray-100" />)}</div>
                 </div>
             ) : rows.data.length === 0 ? (
-                <div className="rounded-control border border-dashed border-brand-500/20 bg-brand-500/[0.025] px-4 py-8 text-center">
+                <div className="rounded-control border border-dashed border-brand-500/20 bg-brand-500/2.5 px-4 py-8 text-center">
                     <span className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-control bg-brand-500/10 text-brand-600"><Icon name="users" className="h-5 w-5" /></span>
                     <p className="text-sm font-bold text-gray-900">لا يوجد مشتركون على هذا الطبلون.</p>
                     <p className="mt-1.5 text-xs text-gray-500">سيظهر المشتركون هنا عند ربطهم بالطبلون.</p>
@@ -112,9 +112,9 @@ export default function MeterBoxSubscriptions({ meterBox, sort, direction, canRe
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-gray-500">
                         <span>عرض <b className="font-display">{rows.from}–{rows.to}</b> من <b className="font-display">{rows.total}</b> مشترك</span>
                         {rows.last_page > 1 && <div className="flex items-center gap-2">
-                            <SecondaryButton className="!px-3 !py-1.5 !text-xs" disabled={http.processing || rows.current_page === 1} onClick={() => load(rows.current_page - 1)}>السابق</SecondaryButton>
+                            <SecondaryButton className="px-3! py-1.5! text-xs!" disabled={http.processing || rows.current_page === 1} onClick={() => load(rows.current_page - 1)}>السابق</SecondaryButton>
                             <span className="font-display">{rows.current_page} / {rows.last_page}</span>
-                            <SecondaryButton className="!px-3 !py-1.5 !text-xs" disabled={http.processing || rows.current_page === rows.last_page} onClick={() => load(rows.current_page + 1)}>التالي</SecondaryButton>
+                            <SecondaryButton className="px-3! py-1.5! text-xs!" disabled={http.processing || rows.current_page === rows.last_page} onClick={() => load(rows.current_page + 1)}>التالي</SecondaryButton>
                         </div>}
                     </div>
                 </>

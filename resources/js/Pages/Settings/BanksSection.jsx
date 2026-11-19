@@ -41,7 +41,7 @@ function BankLogoInput({ id, file, currentLogo, bankName, onChange, disabled, ..
         </div>
         <div className="relative shrink-0">
             <input {...props} id={id} name="logo" type="file" accept="image/png,image/jpeg,image/webp" disabled={disabled} className="peer sr-only" onChange={(event) => onChange(event.target.files?.[0] ?? null)} />
-            <label htmlFor={id} className={`inline-flex items-center justify-center gap-2 rounded-control border border-gray-200 bg-surface px-4 py-2.5 text-sm font-semibold text-gray-900 transition peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-gray-900 ${disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer hover:border-gray-300 hover:bg-gray-50'}`}>
+            <label htmlFor={id} className={`inline-flex items-center justify-center gap-2 rounded-control border border-gray-200 bg-surface px-4 py-2.5 text-sm font-semibold text-gray-900 transition peer-focus-visible:outline-solid peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-gray-900 ${disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer hover:border-gray-300 hover:bg-gray-50'}`}>
                 <Icon name="plus" className="h-4 w-4" />{file || currentLogo ? 'تغيير الشعار' : 'اختيار الشعار'}
             </label>
         </div>

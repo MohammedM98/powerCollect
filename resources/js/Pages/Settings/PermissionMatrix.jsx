@@ -69,7 +69,7 @@ function MatrixCheck({ checked, dirty, risk, label, disabled, onChange, hit }) {
             role="checkbox"
             aria-checked={checked}
             aria-label={label}
-            title={[label, risk ? RISK_LABELS[risk] : '', dirty ? 'لم يُحفظ بعد' : ''].filter(Boolean).join(' · ')}
+            title={[label, risk ? RISK_LABELS[risk] : '', dirty ? 'لم يُحفظ بعد' : ''].filter(Boolean).join('، ')}
             disabled={disabled}
             onClick={() => onChange(!checked)}
             className={`pm-check ${checked ? 'is-on' : ''} ${risk ? `is-${risk}` : ''} ${dirty ? 'is-dirty' : ''} ${hit ? 'is-hit' : ''}`}
@@ -194,7 +194,7 @@ export function SectionRow({
                     </b>
                     {explaining && SECTION_DETAILS[section.key] && (
                         <span className="pm-section-what">
-                            {SECTION_DETAILS[section.key].description} · صفحة «{SECTION_DETAILS[section.key].page}»
+                            {SECTION_DETAILS[section.key].description}، صفحة «{SECTION_DETAILS[section.key].page}»
                         </span>
                     )}
                     <small>{summary ?? sectionSentence(section, selected)}</small>
