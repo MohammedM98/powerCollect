@@ -7662,3 +7662,35 @@ body {
         min-width: 120px;
     }
 }
+
+/*
+ * The statement window, as option «أ»'s window: the name and its chips on
+ * one line under no kicker, the body 22px from the glass with the cards
+ * 16px under the header, and one row of tools (the default order shows as
+ * just «الترتيب»).
+ */
+.gl-statement .gl-statement-kicker {
+    display: none;
+}
+
+.gl-statement-body {
+    padding: 0 22px 22px;
+}
+
+.gl-st-sort {
+    display: contents;
+}
+
+.gl-statement .gl-st-tb .gl-st-search {
+    flex-basis: 220px;
+}
+
+.gl-statement .gl-st-sort .gl-filter-trigger:not([data-active]) .truncate {
+    display: none;
+}
+
+@media (max-width: 639px) {
+    .gl-statement-body {
+        padding: 0 12px 16px;
+    }
+}
