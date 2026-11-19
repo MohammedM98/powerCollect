@@ -17,12 +17,15 @@
         <link rel="preload" href="{{ Vite::asset('resources/fonts/zain-latin-700.woff2') }}" as="font" type="font/woff2" crossorigin>
         <link rel="preload" href="{{ Vite::asset('resources/fonts/alexandria-arabic.woff2') }}" as="font" type="font/woff2" crossorigin>
 
-        <!-- Theme, table density and the side bar's width: apply the saved choices before the page paints, so there is no flash. -->
+        <!-- Theme, solid or glass surfaces, table density and the side bar's width: apply the saved choices before the page paints, so there is no flash. -->
         <script nonce="{{ Vite::cspNonce() }}">
             try {
                 const theme = localStorage.getItem('theme');
                 if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
+                }
+                if (localStorage.getItem('surface') === 'glass') {
+                    document.documentElement.dataset.surface = 'glass';
                 }
                 // The density chosen in this browser, else the company's (data-ui-density).
                 document.documentElement.dataset.side = localStorage.getItem('side') === 'wide' ? 'wide' : 'rail';

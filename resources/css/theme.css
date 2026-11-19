@@ -90,18 +90,18 @@
     --add-hover: 59 63 72;
     --add-press: 30 32 38;
     --add-ink: 255 255 255;
-    --group-fill: 237 235 234;
-    --group-hover: 226 224 222;
-    --group-press: 216 214 211;
-    --group-ink: 32 35 41;
+    --group-fill: 236 238 241;
+    --group-hover: 226 229 233;
+    --group-press: 214 218 223;
+    --group-ink: 31 35 41;
 
     /*
      * The main action of a page or window (its one solid button): the logo's
      * charcoal in the light theme, a quiet slate in the dark one, never the
      * company's colour, which is kept for choice, focus and the identity.
      */
-    --action: 42 45 52;
-    --action-hover: 59 63 72;
+    --action: 36 39 46;
+    --action-hover: 52 56 65;
     --action-ink: 255 255 255;
 
     /*
@@ -135,21 +135,22 @@
     /* ── 2. Neutrals ──────────────────────────────────────────────────────── */
 
     /*
-     * Neutral greys, a touch cool so they sit well beside the teal. Quiet
-     * text (400) reads at 5.1:1 on the page's soft gray (50) and muted
-     * text (500) higher still, above the WCAG AA minimum of 4.5.
+     * Cool neutral greys (the redesign's banking calm): one hue from the
+     * page to the ink, so no surface fights another. Quiet text (400)
+     * reads at 5.2:1 on the page's gray (50) and muted text (500) higher
+     * still, above the WCAG AA minimum of 4.5.
      */
-    --gray-50: 248 247 245;
-    --gray-100: 243 242 240;
-    --gray-200: 232 231 229;
-    --gray-300: 211 210 208;
-    --gray-400: 100 103 110;
-    --gray-500: 94 97 104;
-    --gray-600: 75 78 85;
-    --gray-700: 57 61 67;
-    --gray-800: 40 43 49;
-    --gray-900: 20 23 28;
-    --gray-950: 11 14 19;
+    --gray-50: 244 245 247;
+    --gray-100: 238 240 243;
+    --gray-200: 226 229 233;
+    --gray-300: 205 209 215;
+    --gray-400: 96 102 112;
+    --gray-500: 89 96 106;
+    --gray-600: 72 78 87;
+    --gray-700: 55 60 68;
+    --gray-800: 40 44 51;
+    --gray-900: 31 35 41;
+    --gray-950: 12 14 17;
 
     /* Cards, tables, dialogs and fields. */
     --surface: 255 255 255;
@@ -335,17 +336,17 @@
     --logo-bolt: 45 200 178;
     --switch-on: 34 197 94;
 
-    --gray-50: 15 16 19;
-    --gray-100: 37 38 41;
-    --gray-200: 48 49 52;
-    --gray-300: 65 66 69;
-    --gray-400: 139 141 144;
-    --gray-500: 168 170 173;
-    --gray-600: 192 193 197;
-    --gray-700: 211 212 216;
-    --gray-800: 230 232 235;
-    --gray-900: 237 239 242;
-    --gray-950: 247 249 252;
+    --gray-50: 12 14 17;
+    --gray-100: 28 32 38;
+    --gray-200: 38 43 50;
+    --gray-300: 54 60 69;
+    --gray-400: 141 148 158;
+    --gray-500: 162 169 179;
+    --gray-600: 190 195 203;
+    --gray-700: 210 214 220;
+    --gray-800: 228 231 236;
+    --gray-900: 238 240 243;
+    --gray-950: 247 248 250;
 
     --blue-500: 37 99 235;
     --blue-600: 96 165 250;
@@ -356,20 +357,20 @@
     --excel-600: 110 220 150;
     --excel-700: 20 96 54;
 
-    --surface: 22 23 25;
+    --surface: 21 24 29;
 
 
 
     --add-fill: 65 78 96;
     --add-hover: 77 92 114;
     --add-press: 55 66 82;
-    --group-fill: 37 38 41;
-    --group-hover: 48 49 53;
-    --group-press: 58 59 63;
-    --group-ink: 247 246 245;
+    --group-fill: 32 36 43;
+    --group-hover: 42 47 55;
+    --group-press: 50 56 65;
+    --group-ink: 238 240 243;
 
-    --action: 65 78 96;
-    --action-hover: 77 92 114;
+    --action: 57 64 74;
+    --action-hover: 68 76 88;
     --tone-pay-solid: 34 124 69;
     --tone-pay-ink: 134 219 157;
     --tone-charge-solid: 188 54 80;
@@ -451,18 +452,18 @@
 :root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) .tn-bar {
     color-scheme: dark;
 
-    --gray-50: 15 16 19;
-    --gray-100: 37 38 41;
-    --gray-200: 48 49 52;
-    --gray-300: 65 66 69;
-    --gray-400: 139 141 144;
-    --gray-500: 168 170 173;
-    --gray-600: 192 193 197;
-    --gray-700: 211 212 216;
-    --gray-800: 230 232 235;
-    --gray-900: 237 239 242;
-    --gray-950: 247 249 252;
-    --surface: 22 23 25;
+    --gray-50: 12 14 17;
+    --gray-100: 28 32 38;
+    --gray-200: 38 43 50;
+    --gray-300: 54 60 69;
+    --gray-400: 141 148 158;
+    --gray-500: 162 169 179;
+    --gray-600: 190 195 203;
+    --gray-700: 210 214 220;
+    --gray-800: 228 231 236;
+    --gray-900: 238 240 243;
+    --gray-950: 247 248 250;
+    --surface: 21 24 29;
 }
 
 /*
@@ -477,23 +478,24 @@
 :root {
     /* Fields: the deepest layer, where one types (white on a light page, darker than the tile on a dark one). */
     --panel-field: 255 255 255;
-    --panel-tile: 241 240 238;
-    --panel-field-line: 223 222 219;
-    --panel-page: 247 245 244;
-    --panel-ink: 32 35 41;
-    --panel-muted: 84 84 93;
-    --panel-faint: 94 97 104;
+    --panel-tile: 244 245 247;
+    --panel-field-line: 222 226 231;
+    --panel-page: 236 238 241;
+    --panel-ink: 31 35 41;
+    --panel-muted: 84 90 100;
+    --panel-faint: 93 100 110;
     --panel-bg: 255 255 255;
     --panel-line: 0 0 0 / 0.09;
     --panel-line-strong: 0 0 0 / 0.16;
     --panel-fill: 0 0 0 / 0.04;
     --panel-fill-strong: 0 0 0 / 0.07;
-    /* HeroUI's card shadow: barely there, so cards read by their surface, not a halo. */
-    --panel-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.04), 0 1px 2px 0 rgb(0 0 0 / 0.06), 0 0 1px 0 rgb(0 0 0 / 0.06);
+    /* Depth without noise: light from above (a bright top edge), then a soft layered shadow under the panel. */
+    --panel-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 1px 2px rgb(16 20 26 / 0.05), 0 10px 28px -14px rgb(16 20 26 / 0.16);
     --panel-highlight: 255 255 255 / 0.9;
     --panel-ambient:
         radial-gradient(1200px 640px at 85% -12%, rgb(255 255 255 / 0.75), transparent 62%),
         radial-gradient(900px 600px at 0% 112%, rgb(20 25 35 / 0.04), transparent 62%);
+    /* Solid by default; the glass look (html[data-surface='glass'], below) lets the page through, frosted. */
     --panel-opacity: 1;
     --panel-frost: none;
 
@@ -504,20 +506,20 @@
 }
 
 .dark {
-    --panel-field: 35 35 37;
-    --panel-tile: 31 32 35;
-    --panel-field-line: 42 43 46;
-    --panel-page: 10 11 13;
-    --panel-ink: 247 246 245;
-    --panel-muted: 179 179 188;
-    --panel-faint: 150 151 160;
-    --panel-bg: 22 23 25;
+    --panel-field: 30 34 40;
+    --panel-tile: 28 32 38;
+    --panel-field-line: 44 50 58;
+    --panel-page: 12 14 17;
+    --panel-ink: 238 240 243;
+    --panel-muted: 170 177 187;
+    --panel-faint: 150 157 167;
+    --panel-bg: 21 24 29;
     --panel-line: 255 255 255 / 0.08;
     --panel-line-strong: 255 255 255 / 0.16;
     --panel-fill: 255 255 255 / 0.05;
     --panel-fill-strong: 255 255 255 / 0.09;
-    --panel-shadow: 0 0 0 1px rgb(255 255 255 / 0.04);
-    --panel-highlight: 255 255 255 / 0.16;
+    --panel-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 12px 32px -16px rgb(0 0 0 / 0.8);
+    --panel-highlight: 255 255 255 / 0.08;
     --panel-ambient: radial-gradient(1300px 720px at 85% -12%, rgb(255 255 255 / 0.05), transparent 62%);
 
     --panel-success: 60 207 145;
@@ -526,15 +528,30 @@
     --panel-info: 56 189 248;
 }
 
+/*
+ * The glass look, the person's own choice in the top bar (SurfaceToggle,
+ * kept in this browser): panels let a faint wash of the company's colour,
+ * the transfer blue and the payment green through, frosted. Solid where the
+ * browser cannot blur, or less transparency is asked for (below).
+ */
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    :root {
-        --panel-opacity: 0.6;
-        --panel-frost: blur(18px) saturate(1.25);
+    :root[data-surface='glass'] {
+        --panel-opacity: 0.66;
+        --panel-frost: blur(22px) saturate(1.6);
+        --panel-ambient:
+            radial-gradient(60% 50% at 85% 0%, rgb(var(--brand-solid) / 0.16), transparent 70%),
+            radial-gradient(50% 45% at 10% 30%, rgb(var(--tone-split) / 0.16), transparent 70%),
+            radial-gradient(60% 60% at 50% 100%, rgb(var(--tone-pay) / 0.12), transparent 70%);
+    }
+
+    :root[data-surface='glass'].dark {
+        --panel-opacity: 0.58;
     }
 }
 
 @media (prefers-reduced-transparency: reduce), (forced-colors: active) {
-    :root {
+    :root,
+    :root[data-surface='glass'] {
         --panel-opacity: 1;
         --panel-frost: none;
     }

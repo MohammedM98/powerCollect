@@ -711,6 +711,13 @@ html.tn-locked {
     display: none;
 }
 
+/* Solid or glass surfaces (Components/SurfaceToggle.jsx): a slim two-part switch beside the theme. */
+.tn-surface.gl-seg button {
+    min-height: 32px;
+    padding-inline: 10px;
+    font-size: 12.5px;
+}
+
 @media (max-width: 1023px) {
     :root {
         --tn-bar-height: 60px;
@@ -726,6 +733,10 @@ html.tn-locked {
 
     .tn-mobile-only {
         display: grid;
+    }
+
+    .tn-desktop-only {
+        display: none !important;
     }
 
     .tn-bar {
