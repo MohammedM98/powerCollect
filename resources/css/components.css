@@ -6151,3 +6151,222 @@ button.gl-cb-tile:hover {
     outline: 2px solid rgb(var(--brand-solid));
     outline-offset: 3px;
 }
+
+/*
+ * The dashboard as in the redesign (Pages/Dashboard.jsx): the actions as
+ * pills, what waits beside the period's collections (a hero card with its
+ * chart across the foot), the overview tiles, three cards in a row, then
+ * how people paid beside the subscribers by breaker.
+ */
+.gl-dash-acts {
+    margin-bottom: 4px;
+}
+
+.gl-dash-acts .gl-act {
+    height: 40px;
+}
+
+.gl-dash-acts .gl-act:not(.is-solid) {
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--panel-shadow);
+    color: var(--gl-ink);
+}
+
+.gl-dash-acts .gl-act:not(.is-solid):hover {
+    background: rgb(var(--group-fill));
+}
+
+.gl-dash-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.65fr);
+    gap: 16px;
+}
+
+.gl-dash-hero.is-single {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.gl-dash-pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.65fr);
+    gap: 16px;
+}
+
+.gl-dash-pair.is-single {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+@media (max-width: 1100px) {
+    .gl-dash-hero,
+    .gl-dash-pair {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.gl-hero-collect {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: hidden;
+    padding-bottom: 0 !important;
+}
+
+.gl-hero-collect-head h2 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    color: var(--gl-ink);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.gl-hero-collect-total {
+    display: block;
+    margin-top: 6px;
+    color: var(--gl-ink);
+    font: 800 clamp(34px, 3.4vw, 46px) / 1.1 var(--gl-head);
+}
+
+.gl-hero-collect-total > span {
+    color: var(--gl-muted);
+    font-size: 0.6em;
+}
+
+.gl-hero-collect-head small {
+    display: block;
+    margin-top: 4px;
+    color: var(--gl-muted);
+    font-size: 13px;
+}
+
+.gl-hero-collect-head small b {
+    color: var(--gl-ink);
+}
+
+.gl-hero-collect-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.gl-hero-collect-tiles > div {
+    display: grid;
+    gap: 4px;
+    align-content: start;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgb(var(--panel-tile));
+}
+
+.gl-hero-collect-tiles small {
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.gl-hero-collect-tiles b {
+    color: var(--gl-ink);
+    font: 800 19px / 1.3 var(--gl-head);
+}
+
+.gl-hero-collect-tiles b > span {
+    color: var(--gl-muted);
+    font-size: 0.7em;
+}
+
+.gl-hero-collect-tiles > div > span {
+    color: var(--gl-muted);
+    font-size: 11.5px;
+}
+
+.gl-hero-collect-split {
+    display: block;
+    height: 8px;
+    margin: 8px 0 2px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: rgb(var(--gray-400) / 0.5);
+}
+
+.gl-hero-collect-split > span {
+    display: block;
+    height: 100%;
+    border-radius: 99px;
+    background: rgb(var(--action));
+}
+
+@media (max-width: 640px) {
+    .gl-hero-collect-tiles {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* The chart across the hero card's foot, edge to edge. */
+.gl-chart-bare {
+    position: relative;
+    margin: auto calc(-1 * var(--gl-panel-pad, 20px)) 0;
+}
+
+.gl-chart-bare > .gl-tog {
+    position: absolute;
+    top: -6px;
+    inset-inline-end: var(--gl-panel-pad, 20px);
+    z-index: 1;
+}
+
+/* A ranked list: number, name, amount, and a bar under each. */
+.gl-rank {
+    display: grid;
+    gap: 12px;
+    margin: 4px 0 10px;
+    padding: 0;
+    list-style: none;
+}
+
+.gl-rank li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 4px 10px;
+    font-size: 13.5px;
+}
+
+.gl-rank-n {
+    color: var(--gl-muted);
+    font-size: 12px;
+}
+
+.gl-rank-name {
+    overflow: hidden;
+    color: var(--gl-ink);
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gl-rank b {
+    color: var(--gl-ink);
+    font-size: 13px;
+}
+
+.gl-rank i {
+    grid-column: 2 / -1;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: rgb(var(--group-fill));
+}
+
+.gl-rank i > span {
+    display: block;
+    height: 100%;
+    border-radius: 99px;
+    background: rgb(var(--action));
+}
+
+.gl-av-bad {
+    background: rgb(var(--danger-600) / 0.1) !important;
+    color: rgb(var(--danger-700)) !important;
+}
