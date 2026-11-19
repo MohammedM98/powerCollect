@@ -8,7 +8,9 @@ import { describeBalance } from '@/lib/accountStatement';
 import { formatAmount } from '@/lib/currency';
 import { formatMoney } from '@/lib/format';
 import { clearErrorOnInput, submitOnCtrlEnter, validateFormFields } from '@/lib/formValidation';
-import { balanceCells, balanceText, DoneScreen, FormFooter, FormHeader, FormStep, MovementCard, movementStyle, SheetBody, SHEET_FORM_CLASS } from './AccountFormParts';
+import { balanceText, DoneScreen, FormHeader, FormStep, movementStyle, SheetBody, SHEET_FORM_CLASS } from './AccountFormParts';
+import { LedgerFooter, recentStatementLines } from './LedgerLine';
+import OnceDiscountLine from './OnceDiscountLine';
 import { CorrectionReasonFields, EMPTY_CORRECTION, OriginalLine } from './CorrectionFields';
 import { discountPreview, standingTerms, withSegment } from '@/lib/discountTerms';
 import DiscountSegmentStep from './DiscountSegmentStep';
@@ -24,9 +26,9 @@ import StandingDiscountCard from './StandingDiscountCard';
  * off the latest week's reading, straight away if it has been entered,
  * and every weekly reading after it — a
  * percentage of the reading, free kilowatts, or shekels off the kilo price
- * — until it is stopped. The movement card under the title shows the balance a
- * discount leaves, or what the subscription pays for the latest week with a
- * standing one. Keys: Ctrl + Enter saves, 1، 2، 3 pick the weekly
+ * — until it is stopped. A one-off discount is written as the statement's
+ * next line, under the account's last lines (`recentLines`); a standing one
+ * shows what the subscription pays for the latest week with it. Keys: Ctrl + Enter saves, 1، 2، 3 pick the weekly
  * readings discount's method.
  *
  * With `correcting` (a statement line), it corrects that one-off discount
@@ -41,6 +43,7 @@ export default function DiscountModal({
     balance,
     discountMethods,
     discountSegments = [],
+    recentLines = [],
     correcting = null,
     correctionReasons = [],
 }) {
@@ -199,7 +202,7 @@ export default function DiscountModal({
 
     return (
         <>
-            <Modal show={show} onClose={requestClose} maxWidth="2xl">
+            <Modal show={show} onClose={requestClose} maxWidth="5xl">
                 {receipt ? (
                     <DoneScreen
                         tone={correcting ? 'amber' : 'green'}
@@ -224,6 +227,7 @@ export default function DiscountModal({
                         onInput={(e) => clearErrorOnInput(e, form)}
                         onKeyDown={onKeyDown}
                         className={SHEET_FORM_CLASS}
+                        data-ledger-tone={tone}
                         style={movementStyle(tone)}
                     >
                         <FormHeader
@@ -234,12 +238,12 @@ export default function DiscountModal({
                             subtitle={
                                 correcting
                                     ? 'صحّح الخصم؛ يبقى الأصلي في الكشف ملغى مع سبب التصحيح.'
-                                    : 'يُنزَّل مما على المشترك، مرة واحدة أو كل أسبوع.'
+                                    : `${[subscription.fullName, subscription.accountNumber && `حساب ${subscription.accountNumber}`].filter(Boolean).join('، ')}، يُنزَّل مما عليه مرة واحدة أو كل أسبوع`
                             }
                             onClose={requestClose}
                         />
 
-                        {isStanding ? (
+                        {isStanding && (
                             <StandingDiscountCard
                                 data={data}
                                 example={example}
@@ -251,27 +255,13 @@ export default function DiscountModal({
                                 value={value}
                                 weeklySaving={weeklySaving}
                             />
-                        ) : (
-                            <MovementCard
-                                subscription={subscription}
-                                tone={tone}
-                                tag="مرة واحدة"
-                                ops={['−', '=']}
-                                cells={balanceCells({
-                                    balance,
-                                    balanceLabel: correcting ? 'الرصيد بدون الأصلي' : 'الرصيد الحالي',
-                                    amount: discount,
-                                    sign: -1,
-                                    moveLabel: 'الخصم',
-                                    afterLabel: 'الرصيد بعده',
-                                })}
-                            />
                         )}
 
                         <SheetBody>
                             {correcting && <OriginalLine entry={correcting} />}
 
                             {!correcting && (
+                                <div className="gl-cl-types is-plain">
                                 <DiscountKindStep
                                     changeKind={changeKind}
                                     data={data}
@@ -281,6 +271,7 @@ export default function DiscountModal({
                                     steps={steps}
                                     stopping={stopping}
                                 />
+                                </div>
                             )}
 
                             {isStanding && (
@@ -295,22 +286,38 @@ export default function DiscountModal({
                             )}
                             {!isStanding && <InputError message={errors.method} />}
 
-                            <DiscountValueStep
-                                data={data}
-                                errors={errors}
-                                example={example}
-                                exampleWithDiscount={exampleWithDiscount}
-                                field={field}
-                                invalid={invalid}
-                                isStanding={isStanding}
-                                owed={owed}
-                                setData={setData}
-                                setValue={setValue}
-                                steps={steps}
-                                value={value}
-                                valueInput={valueInput}
-                                weeklySaving={weeklySaving}
-                            />
+                            {isStanding ? (
+                                <DiscountValueStep
+                                    data={data}
+                                    errors={errors}
+                                    example={example}
+                                    exampleWithDiscount={exampleWithDiscount}
+                                    field={field}
+                                    invalid={invalid}
+                                    isStanding={isStanding}
+                                    owed={owed}
+                                    setData={setData}
+                                    setValue={setValue}
+                                    steps={steps}
+                                    value={value}
+                                    valueInput={valueInput}
+                                    weeklySaving={weeklySaving}
+                                />
+                            ) : (
+                                <OnceDiscountLine
+                                    balance={balance}
+                                    balanceAfter={balanceAfter}
+                                    data={data}
+                                    errors={errors}
+                                    invalid={invalid}
+                                    lines={correcting ? [] : recentStatementLines(recentLines)}
+                                    owed={owed}
+                                    setData={setData}
+                                    setValue={setValue}
+                                    tone={tone}
+                                    valueInput={valueInput}
+                                />
+                            )}
 
                             {isStanding && (
                                 <DiscountSegmentStep
@@ -322,7 +329,7 @@ export default function DiscountModal({
                                 />
                             )}
 
-                            <DiscountNotesStep data={data} errors={errors} setData={setData} steps={steps} />
+                            {isStanding && <DiscountNotesStep data={data} errors={errors} setData={setData} steps={steps} />}
 
                             {correcting && (
                                 <FormStep number={steps.notes + 1} title="سبب التصحيح">
@@ -331,22 +338,26 @@ export default function DiscountModal({
                             )}
                         </SheetBody>
 
-                        <FormFooter
+                        <LedgerFooter
+                            balance={balance}
+                            balanceAfter={balanceAfter}
                             onCancel={requestClose}
-                            disabled={value <= 0 || Boolean(invalid)}
-                            processing={form.processing}
-                            submitLabel={
-                                correcting
-                                    ? 'حفظ التصحيح'
-                                    : isStanding
-                                      ? standingDiscount
-                                          ? 'استبدال خصم القراءات الأسبوعية'
-                                          : 'تفعيل خصم القراءات الأسبوعية'
-                                      : discount
-                                        ? `خصم ${formatMoney(discount)} ₪`
-                                        : 'إضافة الخصم'
+                            disabled={value <= 0 || Boolean(invalid) || form.processing}
+                            keys={isStanding ? <><span className="kbd">1–3</span> الطريقة</> : null}
+                            summary={isStanding ? { label: 'يوفّر في الأسبوع', value: value > 0 && !invalid ? `${formatMoney(weeklySaving)} ₪` : '—' } : null}
+                            label={
+                                form.processing
+                                    ? 'جارٍ الحفظ...'
+                                    : correcting
+                                      ? 'حفظ التصحيح'
+                                      : isStanding
+                                        ? standingDiscount
+                                            ? 'استبدال خصم القراءات الأسبوعية'
+                                            : 'تفعيل خصم القراءات الأسبوعية'
+                                        : discount
+                                          ? `خصم ${formatMoney(discount)} ₪`
+                                          : 'إضافة الخصم'
                             }
-                            shortcuts={isStanding ? '1، 2، 3 للطريقة' : undefined}
                         />
                     </form>
                 )}

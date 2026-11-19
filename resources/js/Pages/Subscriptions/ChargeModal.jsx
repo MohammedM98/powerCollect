@@ -3,8 +3,6 @@ import ConfirmDialog from '@/Components/ConfirmDialog';
 import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
-import Balance from '@/Components/Balance';
-import { Button } from '@heroui/react';
 import { useResourceForm } from '@/hooks/useResourceForm';
 import { describeBalance } from '@/lib/accountStatement';
 import { formatMoney, normalizeDecimalInput } from '@/lib/format';
@@ -22,7 +20,7 @@ import {
     SHEET_FORM_CLASS,
 } from './AccountFormParts';
 import { CorrectionReasonFields, EMPTY_CORRECTION, OriginalLine } from './CorrectionFields';
-import ChargeLedger, { recentStatementLines } from './ChargeLedger';
+import LedgerLine, { LedgerFooter, recentStatementLines } from './LedgerLine';
 
 /** How each type of charge looks in the form: its icon, a hint, quick amounts and an example note. */
 const TYPE_LOOKS = {
@@ -166,6 +164,7 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                         onInput={(e) => clearErrorOnInput(e, form)}
                         onKeyDown={onKeyDown}
                         className={SHEET_FORM_CLASS}
+                        data-ledger-tone={correcting ? 'correction' : 'charge'}
                         style={movementStyle(tone)}
                     >
                         <FormHeader
@@ -194,7 +193,7 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                             </div>
 
                             <div>
-                                <ChargeLedger
+                                <LedgerLine
                                     lines={correcting ? [] : recentStatementLines(recentLines)}
                                     balance={balance}
                                     balanceAfter={balanceAfter}
@@ -282,23 +281,14 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                             )}
                         </SheetBody>
 
-                        <div className="gl-dialog-foot gl-sheet-foot gl-cl-foot">
-                            <span className="gl-sheet-keys">
-                                <span className="kbd" dir="ltr">Esc</span> إغلاق
-                                <span className="kbd" dir="ltr">Ctrl ↵</span> تحميل
-                            </span>
-                            <div className="gl-cl-total">
-                                <small>الرصيد بعده</small>
-                                <b className="gl-num"><Balance value={balanceAfter ?? balance} colored={false} unit="₪" paperWord={false} /></b>
-                            </div>
-                            <Button onPress={requestClose} className="gl-sheet-btn">
-                                إلغاء
-                            </Button>
-                            <Button type="submit" isDisabled={amount <= 0 || missingReason || form.processing} className="gl-sheet-btn is-submit">
-                                <Icon name="check" className="h-[18px] w-[18px]" strokeWidth={2.2} />
-                                {form.processing ? 'جارٍ الحفظ...' : correcting ? 'حفظ التصحيح' : amount > 0 ? `إضافة ${formatMoney(amount)} ₪ إلى الكشف` : 'إضافة السطر'}
-                            </Button>
-                        </div>
+                        <LedgerFooter
+                            balance={balance}
+                            balanceAfter={balanceAfter}
+                            onCancel={requestClose}
+                            disabled={amount <= 0 || missingReason || form.processing}
+                            keys={<><span className="kbd">{typeKeys}</span> النوع</>}
+                            label={form.processing ? 'جارٍ الحفظ...' : correcting ? 'حفظ التصحيح' : amount > 0 ? `إضافة ${formatMoney(amount)} ₪ إلى الكشف` : 'إضافة السطر'}
+                        />
                     </form>
                 )}
             </Modal>

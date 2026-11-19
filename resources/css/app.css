@@ -5438,8 +5438,8 @@ body {
 
 .gl-cl-types .gl-choice-content[data-selected],
 .gl-cl-types .gl-choice-content[data-selected]:hover {
-    background: linear-gradient(170deg, color-mix(in oklab, var(--ma-owe) 82%, white), var(--ma-owe));
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), 0 14px 26px -14px color-mix(in oklab, var(--ma-owe) 80%, black);
+    background: linear-gradient(170deg, color-mix(in oklab, var(--cl-t) 82%, white), var(--cl-t));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), 0 14px 26px -14px color-mix(in oklab, var(--cl-t) 80%, black);
     color: #fff;
 }
 
@@ -5538,13 +5538,13 @@ body {
 .gl-cl-table tr.is-new td {
     height: 76px;
     border-bottom: 0;
-    background: color-mix(in oklab, var(--ma-owe-s) 70%, transparent);
+    background: color-mix(in oklab, var(--cl-ts) 70%, transparent);
 }
 
 .gl-cl-table tr.is-new td:first-child {
     border-start-start-radius: 14px;
     border-end-start-radius: 14px;
-    box-shadow: inset -4px 0 0 var(--ma-owe);
+    box-shadow: inset -4px 0 0 var(--cl-t);
 }
 
 .gl-cl-table tr.is-new td:last-child {
@@ -5558,7 +5558,7 @@ body {
     height: 24px;
     padding: 0 10px;
     border-radius: 99px;
-    background: var(--ma-owe);
+    background: var(--cl-t);
     color: #fff;
     font-size: 12.5px;
     font-weight: 800;
@@ -5578,16 +5578,16 @@ body {
     padding: 0 12px;
     border-radius: 12px;
     background: var(--ma-solid);
-    box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--ma-owe) 30%, transparent);
+    box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--cl-t) 30%, transparent);
     transition: box-shadow 0.15s;
 }
 
 .gl-cl-in:focus-within {
-    box-shadow: inset 0 0 0 2px var(--ma-owe), 0 0 0 4px color-mix(in oklab, var(--ma-owe) 14%, transparent);
+    box-shadow: inset 0 0 0 2px var(--cl-t), 0 0 0 4px color-mix(in oklab, var(--cl-t) 14%, transparent);
 }
 
 .gl-cl-in[data-invalid] {
-    box-shadow: inset 0 0 0 2px var(--ma-owe);
+    box-shadow: inset 0 0 0 2px var(--cl-t);
 }
 
 .gl-cl-in input,
@@ -5612,10 +5612,10 @@ body {
 }
 
 .gl-cl-in.is-amount input {
-    color: var(--ma-owe);
+    color: var(--cl-t);
     font: 900 22px var(--font-body, 'Zain'), sans-serif;
     text-align: end;
-    caret-color: var(--ma-owe);
+    caret-color: var(--cl-t);
 }
 
 .gl-cl-in.is-amount[data-readonly] input {
@@ -5628,7 +5628,7 @@ body {
 }
 
 .gl-cl-after {
-    color: var(--ma-owe);
+    color: var(--cl-t);
     font: 900 20px var(--font-body, 'Zain'), sans-serif;
     white-space: nowrap;
 }
@@ -5674,7 +5674,7 @@ body {
     border-radius: 99px;
     background: var(--ma-solid);
     box-shadow: var(--ma-depth);
-    color: var(--ma-owe);
+    color: var(--cl-t);
     font-size: 13px;
     font-weight: 800;
 }
@@ -5689,23 +5689,23 @@ body {
 }
 
 .gl-cl-hint.is-bad {
-    color: var(--ma-owe);
+    color: var(--cl-t);
     font-weight: 700;
 }
 
 /* The footer's save button in the charge's red, with its light and shadow. */
-.gl-sheet:has(.gl-cl) .gl-sheet-btn.is-submit.button,
-.gl-sheet:has(.gl-cl) .gl-sheet-btn.is-submit.button:hover:not([data-disabled]) {
+.gl-sheet[data-ledger-tone] .gl-sheet-btn.is-submit.button,
+.gl-sheet[data-ledger-tone] .gl-sheet-btn.is-submit.button:hover:not([data-disabled]) {
     height: 50px;
     padding: 0 24px;
     border-radius: 15px;
-    background: linear-gradient(180deg, color-mix(in oklab, #b0524b 88%, white), #b0524b);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 8px 18px -10px color-mix(in oklab, #b0524b 80%, black);
+    background: linear-gradient(180deg, color-mix(in oklab, var(--cl-btn) 88%, white), var(--cl-btn));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 8px 18px -10px color-mix(in oklab, var(--cl-btn) 80%, black);
     color: #fff;
     font-size: 16px;
 }
 
-.gl-sheet:has(.gl-cl) .gl-sheet-btn.is-submit.button:hover:not([data-disabled]) {
+.gl-sheet[data-ledger-tone] .gl-sheet-btn.is-submit.button:hover:not([data-disabled]) {
     filter: brightness(1.05);
 }
 
@@ -5754,8 +5754,8 @@ body {
         padding: 12px;
         border: 0;
         border-radius: 16px;
-        background: color-mix(in oklab, var(--ma-owe-s) 70%, transparent);
-        box-shadow: inset -4px 0 0 var(--ma-owe);
+        background: color-mix(in oklab, var(--cl-ts) 70%, transparent);
+        box-shadow: inset -4px 0 0 var(--cl-t);
     }
 
     .gl-cl-table tr.is-new td:nth-child(2) {
@@ -5763,11 +5763,11 @@ body {
         order: 1;
     }
 
-    .gl-cl-table tr.is-new td:nth-child(3) {
+    .gl-cl-table tr.is-new td:is(:nth-child(3), :nth-child(4)) {
         order: 2;
     }
 
-    .gl-cl-table tr.is-new td:nth-child(4) {
+    .gl-cl-table tr.is-new td:empty {
         display: none;
     }
 
@@ -5793,8 +5793,8 @@ body {
 }
 
 /* The charge window exactly as the prototype: the MA glass window, its header and footer. */
-.modal-sheet-panel:has(.gl-cl),
-:root[data-ui-background='graphite'] .modal-sheet-panel:has(.gl-cl) {
+.modal-sheet-panel:has(.gl-sheet[data-ledger-tone]),
+:root[data-ui-background='graphite'] .modal-sheet-panel:has(.gl-sheet[data-ledger-tone]) {
     border: 0;
     border-radius: 28px;
     background: var(--ma-panel);
@@ -5804,46 +5804,46 @@ body {
     color: var(--ma-ink);
 }
 
-:root:not([data-surface='glass']) .modal-sheet-panel:has(.gl-cl) {
+:root:not([data-surface='glass']) .modal-sheet-panel:has(.gl-sheet[data-ledger-tone]) {
     background: var(--ma-solid);
 }
 
-.gl-sheet:has(.gl-cl) .gl-dialog-head {
+.gl-sheet[data-ledger-tone] .gl-dialog-head {
     padding: 20px 24px 16px;
     border: 0;
 }
 
-.gl-sheet:has(.gl-cl) .gl-dialog-head .gl-tone {
+.gl-sheet[data-ledger-tone] .gl-dialog-head .gl-tone {
     width: 46px;
     height: 46px;
     border-radius: 15px;
-    background: var(--ma-owe-s);
-    color: var(--ma-owe);
+    background: var(--cl-ts);
+    color: var(--cl-t);
     box-shadow: var(--ma-hl);
 }
 
-.gl-sheet:has(.gl-cl) .gl-dialog-head h3 {
+.gl-sheet[data-ledger-tone] .gl-dialog-head h3 {
     font-size: 21px !important;
 }
 
-.gl-sheet:has(.gl-cl) .gl-dialog-head .gl-sub {
+.gl-sheet[data-ledger-tone] .gl-dialog-head .gl-sub {
     color: var(--ma-muted);
     font-size: 14px !important;
 }
 
-.gl-sheet:has(.gl-cl) .gl-dialog-head button {
+.gl-sheet[data-ledger-tone] .gl-dialog-head button {
     border: 0;
     background: none;
     box-shadow: none;
     color: var(--ma-muted);
 }
 
-.gl-sheet:has(.gl-cl) .gl-dialog-head button:hover {
+.gl-sheet[data-ledger-tone] .gl-dialog-head button:hover {
     background: var(--ma-tile);
     color: var(--ma-ink);
 }
 
-.gl-sheet:has(.gl-cl) .gl-sheet-body {
+.gl-sheet[data-ledger-tone] .gl-sheet-body {
     gap: 18px;
     padding: 4px 24px 22px;
 }
@@ -5941,4 +5941,171 @@ body {
     .gl-cl-foot .gl-sheet-btn.is-submit {
         flex: 1;
     }
+}
+
+/* Each window's colour for its line, its tiles and its button. */
+.gl-sheet[data-ledger-tone] {
+    --cl-t: var(--ma-owe);
+    --cl-ts: var(--ma-owe-s);
+    --cl-btn: #b0524b;
+}
+
+.gl-sheet[data-ledger-tone='clearing'] {
+    --cl-t: var(--ma-clr);
+    --cl-ts: var(--ma-clr-s);
+    --cl-btn: #45678e;
+}
+
+.gl-sheet[data-ledger-tone='discount'] {
+    --cl-t: var(--ma-disc);
+    --cl-ts: var(--ma-disc-s);
+    --cl-btn: #6c599d;
+}
+
+.gl-sheet[data-ledger-tone='correction'] {
+    --cl-t: var(--ma-warn);
+    --cl-ts: var(--ma-warn-s);
+    --cl-btn: #946615;
+}
+
+/* A credit (له) line's amount is under له; its balance goes down. */
+.gl-cl[data-tone]:not([data-tone='charge']) .gl-cl-after {
+    color: var(--ma-ink);
+}
+
+/* Small extra fields under the line (a clearing's paper voucher number). */
+.gl-cl-extra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    margin-top: 12px;
+}
+
+.gl-cl-extra label {
+    color: var(--ma-muted);
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.gl-cl-extra .gl-cl-in {
+    width: 180px;
+    background: var(--ma-tile);
+    box-shadow: none;
+}
+
+.gl-cl-extra .gl-cl-in:focus-within {
+    background: var(--ma-solid);
+}
+
+.gl-cl-quick button.is-settle {
+    background: var(--ma-pay-s);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ma-pay) 25%, transparent);
+    color: var(--ma-pay);
+}
+
+/* A notice inside the window (an amount above what is owed). */
+.gl-cl-note {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: var(--ma-warn-s);
+    color: var(--ma-ink);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.gl-cl-note label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.gl-cl-note input {
+    width: 19px;
+    height: 19px;
+    accent-color: var(--ma-act);
+}
+
+@media (max-width: 600px) {
+    .gl-cl-foot .gl-sheet-btn.is-submit.button {
+        min-width: 0;
+        padding-inline: 14px;
+        font-size: 15px;
+        white-space: normal;
+        line-height: 1.25;
+    }
+}
+
+/* A window whose keys pick something else (the discount) shows no numbers on its tiles. */
+.gl-cl-types.is-plain .gl-choice-content::before {
+    content: none;
+}
+
+/* The weekly discount keeps its card and steps, in the window's colours. */
+.gl-sheet[data-ledger-tone] .gl-step-n {
+    background: var(--ma-tile);
+    color: var(--ma-muted);
+}
+
+.gl-sheet[data-ledger-tone] .gl-step[data-done] .gl-step-n {
+    background: var(--cl-ts);
+    color: var(--cl-t);
+}
+
+/*
+ * The other choices and the big amount of these windows (the weekly
+ * discount's method and value), as the payment's: grey cards turning white,
+ * ringed in the window's colour with their icon filled; the value on a soft
+ * field ringed in that colour while typed.
+ */
+.gl-sheet[data-ledger-tone] .gl-step:not(.gl-cl-types .gl-step) .gl-choice-content,
+.gl-sheet[data-ledger-tone] .gl-step:not(.gl-cl-types .gl-step) .gl-choice-content:hover {
+    border: 0;
+    border-radius: 20px;
+    background: var(--ma-tile);
+    box-shadow: inset 0 0 0 1.5px transparent;
+}
+
+.gl-sheet[data-ledger-tone] .gl-step:not(.gl-cl-types .gl-step) .gl-choice-content:hover {
+    box-shadow: inset 0 0 0 1.5px var(--ma-line);
+}
+
+.gl-sheet[data-ledger-tone] .gl-step:not(.gl-cl-types .gl-step) .gl-choice-content[data-selected] {
+    background: var(--ma-solid);
+    box-shadow: inset 0 0 0 2px var(--cl-t), 0 14px 30px -18px color-mix(in oklab, var(--cl-t) 70%, transparent);
+}
+
+.gl-sheet[data-ledger-tone] .gl-step:not(.gl-cl-types .gl-step) .gl-choice-icon {
+    background: var(--ma-solid);
+    color: var(--ma-muted);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-sheet[data-ledger-tone] .gl-step:not(.gl-cl-types .gl-step) .gl-choice-content[data-selected] .gl-choice-icon {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--cl-t) 85%, white), var(--cl-t));
+    color: #fff;
+}
+
+.gl-sheet[data-ledger-tone] .gl-amt-field,
+.gl-sheet[data-ledger-tone] .gl-amt-field:hover {
+    border: 0;
+    background: var(--ma-tile);
+    box-shadow: inset 0 1px 2px rgb(16 20 26 / 0.04);
+}
+
+.gl-sheet[data-ledger-tone] .gl-amt-field:focus-within {
+    background: var(--ma-solid);
+    box-shadow: inset 0 0 0 2px var(--cl-t), 0 0 0 5px color-mix(in oklab, var(--cl-t) 12%, transparent);
+}
+
+.gl-sheet[data-ledger-tone] .gl-amt-quick .button {
+    border: 0;
+    border-radius: 11px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
 }
