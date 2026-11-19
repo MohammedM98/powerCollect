@@ -9,7 +9,7 @@ const TAB_ICONS = { open: 'unlock', closed: 'lock', sent: 'send', entries: 'list
  * the order work goes through them: the entries of the branch's open boxes,
  * its open boxes, and its closed boxes, each with how many there are. The
  * place shown is white on the grey track; closed boxes waiting are counted
- * in red. `tabs` come from the server with their links; `current` is the
+ * in the company's soft tint. `tabs` come from the server with their links; `current` is the
  * key of the one shown; `hint` says what the place holds, under it.
  */
 export default function BoxTabs({ tabs, current, hint = null }) {

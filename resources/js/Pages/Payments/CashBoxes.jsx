@@ -31,7 +31,7 @@ export default function CashBoxes({ started, branchName, boxes, filters, pending
         router.get(collectionUrls.cashBoxes, { ...filters, [key]: value }, { preserveState: true, preserveScroll: true, replace: true });
     }
 
-    return <AuthenticatedLayout badges={{ '/payments/summary': pendingCount }} header={<PageHeader eyebrow={branchName ?? 'حسابك الحالي'} title="الصناديق المالية" />}>
+    return <AuthenticatedLayout badges={{ '/payments/summary': pendingCount }} header={<PageHeader title="الصناديق المالية" info={branchName ?? 'حسابك الحالي'} />}>
         <Head title="الصناديق المالية" />
         {started ? <div className="financial-boxes gl-cb-page">
             <FinancialBoxSummary boxes={presentedBoxes} pageOnly />
