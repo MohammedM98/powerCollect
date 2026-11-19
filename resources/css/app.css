@@ -1349,14 +1349,33 @@ select:not([multiple], [size]) {
     }
 
     .account-statement .statement-summary {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: 1fr 4fr;
         gap: 6px;
         margin-bottom: 8px;
     }
 
-    .account-statement .statement-summary > div {
+    .account-statement .statement-summary .gl-st-kpis {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .account-statement .statement-summary :is(> div, .gl-st-kpis > div) {
         padding: 6px 8px;
         break-inside: avoid;
+    }
+
+    .account-statement .statement-summary .gl-st-acard {
+        background: none !important;
+        box-shadow: none !important;
+        color: inherit !important;
+    }
+
+    .account-statement .statement-summary .gl-st-acard :is(b, small, span, dt, dd) {
+        color: inherit !important;
+    }
+
+    .account-statement .statement-summary :is(.gl-st-acard-mark, .gl-st-acard-facts) {
+        display: none !important;
     }
 
     .account-statement .statement-summary > div > p:nth-child(2) {

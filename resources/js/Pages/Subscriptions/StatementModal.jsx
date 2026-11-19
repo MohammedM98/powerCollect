@@ -116,16 +116,6 @@ export default function StatementModal({ subscription, statement, initialForm = 
                                 </button>
                             </div>
                         </div>
-                        {statement && (
-                            <StatementActions
-                                canRecordPayment={statement.canRecordPayment}
-                                canRecordSplitPayment={statement.canRecordSplitPayment}
-                                canAddCharge={statement.canAddCharge}
-                                canAddDiscount={statement.canAddDiscount}
-                                canAddClearing={statement.canAddClearing}
-                                onOpen={setOpenForm}
-                            />
-                        )}
                     </header>
 
                     <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6" aria-busy={!statement}>
@@ -141,6 +131,16 @@ export default function StatementModal({ subscription, statement, initialForm = 
                                     transactionTypes={statement.transactionTypes}
                                     onAction={(action, entry) => setOpenForm({ action, entry })}
                                     focusLineId={focusLineId}
+                                    actions={
+                                        <StatementActions
+                                            canRecordPayment={statement.canRecordPayment}
+                                            canRecordSplitPayment={statement.canRecordSplitPayment}
+                                            canAddCharge={statement.canAddCharge}
+                                            canAddDiscount={statement.canAddDiscount}
+                                            canAddClearing={statement.canAddClearing}
+                                            onOpen={setOpenForm}
+                                        />
+                                    }
                                     between={
                                         <SubscriptionSwitcher
                                             subscriberNumber={statement.subscription.subscriberNumber}

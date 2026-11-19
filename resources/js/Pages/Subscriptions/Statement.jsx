@@ -68,21 +68,21 @@ export default function Statement(statement) {
             <ArchiveNotice subscription={subscription} />
 
             <div className="gl-st-page">
-                <StatementActions
-                    bar
-                    canRecordPayment={canRecordPayment}
-                    canRecordSplitPayment={statement.canRecordSplitPayment}
-                    canAddCharge={canAddCharge}
-                    canAddDiscount={canAddDiscount}
-                    canAddClearing={canAddClearing}
-                    onOpen={setOpenForm}
-                />
-
                 <AccountStatement
                     key={subscription.id}
                     subscription={subscription}
                     entries={entries}
                     summary={summary}
+                    actions={
+                        <StatementActions
+                            canRecordPayment={canRecordPayment}
+                            canRecordSplitPayment={statement.canRecordSplitPayment}
+                            canAddCharge={canAddCharge}
+                            canAddDiscount={canAddDiscount}
+                            canAddClearing={canAddClearing}
+                            onOpen={setOpenForm}
+                        />
+                    }
                     paymentMethods={paymentMethods}
                     transactionTypes={transactionTypes}
                     onAction={(action, entry) => setOpenForm({ action, entry })}

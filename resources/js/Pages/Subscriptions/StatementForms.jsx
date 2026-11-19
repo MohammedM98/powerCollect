@@ -27,7 +27,7 @@ const ACTION_TONES = {
  * 'payment', 'split_payment', 'charge', 'discount' or 'clearing'.
  * `bar` sets them on their own card, named "إضافة حركة", as the page shows them.
  */
-export function StatementActions({ canRecordPayment, canRecordSplitPayment, canAddCharge, canAddDiscount, canAddClearing, onOpen, bar = false }) {
+export function StatementActions({ canRecordPayment, canRecordSplitPayment, canAddCharge, canAddDiscount, canAddClearing, onOpen }) {
     const actions = [
         canRecordPayment && { action: 'payment', label: 'تسجيل دفعة', icon: 'banknotes' },
         canRecordSplitPayment && { action: 'split_payment', label: 'دفعة مقسّمة', icon: 'layers' },
@@ -41,8 +41,7 @@ export function StatementActions({ canRecordPayment, canRecordSplitPayment, canA
     }
 
     return (
-        <div role="group" aria-label="إضافة حركة" className={bar ? 'gl-acts gl-st-actions' : 'gl-acts'}>
-            {bar && <span className="gl-st-actions-label" aria-hidden="true">إضافة حركة</span>}
+        <div role="group" aria-label="إضافة حركة" className="gl-acts">
             {actions.map((item) => (
                 <Button key={item.action} onPress={() => onOpen(item.action)} className={`gl-act ${item.action === 'payment' ? 'is-solid' : ''}`} data-tone={ACTION_TONES[item.action]}>
                     <Icon name={item.icon} className="h-[17px] w-[17px]" />

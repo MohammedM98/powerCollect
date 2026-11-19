@@ -4569,40 +4569,43 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     color: rgb(var(--danger-400));
 }
 
-/* The movements on their own card, named on its start. */
-.gl-st-actions {
-    align-items: center;
-    padding: 10px;
-    border-radius: calc(22px * var(--radius-scale, 1));
-    background: rgb(var(--panel-bg));
-    box-shadow: var(--panel-shadow);
-}
-
-.gl-st-actions-label {
-    padding: 0 8px;
-    color: var(--gl-muted);
-    font-size: 13px;
-    font-weight: 700;
-}
-
 .gl-acts .gl-act.button {
     min-width: 0;
     height: 40px;
     padding: 0 15px;
 }
 
-/* Five totals: the balance first and wider, in red while owed and green in credit. */
+/*
+ * The statement's top, as in the redesign: the balance on a dark account
+ * card with the company's mark, beside four totals with the movements one
+ * can add under them.
+ */
+.gl-st-top {
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+    gap: 14px;
+    align-items: stretch;
+    margin-bottom: 18px;
+}
+
+.gl-st-side {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+}
+
 .gl-st-kpis {
     display: grid;
-    grid-template-columns: 1.3fr repeat(4, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 18px;
+    flex: 1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
 }
 
 .gl-kpi.card {
     gap: 6px;
-    padding: 18px 20px;
-    border-radius: calc(22px * var(--radius-scale, 1));
+    padding: 16px 18px;
+    border-radius: calc(20px * var(--radius-scale, 1));
 }
 
 .gl-kpi > small {
@@ -4613,7 +4616,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 
 .gl-kpi > b {
     color: var(--gl-ink);
-    font: 800 26px / 1.2 var(--gl-head);
+    font: 800 24px / 1.2 var(--gl-head);
     font-variant-numeric: tabular-nums;
 }
 
@@ -4628,41 +4631,103 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     font-size: 12.5px;
 }
 
-.gl-kpi-balance > b {
-    font-size: 32px;
+/* The account card: dark in both themes, white figures, the tone on the dot by its name. */
+.gl-kpi.card.gl-st-acard {
+    position: relative;
+    overflow: hidden;
+    gap: 4px;
+    padding: 18px 20px 16px;
+    border-radius: calc(22px * var(--radius-scale, 1));
+    background:
+        radial-gradient(120% 90% at 0% 100%, rgb(var(--brand-solid) / 0.28), transparent 60%),
+        linear-gradient(160deg, rgb(44 49 58), rgb(18 21 26));
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.08) inset, 0 18px 36px -20px rgb(0 0 0 / 0.55);
+    color: rgb(255 255 255);
 }
 
-.gl-kpi-balance[data-tone='owes'] {
-    background: color-mix(in srgb, rgb(var(--danger-600)) 9%, rgb(var(--panel-bg)));
+.gl-st-acard > small {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgb(255 255 255 / 0.7);
 }
 
-.gl-kpi-balance[data-tone='owes'] > b {
-    color: rgb(var(--danger-700));
+.gl-st-acard > small i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.5);
 }
 
-.gl-kpi-balance[data-tone='credit'] {
-    background: color-mix(in srgb, rgb(var(--success-600)) 10%, rgb(var(--panel-bg)));
+.gl-st-acard[data-tone='owes'] > small i {
+    background: rgb(248 113 113);
+    box-shadow: 0 0 0 3px rgb(248 113 113 / 0.2);
 }
 
-.gl-kpi-balance[data-tone='credit'] > b {
-    color: rgb(var(--success-700));
+.gl-st-acard[data-tone='credit'] > small i {
+    background: rgb(74 222 128);
+    box-shadow: 0 0 0 3px rgb(74 222 128 / 0.2);
 }
 
-.dark .gl-kpi-balance[data-tone='owes'] > b {
-    color: rgb(var(--danger-400));
+.gl-st-acard > b {
+    color: rgb(255 255 255);
+    font-size: 38px;
+    letter-spacing: -0.01em;
 }
 
-.dark .gl-kpi-balance[data-tone='credit'] > b {
-    color: rgb(var(--success-400));
+.gl-st-acard > span {
+    color: rgb(255 255 255 / 0.6);
+}
+
+.gl-st-acard-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    margin: auto 0 0;
+    padding-top: 12px;
+    padding-inline-end: 64px;
+    font-size: 13px;
+}
+
+.gl-st-acard-facts > div {
+    display: flex;
+    gap: 6px;
+}
+
+.gl-st-acard-facts dt {
+    color: rgb(255 255 255 / 0.6);
+    font-weight: 600;
+}
+
+.gl-st-acard-facts dd {
+    margin: 0;
+    color: rgb(255 255 255);
+    font-weight: 800;
+}
+
+/* The company's mark at the card's corner, in its light version. */
+.gl-st-acard :is(img, svg).gl-st-acard-mark {
+    position: absolute;
+    bottom: 14px;
+    inset-inline-end: 18px;
+    width: auto;
+    height: 34px;
+    max-width: 64px;
+    object-fit: contain;
+    opacity: 0.95;
+}
+
+.gl-st-side-actions .gl-acts {
+    justify-content: flex-start;
 }
 
 @media (max-width: 1100px) {
-    .gl-st-kpis {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+    .gl-st-top {
+        grid-template-columns: minmax(0, 1fr);
     }
 
-    .gl-st-kpis > :first-child {
-        grid-column: 1 / -1;
+    .gl-st-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
@@ -5317,7 +5382,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     .gl-st-act,
     .gl-st-x,
     .gl-st-tools,
-    .gl-st-actions,
+    .gl-st-side-actions,
     .gl-st-filters,
     .gl-seg-group {
         display: none !important;
