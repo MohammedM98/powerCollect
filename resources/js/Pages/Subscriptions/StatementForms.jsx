@@ -162,6 +162,7 @@ export function StatementForms({ statement, openForm, onClose, onOpen = null }) 
                     subscription={subscription}
                     balance={summary.balance}
                     chargeTypes={statement.chargeTypes}
+                    recentLines={statement.entries}
                 />
             )}
             {canAddDiscount && (
@@ -172,9 +173,10 @@ export function StatementForms({ statement, openForm, onClose, onOpen = null }) 
                     balance={summary.balance}
                     discountMethods={statement.discountMethods}
                     discountSegments={statement.discountSegments}
+                    recentLines={statement.entries}
                 />
             )}
-            {canAddClearing && <ClearingModal show={openForm === 'clearing'} onClose={onClose} subscription={subscription} balance={summary.balance} />}
+            {canAddClearing && <ClearingModal show={openForm === 'clearing'} onClose={onClose} subscription={subscription} balance={summary.balance} recentLines={statement.entries} />}
         </>
     );
 }

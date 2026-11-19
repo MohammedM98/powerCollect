@@ -9,22 +9,18 @@ import { formatMoney, normalizeDecimalInput } from '@/lib/format';
 import { amountForChargeType } from '@/lib/subscriptionCharges';
 import { clearErrorOnInput, submitOnCtrlEnter, validateFormFields } from '@/lib/formValidation';
 import {
-    AmountBox,
-    balanceCells,
     balanceText,
     ChoiceCards,
     DoneScreen,
     FieldWarning,
-    FormFooter,
     FormHeader,
     FormStep,
-    MovementCard,
     movementStyle,
-    QuickPick,
     SheetBody,
     SHEET_FORM_CLASS,
 } from './AccountFormParts';
 import { CorrectionReasonFields, EMPTY_CORRECTION, OriginalLine } from './CorrectionFields';
+import LedgerLine, { LedgerFooter, recentStatementLines } from './LedgerLine';
 
 /** How each type of charge looks in the form: its icon, a hint, quick amounts and an example note. */
 const TYPE_LOOKS = {
@@ -37,21 +33,18 @@ const TYPE_LOOKS = {
 /** A charge above this many shekels asks the user to double-check it. */
 const LARGE_CHARGE = 500;
 
-const notesClass =
-    'block min-h-[76px] w-full resize-y rounded-[14px] border-[1.5px] bg-surface px-4 py-3 text-base leading-relaxed text-gray-900 transition placeholder:text-gray-400 hover:border-brand-500/45 focus:border-brand-500 focus:outline-hidden focus:ring-4 focus:ring-brand-500/15';
-
 /**
  * Charge a subscription by hand (تحميل): a financial penalty (which must say
  * why), a service disconnection fee, subscription fee or their minimum.
- * The movement card under the title shows what it does to the balance
- * before saving; once saved, the window shows what was recorded. Keys: Ctrl +
+ * The charge is written as the statement's next line, under the account's
+ * last lines (`recentLines`), with the balance it leaves beside it; once saved, the window shows what was recorded. Keys: Ctrl +
  * Enter saves; number keys pick the type.
  *
  * With `correcting` (a statement line), it corrects that charge instead:
  * the form starts from it, `balance` leaves it out, and saving cancels it
  * and records this one in its place, with one of `correctionReasons`.
  */
-export default function ChargeModal({ show, onClose, subscription, balance, chargeTypes, correcting = null, correctionReasons = [] }) {
+export default function ChargeModal({ show, onClose, subscription, balance, chargeTypes, recentLines = [], correcting = null, correctionReasons = [] }) {
     const titleId = useId();
     const amountInput = useRef(null);
     const form = useResourceForm(
@@ -74,6 +67,8 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
     const balanceAfter = amount > 0 ? Number(balance) + amount : null;
     const missingReason = Boolean(type?.needsReason && !data.notes.trim());
     const tone = correcting ? 'correction' : 'charge';
+    const typeKeys = `1–${chargeTypes.length}`;
+    const reasonLabel = type?.needsReason ? 'سبب الغرامة' : 'ملاحظات';
 
     function close() {
         setDiscarding(false);
@@ -143,7 +138,7 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
 
     return (
         <>
-            <Modal show={show} onClose={requestClose} maxWidth="2xl">
+            <Modal show={show} onClose={requestClose} maxWidth="5xl">
                 {receipt ? (
                     <DoneScreen
                         tone={correcting ? 'amber' : 'red'}
@@ -169,6 +164,7 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                         onInput={(e) => clearErrorOnInput(e, form)}
                         onKeyDown={onKeyDown}
                         className={SHEET_FORM_CLASS}
+                        data-ledger-tone={correcting ? 'correction' : 'charge'}
                         style={movementStyle(tone)}
                     >
                         <FormHeader
@@ -176,108 +172,107 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                             icon={correcting ? 'repeat' : 'receipt'}
                             tone={correcting ? 'amber' : 'charge'}
                             title={correcting ? 'تصحيح تحميل' : 'تحميل حركة'}
-                            subtitle={correcting ? 'صحّح التحميل؛ يبقى الأصلي في الكشف ملغى مع سبب التصحيح.' : 'مبلغ يُضاف على حساب المشترك.'}
+                            subtitle={correcting ? 'صحّح التحميل؛ يبقى الأصلي في الكشف ملغى مع سبب التصحيح.' : [subscription.fullName, subscription.accountNumber && `حساب ${subscription.accountNumber}`].filter(Boolean).join('، ')}
                             onClose={requestClose}
-                        />
-
-                        <MovementCard
-                            subscription={subscription}
-                            tone={tone}
-                            tag={type?.label}
-                            ops={['+', '=']}
-                            cells={balanceCells({
-                                balance,
-                                balanceLabel: correcting ? 'الرصيد بدون الأصلي' : 'الرصيد الحالي',
-                                amount: amount > 0 ? amount : null,
-                                sign: 1,
-                                moveLabel: 'التحميل',
-                                moveNote: type?.label,
-                                afterLabel: 'الرصيد بعده',
-                            })}
                         />
 
                         <SheetBody>
                             {correcting && <OriginalLine entry={correcting} />}
 
-                            <FormStep number={1} title="نوع التحميل" hint={`بالأرقام ${chargeTypes.map((_, index) => index + 1).join('، ')}`} done={Boolean(type)}>
-                                <div>
-                                    <ChoiceCards
-                                        name="type"
-                                        label="نوع التحميل"
-                                        isRequired
-                                        value={data.type}
-                                        onChange={chooseType}
-                                        options={chargeTypes.map((option) => ({ value: option.value, icon: TYPE_LOOKS[option.value]?.icon ?? 'document-plus', title: option.label, hint: TYPE_LOOKS[option.value]?.hint }))}
-                                    />
-                                    <InputError message={errors.type} className="mt-2" />
-                                </div>
-                            </FormStep>
+                            <div className="gl-cl-types">
+                                <ChoiceCards
+                                    name="type"
+                                    label="نوع التحميل"
+                                    isRequired
+                                    columns={4}
+                                    value={data.type}
+                                    onChange={chooseType}
+                                    options={chargeTypes.map((option) => ({ value: option.value, icon: TYPE_LOOKS[option.value]?.icon ?? 'document-plus', title: option.label, hint: TYPE_LOOKS[option.value]?.hint }))}
+                                />
+                                <InputError message={errors.type} className="mt-2" />
+                            </div>
 
-                            <FormStep number={2} title="المبلغ" done={amount > 0}>
-                                <div>
-                                    {isMinimumCharge && (
-                                        <div className="mb-2 flex justify-end">
-                                            <button type="button" aria-pressed={data.override_minimum_amount} onClick={() => {
-                                                if (data.override_minimum_amount) {
-                                                    setData((current) => ({ ...current, amount: String(subscription.minimumPayment ?? '0'), override_minimum_amount: false }));
-                                                    form.clearErrors('amount');
-                                                } else {
-                                                    setConfirmingAmountUnlock(true);
-                                                }
-                                            }} className="inline-flex items-center gap-1 text-xs font-semibold text-brand-600 hover:underline">
-                                                <Icon name={data.override_minimum_amount ? 'unlock' : 'lock'} className="h-3.5 w-3.5" />
-                                                {data.override_minimum_amount ? 'إعادة الحد الأدنى وقفل المبلغ' : 'فتح القفل لتعديل المبلغ'}
-                                            </button>
+                            <div>
+                                <LedgerLine
+                                    lines={correcting ? [] : recentStatementLines(recentLines)}
+                                    balance={balance}
+                                    balanceAfter={balanceAfter}
+                                    shortcuts={typeKeys}
+                                    description={
+                                        <div className="gl-cl-in" data-invalid={errors.notes || (missingReason && amount > 0) ? true : undefined}>
+                                            <label htmlFor="charge_notes" className="sr-only">{reasonLabel}</label>
+                                            <input
+                                                id="charge_notes"
+                                                name="notes"
+                                                required={type?.needsReason}
+                                                maxLength={1000}
+                                                autoComplete="off"
+                                                placeholder={`${type?.label ?? ''}: ${look.example}`}
+                                                value={data.notes}
+                                                onChange={(e) => setData('notes', e.target.value)}
+                                            />
+                                        </div>
+                                    }
+                                    amount={
+                                        <div className="gl-cl-in is-amount" data-invalid={errors.amount ? true : undefined} data-readonly={isMinimumCharge && !data.override_minimum_amount ? true : undefined}>
+                                            <input
+                                                ref={amountInput}
+                                                id="amount"
+                                                name="amount"
+                                                required
+                                                autoFocus
+                                                inputMode="decimal"
+                                                autoComplete="off"
+                                                dir="ltr"
+                                                placeholder="0.00"
+                                                aria-label="مبلغ التحميل"
+                                                value={data.amount}
+                                                readOnly={isMinimumCharge && !data.override_minimum_amount}
+                                                onChange={(e) => setData('amount', normalizeDecimalInput(e.target.value))}
+                                            />
+                                            <span aria-hidden="true">₪</span>
+                                        </div>
+                                    }
+                                />
+
+                                <div className="gl-cl-under">
+                                    {look.quick.length > 0 && (
+                                        <div className="gl-cl-quick">
+                                            {look.quick.map((quick) => (
+                                                <button key={quick} type="button" className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setAmount(String(quick))}>
+                                                    {quick}
+                                                </button>
+                                            ))}
                                         </div>
                                     )}
-                                    <AmountBox
-                                        id="amount"
-                                        inputRef={amountInput}
-                                        value={data.amount}
-                                        onChange={(e) => setData('amount', normalizeDecimalInput(e.target.value))}
-                                        unit="₪"
-                                        placeholder="0.00"
-                                        label="مبلغ التحميل"
-                                        autoFocus
-                                        readOnly={isMinimumCharge && !data.override_minimum_amount}
-                                        error={Boolean(errors.amount)}
-                                    >
-                                        {look.quick.map((quick) => (
-                                            <QuickPick key={quick} onClick={() => setAmount(String(quick))}>
-                                                {quick} ₪
-                                            </QuickPick>
-                                        ))}
-                                        {type?.usualAmount && (
-                                            <span className="ms-auto text-[13.5px] text-gray-500">
-                                                المعتاد لهذا النوع <b className="font-display text-gray-900">{formatMoney(type.usualAmount)} ₪</b>
-                                            </span>
-                                        )}
-                                    </AmountBox>
-                                    <InputError message={errors.amount} className="mt-2" />
-                                    {isMinimumCharge && <p className="mt-2 text-sm text-gray-500">الحد الأدنى للمشترك: {formatMoney(subscription.minimumPayment)} ₪. يُسجّل كتحميل يدوي مستقل على الحساب.</p>}
-                                    {amount > LARGE_CHARGE && (
-                                        <FieldWarning>مبلغ كبير. تأكد أنه صحيح قبل الحفظ، فهو يظهر في كشف حساب المشترك.</FieldWarning>
+                                    {isMinimumCharge && (
+                                        <button type="button" aria-pressed={data.override_minimum_amount} onClick={() => {
+                                            if (data.override_minimum_amount) {
+                                                setData((current) => ({ ...current, amount: String(subscription.minimumPayment ?? '0'), override_minimum_amount: false }));
+                                                form.clearErrors('amount');
+                                            } else {
+                                                setConfirmingAmountUnlock(true);
+                                            }
+                                        }} className="gl-cl-lock">
+                                            <Icon name={data.override_minimum_amount ? 'unlock' : 'lock'} className="h-3.5 w-3.5" />
+                                            {data.override_minimum_amount ? 'إعادة الحد الأدنى وقفل المبلغ' : `مقفل على الحد الأدنى ${formatMoney(subscription.minimumPayment)} ₪، فتح القفل لتعديله`}
+                                        </button>
                                     )}
+                                    {type?.usualAmount && (
+                                        <span className="gl-cl-hint">
+                                            المعتاد لهذا النوع <b className="gl-num">{formatMoney(type.usualAmount)} ₪</b>
+                                        </span>
+                                    )}
+                                    <span className={`gl-cl-hint ms-auto ${missingReason && amount > 0 ? 'is-bad' : ''}`}>
+                                        {type?.needsReason ? 'سبب الغرامة إلزامي، يُكتب في خانة البيان.' : 'البيان يظهر في كشف الحساب كما تكتبه.'}
+                                    </span>
                                 </div>
-                            </FormStep>
-
-                            <FormStep number={3} title={type?.needsReason ? 'سبب الغرامة' : 'ملاحظات'} hint={type?.needsReason ? 'يظهر في كشف الحساب' : 'اختياري'} done={Boolean(data.notes.trim())}>
-                                <div>
-                                    <label htmlFor="charge_notes" className="sr-only">{type?.needsReason ? 'سبب الغرامة' : 'ملاحظات'}</label>
-                                    <textarea
-                                        id="charge_notes"
-                                        name="notes"
-                                        rows={2}
-                                        required={type?.needsReason}
-                                        maxLength={1000}
-                                        placeholder={look.example}
-                                        value={data.notes}
-                                        onChange={(e) => setData('notes', e.target.value)}
-                                        className={`${notesClass} ${missingReason && amount > 0 ? 'border-amber-500/60' : 'border-gray-200'}`}
-                                    />
-                                    <InputError message={errors.notes} className="mt-2" />
-                                </div>
-                            </FormStep>
+                                <InputError message={errors.amount} className="mt-2" />
+                                <InputError message={errors.notes} className="mt-2" />
+                                {amount > LARGE_CHARGE && (
+                                    <FieldWarning>مبلغ كبير. تأكد أنه صحيح قبل الحفظ، فهو يظهر في كشف حساب المشترك.</FieldWarning>
+                                )}
+                            </div>
 
                             {correcting && (
                                 <FormStep number={4} title="سبب التصحيح">
@@ -286,12 +281,13 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                             )}
                         </SheetBody>
 
-                        <FormFooter
+                        <LedgerFooter
+                            balance={balance}
+                            balanceAfter={balanceAfter}
                             onCancel={requestClose}
-                            disabled={amount <= 0 || missingReason}
-                            processing={form.processing}
-                            submitLabel={correcting ? 'حفظ التصحيح' : amount > 0 ? `تحميل ${formatMoney(amount)} ₪ على الحساب` : 'إضافة التحميل'}
-                            shortcuts={`${chargeTypes.map((_, index) => index + 1).join('، ')} للنوع`}
+                            disabled={amount <= 0 || missingReason || form.processing}
+                            keys={<><span className="kbd">{typeKeys}</span> النوع</>}
+                            label={form.processing ? 'جارٍ الحفظ...' : correcting ? 'حفظ التصحيح' : amount > 0 ? `إضافة ${formatMoney(amount)} ₪ إلى الكشف` : 'إضافة السطر'}
                         />
                     </form>
                 )}

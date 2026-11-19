@@ -48,7 +48,7 @@ function lastPaymentText(debtor) {
 }
 
 function Dash() {
-    return <span className="text-gray-300">—</span>;
+    return <span className="text-gray-500">—</span>;
 }
 
 /** "منذ 45 يومًا", or "اليوم". */
