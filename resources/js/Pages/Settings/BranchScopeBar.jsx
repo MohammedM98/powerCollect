@@ -24,6 +24,7 @@ export default function BranchScopeBar({ path, scope, branch, branches, followsC
 
     return (
         <BranchBanner scope={scope} eyebrow="تضبط الآن مواعيد القراءات لـ" allLabel="إعدادات الشركة" className="mt-5"
+            ownControls
             controls={branches.length > 0 ? (
                 <label className="flex w-full flex-col gap-1.5 sm:w-64" htmlFor="schedule-branch">
                     <span className="gl-label">نطاق المواعيد</span>

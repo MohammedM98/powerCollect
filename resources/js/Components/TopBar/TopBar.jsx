@@ -8,7 +8,6 @@ import { shouldPrefetchPage, HOME_LINK, currentGroup, topBarItems } from '@/lib/
 import MegaMenu, { megaWidth } from './MegaMenu';
 import AccountMenu, { LogoutForm } from './AccountMenu';
 import { useTheme } from '@/hooks/useTheme';
-import SurfaceToggle from '@/Components/SurfaceToggle';
 import './top-bar.css';
 import { useMegaMenu } from './useMegaMenu';
 
@@ -245,7 +244,6 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             <span className="tn-search-text flex-1 text-start">{searchText}</span>
                             <span className="tn-kbd" dir="ltr">Ctrl K</span>
                         </button>
-                        <SurfaceToggle className="tn-desktop-only" />
                         <button type="button" className="tn-tool" onClick={() => changePreference(dark ? 'light' : 'dark')} aria-label={dark ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
                             <Icon name={dark ? 'sun' : 'moon'} />
                         </button>

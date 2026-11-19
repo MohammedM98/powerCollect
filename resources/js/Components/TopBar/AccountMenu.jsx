@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom';
 import { Link, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import ThemeSegments from './ThemeSegments';
+import SurfaceToggle from '@/Components/SurfaceToggle';
 import { usePopover } from './usePopover';
 
 /** The user's avatar: their initial on graphite, with a green dot for signed in. */
@@ -66,6 +67,8 @@ export default function AccountMenu({ open, onToggle, onClose, onShowShortcuts, 
                     </div>
                     <div className="mt-1.5 px-2 text-[12px] font-bold text-gray-500">المظهر</div>
                     <ThemeSegments className="mx-1 mb-1.5 mt-1" />
+                    <div className="mt-1 px-2 text-[12px] font-bold text-gray-500">السطح</div>
+                    <SurfaceToggle className="tn-account-surface mx-1 mb-1.5 mt-1" />
                     <Link href="/profile" prefetch className="tn-menu-item" onClick={onClose}><Icon name="user" />الملف الشخصي</Link>
                     <button type="button" className="tn-menu-item" onClick={onShowShortcuts}>
                         <Icon name="keyboard" />اختصارات لوحة المفاتيح<span className="tn-kbd ms-auto">?</span>

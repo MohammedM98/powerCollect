@@ -2,7 +2,7 @@ import { useSurface } from '@/hooks/useSurface';
 import Icon from '@/Components/Icon';
 
 /**
- * Solid or glass surfaces, as the redesign's two-part switch in the top bar:
+ * Solid or glass surfaces, as a two-part switch in the account menu:
  * the chosen look white on the grey track. Remembered in this browser.
  */
 export default function SurfaceToggle({ className = '' }) {

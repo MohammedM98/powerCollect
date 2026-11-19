@@ -2224,3 +2224,191 @@ html.tn-locked {
         transform: none;
     }
 }
+
+/*
+ * ── The side bar exactly as the MA prototype ─────────────────────────────
+ * Glass over the ground (70% of the panel, frosted), a hairline toward the
+ * page; items 46px with 14px corners, grey until hovered (a soft tile); the
+ * current one raised on white with a 3px orange bar just inside its start.
+ */
+@media (min-width: 1024px) {
+    :root[data-ui-navigation] .tn-side,
+    :root[data-ui-background='graphite'][data-ui-navigation] .tn-side {
+        border-inline-end: 1px solid var(--ma-line);
+        background: color-mix(in oklab, var(--ma-panel) 70%, transparent);
+        -webkit-backdrop-filter: var(--ma-blur);
+        backdrop-filter: var(--ma-blur);
+    }
+
+    :root[data-ui-navigation]:not([data-surface='glass']) .tn-side {
+        background: var(--ma-solid);
+    }
+
+    :root[data-ui-navigation] .tn-side:is(:hover, :focus-within) {
+        box-shadow: var(--ma-float);
+    }
+}
+
+:root[data-ui-navigation] .tn-sections {
+    gap: 4px;
+}
+
+:root[data-ui-navigation] .tn-side .tn-section {
+    min-height: 46px;
+    border-radius: 14px;
+    color: var(--ma-muted);
+    font-size: 15px;
+    font-weight: 700;
+    transition: background-color 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+:root[data-ui-navigation] .tn-side .tn-section:hover,
+:root[data-ui-navigation] .tn-side .tn-section[data-lit='true'] {
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+}
+
+:root[data-ui-navigation] .tn-side .tn-section[data-current='true'] {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+}
+
+:root[data-ui-navigation] .tn-side .tn-section[data-current='true']::after {
+    inset-block: 13px;
+    inset-inline: 4px auto;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--ma-brand);
+}
+
+:root[data-ui-navigation] .tn-side .tn-section[data-current='true'] .tn-section-icon {
+    color: var(--ma-ink);
+}
+
+/* Counts: a soft orange pill once open, a dot on the rail. */
+:root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-side .tn-section .tn-badge {
+    min-width: 22px;
+    height: 20px;
+    padding: 0 6px;
+    background: var(--ma-brand-soft);
+    color: var(--ma-brand);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+:root[data-ui-navigation] .tn-side .tn-section .tn-badge {
+    background: var(--ma-brand);
+    box-shadow: 0 0 0 2px var(--ma-solid);
+}
+
+:root[data-ui-navigation] .tn-side-heading {
+    color: var(--ma-muted);
+}
+
+/* The section menu (its pages) as the prototype's flyout: glass, 18px, floating. */
+:root[data-ui-navigation] .tn-mega,
+:root[data-ui-background='graphite'][data-ui-navigation] .tn-mega {
+    border: 0;
+    border-radius: 18px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: blur(22px) saturate(1.6);
+    backdrop-filter: blur(22px) saturate(1.6);
+    box-shadow: var(--ma-float);
+}
+
+:root[data-ui-navigation]:not([data-surface='glass']) .tn-mega {
+    background: var(--ma-solid);
+}
+
+/* The working branch, as the MA top bar's pill: a building, the branch, a chevron; on phones too. */
+:root[data-ui-navigation] .tn-header .tn-bar .tn-branch-chip {
+    display: inline-flex;
+    gap: 8px;
+    height: 42px;
+    margin-inline-end: 0;
+    padding-inline: 14px 12px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+    font-size: 14.5px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+:root[data-ui-navigation] .tn-header .tn-bar .tn-branch-chip svg {
+    flex: none;
+    color: var(--ma-muted);
+}
+
+:root[data-ui-navigation] .tn-header .tn-bar .tn-branch-chip select {
+    max-width: 11rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 700;
+}
+
+:root[data-ui-navigation] .tn-header .tn-bar .tn-branch-chip select option {
+    background: var(--ma-solid);
+    color: var(--ma-ink);
+}
+
+@media (max-width: 1023px) {
+    :root[data-ui-navigation] .tn-header .tn-bar .tn-branch-chip {
+        height: 38px;
+        padding-inline: 10px 8px;
+        font-size: 13.5px;
+    }
+
+    :root[data-ui-navigation] .tn-header .tn-bar .tn-branch-chip select {
+        max-width: 7.5rem;
+    }
+}
+
+/* The surface switch in the account menu: the whole width, two halves. */
+.tn-popover .tn-account-surface.gl-seg {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    padding: 3px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--ma-tile);
+}
+
+.tn-popover .tn-account-surface.gl-seg button {
+    justify-content: center;
+    min-height: 34px;
+    border-radius: 9px;
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.tn-popover .tn-account-surface.gl-seg button[aria-pressed='true'] {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+}
+
+@media (max-width: 639px) {
+    :root[data-ui-navigation] .tn-header .tn-bar .tn-branch-chip {
+        gap: 4px;
+        height: 36px;
+        padding-inline: 8px 6px;
+        border-radius: 12px;
+        font-size: 13px;
+    }
+
+    :root[data-ui-navigation] .tn-header .tn-bar .tn-branch-chip > svg:first-child {
+        display: none;
+    }
+
+    :root[data-ui-navigation] .tn-header .tn-bar .tn-branch-chip select {
+        max-width: 5.5rem;
+    }
+}
