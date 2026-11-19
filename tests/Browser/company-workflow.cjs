@@ -468,7 +468,6 @@ step('subscribers and their account statements export formatted Excel, with read
     await page.getByRole('row').filter({ hasText: 'سالم عبد الله' }).getByRole('button', { name: 'سالم عبد الله', exact: true }).click();
     const statement = page.locator('.account-statement');
     await statement.locator('tbody tr').first().waitFor();
-    await statement.locator('td[data-label="اسم المستخدم"]').first().evaluate((cell) => { cell.textContent = 'Super Admin'; });
     const balance = statement.locator('td[data-label="الرصيد (شيكل)"]').first();
     await balance.locator(':scope > span').first().evaluate((element) => { element.textContent = '100,315.50'; });
     const geometry = await balance.evaluate((cell) => {
@@ -478,7 +477,7 @@ step('subscribers and their account statements export formatted Excel, with read
     });
     assert.ok(geometry.width >= 140, JSON.stringify(geometry));
     assert.ok(geometry.textLeft >= geometry.left && geometry.textRight <= geometry.right, JSON.stringify(geometry));
-    await statement.locator('.data-table-container').evaluate((container) => { container.scrollLeft = -container.scrollWidth; });
+    await statement.locator('.gl-st-scroll').evaluate((container) => { container.scrollLeft = -container.scrollWidth; });
     await snap(page, 'statement-wide-balances');
     await statement.getByRole('button', { name: 'Excel', exact: true }).click();
     const studio = page.getByRole('dialog', { name: /تصدير كشف حساب.*إلى Excel/ });

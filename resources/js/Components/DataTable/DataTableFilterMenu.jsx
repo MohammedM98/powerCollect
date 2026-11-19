@@ -5,13 +5,13 @@ import Icon from '@/Components/Icon';
 import { childOptions, nestFilterGroups, parentChange, parentValue, scopedOptions, withStaleCleared } from '@/lib/filterGroups';
 
 /** One filter as HeroUI's compact pill: its name (and the choice, once made) on a soft grey pill, in the company's colour while it narrows the table. */
-function FilterField({ group, value, onChange, placeholder = '' }) {
+export function FilterField({ group, value, onChange, placeholder = '', clearable = true, icon = 'filter' }) {
     return (
         <SearchableSelect
             variant="pill"
             prefix={
                 <span className="gl-filter-name">
-                    <Icon name="filter" className="h-[15px] w-[15px]" />
+                    <Icon name={icon} className="h-[15px] w-[15px]" />
                     {group.label}
                     {value ? ':' : ''}
                 </span>
@@ -23,6 +23,7 @@ function FilterField({ group, value, onChange, placeholder = '' }) {
             searchPlaceholder={`بحث في ${group.label}...`}
             emptyLabel="لا توجد نتائج"
             active={Boolean(value)}
+            clearable={clearable}
             className="gl-filter-item"
         />
     );

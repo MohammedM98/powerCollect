@@ -3607,6 +3607,26 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     opacity: 0.45;
 }
 
+.gl-co-foot-row {
+    display: flex;
+    gap: 10px;
+}
+
+.gl-co .gl-co-cancel {
+    flex: none;
+    height: 52px;
+    padding-inline: 22px;
+    border-radius: 999px;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.gl-co .gl-co-cancel:hover:not([data-disabled]) {
+    background: rgb(var(--group-hover));
+}
+
 .gl-co-foot-hint {
     display: flex;
     align-items: center;
@@ -4351,4 +4371,900 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-filter-item > .gl-pop,
 .gl-filter-item > div[class*='absolute'] {
     min-width: 14rem;
+}
+
+/*
+ * The account statement as in the redesign (docs/redesign): the name with
+ * its status, the movements on one card, five totals, the person's
+ * subscriptions, and the movements on a HeroUI card as a calm ledger of
+ * eight columns in bands of one month, each line opening its full details.
+ * Pages/Subscriptions/Statement.jsx, AccountStatement.jsx, StatementLedger.jsx.
+ */
+.gl-st-head {
+    display: grid;
+    gap: 14px;
+    width: 100%;
+}
+
+.gl-st-head .gl-back,
+.gl-st-head > a {
+    justify-self: start;
+}
+
+.gl-st-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.gl-st-title > :first-child {
+    flex: 1 1 420px;
+}
+
+.gl-st-head .gl-statement-name {
+    font-size: clamp(30px, 3.2vw, 42px);
+}
+
+.gl-st-account {
+    margin: 4px 0 0;
+    color: var(--gl-muted);
+    font-size: 15px;
+}
+
+.gl-st-standing {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.gl-st-tools {
+    display: flex;
+    gap: 8px;
+    margin-inline-start: auto;
+}
+
+.gl-st-tools:empty {
+    display: none;
+}
+
+.gl-st-page {
+    display: grid;
+    gap: 18px;
+}
+
+/* A status as a soft chip with a dot. */
+.gl-st-status.chip {
+    gap: 6px;
+    height: 26px;
+    padding-inline: 10px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    vertical-align: middle;
+}
+
+.gl-st-status > i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* A line's kind (or any quiet label) as a chip, in the movement's colour when it has one. */
+.gl-st-chip.chip {
+    --chip-bg: rgb(var(--group-fill));
+    --chip-fg: var(--gl-muted);
+    gap: 5px;
+    height: 26px;
+    padding-inline: 10px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.gl-st-chip[data-tone='pay'] { --gl-c: var(--tone-pay); --gl-c-ink: var(--tone-pay-ink); }
+.gl-st-chip[data-tone='split'] { --gl-c: var(--tone-split); --gl-c-ink: var(--tone-split-ink); }
+.gl-st-chip[data-tone='charge'] { --gl-c: var(--tone-charge); --gl-c-ink: var(--tone-charge-ink); }
+.gl-st-chip[data-tone='discount'] { --gl-c: var(--tone-discount); --gl-c-ink: var(--tone-discount-ink); }
+.gl-st-chip[data-tone='clearing'] { --gl-c: var(--tone-clearing); --gl-c-ink: var(--tone-clearing-ink); }
+.gl-st-chip[data-tone='reading'] { --gl-c: var(--tone-reading); --gl-c-ink: var(--tone-reading-ink); }
+
+.gl-st-chip[data-tone].chip {
+    --chip-bg: rgb(var(--gl-c) / 0.14);
+    --chip-fg: rgb(var(--gl-c-ink));
+}
+
+.gl-st-chip[data-state='cancelled'].chip {
+    --chip-bg: rgb(var(--gray-500) / 0.14);
+    --chip-fg: var(--gl-muted);
+}
+
+.gl-st-chip[data-state='corrected'].chip {
+    --chip-bg: var(--warning-soft);
+    --chip-fg: var(--warning-soft-foreground);
+}
+
+/* A quiet danger pill, for undoing something beside it (stopping a standing discount). */
+.gl-pill-danger {
+    height: 26px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgb(var(--danger-600) / 0.12);
+    color: rgb(var(--danger-700));
+    font-size: 12.5px;
+    font-weight: 700;
+    transition: background-color 0.15s;
+}
+
+.gl-pill-danger:hover {
+    background: rgb(var(--danger-600) / 0.2);
+}
+
+.dark .gl-pill-danger {
+    color: rgb(var(--danger-400));
+}
+
+/* The movements on their own card, named on its start. */
+.gl-st-actions {
+    align-items: center;
+    padding: 10px;
+    border-radius: calc(22px * var(--radius-scale, 1));
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--panel-shadow);
+}
+
+.gl-st-actions-label {
+    padding: 0 8px;
+    color: var(--gl-muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.gl-acts .gl-act.button {
+    min-width: 0;
+    height: 40px;
+    padding: 0 15px;
+}
+
+/* Five totals: the balance first and wider, in red while owed and green in credit. */
+.gl-st-kpis {
+    display: grid;
+    grid-template-columns: 1.3fr repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.gl-kpi.card {
+    gap: 6px;
+    padding: 18px 20px;
+    border-radius: calc(22px * var(--radius-scale, 1));
+}
+
+.gl-kpi > small {
+    color: var(--gl-muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.gl-kpi > b {
+    color: var(--gl-ink);
+    font: 800 26px / 1.2 var(--gl-head);
+    font-variant-numeric: tabular-nums;
+}
+
+.gl-kpi > b > .gl-kpi-unit {
+    color: var(--gl-muted);
+    font-size: 0.7em;
+    font-weight: 700;
+}
+
+.gl-kpi > span {
+    color: var(--gl-muted);
+    font-size: 12.5px;
+}
+
+.gl-kpi-balance > b {
+    font-size: 32px;
+}
+
+.gl-kpi-balance[data-tone='owes'] {
+    background: color-mix(in srgb, rgb(var(--danger-600)) 9%, rgb(var(--panel-bg)));
+}
+
+.gl-kpi-balance[data-tone='owes'] > b {
+    color: rgb(var(--danger-700));
+}
+
+.gl-kpi-balance[data-tone='credit'] {
+    background: color-mix(in srgb, rgb(var(--success-600)) 10%, rgb(var(--panel-bg)));
+}
+
+.gl-kpi-balance[data-tone='credit'] > b {
+    color: rgb(var(--success-700));
+}
+
+.dark .gl-kpi-balance[data-tone='owes'] > b {
+    color: rgb(var(--danger-400));
+}
+
+.dark .gl-kpi-balance[data-tone='credit'] > b {
+    color: rgb(var(--success-400));
+}
+
+@media (max-width: 1100px) {
+    .gl-st-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .gl-st-kpis > :first-child {
+        grid-column: 1 / -1;
+    }
+}
+
+/* The person's subscriptions: one tile each, the one shown ringed in the company's colour. */
+.gl-subs.card {
+    gap: 14px;
+    margin-bottom: 18px;
+    padding: 20px;
+    border-radius: calc(24px * var(--radius-scale, 1));
+}
+
+.gl-subs-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.gl-subs-head h3 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--gl-ink);
+    font: 800 18px / 1.4 var(--gl-head);
+}
+
+.gl-subs-head p {
+    margin: 2px 0 0;
+    color: var(--gl-muted);
+    font-size: 13px;
+}
+
+.gl-subs-total {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.gl-subs-total small {
+    color: var(--gl-muted);
+    font-size: 13px;
+}
+
+.gl-subs-total b {
+    font-size: 18px;
+}
+
+.gl-sub-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.gl-sub-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    border: 0;
+    border-radius: calc(18px * var(--radius-scale, 1));
+    background: rgb(var(--panel-tile));
+    color: var(--gl-ink);
+    text-align: start;
+    cursor: pointer;
+    transition: box-shadow 0.15s, background-color 0.15s;
+}
+
+.gl-sub-card:hover:not(:disabled) {
+    box-shadow: 0 0 0 1px var(--field-hover-ring);
+}
+
+.gl-sub-card:focus-visible {
+    outline: 2px solid rgb(var(--brand-solid));
+    outline-offset: 2px;
+}
+
+.gl-sub-card[aria-current] {
+    background: color-mix(in srgb, rgb(var(--brand-solid)) 5%, rgb(var(--panel-tile)));
+    box-shadow: 0 0 0 2px rgb(var(--brand-solid));
+    cursor: default;
+}
+
+.gl-sub-card-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.gl-sub-card-no {
+    font: 800 15px var(--gl-head);
+    font-variant-numeric: tabular-nums;
+}
+
+.gl-sub-card-balance {
+    margin-inline-start: auto;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.gl-sub-card-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.gl-sub-card-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px 12px;
+}
+
+.gl-sub-card-place {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 0;
+    color: var(--gl-muted);
+    font-size: 13px;
+}
+
+.gl-sub-card-place > span + span::before {
+    content: '،\00a0';
+}
+
+.gl-sub-card-place bdi:not(:first-child) {
+    margin-right: 4px;
+}
+
+.gl-sub-card-go {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: rgb(var(--brand-600));
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.dark .gl-sub-card-go {
+    color: rgb(var(--brand-soft));
+}
+
+/* The movements' card: its name and view, the filters as pills, the ledger and its count. */
+.gl-st-ledger.card {
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: calc(24px * var(--radius-scale, 1));
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--panel-shadow);
+}
+
+.gl-st-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 20px 12px;
+}
+
+.gl-st-bar.gl-st-filters {
+    padding-top: 0;
+}
+
+.gl-st-ledger-title {
+    margin: 0;
+    color: var(--gl-ink);
+    font: 800 18px / 1.4 var(--gl-head);
+}
+
+.gl-st-ledger-hint {
+    margin: 2px 0 0;
+    color: var(--gl-muted);
+    font-size: 13px;
+}
+
+.gl-st-note {
+    margin: -4px 20px 10px;
+    color: var(--gl-muted);
+    font-size: 13px;
+}
+
+/* HeroUI's search field, as wide as the line allows, on the same height as the pills. */
+.gl-st-search.search-field {
+    flex: 0 1 320px;
+    min-width: 220px;
+}
+
+.gl-st-search .search-field__group {
+    height: 38px;
+    border-radius: 999px;
+    box-shadow: var(--field-shadow);
+}
+
+.gl-st-search .search-field__input {
+    font-size: 14px;
+}
+
+/* HeroUI's toggle group as the redesign's segmented control: a grey track, the chosen view white on it. */
+.gl-seg-group.toggle-button-group {
+    gap: 2px;
+    padding: 3px;
+    border-radius: 999px;
+    background: rgb(var(--group-fill));
+}
+
+.gl-seg-group .gl-seg-item.toggle-button {
+    --toggle-button-bg: transparent;
+    --toggle-button-bg-hover: rgb(var(--panel-bg) / 0.6);
+    --toggle-button-bg-pressed: rgb(var(--panel-bg) / 0.6);
+    --toggle-button-fg: var(--gl-muted);
+    --toggle-button-bg-selected: rgb(var(--panel-bg));
+    --toggle-button-bg-selected-hover: rgb(var(--panel-bg));
+    --toggle-button-bg-selected-pressed: rgb(var(--panel-bg));
+    --toggle-button-fg-selected: var(--gl-ink);
+    gap: 6px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.gl-seg-group .gl-seg-item[data-selected='true'] {
+    box-shadow: var(--panel-shadow);
+}
+
+.dark .gl-seg-group .gl-seg-item.toggle-button {
+    --toggle-button-bg-selected: rgb(var(--panel-field));
+    --toggle-button-bg-selected-hover: rgb(var(--panel-field));
+    --toggle-button-bg-selected-pressed: rgb(var(--panel-field));
+}
+
+/* The ledger itself. */
+.gl-st-scroll {
+    overflow-x: auto;
+    padding: 0 12px;
+    scrollbar-width: thin;
+}
+
+.gl-st-table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+}
+
+.gl-st-table thead th {
+    height: 42px;
+    padding: 0 12px;
+    background: rgb(var(--panel-tile));
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    font-weight: 700;
+    text-align: start;
+    white-space: nowrap;
+}
+
+.gl-st-table thead th:first-child {
+    border-start-start-radius: 12px;
+    border-end-start-radius: 12px;
+}
+
+.gl-st-table thead th:last-child {
+    border-start-end-radius: 12px;
+    border-end-end-radius: 12px;
+}
+
+.gl-st-table tbody td {
+    height: 56px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--gl-line);
+    color: var(--gl-ink);
+    vertical-align: middle;
+    transition: background-color 0.12s;
+}
+
+.gl-st-table tbody tr:not(.gl-st-month, .gl-st-detail):hover > td {
+    background: rgb(var(--panel-fill));
+}
+
+.gl-st-table td small {
+    display: block;
+    color: var(--gl-muted);
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.gl-st-x {
+    width: 40px;
+    padding-inline: 6px 0 !important;
+}
+
+.gl-st-exp {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    color: var(--gl-muted);
+    transition: transform 0.18s, background-color 0.15s, color 0.15s;
+}
+
+.gl-st-exp:hover {
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+}
+
+.gl-st-exp[aria-expanded='true'] {
+    transform: rotate(180deg);
+    color: var(--gl-ink);
+}
+
+.gl-st-exp:focus-visible {
+    outline: 2px solid rgb(var(--brand-solid));
+    outline-offset: 1px;
+}
+
+.gl-st-n {
+    width: 64px;
+    color: var(--gl-muted);
+    font-weight: 700;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.gl-st-chain {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-inline-end: 6px;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+.gl-st-d {
+    width: 108px;
+    color: var(--gl-muted);
+    font-weight: 600;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.gl-st-d .gl-st-late {
+    color: rgb(var(--warning-700));
+}
+
+.dark .gl-st-d .gl-st-late {
+    color: rgb(var(--warning-400));
+}
+
+.gl-st-desc {
+    min-width: 260px;
+    line-height: 1.5;
+}
+
+.gl-st-desc .statement-description-title {
+    font-weight: 700;
+    line-height: 1.55;
+}
+
+.gl-st-desc .statement-description-details {
+    margin-top: 2px;
+    font-size: 13px;
+}
+
+.gl-st-desc .gl-st-meta {
+    margin-top: 1px;
+}
+
+.gl-st-type {
+    width: 1%;
+}
+
+.gl-st-kind {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.gl-st-table .gl-st-cash {
+    width: 128px;
+    text-align: end;
+    white-space: nowrap;
+}
+
+.gl-st-amount {
+    display: inline-grid;
+    justify-items: end;
+}
+
+.gl-st-money {
+    font: 700 15px var(--gl-head);
+    font-variant-numeric: tabular-nums;
+}
+
+.gl-st-owe .gl-st-money {
+    color: rgb(var(--danger-700));
+}
+
+.gl-st-paid .gl-st-money {
+    color: rgb(var(--success-700));
+}
+
+.dark .gl-st-owe .gl-st-money {
+    color: rgb(var(--danger-400));
+}
+
+.dark .gl-st-paid .gl-st-money {
+    color: rgb(var(--success-400));
+}
+
+.gl-st-table .gl-st-bal {
+    width: 150px;
+}
+
+.gl-st-bal .gl-st-money {
+    color: var(--gl-ink);
+    font-weight: 800;
+}
+
+.gl-st-act {
+    width: 52px;
+    text-align: end;
+}
+
+.gl-st-table tr.ledger-cancelled .ledger-struck {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.gl-st-table tr.ledger-history > td,
+.gl-st-table tr.ledger-follow-up > td {
+    background: rgb(var(--panel-fill));
+}
+
+.gl-st-table tr.ledger-related > td {
+    background: rgb(var(--brand-solid) / 0.07) !important;
+}
+
+.gl-st-table tr.ledger-focused > td {
+    background: rgb(var(--brand-solid) / 0.1);
+}
+
+.gl-st-table tr.ledger-focused > td:first-child {
+    box-shadow: inset 3px 0 0 rgb(var(--brand-solid));
+}
+
+.gl-st-table tr.is-open > td {
+    border-bottom-color: transparent;
+}
+
+/* A month's band: its name, how many lines, and what was charged and credited in it. */
+.gl-st-table tr.gl-st-month > td {
+    height: 40px;
+    padding-block: 0;
+    border-bottom: 0;
+    background: rgb(var(--panel-tile));
+    color: var(--gl-muted);
+    font-size: 13px;
+}
+
+.gl-st-table tr.gl-st-month > td:first-child {
+    padding-inline-start: 16px;
+    border-start-start-radius: 12px;
+    border-end-start-radius: 12px;
+}
+
+.gl-st-table tr.gl-st-month > td:last-child {
+    border-start-end-radius: 12px;
+    border-end-end-radius: 12px;
+}
+
+.gl-st-month-name {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.gl-st-month-name b {
+    color: var(--gl-ink);
+    font-weight: 800;
+}
+
+.gl-st-month-name span {
+    font-size: 12px;
+}
+
+.gl-st-table tr.gl-st-month .gl-st-cash {
+    font: 700 12.5px var(--gl-head);
+    font-variant-numeric: tabular-nums;
+}
+
+.gl-st-table tr.gl-st-month .gl-st-cash small {
+    display: inline;
+}
+
+/* A line's details, under it: every column the eight leave out. */
+.gl-st-table tr.gl-st-detail > td {
+    height: auto;
+    padding-top: 0;
+    padding-bottom: 14px;
+}
+
+.gl-st-detail dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 10px 20px;
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgb(var(--panel-tile));
+}
+
+.gl-st-detail dt {
+    color: var(--gl-muted);
+    font-size: 11.5px;
+    font-weight: 600;
+}
+
+.gl-st-detail dd {
+    margin: 2px 0 0;
+    color: var(--gl-ink);
+    font-size: 13.5px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.gl-st-detail .gl-st-detail-wide {
+    grid-column: 1 / -1;
+}
+
+.gl-st-empty {
+    padding: 48px 20px !important;
+    color: var(--gl-muted);
+    text-align: center;
+}
+
+.gl-st-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 20px 16px;
+    border-top: 1px solid var(--gl-line);
+    color: var(--gl-muted);
+    font-size: 13px;
+}
+
+.gl-st-foot p {
+    margin: 0;
+}
+
+.gl-st-foot b {
+    color: var(--gl-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.gl-st-foot .gl-st-foot-btn.button {
+    height: 34px;
+    font-size: 13px;
+    color: var(--gl-ink);
+    font-weight: 700;
+}
+
+/* On a phone each line becomes a card: its kind and amounts under its description, the menu in its corner. */
+@media (max-width: 760px) {
+    .gl-st-scroll {
+        padding: 0 10px 10px;
+    }
+
+    .gl-st-table {
+        min-width: 0;
+    }
+
+    .gl-st-table thead {
+        display: none;
+    }
+
+    .gl-st-table,
+    .gl-st-table tbody,
+    .gl-st-table tr,
+    .gl-st-table td {
+        display: block;
+        width: auto !important;
+    }
+
+    .gl-st-table tbody tr:not(.gl-st-month, .gl-st-detail) {
+        position: relative;
+        margin-bottom: 8px;
+        padding: 10px 14px;
+        border-radius: 16px;
+        background: rgb(var(--panel-tile));
+    }
+
+    .gl-st-table tbody td {
+        height: auto;
+        padding: 2px 0;
+        border: 0;
+        background: none !important;
+        text-align: start !important;
+    }
+
+    .gl-st-table td.gl-st-x {
+        position: absolute;
+        top: 8px;
+        inset-inline-end: 48px;
+    }
+
+    .gl-st-table td.gl-st-act {
+        position: absolute;
+        top: 6px;
+        inset-inline-end: 6px;
+    }
+
+    .gl-st-table td.gl-st-cash:empty {
+        display: none;
+    }
+
+    .gl-st-table td.gl-st-cash::before {
+        content: attr(data-label) ': ';
+        color: var(--gl-muted);
+        font-size: 12px;
+    }
+
+    .gl-st-table tr.gl-st-month {
+        margin: 6px 0;
+    }
+
+    .gl-st-table tr.gl-st-month > td {
+        display: inline-block;
+        height: auto;
+        padding: 0 4px !important;
+        background: none;
+    }
+
+    .gl-st-table tr.gl-st-month > td::before {
+        content: none;
+    }
+}
+
+@media print {
+    .gl-st-exp,
+    .gl-st-act,
+    .gl-st-x,
+    .gl-st-tools,
+    .gl-st-actions,
+    .gl-st-filters,
+    .gl-seg-group {
+        display: none !important;
+    }
+
+    .gl-st-ledger.card,
+    .gl-kpi.card,
+    .gl-subs.card {
+        box-shadow: none;
+    }
 }

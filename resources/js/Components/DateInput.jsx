@@ -19,6 +19,7 @@ const NAVIGATION_KEYS = { ArrowRight: -1, ArrowLeft: 1, ArrowUp: -7, ArrowDown: 
  * report a missing date. The calendar is drawn over everything, so a
  * dialog never cuts it off, and works from the keyboard: arrows move a
  * day or a week, Page Up/Down a month, Enter picks, Escape closes.
+ * `variant="pill"` draws it as a table's filter pill, `prefix` naming it.
  */
 export default function DateInput({
     id,
@@ -33,6 +34,8 @@ export default function DateInput({
     className = '',
     onDark = false,
     buttonRef: outerButtonRef = null,
+    variant = 'field',
+    prefix = null,
     'aria-label': ariaLabel,
 }) {
     const today = localDay();
@@ -180,10 +183,24 @@ export default function DateInput({
                         openCalendar();
                     }
                 }}
-                className={`flex h-(--control-h) w-full items-center justify-between gap-2 rounded-control border px-3 text-start text-base leading-6 transition focus:outline-hidden disabled:cursor-not-allowed ${fieldColors}`}
+                data-active={variant === 'pill' && hasValue ? '' : undefined}
+                className={variant === 'pill' ? 'gl-filter-trigger' : `flex h-(--control-h) w-full items-center justify-between gap-2 rounded-control border px-3 text-start text-base leading-6 transition focus:outline-hidden disabled:cursor-not-allowed ${fieldColors}`}
             >
-                <span className={`truncate ${onDark ? (hasValue ? 'text-white' : 'text-white/60') : (hasValue ? 'text-gray-900' : 'text-gray-400/60')}`}>{hasValue ? formatWeekDay(value) : placeholder}</span>
-                <Icon name="calendar" className={`h-[18px] w-[18px] shrink-0 ${onDark ? 'text-white/60' : 'text-gray-400'}`} />
+                {variant === 'pill' ? (
+                    <>
+                        <span className="gl-filter-name">
+                            <Icon name="calendar" className="h-[15px] w-[15px]" />
+                            {prefix}
+                            {hasValue ? ':' : ''}
+                        </span>
+                        {(hasValue || placeholder) && <span className="truncate">{hasValue ? formatWeekDay(value) : placeholder}</span>}
+                    </>
+                ) : (
+                    <>
+                        <span className={`truncate ${onDark ? (hasValue ? 'text-white' : 'text-white/60') : (hasValue ? 'text-gray-900' : 'text-gray-400/60')}`}>{hasValue ? formatWeekDay(value) : placeholder}</span>
+                        <Icon name="calendar" className={`h-[18px] w-[18px] shrink-0 ${onDark ? 'text-white/60' : 'text-gray-400'}`} />
+                    </>
+                )}
             </button>
 
             {name && (

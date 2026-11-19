@@ -27,7 +27,7 @@ export default function StopStandingDiscountButton({ subscriptionId, subscriptio
                 type="button"
                 onClick={() => setConfirming(true)}
                 disabled={stopping}
-                className={`rounded-full border border-red-500/30 px-2.5 py-0.5 text-xs font-bold text-red-600 transition hover:bg-red-500/10 disabled:opacity-50 ${className}`}
+                className={`gl-pill-danger ${className}`}
             >
                 {stopping ? 'جارٍ الإلغاء...' : 'إلغاء الخصم'}
             </button>

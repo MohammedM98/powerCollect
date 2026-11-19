@@ -50,6 +50,12 @@
     --color-danger-soft: var(--danger-soft);
     --color-danger-soft-foreground: var(--danger-soft-foreground);
     --color-danger-soft-hover: var(--danger-soft-hover);
+    --color-success-soft: var(--success-soft);
+    --color-success-soft-foreground: var(--success-soft-foreground);
+    --color-warning-soft: var(--warning-soft);
+    --color-warning-soft-foreground: var(--warning-soft-foreground);
+    --color-default-soft: var(--default-soft);
+    --color-default-soft-foreground: var(--default-soft-foreground);
 
     --color-backdrop: rgb(10 13 17 / 0.5);
 
@@ -109,6 +115,14 @@
     --field-border-width: 0px;
     --field-radius: calc(14px * var(--radius-scale, 1));
 
+    /* Soft fills for chips: a status in its colour, a quiet grey otherwise. */
+    --success-soft: rgb(var(--success-600) / 0.14);
+    --success-soft-foreground: rgb(var(--success-700));
+    --warning-soft: rgb(var(--warning-500) / 0.2);
+    --warning-soft-foreground: rgb(var(--warning-700));
+    --default-soft: rgb(var(--group-fill));
+    --default-soft-foreground: rgb(var(--panel-muted));
+
     --ring-offset-width: 2px;
     --disabled-opacity: 0.5;
     --cursor-interactive: pointer;
@@ -117,6 +131,8 @@
 }
 
 .dark {
+    --success-soft-foreground: rgb(var(--success-400));
+    --warning-soft-foreground: rgb(var(--warning-400));
     --danger: rgb(var(--danger-500));
     --danger-soft-foreground: rgb(var(--danger-300));
 }

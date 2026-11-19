@@ -167,7 +167,7 @@ test('account opens compact, leaving out a cancelled line and its reversal, and 
     assert.doesNotMatch(html, /القراءة الخاطئة|عكس القراءة/);
     assert.match(html, /صُحّحت · 2 حركات سابقة/);
     assert.match(html, /أُخفيت 2 حركة ملغاة/);
-    assert.match(html, /aria-pressed="true"[^>]*>(?:(?!<\/button>)[\s\S])*عرض مختصر/);
+    assert.match(html, /aria-(?:pressed|checked)="true"[^>]*>(?:(?!<\/button>)[\s\S])*عرض مختصر/);
     assert.match(html, /كل الحركات/);
 });
 
@@ -179,8 +179,8 @@ test('opening the account ignores a previously saved full view preference', () =
             statement: { summary: { balance: 0, charged: 0, paid: 0, discounted: 0 }, entries: [] },
         }));
 
-        assert.match(html, /aria-pressed="true"[^>]*>(?:(?!<\/button>)[\s\S])*عرض مختصر/);
-        assert.match(html, /aria-pressed="false"[^>]*>(?:(?!<\/button>)[\s\S])*كل الحركات/);
+        assert.match(html, /aria-(?:pressed|checked)="true"[^>]*>(?:(?!<\/button>)[\s\S])*عرض مختصر/);
+        assert.match(html, /aria-(?:pressed|checked)="false"[^>]*>(?:(?!<\/button>)[\s\S])*كل الحركات/);
     } finally {
         globalThis.window = previous;
     }

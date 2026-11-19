@@ -3,7 +3,7 @@ import { useId, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
-import StatusPill from '@/Components/DataTable/StatusPill';
+import { Chip } from '@heroui/react';
 import AccountStatement from './AccountStatement';
 import { StandingDiscountBadge } from './AccountSummary';
 import StopStandingDiscountButton from './StopStandingDiscountButton';
@@ -12,9 +12,9 @@ import SubscriptionSwitcher from './SubscriptionSwitcher';
 import ArchiveNotice from './ArchiveNotice';
 
 const STATUS_TONES = {
-    active: 'green',
-    suspended: 'amber',
-    disconnected: 'gray',
+    active: 'success',
+    suspended: 'warning',
+    disconnected: 'default',
 };
 
 /** Placeholder cards and rows while the statement loads. */
@@ -61,7 +61,12 @@ export default function StatementModal({ subscription, statement, initialForm = 
                             </span>
                             <div className="min-w-0 flex-1">
                                 <StatementTitle id={titleId} name={header.fullName} as="h3">
-                                    {header.statusLabel && <StatusPill tone={STATUS_TONES[header.status]} label={header.statusLabel} />}
+                                    {header.statusLabel && (
+                                        <Chip size="sm" variant="soft" color={STATUS_TONES[header.status] ?? 'default'} className="gl-st-status">
+                                            <i aria-hidden="true" />
+                                            {header.statusLabel}
+                                        </Chip>
+                                    )}
                                     {header.standingDiscount && <StandingDiscountBadge discount={header.standingDiscount} />}
                                     {header.standingDiscount && statement?.canAddDiscount && (
                                         <StopStandingDiscountButton
@@ -127,12 +132,6 @@ export default function StatementModal({ subscription, statement, initialForm = 
                         <ArchiveNotice subscription={header} />
                         {statement ? (
                             <>
-                                <SubscriptionSwitcher
-                                    subscriberNumber={statement.subscription.subscriberNumber}
-                                    subscriptions={statement.subscriptions}
-                                    currentId={statement.subscription.id}
-                                    onSelect={onSwitch}
-                                />
                                 <AccountStatement
                                     key={statement.subscription.id}
                                     subscription={statement.subscription}
@@ -142,6 +141,14 @@ export default function StatementModal({ subscription, statement, initialForm = 
                                     transactionTypes={statement.transactionTypes}
                                     onAction={(action, entry) => setOpenForm({ action, entry })}
                                     focusLineId={focusLineId}
+                                    between={
+                                        <SubscriptionSwitcher
+                                            subscriberNumber={statement.subscription.subscriberNumber}
+                                            subscriptions={statement.subscriptions}
+                                            currentId={statement.subscription.id}
+                                            onSelect={onSwitch}
+                                        />
+                                    }
                                 />
                             </>
                         ) : (

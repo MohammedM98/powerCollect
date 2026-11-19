@@ -32,6 +32,13 @@
 @import '@heroui/styles/components/radio.css' layer(components);
 @import '@heroui/styles/components/radio-group.css' layer(components);
 @import '@heroui/styles/components/switch.css' layer(components);
+@import '@heroui/styles/components/card.css' layer(components);
+@import '@heroui/styles/components/chip.css' layer(components);
+@import '@heroui/styles/components/avatar.css' layer(components);
+@import '@heroui/styles/components/toggle-button.css' layer(components);
+@import '@heroui/styles/components/toggle-button-group.css' layer(components);
+@import '@heroui/styles/components/close-button.css' layer(components);
+@import '@heroui/styles/components/search-field.css' layer(components);
 @import './heroui.css';
 
 @plugin '@tailwindcss/forms';

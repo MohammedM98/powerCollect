@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import MeterReadingModal from '@/Pages/MeterReadings/MeterReadingModal';
 import ChargeModal from './ChargeModal';
@@ -20,17 +21,18 @@ const ACTION_TONES = {
 };
 
 /**
- * The statement's actions as a row of buttons, each in its own colour, so
- * every movement is one click away. Each action is shown only to users
- * allowed to use it (each is its own permission). `onOpen` gets
+ * The statement's actions as a row of HeroUI buttons, each in its own
+ * colour, so every movement is one click away. Each action is shown only
+ * to users allowed to use it (each is its own permission). `onOpen` gets
  * 'payment', 'split_payment', 'charge', 'discount' or 'clearing'.
+ * `bar` sets them on their own card, named "إضافة حركة", as the page shows them.
  */
-export function StatementActions({ canRecordPayment, canRecordSplitPayment, canAddCharge, canAddDiscount, canAddClearing, onOpen }) {
+export function StatementActions({ canRecordPayment, canRecordSplitPayment, canAddCharge, canAddDiscount, canAddClearing, onOpen, bar = false }) {
     const actions = [
         canRecordPayment && { action: 'payment', label: 'تسجيل دفعة', icon: 'banknotes' },
         canRecordSplitPayment && { action: 'split_payment', label: 'دفعة مقسّمة', icon: 'layers' },
         canAddCharge && { action: 'charge', label: 'تحميل حركة', icon: 'document-plus' },
-        canAddDiscount && { action: 'discount', label: 'خصم', icon: 'discount' },
+        canAddDiscount && { action: 'discount', label: 'خصم', icon: 'percent' },
         canAddClearing && { action: 'clearing', label: 'مقاصة', icon: 'scale' },
     ].filter(Boolean);
 
@@ -39,12 +41,13 @@ export function StatementActions({ canRecordPayment, canRecordSplitPayment, canA
     }
 
     return (
-        <div role="group" aria-label="إضافة حركة" className="gl-acts">
+        <div role="group" aria-label="إضافة حركة" className={bar ? 'gl-acts gl-st-actions' : 'gl-acts'}>
+            {bar && <span className="gl-st-actions-label" aria-hidden="true">إضافة حركة</span>}
             {actions.map((item) => (
-                <button key={item.action} type="button" onClick={() => onOpen(item.action)} className={`gl-act ${item.action === 'payment' ? 'is-solid' : ''}`} data-tone={ACTION_TONES[item.action]}>
+                <Button key={item.action} onPress={() => onOpen(item.action)} className={`gl-act ${item.action === 'payment' ? 'is-solid' : ''}`} data-tone={ACTION_TONES[item.action]}>
                     <Icon name={item.icon} className="h-[17px] w-[17px]" />
                     {item.label}
-                </button>
+                </Button>
             ))}
         </div>
     );

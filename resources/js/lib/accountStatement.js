@@ -483,3 +483,76 @@ export function statementHeader(subscription) {
         meterBoxNumber: subscription.meterBoxNumber,
     };
 }
+
+/**
+ * A line's colour on the statement (theme.css section 4): a payment green,
+ * a split transfer's share blue, a charge red, a discount violet, a
+ * clearing teal, a reading grey; reversals, cancellations and corrections
+ * stay neutral (null).
+ */
+export function lineTone(entry) {
+    switch (entry.type) {
+        case 'payment':
+        case 'credit':
+            return entry.splitPayment ? 'split' : 'pay';
+        case 'clearing':
+            return 'clearing';
+        case 'discount':
+        case 'reading_discount':
+            return 'discount';
+        case 'meter_reading':
+        case 'invoice':
+            return 'reading';
+        case 'reversal':
+        case 'cancellation':
+        case 'refund':
+        case 'bank_audit_adjustment':
+            return null;
+        default:
+            return entry.isCredit ? null : 'charge';
+    }
+}
+
+/** What a line comes to in shekels: its amount (after a reading's standing discount) at the rate it was recorded at. */
+export function lineInShekels(entry) {
+    const amount = entry.discountLine ? Number(netOfReadingDiscount(entry)) : Number(entry.amount);
+
+    return cents(amount * (Number(entry.exchangeRate) || 1));
+}
+
+const LEVANT_MONTHS = ['كانون الثاني', 'شباط', 'آذار', 'نيسان', 'أيار', 'حزيران', 'تموز', 'آب', 'أيلول', 'تشرين الأول', 'تشرين الثاني', 'كانون الأول'];
+
+/** The month a line was recorded in, as the statement's bands name it: "تشرين الثاني 2026". */
+export function lineMonth(entry) {
+    const [year, month] = String(entry.date ?? '').split(/[-\s]/);
+
+    return LEVANT_MONTHS[Number(month) - 1] ? `${LEVANT_MONTHS[Number(month) - 1]} ${year}` : '';
+}
+
+/**
+ * The statement's rows in runs of one month each, in the order shown, each
+ * with what was charged (عليه) and credited (له) in it, in shekels. A
+ * cancelled line and the reversal that takes it back count for nothing.
+ * A sort by bank arrival has no months to band (`banded` false): one run.
+ */
+export function monthBands(rows, banded = true) {
+    const bands = [];
+
+    for (const entry of rows) {
+        const month = banded ? lineMonth(entry) : '';
+        let band = bands.at(-1);
+
+        if (!band || band.month !== month) {
+            band = { month, entries: [], charged: 0, credited: 0 };
+            bands.push(band);
+        }
+
+        band.entries.push(entry);
+
+        if (!entry.cancellation && !entry.isReversal) {
+            band[entry.isCredit ? 'credited' : 'charged'] += lineInShekels(entry);
+        }
+    }
+
+    return bands.map((band) => ({ ...band, charged: money(band.charged), credited: money(band.credited) }));
+}

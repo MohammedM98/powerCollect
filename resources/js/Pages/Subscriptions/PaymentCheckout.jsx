@@ -296,7 +296,7 @@ function NotesField({ data, errors, setData }) {
 }
 
 /** One green button carrying the amount, and what happens after it. */
-function CheckoutFooter({ currencyMark, data, form, inShekels, overpayment, referenceStatus }) {
+function CheckoutFooter({ currencyMark, data, form, inShekels, overpayment, referenceStatus, requestClose }) {
     const disabled =
         !(Number(data.amount) > 0) ||
         inShekels === null ||
@@ -306,10 +306,15 @@ function CheckoutFooter({ currencyMark, data, form, inShekels, overpayment, refe
 
     return (
         <footer className="gl-co-foot">
-            <Button type="submit" size="lg" fullWidth isDisabled={disabled} className="gl-co-pay">
-                <Icon name="check" className="h-5 w-5" strokeWidth={2.2} />
-                {form.processing ? 'جارٍ الحفظ...' : Number(data.amount) > 0 ? <>تسجيل <bdi className="gl-num">{formatMoney(data.amount)}</bdi> {currencyMark}</> : 'تسجيل الدفعة'}
-            </Button>
+            <div className="gl-co-foot-row">
+                <Button variant="tertiary" size="lg" onPress={requestClose} isDisabled={form.processing} className="gl-co-cancel">
+                    إلغاء
+                </Button>
+                <Button type="submit" size="lg" fullWidth isDisabled={disabled} className="gl-co-pay">
+                    <Icon name="check" className="h-5 w-5" strokeWidth={2.2} />
+                    {form.processing ? 'جارٍ الحفظ...' : Number(data.amount) > 0 ? <>تسجيل <bdi className="gl-num">{formatMoney(data.amount)}</bdi> {currencyMark}</> : 'تسجيل الدفعة'}
+                </Button>
+            </div>
             <p className="gl-co-foot-hint">
                 <Icon name="shield" className="h-4 w-4" />
                 تُسجَّل في صندوقك، ويُطبع الوصل بعد التأكيد.
