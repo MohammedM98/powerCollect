@@ -33,8 +33,10 @@ function branchCount(count) {
     return `${formatNumber(count)} ${count % 100 >= 3 && count % 100 <= 10 ? 'فروع' : 'فرعاً'}`;
 }
 
-export default function BranchBanner({ scope, eyebrow = 'تعرض الآن البيانات المالية لـ', allLabel = 'تقرير مجمّع', options = [], value = '', allValue = 'all', onChange = null, controls = null, meta = null, children = null, className = 'mb-5' }) {
+export default function BranchBanner({ scope, eyebrow = 'تعرض الآن البيانات المالية لـ', allLabel = 'تقرير مجمّع', options = [], value = '', allValue = 'all', onChange = null, controls = null, ownControls = false, meta = null, children = null, className = 'mb-5' }) {
     const view = useBranchView();
+    // The working branch is picked in the top bar (WorkingBranchChip) and kept across pages; the banner then only prints.
+    const printOnly = view.available && !ownControls;
     const pickerOptions = view.available ? view.options : options;
     const pickerValue = view.available ? view.value || allValue : value;
     const pick = view.available ? view.changeBranch : onChange;
@@ -47,7 +49,7 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
     ].filter(Boolean);
 
     return (
-        <section aria-label="الفرع المعروض" className={`gl-scope print:mb-4 print:rounded-none print:border-0 print:border-b-2 print:border-[rgb(var(--brand-500))] print:bg-none print:p-0 print:pb-3 print:text-[rgb(var(--graphite-900))] print:shadow-none ${className}`}>
+        <section aria-label="الفرع المعروض" className={`gl-scope ${printOnly ? 'hidden print:block' : ''} print:mb-4 print:rounded-none print:border-0 print:border-b-2 print:border-[rgb(var(--brand-500))] print:bg-none print:p-0 print:pb-3 print:text-[rgb(var(--graphite-900))] print:shadow-none ${className}`}>
             <div className="gl-scope-row">
                 <span aria-hidden="true" className="gl-scope-ico print:hidden">
                     <Icon name={scope.level === 'governorate' ? 'map' : scope.all ? 'layers' : 'building'} className="h-5 w-5" />

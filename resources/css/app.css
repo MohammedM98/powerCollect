@@ -6581,3 +6581,264 @@ body {
         padding-inline: 16px;
     }
 }
+
+/*
+ * ── Buttons over every table, as the MA prototype ────────────────────────
+ * The page's main action («مشترك جديد», «فرع جديد»…) is the dark key with
+ * its light and shadow (charcoal in light, slate in dark); the others are
+ * soft grey keys.
+ */
+:root[data-ui-navigation] .tn-shell :is(.gl-page-actions, .gl-page-top) :is(.ui-btn-primary, .gl-add),
+:root[data-ui-navigation] .tn-shell :is(.gl-page-actions, .gl-page-top) :is(.ui-btn-primary, .gl-add):hover:not(:disabled) {
+    min-height: 44px;
+    height: 44px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 13px;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--ma-act) 88%, white), var(--ma-act));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 8px 18px -10px rgb(16 20 26 / 0.6);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    transition: transform 0.1s, filter 0.15s;
+}
+
+:root[data-ui-navigation] .tn-shell :is(.gl-page-actions, .gl-page-top) :is(.ui-btn-primary, .gl-add):hover:not(:disabled) {
+    filter: brightness(1.08);
+}
+
+:root[data-ui-navigation] .tn-shell :is(.gl-page-actions, .gl-page-top) :is(.ui-btn-primary, .gl-add):active {
+    transform: translateY(1px);
+}
+
+:root[data-ui-navigation] .tn-shell :is(.gl-page-actions, .gl-page-top) :is(.gl-btn, .ui-btn-secondary, a.gl-sec):not(.ui-btn-primary, .gl-add),
+:root[data-ui-navigation] .tn-shell :is(.gl-page-actions, .gl-page-top) :is(.gl-btn, .ui-btn-secondary, a.gl-sec):not(.ui-btn-primary, .gl-add):hover:not(:disabled) {
+    min-height: 44px;
+    height: 44px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+    color: var(--ma-ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+:root[data-ui-navigation] .tn-shell :is(.gl-page-actions, .gl-page-top) :is(.gl-btn, .ui-btn-secondary, a.gl-sec):not(.ui-btn-primary, .gl-add):hover:not(:disabled) {
+    background: color-mix(in oklab, var(--ma-tile) 82%, var(--ma-ink) 7%);
+}
+
+/*
+ * ── A row's actions ──────────────────────────────────────────────────────
+ * «عرض» always showing as a raised white key, its eye in the site's blue
+ * (turning to a soft blue under the pointer), its arrow opening the menu;
+ * edit in blue and delete in red as soft keys.
+ */
+:root[data-ui-navigation] .data-table .row-action-view,
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table .row-action-view {
+    height: 36px;
+    border-radius: 11px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth), inset 0 0 0 1px var(--ma-line);
+    color: var(--ma-ink);
+}
+
+:root[data-ui-navigation] .data-table .row-action-view:is(:hover, :focus-within),
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table .row-action-view:is(:hover, :focus-within) {
+    background: var(--ma-clr-s);
+    box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--ma-clr) 45%, transparent);
+    color: var(--ma-clr);
+}
+
+:root[data-ui-navigation] .data-table .row-action-view > button {
+    gap: 6px;
+    padding-inline: 12px;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+:root[data-ui-navigation] .data-table .row-action-view > button svg {
+    color: var(--ma-clr);
+}
+
+:root[data-ui-navigation] .data-table .row-action-view > button + button {
+    padding-inline: 8px;
+    border-inline-start: 1px solid var(--ma-line);
+}
+
+:root[data-ui-navigation] .data-table .row-action-view > button + button svg {
+    color: var(--ma-muted);
+}
+
+:root[data-ui-navigation] .data-table .row-action-view > button[aria-expanded='true'] {
+    background: color-mix(in oklab, var(--ma-clr) 12%, transparent);
+}
+
+:root[data-ui-navigation] .data-table .row-action,
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table .row-action {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+    color: var(--ma-muted);
+}
+
+:root[data-ui-navigation] .data-table .row-action:hover {
+    background: color-mix(in oklab, var(--ma-tile) 82%, var(--ma-ink) 7%);
+    color: var(--ma-ink);
+}
+
+:root[data-ui-navigation] .data-table .row-action-edit {
+    background: var(--ma-clr-s);
+    color: var(--ma-clr);
+}
+
+:root[data-ui-navigation] .data-table .row-action-delete {
+    background: var(--ma-owe-s);
+    color: var(--ma-owe);
+}
+
+:root[data-ui-navigation] .data-table :is(.row-action-edit, .row-action-delete):hover {
+    filter: brightness(0.96);
+}
+
+/*
+ * ── The actions menu: glass, its icons coloured by what they do ──────────
+ * Each item's icon on a soft tint of its tone (in the MA palette), filled
+ * with the tone's deep shade under the pointer.
+ */
+:root[data-ui-navigation] .row-menu.gl-pop {
+    border: 0;
+    border-radius: 18px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: blur(22px) saturate(1.6);
+    backdrop-filter: blur(22px) saturate(1.6);
+    box-shadow: var(--ma-float);
+}
+
+:root[data-ui-navigation]:not([data-surface='glass']) .row-menu.gl-pop {
+    background: var(--ma-solid);
+}
+
+.row-menu-ico[data-menu-tone] {
+    --mt: var(--ma-muted);
+    --mt-s: var(--ma-tile);
+    --mt-fill: #4a5059;
+    background: var(--mt-s) !important;
+    color: var(--mt) !important;
+    box-shadow: var(--ma-hl);
+}
+
+.row-menu-ico[data-menu-tone='blue'],
+.row-menu-ico[data-menu-tone='indigo'],
+.row-menu-ico[data-menu-tone='sky'] {
+    --mt: var(--ma-clr);
+    --mt-s: var(--ma-clr-s);
+    --mt-fill: #45678e;
+}
+
+.row-menu-ico[data-menu-tone='emerald'] {
+    --mt: var(--ma-pay);
+    --mt-s: var(--ma-pay-s);
+    --mt-fill: #2d855c;
+}
+
+.row-menu-ico[data-menu-tone='teal'] {
+    --mt: var(--ma-split);
+    --mt-s: var(--ma-split-s);
+    --mt-fill: #1f6a80;
+}
+
+.row-menu-ico[data-menu-tone='amber'] {
+    --mt: var(--ma-warn);
+    --mt-s: var(--ma-warn-s);
+    --mt-fill: #946615;
+}
+
+.row-menu-ico[data-menu-tone='red'],
+.row-menu-ico[data-menu-tone='brand'] {
+    --mt: var(--ma-owe);
+    --mt-s: var(--ma-owe-s);
+    --mt-fill: #b0524b;
+}
+
+.row-menu-ico[data-menu-tone='violet'] {
+    --mt: var(--ma-disc);
+    --mt-s: var(--ma-disc-s);
+    --mt-fill: #6c599d;
+}
+
+.group\/item:is(:hover, :focus-visible) .row-menu-ico[data-menu-tone] {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--mt-fill) 88%, white), var(--mt-fill)) !important;
+    color: #fff !important;
+}
+
+/* «عرض» (and a row's ⋯ menu) always showing; the smaller keys join it when the row is pointed at. */
+@media (hover: hover) and (pointer: fine) {
+    :root[data-ui-navigation] .data-table tbody tr .row-actions {
+        opacity: 1;
+    }
+
+    :root[data-ui-navigation] .data-table tbody tr .row-actions .row-action:not([aria-haspopup]) {
+        opacity: 0;
+        transition: opacity 0.15s, background-color 0.15s, color 0.15s;
+    }
+
+    :root[data-ui-navigation] .data-table tbody tr:is(:hover, :focus-within, .bg-brand-50) .row-actions .row-action,
+    :root[data-ui-navigation] .data-table tbody tr .row-actions:has([aria-expanded='true']) .row-action {
+        opacity: 1;
+    }
+}
+
+/* The menu's icons on a fuller tint of their colour. */
+.row-menu-ico[data-menu-tone] {
+    background: color-mix(in oklab, var(--mt-fill) 16%, var(--ma-solid)) !important;
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--mt-fill) 22%, transparent);
+}
+
+.dark .row-menu-ico[data-menu-tone] {
+    background: color-mix(in oklab, var(--mt-fill) 30%, var(--ma-solid)) !important;
+}
+
+:root[data-ui-navigation] .data-table .row-action.row-action-edit,
+:root[data-ui-background][data-ui-navigation] .data-table .row-action.row-action-edit {
+    background: var(--ma-clr-s);
+    color: var(--ma-clr);
+}
+
+:root[data-ui-navigation] .data-table .row-action.row-action-delete,
+:root[data-ui-background][data-ui-navigation] .data-table .row-action.row-action-delete {
+    background: var(--ma-owe-s);
+    color: var(--ma-owe);
+}
+
+:root[data-ui-navigation] .data-table .row-action.row-action-print,
+:root[data-ui-background][data-ui-navigation] .data-table .row-action.row-action-print {
+    background: var(--ma-clr-s);
+    color: var(--ma-clr);
+}
+
+:root[data-ui-navigation] .data-table .row-action.row-action-excel,
+:root[data-ui-background][data-ui-navigation] .data-table .row-action.row-action-excel {
+    background: var(--ma-pay-s);
+    color: var(--ma-pay);
+}
+
+/* Menu icons: each on a clear tint of its colour, drawn in the colour's deep shade. */
+:root:not(.dark) .row-menu-ico[data-menu-tone] {
+    background: color-mix(in oklab, var(--mt-fill) 20%, #ffffff) !important;
+    color: var(--mt-fill) !important;
+}
+
+:root:not(.dark) .row-menu-ico[data-menu-tone='graphite'] {
+    background: var(--ma-tile) !important;
+    color: var(--ma-ink) !important;
+}
+
+.dark .row-menu-ico[data-menu-tone] {
+    background: color-mix(in oklab, var(--mt-fill) 38%, var(--ma-solid)) !important;
+    color: #fff !important;
+}

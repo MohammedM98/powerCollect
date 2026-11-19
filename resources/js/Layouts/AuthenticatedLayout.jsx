@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import TopBar from '@/Components/TopBar/TopBar';
-import BranchViewSwitcher, { WorkingBranchChip } from '@/Components/BranchViewSwitcher';
+import { WorkingBranchChip } from '@/Components/BranchViewSwitcher';
 import NavigationDrawer from '@/Components/TopBar/NavigationDrawer';
 import { useBrandDocument } from '@/hooks/useBrand';
 import { Breadcrumb, SectionPages } from '@/Components/TopBar/PageTrail';
@@ -231,7 +231,6 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
 
             <div className="tn-content">
                 <main id="main-content" tabIndex={-1} className="mx-auto max-w-(--ui-content-width) px-(--tn-gutter) pb-16 pt-7 outline-hidden">
-                    <BranchViewSwitcher />
                     {/* As in the redesign: the trail, the title and its line, the section's tabs, then the page's actions. */}
                     <div className="gl-page-top">
                         <Breadcrumb trail={trail} />
