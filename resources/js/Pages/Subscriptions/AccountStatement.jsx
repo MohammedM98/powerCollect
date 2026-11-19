@@ -254,7 +254,9 @@ export default function AccountStatement({ subscription, entries, summary, payme
                     <FilterField group={{ label: 'طريقة الدفع', options: methodOptions }} value={filters.method} onChange={(value) => setFilter('method', value ?? '')} />
                     <DateInput variant="pill" prefix="من تاريخ" aria-label="من تاريخ" placeholder="" value={filters.dateFrom} max={filters.dateTo || undefined} onChange={(value) => setFilter('dateFrom', value)} />
                     <DateInput variant="pill" prefix="إلى تاريخ" aria-label="إلى تاريخ" placeholder="" value={filters.dateTo} min={filters.dateFrom || undefined} onChange={(value) => setFilter('dateTo', value)} />
-                    <FilterField group={{ label: 'الترتيب', options: STATEMENT_SORT_OPTIONS }} value={filters.sort ?? ''} onChange={(value) => setFilter('sort', value ?? '')} placeholder={STATEMENT_SORT_OPTIONS[0].label} clearable={false} icon="sort" />
+                    <span className="gl-st-sort">
+                        <FilterField group={{ label: 'الترتيب', options: STATEMENT_SORT_OPTIONS }} value={filters.sort ?? ''} onChange={(value) => setFilter('sort', value ?? '')} placeholder={STATEMENT_SORT_OPTIONS[0].label} clearable={false} icon="sort" />
+                    </span>
                     {isFiltered && (
                         <button type="button" onClick={() => setFilters(EMPTY_FILTERS)} className="gl-filter-clear">
                             <Icon name="close" className="h-3.5 w-3.5" />
