@@ -71,7 +71,14 @@ class FieldStore {
     if (!await file.exists()) return;
     final text = await file.readAsString();
     final json = await _open(text);
-    if (json == null) return;
+    if (json == null) {
+      // Kept aside before the next save writes over it: the Keystore can fail
+      // for a moment (after an update, or while the phone is locked), and the
+      // file may still hold unsent readings and unconfirmed payments.
+      await file.copy(
+          '${file.path}.unreadable-${DateTime.now().millisecondsSinceEpoch}');
+      return;
+    }
     final decoded = jsonDecode(json);
     if (decoded is Map<String, dynamic>) state = decoded;
     if (!text.startsWith(_sealed)) {

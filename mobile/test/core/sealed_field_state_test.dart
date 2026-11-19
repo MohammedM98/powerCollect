@@ -70,18 +70,25 @@ void main() {
     expect(await stateFile().readAsString(), startsWith('pcs1.'));
   });
 
-  test('a sealed file whose key is gone reads as empty', () async {
+  test('a sealed file that cannot be opened reads as empty and is kept aside', () async {
     final store = FieldStore(directory: directory)
       ..state = {
-        'user': {'id': 5}
+        'user': {'id': 5},
+        'queued_readings': [
+          {'mobile_operation_id': 'op-1'}
+        ],
       };
     await store.save();
+    final sealed = await stateFile().readAsString();
     fakeKeystore(keyLost: true);
 
     final restored = FieldStore(directory: directory);
     await restored.load();
+    await restored.save();
 
     expect(restored.user, isNull);
+    final kept = directory.listSync().whereType<File>().where((file) => file.path.contains('field_state.json.unreadable-'));
+    expect(await kept.single.readAsString(), sealed);
   });
 
   test('an expired session drops the roster and keeps the unsent readings', () {
