@@ -12,13 +12,14 @@ import Pagination from '@/Components/DataTable/Pagination';
 import SearchableSelect from '@/Components/SearchableSelect';
 import { useDataTable } from '@/hooks/useDataTable';
 import { formatCurrency } from '@/lib/currency';
-import { formatMonthName } from '@/lib/format';
+import { formatMoney, formatMonthName } from '@/lib/format';
 import { activeReadingStatus, readingStatusFilters, readingWeekParams } from '@/lib/readingSheet';
 import ReadingContextBar from './ReadingContextBar';
 import ReadingApprovalDialog from './ReadingApprovalDialog';
 import PrintButton from '@/Components/PrintButton';
 import './ReadingEntry.css';
-import InfoTip from '@/Components/InfoTip';
+import KpiTile from '@/Components/KpiTile';
+import PageHeader from '@/Components/PageHeader';
 import { EntryWindowNotice } from './EntryWindowNotice';
 import { PRINT_FIELDS, SheetRow } from './ReadingSheetRow';
 import { printFieldsProps } from '@/lib/print';
@@ -171,40 +172,41 @@ export default function Index({
         );
     }
 
+    // The page's actions, in their row under the section's tabs as in the redesign.
+    const headerActions = (
+        <div className="re-heading re-actions items-center">
+            <PrintButton title="القراءات الأسبوعية" selectedIds={[...selectedIds]} selectionPage="/meter-readings" />
+            {canSendReadingMessages && statusSummary.approved > 0 && (
+                <Link href={`/messages/create?${new URLSearchParams({ kind: 'weekly_reading', week_start: week, approved_only: '1', branch_id: messageBranchId ?? '', status: filterValues.subscription_status === 'all' ? '' : filterValues.subscription_status || 'active' })}`} aria-label="إرسال رسائل القراءات المعتمدة" title="إرسال رسائل القراءات المعتمدة" className="gl-btn gl-sec re-send">
+                    <Icon name="send" className="h-4 w-4" />
+                    إرسال القراءات
+                </Link>
+            )}
+            <span className={`re-open ${entryWindow.isOpen ? 'is-open' : ''}`}><i />الإدخال {entryWindow.isOpen ? 'مفتوح' : 'مغلق'}</span>
+            <div className="re-week">
+                <button type="button" aria-label="الأسبوع السابق" disabled={weekIndex < 0 || weekIndex === weekOptions.length - 1} onClick={() => changeWeek(weekOptions[weekIndex + 1].value)}><Icon name="chevron-right" /></button>
+                <div className="re-week-field re-week-year"><label htmlFor="reading-week-year" className="sr-only">السنة</label><SearchableSelect id="reading-week-year" variant="pill" value={currentYear} onChange={changePeriod} options={yearOptions.map((year) => ({ value: year, label: year }))} clearable={false} searchable={false} className="[&>div.absolute]:min-w-0" /></div>
+                <div className="re-week-field re-week-month"><label htmlFor="reading-week-month" className="sr-only">الشهر</label><SearchableSelect id="reading-week-month" variant="pill" value={currentMonth} onChange={changePeriod} options={monthOptions.map((month) => ({ value: month, label: formatMonthName(`${month}-01`) }))} clearable={false} searchable={false} className="[&>div.absolute]:min-w-0" /></div>
+                <div className="re-week-field re-week-range"><label htmlFor="reading-week-range" className="sr-only">أسبوع القراءة</label><SearchableSelect id="reading-week-range" variant="pill" value={week} onChange={changeWeek} options={weeksOfMonth.map((option) => ({ value: option.value, label: `\u202A${fullDate(option.value)} – ${fullDate(option.end)}\u202C` }))} clearable={false} searchable={false} className="[&>div.absolute]:min-w-0" /></div>
+                <button type="button" aria-label="الأسبوع التالي" disabled={weekIndex <= 0} onClick={() => changeWeek(weekOptions[weekIndex - 1].value)}><Icon name="chevron-left" /></button>
+            </div>
+        </div>
+    );
+
     return (
-        <AuthenticatedLayout>
+        <AuthenticatedLayout header={<PageHeader title="القراءات الأسبوعية" info="قراءات العدادات لهذه الدورة." actions={headerActions} />}>
             <Head title="القراءات الأسبوعية" />
             <div className="reading-entry" dir="rtl">
-                <div className="re-heading">
-                    <div className="flex items-center gap-1"><h1>القراءات الأسبوعية</h1><InfoTip label="طريقة الإدخال">أدخل القراءة الحالية بجانب القراءة السابقة، واضغط Enter أو السهم لأسفل للحفظ والانتقال للمشترك التالي، والسهم لأعلى للرجوع.</InfoTip></div>
-                    <div className="re-actions items-center">
-                        <PrintButton title="القراءات الأسبوعية" selectedIds={[...selectedIds]} selectionPage="/meter-readings" buttonClassName="h-11! rounded-xl! px-3! py-0! text-xs!" />
-                        {canSendReadingMessages && statusSummary.approved > 0 && (
-                            <Link href={`/messages/create?${new URLSearchParams({ kind: 'weekly_reading', week_start: week, approved_only: '1', branch_id: messageBranchId ?? '', status: filterValues.subscription_status === 'all' ? '' : filterValues.subscription_status || 'active' })}`} aria-label="إرسال رسائل القراءات المعتمدة" title="إرسال رسائل القراءات المعتمدة" className="inline-flex h-11 items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3 text-xs font-bold text-emerald-800 shadow-xs transition hover:border-emerald-400 hover:bg-emerald-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-200 dark:hover:bg-emerald-900">
-                                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white"><Icon name="send" className="h-4 w-4" /></span>
-                                إرسال القراءات
-                            </Link>
-                        )}
-                        <span className={`re-open ${entryWindow.isOpen ? 'is-open' : ''}`}><i />الإدخال {entryWindow.isOpen ? 'مفتوح' : 'مغلق'}</span>
-                        <div className="re-week">
-                            <button type="button" aria-label="الأسبوع السابق" disabled={weekIndex < 0 || weekIndex === weekOptions.length - 1} onClick={() => changeWeek(weekOptions[weekIndex + 1].value)}><Icon name="chevron-right" /></button>
-                            <div className="re-week-field re-week-year"><label htmlFor="reading-week-year" className="sr-only">السنة</label><SearchableSelect id="reading-week-year" value={currentYear} onChange={changePeriod} options={yearOptions.map((year) => ({ value: year, label: year }))} clearable={false} searchable={false} className="[&>div.absolute]:min-w-0" /></div>
-                            <div className="re-week-field re-week-month"><label htmlFor="reading-week-month" className="sr-only">الشهر</label><SearchableSelect id="reading-week-month" value={currentMonth} onChange={changePeriod} options={monthOptions.map((month) => ({ value: month, label: formatMonthName(`${month}-01`) }))} clearable={false} searchable={false} className="[&>div.absolute]:min-w-0" /></div>
-                            <div className="re-week-field re-week-range"><label htmlFor="reading-week-range" className="sr-only">أسبوع القراءة</label><SearchableSelect id="reading-week-range" value={week} onChange={changeWeek} options={weeksOfMonth.map((option) => ({ value: option.value, label: `\u202A${fullDate(option.value)} – ${fullDate(option.end)}\u202C` }))} clearable={false} searchable={false} className="[&>div.absolute]:min-w-0" /></div>
-                            <button type="button" aria-label="الأسبوع التالي" disabled={weekIndex <= 0} onClick={() => changeWeek(weekOptions[weekIndex - 1].value)}><Icon name="chevron-left" /></button>
-                        </div>
-                    </div>
-                </div>
                 {showHint && <div className="re-hint"><Icon name="info" /><p><b>كل قراءات الأسبوع في مكان واحد.</b> بعد حفظ القراءة تظهر في «بانتظار الاعتماد» حتى يراجعها المسؤول ويعتمدها. ويمكنك عرض القراءات المعتمدة بشكل منفصل.</p><button type="button" aria-label="إخفاء التوضيح" onClick={() => setShowHint(false)}>×</button></div>}
-                <div className="re-top">
-                    <div className="re-tabs" role="group" aria-label="حالة القراءات">
-                        {STATUS_TABS.map((tab) => <button type="button" key={tab.value} aria-pressed={activeStatus === tab.value} onClick={() => changeStatus(tab.value)}>{tab.value !== 'all' && <i className={tab.value} />}{tab.label}<span>{statusSummary[tab.count].toLocaleString('en')}</span></button>)}
-                    </div>
-                    <div className="re-progress">
-                        <div><b>{entered.toLocaleString('en')}</b><span>من {statusSummary.total.toLocaleString('en')} قراءة</span><strong>{percentage}%</strong></div>
+                <div className="gl-seg re-tabs" role="group" aria-label="حالة القراءات">
+                    {STATUS_TABS.map((tab) => <button type="button" key={tab.value} aria-pressed={activeStatus === tab.value} onClick={() => changeStatus(tab.value)}>{tab.value !== 'all' && <i className={tab.value} />}{tab.label}<span>{statusSummary[tab.count].toLocaleString('en')}</span></button>)}
+                </div>
+                <div className="re-kpis">
+                    <KpiTile label="القراءات المدخلة" value={entered.toLocaleString('en')} unit={`من ${statusSummary.total.toLocaleString('en')} قراءة، ${percentage}%`} index={0}>
                         <div className="re-progress-track" role="progressbar" aria-label="القراءات المدخلة" aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}><i className="approved" style={{ width: `${statusSummary.total ? statusSummary.approved / statusSummary.total * 100 : 0}%` }} /><i className="pending" style={{ width: `${statusSummary.total ? statusSummary.pending / statusSummary.total * 100 : 0}%` }} /></div>
-                        <div className="re-legend"><span><i className="approved" />معتمدة {statusSummary.approved}</span><span><i className="pending" />بانتظار الاعتماد {statusSummary.pending}</span><span><i className="missing" />لم تُدخل {statusSummary.missing}</span></div>
-                    </div>
+                    </KpiTile>
+                    <KpiTile label="بانتظار الاعتماد" value={statusSummary.pending.toLocaleString('en')} unit={pendingApproval ? `قراءة، مجموعها ₪ ${formatMoney(pendingApproval.amountDue)}` : 'قراءة'} hint="تظهر في حساب المشترك بعد اعتمادها" index={1} />
+                    <KpiTile label="مجموع المستحق لهذا الأسبوع" value={formatMoney(summary.amountDue)} unit="₪" hint={`معتمدة ${statusSummary.approved.toLocaleString('en')}، لم تُدخل ${statusSummary.missing.toLocaleString('en')}`} index={2} />
                 </div>
             <EntryWindowNotice
                 entryWindow={entryWindow}
@@ -266,35 +268,6 @@ export default function Index({
 
             <section className="re-card" ref={sheetRef}>
             <ReadingContextBar anchorRef={filtersRef} sectionRef={sheetRef} week={week} weekEnd={weekEnd} groups={filterOptions} values={filterValues} search={search} total={rows.total} onChangeFilters={setFilters} />
-            <div className="re-sort" role="group" aria-label="ترتيب القراءات">
-                <label htmlFor="sheet-sort" className="sr-only">ترتيب حسب</label>
-                <SearchableSelect
-                    id="sheet-sort"
-                    variant="pill"
-                    prefix={<span className="gl-filter-name" aria-hidden="true"><Icon name="sort" className="h-[15px] w-[15px]" />ترتيب حسب:</span>}
-                    className="gl-filter-item"
-                    value={filters.sort}
-                    onChange={(value) => sortBy(value, filters.direction)}
-                    options={SORT_OPTIONS}
-                    searchPlaceholder="بحث في الترتيب..."
-                    clearable={false}
-                />
-                <label htmlFor="sheet-direction" className="sr-only">الاتجاه</label>
-                <SearchableSelect
-                    id="sheet-direction"
-                    variant="pill"
-                    className="gl-filter-item"
-                    value={filters.direction}
-                    onChange={(value) => sortBy(filters.sort, value)}
-                    options={['asc', 'desc'].map((direction) => ({
-                        value: direction,
-                        label: DIRECTION_LABELS[(SORT_OPTIONS.find((option) => option.value === filters.sort) ?? SORT_OPTIONS[0]).type][direction],
-                    }))}
-                    clearable={false}
-                    searchable={false}
-                />
-            </div>
-
             <DataTableToolbar
                 printable={false}
                 search={search}
@@ -311,7 +284,36 @@ export default function Index({
                         onChange={setFilter}
                         onChangeMany={setFilters}
                         onClear={clearFilters}
-                    />
+                    >
+                        <div className="re-sort" role="group" aria-label="ترتيب القراءات">
+                            <label htmlFor="sheet-sort" className="sr-only">ترتيب حسب</label>
+                            <SearchableSelect
+                                id="sheet-sort"
+                                variant="pill"
+                                prefix={<span className="gl-filter-name" aria-hidden="true"><Icon name="sort" className="h-[15px] w-[15px]" />ترتيب حسب:</span>}
+                                className="gl-filter-item"
+                                value={filters.sort}
+                                onChange={(value) => sortBy(value, filters.direction)}
+                                options={SORT_OPTIONS}
+                                searchPlaceholder="بحث في الترتيب..."
+                                clearable={false}
+                            />
+                            <label htmlFor="sheet-direction" className="sr-only">الاتجاه</label>
+                            <SearchableSelect
+                                id="sheet-direction"
+                                variant="pill"
+                                className="gl-filter-item"
+                                value={filters.direction}
+                                onChange={(value) => sortBy(filters.sort, value)}
+                                options={['asc', 'desc'].map((direction) => ({
+                                    value: direction,
+                                    label: DIRECTION_LABELS[(SORT_OPTIONS.find((option) => option.value === filters.sort) ?? SORT_OPTIONS[0]).type][direction],
+                                }))}
+                                clearable={false}
+                                searchable={false}
+                            />
+                        </div>
+                    </DataTableFilterMenu>
                 }
             />
             <div ref={filtersRef} aria-hidden="true" />
@@ -359,7 +361,7 @@ export default function Index({
                 </table>
             </div>
 
-            <div className="re-footer"><span>مجموع المستحق لهذا الأسبوع <b>{formatCurrency(summary.amountDue)}</b></span><span><Icon name="enter" /> Enter أو ↓ للحفظ والانتقال، ↑ للرجوع، Tab للتنقل</span></div>
+            <div className="re-footer"><span><Icon name="enter" /> Enter أو ↓ للحفظ والانتقال، ↑ للرجوع، Tab للتنقل</span></div>
             <Pagination meta={rows} filters={filters} baseUrl="/meter-readings" extraParams={weekParams} />
             </section>
 
