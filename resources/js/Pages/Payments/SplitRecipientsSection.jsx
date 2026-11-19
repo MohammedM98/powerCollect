@@ -12,7 +12,7 @@ function PartRow({ part, onAmount, onRemove, error }) {
 
     return (
         <li className="grid gap-2">
-            <div className="flex flex-wrap items-center gap-x-3.5 gap-y-3 rounded-[18px] border border-gray-100 bg-gray-50 px-3.5 py-3">
+            <div className="flex flex-wrap items-center gap-x-3.5 gap-y-3 rounded-[18px] bg-[rgb(var(--panel-field))] px-3.5 py-3 shadow-[var(--field-shadow)]">
                 <div className="flex min-w-0 flex-1 basis-52 items-center gap-3.5">
                     <span className="relative flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[14px] bg-graphite-gradient font-display text-[15px] font-bold text-white">
                         {initials(part.subscription.fullName)}
@@ -104,9 +104,9 @@ export default function SplitRecipientsSection({
     term,
 }) {
     return (
-        <div>
+        <section className="gl-split-panel" aria-label="توزيع المبلغ على المشتركين">
             <FieldLabel htmlFor="split_search" required hint="أي مشتركين تختارهم، ولو بهويات مختلفة">
-                توزيع المبلغ على المشتركين
+                <span className="gl-split-panel-title">توزيع المبلغ على المشتركين</span>
             </FieldLabel>
 
             {parts.length > 0 && (
@@ -186,7 +186,7 @@ export default function SplitRecipientsSection({
             </div>
             {identityNote && <p className="mt-2 text-[13.5px] text-gray-600">{identityNote}</p>}
             <InputError message={errors.parts} className="mt-2" />
-        </div>
+        </section>
     );
 }
 

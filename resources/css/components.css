@@ -2285,6 +2285,7 @@
 .gl-tone-charge { --gl-c: rgb(var(--tone-charge-ink)); }
 .gl-tone-discount { --gl-c: rgb(var(--tone-discount-ink)); }
 .gl-tone-clearing { --gl-c: rgb(var(--tone-clearing-ink)); }
+.gl-tone-split { --gl-c: rgb(var(--tone-split-ink)); }
 
 /* ── Form windows (Pages/Subscriptions/AccountFormParts.jsx) ──────────── */
 /* The window is never taller than the screen: its title, movement card and footer stay, its steps scroll. */
@@ -6092,4 +6093,61 @@ button.gl-cb-tile:hover {
     .gl-sheet-btn.is-submit.button {
         flex: 1;
     }
+}
+
+/* A shared payment's parts on grey panels: the transfer, then the subscribers it is spread over (Pages/Payments/Split*.jsx). */
+.gl-split-panel {
+    display: grid;
+    gap: 16px;
+    padding: 18px;
+    border-radius: 20px;
+    background: rgb(var(--panel-tile));
+}
+
+.gl-split-panel-title {
+    margin: 0;
+    color: var(--gl-ink);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+/* The company's banks as chips (Components/Banks.jsx BankChips, HeroUI's radio group). */
+.gl-bank-chips {
+    display: flex;
+    flex-flow: row wrap !important;
+    gap: 8px;
+}
+
+.gl-bank-chips [data-slot='radio'] {
+    margin-top: 0 !important;
+}
+
+.gl-bank-chip-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding-inline: 8px 16px;
+    border-radius: 14px;
+    background: rgb(var(--panel-field));
+    box-shadow: var(--field-shadow), 0 0 0 1px rgb(var(--gray-900) / 0.06);
+    color: var(--gl-ink);
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: box-shadow 0.15s, background-color 0.15s;
+}
+
+.gl-bank-chip-content:hover {
+    box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+}
+
+.gl-bank-chip-content[data-selected] {
+    background: rgb(var(--brand-solid) / 0.05);
+    box-shadow: 0 0 0 2px rgb(var(--brand-solid));
+}
+
+.gl-bank-chip-content[data-focus-visible] {
+    outline: 2px solid rgb(var(--brand-solid));
+    outline-offset: 3px;
 }

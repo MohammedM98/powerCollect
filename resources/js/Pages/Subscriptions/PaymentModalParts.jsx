@@ -6,7 +6,7 @@ import { formatMoney } from '@/lib/format';
 import InputError from '@/Components/InputError';
 import Switch from '@/Components/Switch';
 import { BankReceivedDateField } from '@/Components/BankReceivedDate';
-import { BankDropdown, BankRow } from '@/Components/Banks';
+import { BankChips, BankDropdown } from '@/Components/Banks';
 import { balanceText, FieldLabel } from './AccountFormParts';
 
 export const inputClass = 'block h-[46px] w-full px-4 text-base';
@@ -89,24 +89,11 @@ export function PaymentReceipt({ receipt, subscriptionName, title, onAnother, on
 export function TransferFields({ data, setData, errors, transferBanks, senderBanks, senderIsSubscriber, onSenderToggle, checkingReference, referenceStatus }) {
     return (
         <div className="animate-menu gl-receipt mt-3 grid gap-4 border-solid! p-4">
-            <fieldset>
-                <legend className="mb-2 text-[14.5px] font-semibold text-gray-700">
-                    البنك المستلم <span className="text-brand-600">*</span>
-                </legend>
-                <div className="grid gap-2">
-                    {transferBanks.map((bank) => (
-                        <BankRow
-                            key={bank}
-                            bank={bank}
-                            checked={data.bank_name === bank}
-                            name="bank_name"
-                            onChange={(value) => setData('bank_name', value)}
-                            required
-                        />
-                    ))}
-                </div>
+            <div>
+                <p className="gl-label mb-2">البنك المستلم <span className="text-brand-600">*</span></p>
+                <BankChips banks={transferBanks} name="bank_name" label="البنك المستلم" isRequired value={data.bank_name} onChange={(value) => setData('bank_name', value)} />
                 <InputError message={errors.bank_name} className="mt-2" />
-            </fieldset>
+            </div>
 
             <div>
                 <FieldLabel htmlFor="sender_bank_name">

@@ -48,6 +48,7 @@ export const MOVEMENT_TONES = {
     discount: 'rgb(var(--tone-discount-ink))',
     credit: 'rgb(var(--tone-discount-ink))',
     clearing: 'rgb(var(--tone-clearing-ink))',
+    split: 'rgb(var(--tone-split-ink))',
     correction: 'var(--gl-warn)',
 };
 
@@ -58,6 +59,7 @@ const MOVEMENT_SOLIDS = {
     discount: 'rgb(var(--tone-discount-solid))',
     credit: 'rgb(var(--tone-discount-solid))',
     clearing: 'rgb(var(--tone-clearing-solid))',
+    split: 'rgb(var(--tone-split-solid))',
     correction: 'rgb(var(--warning-600))',
 };
 
@@ -298,7 +300,7 @@ export function DoneScreen({ tone = 'green', title, text, rows, anotherLabel, on
 }
 
 /** The soft tint behind each form tone's header icon (components.css `gl-tone`). */
-const HEADER_TONES = { red: 'gl-tone-charge', charge: 'gl-tone-charge', green: 'gl-tone-ok', discount: 'gl-tone-discount', clearing: 'gl-tone-clearing', amber: 'gl-tone-warn', graphite: 'gl-tone-brand', payment: 'gl-tone-brand' };
+const HEADER_TONES = { red: 'gl-tone-charge', charge: 'gl-tone-charge', green: 'gl-tone-ok', discount: 'gl-tone-discount', clearing: 'gl-tone-clearing', split: 'gl-tone-split', amber: 'gl-tone-warn', graphite: 'gl-tone-brand', payment: 'gl-tone-brand' };
 
 /** The window's header: its icon in the form's tone, title and one line under it, and close. */
 export function FormHeader({ titleId, icon, tone = 'graphite', title, subtitle, onClose }) {
