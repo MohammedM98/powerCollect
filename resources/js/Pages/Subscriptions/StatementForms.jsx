@@ -162,6 +162,7 @@ export function StatementForms({ statement, openForm, onClose, onOpen = null }) 
                     subscription={subscription}
                     balance={summary.balance}
                     chargeTypes={statement.chargeTypes}
+                    recentLines={statement.entries}
                 />
             )}
             {canAddDiscount && (
