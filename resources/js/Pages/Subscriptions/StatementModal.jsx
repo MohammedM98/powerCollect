@@ -3,6 +3,7 @@ import { useId, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
+import { initials } from '@/lib/format';
 import { Chip } from '@heroui/react';
 import AccountStatement from './AccountStatement';
 import { StandingDiscountBadge } from './AccountSummary';
@@ -56,8 +57,9 @@ export default function StatementModal({ subscription, statement, initialForm = 
                 <div role="dialog" aria-modal="true" aria-labelledby={titleId} className="gl-statement flex min-h-0 flex-col">
                     <header className="gl-dialog-head grid shrink-0 gap-3.5 px-4 py-4 sm:px-6">
                         <div className="flex items-start gap-3.5">
-                            <span className="gl-tone gl-tone-brand hidden h-11 w-11 shrink-0 items-center justify-center rounded-[14px] sm:flex">
-                                <Icon name="ledger" className="h-[22px] w-[22px]" />
+                            <span className="gl-st-av" data-status={header.status} aria-hidden="true">
+                                {initials(header.fullName)}
+                                <i />
                             </span>
                             <div className="min-w-0 flex-1">
                                 <StatementTitle id={titleId} name={header.fullName} as="h3">

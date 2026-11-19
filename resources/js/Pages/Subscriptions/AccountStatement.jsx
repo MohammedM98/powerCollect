@@ -231,39 +231,27 @@ export default function AccountStatement({ subscription, entries, summary, payme
 
             <div className="statement-summary gl-st-top">
                 <BalanceCard subscription={subscription} summary={summary} entries={entries} />
-                <div className="gl-st-side">
-                    <div className="gl-st-kpis">
-                        <SummaryKpi label="مجموع ما عليه (تحميل)" value={summary.charged} hint="القراءات المعتمدة والرسوم والغرامات" />
-                        <SummaryKpi label="مجموع ما دفعه (تسديد)" value={summary.paid} hint={`عدد الدفعات: ${summary.paymentsCount}`} />
-                        <SummaryKpi label="مجموع الخصومات" value={summary.discounted} hint={`عدد الخصومات: ${summary.discountsCount}`} />
-                        <SummaryKpi label="مجموع المقاصات" value={summary.cleared} hint={`عدد المقاصات: ${summary.clearingsCount}`} />
-                    </div>
-                    {actions && <div className="gl-st-side-actions statement-screen-only">{actions}</div>}
+                <div className="gl-st-kpis">
+                    <SummaryKpi tone="owe" label="مجموع ما عليه" value={summary.charged} hint="القراءات المعتمدة والرسوم والغرامات" />
+                    <SummaryKpi tone="pay" label="مجموع ما دفعه" value={summary.paid} hint={`عدد الدفعات: ${summary.paymentsCount}`} />
+                    <SummaryKpi tone="disc" label="مجموع الخصومات" value={summary.discounted} hint={`عدد الخصومات: ${summary.discountsCount}`} />
+                    <SummaryKpi tone="clr" label="مجموع المقاصات" value={summary.cleared} hint={`عدد المقاصات: ${summary.clearingsCount}`} />
                 </div>
             </div>
 
             {between}
 
             <Card className="gl-st-ledger statement-ledger-panel">
-                <div className="gl-st-bar">
-                    <div className="me-auto min-w-0">
-                        <h3 className="gl-st-ledger-title">الحركات</h3>
-                        <p className="gl-st-ledger-hint">{STATEMENT_VIEWS.find((option) => option.value === view)?.hint}</p>
-                    </div>
-                    <StatementViewTabs value={view} onChange={chooseView} />
-                    {!toolsSlot && exportTools}
-                </div>
-
-                <div className="gl-st-bar gl-st-filters" role="group" aria-label="تصفية الحركات">
+                <div className="gl-st-tb" role="group" aria-label="تصفية الحركات">
                     <SearchField aria-label="بحث" value={filters.search} onChange={(value) => setFilter('search', value)} className="gl-st-search">
                         <SearchField.Group>
                             <SearchField.SearchIcon />
-                            <SearchField.Input placeholder="البيان، رقم السند، المبلغ أو البنك" />
+                            <SearchField.Input placeholder="البيان، رقم السند، المرجع أو المبلغ" />
                             <SearchField.ClearButton />
                         </SearchField.Group>
                     </SearchField>
                     <FilterField group={{ label: 'نوع الحركة', options: typeOptions }} value={filters.type} onChange={(value) => setFilter('type', value ?? '')} />
-                    <FilterField group={{ label: 'طريقة الدفع', options: methodOptions }} value={filters.method} onChange={(value) => setFilter('method', value ?? '')} icon="wallet" />
+                    <FilterField group={{ label: 'طريقة الدفع', options: methodOptions }} value={filters.method} onChange={(value) => setFilter('method', value ?? '')} />
                     <DateInput variant="pill" prefix="من تاريخ" aria-label="من تاريخ" placeholder="" value={filters.dateFrom} max={filters.dateTo || undefined} onChange={(value) => setFilter('dateFrom', value)} />
                     <DateInput variant="pill" prefix="إلى تاريخ" aria-label="إلى تاريخ" placeholder="" value={filters.dateTo} min={filters.dateFrom || undefined} onChange={(value) => setFilter('dateTo', value)} />
                     <FilterField group={{ label: 'الترتيب', options: STATEMENT_SORT_OPTIONS }} value={filters.sort ?? ''} onChange={(value) => setFilter('sort', value ?? '')} placeholder={STATEMENT_SORT_OPTIONS[0].label} clearable={false} icon="sort" />
@@ -273,6 +261,9 @@ export default function AccountStatement({ subscription, entries, summary, payme
                             مسح عوامل التصفية
                         </button>
                     )}
+                    <span className="gl-st-tb-grow" aria-hidden="true" />
+                    <StatementViewTabs value={view} onChange={chooseView} />
+                    {!toolsSlot && exportTools}
                 </div>
                 {filters.sort?.startsWith('bank_') && <p className="gl-st-note">الحركات دون تاريخ وصول للبنك تظهر أخيرًا. الرصيد بجانب كل حركة هو رصيدها وقت التسجيل.</p>}
                 {invalidDates && (
@@ -300,7 +291,7 @@ export default function AccountStatement({ subscription, entries, summary, payme
 
                 <div className="gl-st-foot statement-ledger-footer">
                     <p aria-live="polite">
-                        الحركات المعروضة: <b>{visibleEntries.length}</b> من <b>{entries.length}</b>، الأقدم أولًا، والرصيد بعد كل حركة
+                        <b>{visibleEntries.length}</b> حركة من <b>{entries.length}</b>، المعروض الآن <b>{STATEMENT_VIEWS.find((option) => option.value === view)?.label}</b>، الأقدم أولًا
                         {isCompact && compact.hiddenCount > 0 && <>، أُخفيت {compact.hiddenCount} حركة ملغاة مع قيودها العكسية (مجموعها صفر)</>}
                     </p>
                     {isCompact && compact.hiddenCount > 0 && (
@@ -310,6 +301,9 @@ export default function AccountStatement({ subscription, entries, summary, payme
                     )}
                 </div>
             </Card>
+
+            {/* The movements one can add, in a glass dock that floats at the foot of the screen while the statement scrolls. */}
+            {actions && <div className="gl-st-dock statement-screen-only">{actions}</div>}
         </div>
     );
 }
@@ -357,16 +351,19 @@ function BalanceCard({ subscription, summary, entries }) {
                     <div><dt>الحد الأدنى</dt><dd><bdi dir="ltr">{formatAmount(subscription.minimumPayment)}</bdi> ₪</dd></div>
                 )}
                 <div><dt>آخر دفعة</dt><dd>{lastPayment ?? 'لا دفعات بعد'}</dd></div>
+                {Number(subscription.kiloPrice) > 0 && (
+                    <div><dt>الكيلو</dt><dd><bdi dir="ltr">{formatAmount(subscription.kiloPrice)}</bdi> ₪</dd></div>
+                )}
             </dl>
             <BrandLogo alt="" onDark markSize={36} className="gl-st-acard-mark" />
         </Card>
     );
 }
 
-function SummaryKpi({ label, value, hint }) {
+function SummaryKpi({ label, value, hint, tone }) {
     return (
-        <Card className="gl-kpi">
-            <small>{label}</small>
+        <Card className="gl-kpi gl-st-fig" data-tone={tone}>
+            <small><i aria-hidden="true" />{label}</small>
             <b><bdi dir="ltr">{formatAmount(value)}</bdi> <span className="gl-kpi-unit">₪</span></b>
             <span>{hint}</span>
         </Card>
