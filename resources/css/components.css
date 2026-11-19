@@ -3799,3 +3799,436 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+/*
+ * ── A long form's window (Components/FormModal.jsx with `outline`) ────────
+ * The redesign's two panels: the form (its sections scrolling under the
+ * header, divided by fine lines, a footer counting the complete ones) and
+ * a side panel with the record's card, the sections as an index and a note.
+ */
+.modal-sheet-panel.gl-fm-panel {
+    max-width: min(1100px, 100%);
+}
+
+.gl-fm {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    grid-template-rows: minmax(0, 1fr);
+    height: min(860px, calc(100dvh - 48px));
+}
+
+.gl-fm-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.gl-fm-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 4px 24px 28px;
+    scrollbar-width: thin;
+}
+
+/* Each section: its own block, a fine line from the one before it. */
+.gl-fm-body .scroll-mt-4 + .scroll-mt-4 {
+    padding-top: 26px;
+    border-top: 1px solid var(--gl-line);
+}
+
+.gl-fm-body > div > .scroll-mt-4 {
+    padding-bottom: 6px;
+}
+
+/* A section's heading: its icon on a soft tile, the name, and a line on what it holds. */
+.gl-fm .gl-group-name {
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 18px;
+}
+
+.gl-fm .gl-group-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+}
+
+.gl-fm .gl-group-icon svg {
+    width: 18px;
+    height: 18px;
+    color: currentColor;
+}
+
+.gl-fm .gl-group-text span {
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.gl-fm .gl-group-text small {
+    font-size: 13px;
+}
+
+/* Choices of one (the status, weekly or monthly): HeroUI's segmented track across the field's width. */
+:is(.gl-fm, .gl-fp) [role='radiogroup'].flex {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    gap: 2px;
+    padding: 4px;
+    border-radius: 999px;
+    background: rgb(var(--group-fill));
+}
+
+:is(.gl-fm, .gl-fp) [role='radiogroup'].flex > .gl-chip {
+    justify-content: center;
+    min-height: 40px;
+    border-radius: 999px;
+    background: none;
+    box-shadow: none;
+    color: var(--gl-muted);
+}
+
+:is(.gl-fm, .gl-fp) [role='radiogroup'].flex > .gl-chip:hover {
+    color: var(--gl-ink);
+    background: rgb(var(--gray-900) / 0.05);
+}
+
+:is(.gl-fm, .gl-fp) [role='radiogroup'].flex > .gl-chip[aria-checked='true'] {
+    background: rgb(var(--panel-bg));
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05), 0 1px 2px 0 rgb(0 0 0 / 0.08);
+    color: var(--gl-ink);
+    font-weight: 700;
+}
+
+.dark :is(.gl-fm, .gl-fp) [role='radiogroup'].flex > .gl-chip[aria-checked='true'] {
+    background: rgb(var(--gray-200));
+}
+
+/* The footer: how many sections are complete, then Cancel and Save. */
+.gl-fm-foot {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    border-top: 1px solid var(--gl-line);
+}
+
+.gl-fm-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--gl-muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.gl-fm-progress b {
+    color: var(--gl-ink);
+}
+
+.gl-fm-progress i {
+    display: block;
+    width: 84px;
+    height: 5px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: rgb(var(--group-fill));
+}
+
+.gl-fm-progress i span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--gl-ok);
+    transition: width 0.3s;
+}
+
+/* The side panel: the record's card, the index, the note. */
+.gl-fm-side {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 20px 16px;
+    border-inline-start: 1px solid var(--gl-line);
+    background: rgb(var(--panel-tile));
+}
+
+.gl-fm-card:empty {
+    display: none;
+}
+
+.gl-fm-index {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.gl-fm-index a {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) 20px;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 16px;
+    color: var(--gl-muted);
+    text-align: start;
+    transition: background-color 0.15s;
+}
+
+.gl-fm-index a:hover {
+    background: rgb(var(--group-fill));
+}
+
+.gl-fm-index a[aria-current='true'] {
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--panel-shadow);
+}
+
+.dark .gl-fm-index a[aria-current='true'] {
+    background: rgb(var(--gray-100));
+}
+
+.gl-fm-index a:focus-visible {
+    outline: 2px solid rgb(var(--brand-solid));
+    outline-offset: 2px;
+}
+
+.gl-fm-index-icon {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: rgb(var(--group-fill));
+    color: var(--gl-muted);
+}
+
+.gl-fm-index a[aria-current='true'] .gl-fm-index-icon {
+    background: rgb(var(--brand-solid) / 0.12);
+    color: rgb(var(--brand-600));
+}
+
+.gl-fm-index b {
+    display: block;
+    color: var(--gl-ink);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.gl-fm-index small {
+    display: block;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.gl-fm-index-state {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1.5px var(--gl-line-strong);
+    color: #fff;
+}
+
+.gl-fm-index-state.is-done {
+    background: var(--gl-ok);
+    box-shadow: none;
+}
+
+.gl-fm-index-state.is-bad {
+    background: var(--gl-bad);
+    box-shadow: none;
+}
+
+.gl-fm-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: auto 0 0;
+    padding-top: 8px;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+
+/* The record's card (the redesign's member card): charcoal with a glow in the company's colour, in both themes. */
+.gl-member {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+    padding: 16px 18px 18px;
+    border-radius: 20px;
+    background:
+        radial-gradient(90% 120% at 0% 100%, rgb(var(--brand-solid) / 0.55), transparent 55%),
+        linear-gradient(150deg, rgb(var(--graphite-500)), rgb(var(--graphite-700)) 45%, rgb(var(--graphite-900)));
+    box-shadow: 0 24px 40px -18px rgb(0 0 0 / 0.6);
+    color: #fff;
+}
+
+.gl-member::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(70% 80% at 100% 0%, rgb(255 255 255 / 0.14), transparent 60%);
+    pointer-events: none;
+}
+
+.gl-member-top {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.gl-member-status {
+    padding: 2px 10px;
+    border-radius: 99px;
+    background: rgb(255 255 255 / 0.16);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.gl-member-name {
+    position: relative;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.gl-member-phone {
+    position: relative;
+    color: rgb(255 255 255 / 0.85);
+    font-size: 15px;
+    font-weight: 700;
+    text-align: start;
+}
+
+.gl-member-chips {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.gl-member-chips span {
+    padding: 2px 10px;
+    border-radius: 99px;
+    background: rgb(255 255 255 / 0.14);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* A section's name and its line, on a page too. */
+.gl-group-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.35;
+}
+
+.gl-group-text small {
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    font-weight: 500;
+}
+
+@media (max-width: 899px) {
+    .gl-fm {
+        grid-template-columns: minmax(0, 1fr);
+        height: calc(100dvh - 24px);
+    }
+
+    .gl-fm-side {
+        display: none;
+    }
+
+    .gl-fm-body {
+        padding-inline: 16px;
+    }
+}
+
+/* A long form on its own page (Components/FormPage.jsx with `outline`): the form, and the side panel staying in view beside it. */
+.gl-fp {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 24px;
+    align-items: start;
+}
+
+.gl-fp-main {
+    min-width: 0;
+}
+
+.gl-fp-side {
+    position: sticky;
+    top: calc(var(--tn-bar-rest-height, 68px) + 16px);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    border-radius: calc(24px * var(--radius-scale, 1));
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--panel-shadow);
+}
+
+.gl-fp-foot {
+    grid-column: 1 / -1;
+}
+
+/* A page's form groups carry their heading as in the window: the icon on a soft tile, the name and its line. */
+.gl-fp .gl-group-name {
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.gl-fp .gl-group-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--panel-shadow);
+    color: var(--gl-ink);
+}
+
+.gl-fp .gl-group-icon svg {
+    width: 18px;
+    height: 18px;
+    color: currentColor;
+}
+
+.gl-fp .gl-group-text span {
+    font-size: 17px;
+    font-weight: 800;
+}
+
+@media (max-width: 1023px) {
+    .gl-fp {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .gl-fp-side {
+        display: none;
+    }
+}

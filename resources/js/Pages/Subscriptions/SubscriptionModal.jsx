@@ -33,6 +33,7 @@ export default function SubscriptionModal({
             maxWidth="5xl"
             visitOptions={visitOptions}
             outline={SUBSCRIPTION_OUTLINE}
+            asideNote={form.isEdit ? 'رقم الحساب لا يتغيّر بالتعديل.' : 'يُنشأ رقم الحساب تلقائيًا عند الحفظ.'}
         >
             <SubscriptionForm
                 data={form.data}

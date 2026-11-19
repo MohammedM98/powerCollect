@@ -4,7 +4,7 @@ import ConfirmDialog, { SaveConfirmDialog } from '@/Components/ConfirmDialog';
 import { DialogHeader } from '@/Components/DialogFrame';
 import Icon from '@/Components/Icon';
 import PrimaryButton from '@/Components/PrimaryButton';
-import FormOutline from '@/Components/Form/FormOutline';
+import { FormAsideContext, FormProgress, FormSideIndex, useSectionProgress } from '@/Components/Form/FormAside';
 import { clearErrorOnInput, submitOnCtrlEnter, validateFormFields } from '@/lib/formValidation';
 
 /**
@@ -23,8 +23,12 @@ import { clearErrorOnInput, submitOnCtrlEnter, validateFormFields } from '@/lib/
  * button, and the question before it: `{ submitLabel, title,
  * confirmLabel, icon, tone }`.
  *
- * A long form passes `outline-solid` ([{ id, title, icon }]): an index of its
- * sections down the side, the one being read lit, a click scrolling to it.
+ * A long form passes `outline` ([{ id, title, icon, description, fields }]):
+ * the window then has the redesign's two panels: the form (its sections
+ * scrolling under the header, a footer counting the complete ones) and a
+ * side panel with the record's card (FormAsideCard), the sections as an
+ * index (the one being read lit, a click scrolling to it, a tick once
+ * complete) and `asideNote` under them.
  * An edited record with unsaved changes says so beside the save button.
  */
 export default function FormModal({
@@ -42,6 +46,7 @@ export default function FormModal({
     saveConfirmMessage = null,
     action = null,
     outline = null,
+    asideNote = null,
     children,
 }) {
     const id = useId();
@@ -49,6 +54,8 @@ export default function FormModal({
     const [pendingConfirmation, setPendingConfirmation] = useState(null);
     const [readingSection, setReadingSection] = useState(outline?.[0]?.id ?? null);
     const bodyRef = useRef(null);
+    const [asideSlot, setAsideSlot] = useState(null);
+    const done = useSectionProgress(outline, form.data);
 
     // The index lights the section being read as the form scrolls.
     useEffect(() => {
@@ -118,41 +125,52 @@ export default function FormModal({
 
     return (
         <>
-            <Modal show={show} onClose={requestClose} maxWidth={maxWidth}>
+            <Modal show={show} onClose={requestClose} maxWidth={maxWidth} panelClassName={outline ? 'gl-fm-panel' : ''}>
                 <form
                     aria-labelledby={`${id}-title`}
                     noValidate
                     onSubmit={submit}
                     onInput={(e) => clearErrorOnInput(e, form)}
                     onKeyDown={submitOnCtrlEnter}
-                    className="flex max-h-[90vh] flex-col"
+                    className={outline ? 'gl-fm' : 'flex max-h-[90vh] flex-col'}
                 >
-                    <DialogHeader
-                        titleId={`${id}-title`}
-                        title={title}
-                        description={description}
-                        icon={icon}
-                        tone={headerTone}
-                        onClose={requestClose}
-                    />
                     {outline ? (
-                            <div className="gl-outline-layout">
-                                <FormOutline sections={outline} current={readingSection} onPick={goToSection} />
-                                <div ref={bodyRef} className={`min-h-0 space-y-8 overflow-y-auto px-5 pb-4 pt-5 sm:px-6 ${bodyClassName}`}>{children}</div>
+                        <FormAsideContext value={{ slot: asideSlot }}>
+                            <div className="gl-fm-main">
+                                <DialogHeader titleId={`${id}-title`} title={title} description={description} icon={icon} tone={headerTone} onClose={requestClose} />
+                                <div ref={bodyRef} className={`gl-fm-body ${bodyClassName}`}>{children}</div>
+                                <div className="gl-fm-foot">
+                                    <FormProgress sections={outline} done={done} />
+                                    <span className="flex-1" />
+                                    {form.isEdit && form.isDirty && <span className="gl-unsaved" role="status">تغييرات غير محفوظة</span>}
+                                    <button type="button" onClick={requestClose} className="gl-btn gl-sec">إلغاء</button>
+                                    <PrimaryButton disabled={form.processing} className="min-w-[120px]">
+                                        <Icon name="check" className="h-[18px] w-[18px]" />
+                                        {form.processing ? 'جارٍ الحفظ...' : (action?.submitLabel ?? 'حفظ')}
+                                    </PrimaryButton>
+                                </div>
                             </div>
-                        ) : (
+                            <aside className="gl-fm-side" aria-label="ملخص النموذج">
+                                <div ref={setAsideSlot} className="gl-fm-card" />
+                                <FormSideIndex sections={outline} current={readingSection} done={done} errors={form.errors} onPick={goToSection} />
+                                {asideNote && <p className="gl-fm-note"><Icon name="info" className="h-4 w-4 shrink-0" />{asideNote}</p>}
+                            </aside>
+                        </FormAsideContext>
+                    ) : (
+                        <>
+                            <DialogHeader titleId={`${id}-title`} title={title} description={description} icon={icon} tone={headerTone} onClose={requestClose} />
                             <div ref={bodyRef} className={`min-h-0 flex-1 space-y-5 overflow-y-auto px-5 pb-2 pt-4 sm:px-6 ${bodyClassName}`}>{children}</div>
+                            <div className="gl-dialog-foot flex shrink-0 flex-wrap items-center gap-3 px-5 sm:px-6">
+                                <button type="button" onClick={requestClose} className="gl-btn gl-ghost">إلغاء</button>
+                                <span className="flex-1" />
+                                {form.isEdit && form.isDirty && <span className="gl-unsaved" role="status">تغييرات غير محفوظة</span>}
+                                <PrimaryButton disabled={form.processing} className="gl-lg min-w-[148px]">
+                                    <Icon name="check" className="h-[18px] w-[18px]" />
+                                    {form.processing ? 'جارٍ الحفظ...' : (action?.submitLabel ?? 'حفظ')}
+                                </PrimaryButton>
+                            </div>
+                        </>
                     )}
-
-                    <div className={`gl-dialog-foot flex shrink-0 flex-wrap items-center gap-3 px-5 sm:px-6 ${outline ? 'border-t border-(--gl-line)' : ''}`}>
-                        <button type="button" onClick={requestClose} className="gl-btn gl-ghost">إلغاء</button>
-                        <span className="flex-1" />
-                        {form.isEdit && form.isDirty && <span className="gl-unsaved" role="status">تغييرات غير محفوظة</span>}
-                        <PrimaryButton disabled={form.processing} className="gl-lg min-w-[148px]">
-                            <Icon name="check" className="h-[18px] w-[18px]" />
-                            {form.processing ? 'جارٍ الحفظ...' : (action?.submitLabel ?? 'حفظ')}
-                        </PrimaryButton>
-                    </div>
                 </form>
             </Modal>
 

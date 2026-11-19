@@ -11,7 +11,8 @@ import DateInput from '@/Components/DateInput';
 import SubscriptionTariffSection from './SubscriptionTariffSection';
 import SubscriptionLocationSection from './SubscriptionLocationSection';
 import SubscriberSection from './SubscriberSection';
-import { SubscriptionPreview } from './SubscriptionPreview';
+import { FormAsideCard } from '@/Components/Form/FormAside';
+import { SubscriptionCard, SubscriptionPreview } from './SubscriptionPreview';
 
 const STATUS_OPTIONS = [
     { value: 'active', label: 'نشط', dot: 'green' },
@@ -25,13 +26,13 @@ const STATUS_OPTIONS = [
  */
 const REQUIRED_FIELDS = ['full_name', 'status', 'tariff_id', 'minimum_charge'];
 
-/** The form's sections, for the index down the side of its window (FormModal `outline-solid`). */
+/** The form's sections, for the index in its window's side panel (FormModal `outline`): what each holds and the fields whose errors it shows. */
 export const SUBSCRIPTION_OUTLINE = [
-    { id: 'subscription-subscriber', title: 'بيانات المشترك', icon: 'user' },
-    { id: 'subscription-tariff', title: 'الاشتراك والقاطع', icon: 'bolt' },
-    { id: 'subscription-location', title: 'الموقع والعداد', icon: 'pin' },
-    { id: 'subscription-fees', title: 'الرسوم والتاريخ', icon: 'calendar' },
-    { id: 'subscription-extra', title: 'معلومات إضافية', icon: 'note' },
+    { id: 'subscription-subscriber', title: 'بيانات المشترك', description: 'الاسم والهوية والجوال والحالة', icon: 'user', fields: ['full_name', 'subscription_name', 'national_id', 'phone', 'subscription_phone', 'status'] },
+    { id: 'subscription-tariff', title: 'نوع الاشتراك والقاطع', description: 'المحاسبة والتعرفة والقاطع والحد الأدنى', icon: 'bolt', fields: ['accounting_type', 'tariff_id', 'tariff_segment_id', 'kilowatt_price', 'circuit_breaker_id', 'minimum_charge'] },
+    { id: 'subscription-location', title: 'الموقع والعداد', description: 'الفرع والمنطقة والطبلون', icon: 'pin', fields: ['branch_id', 'meter_box_id'] },
+    { id: 'subscription-fees', title: 'معلومات الاشتراك', description: 'القراءة والرسوم والتاريخ', icon: 'calendar', fields: ['initial_reading', 'subscription_fee', 'charge_subscription_fee', 'subscription_date'] },
+    { id: 'subscription-extra', title: 'معلومات إضافية', description: 'العنوان وأي معلومة أخرى', icon: 'note', fields: ['address', 'notes'] },
 ];
 
 export default function SubscriptionForm({
@@ -225,7 +226,9 @@ export default function SubscriptionForm({
 
     return (
         <div className="space-y-5">
-            {preview}
+            <FormAsideCard fallback={preview}>
+                <SubscriptionCard data={data} tariff={selectedTariff} circuitBreaker={selectedCircuitBreaker} />
+            </FormAsideCard>
 
             {(sharedPersonalDetails || subscriptionCount > 1) && (
                 <div className="rounded-xl border border-brand-100 bg-brand-50 p-4 text-sm text-brand-800">
@@ -305,7 +308,7 @@ export default function SubscriptionForm({
             </div>
 
             <div id="subscription-fees" className="scroll-mt-4">
-                <FormSection icon="calendar" title="معلومات الاشتراك">
+                <FormSection icon="calendar" title="معلومات الاشتراك" description="القراءة والرسوم والتاريخ">
                     <FormField
                         id="initial_reading"
                         label="القراءة السابقة"
@@ -376,7 +379,7 @@ export default function SubscriptionForm({
             </div>
 
             <div id="subscription-extra" className="scroll-mt-4">
-                <FormSection icon="note" title="معلومات إضافية">
+                <FormSection icon="note" title="معلومات إضافية" description="العنوان وأي معلومة أخرى">
                     <FormField id="address" label="العنوان" error={errors.address} span="sm:col-span-2 lg:col-span-3">
                         <textarea
                             rows={2}

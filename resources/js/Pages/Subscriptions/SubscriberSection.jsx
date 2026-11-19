@@ -19,7 +19,7 @@ export default function SubscriberSection({
     statusOptions,
 }) {
     return (
-        <FormSection icon="user" title="بيانات المشترك">
+        <FormSection icon="user" title="بيانات المشترك" description="الاسم والهوية والجوال والحالة">
             <FormField
                 id={nameField}
                 label="الاسم"
