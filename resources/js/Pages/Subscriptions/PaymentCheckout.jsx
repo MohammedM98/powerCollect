@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/react';
 import { Button, Input, Label, Radio, RadioGroup, Switch, TextField } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
@@ -26,7 +27,7 @@ export default function PaymentCheckout(props) {
 
     return (
         <div className="gl-co">
-            <div className="gl-co-main">
+            <div className="gl-co-head">
                 <FormHeader
                     titleId={titleId}
                     icon="banknotes"
@@ -35,17 +36,21 @@ export default function PaymentCheckout(props) {
                     subtitle={`${subscription.fullName}، حساب ${subscription.accountNumber}`}
                     onClose={requestClose}
                 />
-                <div className="gl-co-body">
-                    <CheckoutAmount {...props} />
-                    <CheckoutMethods {...props} />
-                    {props.throughBank ? <CheckoutTransfer {...props} /> : <CheckoutCash {...props} />}
-                    <NotesField {...props} />
-                </div>
-                <CheckoutFooter {...props} />
+            </div>
+            <div className="gl-co-body">
+                <CheckoutAmount {...props} />
+                <CheckoutMethods {...props} />
+                {props.throughBank ? <CheckoutTransfer {...props} /> : <CheckoutCash {...props} />}
+                <NotesField {...props} />
             </div>
             <aside className="gl-co-aside" aria-label="معاينة الوصل">
                 <ReceiptPreview {...props} />
+                <p className="gl-co-aside-note">
+                    <Icon name="shield" className="h-4 w-4 shrink-0" />
+                    تُسجَّل في صندوقك، ويُطبع الوصل بعد التأكيد.
+                </p>
             </aside>
+            <CheckoutFooter {...props} />
         </div>
     );
 }
@@ -163,7 +168,10 @@ const METHOD_CARDS = {
 function CheckoutMethods({ data, errors, methods, setData, transferBanks }) {
     return (
         <section className="gl-co-section">
-            <h4 className="gl-co-h">طريقة الدفع</h4>
+            <div className="gl-co-h-row">
+                <h4 className="gl-co-h">طريقة الدفع</h4>
+                <span className="gl-co-opt" aria-hidden="true">اضغط 1 أو 2</span>
+            </div>
             <RadioGroup name="payment_method" aria-label="طريقة الدفع" orientation="horizontal" value={data.payment_method} onChange={(value) => setData('payment_method', value)} className="gl-co-methods">
                 {methods.map((method, index) => {
                     const card = METHOD_CARDS[method];
@@ -306,20 +314,24 @@ function CheckoutFooter({ currencyMark, data, form, inShekels, overpayment, refe
 
     return (
         <footer className="gl-co-foot">
+            <p className="gl-co-foot-hint">
+                <span className="kbd">Esc</span> إغلاق دون حفظ
+                <span className="gl-co-foot-sep" aria-hidden="true" />
+                <span className="kbd" dir="ltr">Ctrl ↵</span> تسجيل
+            </p>
             <div className="gl-co-foot-row">
+                <div className="gl-co-foot-sum" aria-live="polite">
+                    <small>سيُسجَّل</small>
+                    <b className="gl-num"><bdi>{formatMoney(Number(data.amount) > 0 ? data.amount : 0)}</bdi> {currencyMark}</b>
+                </div>
                 <Button variant="tertiary" size="lg" onPress={requestClose} isDisabled={form.processing} className="gl-co-cancel">
                     إلغاء
                 </Button>
-                <Button type="submit" size="lg" fullWidth isDisabled={disabled} className="gl-co-pay">
+                <Button type="submit" size="lg" isDisabled={disabled} className="gl-co-pay">
                     <Icon name="check" className="h-5 w-5" strokeWidth={2.2} />
                     {form.processing ? 'جارٍ الحفظ...' : Number(data.amount) > 0 ? <>تسجيل <bdi className="gl-num">{formatMoney(data.amount)}</bdi> {currencyMark}</> : 'تسجيل الدفعة'}
                 </Button>
             </div>
-            <p className="gl-co-foot-hint">
-                <Icon name="shield" className="h-4 w-4" />
-                تُسجَّل في صندوقك، ويُطبع الوصل بعد التأكيد.
-                <span className="kbd" dir="ltr">Ctrl ↵</span>
-            </p>
         </footer>
     );
 }
@@ -327,6 +339,7 @@ function CheckoutFooter({ currencyMark, data, form, inShekels, overpayment, refe
 /** The receipt this payment will print, filled in as the form is: the balance now, this payment, and the balance after. */
 function ReceiptPreview({ subscription, balance, inShekels, methodText, owed }) {
     const brand = useBrand();
+    const collector = usePage().props.auth?.user?.name;
     const paid = Number(inShekels) > 0 ? Number(inShekels) : 0;
     const before = describeBalance(balance);
     const after = describeBalance(Number(balance) - paid);
@@ -367,7 +380,13 @@ function ReceiptPreview({ subscription, balance, inShekels, methodText, owed }) 
                     <i aria-hidden="true"><span style={{ width: `${coverage}%` }} /></i>
                 </div>
             )}
-            {subscription.branchName && <p className="gl-co-paper-foot">{subscription.branchName}</p>}
+            <i className="gl-co-paper-code" aria-hidden="true" />
+            {(collector || subscription.branchName) && (
+                <p className="gl-co-paper-foot">
+                    {collector && <span>المحصّل: {collector}</span>}
+                    {subscription.branchName && <span>{subscription.branchName}</span>}
+                </p>
+            )}
         </div>
     );
 }
