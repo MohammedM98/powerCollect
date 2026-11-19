@@ -224,7 +224,7 @@ export default function Index({
                     {STATUS_TABS.map((tab) => <button type="button" key={tab.value} aria-pressed={activeStatus === tab.value} onClick={() => changeStatus(tab.value)}>{tab.value !== 'all' && <i className={tab.value} />}{tab.label}<span>{statusSummary[tab.count].toLocaleString('en')}</span></button>)}
                 </div>
                 <div className="re-kpis">
-                    <KpiTile label="القراءات المدخلة" value={entered.toLocaleString('en')} unit={`من ${statusSummary.total.toLocaleString('en')}`} hint={`${percentage}% من قراءات الأسبوع`} index={0} className="re-kpi-dark">
+                    <KpiTile label="القراءات المدخلة" value={entered.toLocaleString('en')} unit={`من ${statusSummary.total.toLocaleString('en')}`} hint={`${percentage}% من قراءات الأسبوع`} index={0} hero>
                         <div className="re-progress-track" role="progressbar" aria-label="القراءات المدخلة" aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}><i className="approved" style={{ width: `${statusSummary.total ? statusSummary.approved / statusSummary.total * 100 : 0}%` }} /><i className="pending" style={{ width: `${statusSummary.total ? statusSummary.pending / statusSummary.total * 100 : 0}%` }} /></div>
                     </KpiTile>
                     <KpiTile label="بانتظار الاعتماد" value={statusSummary.pending.toLocaleString('en')} unit={readingsNoun(statusSummary.pending)} hint={pendingApproval ? `مجموعها ${formatMoney(pendingApproval.amountDue)} ₪، تُضاف إلى الحسابات بعد اعتمادها` : 'تُضاف إلى حسابات المشتركين بعد اعتمادها'} index={1} />
