@@ -38,6 +38,8 @@ export default function SearchableSelect({
     onDark = false,
     onCreate = null,
     createLabel = 'إضافة جديد',
+    variant = 'field',
+    prefix = null,
 }) {
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState('');
@@ -193,7 +195,9 @@ export default function SearchableSelect({
                 data-active={active ? '' : undefined}
                 onClick={() => setOpen((current) => !current)}
                 className={
-                    onDark
+                    variant === 'pill'
+                        ? `gl-filter-trigger ${open ? 'is-open' : ''}`
+                        : onDark
                         ? `flex h-[46px] w-full items-center justify-between gap-2 rounded-control border bg-white/10 px-3.5 text-start text-base leading-6 text-white transition focus:outline-hidden focus-visible:border-white/50 focus-visible:ring-4 focus-visible:ring-white/15 disabled:cursor-not-allowed disabled:opacity-50 ${
                               open ? 'border-white/50 ring-4 ring-white/15' : active ? 'border-white/35' : 'border-white/15 hover:border-white/35 hover:bg-white/15'
                           }`
@@ -203,8 +207,9 @@ export default function SearchableSelect({
                 }
             >
                 <span className={`flex min-w-0 gap-2 ${selected?.icon ? 'items-center' : 'items-baseline'} ${onDark ? (selected ? 'font-bold text-white' : 'text-white/70') : selected ? 'text-gray-900' : 'text-gray-500'}`}>
+                    {prefix}
                     {selected?.icon && <span aria-hidden="true" className="inline-flex shrink-0">{selected.icon}</span>}
-                    <span className="truncate">{selected ? selected.label : placeholder}</span>
+                    {(selected || placeholder) && <span className="truncate">{selected ? selected.label : placeholder}</span>}
                     {selected?.hint && <span className={`shrink-0 text-sm ${onDark ? 'text-white/60' : 'text-gray-500'}`}>{selected.hint}</span>}
                 </span>
                 <Icon name="chevron-down" className={`h-4 w-4 shrink-0 transition ${onDark ? 'text-white/70' : 'text-gray-400'} ${open ? 'rotate-180' : ''}`} />
