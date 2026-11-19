@@ -387,7 +387,7 @@ export default function Index({
                 </table>
             </div>
 
-            <div className="re-footer"><span><Icon name="enter" /> Enter أو ↓ للحفظ والانتقال، ↑ للرجوع، Tab للتنقل</span></div>
+            <div className="re-footer"><span>مجموع المستحق لهذا الأسبوع <b>{formatMoney(summary.amountDue)} شيكل</b></span><span><Icon name="enter" /> Enter أو ↓ للحفظ والانتقال، ↑ للرجوع، Tab للتنقل</span></div>
             <Pagination meta={rows} filters={filters} baseUrl="/meter-readings" extraParams={weekParams} />
             </section>
 
