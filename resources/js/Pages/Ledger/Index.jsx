@@ -196,7 +196,7 @@ function SummaryCards({ totals, summary, side }) {
 
 function DayHeader({ day, totals, today }) {
     return (
-        <tr className="data-table-group day-row"><td colSpan={9}>
+        <tr className="data-table-group day-row"><td colSpan={8}>
             <div className="day"><b>{formatDayLabel(day)}</b>{day === today && <span className="tod">اليوم</span>}
                 {totals && <span className="sum"><span>{formatNumber(totals.count)} قيد</span><span>عليه <em><Money amount={totals.charged} /></em></span><span>له <em className="g"><Money amount={totals.credited} /></em></span></span>}
             </div>
@@ -204,13 +204,19 @@ function DayHeader({ day, totals, today }) {
     );
 }
 
-function TransactionRow({ entry, grouped, onOpen, rowClick }) {
+function TransactionRow({ entry, grouped, onOpen, rowClick, open, onToggle }) {
     const initials = entry.subscriptionName.split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]).join('');
     const balance = Number(entry.balanceAfter ?? 0);
     const time = grouped ? formatClock(entry.time) : `${formatShortDay(entry.day)}، ${formatClock(entry.time)}`;
     const payment = entry.bankName || entry.paymentMethodLabel;
     return (
-        <tr className={`row ${entry.isCancelled ? 'cx' : ''}`} {...rowClick(onOpen)}>
+        <>
+        <tr className={`row ${entry.isCancelled ? 'cx' : ''} ${open ? 'is-open' : ''}`} {...rowClick(onOpen)}>
+            <td className="xp-c">
+                <button type="button" className="dt-exp-btn" aria-expanded={open} aria-controls={`ledger-details-${entry.id}`} aria-label={`${open ? 'إخفاء' : 'عرض'} تفاصيل القيد`} onClick={(event) => { event.stopPropagation(); onToggle(); }}>
+                    <Icon name="chevron-down" />
+                </button>
+            </td>
             <td className="t"><bdi className="desktop-time">{time}</bdi>
                 <LatePaymentDetails paidOn={entry.paidOn} recordedAt={`${entry.day} ${entry.time}`} reason={entry.lateReason} />
                 <BankReceivedDate value={entry.bankReceivedOn} />
@@ -231,19 +237,25 @@ function TransactionRow({ entry, grouped, onOpen, rowClick }) {
             </td>
             <td className="ty-c"><span className={`ty ${entry.isCancelled ? 'rv' : entry.isCredit ? 'cr' : 'dr'}`}>{entry.typeLabel}</span>{entry.isCancelled && entry.type !== 'reversal' && <div><span className="cxb">ملغاة</span></div>}</td>
             <td className="vch-c"><bdi className="vch">{entry.voucherNumber ?? '—'}</bdi>{entry.isManualVoucher && <span className="mb">يدوي</span>}</td>
-            <td className="mth-c">{payment ? <div className="mth">{BANK_LOGOS[entry.bankName] ? <img src={BANK_LOGOS[entry.bankName]} alt="" /> : <span className="ci"><Icon name={entry.paymentMethod === 'cash' ? 'wallet' : 'bank'} /></span>}<span title={payment}>{payment}</span></div> : '—'}</td>
-            <td className="ref" title={entry.referenceNumber ?? undefined}>
-                <div className="flex min-w-0 flex-col items-start gap-1">
-                    <bdi dir="ltr">{entry.referenceNumber ?? '—'}</bdi>
-                    {entry.splitPayment && <SplitPaymentBadge split={entry.splitPayment} compact />}
-                </div>
-            </td>
             <td className="by" title={entry.recordedByName ?? undefined}>{entry.recordedByName ?? '—'}</td>
             <td className="am-c"><span className={`am ${entry.isCredit ? 'cr' : 'dr'}`}><Money amount={entry.amount} />
                 {entry.currency && entry.currency !== 'ILS' && <small><bdi dir="ltr">{formatMoney(entry.currencyAmount)} {entry.currency}{entry.exchangeRate && ` × ${formatMoney(entry.exchangeRate)}`}</bdi></small>}
             </span></td>
             <td className="bal-c"><span className="blc">{entry.balanceAfter === null ? '—' : <Money amount={balance} balance colored={false} paperWord />}</span></td>
         </tr>
+        {open && (
+            <tr id={`ledger-details-${entry.id}`} className="row-detail">
+                <td>
+                    <dl>
+                        <div><dt>الطريقة والبنك</dt><dd>{payment ? <span className="mth">{BANK_LOGOS[entry.bankName] ? <img src={BANK_LOGOS[entry.bankName]} alt="" /> : <span className="ci"><Icon name={entry.paymentMethod === 'cash' ? 'wallet' : 'bank'} /></span>}<span>{payment}</span></span> : '—'}</dd></div>
+                        <div><dt>المرجع</dt><dd><bdi dir="ltr">{entry.referenceNumber ?? '—'}</bdi>{entry.splitPayment && <div className="mt-1"><SplitPaymentBadge split={entry.splitPayment} compact /></div>}</dd></div>
+                        <div><dt>التاريخ</dt><dd>{formatShortDay(entry.day)}، {formatClock(entry.time)}</dd></div>
+                        <div><dt>الفرع</dt><dd>{entry.branchName}</dd></div>
+                    </dl>
+                </td>
+            </tr>
+        )}
+        </>
     );
 }
 
@@ -252,6 +264,8 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
     const extraParams = { period, date_basis: dateBasis, ...(period === 'custom' ? dateRange : {}) };
     const { search, setSearch, sort, setPerPage, filterValues, setFilter, setFilters, clearFilters } = useDataTable('/ledger', filters, extraParams);
     const [filtersOpen, setFiltersOpen] = useState(false);
+    const [openIds, setOpenIds] = useState(() => new Set());
+    const toggleRow = (id) => setOpenIds((current) => { const next = new Set(current); next.has(id) ? next.delete(id) : next.add(id); return next; });
     const rowClick = useRowClick();
     const statementWindow = useStatementWindow(statement);
     const grouped = filters.sort !== 'amount';
@@ -278,21 +292,14 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
             scope={branchScope?.name ?? null}
             header={
                 <PageHeader
-                    eyebrow={branchScope ? null : scopeLabel}
                     title="السجل المالي"
+                    info={`القيود حسب التاريخ والفرع${!branchScope && scopeLabel && scopeLabel !== '—' ? `، في ${scopeLabel}` : ''}.`}
                 />
             }
         >
             <Head title="السجل المالي" />
             {branchScope && <BranchFilterBanner scope={branchScope} eyebrow="يعرض السجل المالي لـ" group={branchFilter.branch} value={filterValues.branch_id} onChange={(value) => setFilter('branch_id', value)} />}
             <div className="ledger-page">
-                <div className="mb-4 flex flex-wrap items-center gap-3">
-                    <div className="flex items-center gap-1">
-                        <SearchableSelect id="ledger-date-basis" variant="pill" prefix={<span className="gl-filter-name"><Icon name="calendar" className="h-[15px] w-[15px]" />تصفية الفترة حسب:</span>} className="gl-filter-item" clearable={false} searchable={false} value={dateBasis} options={[{ value: 'recorded', label: 'تاريخ التسجيل بالنظام' }, { value: 'paid', label: 'تاريخ الدفع الفعلي' }]} onChange={(value) => changePeriod(period, { ...(period === 'custom' ? dateRange : {}), date_basis: value })} />
-                        <InfoTip label="عن تصفية الفترة">{dateBasis === 'paid' ? 'عرض حسب تاريخ الدفع الفعلي للدفعات المتأخرة، وتاريخ التسجيل لبقية الحركات. الأرصدة وترتيب الحركات يبقيان حسب التسجيل.' : 'الأرصدة والفترات تُحتسب حسب تاريخ التسجيل. تاريخ الدفع السابق محفوظ للتدقيق.'}</InfoTip>
-                    </div>
-                    <DateRange period={period} range={dateRange} today={today} onChange={changePeriod} errors={errors} />
-                </div>
                 {!errors.from && !errors.to ? null : <p role="alert" className="err">{errors.from || errors.to}</p>}
                 <SummaryCards totals={ledgerTotals} summary={summary} side={side} />
                 <section className="pn" aria-label="القيود المالية">
@@ -301,7 +308,14 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
                             <Icon name="search" className="search-icon" />
                             <label htmlFor="ledger-search" className="sr-only">البحث في السجل المالي</label>
                             <input id="ledger-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="ابحث بالاسم، الهاتف، رقم الحساب، رقم السند أو الرقم المرجعي…" autoComplete="off" aria-describedby="ledger-search-hint" />
-                            <div className="hint" id="ledger-search-hint">البحث يشمل: <span>الاسم</span><span>الهاتف</span><span>الحساب</span><span>السند</span><span>المرجع</span></div>
+                            <div className="hint sr-only" id="ledger-search-hint">البحث يشمل: <span>الاسم</span><span>الهاتف</span><span>الحساب</span><span>السند</span><span>المرجع</span></div>
+                        </div>
+                        <div className="per-bar">
+                            <div className="flex items-center gap-1">
+                                <SearchableSelect id="ledger-date-basis" variant="pill" prefix={<span className="gl-filter-name"><Icon name="calendar" className="h-[15px] w-[15px]" />تصفية الفترة حسب:</span>} className="gl-filter-item" clearable={false} searchable={false} value={dateBasis} options={[{ value: 'recorded', label: 'تاريخ التسجيل بالنظام' }, { value: 'paid', label: 'تاريخ الدفع الفعلي' }]} onChange={(value) => changePeriod(period, { ...(period === 'custom' ? dateRange : {}), date_basis: value })} />
+                                <InfoTip label="عن تصفية الفترة">{dateBasis === 'paid' ? 'عرض حسب تاريخ الدفع الفعلي للدفعات المتأخرة، وتاريخ التسجيل لبقية الحركات. الأرصدة وترتيب الحركات يبقيان حسب التسجيل.' : 'الأرصدة والفترات تُحتسب حسب تاريخ التسجيل. تاريخ الدفع السابق محفوظ للتدقيق.'}</InfoTip>
+                            </div>
+                            <DateRange period={period} range={dateRange} today={today} onChange={changePeriod} errors={errors} />
                         </div>
                         <button type="button" className="btn fbtn" onClick={() => setFiltersOpen(!filtersOpen)} aria-expanded={filtersOpen} aria-controls="ledger-filters"><Icon name="filter" />الفلاتر{activeFilters > 0 && <span className="num">{activeFilters}</span>}</button>
                         {can?.printAuditReports !== false && <TableExportActions title="السجل المالي" />}
@@ -319,8 +333,8 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
                         {activeFilters > 0 && <button type="button" className="clr" onClick={clearPanelFilters}>مسح الفلاتر</button>}
                     </div>
                     <table data-excel-source="custom" className="ledger-table" aria-label="السجل المالي">
-                        <thead><tr>{sortHeading('created_at', 'الوقت')}<th scope="col">المشترك</th><th scope="col">النوع</th><th scope="col">السند</th><th scope="col">الطريقة والبنك</th><th scope="col">المرجع</th><th scope="col">سجّله</th>{sortHeading('amount', 'المبلغ')}<th scope="col">الرصيد بعده</th></tr></thead>
-                        <tbody>{entries.data.length === 0 ? <tr className="empty"><td colSpan={9}><b>لا توجد قيود مطابقة</b>جرّب فترة أخرى أو غيّر البحث والفلاتر.</td></tr> : entries.data.map((entry, index) => <Fragment key={entry.id}>{grouped && entry.day !== entries.data[index - 1]?.day && <DayHeader day={entry.day} totals={dayTotals[entry.day]} today={today} />}<TransactionRow entry={entry} grouped={grouped} rowClick={rowClick} onOpen={can?.viewSubscriptions ? () => openStatement(entry) : null} /></Fragment>)}</tbody>
+                        <thead><tr><th scope="col"><span className="sr-only">تفاصيل</span></th>{sortHeading('created_at', 'الوقت')}<th scope="col">المشترك</th><th scope="col">النوع</th><th scope="col">السند</th><th scope="col">سجّله</th>{sortHeading('amount', 'المبلغ')}<th scope="col">الرصيد بعده</th></tr></thead>
+                        <tbody>{entries.data.length === 0 ? <tr className="empty"><td colSpan={8}><b>لا توجد قيود مطابقة</b>جرّب فترة أخرى أو غيّر البحث والفلاتر.</td></tr> : entries.data.map((entry, index) => <Fragment key={entry.id}>{grouped && entry.day !== entries.data[index - 1]?.day && <DayHeader day={entry.day} totals={dayTotals[entry.day]} today={today} />}<TransactionRow entry={entry} grouped={grouped} rowClick={rowClick} onOpen={can?.viewSubscriptions ? () => openStatement(entry) : null} open={openIds.has(entry.id)} onToggle={() => toggleRow(entry.id)} /></Fragment>)}</tbody>
                     </table>
                     <div className="foot data-table-totals">
                         <div>إجمالي التحميل<b><Money amount={ledgerTotals.charged} /></b></div>

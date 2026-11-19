@@ -70,7 +70,7 @@
 .ledger-page .clr{height:40px;border:0;background:transparent;color:var(--ledger-brand);font-weight:700;cursor:pointer;padding:0 8px}
 .ledger-page .btn.fbtn{display:none}
 /* list */
-.ledger-page .row{display:grid;grid-template-columns:70px minmax(170px,1.5fr) 118px 102px minmax(120px,1fr) 110px 104px 120px 150px;gap:10px;align-items:center;padding:0 18px}
+.ledger-page .row{display:grid;grid-template-columns:28px 70px minmax(200px,2fr) 128px 104px minmax(110px,1fr) 130px 150px;gap:10px;align-items:center;padding:0 18px}
 .ledger-page .row .e{text-align:left}
 .ledger-page .day{display:flex;align-items:center;gap:12px;padding:14px 18px 8px;flex-wrap:wrap}
 .ledger-page .day b{font:700 15px var(--font-heading, 'El Messiri'),serif}
@@ -155,7 +155,7 @@
 .ledger-page .err { color: var(--ledger-danger); font-size: 12.5px; }
 .ledger-page .srch .search-icon { position: absolute; inset-inline-start: 14px; top: 15px; color: var(--ledger-faint); }
 .ledger-page .ledger-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-.ledger-page .ledger-table thead tr { display: grid; grid-template-columns: 70px minmax(170px,1.5fr) 118px 102px minmax(120px,1fr) 110px 104px 120px 150px; gap: 10px; align-items: center; min-height: 44px; padding: 0 18px; color: var(--ledger-faint); font-size: 12.5px; background: var(--ledger-surface); border-bottom: 1px solid var(--ledger-line2); }
+.ledger-page .ledger-table thead tr { display: grid; grid-template-columns: 28px 70px minmax(200px,2fr) 128px 104px minmax(110px,1fr) 130px 150px; gap: 10px; align-items: center; min-height: 44px; padding: 0 18px; color: var(--ledger-faint); font-size: 12.5px; background: var(--ledger-surface); border-bottom: 1px solid var(--ledger-line2); }
 .ledger-page .ledger-table th { min-width: 0; text-align: start; font-weight: 700; }
 .ledger-page .ledger-table th button { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; }
 .ledger-page .ledger-table th button svg { width: 12px; height: 12px; }
@@ -207,3 +207,42 @@
 .ledger-page .num.balance-owes > span { color: var(--ledger-danger); }
 .ledger-page .num.balance-credit,
 .ledger-page .num.balance-credit > span { color: var(--ledger-success); }
+
+/* As in the redesign: the period sits in the table's toolbar beside the search, and the filters follow without a line between. */
+.ledger-page .per-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ledger-page .per-bar .per { margin-top: 0; }
+.ledger-page .srch { flex: 1 1 260px; max-width: 420px; }
+.ledger-page .tb { border-bottom: 0; padding-bottom: 8px; }
+.ledger-page .fb { padding-top: 4px; }
+/* The seven columns of the redesign; a row's payment method, reference, date and branch open under it with its chevron. */
+.ledger-page .row.is-open { background: color-mix(in srgb, var(--ledger-ink) 3%, var(--ledger-surface)); }
+.ledger-page .row-detail { display: block; padding: 0 18px 14px; background: color-mix(in srgb, var(--ledger-ink) 3%, var(--ledger-surface)); }
+.ledger-page .row-detail > td { display: block; padding: 0; border: 0; }
+.ledger-page .row-detail dl { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px 20px; margin: 0; padding: 12px 14px; border-radius: 14px; background: var(--ledger-surface); box-shadow: inset 0 0 0 1px var(--ledger-line2); }
+.ledger-page .row-detail dt { color: var(--ledger-faint); font-size: 11.5px; font-weight: 600; }
+.ledger-page .row-detail dd { margin: 2px 0 0; font-size: 13.5px; font-weight: 600; color: var(--ledger-ink2); }
+.ledger-page .row-detail .mth { display: inline-flex; }
+.ledger-page .dt-exp-btn svg { width: 16px; height: 16px; }
+/* Narrower, a row's card already lists all of this in its meta line. */
+@container ledger (max-width: 1180px) {
+ .ledger-page .row .xp-c, .ledger-page .row-detail { display: none; }
+}
+/* A phone: the search, the date basis and the period each take the toolbar's full width. */
+@container ledger (max-width: 760px) {
+ .ledger-page .srch { max-width: none; flex-basis: 100%; }
+ .ledger-page .per-bar { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; }
+ .ledger-page .per-bar > *, .ledger-page .per-bar .per { min-width: 0; max-width: 100%; }
+ .ledger-page .per-bar .gl-filter-item { width: 100%; }
+ .ledger-page .per-bar .gl-filter-item button { max-width: 100%; }
+}
+/* Wider than a phone: the search and the export share the first row, the period takes the next. */
+@container ledger (min-width: 761px) {
+ .ledger-page .tb .per-bar { order: 3; flex-basis: 100%; }
+ .ledger-page .tb > :last-child:not(.per-bar) { margin-inline-start: auto; }
+}
+/* The period as the redesign's segmented control: a grey track with the chosen period in white; the dates as a pill beside it. */
+.ledger-page .pt2 { border: 0; border-radius: 999px; background: rgb(var(--group-fill)); box-shadow: none; }
+.ledger-page .pt2 button { height: 34px; border-radius: 999px; font-size: 14px; }
+.ledger-page .pt2 button[aria-pressed=true] { background: rgb(var(--panel-bg)); color: var(--ledger-ink); box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.04), 0 1px 2px 0 rgb(0 0 0 / 0.06), 0 0 1px 0 rgb(0 0 0 / 0.06); }
+.dark .ledger-page .pt2 button[aria-pressed=true] { background: rgb(var(--gray-200)); }
+.ledger-page .rbtn { height: 40px; border-radius: 999px; }
