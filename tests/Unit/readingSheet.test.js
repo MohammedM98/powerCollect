@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { activeFilterChips, activeReadingStatus, readingStatusFilters, readingWeekParams } from '../../resources/js/lib/readingSheet.js';
+import { activeFilterChips, activeReadingStatus, countReadings, readingStatusFilters, readingWeekParams } from '../../resources/js/lib/readingSheet.js';
 
 test('the current sheet follows the branch reading day through search and pagination', () => {
     assert.deepEqual(readingWeekParams('2026-09-18', '2026-09-18'), {});
@@ -43,4 +43,15 @@ test('the pinned bar names each active filter by its label and option, then the 
         { key: 'search', label: 'بحث', value: 'أحمد' },
     ]);
     assert.deepEqual(activeFilterChips(groups, {}, ''), []);
+});
+
+test('counts of readings agree with the number in Arabic', () => {
+    assert.equal(countReadings(1), '1 قراءة');
+    assert.equal(countReadings(2), '2 قراءتان');
+    assert.equal(countReadings(5), '5 قراءات');
+    assert.equal(countReadings(10), '10 قراءات');
+    assert.equal(countReadings(11), '11 قراءة');
+    assert.equal(countReadings(105), '105 قراءات');
+    assert.equal(countReadings(2310), '2,310 قراءات');
+    assert.equal(countReadings(2300), '2,300 قراءة');
 });

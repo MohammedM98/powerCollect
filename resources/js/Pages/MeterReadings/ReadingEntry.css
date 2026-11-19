@@ -11,12 +11,15 @@
 .reading-entry button:disabled { opacity: .4; cursor: default; }
 .re-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .re-heading button:disabled { opacity: .4; cursor: default; }
-.re-open { height: 40px; display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 0 14px; font-size: 14px; font-weight: 700; color: var(--re-warn); background: color-mix(in srgb, var(--re-warn) 10%, transparent); border: 1px solid color-mix(in srgb, var(--re-warn) 25%, transparent); }
-.re-open.is-open { color: var(--re-success); background: color-mix(in srgb, var(--re-success) 10%, transparent); border-color: color-mix(in srgb, var(--re-success) 25%, transparent); }
+/* Whether entry is open: a status, not a button, so it has no fill or hover of its own. */
+.re-open { height: 40px; display: inline-flex; align-items: center; gap: 8px; padding: 0 4px; font-size: 14px; font-weight: 700; color: var(--re-warn); }
+.re-open.is-open { color: var(--re-success); }
 .re-open i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 20%, transparent); }
-.re-week { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; }
-.re-week > button { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 999px; border: 0; background: rgb(var(--group-fill)); color: var(--re-ink2); }
-.re-week > button:hover:not(:disabled) { background: var(--re-sunken); color: var(--re-brand); }
+/* The week is one control: its arrows and its year, month and dates share a grey track. */
+.re-week { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border-radius: 999px; background: rgb(var(--group-fill)); }
+.re-week > button { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 999px; border: 0; background: transparent; color: var(--re-ink2); }
+.re-week .gl-filter-item, .re-week button[aria-expanded] { background: transparent; box-shadow: none; }
+.re-week > button:hover:not(:disabled), .re-week button[aria-expanded]:hover { background: rgb(var(--panel-bg)); color: var(--re-ink); }
 .re-week-field { min-width: 0; }
 .re-week-field { width: auto; }
 .re-hint { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; padding: 12px 16px; border-radius: calc(18px * var(--radius-scale, 1)); background: color-mix(in srgb, var(--re-info) 7%, var(--re-surface)); border: 0; font-size: 14px; color: var(--re-ink2); line-height: 1.8; }
@@ -58,7 +61,10 @@
 /* Every row is the same height: a cell holds at most two lines, and a longer second line is cut with "…" (its whole text on hover). */
 .re-table td { height: 68px; }
 .re-line { display: block; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.re-pills { display: flex; flex-wrap: nowrap; align-items: center; gap: 4px; }
+/* A reading can carry two states (waiting and unusual): they stack rather than run past the table's edge. */
+.re-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; max-width: 200px; }
+.re-table td.re-empty { height: 160px; text-align: center; color: var(--re-faint); }
+.re-empty b { display: block; margin-bottom: 10px; font-weight: 600; color: var(--re-ink2); }
 .re-pill-action { cursor: pointer; transition: box-shadow 150ms ease; }
 .re-pill-action:hover:not(:disabled) { box-shadow: 0 0 0 3px color-mix(in srgb, var(--re-warn) 15%, transparent); }
 .re-pill-action:focus-visible { outline: 2px solid var(--re-warn); outline-offset: 3px; }
@@ -121,7 +127,7 @@
 @media (max-width: 1250px) { .re-rate, .re-min { display: none; } }
 @container (max-width: 1250px) { .re-table .re-rate, .re-table .re-min { display: none; } }
 @media (max-width: 760px) {
-    .re-week { display: grid; width: 100%; grid-template-columns: 40px minmax(0, 1fr) minmax(0, 1fr) 40px; }
+    .re-week { display: grid; width: 100%; border-radius: 22px; grid-template-columns: 34px minmax(0, 1fr) minmax(0, 1fr) 34px; }
     .re-week-field { width: 100%; }
     .re-week > button:first-child { grid-column: 1; grid-row: 1; }
     .re-week-year { grid-column: 2; grid-row: 1; }
@@ -129,7 +135,7 @@
     .re-week > button:last-child { grid-column: 4; grid-row: 1; }
     .re-week-range { grid-column: 1 / -1; grid-row: 2; }
     .re-actions { width: 100%; }
-    .re-actions .re-week, .re-actions .re-open { flex: 1 1 auto; justify-content: space-between; }
+    .re-actions .re-week { flex: 1 1 auto; }
     .re-kpis { grid-template-columns: 1fr; gap: 10px; }
     .re-tabs { width: 100%; }
     .re-tabs button { flex: 1; padding: 0 8px; gap: 5px; }

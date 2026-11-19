@@ -11,9 +11,8 @@ import SortableTh from '@/Components/DataTable/SortableTh';
 import Pagination from '@/Components/DataTable/Pagination';
 import SearchableSelect from '@/Components/SearchableSelect';
 import { useDataTable } from '@/hooks/useDataTable';
-import { formatCurrency } from '@/lib/currency';
 import { formatMoney, formatMonthName } from '@/lib/format';
-import { activeReadingStatus, readingStatusFilters, readingWeekParams } from '@/lib/readingSheet';
+import { activeReadingStatus, countReadings, readingStatusFilters, readingWeekParams } from '@/lib/readingSheet';
 import ReadingContextBar from './ReadingContextBar';
 import ReadingApprovalDialog from './ReadingApprovalDialog';
 import PrintButton from '@/Components/PrintButton';
@@ -55,6 +54,20 @@ const STATUS_TABS = [
 
 const fullDate = (date) => date.split('-').reverse().join('/');
 
+/** The noun alone of a count of readings ("قراءات"), for a figure that shows its number large. */
+const readingsNoun = (count) => countReadings(count).split(' ').slice(1).join(' ');
+
+/** Where the page remembers that its first-visit hint was put away. */
+const HINT_KEY = 'pc-readings-hint-hidden';
+
+function hintWasHidden() {
+    try {
+        return typeof window !== 'undefined' && window.localStorage.getItem(HINT_KEY) === '1';
+    } catch {
+        return false;
+    }
+}
+
 /**
  * @param {import('@/types/pages').MeterReadingsIndexProps} props
  */
@@ -85,7 +98,7 @@ export default function Index({
     const [confirming, setConfirming] = useState(null);
     const [approving, setApproving] = useState(false);
     const [singleApprovalId, setSingleApprovalId] = useState(null);
-    const [showHint, setShowHint] = useState(true);
+    const [showHint, setShowHint] = useState(() => !hintWasHidden());
     // The end of the filters and the sheet: the pinned bar shows what the filters are set to while they are scrolled away.
     const filtersRef = useRef(null);
     const sheetRef = useRef(null);
@@ -115,6 +128,15 @@ export default function Index({
     const approvableAllCount = (pendingApproval?.count ?? 0) - unusualCount;
     const allOnPageSelected = approvableRows.length > 0 && selectedRows.length === approvableRows.length;
     const isFiltered = Boolean(search) || Object.values(filterValues).some(Boolean);
+
+    function hideHint() {
+        setShowHint(false);
+        try {
+            window.localStorage.setItem(HINT_KEY, '1');
+        } catch {
+            /* The hint simply shows again next time. */
+        }
+    }
 
     function toggleSelected(readingId) {
         setSelectedIds((current) => {
@@ -182,14 +204,14 @@ export default function Index({
                     إرسال القراءات
                 </Link>
             )}
-            <span className={`re-open ${entryWindow.isOpen ? 'is-open' : ''}`}><i />الإدخال {entryWindow.isOpen ? 'مفتوح' : 'مغلق'}</span>
-            <div className="re-week">
+            <div className="re-week" role="group" aria-label="أسبوع القراءة">
                 <button type="button" aria-label="الأسبوع السابق" disabled={weekIndex < 0 || weekIndex === weekOptions.length - 1} onClick={() => changeWeek(weekOptions[weekIndex + 1].value)}><Icon name="chevron-right" /></button>
                 <div className="re-week-field re-week-year"><label htmlFor="reading-week-year" className="sr-only">السنة</label><SearchableSelect id="reading-week-year" variant="pill" value={currentYear} onChange={changePeriod} options={yearOptions.map((year) => ({ value: year, label: year }))} clearable={false} searchable={false} className="[&>div.absolute]:min-w-0" /></div>
                 <div className="re-week-field re-week-month"><label htmlFor="reading-week-month" className="sr-only">الشهر</label><SearchableSelect id="reading-week-month" variant="pill" value={currentMonth} onChange={changePeriod} options={monthOptions.map((month) => ({ value: month, label: formatMonthName(`${month}-01`) }))} clearable={false} searchable={false} className="[&>div.absolute]:min-w-0" /></div>
                 <div className="re-week-field re-week-range"><label htmlFor="reading-week-range" className="sr-only">أسبوع القراءة</label><SearchableSelect id="reading-week-range" variant="pill" value={week} onChange={changeWeek} options={weeksOfMonth.map((option) => ({ value: option.value, label: `\u202A${fullDate(option.value)} – ${fullDate(option.end)}\u202C` }))} clearable={false} searchable={false} className="[&>div.absolute]:min-w-0" /></div>
                 <button type="button" aria-label="الأسبوع التالي" disabled={weekIndex <= 0} onClick={() => changeWeek(weekOptions[weekIndex - 1].value)}><Icon name="chevron-left" /></button>
             </div>
+            <span role="status" className={`re-open ${entryWindow.isOpen ? 'is-open' : ''}`}><i />الإدخال {entryWindow.isOpen ? 'مفتوح' : 'مغلق'}</span>
         </div>
     );
 
@@ -197,16 +219,16 @@ export default function Index({
         <AuthenticatedLayout header={<PageHeader title="القراءات الأسبوعية" info="قراءات العدادات لهذه الدورة." actions={headerActions} />}>
             <Head title="القراءات الأسبوعية" />
             <div className="reading-entry" dir="rtl">
-                {showHint && <div className="re-hint"><Icon name="info" /><p><b>كل قراءات الأسبوع في مكان واحد.</b> بعد حفظ القراءة تظهر في «بانتظار الاعتماد» حتى يراجعها المسؤول ويعتمدها. ويمكنك عرض القراءات المعتمدة بشكل منفصل.</p><button type="button" aria-label="إخفاء التوضيح" onClick={() => setShowHint(false)}>×</button></div>}
+                {showHint && <div className="re-hint"><Icon name="info" /><p>تنتقل القراءة بعد حفظها إلى <b>«بانتظار الاعتماد»</b>، ولا تُضاف إلى حساب المشترك حتى يعتمدها المسؤول.</p><button type="button" aria-label="إخفاء التوضيح" onClick={hideHint}>×</button></div>}
                 <div className="gl-seg re-tabs" role="group" aria-label="حالة القراءات">
                     {STATUS_TABS.map((tab) => <button type="button" key={tab.value} aria-pressed={activeStatus === tab.value} onClick={() => changeStatus(tab.value)}>{tab.value !== 'all' && <i className={tab.value} />}{tab.label}<span>{statusSummary[tab.count].toLocaleString('en')}</span></button>)}
                 </div>
                 <div className="re-kpis">
-                    <KpiTile label="القراءات المدخلة" value={entered.toLocaleString('en')} unit={`من ${statusSummary.total.toLocaleString('en')} قراءة، ${percentage}%`} index={0}>
+                    <KpiTile label="القراءات المدخلة" value={entered.toLocaleString('en')} unit={`من ${statusSummary.total.toLocaleString('en')}`} hint={`${percentage}% من قراءات الأسبوع`} index={0}>
                         <div className="re-progress-track" role="progressbar" aria-label="القراءات المدخلة" aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}><i className="approved" style={{ width: `${statusSummary.total ? statusSummary.approved / statusSummary.total * 100 : 0}%` }} /><i className="pending" style={{ width: `${statusSummary.total ? statusSummary.pending / statusSummary.total * 100 : 0}%` }} /></div>
                     </KpiTile>
-                    <KpiTile label="بانتظار الاعتماد" value={statusSummary.pending.toLocaleString('en')} unit={pendingApproval ? `قراءة، مجموعها ₪ ${formatMoney(pendingApproval.amountDue)}` : 'قراءة'} hint="تظهر في حساب المشترك بعد اعتمادها" index={1} />
-                    <KpiTile label="مجموع المستحق لهذا الأسبوع" value={formatMoney(summary.amountDue)} unit="₪" hint={`معتمدة ${statusSummary.approved.toLocaleString('en')}، لم تُدخل ${statusSummary.missing.toLocaleString('en')}`} index={2} />
+                    <KpiTile label="بانتظار الاعتماد" value={statusSummary.pending.toLocaleString('en')} unit={readingsNoun(statusSummary.pending)} hint={pendingApproval ? `مجموعها ${formatMoney(pendingApproval.amountDue)} ₪، تُضاف إلى الحسابات بعد اعتمادها` : 'تُضاف إلى حسابات المشتركين بعد اعتمادها'} index={1} />
+                    <KpiTile label="مجموع المستحق لهذا الأسبوع" value={formatMoney(summary.amountDue)} unit="₪" hint={`عن ${countReadings(entered)} مدخلة حتى الآن`} index={2} />
                 </div>
             <EntryWindowNotice
                 entryWindow={entryWindow}
@@ -233,17 +255,14 @@ export default function Index({
                         </span>
                         <div>
                             <p className="font-semibold text-gray-900">
-                                بانتظار الاعتماد: <span className="tabular-nums">{pendingApproval.count.toLocaleString('en')}</span> قراءة
-                                {isFiltered && <span className="font-normal text-gray-500"> (حسب البحث والتصفية)</span>}
+                                {countReadings(approvableAllCount)} جاهزة للاعتماد
+                                {isFiltered && <span className="font-normal text-gray-500"> ضمن البحث والتصفية</span>}
                             </p>
-                            <p className="text-sm text-gray-500">
-                                مجموعها <span className="tabular-nums">{formatCurrency(pendingApproval.amountDue)}</span> — تظهر في المعاملات المالية
-                                للمشترك بعد اعتمادها.
-                            </p>
+                            <p className="text-sm text-gray-500">تُضاف إلى المعاملات المالية للمشتركين عند اعتمادها، ولا تُعدّل بعد ذلك.</p>
                             {unusualCount > 0 && (
                                 <p className="re-unusual-note">
-                                    منها {unusualCount.toLocaleString('en')} قراءة غير معتادة (استهلاكها أعلى بكثير من المعتاد) لا تدخل في «اعتماد الكل»؛ راجعها
-                                    وحدّدها لاعتمادها بعد التأكيد.
+                                    وهناك {countReadings(unusualCount)} غير معتادة (استهلاكها أعلى بكثير من المعتاد) لا تدخل في «اعتماد الكل»: راجعها وحدّدها
+                                    لاعتمادها بعد التأكيد.
                                 </p>
                             )}
                         </div>
@@ -338,8 +357,15 @@ export default function Index({
                     <tbody>
                         {rows.data.length === 0 ? (
                             <tr>
-                                <td className="text-gray-500" colSpan={seesWhoRecorded ? 10 : 9}>
-                                    لا يوجد مشتركون مطابقون.
+                                <td className="re-empty" colSpan={seesWhoRecorded ? 10 : 9}>
+                                    {isFiltered ? (
+                                        <>
+                                            <b>لا يوجد مشتركون مطابقون للبحث والتصفية.</b>
+                                            <button type="button" className="gl-btn gl-sec gl-sm" onClick={() => { setSearch(''); clearFilters(); }}>مسح البحث والفلاتر</button>
+                                        </>
+                                    ) : (
+                                        <b>لا يوجد مشتركون بقراءات في هذا الأسبوع.</b>
+                                    )}
                                 </td>
                             </tr>
                         ) : (
@@ -368,8 +394,8 @@ export default function Index({
             {selectedRows.length > 0 && (
                 <div className="re-bulk">
                     <p className="text-sm text-gray-600">
-                        <b className="text-gray-900">{selectedRows.length.toLocaleString('en')}</b> قراءة محددة، المجموع{' '}
-                        <b className="tabular-nums text-gray-900">{formatCurrency(selectedTotal)}</b>
+                        <b className="text-gray-900">{countReadings(selectedRows.length)}</b> محددة، مجموعها{' '}
+                        <b className="tabular-nums text-gray-900">{formatMoney(selectedTotal)} شيكل</b>
                     </p>
                     <div className="flex items-center gap-3">
                         <SecondaryButton onClick={() => setSelectedIds(new Set())} disabled={approving}>
@@ -390,8 +416,8 @@ export default function Index({
                 title={confirming === 'all' ? 'اعتماد كل القراءات؟' : 'اعتماد القراءات المحددة؟'}
                 message={
                     confirming === 'all'
-                        ? `سيتم اعتماد ${approvableAllCount.toLocaleString('en')} قراءة لهذا الأسبوع${isFiltered ? ' مطابقة للبحث والتصفية الحالية' : ''}، وتُضاف إلى المعاملات المالية للمشتركين.${unusualCount > 0 ? ` وتبقى ${unusualCount.toLocaleString('en')} قراءة غير معتادة بانتظار مراجعتها واعتمادها واحدة واحدة.` : ''} لا يمكن تعديل القراءة بعد اعتمادها.`
-                        : `سيتم اعتماد ${selectedRows.length.toLocaleString('en')} قراءة بمجموع ${formatCurrency(selectedTotal)}، وتُضاف إلى المعاملات المالية للمشتركين.${selectedUnusualCount > 0 ? ` منها ${selectedUnusualCount.toLocaleString('en')} قراءة غير معتادة استهلاكها أعلى بكثير من المعتاد، وباعتمادها تؤكد أنك راجعتها وأنها صحيحة.` : ''} لا يمكن تعديل القراءة بعد اعتمادها.`
+                        ? `سيتم اعتماد ${countReadings(approvableAllCount)} لهذا الأسبوع${isFiltered ? ' مطابقة للبحث والتصفية الحالية' : ''}، وتُضاف إلى المعاملات المالية للمشتركين.${unusualCount > 0 ? ` وتبقى ${countReadings(unusualCount)} غير معتادة بانتظار مراجعتها واعتمادها واحدة واحدة.` : ''} لا يمكن تعديل القراءة بعد اعتمادها.`
+                        : `سيتم اعتماد ${countReadings(selectedRows.length)} مجموعها ${formatMoney(selectedTotal)} شيكل، وتُضاف إلى المعاملات المالية للمشتركين.${selectedUnusualCount > 0 ? ` منها ${countReadings(selectedUnusualCount)} غير معتادة استهلاكها أعلى بكثير من المعتاد، وباعتمادها تؤكد أنك راجعتها وأنها صحيحة.` : ''} لا يمكن تعديل القراءة بعد اعتمادها.`
                 }
                 confirmLabel="نعم، اعتمد"
                 cancelLabel="مراجعة القراءات"
