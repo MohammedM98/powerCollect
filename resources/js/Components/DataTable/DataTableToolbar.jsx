@@ -7,9 +7,10 @@ import TableExportActions from './TableExportActions';
 export const PAGE_SIZES = [15, 25, 50, 100];
 
 /**
- * The top of a table card: search (press / to jump to it, Esc to clear),
- * the result count, the print button, the row-density switch and the
- * page-size switch, with the filter row below. Print opens the print
+ * The top of a table card, as in the redesign: search (press / to jump to
+ * it, Esc to clear) with the table's tools at the line's end (the result
+ * count, the row-density switch, the page-size switch and the print
+ * button), and the filter pills on the line under them. Print opens the print
  * designer in a new tab with the table's search, sort and filters;
  * `printable={false}` hides the button.
  */
@@ -48,8 +49,8 @@ export default function DataTableToolbar({
 
     return (
         <div className="data-table-toolbar flex flex-wrap items-center justify-between gap-3">
-            {showSearch ? (
-                <div className="relative w-full sm:max-w-sm">
+            {showSearch && (
+                <div className="data-table-search relative w-full sm:w-auto sm:max-w-sm sm:flex-[1_1_240px]">
                     <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
                     <input
                         ref={searchRef}
@@ -67,11 +68,9 @@ export default function DataTableToolbar({
                     />
                     <span className="kbd pointer-events-none absolute inset-y-0 inset-e-3 my-auto h-fit">/</span>
                 </div>
-            ) : (
-                <div />
             )}
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="data-table-tools flex flex-wrap items-center gap-2">
                 {typeof total === 'number' && (
                     <span className="inline-flex items-center gap-1.5 rounded-control border border-gray-100 bg-gray-50 px-3 py-1.5 text-sm text-gray-500">
                         <b className="font-display font-bold text-gray-900">{total.toLocaleString('en')}</b>

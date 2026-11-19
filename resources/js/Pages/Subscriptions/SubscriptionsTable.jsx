@@ -192,7 +192,7 @@ export default function SubscriptionsTable({
                                     </td>
                                     <td className="whitespace-nowrap text-gray-600">{formatShekels(subscription.weeklyMinimumPayment)}</td>
                                     <td className="whitespace-nowrap font-semibold">
-                                        <Balance value={subscription.outstandingBalance} chip />
+                                        <Balance value={subscription.outstandingBalance} className="font-extrabold" />
                                     </td>
                                     <td>
                                         <StatusPill tone={STATUS_TONES[subscription.status]} label={subscription.statusLabel} />
