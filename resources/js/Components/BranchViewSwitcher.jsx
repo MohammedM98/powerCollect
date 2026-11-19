@@ -1,23 +1,13 @@
-import { useState } from 'react';
-import { router, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
+import { useBranchView } from '@/hooks/useBranchView';
 import Icon from '@/Components/Icon';
 
-/** The working branch the page shows when it has no branch bar of its own, and how to change it; null when there is none to show. */
+/** The working branch and how to change it (the same way a page's banner did: kept for the visit, the page narrowed to it); null when there is none. */
 function useWorkingBranch() {
     const { branchView } = usePage().props;
-    const [switching, setSwitching] = useState(false);
-    const shown = Boolean(branchView);
+    const view = useBranchView();
 
-    function changeBranch(event) {
-        setSwitching(true);
-        router.flushAll();
-        router.put('/branch-view', { branch_id: event.target.value ? Number(event.target.value) : null }, {
-            preserveState: false,
-            onFinish: () => setSwitching(false),
-        });
-    }
-
-    return shown ? { branchView, switching, changeBranch } : null;
+    return branchView ? { branchView, switching: view.switching, changeBranch: (event) => view.changeBranch(event.target.value) } : null;
 }
 
 /**

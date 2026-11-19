@@ -85,7 +85,7 @@ const { readFileSync } = require('node:fs');
         await page.goto(statementUrl);
 
         await page.goto('/reports?branch=all&section=debts');
-        await page.getByRole('region', { name: 'الفرع المعروض' }).getByRole('heading', { name: 'جميع الفروع', exact: true }).waitFor();
+        await page.locator('section[aria-label="الفرع المعروض"] h2', { hasText: 'جميع الفروع' }).waitFor({ state: 'attached' });
         await page.locator('.reports-detail-table').getByRole('button', { name: 'مشترك مدين', exact: true }).waitFor();
         await snap('debts-all-branches');
         await page.getByRole('navigation', { name: 'أقسام التقارير' }).getByRole('button', { name: 'الصناديق والأموال', exact: true }).click();

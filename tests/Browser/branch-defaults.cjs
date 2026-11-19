@@ -13,23 +13,23 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await page.locator('#password').fill('Strong-Pass-2026');
         await page.getByRole('button', { name: 'تسجيل الدخول', exact: true }).click();
         await page.waitForURL((url) => !url.pathname.startsWith('/login'));
+        // The working branch is picked in the top bar on every page and stays as the owner moves between pages;
+        // the page banners only print, as the page's heading.
+        const chip = page.locator('.tn-branch-chip select');
+        const shown = (name) => expect(page.locator('.tn-branch-chip select option:checked')).toHaveText(name);
+        async function pickBranch(name) {
+            await chip.selectOption(name === 'كل الفروع' ? '' : { label: name });
+            await shown(name);
+        }
         for (const path of ['/reports', '/payments/cash-boxes', '/payments/cash-boxes/entries', '/subscriptions', '/ledger', '/meter-readings']) {
             await page.goto(path);
-            const banner = page.getByRole('region', { name: 'الفرع المعروض', exact: true });
-            await banner.getByRole('heading', { name: 'جميع الفروع', exact: true }).waitFor();
+            await shown('كل الفروع');
+            await expect(page.getByRole('region', { name: 'الفرع المعروض', exact: true })).toBeHidden();
             await page.screenshot({ path: `${process.env.OUT_DIR}/all${path.replaceAll('/', '-')}.png`, fullPage: true });
-            if (path === '/reports') {
-                await banner.locator('select').selectOption({ label: 'فرع باء' });
-                await banner.getByRole('heading', { name: 'فرع باء', exact: true }).waitFor();
-                await banner.locator('select').selectOption('all');
-                await banner.getByRole('heading', { name: 'جميع الفروع', exact: true }).waitFor();
-            } else if (path.startsWith('/payments/cash-boxes')) {
-                await banner.getByRole('button').click();
-                await page.locator('ul button').filter({ hasText: /^فرع باء$/ }).click();
-                await banner.getByRole('heading', { name: 'فرع باء', exact: true }).waitFor();
-                await banner.getByRole('button').click();
-                await page.locator('ul button').filter({ hasText: /^جميع الفروع$/ }).click();
-                await banner.getByRole('heading', { name: 'جميع الفروع', exact: true }).waitFor();
+            if (path === '/reports' || path === '/payments/cash-boxes') {
+                await pickBranch('فرع باء');
+                await page.locator('section[aria-label="الفرع المعروض"] h2', { hasText: 'فرع باء' }).waitFor({ state: 'attached' });
+                await pickBranch('كل الفروع');
             }
         }
         await page.getByRole('link', { name: 'عرض القراءات', exact: true }).first().click();
@@ -38,28 +38,19 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         assert.equal(await page.locator('[data-excel-button]').count(), 1);
 
         await page.goto('/subscriptions');
-        const banner = page.getByRole('region', { name: 'الفرع المعروض', exact: true });
-        async function pickBranch(name) {
-            await banner.getByRole('button').click();
-            await page.locator('ul button').filter({ hasText: new RegExp(`^${name}$`) }).click();
-            await banner.getByRole('heading', { name, exact: true }).waitFor();
-        }
-        // The dashboard names the branch in its own header's selector; list pages in the banner above them.
-        const shownBranch = (path, name) => (path === '/dashboard' ? page.locator('.gl-phead-actions').getByText(name, { exact: true }) : banner.getByRole('heading', { name, exact: true }));
         await pickBranch('فرع باء');
         for (const path of ['/meter-boxes', '/ledger', '/reports', '/dashboard']) {
             await page.goto(path);
-            await shownBranch(path, 'فرع باء').waitFor();
+            await shown('فرع باء');
         }
         await page.goto('/subscriptions');
         await pickBranch('فرع ألف');
         await page.goto('/reports');
-        await banner.getByRole('heading', { name: 'فرع ألف', exact: true }).waitFor();
-        await banner.locator('select').selectOption('all');
-        await banner.getByRole('heading', { name: 'جميع الفروع', exact: true }).waitFor();
+        await shown('فرع ألف');
+        await pickBranch('كل الفروع');
         for (const path of ['/subscriptions', '/ledger', '/payments/cash-boxes', '/dashboard']) {
             await page.goto(path);
-            await shownBranch(path, 'جميع الفروع').waitFor();
+            await shown('كل الفروع');
         }
 
         for (const path of ['/subscriptions', '/payments', '/ledger', '/reports?section=movements', '/payments/cash-boxes/report']) {

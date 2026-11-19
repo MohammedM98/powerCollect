@@ -6590,8 +6590,8 @@ body {
  */
 :root[data-ui-navigation] .tn-shell :is(.gl-page-actions, .gl-page-top) :is(.ui-btn-primary, .gl-add),
 :root[data-ui-navigation] .tn-shell :is(.gl-page-actions, .gl-page-top) :is(.ui-btn-primary, .gl-add):hover:not(:disabled) {
-    min-height: 42px;
-    height: 42px;
+    min-height: 44px;
+    height: 44px;
     padding: 0 16px;
     border: 0;
     border-radius: 13px;
@@ -6611,10 +6611,10 @@ body {
     transform: translateY(1px);
 }
 
-:root[data-ui-navigation] .tn-shell .gl-page-actions :is(.gl-btn, .ui-btn-secondary, a.gl-sec):not(.ui-btn-primary, .gl-add),
-:root[data-ui-navigation] .tn-shell .gl-page-actions :is(.gl-btn, .ui-btn-secondary, a.gl-sec):not(.ui-btn-primary, .gl-add):hover:not(:disabled) {
-    min-height: 42px;
-    height: 42px;
+:root[data-ui-navigation] .tn-shell :is(.gl-page-actions, .gl-page-top) :is(.gl-btn, .ui-btn-secondary, a.gl-sec):not(.ui-btn-primary, .gl-add),
+:root[data-ui-navigation] .tn-shell :is(.gl-page-actions, .gl-page-top) :is(.gl-btn, .ui-btn-secondary, a.gl-sec):not(.ui-btn-primary, .gl-add):hover:not(:disabled) {
+    min-height: 44px;
+    height: 44px;
     padding: 0 16px;
     border: 0;
     border-radius: 13px;
@@ -6625,7 +6625,7 @@ body {
     font-weight: 700;
 }
 
-:root[data-ui-navigation] .tn-shell .gl-page-actions :is(.gl-btn, .ui-btn-secondary, a.gl-sec):not(.ui-btn-primary, .gl-add):hover:not(:disabled) {
+:root[data-ui-navigation] .tn-shell :is(.gl-page-actions, .gl-page-top) :is(.gl-btn, .ui-btn-secondary, a.gl-sec):not(.ui-btn-primary, .gl-add):hover:not(:disabled) {
     background: color-mix(in oklab, var(--ma-tile) 82%, var(--ma-ink) 7%);
 }
 
