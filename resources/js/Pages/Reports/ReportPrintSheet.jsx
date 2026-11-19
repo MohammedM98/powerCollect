@@ -22,7 +22,7 @@ export default function ReportPrintSheet({ scopeName, periodName, from, to, flow
         <article className="report-print text-[12px] leading-5 text-gray-900" dir="rtl">
             <header className="mb-4 flex items-end justify-between gap-6 border-b-2 border-gray-900 pb-3">
                 <div>
-                    <p className="text-[11px] font-semibold text-gray-600">التقرير المالي · {periodName}</p>
+                    <p className="text-[11px] font-semibold text-gray-600">التقرير المالي، {periodName}</p>
                     <h1 className="mt-0.5 text-[22px] font-bold">{scopeName}</h1>
                     <p className="mt-1 font-semibold">{dates}</p>
                 </div>
@@ -36,7 +36,7 @@ export default function ReportPrintSheet({ scopeName, periodName, from, to, flow
                 {[
                     ['الرصيد الافتتاحي', flow.opening],
                     ['التحميلات', flow.chargesTotal],
-                    ['إجمالي المقبوضات المسجّلة', collections.total, `نقدي ${reportMoney(collections.cash)} · تحويلات وشيكات ${reportMoney(collections.nonCash)}`],
+                    ['إجمالي المقبوضات المسجّلة', collections.total, `نقدي ${reportMoney(collections.cash)}، تحويلات وشيكات ${reportMoney(collections.nonCash)}`],
                     ['الرصيد الختامي', flow.closing, change > 0 ? `زاد ${reportMoney(change)}` : change < 0 ? `نقص ${reportMoney(-change)}` : 'لم يتغير'],
                     ['عدد الدفعات', null, null, collections.count],
                 ].map(([label, amount, note, count]) => (

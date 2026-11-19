@@ -24,7 +24,7 @@ test('the printed caption names each filter set, and is empty without any', () =
     assert.equal(filtersCaption(NO_FILTERS, types, methods), '');
     assert.equal(
         filtersCaption({ ...NO_FILTERS, type: 'payment', method: 'cash', dateFrom: '2026-10-01', search: '  أحمد ' }, types, methods),
-        'نوع الحركة: دفعة · طريقة الدفع: نقد · من 2026-10-01 · بحث: «أحمد»',
+        'نوع الحركة: دفعة، طريقة الدفع: نقد، من 2026-10-01، بحث: «أحمد»',
     );
     assert.equal(filtersCaption({ ...NO_FILTERS, type: 'debit' }, types, methods), 'نوع الحركة: كل ما عليه (تحميل)');
 });

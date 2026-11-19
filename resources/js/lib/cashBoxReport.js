@@ -16,7 +16,7 @@ export function reportDetails(report) {
         { key: 'closed', label: 'أُغلق بتاريخ', value: report.closedAt ? reportDateTime(report.closedAt) : 'لم يُغلق بعد' },
         { key: 'closedBy', label: 'أغلقه', value: report.closedBy ?? '—' },
         { key: 'audit', label: 'التدقيق', value: report.auditStatus },
-        { key: 'scope', label: 'الحركات المعروضة', value: `${reportFilters[report.filter]} · ${report.rows.length} من ${report.counts.all}` },
+        { key: 'scope', label: 'الحركات المعروضة', value: `${reportFilters[report.filter]}، ${report.rows.length} من ${report.counts.all}` },
     ];
 }
 

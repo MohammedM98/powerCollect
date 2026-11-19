@@ -61,7 +61,7 @@ export default function AccountMenu({ open, onToggle, onClose, onShowShortcuts, 
                         <Avatar name={user?.name} large />
                         <div className="min-w-0">
                             <b dir="auto" className="block truncate text-[15px]">{user?.name}</b>
-                            <small dir="auto" className="block text-[12.5px] text-gray-500">{[user?.roleLabel, user?.branchName].filter(Boolean).join(' · ')}</small>
+                            <small dir="auto" className="block text-[12.5px] text-gray-500">{[user?.roleLabel, user?.branchName].filter(Boolean).join('، ')}</small>
                         </div>
                     </div>
                     <div className="mt-1.5 px-2 text-[12px] font-bold text-gray-500">المظهر</div>

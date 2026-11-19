@@ -35,7 +35,7 @@ export default function PaymentReceipt({ subscription, receipt, printedBy }) {
     const brand = useBrand();
     const [logoReady, setLogoReady] = useState(false);
     const printed = useRef(false);
-    const transferredFrom = [receipt.senderName, receipt.senderBankName].filter(Boolean).join(' · ');
+    const transferredFrom = [receipt.senderName, receipt.senderBankName].filter(Boolean).join('، ');
     const title = receipt.isClearing ? 'سند مقاصة' : 'سند قبض';
 
     // The receipt is light whatever the app's theme, as the print designer's sheet is.
@@ -114,7 +114,7 @@ export default function PaymentReceipt({ subscription, receipt, printedBy }) {
                             رقم <bdi dir="ltr">{receipt.voucherNumber ?? '—'}</bdi>
                         </div>
                         <div className="text-gray-600">
-                            <bdi dir="ltr">{formatDate(receipt.date)}</bdi> · <bdi dir="ltr">{receipt.time}</bdi>
+                            <bdi dir="ltr">{formatDate(receipt.date)}</bdi>، <bdi dir="ltr">{receipt.time}</bdi>
                         </div>
                     </div>
                 </header>
@@ -123,11 +123,11 @@ export default function PaymentReceipt({ subscription, receipt, printedBy }) {
                     <p className="mt-3 rounded-lg border border-brand-600/30 bg-brand-50 px-3 py-2 text-brand-700">
                         {receipt.isClearing ? 'هذه المقاصة ملغاة' : 'هذه الدفعة ملغاة'}
                         {receipt.cancellation.reasonLabel && <>: {receipt.cancellation.reasonLabel}</>}
-                        {receipt.cancellation.byName && <> · {receipt.cancellation.byName}</>}
+                        {receipt.cancellation.byName && <>، {receipt.cancellation.byName}</>}
                         {receipt.cancellation.date && (
                             <>
                                 {' '}
-                                · <bdi dir="ltr">{formatDate(receipt.cancellation.date)}</bdi>
+                               ، <bdi dir="ltr">{formatDate(receipt.cancellation.date)}</bdi>
                             </>
                         )}
                     </p>
@@ -160,7 +160,7 @@ export default function PaymentReceipt({ subscription, receipt, printedBy }) {
                     </div>
                     {!receipt.isShekel && (
                         <div className="mt-1 text-gray-600">
-                            يعادل {formatMoney(receipt.inShekels)} شيكل · سعر الصرف <bdi dir="ltr">{receipt.exchangeRate}</bdi>
+                            يعادل {formatMoney(receipt.inShekels)} شيكل، سعر الصرف <bdi dir="ltr">{receipt.exchangeRate}</bdi>
                         </div>
                     )}
                 </div>
@@ -202,7 +202,7 @@ export default function PaymentReceipt({ subscription, receipt, printedBy }) {
                 </div>
 
                 <footer className="mt-6 border-t border-dashed border-gray-300 pt-2 text-[11px] text-gray-500">
-                    طُبع بواسطة {printedBy} · {PRINTED_AT_FORMAT.format(new Date())}
+                    طُبع بواسطة {printedBy}، {PRINTED_AT_FORMAT.format(new Date())}
                 </footer>
             </article>
         </div>

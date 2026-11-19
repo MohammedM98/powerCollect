@@ -107,7 +107,7 @@ export default function PermissionHero({
                                         key={user.id}
                                         leading={<EmployeeAvatar name={user.name} color={colorOf(user.roleLabel)} size="sm" />}
                                         title={user.name}
-                                        subtitle={`${user.roleLabel} · ${user.branchName ?? 'بلا فرع'}`}
+                                        subtitle={`${user.roleLabel}، ${user.branchName ?? 'بلا فرع'}`}
                                         trailing={
                                             <Delta
                                                 added={diff.filter((item) => item.added).length}

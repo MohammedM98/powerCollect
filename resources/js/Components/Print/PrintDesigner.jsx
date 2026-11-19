@@ -247,7 +247,7 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
                     <Icon name="printer" className="h-5 w-5 text-print-600" />
                     تصميم الطباعة
                 </span>
-                {readingContext && <span className="text-xs text-gray-600">{[readingContext.title, readingContext.branchName, [readingContext.readingDayName, readingContext.readingDate && formatDate(readingContext.readingDate)].filter(Boolean).join(' '), `${provided.rows.length.toLocaleString('en')} سجل`].filter(Boolean).join(' · ')}</span>}
+                {readingContext && <span className="text-xs text-gray-600">{[readingContext.title, readingContext.branchName, [readingContext.readingDayName, readingContext.readingDate && formatDate(readingContext.readingDate)].filter(Boolean).join(' '), `${provided.rows.length.toLocaleString('en')} سجل`].filter(Boolean).join('، ')}</span>}
                 {isCut && (
                     <span role="status" className="inline-flex items-center gap-1 text-sm font-semibold text-amber-700">
                         <Icon name="warning" className="h-4 w-4 shrink-0" />

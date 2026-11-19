@@ -115,7 +115,7 @@ export default function ChartStudio({ title, total, change, unit = '₪', format
                     <h2>{title}</h2>
                     <span className="gl-meta gl-num">
                         {unit} <CountUp value={total} format={formatTotal} /> في هذه الفترة
-                        {change !== null && change !== undefined && <> · <ChangePill change={change} /> عن الفترة السابقة</>}
+                        {change !== null && change !== undefined && <>، <ChangePill change={change} /> عن الفترة السابقة</>}
                     </span>
                 </div>
                 <div className="gl-sp" />

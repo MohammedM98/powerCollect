@@ -29,7 +29,7 @@ export default function Submissions({ cycle, submissions, canReview, filters, fi
         <AuthenticatedLayout
             header={
                 <PageHeader
-                    eyebrow={<><Link href="/reading-cycles" className="hover:underline">توزيع القراءات</Link> / <Link href={`/reading-cycles/${cycle.id}`} className="hover:underline">{cycle.branchName} · {cycle.readingDate}</Link></>}
+                    eyebrow={<><Link href="/reading-cycles" className="hover:underline">توزيع القراءات</Link> / <Link href={`/reading-cycles/${cycle.id}`} className="hover:underline">{cycle.branchName}، {cycle.readingDate}</Link></>}
                     title="القراءات الميدانية"
                     info="كل قراءة رفعها التطبيق ومصيرها. المحفوظة للمراجعة لا تُحتسب حتى يقبلها مشرف."
                 />

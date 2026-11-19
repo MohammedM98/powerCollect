@@ -176,7 +176,7 @@ export default function Sms({ setting, delivery, week }) {
                     <span className="rs-status-dot" aria-hidden="true"><i /></span>
                     <div className="rs-status-copy">
                         <b>{title}</b>
-                        <p>{hint}{isDirty && <span className="rs-preview-note"> · معاينة قبل الحفظ</span>}</p>
+                        <p>{hint}{isDirty && <span className="rs-preview-note">، معاينة قبل الحفظ</span>}</p>
                         <div className="sm-stats" aria-label="رسائل SMS">
                             <span className="sm-stat"><b>{week.sent.toLocaleString('en')}</b>أُرسلت آخر 7 أيام</span>
                             <span className={`sm-stat ${week.failed ? 'is-failed' : ''}`}><b>{week.failed.toLocaleString('en')}</b>فشلت</span>
@@ -340,7 +340,7 @@ export default function Sms({ setting, delivery, week }) {
                                 <li><div>دعم العربية (Unicode)<small>الجزء العربي نحو 70 حرفًا؛ اسأل عن سعر الجزء.</small></div></li>
                                 <li><div>عنوان IP السيرفر<small>إن كان المزوّد يقبل الطلبات من عناوين محددة فقط.</small></div></li>
                             </ol>
-                            {setting.updatedByName && <div className="rs-who"><span className="rs-avatar">{setting.updatedByName.split(' ').slice(0, 2).map((name) => name[0]).join('')}</span><span>آخر تعديل للإعدادات: {setting.updatedByName} · <bdi>{setting.updatedAt}</bdi></span></div>}
+                            {setting.updatedByName && <div className="rs-who"><span className="rs-avatar">{setting.updatedByName.split(' ').slice(0, 2).map((name) => name[0]).join('')}</span><span>آخر تعديل للإعدادات: {setting.updatedByName}، <bdi>{setting.updatedAt}</bdi></span></div>}
                         </section>
                     </div>
                 </div>

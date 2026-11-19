@@ -28,11 +28,11 @@ export default function ResultReport({ result, onClose }) {
                     </p>
                     <p className="mt-1 text-sm text-gray-700">
                         نجح لـ <b className="font-display">{result.succeeded.toLocaleString('en')}</b> مشترك
-                        {failed.length > 0 && <> · لم يُطبَّق على <b className="font-display">{failed.length.toLocaleString('en')}</b></>}
-                        {result.action === 'confirm' && result.succeeded > 0 && <> · رسوم القطع المحمّلة <b className="font-display">{formatMoney(result.feesTotal)} ₪</b></>}
+                        {failed.length > 0 && <>، لم يُطبَّق على <b className="font-display">{failed.length.toLocaleString('en')}</b></>}
+                        {result.action === 'confirm' && result.succeeded > 0 && <>، رسوم القطع المحمّلة <b className="font-display">{formatMoney(result.feesTotal)} ₪</b></>}
                         {result.action === 'warn' && result.batchId && (
                             <>
-                                {' · '}
+                                {'، '}
                                 <a href={`/messages/${result.batchId}`} className="font-semibold text-brand-600 hover:underline">
                                     {result.channel === 'whatsapp' ? 'افتح الرسائل لإرسالها عبر واتساب' : 'تابع حالة الإرسال'}
                                 </a>

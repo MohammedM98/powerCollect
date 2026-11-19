@@ -22,11 +22,11 @@ export function Comparison({ comparison }) {
         <section className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-gray-100 bg-surface p-4 shadow-card" aria-label="المقارنة بالفترة السابقة">
             <div>
                 <h3 className="text-sm font-bold text-gray-900">التحصيل مقارنة بالفترة السابقة</h3>
-                <p className="mt-1 text-xs text-gray-500">{shortDate(comparison.from, true)} – {shortDate(comparison.to, true)} · المحصّل سابقًا {reportMoney(comparison.total)} ₪</p>
+                <p className="mt-1 text-xs text-gray-500">{shortDate(comparison.from, true)} – {shortDate(comparison.to, true)}، المحصّل سابقًا {reportMoney(comparison.total)} ₪</p>
             </div>
             <p className={`text-sm font-semibold ${difference > 0 ? 'text-emerald-700 dark:text-emerald-400' : difference < 0 ? 'text-red-700 dark:text-red-400' : 'text-gray-600'}`}>
                 {difference > 0 ? 'زيادة' : difference < 0 ? 'انخفاض' : 'لم يتغير'} {reportMoney(Math.abs(difference))} ₪
-                {comparison.percentage === null ? ' · لا تحصيل في الفترة السابقة' : ` (${Math.abs(comparison.percentage)}%)`}
+                {comparison.percentage === null ? '، لا تحصيل في الفترة السابقة' : ` (${Math.abs(comparison.percentage)}%)`}
             </p>
         </section>
     );

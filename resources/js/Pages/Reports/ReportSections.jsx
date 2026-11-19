@@ -91,7 +91,7 @@ export function CollectionsBreakdown({ collections, compact = false }) {
 
     return (
         <>
-            <Panel icon="wallet" title={compact ? 'التحصيل حسب الحساب' : 'حسب الحساب'} hint={`${collections.count} دفعة · ${reportMoney(collections.total)} ₪`} excelParts={async () => [accountsPart(collections)]}>
+            <Panel icon="wallet" title={compact ? 'التحصيل حسب الحساب' : 'حسب الحساب'} hint={`${collections.count} دفعة، ${reportMoney(collections.total)} ₪`} excelParts={async () => [accountsPart(collections)]}>
                 <ul className="space-y-3">
                     {collections.accounts.map((account) => (
                         <li key={account.key}>
@@ -267,7 +267,7 @@ export function BranchComparison({ rows, filters }) {
     const sum = (pick) => reportMoney(rows.reduce((total, row) => total + cents(pick(row)), 0) / 100);
 
     return (
-        <Panel icon="layers" title="مقارنة الفروع" hint="نفس الفترة · الأعلى تحصيلًا أولًا · اضغط اسم الفرع لتقريره" excelParts={async () => [branchesPart(sorted)]}>
+        <Panel icon="layers" title="مقارنة الفروع" hint="نفس الفترة، الأعلى تحصيلًا أولًا، اضغط اسم الفرع لتقريره" excelParts={async () => [branchesPart(sorted)]}>
             <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                     <thead>
@@ -350,7 +350,7 @@ export function Transactions({ transactions, kinds, filters, showDay, showBranch
                                     <span className="font-semibold text-gray-900">{onStatement ? <button type="button" className="text-brand-600 hover:underline" onClick={() => onStatement(line.subscriptionId)}>{line.subscriptionName}</button> : line.subscriptionName}</span>
                                     <small className="block font-display text-xs text-gray-500">
                                         {line.accountNumber}
-                                        {line.meterBoxNumber && ` · ${line.meterBoxNumber}`}
+                                        {line.meterBoxNumber && `، ${line.meterBoxNumber}`}
                                     </small>
                                 </td>
                                 {showBranch && <td className={TD}>{line.branchName}</td>}

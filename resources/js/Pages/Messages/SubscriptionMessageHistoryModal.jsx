@@ -42,7 +42,7 @@ export default function SubscriptionMessageHistoryModal({ subscription, onClose 
                         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600"><Icon name="messages" /></span>
                         <div className="min-w-0">
                             <h3 id={titleId} className="text-xl font-bold text-gray-900">سجل رسائل المشترك</h3>
-                            <p className="mt-1 text-sm text-gray-600">{subscription.display_name ?? subscription.fullName} · الاشتراك <bdi dir="ltr">{subscription.account_number ?? subscription.accountNumber}</bdi></p>
+                            <p className="mt-1 text-sm text-gray-600">{subscription.display_name ?? subscription.fullName}، الاشتراك <bdi dir="ltr">{subscription.account_number ?? subscription.accountNumber}</bdi></p>
                         </div>
                     </div>
                     <button type="button" onClick={onClose} aria-label="إغلاق سجل الرسائل" className="rounded-control p-2 text-gray-500 transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"><Icon name="close" className="h-5 w-5" /></button>

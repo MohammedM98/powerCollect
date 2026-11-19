@@ -40,6 +40,11 @@ export function isPrintMode() {
  * list's address), with its search, sort and filters — every matching row
  * from the first one.
  */
+/** The page's own name for a printout or an Excel file: its main heading (never a branch banner's line above a list), else the tab's title. */
+export function pageTitle() {
+    return document.querySelector('h1')?.textContent.trim() || document.title;
+}
+
 export function printUrl(title, base = window.location.href) {
     const url = new URL(base, window.location.origin);
     const params = url.searchParams;
@@ -202,7 +207,7 @@ export function extractSummary(root) {
     // The readings sheet's footer also holds keyboard hints; only its first part is the total.
     const summary = root?.querySelector('.data-table-totals, .re-footer > :first-child');
 
-    return summary ? summary.innerText.trim().replace(/\s*\n\s*/g, ' · ') : '';
+    return summary ? summary.innerText.trim().replace(/\s*\n\s*/g, '، ') : '';
 }
 
 /**

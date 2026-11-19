@@ -154,8 +154,8 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
                                                 <b className="block truncate font-semibold text-gray-900">{subscriber.fullName}</b>
                                                 <span className="block truncate text-sm text-gray-500">
                                                     <span dir="ltr">{subscriber.accountNumber}</span>
-                                                    {subscriber.meterBoxNumber && ` · طبلون ${subscriber.meterBoxNumber}`}
-                                                    {subscriber.branchName && ` · ${subscriber.branchName}`}
+                                                    {subscriber.meterBoxNumber && `، طبلون ${subscriber.meterBoxNumber}`}
+                                                    {subscriber.branchName && `، ${subscriber.branchName}`}
                                                 </span>
                                             </span>
                                             <span className="shrink-0 text-end">

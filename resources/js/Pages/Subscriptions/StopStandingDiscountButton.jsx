@@ -6,7 +6,7 @@ import ConfirmDialog from '@/Components/ConfirmDialog';
  * Cancels a subscription's standing discount (خصم القراءات الأسبوعية) for good after a
  * confirmation: readings recorded from then on get no discount, earlier
  * readings keep theirs, and a new discount can be given again afterwards.
- * `discountLabel` is how the discount reads: "3 كيلو · موظفو أبو زايد".
+ * `discountLabel` is how the discount reads: "3 كيلو، موظفو أبو زايد".
  */
 export default function StopStandingDiscountButton({ subscriptionId, subscriptionName, discountLabel, className = '' }) {
     const [confirming, setConfirming] = useState(false);

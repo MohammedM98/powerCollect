@@ -68,7 +68,7 @@ export function AllocationReport({ result, onConfirmDownloaded, onClose }) {
                 <p className="font-bold text-gray-900">
                     {result.action === 'approve' ? 'اعتُمد' : result.action === 'copy' ? 'نُسخ من الدورة السابقة' : 'نُقل'}{' '}
                     {formatNumber(result.moved)} طبلون
-                    {result.conflicts.length > 0 && <> · راجع الطبلونات التي تعذّر تحديثها أدناه</>}
+                    {result.conflicts.length > 0 && <>، راجع الطبلونات التي تعذّر تحديثها أدناه</>}
                 </p>
                 <button type="button" onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-1.5 text-gray-500 hover:bg-gray-100">
                     <Icon name="close" className="h-4 w-4" />
@@ -185,7 +185,7 @@ export function BoxCard({ box }) {
                 </span>
                 <span className="gl-tag">
                     {box.status === 'approved' ? 'معتمد' : box.status ? 'بانتظار الاعتماد' : 'غير موزع'}
-                    {box.downloaded ? ' · نُزّلت' : ''}
+                    {box.downloaded ? '، نُزّلت' : ''}
                 </span>
             </div>
             <div className="gl-progress" role="img" aria-label={`قُرئ ${box.read} من ${box.subscribers}`}>

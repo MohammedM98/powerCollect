@@ -57,7 +57,7 @@ function MeterBoxSummary({ summary }) {
                 <div className="gl-kv mt-3 border-t pt-3 border-(--gl-line)!"><span className="inline-flex items-center gap-1.5"><Icon name="users" className="h-4 w-4" />المشتركون</span><b className="gl-num">{formatNumber(summary.subscriptions)}</b></div>
             </KpiTile>
             {[
-                { icon: 'pin', label: 'مناطق الطبلونات', unit: 'منطقة', value: formatNumber(summary.regions), hint: `${formatNumber(summary.located)} طبلون ضمن هذه المناطق${summary.total > summary.located ? ` · ${formatNumber(summary.total - summary.located)} بلا منطقة` : ''}` },
+                { icon: 'pin', label: 'مناطق الطبلونات', unit: 'منطقة', value: formatNumber(summary.regions), hint: `${formatNumber(summary.located)} طبلون ضمن هذه المناطق${summary.total > summary.located ? `، ${formatNumber(summary.total - summary.located)} بلا منطقة` : ''}` },
                 { icon: 'users', label: 'المشتركون الفعّالون', unit: 'مشترك', value: formatNumber(summary.active), hint: 'المشتركون بحالة فعّال ضمن نتائج البحث' },
                 { icon: 'table', label: 'طبلونات بلا مشتركين', unit: 'طبلون', value: formatNumber(summary.empty), hint: 'طبلونات لا يرتبط بها أي مشترك' },
             ].map((stat, index) => <KpiTile key={stat.label} role="group" aria-label={`إحصائية ${stat.label}`} index={index + 1} icon={stat.icon} label={stat.label} value={stat.value} unit={stat.unit} hint={stat.hint} />)}
@@ -272,7 +272,7 @@ export default function Index({
                                         <p className="text-sm font-semibold text-gray-900"><b className="font-display">{formatNumber(meterBox.subscriptionsCount)}</b> مشترك</p>
                                         {meterBox.subscriptionsCount > 0 && <>
                                             <div className="my-1.5 flex h-1.5 w-28 overflow-hidden rounded-full bg-gray-100" aria-hidden="true"><span className="bg-emerald-500" style={{ width: `${meterBox.activeSubscriptionsCount / meterBox.subscriptionsCount * 100}%` }} /></div>
-                                            <p className="text-xs text-gray-500">{meterBox.activeSubscriptionsCount} فعّال · {meterBox.subscriptionsCount - meterBox.activeSubscriptionsCount} غير فعّال</p>
+                                            <p className="text-xs text-gray-500">{meterBox.activeSubscriptionsCount} فعّال، {meterBox.subscriptionsCount - meterBox.activeSubscriptionsCount} غير فعّال</p>
                                         </>}
                                     </td>
                                     <td data-actions="" className="text-end">

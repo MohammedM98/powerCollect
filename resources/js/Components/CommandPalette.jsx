@@ -117,7 +117,7 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
                 kind: 'subscriber',
                 id: subscriber.id,
                 label: subscriber.fullName,
-                description: `حساب ${subscriber.accountNumber}${balanceTone(subscriber.balance) !== 'settled' ? ` · الرصيد ${balanceInText(subscriber.balance)}` : ''}`,
+                description: `حساب ${subscriber.accountNumber}${balanceTone(subscriber.balance) !== 'settled' ? `، الرصيد ${balanceInText(subscriber.balance)}` : ''}`,
                 icon: 'user',
             }))]);
         }

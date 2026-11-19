@@ -173,12 +173,12 @@ function SummaryCards({ totals, summary, side }) {
                     )}
                 </small>
                 <b><Money amount={totals.charged} /></b>
-                <p>{formatNumber(totals.debitCount)} قيد تحميل · ضمن الفترة والفلاتر</p>
+                <p>{formatNumber(totals.debitCount)} قيد تحميل، ضمن الفترة والفلاتر</p>
             </section>
             <section className="k cr" aria-label="إجمالي له">
                 <small><span className="dot bg-emerald-600 dark:bg-emerald-400" />إجمالي له (تسديد وخصم ومقاصة)</small>
                 <b><Money amount={totals.credited} /></b>
-                <p>{formatNumber(totals.creditCount)} قيد · دفعات وخصم ومقاصة</p>
+                <p>{formatNumber(totals.creditCount)} قيد، دفعات وخصم ومقاصة</p>
             </section>
             <section className="k" aria-label="الصافي">
                 <small>الصافي (عليه − له)</small>
@@ -188,7 +188,7 @@ function SummaryCards({ totals, summary, side }) {
             <section className="k cx" aria-label="القيود الملغاة">
                 <small><Icon name="close" />الملغاة</small>
                 <b><Money amount={totals.cancelled} /></b>
-                <p>{formatNumber(totals.cancelledCount)} قيد · خارج المجاميع</p>
+                <p>{formatNumber(totals.cancelledCount)} قيد، خارج المجاميع</p>
             </section>
         </div>
     );
@@ -207,7 +207,7 @@ function DayHeader({ day, totals, today }) {
 function TransactionRow({ entry, grouped, onOpen, rowClick }) {
     const initials = entry.subscriptionName.split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]).join('');
     const balance = Number(entry.balanceAfter ?? 0);
-    const time = grouped ? formatClock(entry.time) : `${formatShortDay(entry.day)} · ${formatClock(entry.time)}`;
+    const time = grouped ? formatClock(entry.time) : `${formatShortDay(entry.day)}، ${formatClock(entry.time)}`;
     const payment = entry.bankName || entry.paymentMethodLabel;
     return (
         <tr className={`row ${entry.isCancelled ? 'cx' : ''}`} {...rowClick(onOpen)}>
@@ -216,7 +216,7 @@ function TransactionRow({ entry, grouped, onOpen, rowClick }) {
                 <BankReceivedDate value={entry.bankReceivedOn} />
                 <div className="meta">
                     <span><Icon name="clock" />{time}</span>
-                    {entry.voucherNumber && <span>سند <bdi>{entry.voucherNumber}</bdi>{entry.isManualVoucher && ' · يدوي'}</span>}
+                    {entry.voucherNumber && <span>سند <bdi>{entry.voucherNumber}</bdi>{entry.isManualVoucher && '، يدوي'}</span>}
                     {payment && <span>{payment}</span>}
                     {entry.referenceNumber && <span>مرجع <bdi>{entry.referenceNumber}</bdi></span>}
                     {entry.splitPayment && <SplitPaymentBadge split={entry.splitPayment} compact />}
@@ -226,7 +226,7 @@ function TransactionRow({ entry, grouped, onOpen, rowClick }) {
             <td className="who-c">
                 <div className="who"><span className="av" aria-hidden="true">{initials}</span><div>
                     <b>{onOpen ? <button type="button" className="name-btn" onClick={onOpen} aria-label={`فتح كشف حساب ${entry.subscriptionName}`}>{entry.subscriptionName}</button> : entry.subscriptionName}</b>
-                    <small><bdi>{entry.subscriptionAccountNumber}</bdi> · {entry.branchName}</small>
+                    <small><bdi>{entry.subscriptionAccountNumber}</bdi>، {entry.branchName}</small>
                 </div></div>
             </td>
             <td className="ty-c"><span className={`ty ${entry.isCancelled ? 'rv' : entry.isCredit ? 'cr' : 'dr'}`}>{entry.typeLabel}</span>{entry.isCancelled && entry.type !== 'reversal' && <div><span className="cxb">ملغاة</span></div>}</td>
@@ -326,7 +326,7 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
                         <div>إجمالي التحميل<b><Money amount={ledgerTotals.charged} /></b></div>
                         <div>إجمالي له<b className="g"><Money amount={ledgerTotals.credited} /></b></div>
                         <div>الصافي<b><Money amount={ledgerTotals.net} balance /> <span>{ledgerTotals.net > 0 ? 'للشركة' : ledgerTotals.net < 0 ? 'للمشترك' : 'مسدّد'}</span></b></div>
-                        <span className="r">{formatNumber(entries.total)} قيد مطابق · الملغاة خارج المجاميع</span>
+                        <span className="r">{formatNumber(entries.total)} قيد مطابق، الملغاة خارج المجاميع</span>
                     </div>
                     <div className="ledger-pagination">
                         <div className="w-44">

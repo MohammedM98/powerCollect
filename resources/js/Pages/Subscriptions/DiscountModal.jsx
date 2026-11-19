@@ -26,7 +26,7 @@ import StandingDiscountCard from './StandingDiscountCard';
  * percentage of the reading, free kilowatts, or shekels off the kilo price
  * — until it is stopped. The movement card under the title shows the balance a
  * discount leaves, or what the subscription pays for the latest week with a
- * standing one. Keys: Ctrl + Enter saves, 1 · 2 · 3 pick the weekly
+ * standing one. Keys: Ctrl + Enter saves, 1، 2، 3 pick the weekly
  * readings discount's method.
  *
  * With `correcting` (a statement line), it corrects that one-off discount
@@ -128,7 +128,7 @@ export default function DiscountModal({
         });
     }
 
-    /** 1 · 2 · 3 pick the method — unless a field is being typed in. */
+    /** 1، 2، 3 pick the method — unless a field is being typed in. */
     function onKeyDown(event) {
         submitOnCtrlEnter(event);
 
@@ -346,7 +346,7 @@ export default function DiscountModal({
                                         ? `خصم ${formatMoney(discount)} ₪`
                                         : 'إضافة الخصم'
                             }
-                            shortcuts={isStanding ? '1 · 2 · 3 للطريقة' : undefined}
+                            shortcuts={isStanding ? '1، 2، 3 للطريقة' : undefined}
                         />
                     </form>
                 )}

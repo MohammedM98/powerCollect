@@ -15,7 +15,7 @@ export default function SplitBar({ parts, label, formatValue = null }) {
             {parts.map((part) => (
                 <div key={part.label} className="gl-kv">
                     <span className="inline-flex items-center gap-2"><i className="inline-block h-2 w-2 rounded-sm" style={{ background: part.color }} aria-hidden="true" />{part.label}</span>
-                    <b className="gl-num">{formatValue ? `${formatValue(part.value)} · ` : ''}{share(part)}%</b>
+                    <b className="gl-num">{formatValue ? `${formatValue(part.value)}، ` : ''}{share(part)}%</b>
                 </div>
             ))}
         </>

@@ -199,7 +199,7 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                         <SheetBody>
                             {correcting && <OriginalLine entry={correcting} />}
 
-                            <FormStep number={1} title="نوع التحميل" hint={`بالأرقام ${chargeTypes.map((_, index) => index + 1).join(' · ')}`} done={Boolean(type)}>
+                            <FormStep number={1} title="نوع التحميل" hint={`بالأرقام ${chargeTypes.map((_, index) => index + 1).join('، ')}`} done={Boolean(type)}>
                                 <div>
                                     <ChoiceCards
                                         name="type"
@@ -291,7 +291,7 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                             disabled={amount <= 0 || missingReason}
                             processing={form.processing}
                             submitLabel={correcting ? 'حفظ التصحيح' : amount > 0 ? `تحميل ${formatMoney(amount)} ₪ على الحساب` : 'إضافة التحميل'}
-                            shortcuts={`${chargeTypes.map((_, index) => index + 1).join(' · ')} للنوع`}
+                            shortcuts={`${chargeTypes.map((_, index) => index + 1).join('، ')} للنوع`}
                         />
                     </form>
                 )}

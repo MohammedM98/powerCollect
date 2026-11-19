@@ -137,7 +137,7 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                     <span className="rs-status-dot" aria-hidden="true"><i /></span>
                     <div className="rs-status-copy">
                         <b>{openNow ? 'إدخال القراءات مفتوح الآن' : 'إدخال القراءات مغلق الآن'}</b>
-                        <p>{statusHint} · ينطبق على الجميع ما عدا المدير العام {isDirty && <span className="rs-preview-note">· معاينة قبل الحفظ</span>}</p>
+                        <p>{statusHint}، ينطبق على الجميع ما عدا المدير العام {isDirty && <span className="rs-preview-note">· معاينة قبل الحفظ</span>}</p>
                     </div>
                     <div className="rs-modes" role="group" aria-label="طريقة الفتح">
                         {Object.entries(MODES).map(([value, mode]) => (
@@ -208,7 +208,7 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                                         <span id="closes-at-error"><InputError message={errors.closes_at || (hoursError ? 'يجب أن تكون ساعة النهاية بعد البداية في اليوم نفسه.' : null)} /></span>
                                     </div>
                                 </div>
-                                <span className="rs-timezone">بتوقيت الشركة · {businessTimezone}</span>
+                                <span className="rs-timezone">بتوقيت الشركة، {businessTimezone}</span>
                             </div>
                         </section>
                         <section className="rs-panel">
@@ -228,7 +228,7 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                     <div className="rs-column">
                         <section className="rs-panel">
                             <PanelTitle icon="eye">معاينة الأسبوع الحالي</PanelTitle>
-                            <p>من {weekDayName(currentWeek.start)} {shortDate(currentWeek.start)} إلى {weekDayName(currentWeek.end)} {shortDate(currentWeek.end)}{days.length !== 7 ? ` · أسبوع انتقالي (${dayCount(days.length)})` : ''}{isDirty ? ' · حسب الإعدادات الجديدة' : ''}</p>
+                            <p>من {weekDayName(currentWeek.start)} {shortDate(currentWeek.start)} إلى {weekDayName(currentWeek.end)} {shortDate(currentWeek.end)}{days.length !== 7 ? `، أسبوع انتقالي (${dayCount(days.length)})` : ''}{isDirty ? '، حسب الإعدادات الجديدة' : ''}</p>
                             <div className="rs-week" style={{ '--week-days': days.length }} tabIndex={0} role="region" aria-label="أيام الأسبوع الحالي">
                                 {days.map((day) => {
                                     const open = data.mode === 'open' || (automatic && validEntryHours(data) && data.open_days.includes(day.weekday));
@@ -236,7 +236,7 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                                     const reading = day.date === currentWeek.end;
                                     return (
                                         <div key={day.date} className={`rs-week-day ${open ? 'is-open' : ''} ${today ? 'is-today' : ''}`}
-                                            title={`${formatWeekDay(day.date)} · ${open ? (automatic ? `${data.opens_at} – ${data.closes_at}` : 'مفتوح طوال اليوم') : 'مغلق'}`}>
+                                            title={`${formatWeekDay(day.date)}، ${open ? (automatic ? `${data.opens_at} – ${data.closes_at}` : 'مفتوح طوال اليوم') : 'مغلق'}`}>
                                             <b>{dayLabel(day.weekday)}</b><span className="rs-date">{shortDate(day.date)}</span>
                                             {reading && <span className="rs-tag rs-reading-tag">القراءة</span>}
                                             {today && <span className="rs-tag rs-today-tag">اليوم</span>}
@@ -261,7 +261,7 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                                         <li key={week.start} className={`${current ? 'is-current' : ''} ${length !== 7 ? 'is-transition' : ''}`}>
                                             <span className="rs-week-number">{index + 1}</span>
                                             <span><b>{shortDate(week.start)}</b> ← <b>{shortDate(week.end)}</b></span>
-                                            <span className="rs-week-length">{length !== 7 ? `انتقالي · ${dayCount(length)}` : current ? 'الأسبوع الحالي' : `ينتهي ${weekDayName(week.end)}`}</span>
+                                            <span className="rs-week-length">{length !== 7 ? `انتقالي، ${dayCount(length)}` : current ? 'الأسبوع الحالي' : `ينتهي ${weekDayName(week.end)}`}</span>
                                         </li>
                                     );
                                 })}
@@ -275,7 +275,7 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                                     {history.map((change) => <li key={change.last_week_end}><b>من {dayLabel(change.reading_day)} إلى {dayLabel(change.to)}</b><small>آخر أسبوع على {dayLabel(change.reading_day)} انتهى {formatWeekDay(change.last_week_end)}</small></li>)}
                                 </ul>
                             ) : <p className="rs-empty-history">لم يتغير يوم القراءة الأسبوعي بعد.</p>}
-                            {setting.updatedByName && <div className="rs-who"><span className="rs-avatar">{setting.updatedByName.split(' ').slice(0, 2).map((name) => name[0]).join('')}</span><span>آخر تعديل للإعدادات: {setting.updatedByName} · <bdi>{setting.updatedAt}</bdi></span></div>}
+                            {setting.updatedByName && <div className="rs-who"><span className="rs-avatar">{setting.updatedByName.split(' ').slice(0, 2).map((name) => name[0]).join('')}</span><span>آخر تعديل للإعدادات: {setting.updatedByName}، <bdi>{setting.updatedAt}</bdi></span></div>}
                         </section>
                     </div>
                 </div>

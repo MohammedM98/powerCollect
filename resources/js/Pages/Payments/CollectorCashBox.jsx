@@ -205,7 +205,7 @@ export function BoxCard({ box, type, selected = false, onSelect }) {
                 </p>
                 {others.map((currency) => <p key={currency} className="mt-1 text-sm text-gray-600"><b dir="ltr" className="font-display">{formatMoney(box.totals[currency])}</b> {currencies[currency]}</p>)}
             </div>
-            <p className="text-xs leading-6 text-gray-500">{box ? `${box.paymentCount} حركات · فُتح ${dateTime(box.openedAt)}` : 'يُفتح تلقائيًا عند تسجيل أول حركة من هذا النوع.'}</p>
+            <p className="text-xs leading-6 text-gray-500">{box ? `${box.paymentCount} حركات، فُتح ${dateTime(box.openedAt)}` : 'يُفتح تلقائيًا عند تسجيل أول حركة من هذا النوع.'}</p>
             {box && (
                 <div className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-4">
                     {onSelect ? (
@@ -294,7 +294,7 @@ export function CollectorDebts({ debts }) {
                     <li key={debt.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
                         <div className="space-y-1">
                             {debt.box ? <Link href={debt.box.url} prefetch dir="ltr" className="font-display text-xs text-brand-600">{debt.box.number}</Link> : <span className="text-gray-500">—</span>}
-                            <p className="text-xs text-gray-500">سُجّل {dateTime(debt.createdAt)} · أصل الدين <bdi dir="ltr" className="font-display">{formatMoney(debt.amount)}</bdi> {currencies[debt.currency]}</p>
+                            <p className="text-xs text-gray-500">سُجّل {dateTime(debt.createdAt)}، أصل الدين <bdi dir="ltr" className="font-display">{formatMoney(debt.amount)}</bdi> {currencies[debt.currency]}</p>
                         </div>
                         <p className="text-gray-600">المتبقي <b dir="ltr" className="font-display text-base text-red-600">{formatMoney(debt.remaining)}</b> {currencies[debt.currency]}</p>
                     </li>
@@ -344,9 +344,9 @@ export function CollectorAuditNotes({ notes, onSaved }) {
                 <article key={note.id} className="space-y-3 border-t border-amber-500/15 pt-3">
                     <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
                         {note.box && <Link href={note.box.url} prefetch dir="ltr" className="font-display text-brand-600">{note.box.number}</Link>}
-                        {note.closing?.coverage_from && <span><b className="font-semibold text-gray-700">{periodLabel(note.closing)}</b> · {periodRange(note.closing)}</span>}
+                        {note.closing?.coverage_from && <span><b className="font-semibold text-gray-700">{periodLabel(note.closing)}</b>، {periodRange(note.closing)}</span>}
                     </div>
-                    {note.entry && <p className="text-xs text-gray-600"><b className="text-gray-900">{note.entry.subscriber}</b> · {note.entry.typeLabel}{note.entry.voucherNumber && <> · سند <bdi dir="ltr" className="font-display">{note.entry.voucherNumber}</bdi></>} · <bdi dir="ltr" className="font-display">{formatMoney(note.entry.amount)}</bdi> {currencies[note.entry.currency]}</p>}
+                    {note.entry && <p className="text-xs text-gray-600"><b className="text-gray-900">{note.entry.subscriber}</b>، {note.entry.typeLabel}{note.entry.voucherNumber && <>، سند <bdi dir="ltr" className="font-display">{note.entry.voucherNumber}</bdi></>}، <bdi dir="ltr" className="font-display">{formatMoney(note.entry.amount)}</bdi> {currencies[note.entry.currency]}</p>}
                     <p className="text-sm leading-7 text-gray-800">{note.body}</p>
                     {note.question && <p className="rounded-control bg-surface p-3 text-sm leading-7 text-gray-700"><b className="text-gray-900">سؤال الفرع: </b>{note.question}</p>}
                     {note.differences && (

@@ -20,7 +20,7 @@ export default function DashboardTiles({ subscriptions, meterBoxes, readings, de
                         icon="users"
                         label="المشتركون النشطون"
                         value={subscriptions.active}
-                        hint={`من ${formatNumber(subscriptions.total)} · ${formatNumber(subscriptions.newInPeriod)} جديد في آخر ${period}`}
+                        hint={`من ${formatNumber(subscriptions.total)}، ${formatNumber(subscriptions.newInPeriod)} جديد في آخر ${period}`}
                     >
                         <div className="gl-split" role="img" aria-label="حالات المشتركين">
                             {[
@@ -75,7 +75,7 @@ export default function DashboardTiles({ subscriptions, meterBoxes, readings, de
                             label="الديون المستحقة"
                             value={formatMoney(debts.total)}
                             unit="₪"
-                            hint={`${formatNumber(debts.count)} مدين · أكثر من 90 يومًا ${debts.olderShare}%`}
+                            hint={`${formatNumber(debts.count)} مدين، أكثر من 90 يومًا ${debts.olderShare}%`}
                         />
                     </TileLink>
                 )

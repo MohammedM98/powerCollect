@@ -63,7 +63,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
     const items = topBarItems(groups);
     const current = currentGroup(groups, url);
     const currentScope = props.branchView?.current ? branchLabel : where?.scope;
-    const pageLabel = where ? (currentScope ? [where.page, currentScope] : [where.section, where.page]).filter(Boolean).join(' · ') : null;
+    const pageLabel = where ? (currentScope ? [where.page, currentScope] : [where.section, where.page]).filter(Boolean).join('، ') : null;
     const [wideSide, setWideSide] = useSideWidth();
     const searchText = props.can?.recordPayments && props.can?.viewSubscriptions ? 'ابحث عن صفحة أو مشترك…' : 'ابحث عن صفحة أو أمر…';
 
@@ -156,7 +156,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                                     aria-expanded={openId === item.group.id}
                                     aria-controls="tn-mega"
                                     aria-current={isCurrent ? 'true' : undefined}
-                                    title={`${item.group.label} · Alt+${index + 1}`}
+                                    title={`${item.group.label}، Alt+${index + 1}`}
                                     onPointerDown={(event) => { pointerType.current = event.pointerType; }}
                                     onClick={(event) => onSectionClick(event, item.group)}
                                     onKeyDown={(event) => onSectionKeyDown(event, item)}
@@ -201,19 +201,19 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                                 </span>
                             </span>
                         </Link>
-                        {where && <span key={where.page} className="tn-where" aria-hidden="true">{[where.page, where.scope].filter(Boolean).join(' · ')}</span>}
+                        {where && <span key={where.page} className="tn-where" aria-hidden="true">{[where.page, where.scope].filter(Boolean).join('، ')}</span>}
                     </div>
 
                     <div className="tn-tools flex items-center gap-1">
                         {branchChip}
                         {props.can?.recordPayments && (
-                            <Link href="/payments" prefetch={shouldPrefetchPage('/payments')} className="tn-pay" aria-keyshortcuts="N" title="تسجيل دفعة · N">
+                            <Link href="/payments" prefetch={shouldPrefetchPage('/payments')} className="tn-pay" aria-keyshortcuts="N" title="تسجيل دفعة، N">
                                 <Icon name="banknotes" />
                                 تسجيل دفعة
                             </Link>
                         )}
                         {/* Named by the words it shows, so a voice command that says them reaches it, even when the narrow bar hides them. */}
-                        <button type="button" className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label={`${searchText} Ctrl K`} aria-keyshortcuts="Control+K" title="بحث وأوامر · Ctrl K">
+                        <button type="button" className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label={`${searchText} Ctrl K`} aria-keyshortcuts="Control+K" title="بحث وأوامر، Ctrl K">
                             <Icon name="search" />
                             <span className="tn-search-text flex-1 text-start">{searchText}</span>
                             <span className="tn-kbd" dir="ltr">Ctrl K</span>

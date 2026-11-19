@@ -114,7 +114,7 @@ function CheckoutAmount({ amountInput, currencies, currencyLabel, currencyMark, 
                     {Number(exchangeRate) > 0 ? (
                         <>
                             سعر الصرف المعتمد: 1 {currencyLabel} = <bdi className="gl-num">{Number(exchangeRate)}</bdi> شيكل
-                            {inShekels !== null && <> · على حساب المشترك: <bdi className="gl-num">{formatMoney(inShekels)}</bdi> شيكل</>}
+                            {inShekels !== null && <>، على حساب المشترك: <bdi className="gl-num">{formatMoney(inShekels)}</bdi> شيكل</>}
                         </>
                     ) : (
                         'لم يُضبط سعر لهذه العملة؛ يجب ضبطه من صفحة العملات وأسعار الصرف أولًا.'

@@ -94,6 +94,13 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await page.reload();
         await expect(globalSorting.getByLabel('ترتيب المشتركين', { exact: true })).toContainText('من ي إلى أ');
         await expect(banner.getByRole('heading', { name: 'فرع ألف', exact: true })).toBeVisible();
+        // A refresh starts the table afresh (its order back to the box number), keeping the branch and the subscribers' order.
+        await expect(page).toHaveURL(new URL('/meter-boxes', process.env.BASE_URL).href);
+        await expect(sorting.getByLabel('ترتيب حسب', { exact: true })).toContainText('رقم الطبلون');
+        // Switching the branch keeps the order chosen for the table.
+        await sorting.getByLabel('ترتيب حسب', { exact: true }).click();
+        await page.locator('ul button').filter({ hasText: /^اسم الطبلون$/ }).click();
+        await expect(sorting.getByLabel('ترتيب حسب', { exact: true })).toContainText('اسم الطبلون');
         await banner.getByRole('button').click();
         await page.locator('ul button').filter({ hasText: /^جميع الفروع$/ }).click();
         await expect(banner.getByRole('heading', { name: 'جميع الفروع', exact: true })).toBeVisible();

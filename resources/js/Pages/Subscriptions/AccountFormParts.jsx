@@ -111,8 +111,8 @@ export function MovementCard({ subscription, tone = 'payment', tag = null, cells
                     <b>{subscription.fullName}</b>
                     <small>
                         حساب <bdi dir="ltr" className="gl-num">{subscription.accountNumber}</bdi>
-                        {subscription.meterBoxNumber && ` · طبلون ${subscription.meterBoxNumber}`}
-                        {subscription.branchName && ` · ${subscription.branchName}`}
+                        {subscription.meterBoxNumber && `، طبلون ${subscription.meterBoxNumber}`}
+                        {subscription.branchName && `، ${subscription.branchName}`}
                     </small>
                 </div>
                 {tag && <span className="gl-mv-tag">{tag}</span>}

@@ -6,7 +6,7 @@ export default function AppFooter() {
 
     return (
         <footer className="gl-footer" dir="rtl">
-            © <span dir="ltr">{new Date().getFullYear()}</span> {brand.name} · جميع الحقوق محفوظة
+            © <span dir="ltr">{new Date().getFullYear()}</span> {brand.name}، جميع الحقوق محفوظة
         </footer>
     );
 }

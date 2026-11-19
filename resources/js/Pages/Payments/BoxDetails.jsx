@@ -36,14 +36,14 @@ function sumByCurrency(entries) {
 
 /** Amounts as one line, shekels always and another currency only when it has some. */
 function amountsLine(amounts) {
-    return Object.keys(currencies).filter((currency) => currency === 'ILS' || Number(amounts?.[currency] ?? 0) !== 0).map((currency) => `${formatMoney(amounts?.[currency] ?? 0)} ${currencies[currency]}`).join(' · ');
+    return Object.keys(currencies).filter((currency) => currency === 'ILS' || Number(amounts?.[currency] ?? 0) !== 0).map((currency) => `${formatMoney(amounts?.[currency] ?? 0)} ${currencies[currency]}`).join('، ');
 }
 
 /** The foreign currencies among amounts, as one quiet line, or nothing when there are none. */
 function otherCurrencies(amounts) {
     const lines = Object.keys(currencies).filter((currency) => currency !== 'ILS' && Number(amounts?.[currency] ?? 0) !== 0).map((currency) => `${formatMoney(amounts[currency])} ${currencies[currency]}`);
 
-    return lines.length ? lines.join(' · ') : undefined;
+    return lines.length ? lines.join('، ') : undefined;
 }
 
 /** One figure in the box's summary, on its own card. */
@@ -107,7 +107,7 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
         ...(cash ? {} : { rejected: [clearing ? 'مرفوضة' : 'غير موجودة', (entry) => isActive(entry) && isFlaggedEntry(entry)] }),
         cancelled: ['ملغاة', (entry) => !isActive(entry)],
     };
-    const filterOptions = Object.entries(groups).map(([value, [label, matches]]) => ({ value, label: `${label} · ${entries.filter(matches).length}`, count: entries.filter(matches).length })).filter((option) => option.value === 'all' || option.count > 0);
+    const filterOptions = Object.entries(groups).map(([value, [label, matches]]) => ({ value, label: `${label}، ${entries.filter(matches).length}`, count: entries.filter(matches).length })).filter((option) => option.value === 'all' || option.count > 0);
     const banks = type === 'bank_transfer' ? boxBankOptions(entries) : [];
     const shown = filterBoxEntries(entries, { bank, state: filter, search });
     const columns = [['الصندوق', 72], ...ledgerColumns.before, ['المشترك', 150], ...ledgerColumns.after, ['الحالة', 140], ...(bankAudit ? [['تدقيق البنك', 220]] : []), ['', 110]];
@@ -137,7 +137,7 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
 
             {!editable && <section aria-label="تدقيق الصندوق" className="gl-bd-card">
                 <div className="flex flex-wrap items-center justify-between gap-3"><h3>مراجعة قسم التدقيق</h3>{box.audit ? <p className="text-sm text-gray-600">اعتمدها {box.audit.auditor?.name}، {dateTime(box.audit.audited_at)}</p> : box.canAudit && <Button isDisabled={!box.canCompleteAudit} onPress={() => setConfirmingAudit(true)} className="gl-sheet-btn is-primary"><Icon name="check" className="h-4 w-4" />اعتماد الصندوق كاملًا</Button>}</div>
-                {bankAudit && <p className="text-sm leading-7 text-gray-600">حُفظت مراجعة <b>{box.auditSummary?.reviewed ?? 0}</b> من <b>{box.auditSummary?.total ?? active.length}</b> حوالة. المثبت بحسب المراجعات: <b>{formatMoney(box.auditSummary?.verified ?? 0)} شيكل</b> · صافي الفروق على المشتركين: <b dir="ltr">{formatMoney(box.auditSummary?.difference ?? 0)} شيكل</b>. إجمالي الصندوق التاريخي محفوظ كما أُغلق.</p>}
+                {bankAudit && <p className="text-sm leading-7 text-gray-600">حُفظت مراجعة <b>{box.auditSummary?.reviewed ?? 0}</b> من <b>{box.auditSummary?.total ?? active.length}</b> حوالة. المثبت بحسب المراجعات: <b>{formatMoney(box.auditSummary?.verified ?? 0)} شيكل</b>، صافي الفروق على المشتركين: <b dir="ltr">{formatMoney(box.auditSummary?.difference ?? 0)} شيكل</b>. إجمالي الصندوق التاريخي محفوظ كما أُغلق.</p>}
                 {bankAudit && (box.canReviewTransfers ?? box.canAudit) && <p className="text-sm leading-7 text-gray-600">سجّل الحوالات التي فيها مشاكل فقط. عند اعتماد الصندوق تُرحّل فروق المراجعات المحفوظة ماليًا وتُعتمد بقية الحوالات كمطابقة تلقائيًا.</p>}
             </section>}
 
@@ -199,7 +199,7 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
                                     </td>
                                     <LedgerTrailCells ledger={ledger} amount={entry.amount} currency={entry.currency} cancelled={!live} />
                                     <td className="whitespace-normal!"><Chip size="sm" className="gl-cb-chip" data-state={{ green: 'closed', red: 'bad', amber: 'waiting', blue: 'open' }[tone] ?? 'cancelled'}><i aria-hidden="true" />{label}</Chip></td>
-                                    {bankAudit && <td className="whitespace-normal!">{entry.audit ? <div className="space-y-1"><StatusPill tone={entry.audit.outcome === 'missing' ? 'red' : entry.audit.outcome === 'matched' ? 'green' : 'amber'} label={{ matched: 'مطابقة', missing: 'غير موجودة', short: 'نقص في المبلغ', over: 'زيادة لصالح المشترك' }[entry.audit.outcome]} /><p className="text-xs font-semibold text-gray-600">{entry.audit.posted_at || entry.audit.adjustment_transaction_id ? 'معتمدة نهائيًا' : 'مسودة · لم تُرحّل ماليًا'}</p><p className="text-xs text-gray-600">المثبت: {formatMoney(entry.audit.bank_amount)} {ledger.currencyLabel}</p><p className="text-xs text-gray-500">{entry.audit.auditor?.name} · {dateTime(entry.audit.audited_at)}</p>{entry.audit.reason && <p className="text-xs text-gray-600">{entry.audit.reason}</p>}</div> : <StatusPill tone="gray" label={live ? 'تُطابق عند اعتماد الصندوق' : 'حركة غير سارية'} />}</td>}
+                                    {bankAudit && <td className="whitespace-normal!">{entry.audit ? <div className="space-y-1"><StatusPill tone={entry.audit.outcome === 'missing' ? 'red' : entry.audit.outcome === 'matched' ? 'green' : 'amber'} label={{ matched: 'مطابقة', missing: 'غير موجودة', short: 'نقص في المبلغ', over: 'زيادة لصالح المشترك' }[entry.audit.outcome]} /><p className="text-xs font-semibold text-gray-600">{entry.audit.posted_at || entry.audit.adjustment_transaction_id ? 'معتمدة نهائيًا' : 'مسودة، لم تُرحّل ماليًا'}</p><p className="text-xs text-gray-600">المثبت: {formatMoney(entry.audit.bank_amount)} {ledger.currencyLabel}</p><p className="text-xs text-gray-500">{entry.audit.auditor?.name}، {dateTime(entry.audit.audited_at)}</p>{entry.audit.reason && <p className="text-xs text-gray-600">{entry.audit.reason}</p>}</div> : <StatusPill tone="gray" label={live ? 'تُطابق عند اعتماد الصندوق' : 'حركة غير سارية'} />}</td>}
                                     <td className="whitespace-normal!"><div className="flex flex-wrap items-center gap-1">
                                         {bankAudit && (box.canReviewTransfers ?? box.canAudit) && live && !entry.audit?.posted_at && !entry.audit?.adjustment_transaction_id && <button type="button" onClick={() => setAuditingEntry(entry)} className={auditEditButton}><Icon name="pencil" className="h-3.5 w-3.5" />تعديل الحوالة</button>}
                                         {box.canPrint !== false && entry.receipt_url && <a href={entry.receipt_url} target="_blank" rel="noopener noreferrer" className={`${rowButton} tone-print border`}><Icon name="printer" className="h-3.5 w-3.5" />السند</a>}
@@ -234,13 +234,13 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
             icon="lock"
         >
             <dl className="grid grid-cols-2 gap-x-5 gap-y-4 rounded-control bg-gray-50 p-5">
-                <div><dt className="text-base text-gray-600">الصندوق</dt><dd className="mt-1 font-semibold text-gray-900">{boxTypes[type]} · <bdi dir="ltr">{box.number}</bdi></dd></div>
+                <div><dt className="text-base text-gray-600">الصندوق</dt><dd className="mt-1 font-semibold text-gray-900">{boxTypes[type]}، <bdi dir="ltr">{box.number}</bdi></dd></div>
                 <div><dt className="text-base text-gray-600">المحصّل</dt><dd className="mt-1 font-semibold text-gray-900">{box.user?.name ?? '—'}</dd></div>
                 <div><dt className="text-base text-gray-600">الإجمالي</dt><dd className="mt-1 font-display text-xl font-bold text-gray-900">{amountsLine(totals)}</dd></div>
                 <div><dt className="text-base text-gray-600">الحركات السارية</dt><dd className="mt-1 font-display text-xl font-bold text-gray-900">{active.length}</dd></div>
             </dl>
         </ConfirmDialog>
-        {confirmingAudit && <AuditApprovalDialog title="اعتماد تدقيق الصندوق؟" scope={`${boxTypes[type]} · صندوق ${box.number} · ${box.user?.name ?? '—'}`} summary={auditApprovalSummary([box])} url={box.completeAuditUrl} onClose={() => setConfirmingAudit(false)} />}
+        {confirmingAudit && <AuditApprovalDialog title="اعتماد تدقيق الصندوق؟" scope={`${boxTypes[type]}، صندوق ${box.number}، ${box.user?.name ?? '—'}`} summary={auditApprovalSummary([box])} url={box.completeAuditUrl} onClose={() => setConfirmingAudit(false)} />}
     </Modal>;
 }
 

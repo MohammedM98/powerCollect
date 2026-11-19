@@ -46,7 +46,7 @@ export function PaymentReceipt({ receipt, subscriptionName, title, onAnother, on
             </span>
             <h3 className="text-[24px] font-extrabold font-(family-name:--gl-head)!">{title}</h3>
             <p className="gl-sub mt-1.5 text-sm!">
-                {formatMoney(receipt.currency === 'ILS' ? receipt.amount : receipt.inShekels)} شيكل من {subscriptionName} · الرصيد الجديد {balanceText(after)}
+                {formatMoney(receipt.currency === 'ILS' ? receipt.amount : receipt.inShekels)} شيكل من {subscriptionName}، الرصيد الجديد {balanceText(after)}
             </p>
             <dl className="gl-receipt gl-receipt-cut mx-auto mt-6 w-full max-w-[420px] text-start">
                 {rows.map(([label, value]) => (

@@ -72,28 +72,28 @@ export default function StatementModal({ subscription, statement, initialForm = 
                                         <StopStandingDiscountButton
                                             subscriptionId={header.id}
                                             subscriptionName={header.fullName}
-                                            discountLabel={header.standingDiscount.segment ? `${header.standingDiscount.terms} · ${header.standingDiscount.segment}` : header.standingDiscount.terms}
+                                            discountLabel={header.standingDiscount.segment ? `${header.standingDiscount.terms}، ${header.standingDiscount.segment}` : header.standingDiscount.terms}
                                         />
                                     )}
                                 </StatementTitle>
                                 <p className="gl-sub mt-1.5 text-[13.5px]!">
                                     {header.subscriberNumber && (
                                         <>
-                                            مشترك <span dir="ltr">{header.subscriberNumber}</span> ·{' '}
+                                            مشترك <span dir="ltr">{header.subscriberNumber}</span>،{' '}
                                         </>
                                     )}
                                     {header.accountNumber && (
                                         <>
-                                            حساب <span dir="ltr">{header.accountNumber}</span> ·{' '}
+                                            حساب <span dir="ltr">{header.accountNumber}</span>،{' '}
                                         </>
                                     )}
                                     {header.tariffCategoryLabel && (
                                         <>
                                             {header.tariffCategoryLabel}
-                                            {header.tariffSegmentName && ` (${header.tariffSegmentName})`} ·{' '}
+                                            {header.tariffSegmentName && ` (${header.tariffSegmentName})`}،{' '}
                                         </>
                                     )}
-                                    {header.meterBoxNumber && `طبلون ${header.meterBoxNumber} · `}
+                                    {header.meterBoxNumber && `طبلون ${header.meterBoxNumber}، `}
                                     {header.branchName}
                                 </p>
                             </div>

@@ -46,7 +46,7 @@ export function CancellationNote({ cancellation, onJump }) {
                 {cancellation.notes && <> — {cancellation.notes}</>}
                 <span className="text-gray-500">
                     {' '}
-                    · {cancellation.byName} · <bdi dir="ltr">{cancellation.at}</bdi>
+                   ، {cancellation.byName}، <bdi dir="ltr">{cancellation.at}</bdi>
                 </span>
             </span>
         </p>
@@ -103,7 +103,7 @@ export function HistoryToggle({ entry, isOpen, onToggle }) {
                 className="statement-screen-only inline-flex items-center gap-1.5 font-semibold text-amber-700 hover:underline dark:text-amber-400"
             >
                 <Icon name="history" className="h-3.5 w-3.5 shrink-0" />
-                {wasCorrected ? 'صُحّحت' : 'لها حركات ملغاة'} · {isOpen ? 'إخفاء السجل' : `السجل (${entry.history.length})`}
+                {wasCorrected ? 'صُحّحت' : 'لها حركات ملغاة'}، {isOpen ? 'إخفاء السجل' : `السجل (${entry.history.length})`}
             </button>
         </p>
     );
@@ -150,7 +150,7 @@ export function AmendmentBadge({ amendments }) {
                             </span>
                         ))}
                         <span className="text-[11px] text-gray-500">
-                            عدّلها {amendment.userName ?? 'مستخدم محذوف'} · <bdi dir="ltr">{amendment.at}</bdi> · السبب: {amendment.reason}
+                            عدّلها {amendment.userName ?? 'مستخدم محذوف'}، <bdi dir="ltr">{amendment.at}</bdi>، السبب: {amendment.reason}
                         </span>
                     </span>
                 ))}

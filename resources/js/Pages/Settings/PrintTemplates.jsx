@@ -134,7 +134,7 @@ function NewTemplateModal({ pages, onClose }) {
 function templateSummary(template) {
     const paper = PAPER_SIZES[template.paper]?.label ?? template.paper;
 
-    return `${paper} ${template.orientation === 'landscape' ? 'عرضي' : 'طولي'} · ${template.columnCount} أعمدة`;
+    return `${paper} ${template.orientation === 'landscape' ? 'عرضي' : 'طولي'}، ${template.columnCount} أعمدة`;
 }
 
 /**

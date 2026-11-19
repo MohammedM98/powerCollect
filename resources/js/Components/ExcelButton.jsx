@@ -1,6 +1,7 @@
 import { lazy, Suspense, useState } from 'react';
 import Icon from '@/Components/Icon';
 import { excelUrl } from '@/lib/tableExcel';
+import { pageTitle } from '@/lib/print';
 
 const ExcelStudio = lazy(() => import('@/Components/ExcelStudio'));
 
@@ -13,7 +14,7 @@ export default function ExcelButton({ title, base, loadParts, storageKey, templa
     const classes = `tone-excel ${className}`;
 
     if (!loadParts) {
-        return <a data-excel-button href={excelUrl(caption, base)} onClick={(event) => { event.currentTarget.href = excelUrl(title ?? document.querySelector('#main-content h1, #main-content h2')?.textContent.trim() ?? document.title, base); }} target="_blank" rel="noopener noreferrer" className={classes} title="تخصيص وتنزيل ملف Excel منسّق لكل النتائج المطابقة"><Icon name="excel" className="h-4 w-4" />{label}</a>;
+        return <a data-excel-button href={excelUrl(caption, base)} onClick={(event) => { event.currentTarget.href = excelUrl(title ?? pageTitle(), base); }} target="_blank" rel="noopener noreferrer" className={classes} title="تخصيص وتنزيل ملف Excel منسّق لكل النتائج المطابقة"><Icon name="excel" className="h-4 w-4" />{label}</a>;
     }
 
     return <>

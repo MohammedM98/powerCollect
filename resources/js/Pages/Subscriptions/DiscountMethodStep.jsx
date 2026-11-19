@@ -7,7 +7,7 @@ const METHOD_ICONS = { percentage: 'percent', kilowatt: 'bolt', shekel: 'currenc
 /** How a standing discount is taken from each reading: a percentage, free kilowatts, or shekels off the kilowatt price. */
 export default function DiscountMethodStep({ changeMethod, data, errors, kiloPrice, methods, steps }) {
     return (
-        <FormStep number={steps.method} title="طريقة الخصم" hint="بالأرقام 1 · 2 · 3" done={Boolean(data.method)}>
+        <FormStep number={steps.method} title="طريقة الخصم" hint="بالأرقام 1، 2، 3" done={Boolean(data.method)}>
             <div>
                 <ChoiceCards
                     name="method"

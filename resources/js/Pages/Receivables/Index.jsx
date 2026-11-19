@@ -136,7 +136,7 @@ export default function Index({ debtors, summary, buckets, scopeLabel, branchSco
                     label="أكثر من 90 يومًا"
                     value={formatMoney(overdue.amount)}
                     unit="₪"
-                    hint={`${overdue.share}% من الإجمالي · ${formatNumber(overdue.count)} مشترك`}
+                    hint={`${overdue.share}% من الإجمالي، ${formatNumber(overdue.count)} مشترك`}
                 />
                 <KpiTile
                     icon="wallet"
@@ -195,7 +195,7 @@ export default function Index({ debtors, summary, buckets, scopeLabel, branchSco
                                         <td>
                                             <RowIdentity
                                                 name={debtor.name}
-                                                subtitle={`${debtor.accountNumber} · ${debtor.branchName}`}
+                                                subtitle={`${debtor.accountNumber}، ${debtor.branchName}`}
                                                 status={STATUS_DOTS[debtor.status]}
                                             />
                                         </td>

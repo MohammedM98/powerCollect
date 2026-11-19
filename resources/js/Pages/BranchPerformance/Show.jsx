@@ -76,7 +76,7 @@ function TeamTable({ team }) {
 
     return (
         <section className="mt-5">
-            <TableHeading title="فريق الفرع" caption={`${formatNumber(team.length)} موظف · مرتبون حسب عدد الإدخالات`} />
+            <TableHeading title="فريق الفرع" caption={`${formatNumber(team.length)} موظف، مرتبون حسب عدد الإدخالات`} />
             <div className="data-table-container">
                 <table className="data-table w-full text-start text-sm">
                     <thead>
@@ -260,7 +260,7 @@ export default function Show({ branch, canCompareBranches, dailyRegistrations, d
                             details.length > 0 &&
                             details.map((detail, index) => (
                                 <span key={detail}>
-                                    {index > 0 && ' · '}
+                                    {index > 0 && '، '}
                                     <span dir={detail === branch.phone ? 'ltr' : undefined}>{detail}</span>
                                 </span>
                             ))
@@ -293,7 +293,7 @@ export default function Show({ branch, canCompareBranches, dailyRegistrations, d
                     icon="chart"
                     label="إدخالات اليوم"
                     value={formatNumber(branch.todayEntries)}
-                    hint={`${formatNumber(branch.weekEntries)} آخر 7 أيام · ${formatNumber(branch.monthEntries)} آخر 30 يوم`}
+                    hint={`${formatNumber(branch.weekEntries)} آخر 7 أيام، ${formatNumber(branch.monthEntries)} آخر 30 يوم`}
                 />
             </div>
 
@@ -305,7 +305,7 @@ export default function Show({ branch, canCompareBranches, dailyRegistrations, d
                         formatValue={(value) => `${formatNumber(value)} مشترك جديد`}
                     />
                 </ChartCard>
-                <ChartCard title="القيود اليومية" caption={`بالشيكل · آخر ${formatNumber(dailyCharges.length)} يوم`}>
+                <ChartCard title="القيود اليومية" caption={`بالشيكل، آخر ${formatNumber(dailyCharges.length)} يوم`}>
                     <BarChart
                         data={dailyCharges}
                         label={`قيود ${branch.name} لكل يوم، بالشيكل`}

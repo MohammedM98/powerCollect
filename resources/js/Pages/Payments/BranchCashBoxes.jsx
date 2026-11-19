@@ -73,12 +73,12 @@ export default function BranchCashBoxes({ branch, branches, branchScope = null, 
     const people = [...new Map(inPlace.filter((box) => box.user).map((box) => [box.user.id, box.user.name])).entries()].sort((a, b) => a[1].localeCompare(b[1], 'ar'));
     const currentPeriod = periods.find((period) => period.start === week);
     const sortOptions = [
-        ['dates:desc', `${place === 'closed' ? 'الإضافة للتدقيق' : 'فتح الصندوق'} · الأحدث أولًا`],
-        ['dates:asc', `${place === 'closed' ? 'الإضافة للتدقيق' : 'فتح الصندوق'} · الأقدم أولًا`],
-        ...(place === 'closed' ? [['audited:desc', 'اعتماد التدقيق · الأحدث أولًا'], ['audited:asc', 'اعتماد التدقيق · الأقدم أولًا']] : []),
-        ['number:desc', 'رقم الصندوق · الأكبر أولًا'], ['number:asc', 'رقم الصندوق · الأصغر أولًا'],
-        ['total:desc', 'الإجمالي · الأعلى أولًا'], ['total:asc', 'الإجمالي · الأقل أولًا'],
-        ['status:asc', 'الحالة · تصاعديًا'], ['status:desc', 'الحالة · تنازليًا'],
+        ['dates:desc', `${place === 'closed' ? 'الإضافة للتدقيق' : 'فتح الصندوق'}، الأحدث أولًا`],
+        ['dates:asc', `${place === 'closed' ? 'الإضافة للتدقيق' : 'فتح الصندوق'}، الأقدم أولًا`],
+        ...(place === 'closed' ? [['audited:desc', 'اعتماد التدقيق، الأحدث أولًا'], ['audited:asc', 'اعتماد التدقيق، الأقدم أولًا']] : []),
+        ['number:desc', 'رقم الصندوق، الأكبر أولًا'], ['number:asc', 'رقم الصندوق، الأصغر أولًا'],
+        ['total:desc', 'الإجمالي، الأعلى أولًا'], ['total:asc', 'الإجمالي، الأقل أولًا'],
+        ['status:asc', 'الحالة، تصاعديًا'], ['status:desc', 'الحالة، تنازليًا'],
     ];
     const reviewedBoxes = currentPeriod?.reviewed ?? 0;
     const periodBoxes = currentPeriod?.count ?? 0;
@@ -136,7 +136,7 @@ export default function BranchCashBoxes({ branch, branches, branchScope = null, 
                 <Chip size="sm" className="gl-cb-chip" data-state={periodBoxes > 0 && reviewedBoxes === periodBoxes ? 'audited' : 'waiting'}><i aria-hidden="true" />{periodBoxes > 0 && reviewedBoxes === periodBoxes ? 'اكتمل تدقيق الفترة' : 'لم يكتمل تدقيق الفترة'}</Chip>
                 <span className="flex-1" />
                 <label htmlFor="closed-box-week" className="sr-only">الفترة الأسبوعية</label>
-                <SearchableSelect id="closed-box-week" variant="pill" prefix={<span className="gl-filter-name"><Icon name="calendar" className="h-[15px] w-[15px]" />الفترة:</span>} value={week} clearable={false} searchable={periods.length > 8} options={periods.map((period) => ({ value: period.start, label: `${periodDate(period.start)} — ${periodDate(period.end)}`, hint: `${period.count} صندوق · ${period.reviewed === period.count ? 'تم التدقيق' : `دُقّق ${period.reviewed}`}` }))} onChange={(value) => router.get(urls.index, { ...navigation, week: value }, { preserveScroll: true })} className="gl-filter-item" />
+                <SearchableSelect id="closed-box-week" variant="pill" prefix={<span className="gl-filter-name"><Icon name="calendar" className="h-[15px] w-[15px]" />الفترة:</span>} value={week} clearable={false} searchable={periods.length > 8} options={periods.map((period) => ({ value: period.start, label: `${periodDate(period.start)} — ${periodDate(period.end)}`, hint: `${period.count} صندوق، ${period.reviewed === period.count ? 'تم التدقيق' : `دُقّق ${period.reviewed}`}` }))} onChange={(value) => router.get(urls.index, { ...navigation, week: value }, { preserveScroll: true })} className="gl-filter-item" />
                 {(searchingTransfers ? canApprovePeriod && periodBoxes > reviewedBoxes : periodAudit?.boxes > 0) && <Button isDisabled={busy} onPress={reviewPeriod} className="gl-cb-approve"><Icon name="check" className="h-4 w-4" />{busy ? 'جارٍ تحديث الملخص…' : 'اعتماد الفترة كاملة'}</Button>}
             </section>}
             {searchingTransfers ? <>
@@ -168,6 +168,6 @@ export default function BranchCashBoxes({ branch, branches, branchScope = null, 
         </div>}
         {selectedBox && <BoxDetails key={selectedBox.id} box={selectedBox} initialSearch={(selectedBox.payments ?? []).some((entry) => boxEntryMatches(entry, search)) ? search : ''} onClose={closeBox} perform={perform} />}
         {auditingEntry && <BankTransferAuditForm key={auditingEntry.id} entry={auditingEntry} onClose={() => setAuditingEntry(null)} />}
-        {confirmingPeriod && periodAudit && <AuditApprovalDialog title="اعتماد تدقيق الفترة كاملة؟" scope={`${branch.name} · ${periodDate(week)} — ${periodDate(currentPeriod.end)}`} summary={periodAudit} url={urls.auditPeriod} payload={{ branch_id: branch.id, week, box_ids: periodAudit.box_ids, snapshot: periodAudit.snapshot }} onClose={() => setConfirmingPeriod(false)} />}
+        {confirmingPeriod && periodAudit && <AuditApprovalDialog title="اعتماد تدقيق الفترة كاملة؟" scope={`${branch.name}، ${periodDate(week)} — ${periodDate(currentPeriod.end)}`} summary={periodAudit} url={urls.auditPeriod} payload={{ branch_id: branch.id, week, box_ids: periodAudit.box_ids, snapshot: periodAudit.snapshot }} onClose={() => setConfirmingPeriod(false)} />}
     </AuthenticatedLayout>;
 }

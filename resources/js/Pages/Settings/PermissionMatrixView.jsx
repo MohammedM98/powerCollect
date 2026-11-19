@@ -214,8 +214,8 @@ export default function PermissionMatrixView({
                                                 query={query}
                                                 summary={
                                                     auditEnabled
-                                                        ? `مفعّل · ${auditScopeLabel(auditValue, auditOptions.branches)}`
-                                                        : 'غير مفعّل · يمنحه السوبر أدمن لأشخاص محددين'
+                                                        ? `مفعّل، ${auditScopeLabel(auditValue, auditOptions.branches)}`
+                                                        : 'غير مفعّل، يمنحه السوبر أدمن لأشخاص محددين'
                                                 }
                                                 changed={auditChanges.length > 0}
                                             >

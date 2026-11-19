@@ -56,7 +56,7 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
                     <p className="gl-scope-eyebrow">
                         <span className="hidden sm:inline print:inline">{eyebrow}</span>
                         <span className="gl-pill print:hidden" style={{ '--gl-c': scope.level === 'governorate' ? 'var(--gl-info)' : scope.all ? 'var(--gl-warn)' : scope.isActive ? 'var(--gl-ok)' : 'var(--gl-faint)' }}>
-                            {scope.level === 'governorate' ? `محافظة · ${branchCount(scope.branches)}` : scope.all ? `${allLabel} · ${branchCount(scope.branches)}` : scope.isActive ? 'فرع واحد' : 'فرع واحد · متوقف'}
+                            {scope.level === 'governorate' ? `محافظة، ${branchCount(scope.branches)}` : scope.all ? `${allLabel}، ${branchCount(scope.branches)}` : scope.isActive ? 'فرع واحد' : 'فرع واحد، متوقف'}
                         </span>
                     </p>
                     <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">

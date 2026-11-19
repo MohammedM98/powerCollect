@@ -291,7 +291,7 @@ export default function Index({
 
             {balanceLabel && (
                 <div role="status" className="flex flex-wrap items-center justify-between gap-3 border-x border-gray-100 bg-brand-500/5 px-5 py-3 text-sm text-gray-700">
-                    <span><b className="font-display text-gray-900">{subscriptions.total.toLocaleString('en')}</b> اشتراكًا · {balanceLabel}{filtersPending && ' · جارٍ تحديث النتائج…'}</span>
+                    <span><b className="font-display text-gray-900">{subscriptions.total.toLocaleString('en')}</b> اشتراكًا، {balanceLabel}{filtersPending && '، جارٍ تحديث النتائج…'}</span>
                     {canSelect && subscriptions.total > 0 && !allMatching && <button type="button" disabled={filtersPending} onClick={selectAllMatching} className="rounded-control border border-brand-500/20 bg-surface px-3 py-2 font-semibold text-brand-600 transition hover:bg-brand-500/10 disabled:opacity-40">تحديد جميع النتائج ({subscriptions.total.toLocaleString('en')})</button>}
                 </div>
             )}

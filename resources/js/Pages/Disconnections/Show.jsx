@@ -191,7 +191,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
                 <Stat label="متأخر — بانتظار إجراء" value={formatNumber(summary.overdue)} tone="text-red-700 dark:text-red-400" hint="لا يُقطع أحد تلقائيًا" />
                 <Stat label="تم قطعهم" value={formatNumber(summary.disconnected)} />
                 <Stat label="أُزيلوا" value={formatNumber(summary.removed)} />
-                <Stat label="إنذارات · تمديدات" value={`${formatNumber(summary.warnings)} · ${formatNumber(summary.extensions)}`} />
+                <Stat label="إنذارات، تمديدات" value={`${formatNumber(summary.warnings)}، ${formatNumber(summary.extensions)}`} />
                 <Stat label="رسوم القطع المحمّلة" value={`${formatMoney(summary.feesTotal)} ₪`} />
             </div>
 
@@ -258,7 +258,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
                                         </td>
                                     )}
                                     <td data-label="المشترك">
-                                        <RowIdentity name={item.name} subtitle={[item.accountNumber, item.meterBoxNumber && `طبلون ${item.meterBoxNumber}`].filter(Boolean).join(' · ')} />
+                                        <RowIdentity name={item.name} subtitle={[item.accountNumber, item.meterBoxNumber && `طبلون ${item.meterBoxNumber}`].filter(Boolean).join('، ')} />
                                     </td>
                                     <td data-label="السبب" className="text-gray-700">
                                         {item.reasonLabel}
@@ -288,7 +288,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
                                     </td>
                                     <td data-label="الحالة">
                                         <StatusPill tone={itemTone(item)} label={item.isOverdue ? 'متأخر — بانتظار إجراء' : item.statusLabel} />
-                                        {item.status === 'disconnected' && <span className="block text-xs text-gray-500">{item.disconnectedBy} · {formatMoney(item.fee)} ₪</span>}
+                                        {item.status === 'disconnected' && <span className="block text-xs text-gray-500">{item.disconnectedBy}، {formatMoney(item.fee)} ₪</span>}
                                         {item.status === 'removed' && item.removalReason && <span className="block text-xs text-gray-500">{item.removalReason}</span>}
                                         {item.status === 'scheduled' && !item.serviceIsActive && <span className="block text-xs text-amber-700">الخدمة: {item.serviceStatusLabel}</span>}
                                     </td>

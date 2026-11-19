@@ -127,7 +127,7 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
     const hoverText = error
         ?? (missed ? 'لم تُدخل قراءة هذا المشترك' : null)
         ?? (isSaved
-            ? `تم حفظ القراءة (${row.reading.status === 'pending' ? 'بانتظار الاعتماد' : (row.reading.statusLabel ?? row.reading.status)}) · الاستهلاك ${charges?.consumption ?? '—'} · المستحق ${charges ? formatCurrency(charges.amountDue) : '—'}`
+            ? `تم حفظ القراءة (${row.reading.status === 'pending' ? 'بانتظار الاعتماد' : (row.reading.statusLabel ?? row.reading.status)})، الاستهلاك ${charges?.consumption ?? '—'}، المستحق ${charges ? formatCurrency(charges.amountDue) : '—'}`
             : null)
         ?? (row.hasLaterWeek ? 'توجد قراءة لأسبوع لاحق، فلا تُعدَّل هذه القراءة' : null);
 
@@ -185,7 +185,7 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
                         <div className="re-sub-name">
                             <b>{row.fullName}</b>
                             {row.discount && (
-                                <span className="re-pill discount" title={`خصم القراءات الأسبوعية: ${row.discount.terms}${row.discount.segment ? ` · ${row.discount.segment}` : ''}`}>
+                                <span className="re-pill discount" title={`خصم القراءات الأسبوعية: ${row.discount.terms}${row.discount.segment ? `، ${row.discount.segment}` : ''}`}>
                                     خصم
                                 </span>
                             )}
@@ -267,10 +267,10 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
             <td className={`re-due re-number ${billCancelled && !isDraft ? 'text-gray-400' : ''}`}>
                 {charges && charges.consumption >= 0 ? <span className={billCancelled && !isDraft ? 'line-through' : ''}>{formatShekels(charges.amountDue)}</span> : '—'}
                 {dueNotes.length > 0 && (
-                    <p className="re-line text-xs font-normal text-gray-500" title={dueNotes.map((note) => note.text).join(' · ')}>
+                    <p className="re-line text-xs font-normal text-gray-500" title={dueNotes.map((note) => note.text).join('، ')}>
                         {dueNotes.map((note, index) => (
                             <span key={note.text} className={note.className}>
-                                {index > 0 && ' · '}
+                                {index > 0 && '، '}
                                 {note.text}
                             </span>
                         ))}
@@ -322,12 +322,12 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
                     <span className="re-line">
                         <b>{row.reading.recordedByName || '—'}</b>
                         {row.reading.approvedByName && (
-                            <span className="re-approved-by" title={`اعتمدها ${row.reading.approvedByName} · ${row.reading.approvedAt}`}>
-                                · اعتمدها {row.reading.approvedByName}
+                            <span className="re-approved-by" title={`اعتمدها ${row.reading.approvedByName}، ${row.reading.approvedAt}`}>
+                               ، اعتمدها {row.reading.approvedByName}
                             </span>
                         )}
                     </span>
-                    <small><Icon name="clock" />{row.reading.recordedAt} · {row.reading.recordedSource === 'app' ? 'التطبيق' : 'الموقع'}</small>
+                    <small><Icon name="clock" />{row.reading.recordedAt}، {row.reading.recordedSource === 'app' ? 'التطبيق' : 'الموقع'}</small>
                 </> : <span>—</span>}
             </td>}
         </tr>

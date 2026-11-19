@@ -132,7 +132,7 @@ export default function UserForm({ data, setData, errors, isEdit, branches, canC
                             onChange={(value) => setData('company_wide', value === 'company')}
                             options={[
                                 { value: 'branch', label: 'فرع واحد', icon: 'pin' },
-                                { value: 'company', label: 'كل الفروع · مدير عام', icon: 'shield' },
+                                { value: 'company', label: 'كل الفروع، مدير عام', icon: 'shield' },
                             ]}
                         />
                     </FormField>

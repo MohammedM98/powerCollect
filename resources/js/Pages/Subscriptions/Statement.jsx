@@ -53,7 +53,7 @@ export default function Statement(statement) {
                                         <StopStandingDiscountButton
                                             subscriptionId={subscription.id}
                                             subscriptionName={subscription.fullName}
-                                            discountLabel={subscription.standingDiscount.segment ? `${subscription.standingDiscount.terms} · ${subscription.standingDiscount.segment}` : subscription.standingDiscount.terms}
+                                            discountLabel={subscription.standingDiscount.segment ? `${subscription.standingDiscount.terms}، ${subscription.standingDiscount.segment}` : subscription.standingDiscount.terms}
                                         />
                                     )}
                                 </div>

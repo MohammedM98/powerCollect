@@ -32,7 +32,7 @@ export default function DistributionAreas({ areas, chosen, onChange, disabled, f
                 <label className="sr-only" htmlFor="distribution-area-search">البحث عن منطقة</label>
                 <input id="distribution-area-search" type="search" value={search} disabled={disabled} onChange={(event) => setSearch(event.target.value)} placeholder="ابحث عن منطقة..." className="block w-full text-sm" />
                 <div className="flex items-center justify-between gap-2 text-xs">
-                    <span className="text-gray-500">{formatNumber(matching.length)} منطقة{chosen.length > 0 && ` · اختيرت ${formatNumber(chosen.length)}`}</span>
+                    <span className="text-gray-500">{formatNumber(matching.length)} منطقة{chosen.length > 0 && `، اختيرت ${formatNumber(chosen.length)}`}</span>
                     {matching.length > 0 && <button type="button" disabled={disabled} onClick={() => onChange([...new Set([...chosen, ...matching.map((area) => area.id)])])} className="font-semibold text-brand-600 hover:underline">اختيار كل نتائج المناطق</button>}
                 </div>
             </div>
@@ -42,7 +42,7 @@ export default function DistributionAreas({ areas, chosen, onChange, disabled, f
                     <input type="checkbox" checked={chosen.includes(area.id)} disabled={disabled} onChange={() => toggle(area.id)} aria-label={`عرض منطقة ${area.name}`} className="mt-1 rounded border-gray-300 text-brand-600" />
                     <span className="flex min-w-0 flex-1 flex-col gap-1">
                         <span className="block text-sm font-semibold text-gray-900">{area.name}</span>
-                        <span className="text-xs text-gray-500">{formatNumber(area.matchingBoxes)} طبلون{filter ? ' مطابق' : ''} · {formatNumber(area.matchingSubscribers)} مشترك</span>
+                        <span className="text-xs text-gray-500">{formatNumber(area.matchingBoxes)} طبلون{filter ? ' مطابق' : ''}، {formatNumber(area.matchingSubscribers)} مشترك</span>
                         <span className="flex flex-wrap gap-x-2 gap-y-1 text-xs" aria-label={`إجمالي المنطقة: ${area.assigned} موزع، ${area.unassigned} غير موزع`}>
                             <span className="text-emerald-700 dark:text-emerald-400">{formatNumber(area.assigned)} موزع</span>
                             <span className="text-amber-700 dark:text-amber-400">{formatNumber(area.unassigned)} متبقٍ</span>

@@ -185,7 +185,7 @@ export default function AccountStatement({ subscription, entries, summary, payme
         filtersCaption(filters, transactionTypes, paymentMethods),
     ]
         .filter(Boolean)
-        .join(' · ');
+        .join('، ');
 
     const exportTools = (
         <TableExportActions
@@ -214,7 +214,7 @@ export default function AccountStatement({ subscription, entries, summary, payme
         return (
             <div data-excel-source="custom" className="statement-print-source">
                 <p className="data-table-totals">
-                    ملخص الحساب الكامل: الرصيد {formatAmount(summary.balance)} شيكل · التحميلات {formatAmount(summary.charged)} شيكل · التسديدات {formatAmount(summary.paid)} شيكل · الخصومات {formatAmount(summary.discounted)} شيكل · المقاصات {formatAmount(summary.cleared)} شيكل.
+                    ملخص الحساب الكامل: الرصيد {formatAmount(summary.balance)} شيكل، التحميلات {formatAmount(summary.charged)} شيكل، التسديدات {formatAmount(summary.paid)} شيكل، الخصومات {formatAmount(summary.discounted)} شيكل، المقاصات {formatAmount(summary.cleared)} شيكل.
                     {printCaption && ` نطاق الطباعة: ${printCaption}.`}
                     {' مجموع عمود المبلغ هو صافي عليه ناقص له، لكل عملة على حدة. الأرصدة بعد الحركات ليست قابلة للجمع.'}
                 </p>

@@ -152,7 +152,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                             {preview ? (
                                 <>
                                     يُطبَّق على <b className="font-display text-gray-900">{reached.length.toLocaleString('en')}</b> مشترك
-                                    {excluded.length > 0 && <> · يُستثنى <b className="font-display">{excluded.length.toLocaleString('en')}</b></>}
+                                    {excluded.length > 0 && <>، يُستثنى <b className="font-display">{excluded.length.toLocaleString('en')}</b></>}
                                     {selection.all ? ' (من كل النتائج المطابقة للفلاتر في كل الصفحات)' : ' (من المحددين)'}
                                 </>
                             ) : (
@@ -290,7 +290,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                             )}
                             <p className="text-xs text-gray-600">
                                 المستلمون: <b className="font-display">{reached.length.toLocaleString('en')}</b>
-                                {channel === 'sms' && <> · كل رسالة نحو <b className="font-display">{parts}</b> جزء SMS · التكلفة التقريبية <b className="font-display">{(parts * reached.length).toLocaleString('en')}</b> رسالة</>}
+                                {channel === 'sms' && <>، كل رسالة نحو <b className="font-display">{parts}</b> جزء SMS، التكلفة التقريبية <b className="font-display">{(parts * reached.length).toLocaleString('en')}</b> رسالة</>}
                                 . الإرسال يدوي في كل مرة؛ لا تُرسل إنذارات تلقائيًا.
                             </p>
                         </div>
@@ -315,7 +315,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                             )}
                             <div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-red-500/20 bg-red-500/5 px-4 py-3">
                                 <p className="text-sm text-gray-700">
-                                    <b className="font-display text-gray-900">{reached.length.toLocaleString('en')}</b> مشترك · إجمالي رسوم القطع المقدّرة
+                                    <b className="font-display text-gray-900">{reached.length.toLocaleString('en')}</b> مشترك، إجمالي رسوم القطع المقدّرة
                                 </p>
                                 <p className="font-display text-2xl font-bold text-gray-900">{formatMoney(totalFees(chosenFees))} ₪</p>
                             </div>

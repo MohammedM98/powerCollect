@@ -54,7 +54,7 @@ export default function BulkActionBar({ count, selection, abilities, onAction, o
             <div className="flex flex-1 flex-wrap items-center gap-2">
                 {pendingAction ? (
                     <>
-                        <span className="flex-1 text-sm">{pendingAction.label}{count === 0 && ' · حدّد الاشتراكات من القائمة'}</span>
+                        <span className="flex-1 text-sm">{pendingAction.label}{count === 0 && '، حدّد الاشتراكات من القائمة'}</span>
                         <BarButton icon="check" label="متابعة" onClick={onContinue} disabled={count === 0 || count > 5000} hint="حدّد من 1 إلى 5,000 اشتراك للمتابعة." />
                     </>
                 ) : <>

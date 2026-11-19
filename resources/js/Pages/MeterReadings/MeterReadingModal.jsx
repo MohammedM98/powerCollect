@@ -63,7 +63,7 @@ export default function MeterReadingModal({ show, onClose, reading, subscription
                 <div className="rounded-lg border border-gray-100 px-4 py-3 text-sm">
                     <p className="font-semibold text-gray-900">{reading.subscriptionName}</p>
                     <p className="mt-1 text-gray-500">
-                        <span dir="ltr">{reading.accountNumber}</span> · الأسبوع {formatDate(reading.weekStart)} ← {formatDate(reading.weekEnd)}
+                        <span dir="ltr">{reading.accountNumber}</span>، الأسبوع {formatDate(reading.weekStart)} ← {formatDate(reading.weekEnd)}
                     </p>
                 </div>
             ) : (

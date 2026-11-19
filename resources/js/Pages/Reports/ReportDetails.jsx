@@ -66,7 +66,7 @@ function ReportTable({ columns, title, section, nameCell, empty, exportRows }) {
             onSearchChange={controls.setSearch}
             placeholder={section === 'statement' ? 'بحث في البيان أو رقم السند أو المبلغ...' : section === 'debts' ? 'بحث بالمشترك أو رقم الحساب...' : 'بحث برقم الصندوق أو المحصّل...'}
             perPage={size} onPerPageChange={controls.setPerPage} total={model.total}
-            actions={<Actions title={title} section={section} columns={columns} exportRows={exportRows} identity={reportStatement ? `${reportStatement.subscription.name} · ${reportStatement.subscription.accountNumber}` : ''} />}
+            actions={<Actions title={title} section={section} columns={columns} exportRows={exportRows} identity={reportStatement ? `${reportStatement.subscription.name}، ${reportStatement.subscription.accountNumber}` : ''} />}
             filterMenu={<DataTableFilterMenu tableKey={`reports:${section}`} groups={model.options} values={controls.filterValues} onChange={controls.setFilter} onChangeMany={controls.setFilters} onClear={controls.clearFilters} />}
         />
         <div className="data-table-container">
@@ -110,7 +110,7 @@ export function BoxesReport({ data }) {
         <section aria-label="الأموال حسب حالة الصندوق" className="grid gap-4 sm:grid-cols-3">
             {data.byStatus.map((group) => {
                 const [main, ...others] = group.currencies;
-                return <KpiTile key={group.status} label={boxStatusLabels[group.status]} value={<bdi dir="ltr">{reportMoney(main?.amount ?? 0)}</bdi>} unit={main && main.currency !== 'ILS' ? main.currency : 'شيكل'} hint={[`${group.boxes} صندوق`, ...others.map((total) => `${reportMoney(total.amount)} ${total.currency}`)].join(' · ')} />;
+                return <KpiTile key={group.status} label={boxStatusLabels[group.status]} value={<bdi dir="ltr">{reportMoney(main?.amount ?? 0)}</bdi>} unit={main && main.currency !== 'ILS' ? main.currency : 'شيكل'} hint={[`${group.boxes} صندوق`, ...others.map((total) => `${reportMoney(total.amount)} ${total.currency}`)].join('، ')} />;
             })}
         </section>
         <TableReport section="boxes" title="الصناديق والأموال" columns={boxColumns} />

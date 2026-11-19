@@ -359,14 +359,14 @@ export default function Index({
                 </table>
             </div>
 
-            <div className="re-footer"><span>مجموع المستحق لهذا الأسبوع <b>{formatCurrency(summary.amountDue)}</b></span><span><Icon name="enter" /> Enter أو ↓ للحفظ والانتقال · ↑ للرجوع · Tab للتنقل</span></div>
+            <div className="re-footer"><span>مجموع المستحق لهذا الأسبوع <b>{formatCurrency(summary.amountDue)}</b></span><span><Icon name="enter" /> Enter أو ↓ للحفظ والانتقال، ↑ للرجوع، Tab للتنقل</span></div>
             <Pagination meta={rows} filters={filters} baseUrl="/meter-readings" extraParams={weekParams} />
             </section>
 
             {selectedRows.length > 0 && (
                 <div className="re-bulk">
                     <p className="text-sm text-gray-600">
-                        <b className="text-gray-900">{selectedRows.length.toLocaleString('en')}</b> قراءة محددة · المجموع{' '}
+                        <b className="text-gray-900">{selectedRows.length.toLocaleString('en')}</b> قراءة محددة، المجموع{' '}
                         <b className="tabular-nums text-gray-900">{formatCurrency(selectedTotal)}</b>
                     </p>
                     <div className="flex items-center gap-3">

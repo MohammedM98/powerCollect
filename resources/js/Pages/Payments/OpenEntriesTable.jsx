@@ -22,8 +22,8 @@ export default function OpenEntriesTable({ table, entries, filters, counts, url,
     const { search, setSearch, setPerPage, filterValues, setFilter } = table;
     const type = filterValues.type ?? '';
     const typeFilters = [
-        { value: '', label: `كل الحركات · ${counts.all}` },
-        ...Object.entries(boxTypeStyles).map(([value, style]) => ({ value, label: `${style.label} · ${counts[value] ?? 0}` })),
+        { value: '', label: `كل الحركات، ${counts.all}` },
+        ...Object.entries(boxTypeStyles).map(([value, style]) => ({ value, label: `${style.label}، ${counts[value] ?? 0}` })),
     ];
     const columns = [['رقم الصندوق', 76], ...ledgerColumns.before, ['المشترك', 150], ...ledgerColumns.after, ['الحالة', 140], ['', 48]];
     const columnWidths = columns.map(([, width]) => width);

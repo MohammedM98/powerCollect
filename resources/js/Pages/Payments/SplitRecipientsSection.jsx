@@ -28,7 +28,7 @@ function PartRow({ part, onAmount, onRemove, error }) {
                             <span dir="ltr" className="font-display">
                                 {part.subscription.accountNumber}
                             </span>
-                            {part.subscription.meterBoxNumber && ` · طبلون ${part.subscription.meterBoxNumber}`}
+                            {part.subscription.meterBoxNumber && `، طبلون ${part.subscription.meterBoxNumber}`}
                         </p>
                     </div>
                 </div>
@@ -159,7 +159,7 @@ export default function SplitRecipientsSection({
                                                     <span dir="ltr" className="font-display">
                                                         {subscription.accountNumber}
                                                     </span>
-                                                    {subscription.meterBoxNumber && ` · طبلون ${subscription.meterBoxNumber}`}
+                                                    {subscription.meterBoxNumber && `، طبلون ${subscription.meterBoxNumber}`}
                                                 </small>
                                             </span>
                                             <span

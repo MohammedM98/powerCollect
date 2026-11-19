@@ -72,9 +72,9 @@ function ReadingAdjustmentHistory({ reading }) {
 
     return <>
         {reading.requiresReentry && <span className="rh-note">بانتظار إدخال القراءة الحالية من جديد</span>}
-        {!reading.requiresReentry && reading.nextPreviousReading != null && Number(reading.nextPreviousReading) !== Number(reading.current_reading) && <span className="rh-note">نقطة البداية التالية: {formatMoney(reading.nextPreviousReading)} · القراءة المفوترة: {formatMoney(reading.current_reading)}</span>}
+        {!reading.requiresReentry && reading.nextPreviousReading != null && Number(reading.nextPreviousReading) !== Number(reading.current_reading) && <span className="rh-note">نقطة البداية التالية: {formatMoney(reading.nextPreviousReading)}، القراءة المفوترة: {formatMoney(reading.current_reading)}</span>}
         {reading.adjustmentHistory?.length > 0 && <details className="mt-2 text-xs font-normal"><summary className="cursor-pointer text-brand-700">سجل التعديلات ({reading.adjustmentHistory.length})</summary><div className="space-y-2 py-2">{[...reading.adjustmentHistory].reverse().map((entry, index) => <div key={index} className="rounded border border-gray-200 p-2">
-            <b>{labels[entry.kind] ?? 'تعديل'}</b><p>{entry.userName} · <bdi dir="ltr">{entry.at}</bdi></p>
+            <b>{labels[entry.kind] ?? 'تعديل'}</b><p>{entry.userName}، <bdi dir="ltr">{entry.at}</bdi></p>
             {Object.entries(entry.after).filter(([field]) => fields[field]).map(([field, value]) => <p key={field}>{fields[field]}: <bdi dir="ltr">{entry.before[field] == null ? '—' : formatMoney(entry.before[field])} ← {value == null ? '—' : formatMoney(value)}</bdi></p>)}
             {entry.reason && <p>السبب: {entry.reason}</p>}
         </div>)}</div></details>}
@@ -133,7 +133,7 @@ function HistoryChart({ readings, average }) {
                         const x = width - (index + 1) * barWidth - index * gap;
                         const height = Math.max(2, 146 - y(reading.consumption));
                         const latest = index === points.length - 1;
-                        const description = `${formatDate(reading.weekStart)} – ${formatDate(reading.weekEnd)}: ${formatMoney(reading.consumption)} كيلو · ${money(reading.amountDue)} ₪ · ${reading.statusLabel}`;
+                        const description = `${formatDate(reading.weekStart)} – ${formatDate(reading.weekEnd)}: ${formatMoney(reading.consumption)} كيلو، ${money(reading.amountDue)} ₪، ${reading.statusLabel}`;
 
                         return <g key={reading.id} tabIndex={0} role="img" aria-label={description} onFocus={() => setActiveId(reading.id)} onBlur={() => setActiveId(null)} onPointerEnter={() => setActiveId(reading.id)} className="rh-chart-point">
                             <title>{description}</title>
@@ -145,7 +145,7 @@ function HistoryChart({ readings, average }) {
                     })}
                     <line x1="0" x2={width} y1={y(average)} y2={y(average)} className="rh-average-line" />
                 </svg> : <p className="rh-chart-empty">لا توجد قراءات في هذه الفترة.</p>}
-                {active && <div className="rh-tooltip" role="tooltip"><b>{formatMoney(active.consumption)} كيلو · {money(active.amountDue)} ₪</b>{shortDate(active.weekStart)} – {shortDate(active.weekEnd)} · {active.statusLabel}</div>}
+                {active && <div className="rh-tooltip" role="tooltip"><b>{formatMoney(active.consumption)} كيلو، {money(active.amountDue)} ₪</b>{shortDate(active.weekStart)} – {shortDate(active.weekEnd)}، {active.statusLabel}</div>}
             </div>
         </section>
     );
@@ -288,7 +288,7 @@ function LiveRow({ subscription, week, reading, maximum, average, editableLastRe
             {saving ? <span className="rh-saving">جارٍ الحفظ...</span> : reading ? <ReadingHistoryStatus subscription={subscription} reading={reading} disabled={isDraft || Boolean(error) || negative} /> : <span className="rh-pill is-missing"><i />لم تُدخل</span>}
             <ConfirmDialog show={confirming} onConfirm={() => { setConfirming(false); save(true); }} onCancel={() => { setConfirming(false); setValue(savedValue); }} title="تعديل قراءة معتمدة؟" message={`قراءة ${subscription.display_name} معتمدة. تعديلها يعيدها إلى قيد المراجعة ويزيل مبلغها من المعاملات المالية للمشترك حتى يُعاد اعتمادها.`} confirmLabel="نعم، عدّل" cancelLabel="تراجع عن التعديل" icon="alert" />
         </td>
-        <td className="rh-recorder">{reading ? <>{reading.recordedByName ?? '—'}<small><HistoryIcon name={reading.recordedSource === 'app' ? 'app' : 'web'} /><span>{reading.recordedSource === 'app' ? 'التطبيق' : 'الموقع'}</span> · <span dir="ltr">{reading.recordedAt}</span></small></> : '—'}</td>
+        <td className="rh-recorder">{reading ? <>{reading.recordedByName ?? '—'}<small><HistoryIcon name={reading.recordedSource === 'app' ? 'app' : 'web'} /><span>{reading.recordedSource === 'app' ? 'التطبيق' : 'الموقع'}</span>، <span dir="ltr">{reading.recordedAt}</span></small></> : '—'}</td>
     </tr>;
 }
 
@@ -335,8 +335,8 @@ export default function ReadingHistoryModal({ subscription, onClose, readingWeek
                         <h2 id={titleId}>سجل قراءات {subscription.display_name}</h2>
                         <div className="rh-meta">
                             <span>حساب <b dir="ltr">{subscription.account_number}</b></span>
-                            {subscription.meterBoxNumber && <><span>·</span><span>الطبلون <b>{subscription.meterBoxNumber}</b>{subscription.subAreaName && ` · ${subscription.subAreaName}`}</span></>}
-                            <span>·</span><span>{subscription.branchName}</span><span>·</span><span>{subscription.tariffCategoryLabel} · {money(subscription.kilowattPrice)} ₪ للكيلو</span>
+                            {subscription.meterBoxNumber && <><span>·</span><span>الطبلون <b>{subscription.meterBoxNumber}</b>{subscription.subAreaName && `، ${subscription.subAreaName}`}</span></>}
+                            <span>·</span><span>{subscription.branchName}</span><span>·</span><span>{subscription.tariffCategoryLabel}، {money(subscription.kilowattPrice)} ₪ للكيلو</span>
                             <span className={`rh-pill ${subscription.status === 'active' ? 'is-approved' : 'is-pending'}`}><i />{subscription.statusLabel}</span>
                         </div>
                     </div>
@@ -350,7 +350,7 @@ export default function ReadingHistoryModal({ subscription, onClose, readingWeek
                         <Figure label="عدد القراءات" value={formatNumber(periodReadings.length)}>{periodReadings.length ? `من أسبوع ${shortDate(periodReadings.at(-1).weekStart)}` : 'لا توجد قراءات بعد'}</Figure>
                         <Figure label="متوسط الاستهلاك الأسبوعي" value={formatMoney(average)} unit="كيلو">{periodReadings.length ? `≈ ${money(average * Number(subscription.kilowattPrice))} ₪ في الأسبوع` : '—'}</Figure>
                         <Figure label="أعلى استهلاك" value={formatMoney(busiest?.consumption ?? 0)} unit="كيلو">{busiest && `أسبوع ${shortDate(busiest.weekStart)} – ${shortDate(busiest.weekEnd)}`}</Figure>
-                        <Figure label="القراءة السابقة" value={formatMoney(subscription.lastReading)}>{latest ? <>أسبوع {shortDate(latest.weekEnd)}{change !== null && <> · <span className={change > 0 ? 'rh-up' : 'rh-down'}>{change > 0 ? '▲' : change < 0 ? '▼' : '≈'} {Math.abs(change)}٪</span> عن متوسط {formatNumber(previousWeeks.length)} أسابيع</>}</> : 'قراءة العداد عند الاشتراك'}</Figure>
+                        <Figure label="القراءة السابقة" value={formatMoney(subscription.lastReading)}>{latest ? <>أسبوع {shortDate(latest.weekEnd)}{change !== null && <>، <span className={change > 0 ? 'rh-up' : 'rh-down'}>{change > 0 ? '▲' : change < 0 ? '▼' : '≈'} {Math.abs(change)}٪</span> عن متوسط {formatNumber(previousWeeks.length)} أسابيع</>}</> : 'قراءة العداد عند الاشتراك'}</Figure>
                     </div>
                     <HistoryChart readings={periodReadings} average={average} />
                     <div className="rh-toolbar">
@@ -359,15 +359,15 @@ export default function ReadingHistoryModal({ subscription, onClose, readingWeek
                         <span className="rh-count" aria-live="polite">{formatNumber(visibleReadings.length)} قراءة معروضة</span>
                     </div>
                     <p className="rh-print-context">
-                        الفترة: {PERIODS.find(([value]) => value === period)[1]} · الحالة: {STATUSES.find(([value]) => value === status)[1]}
-                        {visibleReadings.length > 0 && <> · {visibleReadings.at(-1).weekStart} – {visibleReadings[0].weekEnd}</>}
+                        الفترة: {PERIODS.find(([value]) => value === period)[1]}، الحالة: {STATUSES.find(([value]) => value === status)[1]}
+                        {visibleReadings.length > 0 && <>، {visibleReadings.at(-1).weekStart} – {visibleReadings[0].weekEnd}</>}
                     </p>
                     {initialReading && !liveRowShown && !entryReading && <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm"><span>القراءة السابقة لآخر أسبوع:</span><span className="px-8"><LastReadingField subscription={subscription} lastReading={initialReading} /></span></div>}
                     <div className="rh-table-wrap">
                         <table className="rh-table">
                             <thead><tr><th scope="col">الأسبوع</th><th scope="col" className="rh-previous">السابقة</th><th scope="col" className="rh-current">الحالية</th><th scope="col">الاستهلاك</th><th scope="col" className="rh-price">سعر الكيلو</th><th scope="col" className="rh-minimum">الحد الأدنى</th><th scope="col" className="rh-discount">الخصم</th><th scope="col">المستحق</th><th scope="col">الحالة</th><th scope="col" className="rh-recorder">سجّلها</th></tr></thead>
                             <tbody>{newLine && <LiveRow subscription={subscription} week={entryWeek} reading={null} maximum={maximum} average={average} editableLastReading={editableLastReading ?? initialReading} />}{groupReadingsByMonth(visibleReadings).map((group) => <Fragment key={group.month}>
-                                <tr className="rh-month"><th scope="rowgroup" colSpan={10}><b>{MONTH.format(new Date(`${group.month}-01T00:00:00Z`))}</b>{formatNumber(group.readings.length)} قراءة · <span>{formatMoney(group.totals.consumption)}</span> كيلو · <span>{money(group.totals.due)}</span> ₪</th></tr>
+                                <tr className="rh-month"><th scope="rowgroup" colSpan={10}><b>{MONTH.format(new Date(`${group.month}-01T00:00:00Z`))}</b>{formatNumber(group.readings.length)} قراءة، <span>{formatMoney(group.totals.consumption)}</span> كيلو، <span>{money(group.totals.due)}</span> ₪</th></tr>
                                 {group.readings.map((reading) => {
                                     if (reading.id === editableId) {
                                         return <LiveRow key={reading.id} subscription={subscription} week={entryWeek} reading={reading} maximum={maximum} average={average} editableLastReading={readingAfterLast?.id === reading.id ? editableLastReading : initialReading} />;
@@ -383,7 +383,7 @@ export default function ReadingHistoryModal({ subscription, onClose, readingWeek
                                         <td className="rh-discount">{Number(reading.discountAmount) > 0 ? <span className="rh-discount-value" dir="ltr">−{money(reading.discountAmount)}</span> : <span className="rh-muted">—</span>}</td>
                                         <td className="rh-due"><b dir="ltr">{money(reading.amountDue)} <em>₪</em></b>{reading.minimumApplied && <small>الحد الأدنى</small>}</td>
                                         <td className="rh-status"><ReadingHistoryStatus subscription={subscription} reading={reading} /></td>
-                                        <td className="rh-recorder">{reading.recordedByName ?? '—'}<small><HistoryIcon name={reading.recordedSource === 'app' ? 'app' : 'web'} /><span>{reading.recordedSource === 'app' ? 'التطبيق' : 'الموقع'}</span> · <span dir="ltr">{reading.recordedAt}</span></small></td>
+                                        <td className="rh-recorder">{reading.recordedByName ?? '—'}<small><HistoryIcon name={reading.recordedSource === 'app' ? 'app' : 'web'} /><span>{reading.recordedSource === 'app' ? 'التطبيق' : 'الموقع'}</span>، <span dir="ltr">{reading.recordedAt}</span></small></td>
                                     </tr>;
                                 })}
                             </Fragment>)}</tbody>

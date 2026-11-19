@@ -13,14 +13,14 @@ function row(amount, bankAmount, currency, active = true) {
 
 test('print totals exclude returns and keep each currency separate after sorting or grouping', () => {
     const rows = [row('100.10', '80', 'شيكل'), row('25', '25', 'شيكل', false), row('20', '25', 'دولار'), row('0.20', null, 'شيكل')];
-    assert.equal(rowColumnTotal(rows, 'مبلغ الصندوق'), '100.30 شيكل · 20 دولار');
-    assert.equal(rowColumnTotal(rows, 'وصل البنك'), '80 شيكل · 25 دولار');
-    assert.equal(rowColumnTotal(rows, 'الفرق'), '20.10 شيكل · -5 دولار');
+    assert.equal(rowColumnTotal(rows, 'مبلغ الصندوق'), '100.30 شيكل، 20 دولار');
+    assert.equal(rowColumnTotal(rows, 'وصل البنك'), '80 شيكل، 25 دولار');
+    assert.equal(rowColumnTotal(rows, 'الفرق'), '20.10 شيكل، -5 دولار');
     assert.equal(rowColumnTotal(rows, 'المشترك'), null);
     const layout = defaultLayout({ columns: [{ key: 'الفرق', label: 'الفرق' }] });
     layout.group.key = 'المشترك';
     const groups = arrangeRows(rows, layout);
-    assert.equal(rowColumnTotal(groups[0].rows, 'وصل البنك'), '80 شيكل · 25 دولار');
+    assert.equal(rowColumnTotal(groups[0].rows, 'وصل البنك'), '80 شيكل، 25 دولار');
 });
 
 test('unknown bank amounts stay unknown while an audited missing payment totals to zero', () => {

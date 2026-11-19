@@ -428,7 +428,7 @@ export function filtersCaption(filters, transactionTypes, paymentMethods) {
         filters.search.trim() && `بحث: «${filters.search.trim()}»`,
     ]
         .filter(Boolean)
-        .join(' · ');
+        .join('، ');
 }
 
 /** Whether a reversal immediately follows the original line in chronological order. */

@@ -25,7 +25,7 @@ function areasCountLabel(count) {
 }
 
 function subAreasCountLabel(count) {
-    return count === 0 ? 'بلا منطقة 2' : `منطقة 2 · ${count}`;
+    return count === 0 ? 'بلا منطقة 2' : `منطقة 2، ${count}`;
 }
 
 /**

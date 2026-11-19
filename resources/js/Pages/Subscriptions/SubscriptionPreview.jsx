@@ -27,7 +27,7 @@ export function SubscriptionPreview({ data, tariff, circuitBreaker, filled, tota
             title={name || 'مشترك جديد'}
             subtitle={phone || '05— ——— ——'}
             subtitleDir="ltr"
-            chips={[tariff && `${tariff.categoryLabel} · ${formatAmount(kilowattPrice)} ش/ك.و`, circuitBreaker && `قاطع ${circuitBreaker.ampere} أمبير`].filter(Boolean)}
+            chips={[tariff && `${tariff.categoryLabel}، ${formatAmount(kilowattPrice)} ش/ك.و`, circuitBreaker && `قاطع ${circuitBreaker.ampere} أمبير`].filter(Boolean)}
             filled={filled}
             total={total}
         />

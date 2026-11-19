@@ -129,7 +129,7 @@ export default function BarChart({ data, label, formatValue = formatNumber, coun
                             <b className="block font-display text-sm text-gray-900">{formatValue(point.value)}</b>
                             <span className="text-gray-500">
                                 {formatShortDay(point.date)}
-                                {countLabel && point.count !== undefined && ` · ${formatNumber(point.count)} ${countLabel}`}
+                                {countLabel && point.count !== undefined && `، ${formatNumber(point.count)} ${countLabel}`}
                             </span>
                         </div>
                     )}

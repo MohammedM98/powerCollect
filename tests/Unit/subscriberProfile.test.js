@@ -165,7 +165,7 @@ test('account opens compact, leaving out a cancelled line and its reversal, and 
 
     assert.match(html, /القراءة الصحيحة/);
     assert.doesNotMatch(html, /القراءة الخاطئة|عكس القراءة/);
-    assert.match(html, /صُحّحت · 2 حركات سابقة/);
+    assert.match(html, /صُحّحت، 2 حركات سابقة/);
     assert.match(html, /أُخفيت 2 حركة ملغاة/);
     assert.match(html, /aria-(?:pressed|checked)="true"[^>]*>(?:(?!<\/button>)[\s\S])*عرض مختصر/);
     assert.match(html, /كل الحركات/);

@@ -6808,3 +6808,12 @@ html:root[data-ui-background='graphite'] .pm-hero {
 :root .pm-tab:focus-visible {
     outline-color: rgb(var(--brand-solid));
 }
+
+/* The ledger's header as every table's: a rounded grey band inside the card. */
+.ledger-page .pn .ledger-table thead tr {
+    margin: 4px 12px 0;
+    border-bottom: 0;
+    border-radius: 12px;
+    background: rgb(var(--panel-tile));
+    color: var(--gl-muted);
+}

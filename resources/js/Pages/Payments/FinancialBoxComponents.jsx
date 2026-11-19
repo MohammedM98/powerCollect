@@ -9,11 +9,11 @@ const date = (value) => value ? new Intl.DateTimeFormat('ar-u-nu-latn', { day: '
 const dateTimeShort = (value) => value ? new Intl.DateTimeFormat('ar-u-nu-latn', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Gaza' }).format(new Date(value)) : '—';
 
 export function financialAmountsLine(amounts) {
-    return Object.keys(currencies).filter((currency) => currency === 'ILS' || Number(amounts?.[currency] ?? 0) !== 0).map((currency) => `${formatMoney(amounts?.[currency] ?? 0)} ${currencies[currency]}`).join(' · ');
+    return Object.keys(currencies).filter((currency) => currency === 'ILS' || Number(amounts?.[currency] ?? 0) !== 0).map((currency) => `${formatMoney(amounts?.[currency] ?? 0)} ${currencies[currency]}`).join('، ');
 }
 
 function foreignAmounts(amounts) {
-    return Object.keys(currencies).filter((currency) => currency !== 'ILS' && amounts[currency]).map((currency) => `${formatMoney(amounts[currency])} ${currencies[currency]}`).join(' · ');
+    return Object.keys(currencies).filter((currency) => currency !== 'ILS' && amounts[currency]).map((currency) => `${formatMoney(amounts[currency])} ${currencies[currency]}`).join('، ');
 }
 
 export function BoxPersonAvatar({ name, small = false }) {
@@ -83,14 +83,14 @@ export function FinancialBoxEntries({ box, card = false }) {
     const cancelled = box.payments ? box.payments.length - entries.length : 0;
     if (box.type === 'cash') {
         const foreign = entries.filter((entry) => entry.currency !== 'ILS').length;
-        return <>{!card && <p><b className="font-display text-gray-900">{count}</b> <span className="text-[13px] text-gray-600">حركة{cancelled > 0 ? ` · ${cancelled} ملغاة` : ''}</span></p>}<p className="mt-1 flex items-center gap-2 text-[13px] text-gray-600"><Icon name="banknotes" className="h-4 w-4" />{card ? (box.status === 'received' ? 'أُغلق بإجمالي حركاته السارية' : 'يجمع المحصّل النقد') : foreign ? `${foreign} بعملة أجنبية` : 'نقد بالشيكل'}</p></>;
+        return <>{!card && <p><b className="font-display text-gray-900">{count}</b> <span className="text-[13px] text-gray-600">حركة{cancelled > 0 ? `، ${cancelled} ملغاة` : ''}</span></p>}<p className="mt-1 flex items-center gap-2 text-[13px] text-gray-600"><Icon name="banknotes" className="h-4 w-4" />{card ? (box.status === 'received' ? 'أُغلق بإجمالي حركاته السارية' : 'يجمع المحصّل النقد') : foreign ? `${foreign} بعملة أجنبية` : 'نقد بالشيكل'}</p></>;
     }
     if (!box.payments) {
-        return <p className="text-[13px] text-gray-600"><b className="font-display text-gray-900">{count}</b> حركة{box.rejectedCount ? ` · ${box.rejectedCount} مرفوضة` : ''}</p>;
+        return <p className="text-[13px] text-gray-600"><b className="font-display text-gray-900">{count}</b> حركة{box.rejectedCount ? `، ${box.rejectedCount} مرفوضة` : ''}</p>;
     }
     const flagged = entries.filter(isFlaggedEntry).length;
     const note = <p className="mt-1 flex items-center gap-2 text-[13px] text-gray-600"><Icon name={box.type === 'clearing' ? 'scale' : 'bank'} className="h-4 w-4" />{flagged ? <b className="font-semibold text-brand-600">{flagged} {box.type === 'clearing' ? 'مرفوضة' : 'غير موجودة'}</b> : 'يدقّقها قسم التدقيق بعد الإغلاق'}</p>;
-    return card ? note : <><p><b className="font-display text-gray-900">{count}</b> <span className="text-[13px] text-gray-600">حركة{cancelled ? ` · ${cancelled} ملغاة` : ''}</span></p>{note}</>;
+    return card ? note : <><p><b className="font-display text-gray-900">{count}</b> <span className="text-[13px] text-gray-600">حركة{cancelled ? `، ${cancelled} ملغاة` : ''}</span></p>{note}</>;
 }
 
 export function FinancialBoxDates({ box }) {

@@ -22,7 +22,7 @@ export default function DiscountKindStep({ changeKind, data, isStanding, setConf
                         </b>
                         <small className="block text-[12.5px] text-gray-500">
                             منذ <bdi dir="ltr">{standingDiscount.grantedAt}</bdi>
-                            {standingDiscount.grantedByName && ` · أعطاه ${standingDiscount.grantedByName}`}. الخصم الجديد يحلّ محلّه.
+                            {standingDiscount.grantedByName && `، أعطاه ${standingDiscount.grantedByName}`}. الخصم الجديد يحلّ محلّه.
                         </small>
                     </div>
                     <button

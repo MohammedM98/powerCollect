@@ -91,7 +91,7 @@ export default function CloseBoxesByType({ boxes, branchId, userId, initialType,
                         <span className="relative shrink-0"><BoxTypeIcon type={value} className="h-10 w-10" />{chosen && <span className="absolute -inset-e-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-900 text-surface ring-2 ring-surface"><Icon name="check" className="h-2.5 w-2.5" strokeWidth={3} /></span>}</span>
                         <span className="min-w-0">
                             <span className="block font-semibold text-gray-900">{boxTypeStyles[value].label}</span>
-                            <span className="block truncate text-xs text-gray-500"><b className="font-display text-gray-700">{ofType.length}</b> صناديق · <bdi dir="ltr" className="font-display">{formatMoney(financialBoxesTotals(ofType).ILS)}</bdi> شيكل</span>
+                            <span className="block truncate text-xs text-gray-500"><b className="font-display text-gray-700">{ofType.length}</b> صناديق، <bdi dir="ltr" className="font-display">{formatMoney(financialBoxesTotals(ofType).ILS)}</bdi> شيكل</span>
                         </span>
                     </button>;
                 })}
@@ -114,7 +114,7 @@ export default function CloseBoxesByType({ boxes, branchId, userId, initialType,
                             <BoxPersonAvatar name={box.person} />
                             <span className="min-w-0 flex-1">
                                 <span className="block truncate font-semibold text-gray-900">{box.person ?? '—'}</span>
-                                <span className="block text-xs text-gray-500">صندوق <bdi dir="ltr" className="font-display">{box.number}</bdi> · <b className="font-display text-gray-700">{box.count}</b> حركة</span>
+                                <span className="block text-xs text-gray-500">صندوق <bdi dir="ltr" className="font-display">{box.number}</bdi>، <b className="font-display text-gray-700">{box.count}</b> حركة</span>
                             </span>
                             <span className="shrink-0 text-end"><b dir="ltr" className="block font-display text-gray-900">{formatMoney(financialBoxesTotals([box]).ILS)}</b><span className="text-xs text-gray-500">₪</span></span>
                         </label></li>;
@@ -133,7 +133,7 @@ export default function CloseBoxesByType({ boxes, branchId, userId, initialType,
                 <span>عددتُ نقد كل صندوق من الصناديق المختارة ووجدته مطابقًا لإجماليه: <b className="text-gray-900">{financialAmountsLine(totals)}</b></span>
             </label>}
             <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm text-gray-600">{selected.length ? <>{selected.length === 1 ? 'صندوق واحد مختار' : <><b className="font-display text-gray-900">{selected.length}</b> صناديق مختارة</>} · <b className="text-gray-900">{financialAmountsLine(totals)}</b></> : 'لم تختر أي صندوق بعد'}</p>
+                <p className="text-sm text-gray-600">{selected.length ? <>{selected.length === 1 ? 'صندوق واحد مختار' : <><b className="font-display text-gray-900">{selected.length}</b> صناديق مختارة</>}، <b className="text-gray-900">{financialAmountsLine(totals)}</b></> : 'لم تختر أي صندوق بعد'}</p>
                 <div className="flex flex-wrap items-center gap-2">
                     <SecondaryButton onClick={onClose}>إلغاء</SecondaryButton>
                     <PrimaryButton disabled={processing || !selected.length || (cash && !cashCounted)} onClick={() => setConfirming(true)}><Icon name="check" className="h-4 w-4" />{selected.length === 1 ? 'تأكيد إغلاق الصندوق' : selected.length ? `تأكيد إغلاق ${selected.length} صناديق` : 'تأكيد الإغلاق'}</PrimaryButton>

@@ -29,7 +29,7 @@ export function PermissionChangeReview({ employee, changes }) {
     return (
         <div className="px-5 pb-5 sm:px-7">
             <p className="mb-4 rounded-control border border-gray-100 bg-gray-50 p-3 text-sm leading-6 text-gray-600">
-                <b className="text-gray-900">{employee.name}</b> · {employee.roleLabel} · {employee.branchName ?? 'بلا فرع'}
+                <b className="text-gray-900">{employee.name}</b>، {employee.roleLabel}، {employee.branchName ?? 'بلا فرع'}
                 <br />
                 لا تتغيّر الصلاحيات خارج نطاق إدارتك.
             </p>
@@ -159,9 +159,9 @@ export function PermissionReviewDialog({
                         مراجعة تغييرات الصلاحيات
                     </h3>
                     <p className="mt-1 text-sm text-gray-500">
-                        {added} تُمنح · {removed} تُلغى
-                        {auditChanges.length > 0 && ` · ${auditChanges.length} تغييرات في عمل التدقيق`}
-                        {keyChanges.added + keyChanges.removed > 0 && ` · حق المنح: ${keyChanges.added} يُعطى، ${keyChanges.removed} يُسحب`}
+                        {added} تُمنح، {removed} تُلغى
+                        {auditChanges.length > 0 && `، ${auditChanges.length} تغييرات في عمل التدقيق`}
+                        {keyChanges.added + keyChanges.removed > 0 && `، حق المنح: ${keyChanges.added} يُعطى، ${keyChanges.removed} يُسحب`}
                     </p>
                     <div className="pm-review-strip">
                         <span>

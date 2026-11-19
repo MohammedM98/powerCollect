@@ -60,7 +60,7 @@ export function LatestPayments({ payments, latestPayments, period, search, onSea
                                 <td>
                                     <span className="inline-flex items-center gap-1.5">
                                         <Icon name={payment.isCash ? 'banknotes' : 'bank'} className="h-4 w-4" />
-                                        {payment.isCash ? 'نقدي' : `حوالة${payment.bankName ? ` · ${payment.bankName}` : ''}`}
+                                        {payment.isCash ? 'نقدي' : `حوالة${payment.bankName ? `، ${payment.bankName}` : ''}`}
                                     </span>
                                 </td>
                                 <td className={`gl-num font-bold ${payment.cancelled ? 'line-through opacity-50' : ''}`}>₪ {formatMoney(payment.amount)}</td>

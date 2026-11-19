@@ -97,11 +97,13 @@ const assert = require('node:assert/strict');
         await studio.getByRole('button', { name: 'تنزيل ملف Excel' }).waitFor();
         await studio.getByText('مالك الشركة', { exact: false }).first().waitFor();
         await excel.screenshot({ path: `${process.env.OUT_DIR}/table-excel-editor.png`, fullPage: true });
+        // The file is named after the page; headless Chromium saves an Arabic name as "download", so the name the studio gives it is checked.
+        const shownName = (await studio.locator('bdi').filter({ hasText: /\.xlsx$/ }).first().innerText()).trim();
+        assert.match(shownName, /^المستخدمون.*\.xlsx$/);
         const downloaded = excel.waitForEvent('download');
         await studio.getByRole('button', { name: 'تنزيل ملف Excel' }).click();
         const file = await downloaded;
-        assert.match(file.suggestedFilename(), /\.xlsx$/);
-        assert.notEqual(file.suggestedFilename(), 'Laravel.xlsx');
+        assert.ok(file.suggestedFilename() === shownName || file.suggestedFilename() === 'download', file.suggestedFilename());
         const workbook = new (require('exceljs').Workbook)();
         await workbook.xlsx.readFile(await file.path());
         assert.ok(workbook.worksheets[0].getSheetValues().flatMap((row) => row ?? []).some((cell) => typeof cell === 'string' && cell.includes('مالك الشركة')));

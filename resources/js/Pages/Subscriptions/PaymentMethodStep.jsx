@@ -20,7 +20,7 @@ export default function PaymentMethodStep({
         <FormStep
             number={2}
             title="طريقة الدفع"
-            hint={methods.length > 1 ? 'بالأرقام 1 · 2' : null}
+            hint={methods.length > 1 ? 'بالأرقام 1، 2' : null}
             done={throughBank ? Boolean(data.bank_name) : Boolean(data.payment_method)}
         >
             <fieldset>

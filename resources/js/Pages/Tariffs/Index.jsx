@@ -317,7 +317,7 @@ function QuickCalculator({ tariffs }) {
                 {tariffs.map((tariff) => (
                     <div key={tariff.id} className="min-w-[150px] flex-1 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-2.5">
                         <small className="block text-[12.5px] text-gray-500">
-                            {tariff.categoryLabel} · {price(tariff.rate)} ₪
+                            {tariff.categoryLabel}، {price(tariff.rate)} ₪
                         </small>
                         <b className="font-display text-[22px] font-extrabold text-gray-900">{price(amount * Number(tariff.rate))} ₪</b>
                     </div>

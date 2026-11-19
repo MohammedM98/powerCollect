@@ -24,7 +24,7 @@ export default function PermissionGuide({ show, onClose, sections, employee, sel
     const auditScope = auditOptions && auditValue ? auditScopeLabel(auditValue, auditOptions.branches) : '';
     function html() {
         return permissionGuideHtml({ title: audience === 'selected' ? `دليل صلاحيات ${employee.name}` : 'دليل الصلاحيات المتاحة', entries: included, auditActions,
-            scopeNote: audience === 'selected' ? `${employee.roleLabel} · ${employee.branchName ?? 'بلا فرع'}${auditOptions && selected.includes(auditOptions.permissionId) ? ` · فروع التدقيق: ${auditScope}` : ''} · بحسب الاختيارات الحالية؛ التعديلات لا تُعتمد إلا بعد حفظها.` : scopedToOwnBranch ? 'الصلاحيات التي يحق لك إدارتها لموظفي فرعك.' : 'جميع الصلاحيات المتاحة للإدارة في النظام.',
+            scopeNote: audience === 'selected' ? `${employee.roleLabel}، ${employee.branchName ?? 'بلا فرع'}${auditOptions && selected.includes(auditOptions.permissionId) ? `، فروع التدقيق: ${auditScope}` : ''}، بحسب الاختيارات الحالية؛ التعديلات لا تُعتمد إلا بعد حفظها.` : scopedToOwnBranch ? 'الصلاحيات التي يحق لك إدارتها لموظفي فرعك.' : 'جميع الصلاحيات المتاحة للإدارة في النظام.',
             lockedPermissions: audience === 'selected' ? employee.lockedPermissions ?? [] : [],
         });
     }

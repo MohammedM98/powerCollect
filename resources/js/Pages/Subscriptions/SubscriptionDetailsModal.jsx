@@ -94,13 +94,13 @@ export function AccountTab({ statement, onOpenStatement, onLoadStatement, loadin
                     onMouseEnter={chain ? () => setHoveredChain(chain) : undefined} onMouseLeave={chain ? () => setHoveredChain(null) : undefined}>
                     <td><span className="sp-date">{formatDate(entry.date.slice(0, 10))}<small>{entry.date.slice(11)}</small></span></td>
                     <td><span className={`sp-transaction-type ${entry.isCredit ? 'sp-credit' : 'sp-owes'}`}><Icon name={entry.isCredit ? 'arrow-down' : 'receipt'} />{entry.typeLabel}</span></td>
-                    <td>{color && <span className="sp-chain-dot" title="الحركات المرتبطة بنفس اللون" aria-hidden="true" />}{entry.description}{entry.cancellation && <small className="sp-cancellation">{entry.cancellation.wasCorrected ? 'مصححة' : 'ملغاة'} · {entry.cancellation.reasonLabel}</small>}{entry.history?.length > 0 && <button type="button" className="sp-history-link" onClick={() => chooseView('full')}><Icon name="history" />صُحّحت · {entry.history.length} حركات سابقة</button>}</td>
+                    <td>{color && <span className="sp-chain-dot" title="الحركات المرتبطة بنفس اللون" aria-hidden="true" />}{entry.description}{entry.cancellation && <small className="sp-cancellation">{entry.cancellation.wasCorrected ? 'مصححة' : 'ملغاة'}، {entry.cancellation.reasonLabel}</small>}{entry.history?.length > 0 && <button type="button" className="sp-history-link" onClick={() => chooseView('full')}><Icon name="history" />صُحّحت، {entry.history.length} حركات سابقة</button>}</td>
                     <td className="sp-amount-column"><b className="sp-number">{number(entry.amount)} {entry.currencyLabel}</b></td>
                     <td className="sp-amount-column"><bdi dir="ltr" className="sp-number" title={BALANCE_HINTS[running.tone]}>{running.signed} ₪</bdi></td>
                 </tr>;
             })}</tbody>
         </table>{entries.length === 0 && <p className="sp-empty">لا توجد حركات لهذا النوع.</p>}</div>
-        {isCompact && compact.hiddenCount > 0 && <p className="sp-hidden-note">أُخفيت {compact.hiddenCount} حركة ملغاة مع قيودها العكسية (مجموعها صفر) · <button type="button" onClick={() => chooseView('full')}>عرض كل الحركات</button></p>}
+        {isCompact && compact.hiddenCount > 0 && <p className="sp-hidden-note">أُخفيت {compact.hiddenCount} حركة ملغاة مع قيودها العكسية (مجموعها صفر)، <button type="button" onClick={() => chooseView('full')}>عرض كل الحركات</button></p>}
     </>;
 }
 
@@ -174,7 +174,7 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
                         <span className="sp-avatar" aria-hidden="true">{subscription.display_name?.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join('')}<i className={`sp-status-${subscription.status}`} /></span>
                         <div className="sp-identity">
                             <h2 id={`${tabsId}-title`}>{subscription.display_name}<span className={`sp-status sp-status-${subscription.status}`}><i />{subscription.statusLabel}</span></h2>
-                            <div className="sp-meta"><span>ملف المشترك</span><span className="sp-number">#{subscription.subscriber_number ?? subscription.account_number}</span><span><Icon name="pin" />{subscription.branchName}</span><span><Icon name="bolt" />{subscription.tariffCategoryLabel}{subscription.circuitBreakerAmpere && ` · ${subscription.circuitBreakerAmpere} أمبير`}</span></div>
+                            <div className="sp-meta"><span>ملف المشترك</span><span className="sp-number">#{subscription.subscriber_number ?? subscription.account_number}</span><span><Icon name="pin" />{subscription.branchName}</span><span><Icon name="bolt" />{subscription.tariffCategoryLabel}{subscription.circuitBreakerAmpere && `، ${subscription.circuitBreakerAmpere} أمبير`}</span></div>
                             <div className="sp-facts">{lastPayment && <span>آخر دفعة <b>{number(lastPayment.amount)} {lastPayment.currencyLabel}</b></span>}<span>القراءة السابقة <b>{number(subscription.lastReading)}</b></span>{lastReading && <span>استهلاك آخر أسبوع <b>{number(lastReading.consumption)}</b> كيلوواط ساعة</span>}</div>
                         </div>
                         <div className={`sp-balance sp-${balance.tone}`} title={BALANCE_HINTS[balance.tone]}><small>الرصيد الحالي</small><b><bdi dir="ltr">{balance.signed} ₪</bdi><em>{balance.label}</em></b></div>
@@ -252,7 +252,7 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
                         </div>
                     </div>
                 </div>
-                <footer className="sp-footer"><span className="sp-shortcuts"><kbd>←</kbd><kbd>→</kbd> المشترك التالي · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> التبويبات · <kbd>Esc</kbd> إغلاق</span><div className="sp-footer-actions"><button type="button" className="sp-button" onClick={onClose}>إغلاق</button>{canUpdate && <button type="button" className="sp-button sp-primary" onClick={onEdit}><Icon name="pencil" />تعديل البيانات</button>}</div></footer>
+                <footer className="sp-footer"><span className="sp-shortcuts"><kbd>←</kbd><kbd>→</kbd> المشترك التالي، <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> التبويبات، <kbd>Esc</kbd> إغلاق</span><div className="sp-footer-actions"><button type="button" className="sp-button" onClick={onClose}>إغلاق</button>{canUpdate && <button type="button" className="sp-button sp-primary" onClick={onEdit}><Icon name="pencil" />تعديل البيانات</button>}</div></footer>
             </div>}
         </Modal>
         {enteringReading && subscription && <MeterReadingModal show onClose={() => setEnteringReading(false)} reading={null} fixedSubscription={readingOptionFor(subscription)} weekOptions={readingWeekOptions} />}

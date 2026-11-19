@@ -26,7 +26,7 @@ function RecordedSplit({ recorded, onAnother }) {
                 <div>
                     <h3 className="text-xl font-bold text-gray-900">سُجّلت الدفعة المقسّمة</h3>
                     <p className="text-sm text-gray-600">
-                        {formatMoney(recorded.total)} ₪ · {recorded.bankName} · مرجع{' '}
+                        {formatMoney(recorded.total)} ₪، {recorded.bankName}، مرجع{' '}
                         <span dir="ltr" className="font-display font-semibold">
                             {recorded.reference}
                         </span>
