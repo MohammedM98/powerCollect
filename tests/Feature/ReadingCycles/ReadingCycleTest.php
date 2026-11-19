@@ -494,6 +494,27 @@ class ReadingCycleTest extends TestCase
         $this->assertSame(1, MeterReading::query()->count());
     }
 
+    public function test_an_upload_waiting_on_an_earlier_weeks_reentry_is_held_for_review_not_refused(): void
+    {
+        $cycle = $this->cycle();
+        $box = $this->boxes(1)->first();
+        $subscription = $box->subscriptions()->sole();
+        $reader = $this->reader('أحمد');
+        $this->allocate($this->branchAdmin, $cycle, [$box], 'mobile', $reader);
+        $this->actingAs($this->branchAdmin)->post(route('reading-cycles.assignments.approve', $cycle), []);
+        MeterReading::factory()->for($subscription)->create(['week_start' => '2026-10-09', 'week_end' => '2026-10-15', 'previous_reading' => 100, 'current_reading' => 100, 'consumption' => 0, 'requires_reentry' => true]);
+        $this->travelTo(Carbon::parse('2026-10-22 18:00', 'Asia/Gaza'));
+        $download = $this->mobile($reader)->getJson(route('mobile.reading-assignments.index'))->json('assignments.0');
+
+        $this->mobile($reader)->postJson(route('mobile.reading-assignments.sync'), ['readings' => [[
+            'operation_id' => (string) Str::uuid(), 'assignment_id' => $download['id'], 'authorization' => $download['authorization'],
+            'subscription_id' => $subscription->id, 'current_reading' => '150', 'captured_at' => Carbon::parse('2026-10-22 11:00', 'Asia/Gaza')->toIso8601String(),
+        ]]])->assertOk()->assertJsonPath('results.0.status', 'needs_review')->assertJsonPath('results.0.issue', 'reentry_pending');
+
+        $this->assertSame(1, MeterReading::query()->count());
+        $this->assertDatabaseHas('reading_submissions', ['subscription_id' => $subscription->id, 'issue' => 'reentry_pending']);
+    }
+
     public function test_printing_a_paper_sheet_twice_counts_the_reprint_without_allocating_again(): void
     {
         $cycle = $this->cycle();

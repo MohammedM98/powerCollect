@@ -223,6 +223,13 @@ class UserDeviceAccessTest extends TestCase
         $this->assertDatabaseCount('mobile_access_tokens', 1);
     }
 
+    public function test_creating_a_user_does_not_set_the_device_limit_without_password_management_permission(): void
+    {
+        $actor = User::factory()->collector()->withPermissions([PermissionKey::ViewUsers, PermissionKey::CreateUsers])->create();
+        $this->actingAs($actor)->post(route('users.store'), ['name' => 'New Collector', 'username' => 'new.collector', 'password' => 'NewPassword2026', 'password_confirmation' => 'NewPassword2026', 'max_devices' => 20])->assertSessionHasNoErrors();
+        $this->assertSame(1, User::where('username', 'new.collector')->sole()->fresh()->max_devices);
+    }
+
     public function test_existing_recent_browser_access_is_kept_over_an_idle_legacy_mobile_session(): void
     {
         $user = User::factory()->superAdmin()->create();

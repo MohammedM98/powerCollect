@@ -151,6 +151,8 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
         const options = {
             preserveScroll: true,
             preserveState: true,
+            // Each row saves on its own: Enter on the next row must not cancel this row's save still on its way.
+            async: true,
             onStart: () => setSaving(true),
             onFinish: () => setSaving(false),
             onSuccess: () => setError(null),

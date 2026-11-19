@@ -30,6 +30,7 @@ class ReadingSubmission extends Model
         'week_locked' => 'Only the latest week\'s readings can be saved; earlier weeks are view only.',
         'already_read' => 'The subscriber already has a reading this week',
         'later_week_read' => 'The subscriber has a reading for a later week',
+        'reentry_pending' => 'Enter the pending current reading before recording a new week.',
         'below_previous' => 'The reading is below the previous reading',
         'impossible_consumption' => 'The consumption is above any possible weekly consumption',
     ];

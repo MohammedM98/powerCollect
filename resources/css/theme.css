@@ -597,7 +597,7 @@
  * everywhere. Fields show theirs on the frame (.gl-field:focus-within); the
  * appearance setting data-ui-focus-ring recolours or softens it (app.css).
  */
-:is(.gl-btn, .gl-ib, .gl-seg button, .gl-tog, .gl-chip, .gl-tabs button, .gl-tabs .gl-tab, .gl-qbtn, .gl-mb, .gl-switch):focus-visible {
+:is(.gl-btn, .gl-ib, .gl-seg button, .gl-tog, .gl-chip, .gl-qbtn, .gl-mb, .gl-switch):focus-visible {
     outline: 2px solid rgb(var(--gl-brand));
     outline-offset: 2px;
 }

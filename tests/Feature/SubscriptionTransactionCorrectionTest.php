@@ -493,6 +493,21 @@ class SubscriptionTransactionCorrectionTest extends TestCase
             ->assertInertia(fn ($page) => $page->where('entries.1.canCorrect', true)->where('entries.1.canDelete', false));
     }
 
+    public function test_a_correction_cannot_switch_a_payment_to_a_way_of_paying_the_user_may_not_take(): void
+    {
+        $payment = $this->recordPayment(['amount' => '80', 'payment_method' => 'cash']);
+        $corrector = User::factory()->collector()->create(['branch_id' => $this->branch->id]);
+        $corrector->permissions()->sync(Permission::idsFor([PermissionKey::ViewSubscriptions, PermissionKey::RecordCollections, PermissionKey::RecordCashPayments, PermissionKey::CorrectTransactions]));
+        $reason = ['correction_reason' => 'wrong_amount', 'correction_notes' => 'x'];
+        $update = route('subscriptions.transactions.update', [$this->subscription, $payment]);
+
+        $this->actingAs($corrector)->put($update, [...$this->transfer('100'), ...$reason])->assertSessionHasErrors('payment_method');
+        $this->assertFalse($payment->refresh()->isCancelled());
+
+        $this->put($update, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash', ...$reason])->assertSessionHasNoErrors();
+        $this->assertTrue($payment->refresh()->isCancelled());
+    }
+
     public function test_a_registration_fee_can_be_deleted_with_a_reason_but_not_corrected(): void
     {
         $fee = $this->subscription->transactions()->sole();

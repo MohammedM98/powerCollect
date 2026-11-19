@@ -77,6 +77,29 @@ class ReportCacheTest extends TestCase
         $this->assertSame('125.00', $this->opening());
     }
 
+    public function test_moving_a_subscription_to_another_branch_recomputes_the_opening_balance(): void
+    {
+        RecordCharge::handle($this->subscription, $this->admin, ChargeType::Penalty, '100', null);
+        $this->travelTo(Carbon::parse('2026-11-15 10:00', 'Asia/Gaza'));
+        $this->assertSame('100.00', $this->opening());
+
+        $this->subscription->update(['branch_id' => Branch::factory()->create()->id]);
+
+        $this->assertSame('0.00', $this->opening());
+    }
+
+    public function test_the_version_moves_only_once_the_change_is_committed(): void
+    {
+        $before = cache()->get('report-version:activity');
+
+        DB::transaction(function () use ($before): void {
+            RecordCharge::handle($this->subscription, $this->admin, ChargeType::Penalty, '100', null);
+            $this->assertSame($before, cache()->get('report-version:activity'));
+        });
+
+        $this->assertNotSame($before, cache()->get('report-version:activity'));
+    }
+
     public function test_the_dashboard_follows_a_new_payment_at_once_and_each_viewers_access(): void
     {
         $overview = fn (User $user): ?array => (new DashboardOverview($user, Branch::query()->whereKey($this->branch->id)->get(), 7))->collections();

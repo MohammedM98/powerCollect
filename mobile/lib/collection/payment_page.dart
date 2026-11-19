@@ -92,6 +92,9 @@ class _PaymentPageState extends State<PaymentPage> {
   set scanning(bool value) => form.scanning = value;
   bool get collectorConfirmed => form.collectorConfirmed;
   set collectorConfirmed(bool value) => form.collectorConfirmed = value;
+  bool get needsOverpayment => form.needsOverpayment;
+  bool get overpaymentConfirmed => form.overpaymentConfirmed;
+  set overpaymentConfirmed(bool value) => form.overpaymentConfirmed = value;
   bool get recordedAny => form.recordedAny;
   double get balance => form.balance;
   String? get error => form.error;
@@ -191,7 +194,7 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
   Future<void> submit() async {
-    if (busy || scanning || !collectorConfirmed) return;
+    if (busy || scanning || !form.readyToSend) return;
     FocusScope.of(context).unfocus();
     await form.submit();
   }
@@ -267,6 +270,7 @@ class _PaymentPageState extends State<PaymentPage> {
                                 key: 'payment-notes'),
                             summary(),
                             confirmation(),
+                            if (needsOverpayment) overpaymentConfirmation(),
                             if (error != null) ...[
                               const SizedBox(height: 12),
                               AppNotice(error!, error: true)
@@ -299,7 +303,7 @@ class _PaymentPageState extends State<PaymentPage> {
                               busy: busy,
                               onPressed: busy ||
                                       scanning ||
-                                      !collectorConfirmed ||
+                                      !form.readyToSend ||
                                       value <= 0
                                   ? null
                                   : submit)),

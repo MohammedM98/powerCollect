@@ -175,11 +175,13 @@ class SubscriptionBulkChangeController extends Controller
             return BulkChangePage::undoMeterBoxMove($change, $actor);
         }
 
-        if ($change->isUndone()) {
-            return back()->withErrors(['undo' => 'تم التراجع عن هذا التعديل من قبل.']);
-        }
+        $undone = DB::transaction(function () use ($change, $actor): bool {
+            // Checked under the row lock, so a second click waits and is refused instead of recording 0 restored.
+            $change->refreshForUpdate();
+            if ($change->isUndone()) {
+                return false;
+            }
 
-        DB::transaction(function () use ($change, $actor): void {
             $restored = 0;
             $change->items()->with('subscription')->lockForUpdate()->get()->each(function (SubscriptionBulkChangeItem $item) use ($change, &$restored): void {
                 if ($item->subscription !== null && $item->subscription->archived_at === null && BulkChangePage::currentValue($item->subscription, $change->field) === $item->new_value) {
@@ -191,7 +193,13 @@ class SubscriptionBulkChangeController extends Controller
             });
 
             $change->update(['undone_at' => now(), 'undone_by' => $actor->id, 'restored_count' => $restored]);
+
+            return true;
         });
+
+        if (! $undone) {
+            return back()->withErrors(['undo' => 'تم التراجع عن هذا التعديل من قبل.']);
+        }
 
         $actor->notify(new ActionCompleted('subscriptions-bulk-undone', $change->description));
 

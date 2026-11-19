@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Mobile\MobileAdjustmentController;
+use App\Http\Controllers\Mobile\MobileBrandController;
 use App\Http\Controllers\Mobile\MobileCashBoxController;
 use App\Http\Controllers\Mobile\MobileCollectionController;
 use App\Http\Controllers\Mobile\MobileDiagnosticsController;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\Route;
  */
 $mobileRoutes = function (): void {
     Route::post('/login', [MobileSessionController::class, 'store'])->name('login');
+    Route::get('/brand', [MobileBrandController::class, 'show'])->middleware('throttle:60,1')->name('brand');
 
     Route::middleware('mobile.auth')->group(function (): void {
         Route::get('/me', [MobileSessionController::class, 'show'])->name('me');

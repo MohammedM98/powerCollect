@@ -79,6 +79,12 @@ class AppServiceProvider extends ServiceProvider
         });
         // Report figures stay cached until what they count changes (ReportCache).
         SubscriptionTransaction::updated(fn () => ReportCache::touch(ReportCache::HISTORY));
+        // A subscription moved to another branch takes its past lines with it.
+        Subscription::updated(function (Subscription $subscription): void {
+            if ($subscription->wasChanged('branch_id')) {
+                ReportCache::touch(ReportCache::HISTORY);
+            }
+        });
         SubscriptionTransaction::created(function (SubscriptionTransaction $line): void {
             if ($line->created_at?->lt(now()->subMinute())) {
                 ReportCache::touch(ReportCache::HISTORY);

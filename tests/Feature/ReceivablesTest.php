@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\ChargeType;
 use App\Enums\PermissionKey;
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Models\Branch;
 use App\Models\Permission;
 use App\Models\Subscription;
@@ -13,6 +14,7 @@ use App\Support\Ledger\RecordCharge;
 use App\Support\Ledger\RecordPayment;
 use App\Support\Reports\DebtAging;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
@@ -180,6 +182,27 @@ class ReceivablesTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->where('debtors.data.0.id', $recentDebtor->id)
                 ->where('summary.total', 610));
+    }
+
+    public function test_opening_a_statement_over_the_report_does_not_age_the_debts_again(): void
+    {
+        RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '100', null);
+        $agingQueries = function (array $headers): int {
+            DB::flushQueryLog();
+            DB::enableQueryLog();
+            $this->actingAs($this->branchAdmin)->getJson(route('receivables.index', ['statement' => $this->subscription->id]), $headers)->assertOk();
+            $count = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains($query['query'], 'as owed'))->count();
+            DB::disableQueryLog();
+
+            return $count;
+        };
+        $version = app(HandleInertiaRequests::class)->version(request());
+
+        $this->assertSame(1, $agingQueries(['X-Inertia' => 'true', 'X-Inertia-Version' => (string) $version]));
+        $this->assertSame(0, $agingQueries([
+            'X-Inertia' => 'true', 'X-Inertia-Version' => (string) $version,
+            'X-Inertia-Partial-Component' => 'Receivables/Index', 'X-Inertia-Partial-Data' => 'statement',
+        ]));
     }
 
     public function test_malformed_query_values_fall_back_to_the_defaults(): void

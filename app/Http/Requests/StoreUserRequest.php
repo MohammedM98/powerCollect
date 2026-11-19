@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\PermissionKey;
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -36,7 +37,8 @@ class StoreUserRequest extends FormRequest
             'username' => ['required', 'string', 'max:255', 'regex:/\A[\p{L}\p{M}\p{N}_. -]+\z/u', Rule::unique('users', 'username')],
             'password' => ['required', 'confirmed', Password::defaults()],
             'role' => ['prohibited'],
-            'max_devices' => ['sometimes', 'required', 'integer', 'between:1,20'],
+            // The device limit is set on the same terms as editing it (UpdateUserRequest).
+            'max_devices' => $actor->hasPermission(PermissionKey::ManageUserPasswords) ? ['sometimes', 'required', 'integer', 'between:1,20'] : ['exclude'],
         ];
 
         // Only a Super Admin chooses the branch, or makes the account another Super Admin over every branch.

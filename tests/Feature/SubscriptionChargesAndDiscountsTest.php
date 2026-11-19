@@ -2,15 +2,18 @@
 
 namespace Tests\Feature;
 
+use App\Enums\DiscountMethod;
 use App\Models\Branch;
 use App\Models\CircuitBreaker;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Ledger\LinePresenter;
+use App\Support\Ledger\RecordDiscount;
 use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
+use Illuminate\Validation\ValidationException;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
 
@@ -190,6 +193,21 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
         ])->assertSessionHasNoErrors();
         $this->assertSame('cancelled', $charge->fresh()->status);
         $this->assertSame('10.00', $this->subscription->balance());
+    }
+
+    public function test_a_discount_is_checked_again_against_the_balance_when_it_is_recorded(): void
+    {
+        SubscriptionTransaction::factory()->for($this->subscription)->create(['amount' => '100.00']);
+        // A discount that passed the form while the balance was 100, recorded after another one took it to 30.
+        RecordDiscount::handle($this->subscription, $this->branchAdmin, DiscountMethod::Shekel, '70', null);
+
+        $this->expectException(ValidationException::class);
+
+        try {
+            RecordDiscount::handle($this->subscription, $this->branchAdmin, DiscountMethod::Shekel, '70', null);
+        } finally {
+            $this->assertSame('30.00', $this->subscription->balance());
+        }
     }
 
     public function test_a_clearing_takes_the_value_of_the_subscriptions_service_off_what_they_owe(): void

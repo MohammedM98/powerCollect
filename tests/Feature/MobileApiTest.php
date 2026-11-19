@@ -165,6 +165,23 @@ class MobileApiTest extends TestCase
         $this->getJson(route('mobile.readings.index', ['search' => 'HIDDEN-99']))->assertJsonPath('total', 0);
     }
 
+    public function test_weekly_readings_show_the_new_meters_start_as_previous_after_a_meter_change(): void
+    {
+        $user = User::factory()->collector()->create();
+        $user->permissions()->sync(Permission::idsFor([PermissionKey::ViewMeterReadings]));
+        $week = ReadingWeeks::latestEndedWeekStart(null);
+        $subscription = Subscription::factory()->create(['branch_id' => $user->branch_id]);
+        MeterReading::factory()->approved()->create([
+            'subscription_id' => $subscription->id, 'week_start' => $week->copy()->subWeek(),
+            'previous_reading' => 4900, 'current_reading' => 5000, 'consumption' => 100, 'next_previous_reading' => 0,
+        ]);
+
+        $this->withHeader('Authorization', 'Bearer '.MobileAccessToken::issue($user));
+        $this->getJson(route('mobile.readings.index'))
+            ->assertJsonPath('data.0.current_reading', null)
+            ->assertJsonPath('data.0.previous_reading', 0);
+    }
+
     public function test_weekly_readings_filter_subscription_status_within_the_visible_branch(): void
     {
         $user = User::factory()->branchAdmin()->create();

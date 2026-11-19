@@ -119,8 +119,7 @@ void main() {
     expect(api.token, isNull);
     expect(store.token, isNull);
     expect(store.user, isNull);
-    expect(find.text('تطبيق الميدان'), findsOneWidget);
-    expect(find.text('سجّل الدخول للبدء'), findsOneWidget);
+    expect(find.byKey(const ValueKey('login-title')), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });
 

@@ -1,6 +1,17 @@
+/** After this long without a key or a click the timer stops checking, so an unattended page lets the session expire. */
+const IDLE_LIMIT_MS = 15 * 60 * 1000;
+
 export function watchSessionStatus(onUnauthorized, browser = window) {
     let stopped = false;
     let controller = null;
+    const now = () => (browser.now ?? Date.now)();
+    let lastActivity = now();
+    const markActive = () => { lastActivity = now(); };
+
+    // Every check renews the session, so the timer only keeps it alive while someone is using the page.
+    function tick() {
+        if (now() - lastActivity <= IDLE_LIMIT_MS) return check();
+    }
 
     async function check() {
         if (stopped || controller || browser.document.visibilityState === 'hidden') return;
@@ -26,12 +37,16 @@ export function watchSessionStatus(onUnauthorized, browser = window) {
     function stop() {
         stopped = true;
         browser.clearInterval(timer);
+        browser.removeEventListener('pointerdown', markActive);
+        browser.removeEventListener('keydown', markActive);
         browser.removeEventListener('focus', check);
         browser.document.removeEventListener('visibilitychange', check);
         controller?.abort();
     }
 
-    const timer = browser.setInterval(check, 15000);
+    const timer = browser.setInterval(tick, 15000);
+    browser.addEventListener('pointerdown', markActive);
+    browser.addEventListener('keydown', markActive);
     browser.addEventListener('focus', check);
     browser.document.addEventListener('visibilitychange', check);
     return stop;

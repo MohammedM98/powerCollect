@@ -185,10 +185,11 @@ class User extends Authenticatable
             || $this->hasAnyPermission(PermissionKey::CreateBranches, PermissionKey::UpdateBranches, PermissionKey::DeleteBranches, PermissionKey::ManageBranchDomains));
     }
 
-    /** Delegated administrators and auditors are managed by the Super Admin. */
+    /** Whoever holds a company-wide permission (only the Super Admin grants those) is managed by the Super Admin. */
     public function isProtectedFromBranchManagement(): bool
     {
-        return $this->isSuperAdmin() || $this->hasAnyPermission(PermissionKey::ManagePermissions, PermissionKey::AuditClosings, PermissionKey::ManageBranchDomains);
+        return $this->isSuperAdmin() || $this->loadMissing('permissions')->permissions
+            ->contains(fn (Permission $permission): bool => PermissionKey::tryFrom($permission->key)?->isCompanyWide() ?? false);
     }
 
     /** Read subscriber accounts across branches without granting branch administration. */

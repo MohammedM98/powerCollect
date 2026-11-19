@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/material.dart';
@@ -11,7 +12,14 @@ import 'shell/field_shell.dart';
 import 'auth/login_page.dart';
 import 'core/diagnostics.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // The look the app was built with, until the kept or the server's identity replaces it.
+  try {
+    AppIdentity.company = await AppBrand.builtIn();
+  } catch (error, stack) {
+    unawaited(Diagnostics.record(error, stack, where: 'brand'));
+  }
   // Every error the app did not handle goes to the log the collector can send.
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
@@ -76,6 +84,7 @@ class _PowerCollectAppState extends State<PowerCollectApp>
   Future<void> restore() async {
     try {
       await store.load();
+      await restoreBrand();
       appearance = ThemeMode.values.firstWhere(
           (mode) => mode.name == store.state['appearance'],
           orElse: () => ThemeMode.system);
@@ -89,7 +98,59 @@ class _PowerCollectAppState extends State<PowerCollectApp>
       startupError = 'تعذر فتح التخزين المحلي. أعد تشغيل التطبيق.';
     } finally {
       if (mounted) setState(() => loading = false);
+      unawaited(refreshBrand());
     }
+  }
+
+  /// The identity kept from the last time the server was reached; without
+  /// one, the app keeps the one it was built with (see main).
+  Future<void> restoreBrand() async {
+    final kept = store.state['brand'];
+    if (kept is! Map) return;
+    final logos = <String, Uint8List>{};
+    for (final variant in ['main', 'light']) {
+      final bytes = await store.readKept('brand-$variant');
+      if (bytes != null) logos[variant] = bytes;
+    }
+    AppIdentity.company =
+        AppBrand(Map<String, dynamic>.from(kept), logos: logos);
+  }
+
+  /// Ask the server for the company's identity and, when it changed, keep it
+  /// with its logos and redraw the app in it. Offline, the kept one stays.
+  Future<void> refreshBrand() async {
+    try {
+      final next = AppBrand(await api.brand());
+      final current = AppIdentity.company;
+      if (next.fingerprint != null && next.fingerprint == current.fingerprint) {
+        return;
+      }
+      final logos = <String, Uint8List>{};
+      for (final variant in ['main', 'light']) {
+        final url = next.logoUrl(variant);
+        if (url == null) continue;
+        try {
+          logos[variant] = await api.downloadLogo(url);
+          await store.keep('brand-$variant', logos[variant]!);
+        } catch (error, stack) {
+          unawaited(Diagnostics.record(error, stack, where: 'brand'));
+        }
+      }
+      store.state['brand'] = next.json;
+      await store.save();
+      if (!mounted) return;
+      setState(() => AppIdentity.company = AppBrand(next.json, logos: logos));
+      rebuildEverything();
+    } on ApiException {
+      // Offline or an older server: the kept identity stays.
+    } catch (error, stack) {
+      unawaited(Diagnostics.record(error, stack, where: 'brand'));
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) unawaited(refreshBrand());
   }
 
   Future<void> login(String username, String password, bool remember) async {
@@ -144,7 +205,9 @@ class _PowerCollectAppState extends State<PowerCollectApp>
     // Payments sent without an answer stay, for the same collector to settle.
     final pendingCollections = store.state['pending_collections'];
     store.state.clear();
+    final brand = store.state['brand'];
     store.state['appearance'] = appearance.name;
+    if (brand != null) store.state['brand'] = brand;
     if (pendingCollections != null) {
       store.state['pending_collections'] = pendingCollections;
     }

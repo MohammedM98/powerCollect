@@ -62,6 +62,10 @@ class RepriceReading
     public static function recalculate(MeterReading $reading, float $previousReading, float $currentReading, ?string $notes, User $editor): bool
     {
         return DB::transaction(function () use ($previousReading, $currentReading, $notes, $editor, $reading): bool {
+            // The status as stored, under the row lock approval takes, so an approval that just ran is seen and its lines cancelled.
+            // Only the status: the caller may have set new prices on the reading.
+            $status = ['status', 'approved_by', 'approved_at'];
+            $reading->forceFill(MeterReading::query()->lockForUpdate()->findOrFail($reading->id)->only($status))->syncOriginalAttributes($status);
             $wasApproved = ! $reading->isPending();
             $consumption = ReadingConsumption::consumptionBetween($previousReading, $currentReading);
 

@@ -9,6 +9,7 @@ use App\Models\Branch;
 use App\Models\MeterReading;
 use App\Models\Permission;
 use App\Models\Subscription;
+use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\User;
 use App\Support\Ledger\RecordDiscount;
@@ -196,6 +197,7 @@ class SubscriptionKilowattPriceTest extends TestCase
     {
         $user = User::factory()->branchAdmin()->create();
         $subscription = $this->subscriptionFor($user, ['kilowatt_price' => 45]);
+        SubscriptionTransaction::factory()->for($subscription)->create(['amount' => '200.00']);
         $discount = RecordDiscount::handle($subscription, $user, DiscountMethod::Kilowatt, 2, null);
 
         $this->assertSame('-90.00', $discount->amount);
