@@ -14,6 +14,7 @@ import { inputClass, PaymentReceipt } from './PaymentModalParts';
 import PaymentMethodStep from './PaymentMethodStep';
 import PaymentAmountStep from './PaymentAmountStep';
 import PaymentFooter from './PaymentFooter';
+import PaymentCheckout from './PaymentCheckout';
 
 export { inputClass };
 
@@ -72,7 +73,9 @@ export default function PaymentModal({
                   amount: '',
                   currency: 'ILS',
                   // A bank transfer when the user may take one, else the way they may.
-                  payment_method: paymentMethods.some((method) => method.value === 'bank_transfer') ? 'bank_transfer' : (paymentMethods[0]?.value ?? 'bank_transfer'),
+                  payment_method: paymentMethods.some((method) => method.value === 'bank_transfer')
+                      ? 'bank_transfer'
+                      : (paymentMethods[0]?.value ?? 'bank_transfer'),
                   bank_name: '',
                   sender_bank_name: '',
                   bank_received_on: '',
@@ -111,10 +114,12 @@ export default function PaymentModal({
     const methods = ['bank_transfer', 'cash'].filter((method) => paymentMethods.some((option) => option.value === method));
     const tone = correcting ? 'correction' : 'payment';
 
-    const askReferenceStatus = useEffectEvent((query) => referenceCheck
-        .get(`/subscriptions/${subscription.id}/payments/reference-status?${query}`)
-        .then((status) => setReferenceStatus(status ?? null))
-        .catch(() => setReferenceStatus(null)));
+    const askReferenceStatus = useEffectEvent((query) =>
+        referenceCheck
+            .get(`/subscriptions/${subscription.id}/payments/reference-status?${query}`)
+            .then((status) => setReferenceStatus(status ?? null))
+            .catch(() => setReferenceStatus(null)),
+    );
     const cancelReferenceCheck = useEffectEvent(() => referenceCheck.cancel());
 
     useEffect(() => {
@@ -244,13 +249,18 @@ export default function PaymentModal({
                     form.setData('payment_token', paymentToken);
                 }
                 setSenderIsSubscriber(true);
-                    },
+            },
         });
     }
 
     return (
         <>
-            <Modal show={show} onClose={requestClose} maxWidth="5xl" panelClassName="overflow-clip!">
+            <Modal
+                show={show}
+                onClose={requestClose}
+                maxWidth="5xl"
+                panelClassName={`overflow-clip! ${!correcting && !receipt ? 'gl-co-panel' : ''}`}
+            >
                 {receipt ? (
                     <div role="dialog" aria-modal="true" aria-label={correcting ? 'صُحّحت الدفعة' : 'سُجّلت الدفعة'}>
                         <PaymentReceipt
@@ -273,99 +283,139 @@ export default function PaymentModal({
                         className={SHEET_FORM_CLASS}
                         style={{ '--gl-t': MOVEMENT_TONES[tone], '--gl-t-ink': 'var(--gl-tone-ink)' }}
                     >
-                        <FormHeader
-                            titleId={titleId}
-                            icon={correcting ? 'repeat' : 'card'}
-                            tone={correcting ? 'amber' : 'payment'}
-                            title={correcting ? 'تصحيح دفعة' : 'تسجيل دفعة'}
-                            subtitle={correcting ? 'صحّح الدفعة؛ تبقى الأصلية في الكشف ملغاة مع سبب التصحيح.' : 'سجّل المبلغ المستلم، ويُحدَّث الرصيد تلقائيًا.'}
-                            onClose={requestClose}
-                        />
-
-                        <MovementCard
-                            subscription={subscription}
-                            tone={tone}
-                            tag={correcting ? 'تصحيح' : 'دفعة'}
-                            ops={['−', '=']}
-                            cells={balanceCells({
-                                balance,
-                                balanceLabel: correcting ? 'الرصيد بدون الأصلية' : 'الرصيد الحالي',
-                                amount: Number(data.amount) > 0 ? inShekels : null,
-                                sign: -1,
-                                moveLabel: 'هذه الدفعة',
-                                moveNote: methodText,
-                            })}
-                        >
-                            <CoverageBar amount={inShekels} owed={owed} />
-                        </MovementCard>
-
-                        <SheetBody>
-                            {correcting && <OriginalLine entry={correcting} />}
-
-                            <PaymentAmountStep
+                        {!correcting ? (
+                            <PaymentCheckout
+                                titleId={titleId}
+                                requestClose={requestClose}
+                                subscription={subscription}
+                                balance={balance}
+                                owed={owed}
+                                inShekels={inShekels}
+                                methodText={methodText}
                                 amountInput={amountInput}
                                 currencies={currencies}
                                 currencyLabel={currencyLabel}
                                 currencyMark={currencyMark}
+                                exchangeRate={exchangeRate}
+                                overpayment={overpayment}
                                 data={data}
                                 errors={errors}
-                                exchangeRate={exchangeRate}
-                                inShekels={inShekels}
-                                overpayment={overpayment}
-                                owed={owed}
+                                form={form}
                                 setAmount={setAmount}
                                 setCurrency={setCurrency}
                                 setData={setData}
-                                titleId={titleId}
-                            />
-
-                            <PaymentMethodStep
-                                data={data}
-                                errors={errors}
                                 methods={methods}
-                                referenceCheck={referenceCheck}
-                                referenceStatus={referenceStatus}
+                                throughBank={throughBank}
+                                transferBanks={transferBanks}
                                 senderBanks={senderBanks}
                                 senderIsSubscriber={senderIsSubscriber}
-                                setData={setData}
-                                throughBank={throughBank}
                                 toggleSender={toggleSender}
-                                transferBanks={transferBanks}
+                                referenceCheck={referenceCheck}
+                                referenceStatus={referenceStatus}
                             />
+                        ) : (
+                            <>
+                                <FormHeader
+                                    titleId={titleId}
+                                    icon={correcting ? 'repeat' : 'card'}
+                                    tone={correcting ? 'amber' : 'payment'}
+                                    title={correcting ? 'تصحيح دفعة' : 'تسجيل دفعة'}
+                                    subtitle={
+                                        correcting
+                                            ? 'صحّح الدفعة؛ تبقى الأصلية في الكشف ملغاة مع سبب التصحيح.'
+                                            : 'سجّل المبلغ المستلم، ويُحدَّث الرصيد تلقائيًا.'
+                                    }
+                                    onClose={requestClose}
+                                />
 
-                            <FormStep number={3} title="ملاحظة" hint="اختياري: تظهر في كشف الحساب" done={Boolean(data.notes)}>
-                                <div>
-                                    <label htmlFor="payment_notes" className="sr-only">ملاحظة</label>
-                                                <input
-                                                    id="payment_notes"
-                                                    name="notes"
-                                                    autoComplete="off"
-                                                    placeholder="أي تفصيل يُحفظ مع الدفعة"
-                                                    value={data.notes}
-                                                    onChange={(e) => setData('notes', e.target.value)}
-                                                    className={inputClass}
-                                                />
-                                    <InputError message={errors.notes} className="mt-2" />
-                                </div>
-                            </FormStep>
+                                <MovementCard
+                                    subscription={subscription}
+                                    tone={tone}
+                                    tag={correcting ? 'تصحيح' : 'دفعة'}
+                                    ops={['−', '=']}
+                                    cells={balanceCells({
+                                        balance,
+                                        balanceLabel: correcting ? 'الرصيد بدون الأصلية' : 'الرصيد الحالي',
+                                        amount: Number(data.amount) > 0 ? inShekels : null,
+                                        sign: -1,
+                                        moveLabel: 'هذه الدفعة',
+                                        moveNote: methodText,
+                                    })}
+                                >
+                                    <CoverageBar amount={inShekels} owed={owed} />
+                                </MovementCard>
 
-                            {correcting && (
-                                <FormStep number={4} title="سبب التصحيح">
-                                    <CorrectionReasonFields form={form} reasons={correctionReasons} />
-                                </FormStep>
-                            )}
-                        </SheetBody>
+                                <SheetBody>
+                                    {correcting && <OriginalLine entry={correcting} />}
 
-                        <PaymentFooter
-                            correcting={correcting}
-                            currencyMark={currencyMark}
-                            data={data}
-                            form={form}
-                            inShekels={inShekels}
-                            overpayment={overpayment}
-                            referenceStatus={referenceStatus}
-                            requestClose={requestClose}
-                        />
+                                    <PaymentAmountStep
+                                        amountInput={amountInput}
+                                        currencies={currencies}
+                                        currencyLabel={currencyLabel}
+                                        currencyMark={currencyMark}
+                                        data={data}
+                                        errors={errors}
+                                        exchangeRate={exchangeRate}
+                                        inShekels={inShekels}
+                                        overpayment={overpayment}
+                                        owed={owed}
+                                        setAmount={setAmount}
+                                        setCurrency={setCurrency}
+                                        setData={setData}
+                                        titleId={titleId}
+                                    />
+
+                                    <PaymentMethodStep
+                                        data={data}
+                                        errors={errors}
+                                        methods={methods}
+                                        referenceCheck={referenceCheck}
+                                        referenceStatus={referenceStatus}
+                                        senderBanks={senderBanks}
+                                        senderIsSubscriber={senderIsSubscriber}
+                                        setData={setData}
+                                        throughBank={throughBank}
+                                        toggleSender={toggleSender}
+                                        transferBanks={transferBanks}
+                                    />
+
+                                    <FormStep number={3} title="ملاحظة" hint="اختياري: تظهر في كشف الحساب" done={Boolean(data.notes)}>
+                                        <div>
+                                            <label htmlFor="payment_notes" className="sr-only">
+                                                ملاحظة
+                                            </label>
+                                            <input
+                                                id="payment_notes"
+                                                name="notes"
+                                                autoComplete="off"
+                                                placeholder="أي تفصيل يُحفظ مع الدفعة"
+                                                value={data.notes}
+                                                onChange={(e) => setData('notes', e.target.value)}
+                                                className={inputClass}
+                                            />
+                                            <InputError message={errors.notes} className="mt-2" />
+                                        </div>
+                                    </FormStep>
+
+                                    {correcting && (
+                                        <FormStep number={4} title="سبب التصحيح">
+                                            <CorrectionReasonFields form={form} reasons={correctionReasons} />
+                                        </FormStep>
+                                    )}
+                                </SheetBody>
+
+                                <PaymentFooter
+                                    correcting={correcting}
+                                    currencyMark={currencyMark}
+                                    data={data}
+                                    form={form}
+                                    inShekels={inShekels}
+                                    overpayment={overpayment}
+                                    referenceStatus={referenceStatus}
+                                    requestClose={requestClose}
+                                />
+                            </>
+                        )}
                     </form>
                 )}
             </Modal>

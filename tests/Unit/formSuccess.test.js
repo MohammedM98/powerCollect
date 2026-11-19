@@ -22,6 +22,8 @@ before(async () => {
                 if (id === 'react/jsx-runtime') return '\0jsx';
                 if (id.startsWith('file:')) return { id, external: true };
                 if (/^react(?:-dom)?(?:\/|$)/.test(id)) return { id: import.meta.resolve(id), external: true };
+                // HeroUI and react-aria load as the installed packages (they cannot be inlined into a data: URL module).
+                if (/^(?:@heroui\/|react-aria|@react-aria\/|@internationalized\/)/.test(id)) return { id: import.meta.resolve(id), external: true };
                 if (/(?:Components[/\\]Modal|Layouts[/\\]SettingsLayout|[/\\]BanksSection)(?:\.jsx)?$/.test(id)) return '\0container';
                 if (/Components[/\\]ConfirmDialog(?:\.jsx)?$/.test(id)) return '\0confirm';
             },

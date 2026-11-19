@@ -15,6 +15,25 @@
 @import './components.css';
 @import 'tailwindcss/utilities.css';
 
+/*
+ * HeroUI v3's components, in the components layer under the site's own
+ * styles: its prelude (the utilities and variants its styles use), the
+ * components the windows are built with, and their colours from this
+ * palette (heroui.css). Its theme file is left out on purpose (heroui.css).
+ */
+@import '@heroui/styles/utilities';
+@import '@heroui/styles/variants';
+@import '@heroui/styles/components/button.css' layer(components);
+@import '@heroui/styles/components/label.css' layer(components);
+@import '@heroui/styles/components/description.css' layer(components);
+@import '@heroui/styles/components/field-error.css' layer(components);
+@import '@heroui/styles/components/input.css' layer(components);
+@import '@heroui/styles/components/textfield.css' layer(components);
+@import '@heroui/styles/components/radio.css' layer(components);
+@import '@heroui/styles/components/radio-group.css' layer(components);
+@import '@heroui/styles/components/switch.css' layer(components);
+@import './heroui.css';
+
 @plugin '@tailwindcss/forms';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
