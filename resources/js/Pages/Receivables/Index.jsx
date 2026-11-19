@@ -1,4 +1,7 @@
+import { Fragment, useState } from 'react';
 import { Head, usePage } from '@inertiajs/react';
+import Icon from '@/Components/Icon';
+import { printFieldsProps, printRowProps } from '@/lib/print';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { BranchFilterBanner, splitBranchFilter } from '@/Components/BranchBanner';
 import MeterBar from '@/Components/Charts/MeterBar';
@@ -34,6 +37,14 @@ function Shekels({ amount, className = 'text-gray-900' }) {
             <b className="font-display font-bold">{formatMoney(amount)}</b> <span className="text-xs font-normal text-gray-500">₪</span>
         </span>
     );
+}
+
+/** What print and Excel add as a column of their own: the last payment, which on screen opens under its row. */
+const PRINT_FIELDS = [{ key: 'lastPayment', label: 'آخر دفعة', default: true }];
+
+/** The last payment as one line: "منذ 3 يوم، 16 نوفمبر", or that none was made. */
+function lastPaymentText(debtor) {
+    return debtor.lastPaymentDate ? `${daysAgo(debtor.lastPaymentDays)}، ${formatShortDay(debtor.lastPaymentDate)}` : 'لم يدفع بعد';
 }
 
 function Dash() {
@@ -95,6 +106,8 @@ export default function Index({ debtors, summary, buckets, scopeLabel, branchSco
     const rowClick = useRowClick();
     const statementWindow = useStatementWindow(statement);
     const columnCount = 4 + buckets.length;
+    const [openIds, setOpenIds] = useState(() => new Set());
+    const toggleRow = (id) => setOpenIds((current) => { const next = new Set(current); next.has(id) ? next.delete(id) : next.add(id); return next; });
     const pageTotal = debtors.data.reduce((total, debtor) => total + Number(debtor.balance), 0);
     const overdue = summary.buckets.older;
     // The Super Admin picks the branch in the banner above the report, not among the filters; clearing those keeps it.
@@ -116,30 +129,26 @@ export default function Index({ debtors, summary, buckets, scopeLabel, branchSco
         <AuthenticatedLayout
             scope={branchScope?.name ?? null}
             header={
-                <PageHeader eyebrow={branchScope ? null : scopeLabel} title="أعمار الديون" info="المشتركون المدينون، وكم يمضي على ما عليهم منذ تحميله. المبالغ بالشيكل والأعمار بالأيام." />
+                <PageHeader title="أعمار الديون" info={`الذمم المتأخرة حسب مدتها${!branchScope && scopeLabel && scopeLabel !== '—' ? `، في ${scopeLabel}` : ''}. المبالغ بالشيكل والأعمار بالأيام.`} />
             }
         >
             <Head title="أعمار الديون" />
             {branchScope && <BranchFilterBanner scope={branchScope} eyebrow="تعرض الآن ديون مشتركي" group={branchFilter.branch} value={filterValues.branch_id} onChange={(value) => setFilter('branch_id', value)} />}
 
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-5 sm:grid-cols-3">
                 <KpiTile
-                    hero
-                    className="sm:col-span-2"
                     label="إجمالي الديون المستحقة"
                     value={formatMoney(summary.total)}
                     unit="₪"
                     hint={`${formatNumber(summary.count)} مشترك مدين`}
                 />
                 <KpiTile
-                    icon="alert"
                     label="أكثر من 90 يومًا"
                     value={formatMoney(overdue.amount)}
                     unit="₪"
                     hint={`${overdue.share}% من الإجمالي، ${formatNumber(overdue.count)} مشترك`}
                 />
                 <KpiTile
-                    icon="wallet"
                     label="متوسط الدين"
                     value={formatMoney(summary.average)}
                     unit="₪"
@@ -172,16 +181,16 @@ export default function Index({ debtors, summary, buckets, scopeLabel, branchSco
                 />
 
                 <div className="data-table-container">
-                    <table className="data-table w-full text-start text-sm">
+                    <table className="data-table w-full text-start text-sm" {...printFieldsProps(PRINT_FIELDS)}>
                         <thead>
                             <tr>
+                                <th data-actions="" className="dt-exp"><span className="sr-only">تفاصيل</span></th>
                                 <SortableTh column="name" label="المشترك" sortState={filters} onSort={sort} />
                                 <SortableTh column="balance" label="الرصيد المستحق" sortState={filters} onSort={sort} />
                                 {buckets.map((bucket) => (
                                     <SortableTh key={bucket.key} column={bucket.key} label={BUCKET_COLUMNS[bucket.key] ?? bucket.label} sortState={filters} onSort={sort} />
                                 ))}
                                 <SortableTh column="oldest_days" label="أقدم دين" sortState={filters} onSort={sort} />
-                                <SortableTh column="last_payment_days" label="آخر دفعة" sortState={filters} onSort={sort} />
                             </tr>
                         </thead>
                         <tbody>
@@ -190,8 +199,17 @@ export default function Index({ debtors, summary, buckets, scopeLabel, branchSco
                                     <td colSpan={columnCount}>لا يوجد مشتركون مدينون مطابقون.</td>
                                 </tr>
                             ) : (
-                                debtors.data.map((debtor) => (
-                                    <tr key={debtor.id} {...rowClick(can?.viewSubscriptions ? () => openStatement(debtor) : null)}>
+                                debtors.data.map((debtor) => {
+                                    const open = openIds.has(debtor.id);
+
+                                    return (
+                                    <Fragment key={debtor.id}>
+                                    <tr {...rowClick(can?.viewSubscriptions ? () => openStatement(debtor) : null)} {...printRowProps({ lastPayment: lastPaymentText(debtor) })} className={open ? 'is-open' : undefined}>
+                                        <td className="dt-exp">
+                                            <button type="button" className="dt-exp-btn" aria-expanded={open} aria-controls={`debtor-details-${debtor.id}`} aria-label={`${open ? 'إخفاء' : 'عرض'} تفاصيل ${debtor.name}`} onClick={(event) => { event.stopPropagation(); toggleRow(debtor.id); }}>
+                                                <Icon name="chevron-down" className="h-4 w-4" />
+                                            </button>
+                                        </td>
                                         <td>
                                             <RowIdentity
                                                 name={debtor.name}
@@ -223,18 +241,36 @@ export default function Index({ debtors, summary, buckets, scopeLabel, branchSco
                                                 <Dash />
                                             )}
                                         </td>
-                                        <td className="whitespace-nowrap">
-                                            {debtor.lastPaymentDate ? (
-                                                <>
-                                                    <span className="font-semibold text-gray-900">{daysAgo(debtor.lastPaymentDays)}</span>
-                                                    <span className="block text-xs text-gray-500">{formatShortDay(debtor.lastPaymentDate)}</span>
-                                                </>
-                                            ) : (
-                                                <span className="text-gray-500">لم يدفع بعد</span>
-                                            )}
-                                        </td>
                                     </tr>
-                                ))
+                                    {open && (
+                                        <tr id={`debtor-details-${debtor.id}`} className="dt-detail" data-print-skip="">
+                                            <td colSpan={columnCount}>
+                                                <dl>
+                                                    <div>
+                                                        <dt>آخر دفعة</dt>
+                                                        <dd>{lastPaymentText(debtor)}</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt>الحساب</dt>
+                                                        <dd><bdi dir="ltr">{debtor.accountNumber}</bdi></dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt>الفرع</dt>
+                                                        <dd>{debtor.branchName}</dd>
+                                                    </div>
+                                                    {debtor.statusLabel && (
+                                                        <div>
+                                                            <dt>حالة المشترك</dt>
+                                                            <dd>{debtor.statusLabel}</dd>
+                                                        </div>
+                                                    )}
+                                                </dl>
+                                            </td>
+                                        </tr>
+                                    )}
+                                    </Fragment>
+                                    );
+                                })
                             )}
                         </tbody>
                     </table>
