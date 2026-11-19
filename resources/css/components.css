@@ -3025,6 +3025,56 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     box-shadow: none;
 }
 
+/* The page's top, in the redesign's order: trail, title and its line, the section's tabs, then the page's actions. */
+.gl-page-top {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.gl-page-top > .gl-page-head {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+@media (min-width: 640px) {
+    .gl-page-top > .gl-page-head {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+/* A page header (Components/PageHeader.jsx) lets its actions leave the title for their own row under the tabs. */
+.gl-page-top > .gl-page-head:has(> .gl-page-actions) {
+    display: contents;
+}
+
+.gl-page-top > .gl-page-head > .gl-page-title {
+    margin-top: -16px;
+}
+
+.gl-page-top > .tn-page-tabs {
+    order: 1;
+}
+
+.gl-page-top > .gl-page-head > .gl-page-actions {
+    order: 2;
+    align-self: flex-start;
+}
+
+/* The page's guidance under its title (the redesign's subtitle). */
+.gl-page-sub {
+    margin-top: 6px;
+    max-width: 72ch;
+    color: var(--color-gray-500);
+    font-size: 15.5px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
 /* The page's title: large and heavy, straight on the page as in the redesign. */
 .gl-page-head .ui-page-title {
     font-size: clamp(30px, 3.4vw, 48px);

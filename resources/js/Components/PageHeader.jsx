@@ -1,27 +1,27 @@
 import { Link } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
-import InfoTip from '@/Components/InfoTip';
 
 /**
- * Every page's title, laid out the same way: an optional quiet line above
- * it (`eyebrow`: the branch, a link back), the title with an "!" holding
- * the page's guidance (`info`), an optional line of facts under it
- * (`meta`: dates, counts — not instructions), and the page's actions at
- * the other end. Goes in the layout's `header`.
+ * Every page's title, laid out as in the redesign: an optional quiet line
+ * above it (`eyebrow`: the branch, a link back), the large title, the
+ * page's guidance as a muted line under it (`info`), an optional line of
+ * facts (`meta`: dates, counts), and the page's actions in their own row
+ * under the section's tabs (placed by `.gl-page-top`). Goes in the
+ * layout's `header`.
  */
 export default function PageHeader({ title, eyebrow = null, info = null, meta = null, actions = null, titleAddon = null }) {
     return (
         <>
-            <div className="min-w-0">
+            <div className="gl-page-title min-w-0">
                 {eyebrow && <div className="mb-1 text-sm font-semibold text-gray-500">{eyebrow}</div>}
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                     <h1 className="ui-page-title text-3xl font-bold text-gray-900">{title}</h1>
-                    {info && <InfoTip label={`عن صفحة ${typeof title === 'string' ? title : ''}`.trim()}>{info}</InfoTip>}
                     {titleAddon}
                 </div>
-                {meta && <div className="mt-1 text-sm text-gray-500">{meta}</div>}
+                {info && <p className="gl-page-sub">{info}</p>}
+                {meta && <div className="gl-page-sub">{meta}</div>}
             </div>
-            {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
+            {actions && <div className="gl-page-actions flex flex-wrap items-center gap-2">{actions}</div>}
         </>
     );
 }

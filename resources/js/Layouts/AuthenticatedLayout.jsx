@@ -232,10 +232,12 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
             <div className="tn-content">
                 <main id="main-content" tabIndex={-1} className="mx-auto max-w-(--ui-content-width) px-(--tn-gutter) pb-16 pt-7 outline-hidden">
                     <BranchViewSwitcher />
-                    <Breadcrumb trail={trail} />
-                    {header && <div className="gl-page-head rise-in mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">{header}</div>}
-                    {/* The section's pages: tabs on the page, under its title (HeroUI's tabs, as in the redesign). */}
-                    {hasSectionPages && <div className="tn-page-tabs mb-6"><SectionPages trail={trail} url={url} badges={badges} /></div>}
+                    {/* As in the redesign: the trail, the title and its line, the section's tabs, then the page's actions. */}
+                    <div className="gl-page-top">
+                        <Breadcrumb trail={trail} />
+                        {header && <div className="gl-page-head rise-in">{header}</div>}
+                        {hasSectionPages && <div className="tn-page-tabs"><SectionPages trail={trail} url={url} badges={badges} /></div>}
+                    </div>
                     <div ref={titleEndRef} aria-hidden="true" />
                     {children}
                 </main>
