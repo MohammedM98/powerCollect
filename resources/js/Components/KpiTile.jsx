@@ -9,11 +9,11 @@ import Icon from '@/Components/Icon';
  * one (already formatted) shows as it is. `hero` is the card a page leads
  * with, washed in the company's colour with its line along the bottom.
  * `children` go under it all (a small breakdown of the figure); `index`
- * staggers its entrance.
+ * staggers its entrance. Other props (a `role` and its label) go on the card.
  */
-export default function KpiTile({ icon, label, value, unit, hint, badge, hero = false, compact = false, index = 0, className = '', style, children }) {
+export default function KpiTile({ icon, label, value, unit, hint, badge, hero = false, compact = false, index = 0, className = '', style, children, ...props }) {
     return (
-        <div className={`gl-card gl-kpi gl-rise ${hero ? 'gl-hero' : ''} ${className}`} style={{ '--i': index, ...style }}>
+        <div {...props} className={`gl-card gl-kpi gl-rise ${hero ? 'gl-hero' : ''} ${className}`} style={{ '--i': index, ...style }}>
             <div className="gl-lbl">
                 {icon && <span className="gl-ico"><Icon name={icon} className="h-[17px] w-[17px]" /></span>}
                 <span className="min-w-0">{label}</span>

@@ -60,14 +60,7 @@ function MeterBoxSummary({ summary }) {
                 { icon: 'pin', label: 'مناطق الطبلونات', unit: 'منطقة', value: formatNumber(summary.regions), hint: `${formatNumber(summary.located)} طبلون ضمن هذه المناطق${summary.total > summary.located ? ` · ${formatNumber(summary.total - summary.located)} بلا منطقة` : ''}` },
                 { icon: 'users', label: 'المشتركون الفعّالون', unit: 'مشترك', value: formatNumber(summary.active), hint: 'المشتركون بحالة فعّال ضمن نتائج البحث' },
                 { icon: 'table', label: 'طبلونات بلا مشتركين', unit: 'طبلون', value: formatNumber(summary.empty), hint: 'طبلونات لا يرتبط بها أي مشترك' },
-            ].map((stat) => <div key={stat.label} role="group" aria-label={`إحصائية ${stat.label}`} className="rounded-card border border-gray-100 bg-surface p-5 shadow-card">
-                <div className="mb-4 flex items-center gap-2.5 rounded-control bg-brand-500/6 px-3 py-2.5">
-                    <Icon name={stat.icon} className="h-5 w-5 shrink-0 text-brand-600" />
-                    <p className="text-base font-bold leading-6 text-gray-900">{stat.label}</p>
-                </div>
-                <p className="flex items-baseline gap-2 text-gray-900"><b className="font-display text-3xl font-bold">{stat.value}</b><span className="text-sm font-semibold text-gray-500">{stat.unit}</span></p>
-                <p className="mt-2 text-xs leading-5 text-gray-500">{stat.hint}</p>
-            </div>)}
+            ].map((stat, index) => <KpiTile key={stat.label} role="group" aria-label={`إحصائية ${stat.label}`} index={index + 1} icon={stat.icon} label={stat.label} value={stat.value} unit={stat.unit} hint={stat.hint} />)}
         </div>
     );
 }
@@ -207,10 +200,13 @@ export default function Index({
                                 { value: 'created_at', label: 'تاريخ الإضافة' },
                             ]}
                         />
-                        {canViewSubscriptions && <div role="group" aria-label="ترتيب مشتركي جميع الطبلونات" className="flex w-full min-w-0 flex-col gap-1.5 sm:w-44">
-                            <label htmlFor="all-meter-box-subscriptions-direction" className="text-[13.5px] font-semibold text-gray-700">ترتيب المشتركين</label>
+                        {canViewSubscriptions && <div role="group" aria-label="ترتيب مشتركي جميع الطبلونات">
+                            <label htmlFor="all-meter-box-subscriptions-direction" className="sr-only">ترتيب المشتركين</label>
                             <SearchableSelect
                                 id="all-meter-box-subscriptions-direction"
+                                variant="pill"
+                                prefix={<span className="gl-filter-name" aria-hidden="true"><Icon name="users" className="h-[15px] w-[15px]" />ترتيب المشتركين:</span>}
+                                className="gl-filter-item"
                                 value={`${subscriptionOrder.sort}:${subscriptionOrder.direction}`}
                                 onChange={sortSubscriptions}
                                 options={SUBSCRIPTION_ORDERS}

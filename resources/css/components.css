@@ -6622,3 +6622,58 @@ button.gl-cb-tile:hover {
 .gl-bd .gl-sheet-foot {
     background: rgb(var(--panel-bg));
 }
+
+/*
+ * Every page's figures as the redesign draws them: plain white cards, the
+ * label small and quiet above a large figure, no washes or gradients; the
+ * card a page leads with is the same card (KpiTile `hero`, the ledger's).
+ */
+.gl-kpi.gl-hero,
+.gl-park .gl-kpi.gl-hero {
+    border-color: transparent;
+    background: rgb(var(--panel-bg));
+}
+
+.gl-kpi.gl-hero::after,
+.gl-park .gl-kpi.gl-hero::after {
+    content: none;
+}
+
+.gl-kpi.gl-hero .gl-val {
+    font-size: 32px;
+}
+
+.ledger-page .kp .k.hero {
+    background: rgb(var(--panel-bg));
+    color: inherit;
+    box-shadow: var(--panel-shadow);
+}
+
+.ledger-page .kp .k.hero::after {
+    content: none;
+}
+
+.ledger-page .kp .k.hero small,
+.ledger-page .kp .k.hero p,
+.ledger-page .kp .k.hero b span {
+    color: var(--gl-muted);
+}
+
+.ledger-page .kp .k.hero b {
+    color: var(--gl-ink);
+    font-size: 30px;
+}
+
+/* A yes/no filter (HeroUI's switch) on the same pill as the other filters. */
+.gl-filter-switch.switch {
+    height: 38px;
+    padding-inline: 12px;
+    border-radius: 999px;
+    background: rgb(var(--group-fill));
+}
+
+.gl-filter-switch [data-slot='label'] {
+    color: var(--gl-ink);
+    font-size: 13.5px;
+    font-weight: 700;
+}

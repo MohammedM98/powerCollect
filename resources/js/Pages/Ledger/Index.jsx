@@ -1,3 +1,5 @@
+import { FilterField } from '@/Components/DataTable/DataTableFilterMenu';
+import { Label, Switch } from '@heroui/react';
 import BankReceivedDate from '@/Components/BankReceivedDate';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
 import { BranchFilterBanner, splitBranchFilter } from '@/Components/BranchBanner';
@@ -284,8 +286,11 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
             <Head title="السجل المالي" />
             {branchScope && <BranchFilterBanner scope={branchScope} eyebrow="يعرض السجل المالي لـ" group={branchFilter.branch} value={filterValues.branch_id} onChange={(value) => setFilter('branch_id', value)} />}
             <div className="ledger-page">
-                <div className="mb-4 flex flex-wrap items-end gap-3">
-                    <div className="w-56"><div className="mb-1.5 flex items-center gap-1"><label htmlFor="ledger-date-basis" className="block text-sm font-semibold text-gray-700">تصفية الفترة حسب</label><InfoTip label="عن تصفية الفترة">{dateBasis === 'paid' ? 'عرض حسب تاريخ الدفع الفعلي للدفعات المتأخرة، وتاريخ التسجيل لبقية الحركات. الأرصدة وترتيب الحركات يبقيان حسب التسجيل.' : 'الأرصدة والفترات تُحتسب حسب تاريخ التسجيل. تاريخ الدفع السابق محفوظ للتدقيق.'}</InfoTip></div><SearchableSelect id="ledger-date-basis" clearable={false} searchable={false} value={dateBasis} options={[{value: 'recorded', label: 'تاريخ التسجيل بالنظام'}, {value: 'paid', label: 'تاريخ الدفع الفعلي'}]} onChange={(value) => changePeriod(period, { ...(period === 'custom' ? dateRange : {}), date_basis: value })} /></div>
+                <div className="mb-4 flex flex-wrap items-center gap-3">
+                    <div className="flex items-center gap-1">
+                        <SearchableSelect id="ledger-date-basis" variant="pill" prefix={<span className="gl-filter-name"><Icon name="calendar" className="h-[15px] w-[15px]" />تصفية الفترة حسب:</span>} className="gl-filter-item" clearable={false} searchable={false} value={dateBasis} options={[{ value: 'recorded', label: 'تاريخ التسجيل بالنظام' }, { value: 'paid', label: 'تاريخ الدفع الفعلي' }]} onChange={(value) => changePeriod(period, { ...(period === 'custom' ? dateRange : {}), date_basis: value })} />
+                        <InfoTip label="عن تصفية الفترة">{dateBasis === 'paid' ? 'عرض حسب تاريخ الدفع الفعلي للدفعات المتأخرة، وتاريخ التسجيل لبقية الحركات. الأرصدة وترتيب الحركات يبقيان حسب التسجيل.' : 'الأرصدة والفترات تُحتسب حسب تاريخ التسجيل. تاريخ الدفع السابق محفوظ للتدقيق.'}</InfoTip>
+                    </div>
                     <DateRange period={period} range={dateRange} today={today} onChange={changePeriod} errors={errors} />
                 </div>
                 {!errors.from && !errors.to ? null : <p role="alert" className="err">{errors.from || errors.to}</p>}
@@ -303,24 +308,14 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
                     </div>
                     <div className={`fb ${filtersOpen ? 'open' : ''}`} id="ledger-filters">
                         {branchFilter.groups.map((group) => (
-                            <div className="flex w-full min-w-0 flex-col gap-1.5 sm:w-44" key={group.key}>
-                                <label htmlFor={`ledger-filter-${group.key}`} className={`flex items-center gap-1.5 text-xs font-semibold ${filterValues[group.key] ? 'text-gray-900' : 'text-gray-500'}`}>
-                                    {group.label}
-                                    {filterValues[group.key] && <span className="h-1.5 w-1.5 rounded-full bg-brand-500" aria-hidden="true" />}
-                                </label>
-                                <SearchableSelect
-                                    id={`ledger-filter-${group.key}`}
-                                    value={filterValues[group.key] ?? ''}
-                                    onChange={(value) => setFilter(group.key, value)}
-                                    options={group.options}
-                                    placeholder="الكل"
-                                    searchPlaceholder={`بحث في ${group.label}...`}
-                                    emptyLabel="لا توجد نتائج"
-                                    active={Boolean(filterValues[group.key])}
-                                />
-                            </div>
+                            <FilterField key={group.key} group={group} value={filterValues[group.key] ?? ''} onChange={(value) => setFilter(group.key, value ?? '')} />
                         ))}
-                        <label className="inline-flex h-11 cursor-pointer items-center gap-2 rounded-control border border-gray-200 bg-surface px-3 text-sm font-semibold text-gray-700"><input type="checkbox" className="rounded border-gray-300 text-brand-600 focus:ring-brand-500" checked={filterValues.show_cancelled !== '0'} onChange={(event) => setFilter('show_cancelled', event.target.checked ? '' : '0')} />إظهار الملغاة</label>
+                        <Switch isSelected={filterValues.show_cancelled !== '0'} onChange={(on) => setFilter('show_cancelled', on ? '' : '0')} className="gl-filter-switch">
+                            <Switch.Content>
+                                <Switch.Control><Switch.Thumb /></Switch.Control>
+                                <Label>إظهار الملغاة</Label>
+                            </Switch.Content>
+                        </Switch>
                         {activeFilters > 0 && <button type="button" className="clr" onClick={clearPanelFilters}>مسح الفلاتر</button>}
                     </div>
                     <table data-excel-source="custom" className="ledger-table" aria-label="السجل المالي">
