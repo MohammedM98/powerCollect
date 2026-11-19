@@ -58,7 +58,7 @@ export default function DashboardHeader({
                                   )
                         }
                         disabled={branchView.switching}
-                        placeholder="كل الفروع"
+                        placeholder="جميع الفروع"
                         searchPlaceholder="ابحث عن فرع..."
                         active={Boolean(filters.branch)}
                         portal

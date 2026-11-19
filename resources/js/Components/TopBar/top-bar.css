@@ -9,7 +9,7 @@
     --tn-bar-rest-height: 66px;
     /* The row of the section's pages under the bar. */
     --tn-subnav-height: 54px;
-    --tn-sticky-top: calc(var(--tn-bar-rest-height) + 1.5rem);
+    --tn-sticky-top: calc(var(--tn-bar-rest-height) + 12px);
     --tn-dock-width: 92px;
     --tn-dock-gap: 12px;
     --tn-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -26,7 +26,7 @@ html {
 }
 
 html:has(.tn-header[data-subnav]) {
-    --tn-sticky-top: calc(var(--tn-bar-rest-height) + var(--tn-subnav-height) + 1.5rem);
+    --tn-sticky-top: calc(var(--tn-bar-rest-height) + var(--tn-subnav-height) + 12px);
     scroll-padding-top: 170px;
 }
 

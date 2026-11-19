@@ -142,8 +142,8 @@ const { readFileSync } = require('node:fs');
         assert.match(await page.getByRole('tooltip').innerText(), /الموجب مستحق للشركة/);
         await page.keyboard.press('Escape');
         assert.equal(await page.getByRole('tooltip').count(), 0);
-        const side = page.getByText('جهة الحركة', { exact: true }).locator('..');
-        await side.getByRole('button').first().click();
+        // Filters are pills, each named inside its own button.
+        await page.locator('.gl-filter-trigger').filter({ hasText: 'جهة الحركة' }).first().click();
         await page.locator('ul button').filter({ hasText: 'له (دائن)' }).click();
         await page.waitForURL((url) => url.searchParams.get('filter[side]') === 'credit');
         assert.equal(await table.locator('tbody tr').count(), 1);
