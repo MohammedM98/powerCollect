@@ -6966,3 +6966,699 @@ body {
     background: var(--ma-tile);
     color: var(--ma-muted);
 }
+
+/*
+ * ════════════════════════════════════════════════════════════════════════
+ * The account statement, exactly as the redesign's option «أ» (page and
+ * window): the dark account card beside four figures, one toolbar, every
+ * column in one table (its line number pinned while it scrolls sideways),
+ * months as soft bands, and the movements one adds in a glass dock that
+ * floats at the foot of the screen, each a raised key in its colour.
+ * ════════════════════════════════════════════════════════════════════════
+ */
+.modal-sheet-panel:has(.gl-statement),
+:root[data-ui-background='graphite'] .modal-sheet-panel:has(.gl-statement) {
+    border: 0;
+    border-radius: 28px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: blur(28px) saturate(1.6);
+    backdrop-filter: blur(28px) saturate(1.6);
+    box-shadow: var(--ma-float);
+    color: var(--ma-ink);
+}
+
+:root:not([data-surface='glass']) .modal-sheet-panel:has(.gl-statement) {
+    background: var(--ma-solid);
+}
+
+.gl-statement > .gl-dialog-head {
+    padding: 18px 22px 14px;
+    border: 0;
+}
+
+.gl-statement > .gl-dialog-head h3 {
+    font-size: clamp(22px, 2.6vw, 28px) !important;
+    font-weight: 900;
+}
+
+.gl-statement > .gl-dialog-head .gl-ib {
+    border: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--ma-muted);
+}
+
+.gl-statement > .gl-dialog-head .gl-ib:hover {
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+}
+
+/* Who: an initial on a raised white square, its status dot at the corner. */
+.gl-st-av {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-muted);
+    font: 800 17px var(--font-body, 'Zain'), sans-serif;
+}
+
+.gl-st-av i {
+    position: absolute;
+    bottom: -2px;
+    inset-inline-end: -2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--ma-faint);
+    box-shadow: 0 0 0 2px var(--ma-solid);
+}
+
+.gl-st-av[data-status='active'] i {
+    background: var(--ma-pay);
+}
+
+.gl-st-av[data-status='suspended'] i {
+    background: var(--ma-warn);
+}
+
+/* The card and the four figures across. */
+.account-statement .gl-st-top {
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+    margin-bottom: 16px;
+}
+
+.account-statement .gl-st-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+@media (max-width: 900px) {
+    .account-statement .gl-st-top {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .account-statement .gl-st-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.account-statement .gl-kpi.card.gl-st-fig {
+    gap: 2px;
+    padding: 14px 16px;
+    border: 0;
+    border-radius: 18px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+}
+
+.account-statement .gl-st-fig > small {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.account-statement .gl-st-fig > small i {
+    width: 8px;
+    height: 8px;
+    border-radius: 3px;
+    background: var(--ma-muted);
+}
+
+.account-statement .gl-st-fig[data-tone='owe'] > small i { background: var(--ma-owe); }
+.account-statement .gl-st-fig[data-tone='pay'] > small i { background: var(--ma-pay); }
+.account-statement .gl-st-fig[data-tone='disc'] > small i { background: var(--ma-disc); }
+.account-statement .gl-st-fig[data-tone='clr'] > small i { background: var(--ma-clr); }
+
+.account-statement .gl-st-fig > b {
+    color: var(--ma-ink);
+    font: 800 22px / 1.25 var(--font-body, 'Zain'), sans-serif;
+}
+
+.account-statement .gl-st-fig > span {
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+/* The account card: the prototype's charcoal with its orange glow. */
+.account-statement .gl-kpi.card.gl-st-acard {
+    border-radius: 22px;
+    background: radial-gradient(120% 140% at 100% 0%, #3a3f49 0%, #22252c 55%, #191b20 100%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 18px 40px -20px rgb(10 12 16 / 0.7);
+}
+
+.account-statement .gl-st-acard::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: -40px;
+    bottom: -60px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(226 100 42 / 0.28), transparent 70%);
+    pointer-events: none;
+}
+
+.account-statement .gl-st-acard > b {
+    font-size: 40px;
+    font-weight: 900;
+    line-height: 1.1;
+}
+
+.account-statement .gl-st-acard-facts {
+    position: relative;
+    z-index: 1;
+    gap: 4px 16px;
+    padding-inline-end: 84px;
+    font-size: 13.5px;
+}
+
+/* The table's card and its one toolbar. */
+.account-statement .gl-st-ledger.card,
+:root[data-ui-background='graphite'] .account-statement .gl-st-ledger.card {
+    overflow: clip;
+    padding: 0;
+    border: 0;
+    border-radius: 22px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-st-tb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px 10px;
+}
+
+.gl-st-tb-grow {
+    flex: 1;
+}
+
+.gl-st-tb .gl-st-search {
+    flex: 1 1 240px;
+    max-width: 360px;
+}
+
+.gl-st-tb .gl-st-search [data-slot='search-field-group'],
+.gl-st-tb .gl-st-search .search-field__group {
+    min-height: 42px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    box-shadow: none;
+}
+
+.gl-st-tb .gl-st-search input::placeholder {
+    color: var(--ma-faint);
+}
+
+.gl-st-tb .gl-filter-trigger,
+.gl-st-tb .gl-filter-trigger:hover {
+    height: 36px;
+    padding-inline: 12px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+    color: var(--ma-ink);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.gl-st-tb .gl-filter-trigger[data-active] {
+    background: var(--ma-brand-soft);
+    color: var(--ma-brand);
+    box-shadow: none;
+}
+
+.gl-st-tb .gl-seg-group {
+    gap: 2px;
+    padding: 3px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--ma-tile);
+}
+
+.gl-st-tb .gl-seg-group .gl-seg-item {
+    height: 32px;
+    min-height: 32px;
+    padding-inline: 12px;
+    border-radius: 9px;
+    background: none;
+    box-shadow: none;
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.gl-st-tb .gl-seg-group .gl-seg-item svg {
+    display: none;
+}
+
+.gl-st-tb .gl-seg-group .gl-seg-item[data-selected],
+.gl-st-tb .gl-seg-group .gl-seg-item[aria-pressed='true'] {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+}
+
+.gl-st-tb [data-table-export-slot] :is(a, button),
+.gl-st-tb :is(.tone-excel, .tone-print) {
+    height: 36px;
+    padding-inline: 12px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+    color: var(--ma-ink);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* The table: every column, the head a soft band rounded at both ends, the line number pinned. */
+.account-statement .gl-st-scroll {
+    position: relative;
+    overflow-x: auto;
+    padding: 0 10px 10px;
+}
+
+.account-statement .gl-st-table {
+    width: 100%;
+    min-width: 1460px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14.5px;
+}
+
+.account-statement .gl-st-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    height: 40px;
+    padding: 0 10px;
+    border: 0;
+    background: var(--ma-tile);
+    color: var(--ma-muted);
+    font-size: 12.5px;
+    font-weight: 700;
+    text-align: start;
+    white-space: nowrap;
+}
+
+.account-statement .gl-st-table thead th:first-child {
+    border-start-start-radius: 12px;
+    border-end-start-radius: 12px;
+}
+
+.account-statement .gl-st-table thead th:last-child {
+    border-start-end-radius: 12px;
+    border-end-end-radius: 12px;
+}
+
+.account-statement .gl-st-table tbody td {
+    height: 56px;
+    padding: 6px 10px;
+    border: 0;
+    border-bottom: 1px solid var(--ma-line);
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.account-statement .gl-st-table td small {
+    display: block;
+    color: var(--ma-muted);
+    font-size: 12px;
+}
+
+.account-statement .gl-st-table td.gl-st-desc {
+    min-width: 220px;
+    max-width: 280px;
+    white-space: normal;
+}
+
+.account-statement .gl-st-table .statement-description-title {
+    color: var(--ma-ink);
+    font-weight: 700;
+}
+
+.account-statement .gl-st-table .statement-description-details {
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.account-statement .gl-st-table tbody tr:not(.gl-st-month):hover > td {
+    background: color-mix(in oklab, var(--ma-tile) 60%, transparent);
+}
+
+.account-statement .gl-st-table .gl-st-pin {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 1;
+    background: var(--ma-solid);
+}
+
+.account-statement .gl-st-table thead .gl-st-pin {
+    z-index: 3;
+    background: var(--ma-tile);
+}
+
+.account-statement .gl-st-table tbody tr:not(.gl-st-month):hover > td.gl-st-pin {
+    background: color-mix(in oklab, var(--ma-tile) 60%, var(--ma-solid));
+}
+
+.account-statement .gl-st-table .gl-st-n {
+    color: var(--ma-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.account-statement .gl-st-none {
+    color: var(--ma-muted);
+}
+
+.account-statement .gl-st-ref {
+    font: 600 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.account-statement .gl-st-amount .gl-st-money {
+    font-weight: 800;
+}
+
+.account-statement .gl-st-amount[data-side='debit'] .gl-st-money {
+    color: var(--ma-owe);
+}
+
+.account-statement .gl-st-amount[data-side='credit'] .gl-st-money {
+    color: var(--ma-pay);
+}
+
+.account-statement .gl-st-table .gl-st-bal {
+    font-weight: 800;
+}
+
+.account-statement .gl-st-table .gl-st-bal[data-tone='owes'] {
+    color: var(--ma-owe);
+}
+
+.account-statement .gl-st-table .gl-st-bal[data-tone='credit'] {
+    color: var(--ma-pay);
+}
+
+.account-statement .gl-st-table tr.ledger-cancelled > td {
+    color: var(--ma-muted);
+}
+
+/* Months: a soft band with what was charged and credited and the balance it left. */
+.account-statement .gl-st-table tr.gl-st-month > td {
+    height: 40px;
+    border-bottom: 0;
+    background: var(--ma-tile);
+    font-size: 13.5px;
+}
+
+.account-statement .gl-st-table tr.gl-st-month > td:first-child {
+    border-start-start-radius: 12px;
+    border-end-start-radius: 12px;
+}
+
+.account-statement .gl-st-table tr.gl-st-month > td:last-child {
+    border-start-end-radius: 12px;
+    border-end-end-radius: 12px;
+}
+
+.account-statement .gl-st-table tr.gl-st-month .gl-st-month-name {
+    color: var(--ma-ink);
+    font-weight: 800;
+}
+
+.account-statement .gl-st-table tr.gl-st-month .gl-st-month-sum {
+    color: var(--ma-muted);
+}
+
+.account-statement .gl-st-table tbody tr.gl-st-month:not(:first-child) > td {
+    border-top: 8px solid transparent;
+    background-clip: padding-box;
+}
+
+.account-statement .gl-st-foot {
+    padding: 10px 16px 14px;
+    border: 0;
+    color: var(--ma-muted);
+    font-size: 13.5px;
+}
+
+.account-statement .gl-st-foot b {
+    color: var(--ma-ink);
+}
+
+/*
+ * The dock: glass, floating, centred at the foot of the screen while the
+ * statement scrolls; each movement a raised key in its colour with its
+ * light and shadow, rising under the pointer, as the top bar's «تسجيل دفعة».
+ */
+.gl-st-dock {
+    position: sticky;
+    bottom: 18px;
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    margin-top: 4px;
+    pointer-events: none;
+}
+
+.gl-st-dock > .gl-acts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    max-width: calc(100% - 24px);
+    padding: 8px;
+    border-radius: 20px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: blur(22px) saturate(1.6);
+    backdrop-filter: blur(22px) saturate(1.6);
+    box-shadow: var(--ma-float);
+    pointer-events: auto;
+}
+
+:root:not([data-surface='glass']) .gl-st-dock > .gl-acts {
+    background: var(--ma-solid);
+}
+
+.gl-st-dock .gl-act.button,
+.gl-st-dock .gl-act.button:hover {
+    --kc: #4a5059;
+    height: 44px;
+    min-width: 0;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 14px;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--kc) 88%, white), var(--kc));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 10px 20px -10px color-mix(in oklab, var(--kc) 85%, black);
+    color: #fff;
+    font-size: 14.5px;
+    font-weight: 700;
+    transition: transform 0.12s, filter 0.15s, box-shadow 0.15s;
+}
+
+.gl-st-dock .gl-act.button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.06);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 16px 26px -12px color-mix(in oklab, var(--kc) 85%, black);
+}
+
+.gl-st-dock .gl-act.button:active {
+    transform: translateY(0);
+}
+
+.gl-st-dock .gl-act.button svg {
+    color: #fff;
+}
+
+.gl-st-dock .gl-act[data-tone='payment'],
+.gl-st-dock .gl-act[data-tone='pay'] { --kc: #2d855c; }
+.gl-st-dock .gl-act[data-tone='split'] { --kc: #1f6a80; }
+.gl-st-dock .gl-act[data-tone='charge'] { --kc: #b0524b; }
+.gl-st-dock .gl-act[data-tone='discount'] { --kc: #6c599d; }
+.gl-st-dock .gl-act[data-tone='clearing'] { --kc: #45678e; }
+
+@media (max-width: 640px) {
+    .gl-st-dock .gl-act.button {
+        padding-inline: 12px;
+        font-size: 13.5px;
+    }
+}
+
+@media print {
+    .gl-st-dock {
+        display: none !important;
+    }
+}
+
+/* The wide table scrolls inside its card, never the page. */
+.account-statement,
+.account-statement .gl-st-ledger,
+.gl-st-page {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.account-statement .gl-st-ledger {
+    display: block;
+    width: 100%;
+}
+
+/*
+ * Phones: each line of the statement as a card (as the site's other tables
+ * on phones), its columns as label and value two by two, so nothing scrolls
+ * sideways and its menu stays in reach.
+ */
+@media (max-width: 640px) {
+    .account-statement .gl-st-scroll {
+        overflow: visible;
+        padding: 0 8px 8px;
+    }
+
+    .account-statement .gl-st-table,
+    .account-statement .gl-st-table tbody {
+        display: block;
+        min-width: 0;
+    }
+
+    .account-statement .gl-st-table thead {
+        display: none;
+    }
+
+    .account-statement .gl-st-table tbody tr:not(.gl-st-month) {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px 14px;
+        margin-bottom: 8px;
+        padding: 12px 14px;
+        border-radius: 18px;
+        background: var(--ma-solid);
+        box-shadow: var(--ma-depth);
+    }
+
+    .account-statement .gl-st-table tbody tr:not(.gl-st-month) > td {
+        display: grid;
+        gap: 1px;
+        height: auto;
+        padding: 0;
+        border: 0;
+        background: none !important;
+        white-space: normal;
+    }
+
+    .account-statement .gl-st-table tbody tr:not(.gl-st-month) > td[data-label]::before {
+        content: attr(data-label);
+        color: var(--ma-muted);
+        font-size: 11.5px;
+        font-weight: 700;
+    }
+
+    .account-statement .gl-st-table tbody tr > td.gl-st-desc {
+        grid-column: 1 / -1;
+        order: -2;
+        max-width: none;
+        padding-inline-end: 44px;
+    }
+
+    .account-statement .gl-st-table tbody tr > td.gl-st-desc::before,
+    .account-statement .gl-st-table tbody tr > td.gl-st-n::before {
+        display: none;
+    }
+
+    .account-statement .gl-st-table tbody tr > td.gl-st-n {
+        position: absolute;
+        top: 12px;
+        inset-inline-end: 50px;
+        font-size: 12px;
+    }
+
+    .account-statement .gl-st-table tbody tr > td.gl-st-act {
+        position: absolute;
+        top: 6px;
+        inset-inline-end: 6px;
+    }
+
+    .account-statement .gl-st-table tbody tr > td.gl-st-pin {
+        position: static;
+    }
+
+    .account-statement .gl-st-table tbody tr > td:has(> .gl-st-none:only-child) {
+        display: none;
+    }
+
+    .account-statement .gl-st-table tr.gl-st-month {
+        display: block;
+        margin: 10px 0 8px;
+    }
+
+    .account-statement .gl-st-table tr.gl-st-month > td {
+        display: inline;
+        height: auto;
+        padding: 0 4px;
+        border: 0 !important;
+        background: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .gl-st-dock {
+        bottom: max(10px, env(safe-area-inset-bottom, 0px));
+    }
+
+    .gl-st-dock > .gl-acts {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        max-width: calc(100% - 8px);
+        overflow-x: auto;
+        padding: 6px;
+        border-radius: 16px;
+        scrollbar-width: none;
+    }
+
+    .gl-st-dock .gl-act.button,
+    .gl-st-dock .gl-act.button:hover {
+        flex: none;
+        height: 40px;
+        padding-inline: 12px;
+        border-radius: 12px;
+        font-size: 13.5px;
+    }
+
+    .account-statement .gl-st-table tbody tr > td.gl-st-n {
+        display: none;
+    }
+}
+
+/* The balance column fits a six-figure balance; the amount column likewise. */
+@media (min-width: 641px) {
+    .account-statement .gl-st-table :is(th, td):nth-child(13) {
+        min-width: 150px;
+    }
+
+    .account-statement .gl-st-table :is(th, td):nth-child(8) {
+        min-width: 120px;
+    }
+}
