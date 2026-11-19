@@ -7,9 +7,9 @@ function readSurface() {
 }
 
 /**
- * The person's choice of surfaces: solid panels, or glass ones that let the
- * page's faint colour through, frosted (theme.css, section 8). Kept in this
- * browser; app.blade.php applies it before the page paints.
+ * The person's choice of surfaces: glass (the design's own, and the default)
+ * that lets the page's faint colours through, frosted, or solid panels.
+ * Kept in this browser; app.blade.php applies it before the page paints.
  */
 export function useSurface() {
     const [surface, setSurface] = useState(readSurface);
@@ -19,7 +19,7 @@ export function useSurface() {
             if (event.type === 'storage' && event.key !== 'surface') {
                 return;
             }
-            const next = event.type === 'storage' ? (event.newValue === 'glass' ? 'glass' : 'solid') : readSurface();
+            const next = event.type === 'storage' ? (event.newValue === 'solid' ? 'solid' : 'glass') : readSurface();
             apply(next);
             setSurface(next);
         }
