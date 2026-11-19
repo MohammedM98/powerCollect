@@ -19,6 +19,7 @@ function browserFor(fetchResponse) {
         addEventListener: (event, callback) => listeners.set(event, callback),
         removeEventListener: (event) => listeners.delete(event),
         focus: () => listeners.get('focus')?.(),
+        keydown: () => listeners.get('keydown')?.(),
         reveal: () => visibility.get('visibilitychange')?.(),
     };
     return browser;
@@ -81,4 +82,19 @@ test('unmounting aborts a pending check and ignores a late unauthorized response
     assert.equal(signal.aborted, true);
     finish({status:401});
     await check;
+});
+
+test('an unattended page stops renewing the session until someone uses it again', async () => {
+    let requests = 0;
+    const browser = browserFor(async () => { requests++; return {status:204}; });
+    let clock = 0;
+    browser.now = () => clock;
+    const stop = watchSessionStatus(() => assert.fail('unexpected logout'), browser);
+    clock = 16 * 60 * 1000;
+    await browser.tick();
+    assert.equal(requests, 0);
+    browser.keydown();
+    await browser.tick();
+    assert.equal(requests, 1);
+    stop();
 });
