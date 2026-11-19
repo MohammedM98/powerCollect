@@ -250,7 +250,7 @@ class _PowerCollectAppState extends State<PowerCollectApp>
     AppIdentity.dark = isDark;
     return MaterialApp(
       navigatorKey: navigatorKey,
-      title: 'PowerCollect',
+      title: 'MA',
       debugShowCheckedModeBanner: false,
       locale: const Locale('ar'),
       supportedLocales: const [Locale('ar')],
