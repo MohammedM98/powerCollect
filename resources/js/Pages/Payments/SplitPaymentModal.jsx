@@ -24,8 +24,8 @@ export default function SplitPaymentModal({ onClose, transferBanks, senderBanks,
 
     return (
         <>
-            <Modal show onClose={requestClose} maxWidth="3xl">
-                <div role="dialog" aria-modal="true" aria-labelledby={titleId} className={SHEET_FORM_CLASS} style={movementStyle('split')}>
+            <Modal show onClose={requestClose} maxWidth="5xl">
+                <div role="dialog" aria-modal="true" aria-labelledby={titleId} className={SHEET_FORM_CLASS} data-ledger-tone="split" style={movementStyle('split')}>
                     <FormHeader titleId={titleId} icon="layers" tone="split" title="دفعة مقسّمة على عدة مشتركين" subtitle="حوالة واحدة توزَّع على مشتركين، ولو بهويات مختلفة" onClose={requestClose} />
                     <SplitPaymentForm transferBanks={transferBanks} senderBanks={senderBanks} onCancel={requestClose} onDirtyChange={setDirty} initialSubscription={initialSubscription} />
                 </div>

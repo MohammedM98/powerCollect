@@ -6,47 +6,35 @@ import { initials, normalizeDecimalInput } from '@/lib/format';
 import { balanceText, BALANCE_CHIPS, FieldLabel } from '@/Pages/Subscriptions/AccountFormParts';
 import { inputClass } from '@/Pages/Subscriptions/PaymentModal';
 
-/** One subscription of the split, laid out like the subscription strip of the payment form, with the share it pays. */
+/**
+ * One subscription of the split as a line of the distribution sheet: who,
+ * the balance now, the share typed in place, and the balance it leaves.
+ */
 function PartRow({ part, onAmount, onRemove, error }) {
+    const now = describeBalance(part.subscription.balance);
     const after = describeBalance(Number(part.subscription.balance) - Number(part.amount || 0));
 
     return (
-        <li className="grid gap-2">
-            <div className="flex flex-wrap items-center gap-x-3.5 gap-y-3 rounded-[18px] bg-[rgb(var(--panel-field))] px-3.5 py-3 shadow-[var(--field-shadow)]">
-                <div className="flex min-w-0 flex-1 basis-52 items-center gap-3.5">
-                    <span className="relative flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[14px] bg-graphite-gradient font-display text-[15px] font-bold text-white">
-                        {initials(part.subscription.fullName)}
-                        <span
-                            className={`absolute -bottom-0.5 -inset-s-0.5 h-[13px] w-[13px] rounded-full border-[2.5px] border-gray-50 ${STATUS_DOTS[part.subscription.status] ?? 'bg-gray-400'}`}
-                            aria-hidden="true"
-                        />
-                    </span>
-                    <div className="min-w-0">
-                        <p className="wrap-break-word text-[16.5px] font-bold text-gray-900">{part.subscription.fullName}</p>
-                        <p className="text-[13.5px] text-gray-500">
-                            حساب{' '}
-                            <span dir="ltr" className="font-display">
-                                {part.subscription.accountNumber}
-                            </span>
-                            {part.subscription.meterBoxNumber && `، طبلون ${part.subscription.meterBoxNumber}`}
-                        </p>
+        <>
+            <tr className="is-new">
+                <td>
+                    <div className="gl-sp-who">
+                        <span className="gl-sp-av" aria-hidden="true">
+                            {initials(part.subscription.fullName)}
+                            <i className={STATUS_DOTS[part.subscription.status] ?? 'bg-gray-400'} />
+                        </span>
+                        <span className="min-w-0">
+                            <b>{part.subscription.fullName}</b>
+                            <small>
+                                حساب <bdi dir="ltr" className="gl-num">{part.subscription.accountNumber}</bdi>
+                                {part.subscription.meterBoxNumber && `، طبلون ${part.subscription.meterBoxNumber}`}
+                            </small>
+                        </span>
                     </div>
-                </div>
-
-                <div className="flex flex-col items-end gap-0.5">
-                    <span className="text-[12.5px] text-gray-500">الرصيد الحالي</span>
-                    <span
-                        className={`whitespace-nowrap rounded-[10px] px-2.5 py-0.5 font-display text-[15px] font-bold ${BALANCE_CHIPS[describeBalance(part.subscription.balance).tone]}`}
-                    >
-                        {balanceText(describeBalance(part.subscription.balance))}
-                    </span>
-                </div>
-
-                <div className="w-36">
-                    <label htmlFor={`part-${part.subscription.id}`} className="sr-only">
-                        {`مبلغ ${part.subscription.fullName}`}
-                    </label>
-                    <div className="relative">
+                </td>
+                <td className="gl-num" data-tone={now.tone}>{balanceText(now)}</td>
+                <td>
+                    <div className="gl-cl-in is-amount" data-invalid={error ? true : undefined}>
                         <input
                             id={`part-${part.subscription.id}`}
                             inputMode="decimal"
@@ -56,37 +44,23 @@ function PartRow({ part, onAmount, onRemove, error }) {
                             aria-label={`مبلغ ${part.subscription.fullName}`}
                             value={part.amount}
                             onChange={(event) => onAmount(normalizeDecimalInput(event.target.value))}
-                            className={`${inputClass} pe-9 text-end font-display text-lg font-bold`}
                         />
-                        <span
-                            className="pointer-events-none absolute inset-y-0 inset-e-3.5 flex items-center font-display text-base font-bold text-gray-400"
-                            aria-hidden="true"
-                        >
-                            ₪
-                        </span>
+                        <span aria-hidden="true">₪</span>
                     </div>
-                </div>
-
-                <div className="flex w-28 flex-col items-end gap-0.5">
-                    <span className="text-[12.5px] text-gray-500">بعد الدفعة</span>
-                    <span
-                        className={`whitespace-nowrap rounded-[10px] px-2.5 py-0.5 font-display text-[15px] font-bold ${BALANCE_CHIPS[after.tone]}`}
-                    >
-                        {balanceText(after)}
-                    </span>
-                </div>
-
-                <button
-                    type="button"
-                    onClick={onRemove}
-                    aria-label={`إزالة ${part.subscription.fullName}`}
-                    className="rounded-xl p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"
-                >
-                    <Icon name="close" className="h-[18px] w-[18px]" />
-                </button>
-            </div>
-            {error && <InputError message={error} />}
-        </li>
+                </td>
+                <td><b className="gl-sp-after gl-num" data-tone={after.tone}>{balanceText(after)}</b></td>
+                <td>
+                    <button type="button" onClick={onRemove} aria-label={`إزالة ${part.subscription.fullName}`} className="gl-sp-x">
+                        <Icon name="close" className="h-[18px] w-[18px]" />
+                    </button>
+                </td>
+            </tr>
+            {error && (
+                <tr className="gl-sp-err">
+                    <td colSpan={5}><InputError message={error} /></td>
+                </tr>
+            )}
+        </>
     );
 }
 
@@ -110,21 +84,36 @@ export default function SplitRecipientsSection({
             </FieldLabel>
 
             {parts.length > 0 && (
-                <ul className="mb-3 grid gap-2.5">
-                    {parts.map((part, index) => (
-                        <PartRow
-                            key={part.subscription.id}
-                            part={part}
-                            onAmount={(amount) => setAmount(index, amount)}
-                            onRemove={() => removePart(index)}
-                            error={errors[`parts.${index}.amount`] ?? errors[`parts.${index}.subscription_id`]}
-                        />
-                    ))}
-                </ul>
+                <div className="gl-cl" data-tone="split" data-excel-source="custom">
+                    <div className="gl-cl-scroll">
+                        <table className="gl-cl-table gl-sp-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">المشترك</th>
+                                    <th scope="col">الرصيد الحالي</th>
+                                    <th scope="col">يدفع</th>
+                                    <th scope="col">بعد الدفعة</th>
+                                    <th scope="col"><span className="sr-only">إزالة</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {parts.map((part, index) => (
+                                    <PartRow
+                                        key={part.subscription.id}
+                                        part={part}
+                                        onAmount={(amount) => setAmount(index, amount)}
+                                        onRemove={() => removePart(index)}
+                                        error={errors[`parts.${index}.amount`] ?? errors[`parts.${index}.subscription_id`]}
+                                    />
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             )}
 
             <div className="flex flex-wrap items-start gap-3">
-                <div className="relative min-w-0 flex-1 basis-72">
+                <div className="gl-sp-search relative min-w-0 flex-1 basis-72">
                     <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-4 my-auto h-[18px] w-[18px] text-gray-400" />
                     <input
                         id="split_search"
