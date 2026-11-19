@@ -2282,6 +2282,9 @@
 .gl-tone-warn { --gl-c: var(--gl-warn); }
 .gl-tone-bad { --gl-c: var(--gl-bad); }
 .gl-tone-ok { --gl-c: var(--gl-ok); }
+.gl-tone-charge { --gl-c: rgb(var(--tone-charge-ink)); }
+.gl-tone-discount { --gl-c: rgb(var(--tone-discount-ink)); }
+.gl-tone-clearing { --gl-c: rgb(var(--tone-clearing-ink)); }
 
 /* ── Form windows (Pages/Subscriptions/AccountFormParts.jsx) ──────────── */
 /* The window is never taller than the screen: its title, movement card and footer stay, its steps scroll. */
@@ -2435,119 +2438,6 @@
 .gl-mv-cover .gl-bar i {
     transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
     animation: none;
-}
-
-/*
- * Every money form (payment, charge, discount, clearing…) on a wide screen:
- * the fields on one side and the movement as a summary on the other, like
- * an invoice: who it is for, the balance now, the movement, and the balance
- * it leaves, which follows what is typed. The summary stays in view while
- * the fields scroll. Narrow windows keep it above the fields.
- */
-@media (min-width: 860px) {
-    .gl-sheet:has(> .gl-mv) {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 300px;
-        grid-template-rows: auto minmax(0, 1fr) auto;
-        grid-template-areas:
-            'head head'
-            'body side'
-            'foot foot';
-    }
-
-    .gl-sheet:has(> .gl-mv) > .gl-dialog-head {
-        grid-area: head;
-        border-bottom: 1px solid var(--gl-line);
-    }
-
-    .gl-sheet:has(> .gl-mv) > .gl-sheet-body {
-        grid-area: body;
-    }
-
-    .gl-sheet:has(> .gl-mv) > .gl-dialog-foot {
-        grid-area: foot;
-        border-top: 1px solid var(--gl-line);
-    }
-
-    .gl-sheet > .gl-mv {
-        grid-area: side;
-        align-self: start;
-        max-height: calc(100% - 40px);
-        overflow-y: auto;
-        margin: 20px 0 20px 24px;
-        padding: 18px;
-        gap: 16px;
-        border-radius: 18px;
-    }
-
-    /* Who it is for: the movement's tag on its own line, then the avatar and the name kept whole. */
-    .gl-sheet > .gl-mv .gl-mv-who {
-        display: grid;
-        grid-template-columns: 40px minmax(0, 1fr);
-        gap: 10px 12px;
-    }
-
-    .gl-sheet > .gl-mv .gl-mv-tag {
-        grid-column: 1 / -1;
-        grid-row: 1;
-        justify-self: start;
-        margin: 0;
-    }
-
-    .gl-sheet > .gl-mv .gl-mv-cells,
-    .gl-sheet > .gl-mv .gl-mv-cells[data-count='2'] {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 0;
-        padding-top: 14px;
-        border-top: 1px solid var(--gl-line);
-    }
-
-    .gl-sheet > .gl-mv .gl-mv-op {
-        display: none;
-    }
-
-    /* Each line of the summary: its name and note on one side, its amount on the other. */
-    .gl-sheet > .gl-mv .gl-mv-cell {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        align-items: baseline;
-        column-gap: 12px;
-        padding: 8px 0;
-    }
-
-    .gl-sheet > .gl-mv .gl-mv-cell small {
-        grid-column: 1;
-        color: rgb(var(--gray-700));
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .gl-sheet > .gl-mv .gl-mv-cell b {
-        grid-column: 2;
-        grid-row: 1;
-        font-size: 17px;
-    }
-
-    .gl-sheet > .gl-mv .gl-mv-cell em {
-        grid-column: 1 / -1;
-        font-size: 12.5px;
-    }
-
-    .gl-sheet > .gl-mv .gl-mv-cell.is-result {
-        grid-template-columns: minmax(0, 1fr);
-        margin-top: 8px;
-        padding: 14px;
-        border-radius: 14px;
-        background: rgb(var(--panel-bg));
-        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gl-cell, var(--gl-ink)) 30%, transparent);
-    }
-
-    .gl-sheet > .gl-mv .gl-mv-cell.is-result b {
-        grid-column: 1;
-        grid-row: auto;
-        font-size: 26px;
-        transition: color 0.2s;
-    }
 }
 
 /* A statement's movements, one button each in its own colour (Pages/Subscriptions/StatementForms.jsx). */
@@ -5933,4 +5823,273 @@ button.gl-cb-tile:hover {
 
 .gl-cb-period .gl-filter-trigger {
     max-width: min(100%, 32rem);
+}
+
+/*
+ * The money windows (charge, discount, clearing, a payment's correction) as
+ * in the redesign: one column, the movement card on top (who, the balance
+ * now, the movement and the balance it leaves), choices as HeroUI radio
+ * cards, the big amount on HeroUI's input with quick picks under it, and
+ * a footer whose save button wears the movement's colour.
+ * Pages/Subscriptions/AccountFormParts.jsx.
+ */
+.gl-sheet .gl-mv {
+    margin: 16px 24px 0;
+    padding: 16px 18px;
+    border-radius: 20px;
+}
+
+.gl-sheet .gl-mv-cells {
+    align-items: center;
+    text-align: center;
+}
+
+.gl-sheet .gl-mv-cell.is-result {
+    padding: 4px 2px;
+    background: none;
+    box-shadow: none;
+}
+
+.gl-sheet .gl-mv-tag {
+    background: color-mix(in srgb, var(--gl-t) 14%, rgb(var(--panel-bg)));
+}
+
+.gl-sheet .gl-step > h4 {
+    font-size: 14px;
+}
+
+.gl-choices {
+    display: grid;
+    grid-template-columns: repeat(var(--gl-choice-cols, 2), minmax(0, 1fr));
+    gap: 10px;
+}
+
+@media (max-width: 639px) {
+    .gl-choices {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.gl-choice {
+    display: block;
+    min-width: 0;
+}
+
+.gl-choices[data-orientation] [data-slot='radio'] {
+    margin-top: 0;
+}
+
+.gl-choice-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 76px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: rgb(var(--panel-field));
+    box-shadow: var(--field-shadow), 0 0 0 1px rgb(var(--gray-900) / 0.06);
+    cursor: pointer;
+    transition: box-shadow 0.15s, background-color 0.15s;
+}
+
+.gl-choice-content:hover {
+    box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+}
+
+.gl-choice-content[data-selected] {
+    background: rgb(var(--brand-solid) / 0.05);
+    box-shadow: 0 0 0 1.5px rgb(var(--brand-solid)), 0 0 0 4px rgb(var(--brand-solid) / 0.1);
+}
+
+.gl-choice-content[data-focus-visible] {
+    outline: 2px solid rgb(var(--brand-solid));
+    outline-offset: 3px;
+}
+
+.gl-choice-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.gl-choice-content[data-selected] .gl-choice-icon {
+    background: rgb(var(--brand-solid));
+    color: #fff;
+}
+
+.gl-choice-content b {
+    display: block;
+    color: var(--gl-ink);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.gl-choice-content small {
+    display: block;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.gl-amt {
+    display: grid;
+    gap: 10px;
+}
+
+.gl-amt-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 20px;
+    border-radius: 20px;
+    background: rgb(var(--panel-field));
+    box-shadow: var(--field-shadow), 0 0 0 1px rgb(var(--gray-900) / 0.06);
+    transition: box-shadow 0.15s;
+}
+
+.gl-amt-field:hover {
+    box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+}
+
+.gl-amt-field:focus-within {
+    box-shadow: 0 0 0 1.5px rgb(var(--brand-solid)), 0 0 0 4px rgb(var(--brand-solid) / 0.12);
+}
+
+.gl-amt-field[data-invalid] {
+    box-shadow: 0 0 0 1.5px rgb(var(--danger-600)), 0 0 0 4px rgb(var(--danger-600) / 0.1);
+}
+
+.gl-amt-field[data-readonly] {
+    background: rgb(var(--panel-tile));
+}
+
+.gl-amt-field input.gl-amt-input {
+    flex: 1;
+    min-width: 0;
+    height: 60px;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--gl-ink);
+    font: 800 34px / 1 var(--gl-head);
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+    outline: none;
+}
+
+.gl-amt-input::placeholder {
+    color: rgb(var(--gray-400) / 0.7);
+}
+
+.gl-amt-unit {
+    color: var(--gl-muted);
+    font: 700 18px var(--gl-head);
+}
+
+.gl-amt-quick {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.gl-quick.button {
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.gl-quick.button:hover {
+    background: rgb(var(--group-hover));
+}
+
+.gl-quick.is-settle.button {
+    background: color-mix(in srgb, var(--gl-t) 14%, rgb(var(--panel-bg)));
+    color: var(--gl-t);
+}
+
+.gl-sheet-foot {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 24px;
+    border-top: 1px solid var(--gl-line);
+}
+
+.gl-sheet-keys {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    margin-inline-end: auto;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+}
+
+.gl-sheet-keys .kbd + .kbd,
+.gl-sheet-keys > .kbd:nth-of-type(2) {
+    margin-inline-start: 8px;
+}
+
+@media (min-width: 640px) {
+    .gl-sheet-keys {
+        display: inline-flex;
+    }
+}
+
+.gl-sheet-btn.button {
+    gap: 8px;
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 999px;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.gl-sheet-btn.button:hover:not([data-disabled]) {
+    background: rgb(var(--group-hover));
+}
+
+.gl-sheet-btn.is-primary.button {
+    background: rgb(var(--action));
+    color: rgb(var(--action-ink));
+}
+
+.gl-sheet-btn.is-submit.button {
+    min-width: 0;
+    background: var(--gl-t-solid, rgb(var(--action)));
+    color: #fff;
+}
+
+.gl-sheet-btn.is-submit.button:hover:not([data-disabled]) {
+    background: color-mix(in srgb, var(--gl-t-solid, rgb(var(--action))) 86%, #000);
+}
+
+.gl-sheet-btn.is-submit[data-disabled] {
+    opacity: 0.45;
+}
+
+@media (max-width: 639px) {
+    .gl-sheet-foot {
+        padding: 12px 16px;
+    }
+
+    .gl-sheet-btn.is-submit.button {
+        flex: 1;
+    }
 }

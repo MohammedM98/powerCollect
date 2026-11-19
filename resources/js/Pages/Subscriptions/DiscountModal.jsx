@@ -8,7 +8,7 @@ import { describeBalance } from '@/lib/accountStatement';
 import { formatAmount } from '@/lib/currency';
 import { formatMoney } from '@/lib/format';
 import { clearErrorOnInput, submitOnCtrlEnter, validateFormFields } from '@/lib/formValidation';
-import { balanceCells, balanceText, DoneScreen, FormFooter, FormHeader, FormStep, MovementCard, MOVEMENT_TONES, SheetBody, SHEET_FORM_CLASS } from './AccountFormParts';
+import { balanceCells, balanceText, DoneScreen, FormFooter, FormHeader, FormStep, MovementCard, movementStyle, SheetBody, SHEET_FORM_CLASS } from './AccountFormParts';
 import { CorrectionReasonFields, EMPTY_CORRECTION, OriginalLine } from './CorrectionFields';
 import { discountPreview, standingTerms, withSegment } from '@/lib/discountTerms';
 import DiscountSegmentStep from './DiscountSegmentStep';
@@ -69,7 +69,7 @@ export default function DiscountModal({
     const [receipt, setReceipt] = useState(null);
 
     const { isStanding, kiloPrice, owed, value, field, methods, invalid, discount, balanceAfter, example, exampleBill, exampleWithDiscount, weeklySaving, steps } = discountPreview(data, subscription, balance, discountMethods, correcting);
-    const tone = correcting ? 'correction' : 'credit';
+    const tone = correcting ? 'correction' : 'discount';
 
     function close() {
         setDiscarding(false);
@@ -199,7 +199,7 @@ export default function DiscountModal({
 
     return (
         <>
-            <Modal show={show} onClose={requestClose} maxWidth="5xl">
+            <Modal show={show} onClose={requestClose} maxWidth="2xl">
                 {receipt ? (
                     <DoneScreen
                         tone={correcting ? 'amber' : 'green'}
@@ -224,12 +224,12 @@ export default function DiscountModal({
                         onInput={(e) => clearErrorOnInput(e, form)}
                         onKeyDown={onKeyDown}
                         className={SHEET_FORM_CLASS}
-                        style={{ '--gl-t': MOVEMENT_TONES[tone], '--gl-t-ink': 'var(--gl-tone-ink)' }}
+                        style={movementStyle(tone)}
                     >
                         <FormHeader
                             titleId={titleId}
                             icon={correcting ? 'repeat' : 'tag'}
-                            tone={correcting ? 'amber' : 'green'}
+                            tone={correcting ? 'amber' : 'discount'}
                             title={correcting ? 'تصحيح خصم' : 'إضافة خصم'}
                             subtitle={
                                 correcting
@@ -333,7 +333,6 @@ export default function DiscountModal({
 
                         <FormFooter
                             onCancel={requestClose}
-                            tone={correcting ? 'amber' : 'green'}
                             disabled={value <= 0 || Boolean(invalid)}
                             processing={form.processing}
                             submitLabel={

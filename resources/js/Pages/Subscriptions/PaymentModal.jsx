@@ -8,7 +8,7 @@ import { paymentInShekels } from '@/lib/accountStatement';
 import { overpaymentLevel } from '@/lib/overpayment';
 import { formatMoney } from '@/lib/format';
 import { clearErrorOnInput, submitOnCtrlEnter, validateFormFields } from '@/lib/formValidation';
-import { balanceCells, CoverageBar, FormHeader, FormStep, MovementCard, MOVEMENT_TONES, SheetBody, SHEET_FORM_CLASS } from './AccountFormParts';
+import { balanceCells, CoverageBar, FormHeader, FormStep, MovementCard, movementStyle, SheetBody, SHEET_FORM_CLASS } from './AccountFormParts';
 import { CorrectionReasonFields, EMPTY_CORRECTION, OriginalLine } from './CorrectionFields';
 import { inputClass, PaymentReceipt } from './PaymentModalParts';
 import PaymentMethodStep from './PaymentMethodStep';
@@ -281,7 +281,7 @@ export default function PaymentModal({
                         onInput={(e) => clearErrorOnInput(e, form)}
                         onKeyDown={onKeyDown}
                         className={SHEET_FORM_CLASS}
-                        style={{ '--gl-t': MOVEMENT_TONES[tone], '--gl-t-ink': 'var(--gl-tone-ink)' }}
+                        style={movementStyle(tone)}
                     >
                         {!correcting ? (
                             <PaymentCheckout

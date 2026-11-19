@@ -16,7 +16,7 @@ import {
     FormHeader,
     FormStep,
     MovementCard,
-    MOVEMENT_TONES,
+    movementStyle,
     QuickPick,
     SheetBody,
     SHEET_FORM_CLASS,
@@ -69,7 +69,7 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
     const overBalance = amount > owed;
     const creditLeft = overBalance ? Math.round((amount - Number(balance)) * 100) / 100 : 0;
     const balanceAfter = amount > 0 ? Number(balance) - amount : null;
-    const tone = correcting ? 'correction' : 'credit';
+    const tone = correcting ? 'correction' : 'clearing';
 
     function close() {
         setDiscarding(false);
@@ -120,7 +120,7 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
 
     return (
         <>
-            <Modal show={show} onClose={requestClose} maxWidth="5xl">
+            <Modal show={show} onClose={requestClose} maxWidth="2xl">
                 {receipt ? (
                     <DoneScreen
                         tone={correcting ? 'amber' : 'green'}
@@ -147,12 +147,12 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
                         onInput={(e) => clearErrorOnInput(e, form)}
                         onKeyDown={submitOnCtrlEnter}
                         className={SHEET_FORM_CLASS}
-                        style={{ '--gl-t': MOVEMENT_TONES[tone] }}
+                        style={movementStyle(tone)}
                     >
                         <FormHeader
                             titleId={titleId}
                             icon={correcting ? 'repeat' : 'scale'}
-                            tone={correcting ? 'amber' : 'green'}
+                            tone={correcting ? 'amber' : 'clearing'}
                             title={correcting ? 'تصحيح مقاصة' : 'مقاصة'}
                             subtitle={
                                 correcting
@@ -269,7 +269,6 @@ export default function ClearingModal({ show, onClose, subscription, balance, co
 
                         <FormFooter
                             onCancel={requestClose}
-                            tone={correcting ? 'amber' : 'green'}
                             disabled={amount <= 0 || missingService || (overBalance && !data.confirm_over_balance)}
                             processing={form.processing}
                             submitLabel={correcting ? 'حفظ التصحيح' : amount > 0 ? `مقاصة ${formatMoney(amount)} ₪ من الحساب` : 'تسجيل المقاصة'}

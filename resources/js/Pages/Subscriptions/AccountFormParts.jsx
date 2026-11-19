@@ -1,9 +1,8 @@
 import { Fragment } from 'react';
+import { Button, Input, Radio, RadioGroup } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import InfoTip from '@/Components/InfoTip';
 import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { describeBalance, describedBalanceText } from '@/lib/accountStatement';
 import { BALANCE_CHIP_CLASSES } from '@/lib/balance';
 import { formatMoney, initials } from '@/lib/format';
@@ -19,30 +18,6 @@ const STATUS_DOTS = { active: 'bg-emerald-500', suspended: 'bg-amber-500', disco
 
 /** A balance's chip, by its tone (see lib/balance.js). */
 export const BALANCE_CHIPS = BALANCE_CHIP_CLASSES;
-
-/** Each tone's selected tile and header icon: red for a charge (عليه), green for a discount (له), graphite otherwise. */
-const TONES = {
-    red: {
-        tile: 'border-brand-500 shadow-[0_0_0_4px_rgb(var(--brand-500)/0.12)]',
-        icon: 'bg-brand-gradient text-white',
-        dot: 'border-brand-500 bg-brand-500',
-    },
-    green: {
-        tile: 'border-emerald-600 shadow-[0_0_0_4px_rgb(var(--success-600)/0.12)]',
-        icon: 'bg-linear-to-br from-emerald-600 to-emerald-800 text-white',
-        dot: 'border-emerald-600 bg-emerald-600',
-    },
-    amber: {
-        tile: 'border-amber-600 shadow-[0_0_0_4px_rgb(var(--warning-600)/0.12)]',
-        icon: 'bg-linear-to-br from-amber-500 to-amber-700 text-white',
-        dot: 'border-amber-600 bg-amber-600',
-    },
-    graphite: {
-        tile: 'border-gray-900 shadow-[0_0_0_4px_rgb(var(--gray-900)/0.07)]',
-        icon: 'bg-graphite-gradient text-white',
-        dot: 'border-gray-900 bg-gray-900',
-    },
-};
 
 /** A described balance (describeBalance()) as text: "7,178 ₪", "-9.10 ₪" or "0 ₪" (lib/accountStatement.js). */
 export function balanceText(balance) {
@@ -62,13 +37,34 @@ export function FieldLabel({ htmlFor, required = false, hint, children }) {
     );
 }
 
-/** The colour each kind of movement is drawn in, from components.css: the company's colour as text, red for what is added on, green for what comes off, amber for a correction. */
+/**
+ * The colour each kind of movement is drawn in (theme.css section 4): a
+ * payment green, a charge red, a discount violet, a clearing teal, a
+ * correction amber. `credit` is a discount's old name.
+ */
 export const MOVEMENT_TONES = {
-    payment: 'rgb(var(--gl-brand))',
-    charge: 'var(--gl-bad)',
-    credit: 'var(--gl-ok)',
+    payment: 'rgb(var(--tone-pay-ink))',
+    charge: 'rgb(var(--tone-charge-ink))',
+    discount: 'rgb(var(--tone-discount-ink))',
+    credit: 'rgb(var(--tone-discount-ink))',
+    clearing: 'rgb(var(--tone-clearing-ink))',
     correction: 'var(--gl-warn)',
 };
+
+/** Each kind of movement's solid colour, for its save button. */
+const MOVEMENT_SOLIDS = {
+    payment: 'rgb(var(--tone-pay-solid))',
+    charge: 'rgb(var(--tone-charge-solid))',
+    discount: 'rgb(var(--tone-discount-solid))',
+    credit: 'rgb(var(--tone-discount-solid))',
+    clearing: 'rgb(var(--tone-clearing-solid))',
+    correction: 'rgb(var(--warning-600))',
+};
+
+/** The colours a money form's parts read (`--gl-t` for text and rings, `--gl-t-solid` for its save button), for its `style`. */
+export function movementStyle(tone) {
+    return { '--gl-t': MOVEMENT_TONES[tone] ?? tone, '--gl-t-solid': MOVEMENT_SOLIDS[tone] ?? 'rgb(var(--action))', '--gl-t-ink': '#fff' };
+}
 
 /** A balance's colour on the movement card: red while owed, green in credit, plain when settled. */
 const CELL_COLORS = { owes: 'var(--gl-bad)', credit: 'var(--gl-ok)', settled: 'var(--gl-ink)' };
@@ -175,64 +171,41 @@ export function SheetBody({ children }) {
 }
 
 /**
- * One choice as a big radio tile, in the form's tone. `stacked` puts the
- * icon above the words (three in a row); `shortcut` is the number key
- * that picks it.
+ * A choice of one among a few, as big cards on HeroUI's radio group (the
+ * redesign's look): each with its icon, name and a line on what it does;
+ * the chosen one ringed in the company's colour, its icon filled. `name`
+ * is the field's name in the form; `columns` how many to a row on a wide
+ * window; `options` are `{ value, icon, title, hint }`. Number keys pick
+ * them where the form listens for them.
  */
-export function ChoiceTile({ name, value, checked, onChange, icon, title, hint, tone = 'graphite', stacked = false, shortcut = null }) {
-    const look = TONES[tone];
-
+export function ChoiceCards({ name, label, value, onChange, options, columns = 2, isRequired = false }) {
     return (
-        <label
-            className={`relative flex cursor-pointer gap-3 rounded-[18px] border-[1.5px] bg-surface px-4 py-3.5 text-start transition focus-within:outline-solid focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-gray-900 ${
-                stacked ? 'items-center sm:flex-col sm:items-start sm:gap-2 sm:px-3.5' : 'items-center'
-            } ${checked ? look.tile : 'border-gray-200 hover:border-gray-300'}`}
-        >
-            <input type="radio" name={name} value={value} checked={checked} onChange={() => onChange(value)} className="sr-only" />
-            <span
-                className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[13px] transition ${checked ? look.icon : 'bg-gray-100 text-gray-700'}`}
-            >
-                <Icon name={icon} className="h-[18px] w-[18px]" strokeWidth={1.8} />
-            </span>
-            <span className="min-w-0">
-                <b className="block text-[15.5px] text-gray-900">{title}</b>
-                {hint && <small className="block text-[13px] leading-snug text-gray-500">{hint}</small>}
-            </span>
-            <span
-                className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full border-[1.5px] transition ${
-                    stacked ? 'ms-auto sm:absolute sm:inset-e-3 sm:top-3 sm:ms-0' : 'ms-auto'
-                } ${checked ? look.dot : 'border-gray-300'}`}
-                aria-hidden="true"
-            >
-                {checked && <span className="h-2 w-2 rounded-full bg-surface" />}
-            </span>
-            {shortcut && (
-                <span
-                    className="absolute inset-e-11 top-3 hidden rounded-md border border-gray-100 bg-surface px-1.5 font-display text-[11px] font-semibold leading-5 text-gray-500 sm:inline-block"
-                    aria-hidden="true"
-                >
-                    {shortcut}
-                </span>
-            )}
-        </label>
+        <RadioGroup name={name} aria-label={label} isRequired={isRequired} value={value || null} onChange={onChange} className="gl-choices" style={{ '--gl-choice-cols': columns }}>
+            {options.map((option) => (
+                <Radio key={option.value} value={option.value} className="gl-choice">
+                    <Radio.Content className="gl-choice-content">
+                        <span className="gl-choice-icon" aria-hidden="true"><Icon name={option.icon} className="h-[18px] w-[18px]" strokeWidth={1.8} /></span>
+                        <span className="min-w-0">
+                            <b>{option.title}</b>
+                            {option.hint && <small>{option.hint}</small>}
+                        </span>
+                        <Radio.Control className="sr-only"><Radio.Indicator /></Radio.Control>
+                    </Radio.Content>
+                </Radio>
+            ))}
+        </RadioGroup>
     );
 }
 
 /**
- * The big amount field: the number, its unit beside it, and a footer of
- * quick picks (`children`). Red while `error` is set.
+ * The big amount field (HeroUI's input), its unit inside it, and the quick
+ * picks (`children`) under it. Red while `error` is set.
  */
 export function AmountBox({ id, inputRef, value, onChange, unit, placeholder = '0', label, error = false, autoFocus = false, readOnly = false, children }) {
     return (
-        <div
-            className={`rounded-[22px] border-[1.5px] bg-surface px-[18px] pb-3.5 pt-4 transition ${
-                error
-                    ? 'border-brand-500 shadow-[0_0_0_5px_rgb(var(--brand-500)/0.08)]'
-                    : 'border-gray-200 focus-within:border-brand-500 focus-within:shadow-[0_0_0_5px_rgb(var(--brand-500)/0.12)]'
-            }`}
-        >
-            <div className="flex items-center gap-3.5">
-                <input
+        <div className="gl-amt">
+            <div className="gl-amt-field" data-invalid={error || undefined} data-readonly={readOnly || undefined}>
+                <Input
                     ref={inputRef}
                     autoFocus={autoFocus}
                     id={id}
@@ -246,31 +219,21 @@ export function AmountBox({ id, inputRef, value, onChange, unit, placeholder = '
                     value={value}
                     readOnly={readOnly}
                     onChange={onChange}
-                    className="w-full min-w-0 flex-1 border-0 bg-transparent p-0 text-end font-display text-[34px] font-extrabold leading-tight text-gray-900 placeholder:text-gray-300 focus:ring-0 sm:text-[44px]"
+                    className="gl-amt-input"
                 />
-                <span className="flex h-12 min-w-16 shrink-0 flex-col items-center justify-center rounded-[14px] border border-gray-100 bg-gray-100 px-3.5 font-display text-xl font-extrabold leading-none text-gray-700">
-                    {unit}
-                </span>
+                <span className="gl-amt-unit" aria-hidden="true">{unit}</span>
             </div>
-            {children && <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-dashed border-gray-200 pt-3">{children}</div>}
+            {children && <div className="gl-amt-quick">{children}</div>}
         </div>
     );
 }
 
-/** A quick value under the amount; `tone="green"` marks the one that settles everything. */
+/** A quick value under the amount, as a HeroUI pill; `tone="green"` marks the one that settles everything. */
 export function QuickPick({ onClick, tone = null, children }) {
     return (
-        <button
-            type="button"
-            onClick={onClick}
-            className={`rounded-full border px-3 py-1 text-[13.5px] font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
-                tone === 'green'
-                    ? 'border-emerald-600/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
-                    : 'border-gray-100 bg-gray-50 text-gray-700 hover:border-gray-200 hover:bg-surface hover:text-gray-900'
-            }`}
-        >
+        <Button size="sm" onPress={onClick} className={`gl-quick ${tone === 'green' ? 'is-settle' : ''}`}>
             {children}
-        </button>
+        </Button>
     );
 }
 
@@ -315,27 +278,27 @@ export function DoneScreen({ tone = 'green', title, text, rows, anotherLabel, on
             </dl>
             <div className="mt-6 flex flex-wrap justify-center gap-2.5">
                 {printUrl && (
-                    <SecondaryButton onClick={() => window.open(printUrl, '_blank')} title="يُفتح السند في نافذة جديدة جاهزًا للطباعة" className="tone-print h-12 rounded-[14px] px-5 text-[15.5px]">
+                    <Button onPress={() => window.open(printUrl, '_blank')} aria-description="يُفتح السند في نافذة جديدة جاهزًا للطباعة" className="gl-sheet-btn">
                         <Icon name="printer" className="h-[18px] w-[18px]" />
                         طباعة السند
-                    </SecondaryButton>
+                    </Button>
                 )}
                 {onAnother && (
-                    <SecondaryButton onClick={onAnother} className="h-12 rounded-[14px] px-5 text-[15.5px]">
+                    <Button onPress={onAnother} className="gl-sheet-btn">
                         <Icon name="plus" className="h-[18px] w-[18px]" strokeWidth={2} />
                         {anotherLabel}
-                    </SecondaryButton>
+                    </Button>
                 )}
-                <PrimaryButton type="button" onClick={onDone} autoFocus className="h-12 min-w-28 rounded-[14px] px-5 text-[15.5px]">
+                <Button onPress={onDone} autoFocus className="gl-sheet-btn is-primary">
                     تم
-                </PrimaryButton>
+                </Button>
             </div>
         </div>
     );
 }
 
 /** The soft tint behind each form tone's header icon (components.css `gl-tone`). */
-const HEADER_TONES = { red: 'gl-tone-bad', green: 'gl-tone-ok', amber: 'gl-tone-warn', graphite: 'gl-tone-brand', payment: 'gl-tone-brand' };
+const HEADER_TONES = { red: 'gl-tone-charge', charge: 'gl-tone-charge', green: 'gl-tone-ok', discount: 'gl-tone-discount', clearing: 'gl-tone-clearing', amber: 'gl-tone-warn', graphite: 'gl-tone-brand', payment: 'gl-tone-brand' };
 
 /** The window's header: its icon in the form's tone, title and one line under it, and close. */
 export function FormHeader({ titleId, icon, tone = 'graphite', title, subtitle, onClose }) {
@@ -357,31 +320,25 @@ export function FormHeader({ titleId, icon, tone = 'graphite', title, subtitle, 
     );
 }
 
-/** The save button's colour for each form tone. */
-const SUBMIT_TONES = { green: 'var(--success-700)', amber: 'var(--warning-700)', red: 'var(--danger-700)' };
-
-/** The window's footer, fixed under the steps: cancel, the shortcuts, and the save button in the form's tone naming what it saves. */
-export function FormFooter({ onCancel, submitLabel, disabled, processing, tone = 'red', shortcuts = null }) {
+/**
+ * The window's footer, fixed under its fields: Esc and the shortcuts on
+ * one side; cancel and the save button (HeroUI's), in the movement's
+ * colour (`--gl-t-solid`, movementStyle()), naming what it saves.
+ */
+export function FormFooter({ onCancel, submitLabel, disabled, processing, shortcuts = null }) {
     return (
-        <div className="gl-dialog-foot flex shrink-0 items-center gap-3 px-5 py-4 sm:px-6">
-            <SecondaryButton onClick={onCancel} className="gl-lg">
-                إلغاء
-            </SecondaryButton>
-            <span className="gl-sub hidden items-center gap-1.5 text-[12.5px]! xl:flex">
-                <span className="kbd" dir="ltr">
-                    Ctrl + Enter
-                </span>
-                للحفظ{shortcuts && <> · {shortcuts}</>}
+        <div className="gl-dialog-foot gl-sheet-foot">
+            <span className="gl-sheet-keys">
+                <span className="kbd" dir="ltr">Esc</span> إغلاق
+                <span className="kbd" dir="ltr">Ctrl + Enter</span> للحفظ{shortcuts && <>، {shortcuts}</>}
             </span>
-            <button
-                type="submit"
-                disabled={disabled || processing}
-                className="gl-btn gl-lg ms-auto min-w-0 flex-1 sm:min-w-[230px] sm:flex-none"
-                style={SUBMIT_TONES[tone] ? { '--gl-btn': SUBMIT_TONES[tone] } : undefined}
-            >
+            <Button onPress={onCancel} className="gl-sheet-btn">
+                إلغاء
+            </Button>
+            <Button type="submit" isDisabled={disabled || processing} className="gl-sheet-btn is-submit">
                 <Icon name="check" className="h-[18px] w-[18px]" strokeWidth={2.2} />
                 {processing ? 'جارٍ الحفظ...' : submitLabel}
-            </button>
+            </Button>
         </div>
     );
 }
