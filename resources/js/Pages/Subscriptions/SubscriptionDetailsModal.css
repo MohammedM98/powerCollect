@@ -238,3 +238,26 @@
 .subscription-profile .data-table-toolbar { margin: 0; padding: 12px 14px 8px; border: 0; border-radius: 22px 22px 0 0; background: var(--ma-panel); -webkit-backdrop-filter: var(--ma-blur); backdrop-filter: var(--ma-blur); }
 .subscription-profile .data-table-toolbar::before { content: none; }
 .subscription-profile .data-table-toolbar + .sp-table-wrap { border-radius: 0 0 22px 22px; -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/*
+ * The consumption tab in the same look: its two sections as glass cards,
+ * the month bars in the MA brand colour on a soft tile (the latest month
+ * full, the older ones soft), and the readings' history key raised white.
+ */
+.sp-consumption .sp-section { border: 0; border-radius: 22px; padding: 16px 18px; background: var(--ma-panel); -webkit-backdrop-filter: var(--ma-blur); backdrop-filter: var(--ma-blur); box-shadow: var(--ma-depth); }
+.sp-consumption .sp-section h3 { margin-bottom: 8px; color: var(--ma-ink); font-weight: 800; }
+.sp-consumption .sp-section-icon { border-radius: 11px; background: var(--ma-tile); color: var(--ma-muted); box-shadow: var(--ma-hl); }
+.sp-consumption .sp-section-unit { margin-inline-start: auto; color: var(--ma-muted); font-size: 12.5px; font-weight: 700; }
+.sp-consumption .sp-field { padding: 10px 0; border-bottom: 1px solid var(--ma-line); }
+.sp-consumption .sp-field dt { color: var(--ma-muted); font-size: 13px; font-weight: 700; }
+.sp-consumption .sp-field dd { color: var(--ma-ink); font-weight: 800; }
+.sp-consumption .sp-field dd.sp-empty-value { color: var(--ma-faint); font-weight: 600; }
+.sp-consumption .sp-chart { gap: 8px; height: 180px; margin-top: 8px; padding: 12px 10px 10px; border-radius: 16px; background: var(--ma-tile); box-shadow: var(--ma-hl); }
+.sp-consumption .sp-chart i { max-width: 36px; border-radius: 9px 9px 4px 4px; background: var(--ma-brand); opacity: 0.35; }
+.sp-consumption .sp-chart > div:last-child i { opacity: 1; box-shadow: 0 8px 18px -10px var(--ma-brand); }
+.sp-consumption .sp-chart b { color: var(--ma-ink); font-weight: 800; }
+.sp-consumption .sp-chart small { color: var(--ma-muted); font-weight: 600; }
+.sp-consumption .sp-empty { color: var(--ma-muted); }
+.sp-consumption .sp-reading-footer { color: var(--ma-muted); font-size: 13px; }
+.sp-consumption .sp-reading-footer .sp-button { height: 40px; border: 0; border-radius: 12px; background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-depth); font-weight: 700; }
+.sp-consumption .sp-reading-footer .sp-button:hover { background: var(--ma-tile); }
