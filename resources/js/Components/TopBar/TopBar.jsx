@@ -6,7 +6,7 @@ import ActivityBell from '@/Components/ActivityBell';
 import { useBrand } from '@/hooks/useBrand';
 import { shouldPrefetchPage, HOME_LINK, currentGroup, topBarItems } from '@/lib/navigation';
 import MegaMenu, { megaWidth } from './MegaMenu';
-import AccountMenu, { Avatar } from './AccountMenu';
+import AccountMenu, { LogoutForm } from './AccountMenu';
 import { useTheme } from '@/hooks/useTheme';
 import './top-bar.css';
 import { useMegaMenu } from './useMegaMenu';
@@ -76,6 +76,16 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                     <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-side-logo" aria-label={`${companyName}، الصفحة الرئيسية`}>
                         <BrandLogo alt="" markSize={40} className="h-10 w-auto max-w-[56px] object-contain" />
                     </Link>
+                    <button
+                        type="button"
+                        className="tn-side-pin"
+                        onClick={() => setWideSide(!wideSide)}
+                        aria-pressed={wideSide}
+                        aria-label={wideSide ? 'إلغاء تثبيت الشريط الجانبي' : 'تثبيت الشريط الجانبي مفتوحًا'}
+                        title={wideSide ? 'إلغاء التثبيت' : 'تثبيت الشريط مفتوحًا'}
+                    >
+                        <Icon name="thumbtack" />
+                    </button>
                     <nav
                         ref={navRef}
                         className="tn-sections"
@@ -109,7 +119,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             const register = (element) => (element ? itemRefs.current.set(item.key, element) : itemRefs.current.delete(item.key));
 
                             if (item.link) {
-                                return (
+                                return [
                                     <Link
                                         key={item.key}
                                         ref={register}
@@ -126,8 +136,9 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                                         <Icon name={item.link.icon} className="tn-section-icon" />
                                         <span className="tn-section-label">{item.link.label}</span>
                                         {badges[item.link.href] > 0 && <span className="tn-badge" aria-hidden="true">{badges[item.link.href]}</span>}
-                                    </Link>
-                                );
+                                    </Link>,
+                                    index === 0 && items.length > 1 ? <span key="heading" className="tn-side-heading" aria-hidden="true">الأقسام</span> : null,
+                                ];
                             }
 
                             const badge = badgeOf(item.group, badges);
@@ -164,20 +175,18 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                         })}
                     </nav>
 
-                    <button
-                        type="button"
-                        className="tn-side-pin"
-                        onClick={() => setWideSide(!wideSide)}
-                        aria-pressed={wideSide}
-                        aria-label={wideSide ? 'تضييق الشريط الجانبي' : 'توسيع الشريط الجانبي'}
-                        title={wideSide ? 'تضييق الشريط الجانبي' : 'توسيع الشريط الجانبي'}
-                    >
-                        <Icon name={wideSide ? 'chevron-right' : 'chevron-left'} />
-                    </button>
-
-                    <Link href="/profile" prefetch={shouldPrefetchPage('/profile')} className="tn-side-account" aria-label={`${user?.name ?? ''}، الملف الشخصي`}>
-                        <Avatar name={user?.name} />
-                    </Link>
+                    <div className="tn-side-foot">
+                        <Link href="/profile" prefetch={shouldPrefetchPage('/profile')} className="tn-section" aria-current={url.startsWith('/profile') ? 'page' : undefined} data-current={url.startsWith('/profile') || undefined} title="الملف الشخصي">
+                            <Icon name="user-circle" className="tn-section-icon" />
+                            <span className="tn-section-label">الملف الشخصي</span>
+                        </Link>
+                        <LogoutForm>
+                            <button type="submit" className="tn-section" title="تسجيل الخروج">
+                                <Icon name="door" className="tn-section-icon" />
+                                <span className="tn-section-label">خارج النظام</span>
+                            </button>
+                        </LogoutForm>
+                    </div>
                 </aside>
 
                 <div className="tn-bar">

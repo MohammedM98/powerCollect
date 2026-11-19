@@ -1638,9 +1638,32 @@ html.tn-locked {
     }
 }
 
+/*
+ * The bar open: pinned open (data-side="wide"), or the rail slid open over
+ * the page while the pointer or the keyboard is in it, with the sections'
+ * names beside their icons. Closed, the rail shows the icons only.
+ */
+@media (min-width: 1024px) {
+    :root[data-ui-navigation] .tn-side {
+        z-index: 46;
+    }
+
+    :root[data-ui-navigation][data-side='rail'] .tn-side:is(:hover, :focus-within) {
+        width: var(--tn-side-open);
+        box-shadow: -24px 0 60px -20px rgb(0 0 0 / 0.45);
+    }
+}
+
+:root[data-ui-navigation] {
+    --tn-side-open: 272px;
+    /* The room between the bar's edge and its items: the current section's line sits in it. */
+    --tn-side-inset: 12px;
+}
+
 /* The logo: the largest thing in the bar; once the page scrolls it shrinks into the bar's middle. */
 :root[data-ui-navigation] .tn-side-logo {
     display: flex;
+    flex: none;
     align-items: center;
     justify-content: center;
     width: auto;
@@ -1659,12 +1682,12 @@ html.tn-locked {
     transition: width 0.32s var(--tn-ease);
 }
 
-:root[data-ui-navigation][data-side='wide'] .tn-side-logo {
+:root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-side-logo {
     justify-content: flex-start;
     padding-inline: 22px;
 }
 
-:root[data-ui-navigation][data-side='wide'] .tn-side-logo :is(img, svg) {
+:root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-side-logo :is(img, svg) {
     width: 84px;
 }
 
@@ -1679,150 +1702,36 @@ html.tn-locked {
     width: 44px;
 }
 
-/* The sections: a quiet pill under the hovered one; the open one on a soft fill with the company's line at the edge. */
-:root[data-ui-navigation] {
-    /* The room between the bar's edge and its sections: the current section's line sits in it. */
-    --tn-side-inset: 6px;
-}
-
-:root[data-ui-navigation][data-side='wide'] {
-    --tn-side-inset: 12px;
-}
-
-:root[data-ui-navigation] .tn-sections {
-    gap: 2px;
-    padding: 2px var(--tn-side-inset);
-    overflow-x: hidden;
-}
-
-:root[data-ui-navigation] .tn-highlight,
-:root[data-ui-background='graphite'][data-ui-navigation] .tn-highlight {
-    inset-inline-start: var(--tn-side-inset);
-    border-radius: 16px;
-    background: rgb(var(--gray-900) / 0.06);
-    box-shadow: none;
-}
-
-.dark:root[data-ui-navigation] .tn-highlight {
-    background: rgb(255 255 255 / 0.08);
-}
-
-:root[data-ui-navigation] .tn-section {
-    min-height: 56px;
-    border-radius: 16px;
-    color: rgb(var(--panel-muted));
-    font-size: 12px;
-    font-weight: 700;
-}
-
-:root[data-ui-navigation] .tn-section .tn-section-icon,
-:root[data-ui-navigation] .tn-section[data-lit='true'] .tn-section-icon {
-    width: 20px;
-    height: 20px;
-    color: currentColor;
-}
-
-:root[data-ui-navigation] .tn-section[data-lit='true'],
-:root[data-ui-navigation] .tn-section[data-current='true'] {
-    color: rgb(var(--panel-ink));
-}
-
-:root[data-ui-navigation] .tn-section[data-current='true'] {
-    background: rgb(var(--gray-900) / 0.05);
-}
-
-.dark:root[data-ui-navigation] .tn-section[data-current='true'] {
-    background: rgb(255 255 255 / 0.06);
-}
-
-:root[data-ui-navigation] .tn-section[data-current='true']::after {
-    inset-block: 14px;
-    inset-inline: calc(var(--tn-side-inset) * -1) auto;
-    width: 3px;
-    border-radius: 0 3px 3px 0;
-    background: rgb(var(--brand-solid));
-}
-
-/* The short name under the icon on the rail; the full name beside it when the bar is wide. */
-:root[data-ui-navigation] .tn-section-full {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-}
-
-:root[data-ui-navigation][data-side='wide'] .tn-section {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 12px;
-    min-height: 44px;
-    padding: 0 13px;
-    border-radius: 999px;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: start;
-    white-space: nowrap;
-}
-
-:root[data-ui-navigation][data-side='wide'] .tn-highlight {
-    border-radius: 999px;
-}
-
-:root[data-ui-navigation][data-side='wide'] .tn-section-short {
-    display: none;
-}
-
-:root[data-ui-navigation][data-side='wide'] .tn-section-full {
-    position: static;
-    width: auto;
-    height: auto;
-    overflow: hidden;
-    clip-path: none;
-    text-overflow: ellipsis;
-}
-
-:root[data-ui-navigation][data-side='wide'] .tn-section .tn-badge {
-    position: static;
-    margin-inline-start: auto;
-}
-
-:root[data-ui-navigation] .tn-section .tn-badge {
-    font-family: var(--font-body, 'Zain'), sans-serif;
-    font-size: 11.5px;
-    box-shadow: 0 0 0 2px rgb(var(--panel-page));
-}
-
-/* Widening and narrowing the bar, and the account, at its foot. */
+/* Pinning the bar open: at the logo's end, once the bar is open. */
 .tn-side-pin {
     display: none;
 }
 
 @media (min-width: 1024px) {
-    :root[data-ui-navigation] .tn-side-pin {
+    :root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-side-pin {
+        position: absolute;
+        top: 52px;
+        inset-inline-end: 14px;
         display: grid;
-        flex: none;
         place-items: center;
-        align-self: center;
-        width: 40px;
-        height: 40px;
-        margin-top: 8px;
+        width: 34px;
+        height: 34px;
         border: 0;
         border-radius: 999px;
         background: none;
         color: rgb(var(--panel-muted));
         cursor: pointer;
-        transition: background-color 0.15s, color 0.15s;
+        translate: 0 -50%;
+        transition: background-color 0.15s, color 0.15s, top 0.32s var(--tn-ease);
     }
 
-    :root[data-ui-navigation][data-side='wide'] .tn-side-pin {
-        align-self: flex-end;
+    :root[data-ui-navigation] .tn-header.is-scrolled .tn-side-pin {
+        top: 34px;
     }
 
-    :root[data-ui-navigation] .tn-side-pin:hover {
-        background: rgb(var(--gray-900) / 0.06);
+    :root[data-ui-navigation] .tn-side-pin:hover,
+    :root[data-ui-navigation] .tn-side-pin[aria-pressed='true'] {
+        background: rgb(var(--group-fill));
         color: rgb(var(--panel-ink));
     }
 
@@ -1832,13 +1741,298 @@ html.tn-locked {
     }
 
     :root[data-ui-navigation] .tn-side-pin svg {
-        width: 18px;
-        height: 18px;
+        width: 17px;
+        height: 17px;
     }
+}
 
-    :root[data-ui-navigation] .tn-side-account {
-        align-self: center;
-    }
+/* The sections: 42px pills; a soft fill under the hovered one, the open one on the page's second surface with the company's line at the screen's edge. */
+:root[data-ui-navigation] .tn-sections {
+    gap: 2px;
+    padding: 2px var(--tn-side-inset);
+    overflow-x: hidden;
+}
+
+:root[data-ui-navigation] .tn-highlight,
+:root[data-ui-background='graphite'][data-ui-navigation] .tn-highlight {
+    inset-inline-start: var(--tn-side-inset);
+    border-radius: 999px;
+    background: rgb(var(--group-fill));
+    box-shadow: none;
+}
+
+:root[data-ui-navigation] .tn-section {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 42px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: rgb(var(--panel-muted));
+    font-size: 14px;
+    font-weight: 600;
+    text-align: start;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+:root[data-ui-navigation] .tn-section .tn-section-icon,
+:root[data-ui-navigation] .tn-section[data-lit='true'] .tn-section-icon {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    color: currentColor;
+}
+
+:root[data-ui-navigation] .tn-section:hover,
+:root[data-ui-navigation] .tn-section[data-lit='true'],
+:root[data-ui-navigation] .tn-section[data-current='true'] {
+    color: rgb(var(--panel-ink));
+}
+
+:root[data-ui-navigation] .tn-side-foot .tn-section:hover {
+    background: rgb(var(--group-fill));
+}
+
+:root[data-ui-navigation] .tn-section[data-current='true'] {
+    background: rgb(var(--panel-tile));
+}
+
+:root[data-ui-navigation] .tn-section[data-current='true']::after {
+    content: '';
+    position: absolute;
+    inset-block: 11px;
+    inset-inline: calc(var(--tn-side-inset) * -1) auto;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: rgb(var(--brand-solid));
+}
+
+/* Names: hidden on the closed rail (a screen reader still hears the full one), beside the icon once open. */
+:root[data-ui-navigation] :is(.tn-section-short, .tn-section-label, .tn-section-full) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+:root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-section {
+    justify-content: flex-start;
+    padding: 0 13px;
+}
+
+:root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) :is(.tn-section-short, .tn-section-label) {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    clip-path: none;
+    text-overflow: ellipsis;
+}
+
+/* "الأقسام" over the sections, once open. */
+:root[data-ui-navigation] .tn-side-heading {
+    display: none;
+}
+
+:root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-side-heading {
+    display: block;
+    flex: none;
+    padding: 12px 13px 4px;
+    color: rgb(var(--panel-muted));
+    font-size: 11.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* What waits in a section: a red dot on the closed rail, its count once open. */
+:root[data-ui-navigation] .tn-section .tn-badge {
+    position: absolute;
+    top: 8px;
+    inset-inline-start: calc(50% + 4px);
+    width: 8px;
+    min-width: 0;
+    height: 8px;
+    padding: 0;
+    border-radius: 50%;
+    background: rgb(var(--danger-500));
+    color: transparent;
+    font-size: 0;
+    box-shadow: 0 0 0 2px rgb(var(--panel-page));
+}
+
+:root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-section .tn-badge {
+    position: static;
+    display: grid;
+    place-items: center;
+    width: auto;
+    min-width: 22px;
+    height: 22px;
+    margin-inline-start: auto;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: rgb(var(--panel-tile));
+    color: rgb(var(--panel-ink));
+    font: 700 11px/1 var(--font-body, 'Zain'), sans-serif;
+    box-shadow: none;
+}
+
+/* The profile and signing out, at the bar's foot. */
+:root[data-ui-navigation] .tn-side-foot {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: auto;
+    padding: 14px var(--tn-side-inset) 0;
+}
+
+:root[data-ui-navigation] .tn-side-foot form {
+    display: contents;
+}
+
+/* A section's pages (MegaMenu.jsx): HeroUI's menu, one column of 340px beside the side bar. */
+:root[data-ui-navigation] .tn-fly {
+    padding: 8px;
+}
+
+.tn-fly-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+    padding: 10px 10px 12px;
+    border-bottom: 1px solid var(--tn-line, rgb(var(--gray-200)));
+}
+
+.tn-fly-head b {
+    display: block;
+    color: rgb(var(--panel-ink));
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.tn-fly-head small {
+    display: block;
+    color: rgb(var(--panel-muted));
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.tn-fly-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: rgb(var(--brand-solid) / 0.12);
+    color: rgb(var(--brand-600));
+}
+
+.tn-fly-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.tn-fly-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+:root[data-ui-navigation] .tn-fly .tn-mega-link,
+:root[data-ui-background='graphite'][data-ui-navigation] .tn-fly .tn-mega-link {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 14px;
+    background: none;
+    box-shadow: none;
+}
+
+:root[data-ui-navigation] .tn-fly .tn-mega-link:is(:hover, :focus-visible) {
+    background: rgb(var(--group-fill));
+    outline: 0;
+}
+
+:root[data-ui-navigation] .tn-fly .tn-mega-link[aria-current='page'],
+:root[data-ui-background='graphite'][data-ui-navigation] .tn-fly .tn-mega-link[aria-current='page'] {
+    background: rgb(var(--panel-tile));
+}
+
+:root[data-ui-navigation] .tn-fly .tn-mega-link .tn-tile,
+:root[data-ui-background='graphite'][data-ui-navigation] .tn-fly .tn-mega-link .tn-tile {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 12px;
+    background: rgb(var(--group-fill));
+    color: rgb(var(--panel-muted));
+    box-shadow: none;
+}
+
+:root[data-ui-navigation] .tn-fly .tn-mega-link[aria-current='page'] .tn-tile,
+:root[data-ui-background='graphite'][data-ui-navigation] .tn-fly .tn-mega-link[aria-current='page'] .tn-tile {
+    background: rgb(var(--brand-solid));
+    color: #fff;
+}
+
+:root[data-ui-navigation] .tn-fly .tn-mega-link b {
+    display: block;
+    color: rgb(var(--panel-ink));
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+:root[data-ui-navigation] .tn-fly .tn-mega-link small {
+    display: block;
+    overflow: hidden;
+    color: rgb(var(--panel-muted));
+    font-size: 12px;
+    line-height: 1.45;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+:root[data-ui-navigation] .tn-fly .tn-badge {
+    position: static;
+    display: grid;
+    place-items: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: rgb(var(--panel-tile));
+    color: rgb(var(--panel-ink));
+    font: 700 11px/1 var(--font-body, 'Zain'), sans-serif;
+    box-shadow: none;
+}
+
+.tn-fly-foot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+    padding: 10px 8px 4px;
+    border-top: 1px solid var(--tn-line, rgb(var(--gray-200)));
+    color: rgb(var(--panel-muted));
+    font-size: 12px;
+}
+
+.tn-fly-foot button {
+    color: rgb(var(--panel-ink));
 }
 
 /* The working branch: a soft grey pill among the tools. */
