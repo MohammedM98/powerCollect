@@ -7365,3 +7365,49 @@ html:root[data-ui-background='graphite'] .pm-hero {
     font-size: 12.5px;
     line-height: 1.6;
 }
+
+/*
+ * ── The lead figure of every page (KpiTile `hero`) ───────────────────────
+ * As the statement's account card in the MA redesign: dark in both themes,
+ * a soft wash of the company's colour from its corner, white figures and
+ * quieter labels. Every page's row of figures leads with one.
+ */
+.gl-kpi.gl-card.gl-hero,
+.gl-park .gl-kpi.gl-card.gl-hero {
+    border-color: transparent;
+    background:
+        radial-gradient(120% 90% at 0% 100%, rgb(var(--brand-solid) / 0.28), transparent 60%),
+        linear-gradient(160deg, rgb(44 49 58), rgb(18 21 26));
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.08) inset, 0 18px 36px -20px rgb(0 0 0 / 0.55);
+    color: #fff;
+    /* What sits inside (key–value lines, bars, legends) reads on the dark. */
+    --gl-ink: #fff;
+    --gl-muted: rgb(255 255 255 / 0.66);
+    --gl-faint: rgb(255 255 255 / 0.45);
+    --gl-line: rgb(255 255 255 / 0.14);
+    --gl-fill: rgb(255 255 255 / 0.08);
+}
+
+.gl-kpi.gl-hero::after {
+    content: none;
+}
+
+.gl-kpi.gl-hero :is(.gl-lbl, .gl-hint, .gl-val small) {
+    color: rgb(255 255 255 / 0.66);
+}
+
+.gl-kpi.gl-hero .gl-val {
+    color: #fff;
+    font-size: 38px;
+}
+
+.gl-kpi.gl-hero .gl-ico,
+.gl-park .gl-kpi.gl-hero .gl-ico {
+    border-color: rgb(255 255 255 / 0.12);
+    background: rgb(255 255 255 / 0.08);
+    color: #fff;
+}
+
+.gl-kpi.gl-hero :is(a, button):not(.gl-btn) {
+    color: #fff;
+}

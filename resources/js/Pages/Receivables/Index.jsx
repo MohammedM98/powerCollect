@@ -137,6 +137,7 @@ export default function Index({ debtors, summary, buckets, scopeLabel, branchSco
 
             <div className="grid gap-5 sm:grid-cols-3">
                 <KpiTile
+                    hero
                     label="إجمالي الديون المستحقة"
                     value={formatMoney(summary.total)}
                     unit="₪"

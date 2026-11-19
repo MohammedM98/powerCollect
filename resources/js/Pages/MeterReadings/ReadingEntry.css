@@ -199,32 +199,11 @@
 @media print { .re-context { display: none; } }
 
 /*
- * The page in the MA redesign's look: the week's progress on a dark card
- * (as the statement's account card), the approval bar lighter, and the
+ * The page in the MA redesign's look: the week's progress on the dark hero
+ * card (components.css), its bar on the dark, the approval bar lighter, and the
  * reading's − / value / + joined into one field.
  */
-.reading-entry .re-kpi-dark.gl-card {
-    border: 0;
-    background:
-        radial-gradient(120% 90% at 0% 100%, rgb(var(--brand-solid) / 0.28), transparent 60%),
-        linear-gradient(160deg, rgb(44 49 58), rgb(18 21 26));
-    box-shadow: 0 1px 0 rgb(255 255 255 / 0.08) inset, 0 18px 36px -20px rgb(0 0 0 / 0.55);
-    color: #fff;
-}
-
-.reading-entry .re-kpi-dark :is(.gl-lbl, .gl-hint) {
-    color: rgb(255 255 255 / 0.65);
-}
-
-.reading-entry .re-kpi-dark .gl-val {
-    color: #fff;
-}
-
-.reading-entry .re-kpi-dark .gl-val small {
-    color: rgb(255 255 255 / 0.6);
-}
-
-.reading-entry .re-kpi-dark .re-progress-track {
+.reading-entry .gl-hero .re-progress-track {
     background: rgb(255 255 255 / 0.14);
 }
 

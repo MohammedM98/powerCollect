@@ -122,7 +122,7 @@ export function Figures({ flow, collections }) {
 
     return (
         <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-            <KpiTile label="إجمالي المقبوضات المسجّلة" value={reportMoney(collections.total)} unit="₪" hint={`${collections.count} دفعة في الفترة`}>
+            <KpiTile hero label="إجمالي المقبوضات المسجّلة" value={reportMoney(collections.total)} unit="₪" hint={`${collections.count} دفعة في الفترة`}>
                 <div className="gl-bar mt-3 flex" role="img" aria-label="النقدي والتحويلات والشيكات">
                     {total > 0 && (
                         <>

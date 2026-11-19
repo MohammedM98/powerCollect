@@ -132,7 +132,7 @@ export default function Index({ sort, summary, branches }) {
             <Head title="أداء الفروع" />
 
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-                <KpiTile icon="folder" label="إجمالي القيود" value={formatMoney(summary.chargesTotal)} unit="₪" hint="كل الفروع، منذ البداية" />
+                <KpiTile hero icon="folder" label="إجمالي القيود" value={formatMoney(summary.chargesTotal)} unit="₪" hint="كل الفروع، منذ البداية" />
                 <KpiTile
                     icon="users"
                     label="المشتركون النشطون"
