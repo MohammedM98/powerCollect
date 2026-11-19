@@ -6109,3 +6109,138 @@ body {
     box-shadow: var(--ma-depth);
     color: var(--ma-ink);
 }
+
+/*
+ * ── Contrast ─────────────────────────────────────────────────────────────
+ * Every text at least 4.5:1 on what is behind it (3:1 when large), in
+ * both themes, measured on every page and money window:
+ * - the faint grey (hints, search, placeholders) is a step darker in the
+ *   light theme and a step lighter in the dark one;
+ * - the payment green and the charge red text a shade deeper on their
+ *   tints (statuses, «كل ما عليه»);
+ * - a filled tile, badge or button always uses its colour's deep shade
+ *   with white text, also in the dark theme, where the light shades of
+ *   the tones are for text only.
+ */
+:root {
+    --ma-faint: #646b75;
+    --ma-pay: #23704c;
+    --ma-owe: #a1443d;
+}
+
+.dark {
+    --ma-faint: #8a919b;
+    --ma-pay: #6dbf98;
+    --ma-owe: #e1938c;
+}
+
+.gl-sheet[data-ledger-tone] {
+    --cl-fill: var(--cl-btn);
+}
+
+:is(input, textarea)::placeholder {
+    color: var(--ma-faint) !important;
+    opacity: 1 !important;
+}
+
+.tn-search .tn-search-text {
+    color: var(--ma-faint);
+}
+
+/* Filled tiles and the «today» tag: the deep shade with white text. */
+.gl-cl-types .gl-choice-content[data-selected],
+.gl-cl-types .gl-choice-content[data-selected]:hover {
+    background: linear-gradient(170deg, color-mix(in oklab, var(--cl-fill) 92%, white), var(--cl-fill));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), 0 14px 26px -14px color-mix(in oklab, var(--cl-fill) 80%, black);
+}
+
+.gl-cl-types .gl-choice-content[data-selected] b,
+.gl-cl-types .gl-choice-content[data-selected] small {
+    color: #fff;
+}
+
+.gl-cl-types .gl-choice-content[data-selected] small {
+    color: #fff;
+}
+
+.gl-cl-today,
+.dark .gl-cl-today {
+    background: var(--cl-fill);
+    color: #fff;
+}
+
+.gl-sheet[data-ledger-tone] .gl-step:not(.gl-cl-types .gl-step) .gl-choice-content[data-selected] .gl-choice-icon {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--cl-fill) 85%, white), var(--cl-fill));
+}
+
+/* The payment's chosen way of paying: its icon filled with the deep shade. */
+.gl-co-method[data-tone='cash'] {
+    --ma-tone-fill: #2d855c;
+}
+
+.gl-co-method[data-tone='transfer'] {
+    --ma-tone-fill: #45678e;
+}
+
+.gl-co .gl-co-method-content[data-selected] .gl-co-method-icon,
+.gl-co .gl-co-method[data-tone='cash'] .gl-co-method-content[data-selected] .gl-co-method-icon {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--ma-tone-fill) 85%, white), var(--ma-tone-fill));
+}
+
+.gl-co .gl-co-check {
+    background: var(--ma-tone-fill);
+}
+
+/* The readings' approve button: the payment green's deep shade in both themes. */
+.reading-entry .re-approval button.ui-btn-primary,
+.reading-entry .re-approval .ui-btn-primary {
+    border-color: #2d855c;
+    background: linear-gradient(180deg, color-mix(in oklab, #2d855c 88%, white), #2d855c);
+    color: #fff;
+}
+
+/* Statuses on their tints. */
+:root:not(.dark) .gl-st-status.chip--success {
+    color: #035c43;
+}
+
+:root:not(.dark) .gl-cb-chip[data-state='waiting'].chip {
+    --chip-fg: rgb(146 64 14);
+}
+
+/* Small coloured signs and links, a shade deeper in the light theme and lighter in the dark one. */
+:root:not(.dark) .text-amber-600 {
+    color: rgb(180 83 9);
+}
+
+:root:not(.dark) .text-emerald-600 {
+    color: rgb(4 120 87);
+}
+
+:root:not(.dark) .text-brand-500 {
+    color: rgb(var(--brand-600));
+}
+
+.dark .text-amber-700 {
+    color: rgb(251 191 36);
+}
+
+.dark .text-brand-500 {
+    color: rgb(var(--brand-600));
+}
+
+.dark .gl-av-bad {
+    color: rgb(252 165 165) !important;
+}
+
+.dark .ledger-page .day .tod {
+    background: rgb(160 60 10);
+}
+
+.dark .gl-cb-tab[aria-current='page'] .gl-cb-count {
+    color: #f3a77c;
+}
+
+.gl-cl-types .gl-choice-content[data-selected] :is(.gl-choice-icon, small, b) {
+    color: #fff;
+}
