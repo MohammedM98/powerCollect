@@ -183,3 +183,58 @@
     .sp-account-summary b { font-size: 16px; }
 }
 @media (prefers-reduced-motion: reduce) { .sp-loading { animation: none; } }
+
+/*
+ * The account tab as option «أ» of the statement: four glass figures with
+ * a coloured mark, the filters as one soft segmented pill, and the lines on
+ * a glass card with the statement's coloured kind chips and signed colours.
+ */
+.sp-account-summary > div {
+    display: grid;
+    gap: 2px;
+    border: 0;
+    border-radius: 18px;
+    padding: 14px 16px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+}
+.sp-account-summary small { display: flex; align-items: center; gap: 6px; color: var(--ma-muted); font-size: 13px; font-weight: 700; }
+.sp-account-summary small i { width: 8px; height: 8px; border-radius: 3px; background: var(--ma-faint); }
+.sp-account-summary [data-tone='owe'] small i { background: var(--ma-owe); }
+.sp-account-summary [data-tone='pay'] small i { background: var(--ma-pay); }
+.sp-account-summary [data-tone='disc'] small i { background: var(--ma-disc); }
+.sp-account-summary b { justify-self: start; color: var(--ma-ink); font: 800 22px/1.3 var(--font-body, 'Zain'), sans-serif; }
+.sp-account-summary b.sp-owes { color: var(--ma-owe); }
+.sp-account-summary b.sp-credit { color: var(--ma-pay); }
+
+.sp-account-toolbar { margin: 16px 0 12px; }
+.sp-filters { border: 0; border-radius: 13px; padding: 3px; background: var(--ma-tile); box-shadow: var(--ma-hl); }
+.sp-filters button { border-radius: 10px; color: var(--ma-muted); font-weight: 700; }
+.sp-filters button:hover { color: var(--ma-ink); }
+.sp-filters button[aria-pressed=true] { background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-depth); }
+.sp-account-toolbar > .sp-button { border: 0; border-radius: 12px; background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-depth); font-weight: 700; }
+.sp-account-toolbar > .sp-button:hover { background: var(--ma-tile); }
+
+.sp-table-wrap {
+    border-radius: 22px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+}
+.sp-statement th { padding: 12px 14px; border-bottom: 1px solid var(--ma-line); background: var(--ma-tile); color: var(--ma-muted); font-size: 13px; font-weight: 700; }
+.sp-statement td { padding: 12px 14px; border-bottom: 1px solid var(--ma-line); color: var(--ma-ink); }
+.sp-statement tbody tr:last-child td { border-bottom: 0; }
+.sp-statement tr:hover td { background: var(--ma-tile); }
+.sp-statement td[data-side='debit'] b { color: var(--ma-owe); }
+.sp-statement td[data-side='credit'] b { color: var(--ma-pay); }
+.sp-statement .sp-number { font-weight: 800; }
+.sp-date small, .sp-cancellation { color: var(--ma-muted); }
+.sp-table-wrap > .sp-empty { padding: 18px; color: var(--ma-muted); }
+.sp-hidden-note { color: var(--ma-muted); }
+/* The table's Excel key sits on the same glass card, at its top. */
+.subscription-profile .data-table-toolbar { margin: 0; padding: 12px 14px 8px; border: 0; border-radius: 22px 22px 0 0; background: var(--ma-panel); -webkit-backdrop-filter: var(--ma-blur); backdrop-filter: var(--ma-blur); }
+.subscription-profile .data-table-toolbar::before { content: none; }
+.subscription-profile .data-table-toolbar + .sp-table-wrap { border-radius: 0 0 22px 22px; -webkit-backdrop-filter: none; backdrop-filter: none; }

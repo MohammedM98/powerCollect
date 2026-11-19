@@ -8,6 +8,7 @@ import { hasLatestWeekReading, readingOptionFor } from '@/lib/readings';
 import MeterReadingModal from '@/Pages/MeterReadings/MeterReadingModal';
 import StopStandingDiscountButton from './StopStandingDiscountButton';
 import StatementViewTabs from './StatementViewTabs';
+import { LineKind } from './StatementLedger';
 import ArchiveNotice from './ArchiveNotice';
 import './SubscriptionDetailsModal.css';
 import { formatDate } from '@/lib/format';
@@ -74,10 +75,10 @@ export function AccountTab({ statement, onOpenStatement, onLoadStatement, loadin
     const balance = describeBalance(statement.summary.balance);
     return <>
         <div className="sp-account-summary">
-            <div><small>الرصيد</small><b className={`sp-${balance.tone}`} title={BALANCE_HINTS[balance.tone]}><bdi dir="ltr">{balance.signed} ₪</bdi></b></div>
-            <div><small>مجموع الفواتير والرسوم</small><b>{money(statement.summary.charged)}</b></div>
-            <div><small>مجموع الدفعات</small><b className="sp-credit">{money(statement.summary.paid)}</b></div>
-            <div><small>مجموع الخصومات</small><b>{money(statement.summary.discounted)}</b></div>
+            <div data-tone={balance.tone === 'credit' ? 'pay' : balance.tone === 'owes' ? 'owe' : undefined}><small><i aria-hidden="true" />الرصيد</small><b className={`sp-${balance.tone}`} title={BALANCE_HINTS[balance.tone]}><bdi dir="ltr">{balance.signed} ₪</bdi></b></div>
+            <div data-tone="owe"><small><i aria-hidden="true" />مجموع الفواتير والرسوم</small><b>{money(statement.summary.charged)}</b></div>
+            <div data-tone="pay"><small><i aria-hidden="true" />مجموع الدفعات</small><b className="sp-credit">{money(statement.summary.paid)}</b></div>
+            <div data-tone="disc"><small><i aria-hidden="true" />مجموع الخصومات</small><b>{money(statement.summary.discounted)}</b></div>
         </div>
         <div className="sp-account-toolbar">
             <div className="sp-filters" role="group" aria-label="نوع المعاملة">{[['', 'الكل'], ['meter_reading', 'فواتير'], ['payment', 'دفعات'], ['debit', 'تحميلات'], ['credit', 'دفعات وخصومات']].map(([value, label]) => <button type="button" key={value} aria-pressed={type === value} onClick={() => setType(value)}>{label}</button>)}</div>
@@ -93,9 +94,9 @@ export function AccountTab({ statement, onOpenStatement, onLoadStatement, loadin
                 return <tr key={entry.id} data-chain={chain ?? undefined} className={chain !== null && chain === hoveredChain ? 'sp-related' : undefined} style={color ? { '--sp-chain': color } : undefined}
                     onMouseEnter={chain ? () => setHoveredChain(chain) : undefined} onMouseLeave={chain ? () => setHoveredChain(null) : undefined}>
                     <td><span className="sp-date">{formatDate(entry.date.slice(0, 10))}<small>{entry.date.slice(11)}</small></span></td>
-                    <td><span className={`sp-transaction-type ${entry.isCredit ? 'sp-credit' : 'sp-owes'}`}><Icon name={entry.isCredit ? 'arrow-down' : 'receipt'} />{entry.typeLabel}</span></td>
-                    <td>{color && <span className="sp-chain-dot" title="الحركات المرتبطة بنفس اللون" aria-hidden="true" />}{entry.description}{entry.cancellation && <small className="sp-cancellation">{entry.cancellation.wasCorrected ? 'مصححة' : 'ملغاة'}، {entry.cancellation.reasonLabel}</small>}{entry.history?.length > 0 && <button type="button" className="sp-history-link" onClick={() => chooseView('full')}><Icon name="history" />صُحّحت، {entry.history.length} حركات سابقة</button>}</td>
-                    <td className="sp-amount-column"><b className="sp-number">{number(entry.amount)} {entry.currencyLabel}</b></td>
+                    <td><LineKind entry={entry} /></td>
+                    <td>{color && <span className="sp-chain-dot" title="الحركات المرتبطة بنفس اللون" aria-hidden="true" />}{entry.description}{entry.cancellation?.reasonLabel && <small className="sp-cancellation">{entry.cancellation.reasonLabel}</small>}{entry.history?.length > 0 && <button type="button" className="sp-history-link" onClick={() => chooseView('full')}><Icon name="history" />صُحّحت، {entry.history.length} حركات سابقة</button>}</td>
+                    <td className="sp-amount-column" data-side={entry.isCredit ? 'credit' : 'debit'}><b className="sp-number">{number(entry.amount)} {entry.currencyLabel}</b></td>
                     <td className="sp-amount-column"><bdi dir="ltr" className="sp-number" title={BALANCE_HINTS[running.tone]}>{running.signed} ₪</bdi></td>
                 </tr>;
             })}</tbody>
