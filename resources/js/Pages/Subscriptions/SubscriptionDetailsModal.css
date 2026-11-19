@@ -1,6 +1,8 @@
 .subscription-profile-panel {
     max-width: 1080px;
     margin-block: 0;
+    /* Its own height, centred, not stretched down the screen (which left a blank band under the footer). */
+    align-self: center;
     border-radius: calc(28px * var(--radius-scale, 1));
     box-shadow: 0 40px 80px -30px rgb(var(--shadow-ink) / 0.4), 0 2px 6px rgb(var(--shadow-ink) / 0.051);
 }
@@ -270,3 +272,5 @@
 .sp-details .sp-copy:hover { background: var(--ma-tile); color: var(--ma-ink); }
 .sp-details .sp-notice { border: 0; border-radius: 18px; background: var(--ma-warn-s); color: var(--ma-ink); box-shadow: var(--ma-hl); }
 .sp-details .sp-notice > svg { color: var(--ma-warn); }
+/* On phones the window stays a sheet on the screen's bottom edge. */
+@media (max-width: 639px) { .subscription-profile-panel { align-self: auto; } }
