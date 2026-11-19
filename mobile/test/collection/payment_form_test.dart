@@ -71,6 +71,16 @@ void main() {
     expect(form.missingDetail, contains('سعر صرف دينار'));
   });
 
+  test('a foreign amount rounds half up to the agora, as the server records it', () {
+    final form = PaymentForm(
+        api: ApiClient(),
+        subscriber: subscriber,
+        exchangeRates: const {'USD': 3.53})
+      ..amount.text = '2.5'
+      ..currency = 'USD';
+    expect(form.inShekels, 8.83);
+  });
+
   test('the keypad keeps at most two decimals and ten characters', () {
     final form = cashForm(ApiClient());
     for (final key in ['0', '7', '.', '2', '5', '9']) {
@@ -141,6 +151,30 @@ void main() {
 
     await form.submit();
     expect(api.sent[1]['mobile_operation_id'], isNot(api.sent[0]['mobile_operation_id']));
+  });
+
+  test('an amount far above what is owed is sent again only once the collector confirms it', () async {
+    final api = ScriptedApi([
+      const ApiException('المبلغ يتجاوز المستحق كثيرًا.', 422,
+          errors: {'confirm_overpayment': ['المبلغ يتجاوز المستحق كثيرًا.']}),
+      {'id': 1}
+    ]);
+    final form = cashForm(api)
+      ..amount.text = '700'
+      ..collectorConfirmed = true;
+
+    await form.submit();
+    expect(api.sent.single['confirm_overpayment'], isFalse);
+    expect(form.needsOverpayment, isTrue);
+    expect(form.readyToSend, isFalse);
+
+    await form.submit();
+    expect(api.sent, hasLength(1));
+
+    form.overpaymentConfirmed = true;
+    await form.submit();
+    expect(api.sent[1]['confirm_overpayment'], isTrue);
+    expect(form.recordedAny, isTrue);
   });
 
   test('a kept payment comes back as sent, and can be discarded', () async {

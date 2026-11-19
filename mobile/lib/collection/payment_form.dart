@@ -90,6 +90,11 @@ class PaymentForm extends ChangeNotifier {
   bool busy = false;
   bool scanning = false;
   bool collectorConfirmed = false;
+
+  /// The server asked to confirm an amount far above what is owed (an
+  /// advance payment): sent again only once the collector ticks it.
+  bool needsOverpayment = false;
+  bool overpaymentConfirmed = false;
   bool recordedAny = false;
   late double balance = double.tryParse('${subscriber['balance']}') ?? 0;
   String? error;
@@ -108,13 +113,18 @@ class PaymentForm extends ChangeNotifier {
       ? 'bank_transfer'
       : paymentMethods.firstOrNull ?? '';
   bool get editable => !busy && !scanning && submission == null;
+  bool get readyToSend =>
+      collectorConfirmed && (!needsOverpayment || overpaymentConfirmed);
   bool get throughBank => method == 'bank_transfer';
   bool get isShekel => currency == 'ILS';
   double get value => double.tryParse(amount.text) ?? 0;
   double? get rateValue => isShekel ? 1 : exchangeRates[currency];
   double? get inShekels => rateValue == null || rateValue! <= 0
       ? null
-      : (value * rateValue! * 100).roundToDouble() / 100;
+      // Rounded from the decimal text, as the server and the website do: 8.825 is 8.83, not 8.82.
+      : (double.tryParse('${value * rateValue!}e2') ?? value * rateValue! * 100)
+              .round() /
+          100;
   double get owed => max(balance, 0);
   (String, String, String) get currencyLook =>
       paymentCurrencies.firstWhere((look) => look.$1 == currency);
@@ -142,6 +152,8 @@ class PaymentForm extends ChangeNotifier {
     submission = sent;
     unconfirmed = true;
     collectorConfirmed = true;
+    overpaymentConfirmed =
+        needsOverpayment = sent['confirm_overpayment'] == true;
     amount.text = '${sent['amount'] ?? ''}';
     currency = '${sent['currency'] ?? 'ILS'}';
     method = '${sent['payment_method'] ?? method}';
@@ -163,6 +175,7 @@ class PaymentForm extends ChangeNotifier {
       submission = null;
       unconfirmed = false;
       collectorConfirmed = false;
+      needsOverpayment = overpaymentConfirmed = false;
       error = null;
     });
   }
@@ -183,7 +196,10 @@ class PaymentForm extends ChangeNotifier {
         !(current.contains('.') && current.split('.').last.length >= 2)) {
       next = current == '0' ? key : '$current$key';
     }
-    update(() => amount.text = next);
+    update(() {
+      amount.text = next;
+      needsOverpayment = overpaymentConfirmed = false;
+    });
   }
 
   /// The balance the server reports after the payment; the app's own sum
@@ -207,6 +223,7 @@ class PaymentForm extends ChangeNotifier {
         senderIsSubscriber = true;
         sender.text = subscriberName;
         collectorConfirmed = false;
+        needsOverpayment = overpaymentConfirmed = false;
         submission = null;
         receipt = null;
         error = null;
@@ -219,7 +236,10 @@ class PaymentForm extends ChangeNotifier {
 
   /// What a transfer receipt read on the phone filled in.
   void applyReceipt(Map<String, String> picked) => update(() {
-        if (picked['amount'] != null) amount.text = picked['amount']!;
+        if (picked['amount'] != null) {
+          amount.text = picked['amount']!;
+          needsOverpayment = overpaymentConfirmed = false;
+        }
         if (picked['reference_number'] != null) {
           reference.text = picked['reference_number']!;
         }
@@ -270,13 +290,14 @@ class PaymentForm extends ChangeNotifier {
         if (!throughBank && voucher.text.trim().isNotEmpty)
           'manual_voucher_number': voucher.text.trim(),
         'notes': notes.text.trim(),
+        'confirm_overpayment': overpaymentConfirmed,
       };
 
   /// Send the payment, or send again the one already sent: the same
   /// operation id, so the server records it once. Kept on the phone until
   /// the server records or refuses it.
   Future<void> submit() async {
-    if (busy || scanning || !collectorConfirmed) return;
+    if (busy || scanning || !readyToSend) return;
     if (submission == null && missingDetail != null) {
       update(() => error = missingDetail);
       return;
@@ -307,6 +328,8 @@ class PaymentForm extends ChangeNotifier {
         submission = null;
       }
       unconfirmed = uncertain;
+      needsOverpayment = needsOverpayment ||
+          exception.errors.containsKey('confirm_overpayment');
       error = uncertain ? unconfirmedMessage : exception.message;
     } finally {
       update(() => busy = false);

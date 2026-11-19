@@ -59,25 +59,35 @@ extension _SummarySection on _PaymentPageState {
                         .copyWith(fontFamily: 'PlexArabic'))),
           ]));
 
-  Widget confirmation() => Padding(
+  Widget confirmation() => confirmTile(
+      const ValueKey('payment-confirm'),
+      collectorConfirmed,
+      () => collectorConfirmed = !collectorConfirmed,
+      'أؤكد استلام هذه الدفعة من $subscriberName وتسجيلها مباشرة في السجل المالي.');
+
+  /// Shown once the server finds the amount far above what is owed.
+  Widget overpaymentConfirmation() => confirmTile(
+      const ValueKey('payment-overpayment'),
+      overpaymentConfirmed,
+      () => overpaymentConfirmed = !overpaymentConfirmed,
+      'راجعت المبلغ وأؤكد أنه يتجاوز المستحق (دفعة مقدّمة).');
+
+  Widget confirmTile(
+          Key key, bool checked, VoidCallback toggle, String text) =>
+      Padding(
         padding: const EdgeInsets.only(top: 12),
         child: Semantics(
-          checked: collectorConfirmed,
+          checked: checked,
           child: InkWell(
-            key: const ValueKey('payment-confirm'),
+            key: key,
             borderRadius: BorderRadius.circular(18),
-            onTap: busy || scanning
-                ? null
-                : () =>
-                    change(() => collectorConfirmed = !collectorConfirmed),
+            onTap: busy || scanning ? null : () => change(toggle),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
                   color: AppIdentity.surface,
                   border: Border.all(
-                      color: collectorConfirmed
-                          ? AppIdentity.good
-                          : AppIdentity.lineSoft,
+                      color: checked ? AppIdentity.good : AppIdentity.lineSoft,
                       width: 1.5),
                   borderRadius: BorderRadius.circular(18)),
               child:
@@ -88,24 +98,17 @@ extension _SummarySection on _PaymentPageState {
                     margin: const EdgeInsets.only(top: 1),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                        color: collectorConfirmed
-                            ? AppIdentity.good
-                            : Colors.transparent,
+                        color: checked ? AppIdentity.good : Colors.transparent,
                         border: Border.all(
-                            color: collectorConfirmed
-                                ? AppIdentity.good
-                                : AppIdentity.line,
+                            color: checked ? AppIdentity.good : AppIdentity.line,
                             width: 2),
                         borderRadius: BorderRadius.circular(7)),
-                    child: collectorConfirmed
+                    child: checked
                         ? const AppIcon('check',
                             size: 15, strokeWidth: 3, color: Colors.white)
                         : null),
                 const SizedBox(width: 10),
-                Expanded(
-                    child: Text(
-                        'أؤكد استلام هذه الدفعة من $subscriberName وتسجيلها مباشرة في السجل المالي.',
-                        style: AppIdentity.body(13.5))),
+                Expanded(child: Text(text, style: AppIdentity.body(13.5))),
               ]),
             ),
           ),
