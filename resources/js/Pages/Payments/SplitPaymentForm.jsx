@@ -328,6 +328,23 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, onCancel 
             </p>
         </div>
 
+        <aside className="gl-split-aside" aria-hidden="true">
+            <p className="gl-mv-title">التوزيع</p>
+            <div className="gl-split-bar" data-done={distributed || undefined}>
+                <i style={{ width: `${totalCents > 0 ? Math.min(100, (allocatedCents / totalCents) * 100) : 0}%` }} />
+            </div>
+            <dl className="gl-split-rows">
+                <div><dt>المحوَّل</dt><dd className="gl-num"><bdi dir="ltr">{formatMoney(fromCents(totalCents))}</bdi> ₪</dd></div>
+                <div><dt>وُزِّع</dt><dd className="gl-num"><bdi dir="ltr">{formatMoney(fromCents(allocatedCents))}</bdi> ₪</dd></div>
+                <div data-tone={remainingCents < 0 ? 'over' : remainingCents > 0 ? 'left' : 'done'}>
+                    <dt>{remainingCents < 0 ? 'زيادة' : 'بقي'}</dt>
+                    <dd className="gl-num"><bdi dir="ltr">{formatMoney(fromCents(Math.abs(remainingCents)))}</bdi> ₪</dd>
+                </div>
+                <div className="is-count"><dt>المشتركون</dt><dd className="gl-num">{parts.length}</dd></div>
+            </dl>
+            <p className="gl-split-note">يُفعَّل التسجيل حين يساوي الموزَّع مبلغ الحوالة، على مشتركَين أو أكثر.</p>
+        </aside>
+
         <div className="gl-dialog-foot gl-sheet-foot">
             <span className="gl-sheet-keys">
                 <b className="gl-num">{parts.length}</b> {parts.length === 1 ? 'مشترك' : 'مشتركين'}، موزّع <b className="gl-num">{formatMoney(fromCents(allocatedCents))}</b> من <b className="gl-num">{formatMoney(fromCents(totalCents))}</b> ₪
