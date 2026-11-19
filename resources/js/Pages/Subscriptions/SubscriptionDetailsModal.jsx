@@ -239,7 +239,7 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
                     <div id={`${tabsId}-transactions-panel`} role="tabpanel" aria-labelledby={`${tabsId}-transactions`} hidden={activeTab !== 'transactions'} aria-busy={statementLoading}>
                         {activeTab === 'transactions' && <AccountTab statement={statement} loading={statementLoading} onLoadStatement={onLoadStatement} onOpenStatement={onOpenStatement} />}
                     </div>
-                    <div id={`${tabsId}-consumption-panel`} role="tabpanel" aria-labelledby={`${tabsId}-consumption`} hidden={activeTab !== 'consumption'}>
+                    <div id={`${tabsId}-consumption-panel`} className="sp-consumption" role="tabpanel" aria-labelledby={`${tabsId}-consumption`} hidden={activeTab !== 'consumption'}>
                         <div className="sp-columns">
                             <Section title="الاستهلاك الشهري" icon="bolt" trailing={<small className="sp-section-unit">كيلوواط ساعة</small>}>
                                 {months.length ? <div className="sp-chart" role="img" aria-label={`الاستهلاك الشهري: ${months.map((month) => `${month.month}: ${number(month.totals.consumption)} كيلوواط ساعة`).join('، ')}`}>{months.map((month) => <div key={month.month} title={`${month.month}: ${number(month.totals.consumption)} كيلوواط ساعة`}><b>{number(month.totals.consumption)}</b><i style={{ height: `${month.totals.consumption / maximum * 80}px` }} /><small>{monthLabel(month.month)}</small><small>{month.month.slice(0, 4)}</small></div>)}</div> : <p className="sp-empty">لا توجد قراءات مسجلة بعد.</p>}
