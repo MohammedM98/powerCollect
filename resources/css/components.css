@@ -446,18 +446,20 @@
     transition: background-color 0.15s, color 0.15s;
 }
 
-.gl-seg button:not([aria-pressed='true']):hover {
+.gl-seg button:not([aria-pressed='true'], [aria-current='page']):hover {
     color: var(--gl-ink);
     background: rgb(var(--gray-900) / 0.06);
 }
 
-.gl-seg button[aria-pressed='true'] {
+.gl-seg button[aria-pressed='true'],
+.gl-seg button[aria-current='page'] {
     background: rgb(var(--panel-bg));
     color: var(--gl-ink);
     box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.04), 0 1px 2px 0 rgb(0 0 0 / 0.06), 0 0 1px 0 rgb(0 0 0 / 0.06);
 }
 
-.dark .gl-seg button[aria-pressed='true'] {
+.dark .gl-seg button[aria-pressed='true'],
+.dark .gl-seg button[aria-current='page'] {
     background: rgb(var(--gray-200));
 }
 
@@ -6225,7 +6227,7 @@ button.gl-cb-tile:hover {
 
 .gl-dash-hero {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.65fr);
+    grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
     gap: 16px;
 }
 
@@ -6235,7 +6237,7 @@ button.gl-cb-tile:hover {
 
 .gl-dash-pair {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.65fr);
+    grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
     gap: 16px;
 }
 
@@ -6959,4 +6961,30 @@ html:root[data-ui-background='graphite'] .pm-hero {
     .dt-detail dl {
         grid-template-columns: 1fr 1fr;
     }
+}
+
+/* The reports' sections (Pages/Reports/Index.jsx) as the redesign's segmented pill; on a phone the pill scrolls sideways. */
+.gl-seg.reports-sections {
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.gl-seg.reports-sections button {
+    min-height: 34px;
+    font-size: 13.5px;
+}
+
+/* The print contents beside the export buttons in the page's actions row. */
+.reports-print-view select:not([multiple], [size]) {
+    height: 40px;
+    min-height: 40px;
+    border: 0;
+    border-radius: 999px;
+    background-color: rgb(var(--group-fill));
+    padding-block: 0;
+    padding-inline: 14px 34px;
+    line-height: 40px;
+    font-size: 13.5px;
+    font-weight: 600;
 }

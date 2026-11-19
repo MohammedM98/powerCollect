@@ -84,6 +84,19 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
             header={
                 <PageHeader
                     title="التقارير المالية"
+                    info="تقارير التحصيل والقراءات الجاهزة."
+                    actions={hasFigures && ['overview', 'collections', 'movements'].includes(section) ? (
+                        // As in the redesign: what to print, Excel and print in the page's actions row, under the section tabs.
+                        <div className="flex flex-wrap items-center gap-2">
+                            <label className="reports-print-view flex items-center gap-2 text-sm text-gray-600">محتوى الطباعة
+                                <select aria-label="محتوى الطباعة" value={printView} onChange={(event) => setPrintView(event.target.value)}>
+                                    <option value="summary">الملخص المالي</option>
+                                    <option value="lines">الحركات التفصيلية</option>
+                                </select>
+                            </label>
+                            <TableExportActions showExcel={canExport} onExcel={() => setExcelOpenedAt(new Date())} printHref={printUrl(`${printView === 'lines' ? 'الحركات التفصيلية' : 'الملخص المالي'} — ${scopeName} — ${periodText}`, `/reports?${query}&print_view=${printView}`)} />
+                        </div>
+                    ) : null}
                     meta={`${branchScope ? '' : `${scopeLabel}، `}${periodLabel(period?.mode, period)}، ${periodText}${oneDay && filters.from === today ? '، اليوم الجاري' : ''}`}
                 />
             }
@@ -127,21 +140,10 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                     </BranchBanner>
                 )}
 
-                <nav aria-label="أقسام التقارير" className="gl-tabs">
-                    {sections.map((item) => <button key={item.key} type="button" aria-current={section === item.key ? 'page' : undefined} onClick={() => { setPrintView(item.key === 'movements' ? 'lines' : 'summary'); visit({ section: item.key, page: undefined }); }} className="gl-tab"><Icon name={item.icon} className="h-4 w-4" />{item.title}</button>)}
+                <nav aria-label="أقسام التقارير" className="gl-seg reports-sections">
+                    {sections.map((item) => <button key={item.key} type="button" aria-current={section === item.key ? 'page' : undefined} onClick={() => { setPrintView(item.key === 'movements' ? 'lines' : 'summary'); visit({ section: item.key, page: undefined }); }} ><Icon name={item.icon} className="h-4 w-4" />{item.title}</button>)}
                 </nav>
                 <PeriodCard branches={branches} branchScope={branchScope} scopeLabel={scopeLabel} filters={filters} presets={presets} today={today} period={period} periodText={periodText} visit={visit} />
-                {hasFigures && ['overview', 'collections', 'movements'].includes(section) && (
-                    <div className="data-table-toolbar flex flex-wrap items-center gap-3">
-                        <label className="flex items-center gap-2 text-sm text-gray-600">محتوى الطباعة
-                            <select aria-label="محتوى الطباعة" className="text-sm" value={printView} onChange={(event) => setPrintView(event.target.value)}>
-                                <option value="summary">الملخص المالي</option>
-                                <option value="lines">الحركات التفصيلية</option>
-                            </select>
-                        </label>
-                        <TableExportActions showExcel={canExport} onExcel={() => setExcelOpenedAt(new Date())} printHref={printUrl(`${printView === 'lines' ? 'الحركات التفصيلية' : 'الملخص المالي'} — ${scopeName} — ${periodText}`, `/reports?${query}&print_view=${printView}`)} />
-                    </div>
-                )}
 
                 {errors.from && (
                     <p role="alert" className="flex items-center gap-2 rounded-card border border-red-200 bg-red-500/5 px-4 py-3 text-sm font-semibold text-red-700">
@@ -158,13 +160,13 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                 )}
 
                 <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold text-gray-900">{current.heading}</h2><InfoTip label={`معلومة عن ${current.heading}`}>{current.hint}</InfoTip></div>
+                {hasFigures && section === 'overview' && <Figures flow={flow} collections={collections} />}
                 {hasFigures && ['overview', 'collections'].includes(section) && collections.receipts && <section className="rounded-card border border-gray-200 bg-surface p-5" aria-label="نتيجة تدقيق المقبوضات">
                     <h3 className="text-lg font-bold text-gray-900">نتيجة تدقيق مقبوضات الفترة حتى الآن</h3>
                     <p className="mt-2 text-sm leading-7 text-gray-600">{collections.receipts.basis}</p>
                     <dl className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{collections.receipts.rows.map((row) => <div key={row.key} className={`rounded-control border p-4 ${row.key === 'confirmed' ? 'border-gray-900 bg-gray-50' : 'border-gray-100'}`}><dt className="text-sm text-gray-600">{row.label}</dt><dd className="mt-2 font-display text-xl font-bold text-gray-900"><bdi dir="ltr">{reportMoney(row.amount)}</bdi> ₪</dd></div>)}</dl>
                 </section>}
                 {hasFigures && section === 'overview' && <>
-                    <Figures flow={flow} collections={collections} />
                     {comparison && <Comparison comparison={comparison} />}
                     <div className="grid gap-5 xl:grid-cols-2"><FlowStatement flow={flow} /><div className="space-y-5"><CollectionsBreakdown collections={collections} compact />{readings && <Readings readings={readings} />}</div></div>
                     {days.length > 1 && <DailyCollections days={days} onOpenDay={openDay} />}

@@ -115,14 +115,15 @@ export function PeriodCard({ branches, branchScope, scopeLabel, filters, presets
 }
 
 /** What was collected (cash against transfers and cheques), what the subscribers owed at the start and at the end, and what was charged. */
+/** The report's four figures, as the redesign's row of equal cards. */
 export function Figures({ flow, collections }) {
     const change = cents(flow.change);
     const total = Number(collections.total);
 
     return (
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)]">
-            <KpiTile hero label="إجمالي المقبوضات المسجّلة" value={reportMoney(collections.total)} unit="₪" hint={`${collections.count} دفعة في الفترة`} className="md:col-span-2 xl:col-span-1 xl:row-span-2">
-                <div className="gl-bar mt-5 flex" role="img" aria-label="النقدي والتحويلات والشيكات">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+            <KpiTile label="إجمالي المقبوضات المسجّلة" value={reportMoney(collections.total)} unit="₪" hint={`${collections.count} دفعة في الفترة`}>
+                <div className="gl-bar mt-3 flex" role="img" aria-label="النقدي والتحويلات والشيكات">
                     {total > 0 && (
                         <>
                             <span style={{ width: `${(Number(collections.cash) / total) * 100}%`, background: 'var(--gl-ink)' }} />
@@ -135,9 +136,9 @@ export function Figures({ flow, collections }) {
                     <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-brand-500" />تحويلات وشيكات <b className="font-display text-(--gl-ink)!">{reportMoney(collections.nonCash)} ₪</b></span>
                 </div>
             </KpiTile>
-            <KpiTile icon="ledger" label="الرصيد الافتتاحي" value={<bdi dir="ltr">{reportMoney(flow.opening)}</bdi>} unit="₪" hint={Number(flow.opening) < 0 ? 'لصالح المشتركين' : 'على المشتركين'} />
-            <KpiTile icon="document-plus" label="التحميلات" value={reportMoney(flow.chargesTotal)} unit="₪" hint="قراءات ورسوم وغرامات" />
-            <KpiTile icon="layers" label="الرصيد الختامي" value={<bdi dir="ltr">{reportMoney(flow.closing)}</bdi>} unit="₪" className="md:col-span-2">
+            <KpiTile label="الرصيد الافتتاحي" value={<bdi dir="ltr">{reportMoney(flow.opening)}</bdi>} unit="₪" hint={Number(flow.opening) < 0 ? 'لصالح المشتركين' : 'على المشتركين'} />
+            <KpiTile label="التحميلات" value={reportMoney(flow.chargesTotal)} unit="₪" hint="قراءات ورسوم وغرامات" />
+            <KpiTile label="الرصيد الختامي" value={<bdi dir="ltr">{reportMoney(flow.closing)}</bdi>} unit="₪">
                 <p className={`mt-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${change > 0 ? 'bg-amber-500/10 text-amber-700' : change < 0 ? 'bg-emerald-500/10 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
                     {change > 0 ? 'زاد' : change < 0 ? 'نقص' : 'لم يتغير'}
                     {change !== 0 && <b className="font-display">{reportMoney(Math.abs(Number(flow.change)))} ₪</b>}
