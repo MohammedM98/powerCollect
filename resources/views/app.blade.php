@@ -1,6 +1,6 @@
 @php($brand = app(\App\Support\Branding\Brand::class))
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" {!! $brand->htmlAttributes() !!}>
+<html lang="ar" dir="rtl" data-surface="glass" {!! $brand->htmlAttributes() !!}>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,8 +24,9 @@
                 if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
                 }
-                if (localStorage.getItem('surface') === 'glass') {
-                    document.documentElement.dataset.surface = 'glass';
+                // Glass is the design's surface; only a saved «solid» turns it off.
+                if (localStorage.getItem('surface') === 'solid') {
+                    delete document.documentElement.dataset.surface;
                 }
                 // The density chosen in this browser, else the company's (data-ui-density).
                 document.documentElement.dataset.side = ['wide', 'hidden'].includes(localStorage.getItem('side')) ? localStorage.getItem('side') : 'rail';

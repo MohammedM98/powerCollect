@@ -56,8 +56,9 @@ export default function PaymentCheckout(props) {
 }
 
 /** The amount received, large, with its currency, the quick amounts and what it comes to in shekels. */
-function CheckoutAmount({ amountInput, currencies, currencyLabel, currencyMark, data, errors, exchangeRate, inShekels, overpayment, owed, setAmount, setCurrency, setData, titleId }) {
+function CheckoutAmount({ amountInput, currencies, currencyLabel, currencyMark, data, errors, exchangeRate, inShekels, overpayment, owed, setAmount, setCurrency, setData, subscription, titleId }) {
     const ownedInCurrency = data.currency === 'ILS' ? owed : Number(exchangeRate) > 0 ? owed / Number(exchangeRate) : null;
+    const weeklyMinimum = Number(subscription.weeklyMinimumPayment ?? subscription.minimumPayment ?? 0);
 
     return (
         <section className="gl-co-amount">
@@ -71,13 +72,13 @@ function CheckoutAmount({ amountInput, currencies, currencyLabel, currencyMark, 
                     autoFocus
                     inputMode="decimal"
                     autoComplete="off"
-                    placeholder="0"
+                    placeholder="0.00"
                     dir="ltr"
                     aria-describedby={errors.amount ? `${titleId}-amount-error` : undefined}
                     value={data.amount}
                     onChange={(e) => setData((current) => ({ ...current, amount: normalizeDecimalInput(e.target.value), confirm_overpayment: false }))}
                     className="gl-co-amount-input gl-num"
-                    style={{ width: `${Math.max(2, String(data.amount || '0').length + 1)}ch` }}
+                    style={{ width: `${data.amount ? Math.max(2, String(data.amount).length + 1) : 4.6}ch` }}
                 />
                 <div className="gl-co-currency">
                     <label htmlFor="payment-currency" className="sr-only">عملة الدفع</label>
@@ -105,6 +106,11 @@ function CheckoutAmount({ amountInput, currencies, currencyLabel, currencyMark, 
                         onPress={() => setAmount(String(Number(ownedInCurrency.toFixed(2))))}
                     >
                         تسديد كامل الدين، <bdi className="gl-num">{formatMoney(owed)}</bdi> ₪
+                    </Button>
+                )}
+                {weeklyMinimum > 0 && data.currency === 'ILS' && (
+                    <Button size="sm" variant="secondary" className="gl-co-chip" onPress={() => setAmount(String(weeklyMinimum))}>
+                        الحد الأدنى <bdi className="gl-num">{formatMoney(weeklyMinimum)}</bdi>
                     </Button>
                 )}
                 {QUICK_AMOUNTS.map((quick) => (
@@ -199,7 +205,7 @@ function CheckoutMethods({ data, errors, methods, setData, transferBanks }) {
 /** A transfer: the company bank it reached (chips), then the bank it came from, the day it arrived, who sent it and its reference. */
 function CheckoutTransfer({ data, errors, referenceCheck, referenceStatus, senderBanks, senderIsSubscriber, setData, toggleSender, transferBanks }) {
     return (
-        <section className="gl-co-section">
+        <section className="gl-co-section gl-co-transfer">
             <RadioGroup name="bank_name" isRequired value={data.bank_name || null} onChange={(value) => setData('bank_name', value)} className="gl-co-banks-group">
                 <Label className="gl-co-h">البنك المستلم</Label>
                 <div className="gl-co-banks">
