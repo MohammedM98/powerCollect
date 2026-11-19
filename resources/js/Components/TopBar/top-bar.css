@@ -1659,7 +1659,7 @@ html.tn-locked {
         z-index: 46;
     }
 
-    :root[data-ui-navigation][data-side='rail'] .tn-side:is(:hover, :focus-within) {
+    :root[data-ui-navigation]:is([data-side='rail'], [data-side='hidden']) .tn-side:is(:hover, :focus-within) {
         width: var(--tn-side-open);
         box-shadow: -24px 0 60px -20px rgb(0 0 0 / 0.45);
     }
@@ -1840,7 +1840,7 @@ html.tn-locked {
     padding: 0 13px;
 }
 
-:root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) :is(.tn-section-short, .tn-section-label) {
+:root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) :is(.tn-section-full, .tn-section-label) {
     position: static;
     width: auto;
     height: auto;
@@ -2141,5 +2141,86 @@ html.tn-locked {
 @media (prefers-reduced-motion: reduce) {
     :root[data-ui-navigation] :is(.tn-side, .tn-side-logo, .tn-side-logo img, .tn-side-logo svg, .tn-brand, .tn-header, .tn-content) {
         transition: none;
+    }
+}
+
+/*
+ * The section's arrow: points toward the menu of its pages (MegaMenu), once
+ * the bar is open; turns toward the menu while that menu is open.
+ */
+:root[data-ui-navigation] .tn-section-chev {
+    display: none;
+    flex: none;
+    width: 14px;
+    height: 14px;
+    color: rgb(var(--panel-muted));
+    transition: transform 0.18s var(--tn-ease), color 0.18s;
+}
+
+:root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-section .tn-section-chev {
+    display: block;
+    margin-inline-start: auto;
+}
+
+:root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-section .tn-badge + .tn-section-chev {
+    margin-inline-start: 6px;
+}
+
+:root[data-ui-navigation] .tn-section:is(:hover, [aria-expanded='true']) .tn-section-chev {
+    color: rgb(var(--panel-ink));
+    transform: translateX(-2px);
+}
+
+/* The menu's mode button, at the top bar's start (desktop only). */
+:root[data-ui-navigation] .tn-side-mode {
+    flex: none;
+    margin-inline-end: 10px;
+}
+
+/* The edge strip that brings the hidden bar back: only while it is hidden. */
+.tn-side-edge {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    /*
+     * Hidden: the page takes the whole width, the bar waits off the screen's
+     * edge and slides back in over the page while the pointer rests on that
+     * edge (or the keyboard reaches it); the company's logo moves into the top bar.
+     */
+    :root[data-ui-navigation][data-side='hidden'] {
+        --tn-dock-width: 0px;
+    }
+
+    :root[data-ui-navigation][data-side='hidden'] .tn-side {
+        width: var(--tn-side-open);
+        transform: translateX(100%);
+        transition: transform 0.24s var(--tn-ease), box-shadow 0.24s;
+    }
+
+    :root[data-ui-navigation][data-side='hidden']:is(:has(.tn-side-edge:hover), :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-side {
+        transform: none;
+        box-shadow: -24px 0 60px -20px rgb(0 0 0 / 0.45);
+    }
+
+    :root[data-ui-navigation][data-side='hidden'] .tn-side-edge {
+        position: fixed;
+        z-index: 45;
+        inset-block: 0;
+        inset-inline-start: 0;
+        display: block;
+        width: 14px;
+        pointer-events: auto;
+    }
+
+    :root[data-ui-navigation][data-side='hidden'] .tn-context :is(.tn-top-logo, .tn-brand-divider) {
+        display: block;
+    }
+
+    :root[data-ui-navigation][data-side='hidden'] .tn-brand {
+        max-width: 420px;
+        padding-inline: 8px;
+        opacity: 1;
+        transform: none;
     }
 }

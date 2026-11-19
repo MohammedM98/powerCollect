@@ -28,7 +28,7 @@
                     document.documentElement.dataset.surface = 'glass';
                 }
                 // The density chosen in this browser, else the company's (data-ui-density).
-                document.documentElement.dataset.side = localStorage.getItem('side') === 'wide' ? 'wide' : 'rail';
+                document.documentElement.dataset.side = ['wide', 'hidden'].includes(localStorage.getItem('side')) ? localStorage.getItem('side') : 'rail';
                 if ((localStorage.getItem('table-density') ?? document.documentElement.dataset.uiDensity) === 'compact') {
                     document.documentElement.dataset.tableDensity = 'compact';
                 }
