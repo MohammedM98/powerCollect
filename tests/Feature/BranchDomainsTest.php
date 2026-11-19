@@ -158,6 +158,9 @@ class BranchDomainsTest extends TestCase
         $this->actingAs($this->admin)->post('https://north.company.test/subscriptions', ['branch_id' => $this->south->id])->assertSessionHasErrors('branch_id');
         $this->get('https://north.company.test/settings/permissions')->assertForbidden();
         $this->put('https://north.company.test/branch-domains/'.$this->south->id, ['domain' => 'new.company.test', 'domain_enabled' => true])->assertForbidden();
+        // Templates every branch shares are changed from the central site, like print templates.
+        $this->post('https://north.company.test/excel-templates', [])->assertForbidden();
+        $this->post('https://north.company.test/company-forms', [])->assertForbidden();
     }
 
     public function test_a_branch_manager_adds_a_subscription_on_the_branch_domain_without_choosing_a_branch(): void

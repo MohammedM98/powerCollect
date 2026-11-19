@@ -92,15 +92,16 @@ class AdminManagedPasswordTest extends TestCase
         $this->assertSame($original, $target->fresh()->password);
     }
 
-    public function test_branch_manager_cannot_reset_passwords_of_another_branch_or_other_administrators(): void
+    public function test_branch_manager_cannot_reset_passwords_of_another_branch_or_holders_of_company_wide_permissions(): void
     {
         $branch = Branch::factory()->create();
         $manager = User::factory()->branchAdmin()->create(['branch_id' => $branch->id]);
         $otherManager = User::factory()->branchAdmin()->create(['branch_id' => $branch->id]);
         $foreignStaff = User::factory()->collector()->create();
         $administrator = User::factory()->superAdmin()->create();
+        $companyWideStaff = User::factory()->collector()->withPermissions([PermissionKey::ViewAllFinancialReports])->create(['branch_id' => $branch->id]);
 
-        foreach ([$otherManager, $foreignStaff, $administrator] as $target) {
+        foreach ([$otherManager, $foreignStaff, $administrator, $companyWideStaff] as $target) {
             $original = $target->password;
             $this->actingAs($manager)->put(route('users.update', $target), $this->passwordPayload($target))->assertForbidden();
 

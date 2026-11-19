@@ -12,6 +12,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Readings\ApproveReading;
 use App\Support\Readings\ReadingCharges;
+use App\Support\Readings\RepriceReading;
 use Carbon\CarbonInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -211,22 +212,6 @@ class ReadingAdjustmentTest extends TestCase
         $this->assertSame(SubscriptionTransaction::STATUS_CANCELLED, $charge->fresh()->status);
     }
 
-    public function test_discount_changes_cannot_bill_an_empty_current_reading(): void
-    {
-        [$actor, $subscription, $last] = $this->context();
-        $current = $this->reading($subscription, '2026-09-18', 210, 230, $actor);
-        $current->update(['minimum_payment' => 20]);
-        $this->actingAs($actor)->put(route('meter-readings.adjust-last', $last), [
-            'adjustment_type' => 'correction', 'current_reading' => 205, 'expected_reading' => 210,
-        ])->assertSessionHasNoErrors();
-
-        ApproveReading::applyStandingDiscount($current->fresh(), null, $actor);
-
-        $this->assertSame('0.00', $current->fresh()->amount_due);
-        $this->assertTrue($current->fresh()->requires_reentry);
-        $this->assertFalse(ApproveReading::handle($current->fresh(), $actor, true));
-    }
-
     #[TestWith([-1])]
     #[TestWith([0.001])]
     #[TestWith([10000000000])]
@@ -387,6 +372,21 @@ class ReadingAdjustmentTest extends TestCase
     }
 
     /** @return array{User, Subscription, MeterReading} */
+    public function test_repricing_a_copy_loaded_before_approval_still_cancels_the_charge_approval_wrote(): void
+    {
+        [$actor, $subscription] = $this->context();
+        $stale = MeterReading::factory()->for($subscription)->create([
+            'week_start' => '2026-09-18', 'week_end' => '2026-09-24', 'previous_reading' => 210, 'current_reading' => 230, 'consumption' => 20,
+            'unit_price' => '0.50', 'minimum_payment' => '0.00', ...ReadingCharges::chargesFor(20, '0.50', '0.00'),
+        ]);
+        $this->assertTrue(ApproveReading::handle($stale->fresh(), $actor, true));
+
+        $this->assertTrue(RepriceReading::recalculate($stale, 210, 220, null, $actor));
+
+        $this->assertSame([MeterReadingStatus::Pending, '5.00'], [$stale->fresh()->status, $stale->fresh()->amount_due]);
+        $this->assertSame('5.00', $subscription->fresh()->balance());
+    }
+
     private function context(): array
     {
         $actor = User::factory()->branchAdmin()->create();

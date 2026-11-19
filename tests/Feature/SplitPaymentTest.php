@@ -192,6 +192,17 @@ class SplitPaymentTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_an_archived_subscription_cannot_take_a_part_without_the_archive_permission(): void
+    {
+        $this->subscriptions[1]->forceFill(['archived_at' => now()])->save();
+
+        $this->actingAs($this->cashier)
+            ->post(route('payments.split.store'), $this->payload())
+            ->assertSessionHasErrors('parts.1.subscription_id');
+
+        $this->assertDatabaseCount('split_payments', 0);
+    }
+
     public function test_cancelling_one_part_cancels_the_whole_transfer_with_the_same_reason(): void
     {
         $split = $this->recordSplit();

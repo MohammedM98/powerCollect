@@ -141,8 +141,8 @@ class StoreSplitPaymentRequest extends FormRequest
     }
 
     /**
-     * The subscriptions named by the parts that the user may see (and so take
-     * a payment for): the branch's own, or any for the Super Admin.
+     * The subscriptions named by the parts that the user may take a payment
+     * for, on the same terms as a single payment (SubscriptionPolicy::recordPayment).
      *
      * @return Collection<int, Subscription>
      */
@@ -153,6 +153,7 @@ class StoreSplitPaymentRequest extends FormRequest
             ->with('branch')
             ->whereIn('id', collect((array) $this->input('parts'))->pluck('subscription_id')->filter(fn ($id) => is_numeric($id))->map(fn ($id): int => (int) $id))
             ->get()
+            ->filter(fn (Subscription $subscription): bool => $this->user()->can('recordPayment', $subscription))
             ->keyBy('id');
     }
 

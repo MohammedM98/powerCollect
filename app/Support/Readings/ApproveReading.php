@@ -2,14 +2,11 @@
 
 namespace App\Support\Readings;
 
-use App\Enums\CorrectionReason;
 use App\Enums\MeterReadingStatus;
 use App\Models\MeterReading;
-use App\Models\StandingDiscount;
-use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Ledger\CancelLine;
+use App\Support\Closing\BranchClosingWorkflow;
 use App\Support\Ledger\Money;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -41,58 +38,15 @@ class ApproveReading
                 'approved_at' => now(),
             ]);
 
-            ApproveReading::recordChargeLine($reading, $approver);
-            ApproveReading::recordDiscountLine($reading, $approver);
+            // The bill lines are written under the branch lock, as payments are, so each line's balance_after counts the one before it.
+            app(BranchClosingWorkflow::class)->locked($reading->subscription->branch_id, function () use ($reading, $approver): void {
+                ApproveReading::recordChargeLine($reading, $approver);
+                ApproveReading::recordDiscountLine($reading, $approver);
+            });
 
             $meterReading->setRawAttributes($reading->getAttributes(), true);
 
             return true;
-        });
-    }
-
-    /**
-     * Bill the reading with the subscription's standing discount as it is now
-     * (none when it was stopped), at the prices the reading was recorded
-     * with. An approved reading's lines are rebilled to match — the old ones
-     * cancelled with a reversal, kept on the statement, and the new ones
-     * recorded under them — so the subscription's transactions show the change
-     * straight away; a pending one's shows when it is approved.
-     */
-    public static function applyStandingDiscount(MeterReading $meterReading, ?StandingDiscount $discount, User $recorder): void
-    {
-        DB::transaction(function () use ($discount, $recorder, $meterReading): void {
-            $reading = MeterReading::query()->lockForUpdate()->findOrFail($meterReading->id);
-
-            $reading->update([
-                'discount_method' => $discount?->method,
-                'discount_value' => $discount?->value,
-                'discount_segment' => $discount?->segment,
-                ...($reading->requires_reentry
-                    ? ['reading_fee' => '0.00', 'discount_amount' => '0.00', 'amount_due' => '0.00']
-                    : ReadingCharges::chargesFor($reading->consumption, $reading->unit_price, $reading->minimum_payment, $discount?->method, $discount?->value)),
-            ]);
-
-            if (! $reading->isPending()) {
-                $charge = ApproveReading::currentLine($reading, SubscriptionTransaction::TYPE_METER_READING);
-                $discountLine = ApproveReading::currentLine($reading, SubscriptionTransaction::TYPE_READING_DISCOUNT);
-                $chargeNeedsRebilling = $charge && $charge->amount !== ReadingCharges::amountBeforeDiscount($reading);
-
-                if ($chargeNeedsRebilling) {
-                    CancelLine::cancelForReading($charge, $recorder, CorrectionReason::StandingDiscountChanged);
-                }
-
-                if ($discountLine !== null) {
-                    CancelLine::cancelForReading($discountLine, $recorder, CorrectionReason::StandingDiscountChanged);
-                }
-
-                if ($chargeNeedsRebilling) {
-                    ApproveReading::recordChargeLine($reading, $recorder);
-                }
-
-                ApproveReading::recordDiscountLine($reading, $recorder);
-            }
-
-            $meterReading->setRawAttributes($reading->getAttributes(), true);
         });
     }
 

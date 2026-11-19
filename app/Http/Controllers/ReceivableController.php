@@ -14,6 +14,7 @@ use App\Support\Reports\DebtAging;
 use App\Support\Reports\ReceivablesPage;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
@@ -32,22 +33,27 @@ class ReceivableController extends Controller
         $this->authorize('viewDebtAging', SubscriptionTransaction::class);
 
         $actor = $request->user();
-        $debtors = ReceivablesPage::withAgeFilter((new DebtAging(DailySeries::today()))->debtors(ReceivablesPage::filteredSubscriptions($request, $actor)), $request);
+        // Computed only when asked for, so opening a statement does not age every debt again.
+        $aged = null;
+        $debtors = function () use (&$aged, $request, $actor): Collection {
+            return $aged ??= ReceivablesPage::withAgeFilter((new DebtAging(DailySeries::today()))->debtors(ReceivablesPage::filteredSubscriptions($request, $actor)), $request);
+        };
         $perPage = DataTableFilters::dataTablePerPage($request, self::DEFAULT_PER_PAGE);
         $page = max(1, (int) $request->input('page', 1));
-        $sorted = ReceivablesPage::sortDebtors($debtors, $request);
-
-        $rows = new LengthAwarePaginator(
-            $sorted->forPage($page, $perPage)->map(fn (array $debtor): array => ReceivablesPage::row($debtor))->values(),
-            $sorted->count(),
-            $perPage,
-            $page,
-            ['path' => $request->url(), 'query' => $request->query()],
-        );
 
         return Inertia::render('Receivables/Index', [
-            'debtors' => $rows,
-            'summary' => ReceivablesPage::summary($debtors),
+            'debtors' => function () use ($debtors, $request, $perPage, $page): LengthAwarePaginator {
+                $sorted = ReceivablesPage::sortDebtors($debtors(), $request);
+
+                return new LengthAwarePaginator(
+                    $sorted->forPage($page, $perPage)->map(fn (array $debtor): array => ReceivablesPage::row($debtor))->values(),
+                    $sorted->count(),
+                    $perPage,
+                    $page,
+                    ['path' => $request->url(), 'query' => $request->query()],
+                );
+            },
+            'summary' => fn () => ReceivablesPage::summary($debtors()),
             'buckets' => collect(DebtAging::BUCKET_LABELS)->map(fn (string $label, string $key): array => ['key' => $key, 'label' => __($label)])->values(),
             'today' => DailySeries::today()->toDateString(),
             'scopeLabel' => ReceivablesPage::scopeLabel($request, $actor),

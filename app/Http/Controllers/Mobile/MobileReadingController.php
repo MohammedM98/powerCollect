@@ -58,7 +58,7 @@ class MobileReadingController extends Controller
                     'subscription_status_label' => __($subscription->status->label()),
                     'account_number' => $subscription->account_number,
                     'meter_box_number' => $subscription->meterBox?->box_number,
-                    'previous_reading' => $reading?->previous_reading ?? $latest?->current_reading ?? $subscription->initial_reading,
+                    'previous_reading' => $reading?->previous_reading ?? $latest?->nextPreviousReading() ?? $subscription->initial_reading,
                     'current_reading' => $reading?->current_reading,
                     'consumption' => $reading?->consumption,
                     'amount_due' => $reading?->amount_due,

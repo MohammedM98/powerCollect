@@ -10,6 +10,7 @@ use App\Models\ReadingAssignment;
 use App\Models\ReadingSubmission;
 use App\Models\Subscription;
 use App\Models\User;
+use Carbon\CarbonInterface;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -149,10 +150,17 @@ class FieldReadingSync
             $subscription->meterReadings()->whereDate('week_start', $cycle->week_start->toDateString())->exists() => 'already_read',
             $subscription->meterReadings()->whereDate('week_start', '>', $cycle->week_start->toDateString())->exists() => 'later_week_read',
             ! $cycle->week_start->equalTo(ReadingWeeks::latestEndedWeekStart($subscription->branch_id)) => 'week_locked',
+            $this->awaitsReentry($subscription, $cycle->week_start) => 'reentry_pending',
             $currentReading < $subscription->previousReadingBefore($cycle->week_start) => 'below_previous',
             ReadingConsumption::isImpossibleConsumption(ReadingConsumption::consumptionBetween($subscription->previousReadingBefore($cycle->week_start), $currentReading)) => 'impossible_consumption',
             default => null,
         };
+    }
+
+    /** An earlier week's reading was cleared and must be entered again first (RecordReading refuses until then). */
+    private function awaitsReentry(Subscription $subscription, CarbonInterface $weekStart): bool
+    {
+        return $subscription->meterReadings()->where('week_start', '<', $weekStart)->where('requires_reentry', true)->exists();
     }
 
     /**
@@ -177,6 +185,7 @@ class FieldReadingSync
                 ! $weekStart->equalTo(ReadingWeeks::latestEndedWeekStart($subscription->branch_id)) => __(ReadingSubmission::ISSUES['week_locked']),
                 $subscription->status !== SubscriptionStatus::Active => __(ReadingSubmission::ISSUES['not_on_box']),
                 $subscription->meterReadings()->whereDate('week_start', '>=', $weekStart->toDateString())->exists() => __(ReadingSubmission::ISSUES['already_read']),
+                $this->awaitsReentry($subscription, $weekStart) => __(ReadingSubmission::ISSUES['reentry_pending']),
                 $held->current_reading < $previous => __(ReadingSubmission::ISSUES['below_previous']),
                 ReadingConsumption::isImpossibleConsumption(ReadingConsumption::consumptionBetween($previous, $held->current_reading)) => __(ReadingSubmission::ISSUES['impossible_consumption']),
                 default => null,

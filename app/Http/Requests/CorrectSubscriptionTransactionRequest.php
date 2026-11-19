@@ -47,7 +47,7 @@ class CorrectSubscriptionTransactionRequest extends FormRequest
 
         return [
             ...match (true) {
-                $line->isPayment() => StoreSubscriptionPaymentRequest::paymentRules($this->input('payment_method')),
+                $line->isPayment() => $this->correctedPaymentRules($line),
                 $line->isDiscount() => StoreSubscriptionDiscountRequest::discountRules(),
                 $line->isClearing() => StoreSubscriptionClearingRequest::clearingRules(),
                 default => StoreSubscriptionChargeRequest::chargeRules($this->input('type')),
@@ -55,6 +55,23 @@ class CorrectSubscriptionTransactionRequest extends FormRequest
             'correction_reason' => ['required', Rule::enum(CorrectionReason::class)->only(CorrectionReason::forCorrectionOf($line))],
             'correction_notes' => ['required', 'string', 'max:1000'],
         ];
+    }
+
+    /**
+     * Switching a payment to another way of paying takes that way's own
+     * permission, as recording it would; keeping the original way does not.
+     *
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
+    private function correctedPaymentRules(SubscriptionTransaction $line): array
+    {
+        $rules = StoreSubscriptionPaymentRequest::paymentRules($this->input('payment_method'));
+
+        if ($this->input('payment_method') !== $line->payment_method?->value) {
+            $rules['payment_method'][] = StoreSubscriptionPaymentRequest::allowedMethodRule($this->user());
+        }
+
+        return $rules;
     }
 
     /**

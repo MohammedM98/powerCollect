@@ -4,6 +4,7 @@ namespace App\Support\Reports;
 
 use Closure;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
@@ -40,10 +41,13 @@ class ReportCache
             : Cache::remember($cacheKey, $seconds, $compute);
     }
 
-    /** Mark everything cached under `scope` as out of date. */
+    /**
+     * Mark everything cached under `scope` as out of date, once the change
+     * is committed: the cache row is not held locked by every open write.
+     */
     public static function touch(string $scope): void
     {
-        Cache::forever("report-version:{$scope}", (string) Str::ulid());
+        DB::afterCommit(fn () => Cache::forever("report-version:{$scope}", (string) Str::ulid()));
     }
 
     private static function version(string $scope): string
