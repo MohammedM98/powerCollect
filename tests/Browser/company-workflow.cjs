@@ -410,7 +410,8 @@ step('report sections retain the branch banner, statement alignment and mobile b
     const nav = page.getByRole('navigation', { name: 'أقسام التقارير' });
     await nav.getByRole('button').nth(5).waitFor();
     assert.equal(await nav.getByRole('button').count(), 6);
-    await page.getByRole('region', { name: 'الفرع المعروض' }).getByRole('heading', { name: 'فرع النصيرات', exact: true }).waitFor();
+    // The banner stays as the printed page's heading; on screen the branch is picked in the top bar.
+    await page.locator('section[aria-label="الفرع المعروض"] h2', { hasText: 'فرع النصيرات' }).waitFor({ state: 'attached' });
     await snap(page, 'reports-overview');
     await nav.getByRole('button', { name: 'التحصيل', exact: true }).click();
     await page.getByRole('heading', { name: 'تقرير التحصيل', exact: true }).waitFor();
