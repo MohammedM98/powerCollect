@@ -12,7 +12,9 @@ import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Pagination from '@/Components/DataTable/Pagination';
 import ActionsTh from '@/Components/DataTable/ActionsTh';
 import Icon from '@/Components/Icon';
-import KpiTile from '@/Components/KpiTile';
+import { Button, ToggleButton } from '@heroui/react';
+import SegmentedChoice from '@/Components/SegmentedChoice';
+import { Figure } from '@/Pages/Reports/ReportViews';
 import { formatNumber } from '@/lib/format';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useDeleteRecord } from '@/hooks/useDeleteRecord';
@@ -21,10 +23,8 @@ import MeterBoxModal from './MeterBoxModal';
 import MeterBoxSubscriptions from './MeterBoxSubscriptions';
 import './meter-boxes.css';
 import PageHeader from '@/Components/PageHeader';
-import SecondaryButton from '@/Components/SecondaryButton';
 import SearchableSelect from '@/Components/SearchableSelect';
 import { readingPrintUrl } from '@/Components/PrintButton';
-import { secondaryButtonClass } from '@/Components/SecondaryButton';
 import { queryString } from '@/lib/pageUrl';
 
 const SUBSCRIPTION_DIRECTION_KEY = 'meter-box-subscription-direction';
@@ -50,17 +50,38 @@ function readSubscriptionOrder() {
     }
 }
 
+/**
+ * The boxes in figures (before the quick filter, so each keeps its count):
+ * those with subscribers out of all, their subscribers, the empty ones and
+ * the areas they sit in.
+ */
 function MeterBoxSummary({ summary }) {
+    const used = summary.total - summary.empty;
+
     return (
-        <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <KpiTile hero icon="table" label="إجمالي الطبلونات" value={formatNumber(summary.total)} unit="طبلون" hint="ضمن نتائج البحث والتصفية">
-                <div className="gl-kv mt-3 border-t pt-3 border-(--gl-line)!"><span className="inline-flex items-center gap-1.5"><Icon name="users" className="h-4 w-4" />المشتركون</span><b className="gl-num">{formatNumber(summary.subscriptions)}</b></div>
-            </KpiTile>
-            {[
-                { icon: 'pin', label: 'مناطق الطبلونات', unit: 'منطقة', value: formatNumber(summary.regions), hint: `${formatNumber(summary.located)} طبلون ضمن هذه المناطق${summary.total > summary.located ? `، ${formatNumber(summary.total - summary.located)} بلا منطقة` : ''}` },
-                { icon: 'users', label: 'المشتركون الفعّالون', unit: 'مشترك', value: formatNumber(summary.active), hint: 'المشتركون بحالة فعّال ضمن نتائج البحث' },
-                { icon: 'table', label: 'طبلونات بلا مشتركين', unit: 'طبلون', value: formatNumber(summary.empty), hint: 'طبلونات لا يرتبط بها أي مشترك' },
-            ].map((stat, index) => <KpiTile key={stat.label} role="group" aria-label={`إحصائية ${stat.label}`} index={index + 1} icon={stat.icon} label={stat.label} value={stat.value} unit={stat.unit} hint={stat.hint} />)}
+        <div className="gl-rp-figs gl-sub-figs">
+            <Figure dark label="الطبلونات المستخدمة" hint={`من ${formatNumber(summary.total)} طبلون ضمن البحث والتصفية`}>{formatNumber(used)}</Figure>
+            <Figure tone="clr" label="المشتركون عليها" hint={`${formatNumber(summary.active)} مشترك فعّال`} role="group" aria-label="إحصائية المشتركون الفعّالون">{formatNumber(summary.subscriptions)}</Figure>
+            <Figure tone={summary.empty > 0 ? 'warn' : null} label="طبلونات بلا مشتركين" hint="طبلونات لا يرتبط بها أي مشترك" role="group" aria-label="إحصائية طبلونات بلا مشتركين">{formatNumber(summary.empty)}</Figure>
+            <Figure tone="disc" label="مناطق الطبلونات" hint={`${formatNumber(summary.located)} طبلون ضمن هذه المناطق${summary.total > summary.located ? `، ${formatNumber(summary.total - summary.located)} بلا منطقة` : ''}`} role="group" aria-label="إحصائية مناطق الطبلونات">{formatNumber(summary.regions)}</Figure>
+        </div>
+    );
+}
+
+/** Which boxes the list shows: those with subscribers, the empty ones, or all, each with its count. */
+function OccupancyFilter({ summary, value, onChange }) {
+    return (
+        <div className="gl-sub-quick">
+            <SegmentedChoice
+                label="الطبلونات المعروضة"
+                value={value ?? ''}
+                onChange={onChange}
+                options={[
+                    { value: '', label: <>الكل <span className="gl-sub-count">{formatNumber(summary.total)}</span></> },
+                    { value: 'used', label: <>بها مشتركون <span className="gl-sub-count">{formatNumber(summary.total - summary.empty)}</span></> },
+                    { value: 'empty', label: <>فارغة <span className="gl-sub-count">{formatNumber(summary.empty)}</span></> },
+                ]}
+            />
         </div>
     );
 }
@@ -170,6 +191,7 @@ export default function Index({
             {branchScope && <BranchFilterBanner scope={selectedBranch ? { ...branchScope, place: null } : branchScope} eyebrow="تعرض الآن طبلونات" group={branchFilter.branch} value={filterValues.branch_id} onChange={(value) => setFilter('branch_id', value)} />}
 
             {summary && <MeterBoxSummary summary={summary} />}
+            {summary && <OccupancyFilter summary={summary} value={filterValues.occupancy} onChange={(value) => setFilter('occupancy', value)} />}
 
             <DataTableToolbar
                 search={search}
@@ -221,11 +243,11 @@ export default function Index({
 
             <div className="mb-3 flex flex-wrap items-center gap-2">
                 {canViewSubscriptions && <>
-                    <SecondaryButton onClick={expandAll} disabled={meterBoxes.data.length === 0 || allExpanded}><Icon name="chevron-down" className="h-4 w-4" />توسيع الكل</SecondaryButton>
-                    <SecondaryButton onClick={collapseAll} disabled={!anyExpanded}><Icon name="chevron-down" className="h-4 w-4 rotate-180" />طي الكل</SecondaryButton>
+                    <Button variant="secondary" onPress={expandAll} isDisabled={meterBoxes.data.length === 0 || allExpanded}><Icon name="chevron-down" className="h-4 w-4" />توسيع الكل</Button>
+                    <Button variant="secondary" onPress={collapseAll} isDisabled={!anyExpanded}><Icon name="chevron-down" className="h-4 w-4 rotate-180" />طي الكل</Button>
                 </>}
-                <SecondaryButton aria-pressed={groupByRegion} onClick={toggleGroupByRegion} className={groupByRegion ? 'border-brand-500/30! bg-brand-500/10! text-brand-600!' : ''}><Icon name="pin" className="h-4 w-4" />تجميع حسب المنطقة</SecondaryButton>
-                {canViewSubscriptions && canPrint && <a href={subscriptionsPrintHref()} onClick={(event) => { event.currentTarget.href = subscriptionsPrintHref(); }} target="_blank" rel="noopener noreferrer" className={`${secondaryButtonClass} tone-print`} title="طباعة كل طبلون تحت منطقته ومشتركوه تحته، بنفس البحث والتصفية وترتيب المشتركين"><Icon name="printer" className="h-4 w-4" />طباعة الطبلونات مع المشتركين</a>}
+                <ToggleButton className="gl-sub-debtors gl-box-group" isSelected={groupByRegion} onChange={toggleGroupByRegion}><Icon name="pin" className="h-4 w-4" />تجميع حسب المنطقة</ToggleButton>
+                {canViewSubscriptions && canPrint && <a href={subscriptionsPrintHref()} onClick={(event) => { event.currentTarget.href = subscriptionsPrintHref(); }} target="_blank" rel="noopener noreferrer" className="button button--secondary button--md tone-print" title="طباعة كل طبلون تحت منطقته ومشتركوه تحته، بنفس البحث والتصفية وترتيب المشتركين"><Icon name="printer" className="h-4 w-4" />طباعة الطبلونات مع المشتركين</a>}
                 {canViewSubscriptions && <span className="text-xs text-gray-500">التوسيع يعرض مشتركي طبلونات الصفحة الحالية، ويستمر عند الانتقال للصفحة التالية.</span>}
             </div>
 

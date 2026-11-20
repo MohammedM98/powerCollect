@@ -77,6 +77,7 @@ class SubscriptionController extends Controller
                 'message' => $actor->can('create', MessageBatch::class),
             ],
             'statusOptions' => SubscriptionStatus::options(),
+            'listSummary' => fn () => SubscriptionPage::listSummary($actor, $request, $showArchived),
             'filters' => DataTableFilters::dataTableState($request, 'display_name'),
             'filterOptions' => fn () => SubscriptionPage::filterOptions($actor, $request),
             // Whoever sees every branch's subscribers reads, large above the table, which branch the list holds.

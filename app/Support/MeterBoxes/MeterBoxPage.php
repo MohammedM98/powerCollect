@@ -72,6 +72,20 @@ class MeterBoxPage
     }
 
     /**
+     * Narrow the boxes to those with subscribers (`used`) or without them
+     * (`empty`); anything else keeps them all. The figures above the list are
+     * counted before this, so each quick filter keeps its count.
+     */
+    public static function applyOccupancy(Builder $query, Request $request): Builder
+    {
+        return match ($request->input('filter.occupancy')) {
+            'used' => $query->whereRaw('COALESCE(subscription_totals.subscriptions_count, 0) > 0'),
+            'empty' => $query->whereRaw('COALESCE(subscription_totals.subscriptions_count, 0) = 0'),
+            default => $query,
+        };
+    }
+
+    /**
      * A meter box's editable fields — used both for the dedicated edit
      * page and for the edit modal's initial form data on the index page.
      *

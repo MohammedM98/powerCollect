@@ -11,12 +11,10 @@ import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Pagination from '@/Components/DataTable/Pagination';
 import ActionsTh from '@/Components/DataTable/ActionsTh';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
-import KpiTile from '@/Components/KpiTile';
+import { Button, FieldError, Input, Label, TextArea, TextField } from '@heroui/react';
+import { Figure } from '@/Pages/Reports/ReportViews';
 import Modal from '@/Components/Modal';
-import FormField from '@/Components/Form/FormField';
 import FormSelect from '@/Components/Form/FormSelect';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import Icon from '@/Components/Icon';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useRowClick } from '@/hooks/useRowClick';
@@ -34,33 +32,52 @@ function NewListModal({ branchOptions, onClose }) {
 
     return (
         <Modal show onClose={onClose} maxWidth="lg">
-            <form onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="new-list-title">
-                <div className="flex items-start gap-4 px-7 pb-2 pt-7">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600">
-                        <Icon name="power" strokeWidth={2} />
-                    </span>
-                    <div>
-                        <h3 id="new-list-title" className="text-lg font-bold text-gray-900">قائمة قطع جديدة</h3>
-                        <p className="mt-1 text-sm text-gray-600">تُضاف إليها المشتركون يدويًا بعد إنشائها. لا يُقطع أي مشترك ولا تُرسل أي رسالة تلقائيًا.</p>
+            <form onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="new-list-title" className="gl-win">
+                <div className="gl-win-head">
+                    <span className="gl-set-ico" aria-hidden="true"><Icon name="power" /></span>
+                    <div className="min-w-0">
+                        <h2 id="new-list-title" className="gl-set-title">قائمة قطع جديدة</h2>
+                        <p className="gl-set-desc">تُضاف إليها المشتركون يدويًا بعد إنشائها. لا يُقطع أي مشترك ولا تُرسل أي رسالة تلقائيًا.</p>
                     </div>
                 </div>
-                <div className="space-y-4 px-7 py-5">
-                    <FormField id="list-title" label="اسم القائمة" required error={form.errors.title}>
-                        <input type="text" value={form.data.title} onChange={(event) => form.setData('title', event.target.value)} className="block w-full text-sm" autoFocus maxLength={150} />
-                    </FormField>
+                <div className="gl-win-body space-y-4">
+                    <TextField isRequired isInvalid={Boolean(form.errors.title)} value={form.data.title} onChange={(value) => form.setData('title', value)} maxLength={150} className="gl-set-field" autoFocus>
+                        <Label>اسم القائمة</Label>
+                        <Input id="list-title" />
+                        <FieldError>{form.errors.title}</FieldError>
+                    </TextField>
                     {branchOptions.length > 0 && (
                         <FormSelect id="list-branch" label="الفرع" required value={form.data.branch_id} onChange={(value) => form.setData('branch_id', value)} options={branchOptions} placeholder="اختر الفرع" error={form.errors.branch_id} />
                     )}
-                    <FormField id="list-notes" label="ملاحظات" error={form.errors.notes}>
-                        <textarea value={form.data.notes} onChange={(event) => form.setData('notes', event.target.value)} rows={3} className="block w-full text-sm" />
-                    </FormField>
+                    <TextField isInvalid={Boolean(form.errors.notes)} value={form.data.notes} onChange={(value) => form.setData('notes', value)} className="gl-set-field">
+                        <Label>ملاحظات</Label>
+                        <TextArea id="list-notes" rows={3} />
+                        <FieldError>{form.errors.notes}</FieldError>
+                    </TextField>
                 </div>
-                <div className="flex justify-end gap-3 border-t border-gray-100 bg-gray-50 px-7 py-4">
-                    <SecondaryButton onClick={onClose}>إلغاء</SecondaryButton>
-                    <PrimaryButton type="submit" disabled={form.processing}>إنشاء القائمة</PrimaryButton>
+                <div className="gl-win-foot">
+                    <Button type="button" onPress={onClose} className="gl-win-cancel">إلغاء</Button>
+                    <Button type="submit" isDisabled={form.processing}>إنشاء القائمة</Button>
                 </div>
             </form>
         </Modal>
+    );
+}
+
+/** No lists yet: how a list works, in its three steps, and the key to start one. */
+function DisconnectionEmptyState({ canCreate, onCreate }) {
+    return (
+        <div className="gl-empty-how">
+            <span className="gl-set-ico" data-tone="owe" aria-hidden="true"><Icon name="power" /></span>
+            <b>لا توجد قوائم قطع بعد</b>
+            <p>أنشئ قائمة، وأدرج فيها المدينين، ثم أنذرهم وحدّد موعد القطع.</p>
+            <ol>
+                <li><b>1. أدرج المدينين</b><span>يدويًا أو من المرشحين حسب المبلغ</span></li>
+                <li><b>2. أرسل الإنذار</b><span>رسالة بالموعد والمستحق</span></li>
+                <li><b>3. أكّد القطع</b><span>وتُحمَّل رسوم القطع على المشترك</span></li>
+            </ol>
+            {canCreate && <Button onPress={onCreate}><Icon name="plus" className="h-4 w-4" />قائمة جديدة</Button>}
+        </div>
     );
 }
 
@@ -85,11 +102,11 @@ export default function Index({ lists, summary, canCreate, branchOptions, branch
             <Head title="قوائم القطع" />
             {branchScope && <BranchFilterBanner scope={branchScope} eyebrow="تعرض الآن قوائم القطع لـ" group={branchFilter.branch} value={filterValues.branch_id} onChange={(value) => setFilter('branch_id', value)} />}
 
-            <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <KpiTile hero label="بانتظار القطع" value={formatNumber(summary.scheduled)} unit="مشترك" hint={`في ${formatNumber(summary.openLists)} قائمة مفتوحة`} />
-                <KpiTile icon="warning" label="متأخر — بانتظار إجراء" value={formatNumber(summary.overdue)} unit="مشترك" hint="مرّ موعده ولم يُتخذ إجراء؛ لا يُقطع تلقائيًا" />
-                <KpiTile icon="calendar" label="خلال ٧ أيام" value={formatNumber(summary.upcoming)} unit="مشترك" hint={`إنذارات هذا الشهر: ${formatNumber(summary.warningsThisMonth)}`} />
-                <KpiTile icon="power" label="قُطع هذا الشهر" value={formatNumber(summary.disconnectedThisMonth)} unit="مشترك" hint={`رسوم القطع: ${formatMoney(summary.feesThisMonth)} ₪`} />
+            <div className="gl-rp-figs gl-sub-figs">
+                <Figure dark label="بانتظار القطع" hint={`في ${formatNumber(summary.openLists)} قائمة مفتوحة`}>{formatNumber(summary.scheduled)} <span className="gl-rp-unit">مشترك</span></Figure>
+                <Figure tone={summary.overdue > 0 ? 'owe' : null} label="متأخر، بانتظار إجراء" hint="مرّ موعده ولم يُتخذ إجراء؛ لا يُقطع تلقائيًا">{formatNumber(summary.overdue)}</Figure>
+                <Figure tone="warn" label="خلال 7 أيام" hint={`إنذارات هذا الشهر: ${formatNumber(summary.warningsThisMonth)}`}>{formatNumber(summary.upcoming)}</Figure>
+                <Figure tone="pay" label="قُطع هذا الشهر" hint={`رسوم القطع: ${formatMoney(summary.feesThisMonth)} ₪`}>{formatNumber(summary.disconnectedThisMonth)}</Figure>
             </div>
 
             <DataTableToolbar
@@ -122,7 +139,9 @@ export default function Index({ lists, summary, canCreate, branchOptions, branch
                     <tbody>
                         {lists.data.length === 0 ? (
                             <tr>
-                                <td colSpan={8} className="text-gray-500">لا توجد قوائم بعد.</td>
+                                <td colSpan={8}>
+                                    {search || Object.values(filterValues).some(Boolean) ? <p className="gl-rp-empty">لا توجد قوائم مطابقة للبحث والتصفية.</p> : <DisconnectionEmptyState canCreate={canCreate} onCreate={() => setCreating(true)} />}
+                                </td>
                             </tr>
                         ) : (
                             lists.data.map((list) => (

@@ -1,4 +1,5 @@
 import { Fragment, useState } from 'react';
+import { Button, Checkbox } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import AreaChip from '@/Components/DataTable/AreaChip';
 import MeterBoxCell from '@/Components/DataTable/MeterBoxCell';
@@ -50,7 +51,6 @@ export default function SubscriptionsTable({
     allMatching,
     canSelect,
     filters,
-    headerCheckbox,
     openStatement,
     pageIds,
     pageSelectedCount,
@@ -68,8 +68,7 @@ export default function SubscriptionsTable({
     const [openIds, setOpenIds] = useState(() => new Set());
     const columnCount = canSelect ? 10 : 9;
 
-    function toggleDetails(event, id) {
-        event.stopPropagation();
+    function toggleDetails(id) {
         setOpenIds((current) => {
             const next = new Set(current);
             next.has(id) ? next.delete(id) : next.add(id);
@@ -86,15 +85,14 @@ export default function SubscriptionsTable({
                     </th>
                     {canSelect && (
                         <th data-actions="" className="w-10">
-                            <input
-                                ref={headerCheckbox}
-                                type="checkbox"
-                                checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)}
+                            <Checkbox
+                                isSelected={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)}
+                                isIndeterminate={!allMatching && pageSelectedCount > 0 && pageSelectedCount < pageIds.length}
                                 onChange={togglePage}
                                 aria-label="تحديد كل مشتركي هذه الصفحة"
-                                title="تحديد كل مشتركي هذه الصفحة"
-                                className="rounded border-gray-300 text-brand-600"
-                            />
+                            >
+                                <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
+                            </Checkbox>
                         </th>
                     )}
                     <SortableTh column="account_number" label="رقم الاشتراك" sortState={filters} onSort={sort} />
@@ -142,26 +140,28 @@ export default function SubscriptionsTable({
                                     }
                                 >
                                     <td className="dt-exp">
-                                        <button
-                                            type="button"
+                                        <Button
+                                            isIconOnly
+                                            size="sm"
+                                            variant="ghost"
                                             className="dt-exp-btn"
                                             aria-expanded={open}
                                             aria-controls={`subscription-details-${subscription.id}`}
                                             aria-label={`${open ? 'إخفاء' : 'عرض'} تفاصيل ${subscription.display_name}`}
-                                            onClick={(event) => toggleDetails(event, subscription.id)}
+                                            onPress={() => toggleDetails(subscription.id)}
                                         >
                                             <Icon name="chevron-down" className="h-4 w-4" />
-                                        </button>
+                                        </Button>
                                     </td>
                                     {canSelect && (
                                         <td>
-                                            <input
-                                                type="checkbox"
-                                                checked={allMatching || selectedIds.has(subscription.id)}
+                                            <Checkbox
+                                                isSelected={allMatching || selectedIds.has(subscription.id)}
                                                 onChange={() => toggleSubscription(subscription.id)}
                                                 aria-label={`تحديد ${subscription.display_name}`}
-                                                className="rounded border-gray-300 text-brand-600"
-                                            />
+                                            >
+                                                <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
+                                            </Checkbox>
                                         </td>
                                     )}
                                     <td className="text-gray-600">
@@ -192,7 +192,7 @@ export default function SubscriptionsTable({
                                     </td>
                                     <td className="whitespace-nowrap text-gray-600">{formatShekels(subscription.weeklyMinimumPayment)}</td>
                                     <td className="whitespace-nowrap font-semibold">
-                                        <Balance value={subscription.outstandingBalance} className="font-extrabold" />
+                                        <Balance value={subscription.outstandingBalance} chip className="font-extrabold" />
                                     </td>
                                     <td>
                                         <StatusPill tone={STATUS_TONES[subscription.status]} label={subscription.statusLabel} />

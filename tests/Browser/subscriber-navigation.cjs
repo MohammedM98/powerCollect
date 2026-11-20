@@ -36,11 +36,13 @@ const expect = browserExpect.configure({ timeout: 15_000 });
             }
 
             if (path === '/subscriptions') {
+                // HeroUI's checkbox: its input is visually hidden, so the press lands on its visible box.
                 const checkbox = row.getByRole('checkbox');
-                await checkbox.check();
+                await row.locator('.checkbox').click();
                 await expect(checkbox).toBeChecked();
                 await expect(page.getByRole('dialog')).toHaveCount(0);
-                await checkbox.uncheck();
+                await row.locator('.checkbox').click();
+                await expect(checkbox).not.toBeChecked();
                 await row.getByRole('button', { name: 'عرض', exact: true }).click();
                 await expect(profile).toBeVisible();
                 await expect(profile.getByRole('heading', { name: /^البيانات الشخصية/ })).toBeVisible();

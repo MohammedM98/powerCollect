@@ -18,6 +18,7 @@ use App\Models\User;
 use App\Notifications\ActionCompleted;
 use App\Support\Queries\DataTableFilters;
 use App\Support\Readings\ReadingWeeks;
+use App\Support\Reports\DailySeries;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -58,6 +59,33 @@ class MessagePage
         $batch->messages()
             ->where('status', MessageStatus::Pending)
             ->each(fn (SubscriptionMessage $message) => SendSubscriptionMessage::dispatch($message));
+    }
+
+    /**
+     * This month's sends, for the figures above the list: how many sends and
+     * messages, and how many of those messages went out, wait or failed.
+     *
+     * @return array{batches: int, messages: int, sent: int, pending: int, failed: int}
+     */
+    public static function monthSummary(User $actor): array
+    {
+        $since = DailySeries::today()->startOfMonth()->setTimezone(config('app.timezone'));
+        $batches = MessageBatch::query()->visibleTo($actor)->where('created_at', '>=', $since);
+        $counts = SubscriptionMessage::query()
+            ->whereIn('message_batch_id', (clone $batches)->select('id'))
+            ->selectRaw('COUNT(*) as messages')
+            ->selectRaw('SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as sent', [MessageStatus::Sent->value])
+            ->selectRaw('SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as pending', [MessageStatus::Pending->value])
+            ->selectRaw('SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as failed', [MessageStatus::Failed->value])
+            ->first();
+
+        return [
+            'batches' => $batches->count(),
+            'messages' => (int) $counts->messages,
+            'sent' => (int) $counts->sent,
+            'pending' => (int) $counts->pending,
+            'failed' => (int) $counts->failed,
+        ];
     }
 
     /**
