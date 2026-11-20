@@ -89,7 +89,8 @@ class ApiClient {
       _request('POST', '/api/mobile/diagnostics', body: {'log': log});
   Future<Map<String, dynamic>> readingAssignments() =>
       _request('GET', '/api/mobile/reading-assignments');
-  Future<Map<String, dynamic>> rosterPage(int page) async =>
+  /// Every subscriber on the reader's assigned boxes, in one answer.
+  Future<Map<String, dynamic>> assignedRoster() async =>
       assignedReadingRoster(await readingAssignments());
   Future<Map<String, dynamic>> sendReading(Map<String, dynamic> reading) async {
     if (reading['assignment_id'] == null) {

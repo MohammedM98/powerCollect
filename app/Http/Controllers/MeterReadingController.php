@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\MeterReadingStatus;
 use App\Http\Requests\ApproveMeterReadingsRequest;
 use App\Http\Requests\ListMeterReadingsRequest;
 use App\Http\Requests\StoreMeterReadingRequest;
@@ -17,9 +16,9 @@ use App\Support\Readings\AdjustLastReading;
 use App\Support\Readings\ApproveCorrectedReading;
 use App\Support\Readings\ApproveReading;
 use App\Support\Readings\MeterReadingPage;
-use App\Support\Readings\ReadingCharges;
 use App\Support\Readings\ReadingConsumption;
 use App\Support\Readings\ReadingWeeks;
+use App\Support\Readings\RecordReading;
 use App\Support\Readings\RepriceReading;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -53,38 +52,11 @@ class MeterReadingController extends Controller
     public function store(StoreMeterReadingRequest $request): RedirectResponse
     {
         $subscription = Subscription::with(['tariff', 'circuitBreaker', 'standingDiscount'])->findOrFail($request->integer('subscription_id'));
-        $weekStart = $request->weekStart();
-        $previousReading = $subscription->previousReadingBefore($weekStart);
-        $currentReading = $request->float('current_reading');
-        $consumption = ReadingConsumption::consumptionBetween($previousReading, $currentReading);
-        $usualConsumption = ReadingConsumption::usualConsumptionIfUnusual($subscription, $consumption, $weekStart);
-        $unitPrice = $subscription->kilowattPrice();
-        $minimumPayment = $subscription->weeklyMinimumPayment();
-        $discount = $subscription->standingDiscount;
-
-        MeterReading::create([
-            'subscription_id' => $subscription->id,
-            'branch_id' => $subscription->branch_id,
-            'week_start' => $weekStart,
-            'week_end' => ReadingWeeks::weekEndFor($weekStart, $subscription->branch_id),
-            'previous_reading' => $previousReading,
-            'current_reading' => $currentReading,
-            'consumption' => $consumption,
-            'usual_consumption' => $usualConsumption,
-            'unit_price' => $unitPrice,
-            'minimum_payment' => $minimumPayment,
-            'discount_method' => $discount?->method,
-            'discount_value' => $discount?->value,
-            'discount_segment' => $discount?->segment,
-            ...ReadingCharges::chargesFor($consumption, $unitPrice, $minimumPayment, $discount?->method, $discount?->value),
-            'status' => MeterReadingStatus::Pending,
-            'recorded_by' => $request->user()->id,
-            'notes' => $request->input('notes'),
-        ]);
+        $reading = RecordReading::handle($subscription, $request->weekStart(), $request->float('current_reading'), $request->user(), $request->input('notes'));
 
         $request->user()->notify(new ActionCompleted('meter-reading-created', $subscription->displayName()));
 
-        return back()->with('status', $usualConsumption === null ? 'meter-reading-created' : 'meter-reading-created-unusual');
+        return back()->with('status', $reading->usual_consumption === null ? 'meter-reading-created' : 'meter-reading-created-unusual');
     }
 
     /**
