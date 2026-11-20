@@ -358,7 +358,7 @@ function BalanceCard({ subscription, summary, entries }) {
                     <div><dt>الكيلو</dt><dd><bdi dir="ltr">{formatMoney(subscription.kiloPrice)}</bdi> ₪</dd></div>
                 )}
             </dl>
-            <BrandLogo alt="" onDark markSize={36} className="gl-st-acard-mark" />
+            <BrandLogo alt="" onDark className="gl-st-acard-mark" />
         </Card>
     );
 }
