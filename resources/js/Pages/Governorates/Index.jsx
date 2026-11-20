@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
@@ -216,12 +217,11 @@ export default function Index({
 
 function CrumbButton({ onClick, children }) {
     return (
-        <button
-            type="button"
+        <Button
             onClick={onClick}
             className="rounded-lg px-1.5 py-1 font-bold text-gray-700 transition hover:bg-brand-500/10 hover:text-brand-600"
         >
             {children}
-        </button>
+        </Button>
     );
 }

@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { router } from '@inertiajs/react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
@@ -65,8 +66,7 @@ export default function PhoneQuickEdit({ subscription }) {
 
     if (!editing) {
         return (
-            <button
-                type="button"
+            <Button
                 onClick={start}
                 aria-label={subscription.contact_phone ? `${subscription.contact_phone} تعديل رقم جوال ${subscription.display_name}` : `إضافة رقم جوال ${subscription.display_name}`}
                 title="تعديل رقم الجوال"
@@ -80,7 +80,7 @@ export default function PhoneQuickEdit({ subscription }) {
                     </span>
                 )}
                 <Icon name="pencil" className="h-3.5 w-3.5 text-gray-400 group-hover:text-gray-700" />
-            </button>
+            </Button>
         );
     }
 
@@ -90,7 +90,7 @@ export default function PhoneQuickEdit({ subscription }) {
                 <label htmlFor={id} className="sr-only">
                     رقم جوال {subscription.display_name}
                 </label>
-                <input
+                <Input
                     ref={inputRef}
                     id={id}
                     type="tel"
@@ -113,25 +113,23 @@ export default function PhoneQuickEdit({ subscription }) {
                     placeholder="05XXXXXXXX"
                     className="block w-32 rounded-lg! px-2! py-1! text-sm"
                 />
-                <button
-                    type="button"
+                <Button
                     onClick={requestSave}
-                    disabled={saving}
+                    isDisabled={saving}
                     aria-label="حفظ الرقم"
                     title="حفظ (Enter)"
                     className={`flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 ${FOCUS_RING}`}
                 >
                     <Icon name="check" className="h-4 w-4" strokeWidth={2.5} />
-                </button>
-                <button
-                    type="button"
+                </Button>
+                <Button
                     onClick={() => setEditing(false)}
                     aria-label="إلغاء"
                     title="إلغاء (Esc)"
                     className={`flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:text-gray-900 ${FOCUS_RING}`}
                 >
                     <Icon name="close" className="h-4 w-4" />
-                </button>
+                </Button>
             </span>
             {error && (
                 <span id={`${id}-error`} role="alert" className="mt-1 block text-xs text-brand-600">

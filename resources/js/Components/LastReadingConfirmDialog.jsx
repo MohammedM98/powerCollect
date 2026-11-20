@@ -1,3 +1,4 @@
+import { TextArea } from '@heroui/react';
 import { useEffect, useId, useState } from 'react';
 import DialogFrame from '@/Components/DialogFrame';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -52,7 +53,7 @@ export default function LastReadingConfirmDialog({ editor, subscriptionName }) {
                 </fieldset>
                 {meterChange && <div>
                     <label htmlFor={`${id}-reason`} className="mb-2 block text-base font-semibold text-gray-900">سبب تغيير العداد <span className="text-red-600">*</span></label>
-                    <textarea id={`${id}-reason`} value={editor.reason} onChange={(event) => editor.setReason(event.target.value)} maxLength={1000} required rows={3} className="block w-full rounded-control border-gray-200 text-base leading-8" placeholder="سرقة، تلف، أو استبدال العداد…" />
+                    <TextArea id={`${id}-reason`} value={editor.reason} onChange={(event) => editor.setReason(event.target.value)} maxLength={1000} required rows={3} className="block w-full rounded-control border-gray-200 text-base leading-8" placeholder="سرقة، تلف، أو استبدال العداد…" />
                 </div>}
             </>}
             {phase === 'reading' && <>

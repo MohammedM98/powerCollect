@@ -4,7 +4,7 @@ import { Link } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
 import { initials } from '@/lib/format';
-import { Chip } from '@heroui/react';
+import { Button, Chip } from '@heroui/react';
 import AccountStatement from './AccountStatement';
 import { StandingDiscountBadge } from './AccountSummary';
 import StopStandingDiscountButton from './StopStandingDiscountButton';
@@ -101,9 +101,9 @@ export default function StatementModal({ subscription, statement, initialForm = 
                             </div>
                             <div className="flex shrink-0 items-center gap-2">
                                 {onEdit && statement?.canUpdate && (
-                                    <button type="button" onClick={() => onEdit(header)} aria-label="تعديل البيانات" title="تعديل البيانات" className="gl-ib">
+                                    <Button onClick={() => onEdit(header)} aria-label="تعديل البيانات" title="تعديل البيانات" className="gl-ib">
                                         <Icon name="pencil" className="h-[18px] w-[18px]" />
-                                    </button>
+                                    </Button>
                                 )}
                                 <Link
                                     href={`/subscriptions/${header.id}/statement${focusLineId ? `?transaction=${focusLineId}` : ''}`}
@@ -113,9 +113,9 @@ export default function StatementModal({ subscription, statement, initialForm = 
                                 >
                                     <Icon name="external" className="h-[18px] w-[18px]" />
                                 </Link>
-                                <button type="button" onClick={onClose} aria-label="إخفاء الكشف" title="إخفاء (Esc)" className="gl-ib">
+                                <Button onClick={onClose} aria-label="إخفاء الكشف" title="إخفاء (Esc)" className="gl-ib">
                                     <Icon name="close" className="h-[18px] w-[18px]" />
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     </header>

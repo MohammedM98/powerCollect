@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { Link, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import { shouldPrefetchPage, HOME_LINK, isActiveLink, lockedLinkProps, sectionLinks } from '@/lib/navigation';
@@ -23,10 +24,10 @@ export default function NavigationMenu({ groups, badges, expanded, onExpandedCha
     const searchLabel = props.can?.recordPayments && props.can?.viewSubscriptions ? 'ابحث عن صفحة أو مشترك…' : 'ابحث عن صفحة أو أمر…';
 
     return <>
-        <button type="button" onClick={onOpenPalette} className="tn-nav-search mb-3 flex h-12 w-full items-center gap-2.5 rounded-2xl border border-gray-200 bg-gray-50 px-3.5 text-[15px] text-gray-500" aria-label={compact ? searchLabel : undefined} title={compact ? searchLabel : undefined}>
+        <Button onClick={onOpenPalette} className="tn-nav-search mb-3 flex h-12 w-full items-center gap-2.5 rounded-2xl border border-gray-200 bg-gray-50 px-3.5 text-[15px] text-gray-500" aria-label={compact ? searchLabel : undefined} title={compact ? searchLabel : undefined}>
             <Icon name="search" className="h-5 w-5 shrink-0" />
             <span className="tn-nav-label">{searchLabel}</span>
-        </button>
+        </Button>
         <div className="grid gap-1">
             <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-drawer-group" data-current={onHome || undefined} aria-current={onHome ? 'page' : undefined} title={compact ? HOME_LINK.label : undefined}>
                 <Icon name={HOME_LINK.icon} className="tn-section-icon" />
@@ -38,8 +39,7 @@ export default function NavigationMenu({ groups, badges, expanded, onExpandedCha
 
                 return (
                     <div key={group.id}>
-                        <button
-                            type="button"
+                        <Button
                             className="tn-drawer-group"
                             aria-expanded={isOpen}
                             aria-label={compact ? group.label : undefined}
@@ -50,7 +50,7 @@ export default function NavigationMenu({ groups, badges, expanded, onExpandedCha
                             <span className="tn-nav-label">{group.label}</span>
                             {badge > 0 && <span className="tn-nav-badge rounded-full bg-brand-500 px-1.5 text-[11px] font-bold leading-[18px] text-white">{badge}</span>}
                             <Icon name="chevron-down" className="tn-chevron" />
-                        </button>
+                        </Button>
                         {!compact && <div className={`tn-drawer-pages ${isOpen ? 'is-open' : ''}`} inert={!isOpen}>
                             <div>
                                 <div className="grid gap-0.5 py-1 ps-3">
@@ -86,7 +86,7 @@ export function NavigationAccount({ compact = false }) {
                 </span>}
             </Link>
             <LogoutForm>
-                <button type="submit" className="tn-tool" aria-label="تسجيل الخروج"><Icon name="logout" /></button>
+                <Button type="submit" className="tn-tool" aria-label="تسجيل الخروج"><Icon name="logout" /></Button>
             </LogoutForm>
         </div>
         {!compact && <ThemeSegments />}

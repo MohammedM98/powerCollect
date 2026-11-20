@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { Chip } from '@heroui/react';
+import { Button, Chip } from '@heroui/react';
 import BankReceivedDate from '@/Components/BankReceivedDate';
 import Balance from '@/Components/Balance';
 import Icon from '@/Components/Icon';
@@ -109,9 +109,9 @@ function LedgerLine({ entry, chain, hoveredChain, onHoverChain, isCompact, isHis
                 {entry.reverses && <ReversalNote entry={entry} reverses={entry.reverses} onJump={onJump} />}
                 {entry.auditOriginal && (
                     <p className="ledger-description mt-1.5 text-xs text-gray-600">
-                        <button type="button" onClick={() => onJump(entry.auditOriginal.id)} className="font-semibold hover:underline">
+                        <Button onClick={() => onJump(entry.auditOriginal.id)} className="font-semibold hover:underline">
                             تصحيح حوالة للدفعة #{entry.auditOriginal.lineNumber} ↑
-                        </button>
+                        </Button>
                     </p>
                 )}
                 {entry.linkedReversal && <LinkedReversalNote reversal={entry.linkedReversal} onJump={onJump} />}

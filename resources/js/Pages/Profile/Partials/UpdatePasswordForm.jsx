@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useForm } from '@inertiajs/react';
 import PasswordInput from '@/Components/PasswordInput';
 import InputError from '@/Components/InputError';
@@ -47,7 +48,7 @@ export default function UpdatePasswordForm() {
                 </div>
                 <div className="pp-actions">
                     <span className="pp-note" role="status">{recentlySuccessful ? 'تم تغيير كلمة المرور' : 'بعد التغيير يبقى هذا الجهاز مسجّل الدخول.'}</span>
-                    <button type="submit" className="pp-button primary" disabled={processing}><Icon name="key" />{processing ? 'جارٍ الحفظ…' : 'تغيير كلمة المرور'}</button>
+                    <Button type="submit" className="pp-button primary" isDisabled={processing}><Icon name="key" />{processing ? 'جارٍ الحفظ…' : 'تغيير كلمة المرور'}</Button>
                 </div>
             </form>
         </section>

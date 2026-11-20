@@ -1,3 +1,4 @@
+import { Input, TextArea } from '@heroui/react';
 import ChoiceChips from '@/Components/ChoiceChips';
 import Switch from '@/Components/Switch';
 import { Section, Field, Group, NumberField, HeaderTypography } from './PrintSettingsFields';
@@ -19,7 +20,7 @@ export default function PrintHeaderSection({ layout, setIn }) {
             </Group>
             <Field label="اسم الشركة">
                 {(id) => (
-                    <input
+                    <Input
                         id={id}
                         type="text"
                         value={layout.header.company}
@@ -30,7 +31,7 @@ export default function PrintHeaderSection({ layout, setIn }) {
             </Field>
             <Field label="تفاصيل الشركة بالعربية">
                 {(id) => (
-                    <textarea
+                    <TextArea
                         id={id}
                         rows={2}
                         value={layout.header.companyDetails}
@@ -42,7 +43,7 @@ export default function PrintHeaderSection({ layout, setIn }) {
             </Field>
             <Field label="اسم الشركة والتفاصيل بالإنجليزية">
                 {(id) => (
-                    <textarea
+                    <TextArea
                         id={id}
                         dir="ltr"
                         rows={3}
@@ -55,7 +56,7 @@ export default function PrintHeaderSection({ layout, setIn }) {
             </Field>
             <Field label="عنوان الطباعة">
                 {(id) => (
-                    <input
+                    <Input
                         id={id}
                         type="text"
                         value={layout.header.title}
@@ -66,7 +67,7 @@ export default function PrintHeaderSection({ layout, setIn }) {
             </Field>
             <Field label="سطر إضافي تحت العنوان">
                 {(id) => (
-                    <textarea
+                    <TextArea
                         id={id}
                         rows={2}
                         value={layout.header.subtitle}

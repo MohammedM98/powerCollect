@@ -204,9 +204,9 @@ export default function AccountStatement({ subscription, entries, summary, payme
     ) : isCompact && !compact.entries.length ? (
         <>
             كل حركات هذا الحساب ملغاة مع قيودها العكسية (مجموعها صفر) فلا شيء يُعرض في العرض المختصر.{' '}
-            <button type="button" onClick={() => chooseView('full')} className="font-medium text-brand-600 hover:underline">
+            <Button onClick={() => chooseView('full')} className="font-medium text-brand-600 hover:underline">
                 عرض كل الحركات
-            </button>
+            </Button>
         </>
     ) : (
         'لا توجد حركات تطابق البحث والتصفية.'
@@ -259,10 +259,10 @@ export default function AccountStatement({ subscription, entries, summary, payme
                         <FilterField group={{ label: 'الترتيب', options: STATEMENT_SORT_OPTIONS }} value={filters.sort ?? ''} onChange={(value) => setFilter('sort', value ?? '')} placeholder={STATEMENT_SORT_OPTIONS[0].label} clearable={false} icon="sort" />
                     </span>
                     {isFiltered && (
-                        <button type="button" onClick={() => setFilters(EMPTY_FILTERS)} className="gl-filter-clear">
+                        <Button onClick={() => setFilters(EMPTY_FILTERS)} className="gl-filter-clear">
                             <Icon name="close" className="h-3.5 w-3.5" />
                             مسح عوامل التصفية
-                        </button>
+                        </Button>
                     )}
                     <span className="gl-st-tb-grow" aria-hidden="true" />
                     <StatementViewTabs value={view} onChange={chooseView} />

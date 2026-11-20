@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import Icon from '@/Components/Icon';
 import SearchableSelect from '@/Components/SearchableSelect';
@@ -151,10 +152,10 @@ export default function ReadingContextBar({ anchorRef, sectionRef, week, weekEnd
                     )}
                 </div>
                 <span className="re-context-count"><b>{Number(total ?? 0).toLocaleString('en')}</b> مشترك</span>
-                <button type="button" className="re-context-edit" onClick={showFilters}>
+                <Button className="re-context-edit" onClick={showFilters}>
                     <Icon name="filter" className="h-4 w-4" />
                     تغيير الفلاتر
-                </button>
+                </Button>
             </div>
         </div>
     );

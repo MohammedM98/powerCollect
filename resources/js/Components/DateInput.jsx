@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Icon from '@/Components/Icon';
@@ -168,11 +169,10 @@ export default function DateInput({
 
     return (
         <div className={`relative ${className}`}>
-            <button
+            <Button
                 ref={buttonRef}
-                type="button"
                 id={id}
-                disabled={disabled}
+                isDisabled={disabled}
                 aria-haspopup="dialog"
                 aria-expanded={open}
                 aria-label={ariaLabel ? `${ariaLabel}${hasValue ? `: ${formatWeekDay(value)}` : ''}` : undefined}
@@ -201,10 +201,10 @@ export default function DateInput({
                         <Icon name="calendar" className={`h-[18px] w-[18px] shrink-0 ${onDark ? 'text-white/60' : 'text-gray-400'}`} />
                     </>
                 )}
-            </button>
+            </Button>
 
             {name && (
-                <input
+                <Input
                     type="text"
                     name={name}
                     required={required}
@@ -230,17 +230,15 @@ export default function DateInput({
                         className="animate-menu fixed z-70 w-78 rounded-2xl p-3 text-gray-900 gl-pop"
                     >
                         <div className="mb-2 flex items-center justify-between gap-2">
-                            <button
-                                type="button"
+                            <Button
                                 className={headerButton}
                                 aria-label={view === 'days' ? 'الشهر السابق' : 'السنة السابقة'}
-                                disabled={view === 'days' ? !canGoBack : Boolean(min) && year - 1 < Number(min.slice(0, 4))}
+                                isDisabled={view === 'days' ? !canGoBack : Boolean(min) && year - 1 < Number(min.slice(0, 4))}
                                 onClick={() => setFocusedDay(clampDay(addMonths(focusedDay, view === 'days' ? -1 : -12), min, max))}
                             >
                                 <Icon name="chevron-right" className="h-5 w-5" />
-                            </button>
-                            <button
-                                type="button"
+                            </Button>
+                            <Button
                                 aria-label={view === 'days' ? 'اختيار الشهر والسنة' : 'العودة إلى الأيام'}
                                 onClick={() => setView(view === 'days' ? 'months' : 'days')}
                                 className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[15px] font-bold transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"
@@ -248,16 +246,15 @@ export default function DateInput({
                                 {view === 'days' && formatMonthName(shownMonth)}
                                 <span className="font-display">{year}</span>
                                 <Icon name="chevron-down" className={`h-4 w-4 text-gray-400 transition ${view === 'months' ? 'rotate-180' : ''}`} />
-                            </button>
-                            <button
-                                type="button"
+                            </Button>
+                            <Button
                                 className={headerButton}
                                 aria-label={view === 'days' ? 'الشهر التالي' : 'السنة التالية'}
-                                disabled={view === 'days' ? !canGoForward : Boolean(max) && year + 1 > Number(max.slice(0, 4))}
+                                isDisabled={view === 'days' ? !canGoForward : Boolean(max) && year + 1 > Number(max.slice(0, 4))}
                                 onClick={() => setFocusedDay(clampDay(addMonths(focusedDay, view === 'days' ? 1 : 12), min, max))}
                             >
                                 <Icon name="chevron-left" className="h-5 w-5" />
-                            </button>
+                            </Button>
                         </div>
 
                         {view === 'days' ? (
@@ -277,16 +274,15 @@ export default function DateInput({
                                             const inMonth = sameMonth(day, shownMonth);
 
                                             return (
-                                                <button
+                                                <Button
                                                     key={day}
-                                                    type="button"
                                                     role="gridcell"
                                                     data-day={day}
                                                     tabIndex={day === focusedDay ? 0 : -1}
                                                     aria-selected={selected}
                                                     aria-current={day === today ? 'date' : undefined}
                                                     aria-label={formatWeekDay(day)}
-                                                    disabled={blocked}
+                                                    isDisabled={blocked}
                                                     onClick={() => pick(day)}
                                                     onKeyDown={(event) => {
                                                         if (event.key === 'Enter' || event.key === ' ') {
@@ -302,7 +298,7 @@ export default function DateInput({
                                                 >
                                                     {Number(day.slice(8))}
                                                     {day === today && !selected && <span aria-hidden="true" className="absolute bottom-1.5 h-1 w-1 rounded-full bg-brand-500" />}
-                                                </button>
+                                                </Button>
                                             );
                                         })}
                                     </div>
@@ -316,10 +312,9 @@ export default function DateInput({
                                     const current = shownMonth.slice(0, 7) === month;
 
                                     return (
-                                        <button
+                                        <Button
                                             key={month}
-                                            type="button"
-                                            disabled={blocked}
+                                            isDisabled={blocked}
                                             onClick={() => {
                                                 // The same day in the month picked (held to its last day).
                                                 setFocusedDay(clampDay(addMonths(shownMonth, index + 1 - Number(shownMonth.slice(5, 7))), min, max));
@@ -330,24 +325,22 @@ export default function DateInput({
                                             }`}
                                         >
                                             {formatMonthName(`${month}-01`)}
-                                        </button>
+                                        </Button>
                                     );
                                 })}
                             </div>
                         )}
 
                         <div className="mt-2 flex items-center justify-between gap-2 border-t border-gray-100 pt-2">
-                            <button
-                                type="button"
-                                disabled={isOutOfRange(today, min, max)}
+                            <Button
+                                isDisabled={isOutOfRange(today, min, max)}
                                 onClick={() => pick(today)}
                                 className="rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 disabled:opacity-30"
                             >
                                 اليوم
-                            </button>
+                            </Button>
                             {!required && hasValue && (
-                                <button
-                                    type="button"
+                                <Button
                                     onClick={() => {
                                         onChange('');
                                         close();
@@ -355,7 +348,7 @@ export default function DateInput({
                                     className="rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"
                                 >
                                     مسح
-                                </button>
+                                </Button>
                             )}
                         </div>
                     </div>,

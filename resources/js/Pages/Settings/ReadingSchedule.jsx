@@ -30,7 +30,7 @@ function PanelTitle({ icon, info = null, children }) {
 function DayChip({ day, selected, type, name, disabled = false, subtitle, onChange }) {
     return (
         <label className={`rs-day ${selected ? 'is-selected' : ''}`}>
-            <input type={type} name={name} checked={selected} disabled={disabled} onChange={onChange} aria-label={day.label} />
+            <Input type={type} name={name} checked={selected} disabled={disabled} onChange={onChange} aria-label={day.label} />
             <span className="rs-check"><Icon name="check" strokeWidth={3} /></span>
             <b>{day.label}</b>
             <small>{subtitle || '\u00a0'}</small>

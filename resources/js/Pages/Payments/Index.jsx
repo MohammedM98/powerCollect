@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -108,10 +109,10 @@ export default function Index({
                     actions={
                         canSplitPayments && (
                             // A split payment in its own colour, as every split is across the site (the redesign's money tones).
-                            <button type="button" className="gl-act is-solid" data-tone="split" onClick={() => setSplitting({})}>
+                            <Button className="gl-act is-solid" data-tone="split" onClick={() => setSplitting({})}>
                                 <Icon name="layers" className="h-4 w-4" />
                                 دفعة مقسّمة على عدة مشتركين
-                            </button>
+                            </Button>
                         )
                     }
                 />

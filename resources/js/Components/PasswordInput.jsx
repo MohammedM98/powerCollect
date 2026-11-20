@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import TextInput from '@/Components/TextInput';
 
@@ -14,8 +15,7 @@ export default function PasswordInput({ className = '', toggleTabIndex = -1, dir
     return (
         <div className="relative" dir={direction}>
             <TextInput {...props} dir={direction} type={visible ? 'text' : 'password'} className={`pe-10 ${className}`} />
-            <button
-                type="button"
+            <Button
                 tabIndex={toggleTabIndex}
                 onClick={() => setVisible((v) => !v)}
                 className="absolute inset-y-0 inset-e-0 flex items-center px-3.5 text-gray-400 transition hover:text-gray-900"
@@ -41,7 +41,7 @@ export default function PasswordInput({ className = '', toggleTabIndex = -1, dir
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                 )}
-            </button>
+            </Button>
         </div>
     );
 }

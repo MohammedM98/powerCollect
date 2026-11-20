@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import Pagination from '@/Components/DataTable/Pagination';
 import Icon from '@/Components/Icon';
 import Panel from '@/Components/Panel';
@@ -20,11 +21,11 @@ export function LatestPayments({ payments, latestPayments, period, search, onSea
                     }}
                 >
                     <Icon name="search" className="h-4 w-4 shrink-0" />
-                    <input type="search" value={search} onChange={(event) => onSearchChange(event.target.value)} placeholder="اسم المشترك أو رقم الحساب" aria-label="ابحث في الدفعات" />
+                    <Input type="search" value={search} onChange={(event) => onSearchChange(event.target.value)} placeholder="اسم المشترك أو رقم الحساب" aria-label="ابحث في الدفعات" />
                 </form>
                 <div className="gl-seg" role="group" aria-label="طريقة الدفع">
                     {[['', 'الكل'], ['cash', 'نقدي'], ['transfer', 'حوالات']].map(([value, label]) => (
-                        <button key={value} type="button" aria-pressed={(filters.method ?? '') === value} onClick={() => onVisit({ method: value || null }, ['latestPayments', 'filters'])}>{label}</button>
+                        <Button key={value} aria-pressed={(filters.method ?? '') === value} onClick={() => onVisit({ method: value || null }, ['latestPayments', 'filters'])}>{label}</Button>
                     ))}
                 </div>
             </div>
@@ -51,7 +52,7 @@ export function LatestPayments({ payments, latestPayments, period, search, onSea
                             <tr key={payment.id} data-clickable={can?.viewSubscriptions || undefined} onClick={can?.viewSubscriptions ? () => onOpenStatement(payment) : undefined}>
                                 <td>
                                     {can?.viewSubscriptions ? (
-                                        <button type="button" onClick={(event) => { event.stopPropagation(); onOpenStatement(payment); }} aria-haspopup="dialog" title="كشف الحساب" className="font-semibold">{payment.subscriber}</button>
+                                        <Button onClick={(event) => { event.stopPropagation(); onOpenStatement(payment); }} aria-haspopup="dialog" title="كشف الحساب" className="font-semibold">{payment.subscriber}</Button>
                                     ) : <b className="font-semibold">{payment.subscriber}</b>}
                                 </td>
                                 <td className="gl-mono" dir="ltr">{payment.accountNumber}</td>

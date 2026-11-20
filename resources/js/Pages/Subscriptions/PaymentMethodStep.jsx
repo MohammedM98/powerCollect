@@ -1,3 +1,4 @@
+import { Input } from '@heroui/react';
 import InputError from '@/Components/InputError';
 import { FieldLabel, FormStep } from './AccountFormParts';
 import { inputClass, MethodTile, TransferFields } from './PaymentModalParts';
@@ -72,7 +73,7 @@ export default function PaymentMethodStep({
                             <FieldLabel htmlFor="manual_voucher_number" hint="رقم الوصل الورقي">
                                 رقم السند اليدوي
                             </FieldLabel>
-                            <input
+                            <Input
                                 id="manual_voucher_number"
                                 name="manual_voucher_number"
                                 dir="ltr"

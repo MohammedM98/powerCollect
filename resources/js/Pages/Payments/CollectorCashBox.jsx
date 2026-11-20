@@ -1,3 +1,4 @@
+import { Button, TextArea } from '@heroui/react';
 import { Link, router, useForm } from '@inertiajs/react';
 import { excelUrl } from '@/lib/tableExcel';
 import Pagination from '@/Components/DataTable/Pagination';
@@ -150,7 +151,7 @@ export function CashBoxAction({ box, onClose, onSuccess }) {
                         <h3 className="text-xl font-bold text-gray-900">تأكيد تسليم صندوقي</h3>
                         <p dir="ltr" className="mt-1 text-start font-display text-xs text-gray-500">{box.number}</p>
                     </div>
-                    <button type="button" onClick={close} disabled={form.processing} aria-label="إغلاق" className="rounded-control p-2 text-gray-500 hover:bg-gray-100"><Icon name="close" className="h-5 w-5" /></button>
+                    <Button onClick={close} isDisabled={form.processing} aria-label="إغلاق" className="rounded-control p-2 text-gray-500 hover:bg-gray-100"><Icon name="close" className="h-5 w-5" /></Button>
                 </div>
                 <div>
                     <p className="text-sm leading-7 text-gray-600">عدّ الفرع الصندوق واستلمه بتاريخ {dateTime(box.receivedAt)}. راجع العدّ أدناه، ثم أكّد أنك سلّمت الصندوق.</p>
@@ -171,8 +172,8 @@ export function CashBoxAction({ box, onClose, onSuccess }) {
 export function BoxReportActions({ box, onView }) {
     return (
         <RowActionsMenu onView={onView}>
-            <button onClick={() => window.open(printUrl('تقرير تفاصيل الصندوق', `/payments/cash-boxes/report?box=${box.id}`), '_blank', 'noopener')}>طباعة وتخصيص</button>
-            <button onClick={() => window.open(excelUrl('تقرير تفاصيل الصندوق', `/payments/cash-boxes/report?box=${box.id}`), '_blank', 'noopener')}>Excel</button>
+            <Button type="submit" onClick={() => window.open(printUrl('تقرير تفاصيل الصندوق', `/payments/cash-boxes/report?box=${box.id}`), '_blank', 'noopener')}>طباعة وتخصيص</Button>
+            <Button type="submit" onClick={() => window.open(excelUrl('تقرير تفاصيل الصندوق', `/payments/cash-boxes/report?box=${box.id}`), '_blank', 'noopener')}>Excel</Button>
         </RowActionsMenu>
     );
 }
@@ -209,10 +210,10 @@ export function BoxCard({ box, type, selected = false, onSelect }) {
             {box && (
                 <div className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-4">
                     {onSelect ? (
-                        <button type="button" onClick={onSelect} aria-pressed={selected} className={`inline-flex items-center gap-2 rounded-control px-3 py-2 text-sm font-semibold transition ${selected ? 'bg-gray-900 text-surface' : 'border border-gray-200 text-gray-700 hover:bg-gray-50'}`}>
+                        <Button onClick={onSelect} aria-pressed={selected} className={`inline-flex items-center gap-2 rounded-control px-3 py-2 text-sm font-semibold transition ${selected ? 'bg-gray-900 text-surface' : 'border border-gray-200 text-gray-700 hover:bg-gray-50'}`}>
                             <Icon name="list" className="h-4 w-4" />
                             {selected ? 'حركاته معروضة أدناه' : 'عرض الحركات'}
-                        </button>
+                        </Button>
                     ) : <span />}
                     <BoxReportActions box={box} onView={() => router.visit(box.urls.show)} />
                 </div>
@@ -264,8 +265,8 @@ export function BoxEntriesTable({ boxNumber, entries, pagination }) {
                                     <td className="whitespace-normal!"><StatusPill tone={tone} label={label} />{entry.isLate && <div className="mt-1"><StatusPill tone="amber" label="متأخرة" /></div>}</td>
                                     <td className="text-end">{(entry.receiptUrl || entry.statementUrl) && (
                                         <RowActionsMenu>
-                                            {entry.statementUrl && <button onClick={() => router.visit(entry.statementUrl)}>كشف الحساب</button>}
-                                            {entry.receiptUrl && <button onClick={() => window.open(entry.receiptUrl, '_blank', 'noopener')}>طباعة السند</button>}
+                                            {entry.statementUrl && <Button type="submit" onClick={() => router.visit(entry.statementUrl)}>كشف الحساب</Button>}
+                                            {entry.receiptUrl && <Button type="submit" onClick={() => window.open(entry.receiptUrl, '_blank', 'noopener')}>طباعة السند</Button>}
                                         </RowActionsMenu>
                                     )}</td>
                                 </tr>
@@ -316,7 +317,7 @@ export function AuditNoteReply({ note, onSaved }) {
     return (
         <form onSubmit={submit} className="space-y-2">
             <label htmlFor={`audit-note-${note.id}`} className="text-xs font-semibold text-gray-600">ردّك</label>
-            <textarea
+            <TextArea
                 id={`audit-note-${note.id}`}
                 value={form.data.body}
                 onChange={(event) => form.setData('body', event.target.value)}

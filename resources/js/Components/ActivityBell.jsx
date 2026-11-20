@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useHttp, usePage } from '@inertiajs/react';
@@ -78,9 +79,8 @@ export default function ActivityBell({ open, onToggle, onClose }) {
 
     return (
         <>
-            <button
+            <Button
                 ref={anchorRef}
-                type="button"
                 className="tn-tool"
                 data-tour="bell"
                 onClick={onToggle}
@@ -91,20 +91,20 @@ export default function ActivityBell({ open, onToggle, onClose }) {
             >
                 <Icon name="bell" />
                 {unreadCount > 0 && <span className={`tn-tool-count ${ping ? 'is-pinging' : ''}`}><bdi dir="ltr">{unreadCount > 9 ? '9+' : unreadCount}</bdi></span>}
-            </button>
+            </Button>
 
             {open && createPortal(
                 <div ref={popoverRef} dir="rtl" className="tn-popover w-[380px] max-w-[calc(100vw-24px)] text-gray-900" role="dialog" aria-label="الإشعارات">
                     <div className="flex items-center gap-2 px-4 pb-2 pt-4">
                         <b className="text-[16px]">الإشعارات</b>
                         {unreadCount > 0 && <span className="rounded-full bg-brand-500 px-2 text-[12px] font-bold leading-5 text-white">{unreadCount}</span>}
-                        <button type="button" onClick={markAllRead} disabled={unreadCount === 0} className="ms-auto text-[13px] font-semibold text-gray-500 hover:text-gray-900 disabled:opacity-40">
+                        <Button onClick={markAllRead} isDisabled={unreadCount === 0} className="ms-auto text-[13px] font-semibold text-gray-500 hover:text-gray-900 disabled:opacity-40">
                             تحديد الكل كمقروء
-                        </button>
+                        </Button>
                     </div>
                     <div className="tn-segments mx-4 mb-2 grid grid-cols-2 gap-1 rounded-xl bg-gray-100 p-1">
-                        <button type="button" aria-pressed={tab === 'all'} onClick={() => setTab('all')}>الكل</button>
-                        <button type="button" aria-pressed={tab === 'unread'} onClick={() => setTab('unread')}>غير المقروءة{unreadCount > 0 ? ` (${unreadCount})` : ''}</button>
+                        <Button aria-pressed={tab === 'all'} onClick={() => setTab('all')}>الكل</Button>
+                        <Button aria-pressed={tab === 'unread'} onClick={() => setTab('unread')}>غير المقروءة{unreadCount > 0 ? ` (${unreadCount})` : ''}</Button>
                     </div>
                     <div className="grid max-h-[360px] gap-0.5 overflow-y-auto px-2 pb-2">
                         {shown.length > 0 ? shown.map((item) => (

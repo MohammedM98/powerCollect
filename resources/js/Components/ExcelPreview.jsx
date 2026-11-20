@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import { columnLetter, excelLook, formatExcelCell } from '@/lib/excelSheet';
 
@@ -112,16 +113,15 @@ export function Preview({ sheet, sheets, sheetIndex, onSheet, shownCell, onCell,
             )}
             <div className="flex gap-0.5 overflow-x-auto border-t border-gray-200 bg-gray-50 px-2" role="tablist" aria-label="أوراق الملف">
                 {sheets.map((candidate, index) => (
-                    <button
+                    <Button
                         key={candidate.key}
-                        type="button"
                         role="tab"
                         aria-selected={index === sheetIndex}
                         onClick={() => onSheet(index)}
                         className={`whitespace-nowrap border-t-[3px] px-3 py-1.5 text-xs ${index === sheetIndex ? 'border-excel-600 bg-surface font-bold text-excel-700' : 'border-transparent text-gray-500'}`}
                     >
                         {candidate.name}
-                    </button>
+                    </Button>
                 ))}
             </div>
         </div>

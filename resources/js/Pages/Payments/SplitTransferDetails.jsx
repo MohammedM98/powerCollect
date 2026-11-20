@@ -1,3 +1,4 @@
+import { Input } from '@heroui/react';
 import { BankReceivedDateField } from '@/Components/BankReceivedDate';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
@@ -50,7 +51,7 @@ export default function SplitTransferDetails({
                     <FieldLabel htmlFor="split_sender" required>
                         اسم المحوِّل
                     </FieldLabel>
-                    <input
+                    <Input
                         id="split_sender"
                         maxLength={255}
                         placeholder="اسم صاحب الحساب الذي حُوّل منه المبلغ"
@@ -64,7 +65,7 @@ export default function SplitTransferDetails({
                     <FieldLabel htmlFor="split_reference" required hint="من إشعار الحوالة">
                         الرقم المرجعي
                     </FieldLabel>
-                    <input
+                    <Input
                         id="split_reference"
                         dir="ltr"
                         autoComplete="off"

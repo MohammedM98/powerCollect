@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
@@ -32,20 +33,19 @@ export default function BulkActionsMenu({ abilities, onChoose }) {
     return (
         <>
             <div className={`${groupActionSurfaceClass} items-stretch`}>
-                <button
-                    type="button"
+                <Button
                     onClick={(event) => {
                         const opener = event.currentTarget;
                         setAnchor((current) => (current ? null : opener));
                     }}
-                    disabled={actions.length === 0}
+                    isDisabled={actions.length === 0}
                     aria-haspopup="menu"
                     aria-expanded={Boolean(anchor)}
                     className={`${groupActionControlClass} rounded-control`}
                 >
                     <Icon name="layers" className="h-4 w-4" />
                     إجراءات جماعية
-                </button>
+                </Button>
                 {anchor && (
                     <RowMenu
                         anchor={anchor}

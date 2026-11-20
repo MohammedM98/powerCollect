@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import { EmployeeAvatar, RoleChip } from './PermissionPeople';
 import { RiskGauge } from './PermissionInsights';
@@ -90,10 +91,10 @@ export default function PermissionHero({
             </div>
 
             <div className="pm-hero-actions">
-                <button type="button" className="pm-hero-button" onClick={() => setGuideAudience('selected')}>
+                <Button className="pm-hero-button" onClick={() => setGuideAudience('selected')}>
                     <Icon name="document" className="h-4 w-4" />
                     دليل الموظف
-                </button>
+                </Button>
                 <MenuButton icon="users" label="نسخ من موظف" className="pm-hero-button">
                     {(close) =>
                         copySources.length === 0 ? (
@@ -140,24 +141,22 @@ export default function PermissionHero({
                         </span>
                     )}
                     {deviations > 0 && (
-                        <button
-                            type="button"
+                        <Button
                             onClick={() => setSelected([...template.permissionIds])}
-                            disabled={processing}
+                            isDisabled={processing}
                             className="ms-auto font-semibold underline-offset-4 hover:underline"
                         >
                             إعادة إلى القالب
-                        </button>
+                        </Button>
                     )}
                 </p>
             )}
 
             <div className="pm-tabs" role="tablist" aria-label="عرض صلاحيات الموظف">
                 {tabs.map((item) => (
-                    <button
+                    <Button
                         key={item.key}
                         id={`permission-tab-${item.key}`}
-                        type="button"
                         role="tab"
                         aria-selected={activeTab === item.key}
                         aria-controls={`permission-view-${item.key}`}
@@ -169,7 +168,7 @@ export default function PermissionHero({
                         <Icon name={item.icon} className="h-4 w-4" />
                         {item.label}
                         {item.key === 'matrix' && dirty && <span className="pm-unsaved" title="تغييرات لم تُحفظ" />}
-                    </button>
+                    </Button>
                 ))}
             </div>
         </section>

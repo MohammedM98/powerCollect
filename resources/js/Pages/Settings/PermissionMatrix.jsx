@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import Switch from '@/Components/Switch';
 import { ICONS, permissionGuideEntries } from '@/lib/permissionGuide';
@@ -64,18 +65,17 @@ function Mark({ text, query }) {
 /** One cell of the grid: a check that shows the permission's risk and whether it changed since saving. */
 function MatrixCheck({ checked, dirty, risk, label, disabled, onChange, hit }) {
     return (
-        <button
-            type="button"
+        <Button
             role="checkbox"
             aria-checked={checked}
             aria-label={label}
             title={[label, risk ? RISK_LABELS[risk] : '', dirty ? 'لم يُحفظ بعد' : ''].filter(Boolean).join('، ')}
-            disabled={disabled}
+            isDisabled={disabled}
             onClick={() => onChange(!checked)}
             className={`pm-check ${checked ? 'is-on' : ''} ${risk ? `is-${risk}` : ''} ${dirty ? 'is-dirty' : ''} ${hit ? 'is-hit' : ''}`}
         >
             <Icon name="check" className="h-4 w-4" strokeWidth={3} />
-        </button>
+        </Button>
     );
 }
 
@@ -85,19 +85,18 @@ export function TriToggle({ ids, selected, onChange, disabled, label }) {
     const state = ids.length === 0 ? 'none' : held === ids.length ? 'on' : held > 0 ? 'mixed' : 'off';
 
     return (
-        <button
-            type="button"
+        <Button
             role="checkbox"
             aria-checked={state === 'on' ? 'true' : state === 'mixed' ? 'mixed' : 'false'}
             aria-label={label}
             title={state === 'on' ? 'سحب الكل' : 'منح الكل'}
-            disabled={disabled || state === 'none'}
+            isDisabled={disabled || state === 'none'}
             onClick={() => onChange(state !== 'on')}
             className={`pm-tri is-${state}`}
         >
             {state === 'on' && <Icon name="check" className="h-3.5 w-3.5" strokeWidth={3} />}
             {state === 'mixed' && <i aria-hidden="true" className="pm-tri-dash" />}
-        </button>
+        </Button>
     );
 }
 
@@ -128,9 +127,9 @@ function OptionItem({ section, item, selected, saved, onChange, disabled, onExpl
                 )}
             </div>
             {onExplain && (
-                <button type="button" aria-label={`شرح ${item.label}`} onClick={onExplain} className="pm-icon-button">
+                <Button aria-label={`شرح ${item.label}`} onClick={onExplain} className="pm-icon-button">
                     <Icon name="info" className="h-4 w-4" />
-                </button>
+                </Button>
             )}
         </div>
     );
@@ -219,9 +218,9 @@ export function SectionRow({
                             />
                             <span className="pm-cell-label">{cell.label}</span>
                             {explaining && onExplain && (
-                                <button type="button" aria-label={`ماذا تتيح «${cell.label}» في ${section.label}`} onClick={explain(cell.id)} className="pm-cell-why">
+                                <Button aria-label={`ماذا تتيح «${cell.label}» في ${section.label}`} onClick={explain(cell.id)} className="pm-cell-why">
                                     <Icon name="info" className="h-4 w-4" />
-                                </button>
+                                </Button>
                             )}
                         </>
                     ) : (
@@ -231,8 +230,7 @@ export function SectionRow({
             ))}
 
             <div className="pm-cell pm-more-cell">
-                <button
-                    type="button"
+                <Button
                     className={`pm-more ${heldOptions > 0 ? 'has-held' : ''}`}
                     aria-expanded={open}
                     aria-controls={bodyId}
@@ -251,7 +249,7 @@ export function SectionRow({
                         <span>{children ? 'إعداد' : 'شرح'}</span>
                     )}
                     <Icon name="chevron-down" className="pm-chevron h-4 w-4" />
-                </button>
+                </Button>
             </div>
 
             <div className="pm-cell pm-master-cell">
@@ -281,9 +279,9 @@ export function SectionRow({
                                         </p>
                                     </div>
                                     {onExplain && (
-                                        <button type="button" aria-label={`شرح ${cell.label}`} onClick={explain(cell.id)} className="pm-icon-button">
+                                        <Button aria-label={`شرح ${cell.label}`} onClick={explain(cell.id)} className="pm-icon-button">
                                             <Icon name="info" className="h-4 w-4" />
-                                        </button>
+                                        </Button>
                                     )}
                                 </div>
                             ))}

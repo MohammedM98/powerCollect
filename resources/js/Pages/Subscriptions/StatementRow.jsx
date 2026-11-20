@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import BankReceivedDate from '@/Components/BankReceivedDate';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import StatusPill from '@/Components/DataTable/StatusPill';
@@ -110,7 +111,7 @@ export function StatementRow({
                 {entry.discountLine && <ReadingDiscountNote discountLine={entry.discountLine} />}
                 {entry.cancellation && <CancellationNote cancellation={entry.cancellation} onJump={onJump} />}
                 {entry.reverses && <ReversalNote entry={entry} reverses={entry.reverses} onJump={onJump} />}
-                {entry.auditOriginal && <p className="ledger-description mt-1.5 text-xs text-gray-600"><button type="button" onClick={() => onJump(entry.auditOriginal.id)} className="font-semibold hover:underline">تصحيح حوالة للدفعة #{entry.auditOriginal.lineNumber} ↑</button></p>}
+                {entry.auditOriginal && <p className="ledger-description mt-1.5 text-xs text-gray-600"><Button onClick={() => onJump(entry.auditOriginal.id)} className="font-semibold hover:underline">تصحيح حوالة للدفعة #{entry.auditOriginal.lineNumber} ↑</Button></p>}
                 {entry.linkedReversal && <LinkedReversalNote reversal={entry.linkedReversal} onJump={onJump} />}
                 {showsHistory ? (
                     <HistoryToggle entry={entry} isOpen={historyOpen} onToggle={onToggleHistory} />

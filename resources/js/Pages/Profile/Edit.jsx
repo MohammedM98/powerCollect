@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -75,15 +76,15 @@ function Devices({ devices, dateLabel }) {
             <div className="pp-devices">{devices.map((device) => <div className="pp-device" key={`${device.type}-${device.id}`}>
                 <span className="pp-device-icon"><Icon name={device.type === 'mobile' ? 'phone' : 'devices'} /></span>
                 <div><b>{device.label}{device.current && <em>هذا الجهاز</em>}</b><small>{device.current ? 'نشط الآن' : `آخر نشاط ${dateLabel(device.lastActiveAt)}`}</small></div>
-                {!device.current && <button type="button" className="pp-logout" onClick={() => open(device)}>تسجيل خروج</button>}
+                {!device.current && <Button className="pp-logout" onClick={() => open(device)}>تسجيل خروج</Button>}
             </div>)}</div>
-            <div className="pp-actions"><button type="button" className="pp-button" disabled={!others.length} onClick={() => open(null)}><Icon name="logout" />تسجيل الخروج من كل الأجهزة الأخرى</button></div>
+            <div className="pp-actions"><Button className="pp-button" isDisabled={!others.length} onClick={() => open(null)}><Icon name="logout" />تسجيل الخروج من كل الأجهزة الأخرى</Button></div>
             <Modal show={target !== null} onClose={close} maxWidth="md">
                 <form onSubmit={logout} className="profile-page pp-dialog" dir="rtl" role="dialog" aria-modal="true" aria-labelledby="device-logout-title">
                     <h3 id="device-logout-title">تسجيل الخروج من {target?.label}؟</h3>
                     <p>يبقى هذا الجهاز مسجّل الدخول. أدخل كلمة المرور للتأكيد.</p>
                     <div className="pp-field"><label className="l" htmlFor="device_password">كلمة المرور</label><div className="pp-input"><PasswordInput id="device_password" dir="ltr" toggleTabIndex={0} value={form.data.password} onChange={(e) => form.setData('password', e.target.value)} autoComplete="current-password" autoFocus required /></div><InputError message={form.errors.deviceLogout?.password ?? form.errors.password} /></div>
-                    <div className="pp-actions"><button type="button" className="pp-button" disabled={form.processing} onClick={close}>إلغاء</button><button type="submit" className="pp-button danger" disabled={form.processing}><Icon name="logout" />تسجيل الخروج</button></div>
+                    <div className="pp-actions"><Button className="pp-button" isDisabled={form.processing} onClick={close}>إلغاء</Button><Button type="submit" className="pp-button danger" isDisabled={form.processing}><Icon name="logout" />تسجيل الخروج</Button></div>
                 </form>
             </Modal>
         </section>
@@ -121,7 +122,7 @@ export default function Edit({ user, permissionGroups, devices, businessTimezone
                     <div>
                         <Permissions groups={permissionGroups} />
                         <Devices devices={devices} dateLabel={dateLabel} />
-                        <section className="pp-panel"><PanelTitle icon="sun">المظهر</PanelTitle><div className="pp-theme" role="group" aria-label="مظهر النظام">{THEMES.map((theme) => <button type="button" key={theme.value} aria-pressed={preference === theme.value} onClick={() => changePreference(theme.value)}><span className="sw">{theme.colors.map((color) => <i key={color} style={{ background: color }} />)}</span>{theme.label}</button>)}</div></section>
+                        <section className="pp-panel"><PanelTitle icon="sun">المظهر</PanelTitle><div className="pp-theme" role="group" aria-label="مظهر النظام">{THEMES.map((theme) => <Button key={theme.value} aria-pressed={preference === theme.value} onClick={() => changePreference(theme.value)}><span className="sw">{theme.colors.map((color) => <i key={color} style={{ background: color }} />)}</span>{theme.label}</Button>)}</div></section>
                         <section className="pp-panel"><PanelTitle icon="clock">آخر نشاطاتك</PanelTitle>
                             <div className="pp-feed">{activity?.recent.length ? activity.recent.slice(0, 5).map((item) => <div className="pp-feed-item" key={item.id}><span className={`pp-feed-icon ${item.action.includes('password') ? 'warn' : item.action.includes('reading') ? 'info' : item.action.includes('payment') ? 'success' : ''}`}><Icon name={item.action.includes('password') ? 'key' : item.action.includes('reading') ? 'gauge' : item.action.includes('payment') ? 'cash' : 'pencil'} /></span><div><b>{ACTION_MESSAGES[item.action] ?? 'إجراء محفوظ'}</b>{item.subject && <small>{item.subject}</small>}</div><time dateTime={item.createdAt}>{dateLabel(item.createdAt)}</time></div>) : <p className="pp-empty">لا توجد نشاطات محفوظة بعد.</p>}</div>
                         </section>

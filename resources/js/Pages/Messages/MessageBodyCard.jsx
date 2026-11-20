@@ -1,3 +1,4 @@
+import { Button, Input, TextArea } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
@@ -69,7 +70,7 @@ export default function MessageBodyCard({
             {templateName !== null && (
                 <div className="mb-4 flex flex-wrap items-end gap-3 rounded-control bg-gray-50 p-3">
                     <Field label="اسم القالب" htmlFor="template_name" className="min-w-[200px] flex-1">
-                        <input
+                        <Input
                             id="template_name"
                             type="text"
                             value={templateName}
@@ -92,9 +93,8 @@ export default function MessageBodyCard({
             </p>
             <div role="group" aria-labelledby="placeholders-hint" className="mb-3 flex flex-wrap gap-1.5">
                 {placeholders[kind].map((name) => (
-                    <button
+                    <Button
                         key={name}
-                        type="button"
                         onClick={() => insertPlaceholder(name)}
                         aria-label={`أضف «${name.replaceAll('_', ' ')}» إلى نص الرسالة`}
                         title={`أضف ${name.replaceAll('_', ' ')} مكان المؤشر`}
@@ -102,14 +102,14 @@ export default function MessageBodyCard({
                     >
                         <Icon name="plus" className="h-3.5 w-3.5" strokeWidth={2} />
                         {name.replaceAll('_', ' ')}
-                    </button>
+                    </Button>
                 ))}
             </div>
 
             <label htmlFor="body" className="sr-only">
                 نص الرسالة
             </label>
-            <textarea
+            <TextArea
                 ref={bodyRef}
                 id="body"
                 rows={6}

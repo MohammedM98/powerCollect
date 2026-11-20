@@ -1,3 +1,4 @@
+import { Input, TextArea } from '@heroui/react';
 import { BankReceivedDateField } from '@/Components/BankReceivedDate';
 import { useForm } from '@inertiajs/react';
 import FormModal from '@/Components/FormModal';
@@ -120,7 +121,7 @@ function SinglePaymentEditor({ onClose, subscription, balance, entry, transferBa
 
                     <div>
                         <InputLabel htmlFor="amend_sender_name" value="اسم المرسل" />
-                        <input
+                        <Input
                             id="amend_sender_name"
                             name="sender_name"
                             type="text"
@@ -134,7 +135,7 @@ function SinglePaymentEditor({ onClose, subscription, balance, entry, transferBa
 
                     <div>
                         <InputLabel htmlFor="amend_reference_number" value="الرقم المرجعي" />
-                        <input
+                        <Input
                             id="amend_reference_number"
                             type="text"
                             dir="ltr"
@@ -156,7 +157,7 @@ function SinglePaymentEditor({ onClose, subscription, balance, entry, transferBa
 
             <div>
                 <InputLabel htmlFor="amend_notes" value="ملاحظات" />
-                <textarea
+                <TextArea
                     id="amend_notes"
                     name="notes"
                     rows={2}
@@ -170,7 +171,7 @@ function SinglePaymentEditor({ onClose, subscription, balance, entry, transferBa
 
             <div>
                 <InputLabel htmlFor="amendment_reason" value="سبب التعديل" />
-                <textarea
+                <TextArea
                     id="amendment_reason"
                     name="amendment_reason"
                     rows={2}

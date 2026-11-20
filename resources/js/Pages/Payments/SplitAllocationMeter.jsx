@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import { formatMoney } from '@/lib/format';
 import { fromCents } from '@/lib/currency';
@@ -23,9 +24,9 @@ export default function SplitAllocationMeter({ allocatedCents, distributed, mete
                 </p>
                 <div className="flex items-center gap-3">
                     {parts.length > 0 && remainingCents > 0 && (
-                        <button type="button" onClick={putRemainderOnLast} className="text-[13.5px] font-semibold text-brand-600 hover:underline">
+                        <Button onClick={putRemainderOnLast} className="text-[13.5px] font-semibold text-brand-600 hover:underline">
                             ضع الباقي على آخر مشترك
-                        </button>
+                        </Button>
                     )}
                     <span className="font-display font-bold text-gray-900">
                         {formatMoney(fromCents(allocatedCents))} <span className="font-sans text-[13px] font-medium text-gray-500">من</span>{' '}

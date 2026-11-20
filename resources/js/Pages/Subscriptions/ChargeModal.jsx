@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { useId, useRef, useState } from 'react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import InputError from '@/Components/InputError';
@@ -201,7 +202,7 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                                     description={
                                         <div className="gl-cl-in" data-invalid={errors.notes || (missingReason && amount > 0) ? true : undefined}>
                                             <label htmlFor="charge_notes" className="sr-only">{reasonLabel}</label>
-                                            <input
+                                            <Input
                                                 id="charge_notes"
                                                 name="notes"
                                                 required={type?.needsReason}
@@ -215,7 +216,7 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                                     }
                                     amount={
                                         <div className="gl-cl-in is-amount" data-invalid={errors.amount ? true : undefined} data-readonly={isMinimumCharge && !data.override_minimum_amount ? true : undefined}>
-                                            <input
+                                            <Input
                                                 ref={amountInput}
                                                 id="amount"
                                                 name="amount"
@@ -239,14 +240,14 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                                     {look.quick.length > 0 && (
                                         <div className="gl-cl-quick">
                                             {look.quick.map((quick) => (
-                                                <button key={quick} type="button" className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setAmount(String(quick))}>
+                                                <Button key={quick} className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setAmount(String(quick))}>
                                                     {quick}
-                                                </button>
+                                                </Button>
                                             ))}
                                         </div>
                                     )}
                                     {isMinimumCharge && (
-                                        <button type="button" aria-pressed={data.override_minimum_amount} onClick={() => {
+                                        <Button aria-pressed={data.override_minimum_amount} onClick={() => {
                                             if (data.override_minimum_amount) {
                                                 setData((current) => ({ ...current, amount: String(subscription.minimumPayment ?? '0'), override_minimum_amount: false }));
                                                 form.clearErrors('amount');
@@ -256,7 +257,7 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                                         }} className="gl-cl-lock">
                                             <Icon name={data.override_minimum_amount ? 'unlock' : 'lock'} className="h-3.5 w-3.5" />
                                             {data.override_minimum_amount ? 'إعادة الحد الأدنى وقفل المبلغ' : `مقفل على الحد الأدنى ${formatMoney(subscription.minimumPayment)} ₪، فتح القفل لتعديله`}
-                                        </button>
+                                        </Button>
                                     )}
                                     {type?.usualAmount && (
                                         <span className="gl-cl-hint">

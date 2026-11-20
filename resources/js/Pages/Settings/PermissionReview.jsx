@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -94,15 +95,14 @@ export function PermissionSaveBar({ dirty, errors, changes, auditChanges, firstN
                     </span>
                 )}
             </p>
-            <button
-                type="button"
+            <Button
                 onClick={onDiscard}
-                disabled={processing || !dirty}
+                isDisabled={processing || !dirty}
                 className="inline-flex items-center gap-1.5 rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-white disabled:opacity-40"
             >
                 <Icon name="undo" className="h-4 w-4" />
                 تراجع
-            </button>
+            </Button>
             <PrimaryButton type="button" onClick={onSave} disabled={processing || !dirty} title="Ctrl + S">
                 <Icon name="check" className="h-4 w-4" strokeWidth={2} />
                 {processing ? 'جارٍ الحفظ...' : 'مراجعة وحفظ'}

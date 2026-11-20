@@ -1,3 +1,4 @@
+import { Input, TextArea } from '@heroui/react';
 import { BankReceivedDateField } from '@/Components/BankReceivedDate';
 import { useForm } from '@inertiajs/react';
 import AsyncState from '@/Components/AsyncState';
@@ -54,7 +55,7 @@ export function SplitPaymentEditor({ split, onClose, transferBanks = [], senderB
                 {[['sender_name', 'اسم المرسل'], ['reference_number', 'الرقم المرجعي']].map(([field, label]) => (
                     <div key={field}>
                         <InputLabel htmlFor={`split_${field}`} value={label} />
-                        <input
+                        <Input
                             id={`split_${field}`}
                             name={field}
                             required
@@ -109,7 +110,7 @@ export function SplitPaymentEditor({ split, onClose, transferBanks = [], senderB
             {[['notes', 'ملاحظات', false], ['amendment_reason', 'سبب تعديل بيانات الحوالة', true]].map(([field, label, required]) => (
                 <div key={field}>
                     <InputLabel htmlFor={`split_${field}`} value={label} />
-                    <textarea
+                    <TextArea
                         id={`split_${field}`}
                         name={field}
                         rows={2}

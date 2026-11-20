@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Icon from '@/Components/Icon';
@@ -64,11 +65,11 @@ export function MenuButton({ icon, label, children, className = '' }) {
 
     return (
         <div ref={ref} className="relative">
-            <button type="button" aria-haspopup="menu" aria-expanded={open} onClick={toggle} className={className}>
+            <Button aria-haspopup="menu" aria-expanded={open} onClick={toggle} className={className}>
                 <Icon name={icon} className="h-4 w-4" />
                 {label}
                 <Icon name="chevron-down" className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`} />
-            </button>
+            </Button>
             {open &&
                 position &&
                 createPortal(
@@ -89,8 +90,7 @@ export function MenuButton({ icon, label, children, className = '' }) {
 
 export function MenuItem({ title, subtitle, trailing, onSelect, leading }) {
     return (
-        <button
-            type="button"
+        <Button
             role="menuitem"
             onClick={onSelect}
             className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-start text-sm transition hover:bg-gray-50 focus-visible:bg-gray-50 focus-visible:outline-hidden"
@@ -101,6 +101,6 @@ export function MenuItem({ title, subtitle, trailing, onSelect, leading }) {
                 {subtitle && <span className="block truncate text-xs text-gray-500">{subtitle}</span>}
             </span>
             {trailing}
-        </button>
+        </Button>
     );
 }

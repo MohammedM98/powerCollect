@@ -1,3 +1,4 @@
+import { TextArea } from '@heroui/react';
 import { useForm } from '@inertiajs/react';
 import FormModal from '@/Components/FormModal';
 import InputError from '@/Components/InputError';
@@ -67,7 +68,7 @@ export default function ForceDeleteTransactionModal({ onClose, subscription, bal
 
             <div>
                 <InputLabel htmlFor="correction_notes" value="سبب الإلغاء أو الإرجاع" />
-                <textarea
+                <TextArea
                     id="correction_notes"
                     name="correction_notes"
                     rows={2}

@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import AuditAccessCard, { auditScopeLabel } from './AuditAccessCard';
 import Icon from '@/Components/Icon';
 import { MatrixHead, MatrixLegend, SectionRow, TriToggle } from './PermissionMatrix';
@@ -57,7 +58,7 @@ export default function PermissionMatrixView({
                 <div className="pm-tools">
                     <div className="pm-search">
                         <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
-                        <input
+                        <Input
                             type="search"
                             value={query}
                             onChange={(event) => search(event.target.value)}
@@ -68,48 +69,45 @@ export default function PermissionMatrixView({
                     </div>
                     <div className="pm-modes" role="group" aria-label="تصفية الأقسام">
                         {MODES.map(([value, label]) => (
-                            <button key={value} type="button" onClick={() => setMode(value)} aria-pressed={mode === value} className="pm-mode">
+                            <Button key={value} onClick={() => setMode(value)} aria-pressed={mode === value} className="pm-mode">
                                 {label}
                                 <span className="font-display">{filterSections(sections, selected, saved, '', value).length}</span>
-                            </button>
+                            </Button>
                         ))}
                     </div>
                     <div className="pm-tool-actions">
                         <span className="me-2 inline-flex items-center">
                             <Switch checked={explaining} onChange={setExplaining} label="الشرح" ariaLabel="إظهار شرح الأقسام والأزرار" />
                         </span>
-                        <button
-                            type="button"
+                        <Button
                             className="pm-ghost-button"
-                            disabled={processing || matching.length === 0}
+                            isDisabled={processing || matching.length === 0}
                             title="يجعل كل قسم معروض للعرض فقط"
                             onClick={() => setSelected(withGroupAccess(matching, selected, true))}
                         >
                             <Icon name="eye" className="h-4 w-4" />
                             عرض فقط
-                        </button>
-                        <button
-                            type="button"
+                        </Button>
+                        <Button
                             className="pm-ghost-button"
-                            disabled={processing || matching.length === 0}
+                            isDisabled={processing || matching.length === 0}
                             title="يسحب صلاحيات الأقسام المعروضة"
                             onClick={() => setSelected(withSectionsAll(matching, selected, false))}
                         >
                             <Icon name="close" className="h-4 w-4" />
                             سحب الكل
-                        </button>
-                        <button
-                            type="button"
+                        </Button>
+                        <Button
                             className="pm-ghost-button"
                             onClick={() => setOpenSections(allOpen ? new Set() : new Set(matching.map((section) => section.key)))}
                         >
                             <Icon name={allOpen ? 'collapse' : 'expand'} className="h-4 w-4" />
                             {allOpen ? 'طيّ الكل' : 'فتح الكل'}
-                        </button>
-                        <button type="button" className="pm-ghost-button is-brand" onClick={() => setGuideAudience('all')}>
+                        </Button>
+                        <Button className="pm-ghost-button is-brand" onClick={() => setGuideAudience('all')}>
                             <Icon name="document" className="h-4 w-4" />
                             دليل الصلاحيات
-                        </button>
+                        </Button>
                     </div>
                 </div>
                 {needle && matching.length > 0 && (
@@ -148,8 +146,7 @@ export default function PermissionMatrixView({
                         <div className="px-5 py-12 text-center text-sm text-gray-500">
                             <Icon name="search" className="mx-auto h-8 w-8 text-gray-300" />
                             <p className="mt-2">لا توجد صلاحيات تطابق البحث أو التصفية.</p>
-                            <button
-                                type="button"
+                            <Button
                                 onClick={() => {
                                     search('');
                                     setMode('all');
@@ -157,7 +154,7 @@ export default function PermissionMatrixView({
                                 className="mt-2 font-semibold text-brand-600"
                             >
                                 عرض كل الصلاحيات
-                            </button>
+                            </Button>
                         </div>
                     ) : (
                         groups.map((group) => {
@@ -180,14 +177,13 @@ export default function PermissionMatrixView({
                                         </span>
                                         <span className="flex-1" />
                                         {group.sections.some((section) => section.ladder?.actions.includes('view') || section.key === 'reports') && (
-                                            <button
-                                                type="button"
+                                            <Button
                                                 onClick={() => setSelected(withGroupAccess(group.sections, selected, true))}
-                                                disabled={processing}
+                                                isDisabled={processing}
                                                 className="pm-link-button"
                                             >
                                                 عرض فقط للمجموعة
-                                            </button>
+                                            </Button>
                                         )}
                                         <TriToggle
                                             ids={ids}

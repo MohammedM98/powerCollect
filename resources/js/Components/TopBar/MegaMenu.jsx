@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { Link } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import { shouldPrefetchPage, isActiveLink, lockedLinkProps, sectionLinks } from '@/lib/navigation';
@@ -60,10 +61,10 @@ export default function MegaMenu({ group, url, badges, width, shift, leaving, on
             <div className="tn-fly-foot">
                 <span className="inline-flex items-center gap-1.5"><span className="tn-kbd">↑ ↓</span>تنقّل</span>
                 <span className="inline-flex items-center gap-1.5"><span className="tn-kbd">Esc</span>إغلاق</span>
-                <button type="button" onClick={onSearch} tabIndex={leaving ? -1 : undefined} className="ms-auto inline-flex shrink-0 items-center gap-1.5 font-semibold">
+                <Button onClick={onSearch} tabIndex={leaving ? -1 : undefined} className="ms-auto inline-flex shrink-0 items-center gap-1.5 font-semibold">
                     <Icon name="search" className="h-4 w-4" />
                     كل الصفحات <span className="tn-kbd" dir="ltr">Ctrl K</span>
-                </button>
+                </Button>
             </div>
         </div>
     );

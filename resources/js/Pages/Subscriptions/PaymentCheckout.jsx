@@ -64,7 +64,7 @@ function CheckoutAmount({ amountInput, currencies, currencyLabel, currencyMark, 
         <section className="gl-co-amount">
             <label id={`${titleId}-amount`} htmlFor="amount" className="gl-co-amount-label">المبلغ المستلم</label>
             <div className="gl-co-amount-row" data-invalid={errors.amount ? true : undefined}>
-                <input
+                <Input
                     ref={amountInput}
                     id="amount"
                     name="amount"

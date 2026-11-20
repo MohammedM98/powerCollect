@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import { formatMoney } from '@/lib/format';
 
@@ -40,9 +41,9 @@ export default function ResultReport({ result, onClose }) {
                         )}
                     </p>
                 </div>
-                <button type="button" onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-1.5 text-gray-500 hover:bg-gray-100">
+                <Button onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-1.5 text-gray-500 hover:bg-gray-100">
                     <Icon name="close" className="h-4 w-4" />
-                </button>
+                </Button>
             </div>
             {failed.length > 0 && (
                 <ul className="mt-3 max-h-56 divide-y divide-gray-100 overflow-y-auto rounded-control border border-gray-100 bg-surface text-sm">

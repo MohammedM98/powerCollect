@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -36,9 +37,9 @@ function DetailsModal({ change, details, onClose }) {
                             {change.changedCount.toLocaleString('en')} مشترك — {DATE_TIME_FORMAT.format(new Date(change.createdAt))}
                         </p>
                     </div>
-                    <button type="button" onClick={onClose} aria-label="إغلاق" className={`rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 ${FOCUS_RING}`}>
+                    <Button onClick={onClose} aria-label="إغلاق" className={`rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 ${FOCUS_RING}`}>
                         <Icon name="close" className="h-5 w-5" />
-                    </button>
+                    </Button>
                 </div>
                 <div className="max-h-[60vh] overflow-y-auto px-7 pb-7">
                     {!loaded ? (

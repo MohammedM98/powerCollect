@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
@@ -24,9 +25,9 @@ export function AllocationReport({ result, onConfirmDownloaded, onClose }) {
                     {formatNumber(result.moved)} طبلون
                     {result.conflicts.length > 0 && <>، راجع الطبلونات التي تعذّر تحديثها أدناه</>}
                 </p>
-                <button type="button" onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-1.5 text-gray-500 hover:bg-gray-100">
+                <Button onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-1.5 text-gray-500 hover:bg-gray-100">
                     <Icon name="close" className="h-4 w-4" />
-                </button>
+                </Button>
             </div>
             {result.conflicts.length > 0 && (
                 <ul className="mt-3 max-h-48 divide-y divide-gray-100 overflow-y-auto rounded-control border border-gray-100 bg-surface text-sm">
@@ -39,14 +40,13 @@ export function AllocationReport({ result, onConfirmDownloaded, onClose }) {
                 </ul>
             )}
             {needsConfirmation && onConfirmDownloaded && (
-                <button
-                    type="button"
+                <Button
                     onClick={onConfirmDownloaded}
                     className="mt-3 inline-flex items-center gap-1.5 rounded-control bg-amber-600 px-3 py-2 text-sm font-bold text-white"
                 >
                     <Icon name="warning" className="h-4 w-4" />
                     أؤكد نقل الطبلونات التي نزّلها القارئ (قراءاته غير المرفوعة تُحفظ للمراجعة)
-                </button>
+                </Button>
             )}
         </section>
     );

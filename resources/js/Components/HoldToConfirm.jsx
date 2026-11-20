@@ -1,3 +1,4 @@
+import { Button as HeroButton } from '@heroui/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import Icon from '@/Components/Icon';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -153,9 +154,9 @@ export default function HoldToConfirm({ count, disabled, busy, onConfirm, label,
             </p>
 
             {!typing ? (
-                <button type="button" onClick={() => setTyping(true)} disabled={disabled || busy} className="min-h-11 text-sm font-semibold text-gray-700 underline-offset-2 hover:underline disabled:opacity-50">
+                <HeroButton variant="ghost" onClick={() => setTyping(true)} isDisabled={disabled || busy} className="min-h-11 text-sm font-semibold text-gray-700 underline-offset-2 hover:underline disabled:opacity-50">
                     أو أكّد بكتابة عدد {noun}
-                </button>
+                </HeroButton>
             ) : (
                 <div className="rounded-control border border-gray-200 bg-gray-50 p-3">
                     <label htmlFor={`${id}-count`} className="mb-1.5 block text-base font-semibold text-gray-700">

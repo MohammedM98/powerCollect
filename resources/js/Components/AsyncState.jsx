@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 
 /**
@@ -13,10 +14,10 @@ export default function AsyncState({ loading = false, error = null, empty = fals
                 <Icon name="alert" className="h-6 w-6" />
                 <p className="leading-7">{error}</p>
                 {onRetry && (
-                    <button type="button" onClick={onRetry} className="gl-btn gl-ghost gl-sm">
+                    <Button onClick={onRetry} className="gl-btn gl-ghost gl-sm">
                         <Icon name="repeat" className="h-4 w-4" />
                         إعادة المحاولة
-                    </button>
+                    </Button>
                 )}
             </div>
         );

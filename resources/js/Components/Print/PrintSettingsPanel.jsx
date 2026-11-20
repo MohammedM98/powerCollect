@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { useState } from 'react';
 import ChoiceChips from '@/Components/ChoiceChips';
 import Switch from '@/Components/Switch';
@@ -115,7 +116,7 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
                     </Field>
                     <Field label="الهوامش (مم)">
                         {(id) => (
-                            <input
+                            <Input
                                 id={id}
                                 type="number"
                                 min="0"
@@ -170,9 +171,8 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
                 <Group label="اللون الأساسي (العنوان ورأس الجدول)">
                     <div role="radiogroup" aria-label="اللون الأساسي" className="flex flex-wrap items-center gap-2">
                         {ACCENTS.map((accent) => (
-                            <button
+                            <Button
                                 key={accent.value}
-                                type="button"
                                 role="radio"
                                 aria-checked={layout.table.accent.toLowerCase() === accent.value.toLowerCase()}
                                 aria-label={accent.label}
@@ -211,7 +211,7 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
                 <Switch checked={Boolean(layout.watermark?.enabled)} onChange={(value) => setIn('watermark', 'enabled', value)} label="إظهار العلامة المائية" />
                 {layout.watermark?.enabled && <>
                     <Field label="نص العلامة المائية">
-                        {(id) => <input id={id} type="text" maxLength={60} value={layout.watermark.text ?? ''} onChange={(event) => setIn('watermark', 'text', event.target.value)} placeholder="مثلًا: نسخة القارئ" className="block w-full text-sm" />}
+                        {(id) => <Input id={id} type="text" maxLength={60} value={layout.watermark.text ?? ''} onChange={(event) => setIn('watermark', 'text', event.target.value)} placeholder="مثلًا: نسخة القارئ" className="block w-full text-sm" />}
                     </Field>
                     <Switch checked={Boolean(layout.watermark.logo)} onChange={(value) => setIn('watermark', 'logo', value)} label="إظهار شعار الشركة في العلامة المائية" />
                     <Field label={`وضوح العلامة المائية: ${Math.round((layout.watermark.opacity ?? 0.08) * 100)}%`}>

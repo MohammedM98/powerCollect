@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { Link } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import { shouldPrefetchPage } from '@/lib/navigation';
@@ -27,9 +28,9 @@ export default function DashboardActions({ actions }) {
                 );
 
                 return action.onClick ? (
-                    <button key={action.href} type="button" className={className} data-tone={action.main ? 'pay' : undefined} onClick={action.onClick} aria-haspopup="dialog" title={action.subtitle}>
+                    <Button key={action.href} className={className} data-tone={action.main ? 'pay' : undefined} onClick={action.onClick} aria-haspopup="dialog" title={action.subtitle}>
                         {content}
-                    </button>
+                    </Button>
                 ) : (
                     <Link key={action.href} href={action.href} prefetch={shouldPrefetchPage(action.href)} className={className} data-tone={action.main ? 'pay' : undefined} title={action.subtitle}>
                         {content}

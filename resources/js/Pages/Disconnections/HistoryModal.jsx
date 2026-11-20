@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
 import StatusPill from '@/Components/DataTable/StatusPill';
@@ -44,9 +45,9 @@ export default function HistoryModal({ history, loading, reasonOptions, onClose 
                             </p>
                         )}
                     </div>
-                    <button type="button" onClick={onClose} aria-label="إغلاق" className="rounded-xl p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900">
+                    <Button onClick={onClose} aria-label="إغلاق" className="rounded-xl p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900">
                         <Icon name="close" />
-                    </button>
+                    </Button>
                 </div>
                 <div className="flex-1 overflow-y-auto px-7 py-6">
                     {loading || !history ? (

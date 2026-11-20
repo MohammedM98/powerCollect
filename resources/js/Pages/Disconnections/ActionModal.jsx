@@ -1,3 +1,4 @@
+import { Button, Input, TextArea } from '@heroui/react';
 import { useEffect, useEffectEvent, useId, useMemo, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
@@ -204,7 +205,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                                                         <td className="whitespace-nowrap px-3 py-2 font-semibold">
                                                             {canChangeFee && !why ? (
                                                                 <span className="flex items-center gap-1.5">
-                                                                    <input
+                                                                    <Input
                                                                         type="number"
                                                                         min={0}
                                                                         step="0.01"
@@ -239,7 +240,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                             </div>
                             <div>
                                 <label htmlFor={`${id}-reason`} className="mb-1.5 block text-sm font-semibold text-gray-700">سبب التمديد (اختياري)</label>
-                                <input id={`${id}-reason`} type="text" value={reason} onChange={(event) => setReason(event.target.value)} className="block w-full text-sm" maxLength={1000} />
+                                <Input id={`${id}-reason`} type="text" value={reason} onChange={(event) => setReason(event.target.value)} className="block w-full text-sm" maxLength={1000} />
                             </div>
                             <p className="flex items-start gap-1.5 text-xs text-gray-500 sm:col-span-2">
                                 <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0" />
@@ -251,7 +252,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                     {preview && action === 'remove' && (
                         <div>
                             <label htmlFor={`${id}-reason`} className="mb-1.5 block text-sm font-semibold text-gray-700">سبب الإزالة (اختياري)</label>
-                            <input id={`${id}-reason`} type="text" value={reason} onChange={(event) => setReason(event.target.value)} className="block w-full text-sm" maxLength={1000} />
+                            <Input id={`${id}-reason`} type="text" value={reason} onChange={(event) => setReason(event.target.value)} className="block w-full text-sm" maxLength={1000} />
                             <p className="mt-2 text-xs text-gray-500">يبقى سجلهم في القائمة، ويمكن إدراجهم من جديد لاحقًا.</p>
                         </div>
                     )}
@@ -265,19 +266,19 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                             {warningTemplates.length > 0 && (
                                 <div className="flex flex-wrap gap-2">
                                     {warningTemplates.map((template) => (
-                                        <button key={template.id} type="button" onClick={() => setBody(template.body)} className="rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50">
+                                        <Button key={template.id} onClick={() => setBody(template.body)} className="rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50">
                                             {template.name}
-                                        </button>
+                                        </Button>
                                     ))}
                                 </div>
                             )}
                             <div>
                                 <label htmlFor={`${id}-body`} className="mb-1.5 block text-sm font-semibold text-gray-700">نص الإنذار</label>
-                                <textarea id={`${id}-body`} value={body} onChange={(event) => setBody(event.target.value)} rows={4} className="block w-full text-sm" maxLength={1000} required />
+                                <TextArea id={`${id}-body`} value={body} onChange={(event) => setBody(event.target.value)} rows={4} className="block w-full text-sm" maxLength={1000} required />
                                 <p className="mt-1 flex flex-wrap gap-1.5 text-xs text-gray-500">
                                     الحقول:
                                     {placeholders.map((name) => (
-                                        <button key={name} type="button" onClick={() => setBody((current) => `${current} {${name}}`)} className="rounded bg-gray-100 px-1.5 font-display">{`{${name}}`}</button>
+                                        <Button key={name} onClick={() => setBody((current) => `${current} {${name}}`)} className="rounded bg-gray-100 px-1.5 font-display">{`{${name}}`}</Button>
                                     ))}
                                 </p>
                                 <InputError message={errors.body} className="mt-1" />
@@ -303,7 +304,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                                     <div>
                                         <label htmlFor={`${id}-fee`} className="mb-1.5 block text-sm font-semibold text-gray-700">رسوم قطع الخدمة</label>
                                         <span className="flex items-center gap-1.5">
-                                            <input id={`${id}-fee`} type="number" min={0} step="0.01" value={feeForAll} onChange={(event) => setFeeForAll(event.target.value)} className="w-28 text-sm" />
+                                            <Input id={`${id}-fee`} type="number" min={0} step="0.01" value={feeForAll} onChange={(event) => setFeeForAll(event.target.value)} className="w-28 text-sm" />
                                             ₪
                                         </span>
                                     </div>

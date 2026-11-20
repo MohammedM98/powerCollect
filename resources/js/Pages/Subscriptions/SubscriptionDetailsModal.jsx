@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
@@ -43,7 +44,7 @@ function Field({ label, value, numeric = false, copy = false, wide = false }) {
         <dt>{label}</dt>
         <dd className={empty ? 'sp-empty-value' : ''}>
             <span className={numeric ? 'sp-number' : undefined}>{empty ? 'لا يوجد' : value}</span>
-            {copy && !empty && <button type="button" className="sp-copy" onClick={copyValue} aria-label={`نسخ ${label}`} title={copyStatus || 'نسخ'}><ProfileIcon name="copy" /></button>}
+            {copy && !empty && <Button className="sp-copy" onClick={copyValue} aria-label={`نسخ ${label}`} title={copyStatus || 'نسخ'}><ProfileIcon name="copy" /></Button>}
             {copyStatus && <span className="sp-copy-status" role="status">{copyStatus}</span>}
         </dd>
     </div>;
@@ -52,7 +53,7 @@ function Field({ label, value, numeric = false, copy = false, wide = false }) {
 function Section({ title, icon, onEdit, children, trailing }) {
     return <section className="sp-section">
         <h3><span className="sp-section-icon"><Icon name={icon} /></span>{title}
-            {onEdit && <button type="button" onClick={onEdit}><Icon name="pencil" />تعديل</button>}{trailing}
+            {onEdit && <Button onClick={onEdit}><Icon name="pencil" />تعديل</Button>}{trailing}
         </h3>{children}
     </section>;
 }
@@ -66,7 +67,7 @@ export function AccountTab({ statement, onOpenStatement, onLoadStatement, loadin
     }
     if (!statement) {
         return loading ? <div className="sp-loading" role="status" aria-label="جارٍ تحميل الحساب"><div /><div /><div /><div /></div>
-            : <div className="sp-empty"><p>تعذر تحميل الحساب.</p><button type="button" className="sp-button" onClick={onLoadStatement}>إعادة المحاولة</button></div>;
+            : <div className="sp-empty"><p>تعذر تحميل الحساب.</p><Button className="sp-button" onClick={onLoadStatement}>إعادة المحاولة</Button></div>;
     }
     const isCompact = view === 'compact';
     const compact = compactStatementEntries(statement.entries);
@@ -81,9 +82,9 @@ export function AccountTab({ statement, onOpenStatement, onLoadStatement, loadin
             <div data-tone="disc"><small><i aria-hidden="true" />مجموع الخصومات</small><b>{money(statement.summary.discounted)}</b></div>
         </div>
         <div className="sp-account-toolbar">
-            <div className="sp-filters" role="group" aria-label="نوع المعاملة">{[['', 'الكل'], ['meter_reading', 'فواتير'], ['payment', 'دفعات'], ['debit', 'تحميلات'], ['credit', 'دفعات وخصومات']].map(([value, label]) => <button type="button" key={value} aria-pressed={type === value} onClick={() => setType(value)}>{label}</button>)}</div>
+            <div className="sp-filters" role="group" aria-label="نوع المعاملة">{[['', 'الكل'], ['meter_reading', 'فواتير'], ['payment', 'دفعات'], ['debit', 'تحميلات'], ['credit', 'دفعات وخصومات']].map(([value, label]) => <Button key={value} aria-pressed={type === value} onClick={() => setType(value)}>{label}</Button>)}</div>
             <StatementViewTabs value={view} onChange={chooseView} />
-            <button type="button" className="sp-button" onClick={() => onOpenStatement()}><Icon name="ledger" />كشف الحساب الكامل</button>
+            <Button className="sp-button" onClick={() => onOpenStatement()}><Icon name="ledger" />كشف الحساب الكامل</Button>
         </div>
         <div className="sp-table-wrap"><table className="sp-statement">
             <thead><tr><th>التاريخ</th><th>المعاملة</th><th>الوصف</th><th className="sp-amount-column">المبلغ</th><th className="sp-amount-column">الرصيد بعدها</th></tr></thead>
@@ -95,13 +96,13 @@ export function AccountTab({ statement, onOpenStatement, onLoadStatement, loadin
                     onMouseEnter={chain ? () => setHoveredChain(chain) : undefined} onMouseLeave={chain ? () => setHoveredChain(null) : undefined}>
                     <td><span className="sp-date">{formatDate(entry.date.slice(0, 10))}<small>{entry.date.slice(11)}</small></span></td>
                     <td><LineKind entry={entry} /></td>
-                    <td>{color && <span className="sp-chain-dot" title="الحركات المرتبطة بنفس اللون" aria-hidden="true" />}{entry.description}{entry.cancellation?.reasonLabel && <small className="sp-cancellation">{entry.cancellation.reasonLabel}</small>}{entry.history?.length > 0 && <button type="button" className="sp-history-link" onClick={() => chooseView('full')}><Icon name="history" />صُحّحت، {entry.history.length} حركات سابقة</button>}</td>
+                    <td>{color && <span className="sp-chain-dot" title="الحركات المرتبطة بنفس اللون" aria-hidden="true" />}{entry.description}{entry.cancellation?.reasonLabel && <small className="sp-cancellation">{entry.cancellation.reasonLabel}</small>}{entry.history?.length > 0 && <Button className="sp-history-link" onClick={() => chooseView('full')}><Icon name="history" />صُحّحت، {entry.history.length} حركات سابقة</Button>}</td>
                     <td className="sp-amount-column" data-side={entry.isCredit ? 'credit' : 'debit'}><b className="sp-number">{number(entry.amount)} {entry.currencyLabel}</b></td>
                     <td className="sp-amount-column"><bdi dir="ltr" className="sp-number" title={BALANCE_HINTS[running.tone]}>{running.signed} ₪</bdi></td>
                 </tr>;
             })}</tbody>
         </table>{entries.length === 0 && <p className="sp-empty">لا توجد حركات لهذا النوع.</p>}</div>
-        {isCompact && compact.hiddenCount > 0 && <p className="sp-hidden-note">أُخفيت {compact.hiddenCount} حركة ملغاة مع قيودها العكسية (مجموعها صفر)، <button type="button" onClick={() => chooseView('full')}>عرض كل الحركات</button></p>}
+        {isCompact && compact.hiddenCount > 0 && <p className="sp-hidden-note">أُخفيت {compact.hiddenCount} حركة ملغاة مع قيودها العكسية (مجموعها صفر)، <Button onClick={() => chooseView('full')}>عرض كل الحركات</Button></p>}
     </>;
 }
 
@@ -180,29 +181,29 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
                         </div>
                         <div className={`sp-balance sp-${balance.tone}`} title={BALANCE_HINTS[balance.tone]}><small>الرصيد الحالي</small><b><bdi dir="ltr">{balance.signed} ₪</bdi><em>{balance.label}</em></b></div>
                         <div className="sp-tools">
-                            <button type="button" onClick={onPrevious} disabled={!onPrevious} aria-label="المشترك السابق" title="المشترك السابق"><ProfileIcon name="previous" /></button>
-                            <button type="button" onClick={onNext} disabled={!onNext} aria-label="المشترك التالي" title="المشترك التالي"><ProfileIcon name="next" /></button>
-                            <button type="button" onClick={() => setExpanded(!expanded)} aria-label={expanded ? 'تصغير' : 'توسيع'} title={expanded ? 'تصغير' : 'توسيع'} aria-pressed={expanded}><ProfileIcon name="expand" /></button>
-                            <button type="button" onClick={onClose} aria-label="إغلاق" title="إغلاق (Esc)"><Icon name="close" /></button>
+                            <Button onClick={onPrevious} isDisabled={!onPrevious} aria-label="المشترك السابق" title="المشترك السابق"><ProfileIcon name="previous" /></Button>
+                            <Button onClick={onNext} isDisabled={!onNext} aria-label="المشترك التالي" title="المشترك التالي"><ProfileIcon name="next" /></Button>
+                            <Button onClick={() => setExpanded(!expanded)} aria-label={expanded ? 'تصغير' : 'توسيع'} title={expanded ? 'تصغير' : 'توسيع'} aria-pressed={expanded}><ProfileIcon name="expand" /></Button>
+                            <Button onClick={onClose} aria-label="إغلاق" title="إغلاق (Esc)"><Icon name="close" /></Button>
                         </div>
                     </div>
                     <div className="sp-header-bottom">
                         <div className="sp-tabs" role="tablist" aria-label="أقسام ملف المشترك">
-                            {TABS.map(([tab, label], index) => <button key={tab} type="button" id={`${tabsId}-${tab}`} role="tab" aria-selected={activeTab === tab} aria-controls={`${tabsId}-${tab}-panel`} tabIndex={activeTab === tab ? 0 : -1} onClick={() => selectTab(tab)} onKeyDown={(event) => {
+                            {TABS.map(([tab, label], index) => <Button key={tab} id={`${tabsId}-${tab}`} role="tab" aria-selected={activeTab === tab} aria-controls={`${tabsId}-${tab}-panel`} tabIndex={activeTab === tab ? 0 : -1} onClick={() => selectTab(tab)} onKeyDown={(event) => {
                                 if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
                                     event.preventDefault();
                                     const next = event.key === 'Home' ? 0 : event.key === 'End' ? 2 : (index + (event.key === 'ArrowLeft' ? 1 : 2)) % 3;
                                     selectTab(TABS[next][0], true);
                                 }
-                            }}>{label}{tab === 'transactions' && statement && <span>{statement.entries.length}</span>}</button>)}
+                            }}>{label}{tab === 'transactions' && statement && <span>{statement.entries.length}</span>}</Button>)}
                         </div>
                         <div className="sp-quick-actions">
-                            {subscription.canRecordPayment && <button type="button" className="sp-pay" onClick={() => onOpenStatement('payment')}><Icon name="banknotes" /><span>تسجيل دفعة</span></button>}
-                            {onSendMessage && <button type="button" onClick={onSendMessage} aria-label="إرسال SMS" title="إرسال SMS"><Icon name="chat" /></button>}
-                            {onMessageHistory && <button type="button" onClick={onMessageHistory} title="سجل رسائل هذا الاشتراك"><Icon name="messages" /><span>سجل الرسائل</span></button>}
-                            {subscription.canRecordReading && <button type="button" onClick={() => setEnteringReading(true)} disabled={currentWeekRecorded} aria-label={currentWeekRecorded ? 'تم إدخال قراءة هذا الأسبوع' : 'تسجيل قراءة'} title={currentWeekRecorded ? 'تم إدخال قراءة هذا الأسبوع' : 'تسجيل قراءة'}><Icon name="gauge" /></button>}
-                            <button type="button" onClick={() => onOpenStatement()} aria-label="كشف حساب" title="كشف حساب"><Icon name="ledger" /></button>
-                            {canUpdate && <button type="button" onClick={onEdit} aria-label="تعديل حالة الاشتراك" title="تعديل حالة الاشتراك"><Icon name="power" /></button>}
+                            {subscription.canRecordPayment && <Button className="sp-pay" onClick={() => onOpenStatement('payment')}><Icon name="banknotes" /><span>تسجيل دفعة</span></Button>}
+                            {onSendMessage && <Button onClick={onSendMessage} aria-label="إرسال SMS" title="إرسال SMS"><Icon name="chat" /></Button>}
+                            {onMessageHistory && <Button onClick={onMessageHistory} title="سجل رسائل هذا الاشتراك"><Icon name="messages" /><span>سجل الرسائل</span></Button>}
+                            {subscription.canRecordReading && <Button onClick={() => setEnteringReading(true)} isDisabled={currentWeekRecorded} aria-label={currentWeekRecorded ? 'تم إدخال قراءة هذا الأسبوع' : 'تسجيل قراءة'} title={currentWeekRecorded ? 'تم إدخال قراءة هذا الأسبوع' : 'تسجيل قراءة'}><Icon name="gauge" /></Button>}
+                            <Button onClick={() => onOpenStatement()} aria-label="كشف حساب" title="كشف حساب"><Icon name="ledger" /></Button>
+                            {canUpdate && <Button onClick={onEdit} aria-label="تعديل حالة الاشتراك" title="تعديل حالة الاشتراك"><Icon name="power" /></Button>}
                         </div>
                     </div>
                 </header>
@@ -249,11 +250,11 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
                                 <Field label="استهلاك آخر أسبوع" value={lastReading ? `${number(lastReading.consumption)} كيلوواط ساعة` : null} /><Field label="نهاية أسبوع القراءة" value={lastReading?.weekEnd} numeric />
                                 <Field label="تاريخ التسجيل" value={lastReading?.recordedAt} numeric /><Field label="قرأها" value={lastReading?.recordedByName} />
                             </dl></Section>
-                            <div className="sp-reading-footer"><span>يُجمع الاستهلاك حسب شهر نهاية أسبوع القراءة.</span><button type="button" className="sp-button" onClick={onOpenReadings}><Icon name="history" />سجل القراءات الكامل</button></div>
+                            <div className="sp-reading-footer"><span>يُجمع الاستهلاك حسب شهر نهاية أسبوع القراءة.</span><Button className="sp-button" onClick={onOpenReadings}><Icon name="history" />سجل القراءات الكامل</Button></div>
                         </div>
                     </div>
                 </div>
-                <footer className="sp-footer"><span className="sp-shortcuts"><kbd>←</kbd><kbd>→</kbd> المشترك التالي، <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> التبويبات، <kbd>Esc</kbd> إغلاق</span><div className="sp-footer-actions"><button type="button" className="sp-button" onClick={onClose}>إغلاق</button>{canUpdate && <button type="button" className="sp-button sp-primary" onClick={onEdit}><Icon name="pencil" />تعديل البيانات</button>}</div></footer>
+                <footer className="sp-footer"><span className="sp-shortcuts"><kbd>←</kbd><kbd>→</kbd> المشترك التالي، <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> التبويبات، <kbd>Esc</kbd> إغلاق</span><div className="sp-footer-actions"><Button className="sp-button" onClick={onClose}>إغلاق</Button>{canUpdate && <Button className="sp-button sp-primary" onClick={onEdit}><Icon name="pencil" />تعديل البيانات</Button>}</div></footer>
             </div>}
         </Modal>
         {enteringReading && subscription && <MeterReadingModal show onClose={() => setEnteringReading(false)} reading={null} fixedSubscription={readingOptionFor(subscription)} weekOptions={readingWeekOptions} />}

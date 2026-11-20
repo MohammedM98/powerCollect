@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { useState } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -88,10 +89,10 @@ export default function Submissions({ cycle, submissions, canReview, filters, fi
                                         <td data-label="المراجعة">
                                             {submission.status === 'needs_review' ? (
                                                 <div className="flex min-w-56 flex-col gap-2">
-                                                    <input type="text" placeholder="ملاحظة (اختياري)" value={notes[submission.id] ?? ''} onChange={(event) => setNotes((current) => ({ ...current, [submission.id]: event.target.value }))} className="block w-full text-xs" />
+                                                    <Input type="text" placeholder="ملاحظة (اختياري)" value={notes[submission.id] ?? ''} onChange={(event) => setNotes((current) => ({ ...current, [submission.id]: event.target.value }))} className="block w-full text-xs" />
                                                     <div className="flex gap-2">
-                                                        <button type="button" onClick={() => review(submission, 'accept')} className="rounded-control bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700">قبول كقراءة الأسبوع</button>
-                                                        <button type="button" onClick={() => review(submission, 'reject')} className="rounded-control border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">رفض</button>
+                                                        <Button onClick={() => review(submission, 'accept')} className="rounded-control bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700">قبول كقراءة الأسبوع</Button>
+                                                        <Button onClick={() => review(submission, 'reject')} className="rounded-control border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">رفض</Button>
                                                     </div>
                                                 </div>
                                             ) : (

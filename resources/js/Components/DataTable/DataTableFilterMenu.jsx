@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 import { useFilterVisibility } from '@/hooks/useFilterVisibility';
 import SearchableSelect from '@/Components/SearchableSelect';
@@ -130,8 +131,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
 
             {children}
             <div className="relative" ref={menuRef}>
-                <button
-                    type="button"
+                <Button
                     onClick={() => setOpen((current) => !current)}
                     aria-expanded={open}
                     className="gl-filter-trigger"
@@ -141,7 +141,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                     <span className="gl-filter-count gl-num">
                         {visibleKeys.length}/{hideable.length}
                     </span>
-                </button>
+                </Button>
 
                 {open && (
                     <div className="absolute inset-e-0 z-20 mt-2 w-60 rounded-2xl p-2 gl-pop">
@@ -169,13 +169,12 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
             </div>
 
             {activeCount > 0 && (
-                <button
-                    type="button"
+                <Button
                     onClick={onClear}
                     className="gl-filter-clear"
                 >
                     مسح الفلاتر ({activeCount})
-                </button>
+                </Button>
             )}
         </div>
     );

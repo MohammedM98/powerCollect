@@ -1,3 +1,4 @@
+import { Input } from '@heroui/react';
 import ChoiceChips from '@/Components/ChoiceChips';
 import Switch from '@/Components/Switch';
 import InputError from '@/Components/InputError';
@@ -47,7 +48,7 @@ export default function QuickMessageKind({
                     <label htmlFor={`${id}-min-balance`} className="mb-1.5 block text-sm font-semibold text-gray-700">
                         لمن عليه رصيد أكبر من (₪)
                     </label>
-                    <input
+                    <Input
                         id={`${id}-min-balance`}
                         type="number"
                         min="0"

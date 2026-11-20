@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { lazy, Suspense, useMemo, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -142,7 +143,7 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                 )}
 
                 <nav aria-label="أقسام التقارير" className="gl-seg reports-sections">
-                    {sections.map((item) => <button key={item.key} type="button" aria-current={section === item.key ? 'page' : undefined} onClick={() => { setPrintView(item.key === 'movements' ? 'lines' : 'summary'); visit({ section: item.key, page: undefined }); }} ><Icon name={item.icon} className="h-4 w-4" />{item.title}</button>)}
+                    {sections.map((item) => <Button key={item.key} aria-current={section === item.key ? 'page' : undefined} onClick={() => { setPrintView(item.key === 'movements' ? 'lines' : 'summary'); visit({ section: item.key, page: undefined }); }} ><Icon name={item.icon} className="h-4 w-4" />{item.title}</Button>)}
                 </nav>
                 <PeriodCard branches={branches} branchScope={branchScope} scopeLabel={scopeLabel} filters={filters} presets={presets} today={today} period={period} periodText={periodText} visit={visit} />
 

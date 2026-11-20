@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import Icon from '@/Components/Icon';
 import { formatMoney } from '@/lib/format';
@@ -16,8 +17,7 @@ export default function SplitPaymentBadge({ split, compact = false, className = 
 
     return (
         <>
-            <button
-                type="button"
+            <Button
                 onClick={(event) => {
                     // A row that opens on click must not open under the badge's own click.
                     event.stopPropagation();
@@ -28,7 +28,7 @@ export default function SplitPaymentBadge({ split, compact = false, className = 
             >
                 <Icon name="layers" className="h-3! w-3!" />
                 <span className="min-w-0 truncate">دفعة مقسّمة{!compact && <>، {formatMoney(split.total)} ₪</>}</span>
-            </button>
+            </Button>
             {open && <SplitPaymentDetails id={split.id} onClose={() => setOpen(false)} />}
         </>
     );

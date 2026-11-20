@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { Children, cloneElement, isValidElement } from 'react';
 import Icon from '@/Components/Icon';
 import { useRowActionsMenu } from '@/hooks/useRowActionsMenu';
@@ -41,7 +42,7 @@ const TONES = {
  *   financial ledger).
  * - `menuController`: shares a useRowActionsMenu controller with the row's
  *   context-click and keyboard handlers, so every trigger opens one menu.
- * - children, e.g. <RowActionsMenu><button onClick={…}>تعديل</button></RowActionsMenu>:
+ * - children, e.g. <RowActionsMenu><Button type="submit" onClick={…}>تعديل</Button></RowActionsMenu>:
  *   each becomes a same-size icon button with its word as the tooltip
  *   (and its color, for تعديل, حذف, طباعة and Excel).
  */
@@ -79,33 +80,33 @@ export default function RowActionsMenu({ onView, viewLabel = 'عرض', viewIcon 
                 })}
 
                 {menu && !onView && (
-                    <button type="button" className={`row-action ${coloredMenu ? 'row-action-menu' : ''}`.trim()} {...menuProps('إجراءات أخرى')}>
+                    <Button className={`row-action ${coloredMenu ? 'row-action-menu' : ''}`.trim()} {...menuProps('إجراءات أخرى')}>
                         <Icon name="dots" className="h-[18px] w-[18px]" strokeWidth={2} />
-                    </button>
+                    </Button>
                 )}
 
                 {onDelete && (
-                    <button type="button" className="row-action row-action-delete" title="حذف" aria-label="حذف" onClick={onDelete}>
+                    <Button className="row-action row-action-delete" title="حذف" aria-label="حذف" onClick={onDelete}>
                         <Icon name="trash" className="h-[18px] w-[18px]" />
-                    </button>
+                    </Button>
                 )}
 
                 {onEdit && (
-                    <button type="button" className="row-action row-action-edit" title="تعديل" aria-label="تعديل" onClick={onEdit}>
+                    <Button className="row-action row-action-edit" title="تعديل" aria-label="تعديل" onClick={onEdit}>
                         <Icon name="pencil" className="h-[18px] w-[18px]" />
-                    </button>
+                    </Button>
                 )}
 
                 {onView && (
                     <span className="row-action-view">
-                        <button type="button" onClick={onView}>
+                        <Button onClick={onView}>
                             <Icon name={viewIcon} className="h-4 w-4" />
                             {viewLabel}
-                        </button>
+                        </Button>
                         {menu && (
-                            <button type="button" {...menuProps('إجراءات أخرى')}>
+                            <Button {...menuProps('إجراءات أخرى')}>
                                 <Icon name="chevron-down" className="h-4 w-4" strokeWidth={2} />
-                            </button>
+                            </Button>
                         )}
                     </span>
                 )}

@@ -1,3 +1,4 @@
+import { TextArea } from '@heroui/react';
 import ChoiceChips from '@/Components/ChoiceChips';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
@@ -68,7 +69,7 @@ export function CorrectionReasonFields({ form, reasons, action = 'التصحيح
 
             <div>
                 <InputLabel htmlFor="correction_notes" value={`شرح ${action} (يظهر تحت الحركة في كشف الحساب)`} />
-                <textarea
+                <TextArea
                     id="correction_notes"
                     name="correction_notes"
                     rows={2}

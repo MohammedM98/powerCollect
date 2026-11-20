@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
@@ -6,7 +7,7 @@ import InputError from '@/Components/InputError';
 function NameInput({ value, onChange, onSave, onCancel, processing, error, label, maxLength }) {
     return <div className="max-w-full">
         <span className="inline-flex h-[38px] max-w-full items-center rounded-full border border-gray-900 bg-surface pe-1 ps-1.5">
-            <input autoFocus value={value} placeholder={label} aria-label={label} aria-invalid={Boolean(error)} maxLength={maxLength} disabled={processing}
+            <Input autoFocus value={value} placeholder={label} aria-label={label} aria-invalid={Boolean(error)} maxLength={maxLength} disabled={processing}
                 onChange={(event) => onChange(event.target.value)}
                 onKeyDown={(event) => {
                     if (event.key === 'Enter') {
@@ -18,8 +19,8 @@ function NameInput({ value, onChange, onSave, onCancel, processing, error, label
                     }
                 }}
                 className="min-w-0 w-36 border-0 bg-transparent px-2 py-0 text-sm font-semibold text-gray-900 focus:ring-0" />
-            <button type="button" onClick={onSave} disabled={processing || !value.trim()} aria-label="حفظ" className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-emerald-700 hover:bg-emerald-500/10 disabled:opacity-40"><Icon name="check" className="h-4 w-4" strokeWidth={2} /></button>
-            <button type="button" onClick={onCancel} disabled={processing} aria-label="إلغاء" className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 disabled:opacity-40"><Icon name="close" className="h-4 w-4" strokeWidth={2} /></button>
+            <Button onClick={onSave} isDisabled={processing || !value.trim()} aria-label="حفظ" className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-emerald-700 hover:bg-emerald-500/10 disabled:opacity-40"><Icon name="check" className="h-4 w-4" strokeWidth={2} /></Button>
+            <Button onClick={onCancel} isDisabled={processing} aria-label="إلغاء" className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 disabled:opacity-40"><Icon name="close" className="h-4 w-4" strokeWidth={2} /></Button>
         </span>
         <InputError message={error} className="mt-1" />
     </div>;
@@ -65,11 +66,11 @@ export default function ClassificationChips({ title, description, items, baseUrl
                 <span className="min-w-0 flex-1 wrap-break-word sm:flex-initial sm:truncate" title={item.name}>{item.name}</span>
                 <span className="shrink-0 font-display text-[13.5px] font-semibold text-gray-700">{item.count} {countLabel}</span>
                 <span className="hidden h-[5px] w-11 shrink-0 overflow-hidden rounded-full bg-gray-200 sm:block" aria-hidden="true"><i className="block h-full rounded-full bg-gray-700" style={{ width: `${(item.count / busiest) * 100}%` }} /></span>
-                {item.canUpdate && <button type="button" disabled={form.processing} onClick={() => edit(item)} aria-label={`تعديل ${item.name}`} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-blue-600 hover:bg-blue-500/10 disabled:opacity-40"><Icon name="pencil" className="h-[15px] w-[15px]" /></button>}
-                {item.canDelete && item.count === 0 && <button type="button" disabled={form.processing} onClick={() => onDelete(item)} aria-label={`حذف ${item.name}`} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-brand-600 hover:bg-brand-500/10 disabled:opacity-40"><Icon name="trash" className="h-[15px] w-[15px]" /></button>}
+                {item.canUpdate && <Button isDisabled={form.processing} onClick={() => edit(item)} aria-label={`تعديل ${item.name}`} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-blue-600 hover:bg-blue-500/10 disabled:opacity-40"><Icon name="pencil" className="h-[15px] w-[15px]" /></Button>}
+                {item.canDelete && item.count === 0 && <Button isDisabled={form.processing} onClick={() => onDelete(item)} aria-label={`حذف ${item.name}`} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-brand-600 hover:bg-brand-500/10 disabled:opacity-40"><Icon name="trash" className="h-[15px] w-[15px]" /></Button>}
             </span>)}
             {items.length === 0 && editing !== 'new' && <span className="text-[13.5px] text-gray-500">{emptyLabel}</span>}
-            {canCreate && (editing === 'new' ? editor('new') : <button type="button" disabled={form.processing} onClick={() => edit()} className="inline-flex h-[38px] items-center gap-1.5 rounded-full border-[1.5px] border-dashed border-gray-300 px-3.5 text-sm font-semibold text-gray-600 transition hover:border-gray-900 hover:text-gray-900 disabled:opacity-40"><Icon name="plus" className="h-[15px] w-[15px]" strokeWidth={2} />{addLabel}</button>)}
+            {canCreate && (editing === 'new' ? editor('new') : <Button isDisabled={form.processing} onClick={() => edit()} className="inline-flex h-[38px] items-center gap-1.5 rounded-full border-[1.5px] border-dashed border-gray-300 px-3.5 text-sm font-semibold text-gray-600 transition hover:border-gray-900 hover:text-gray-900 disabled:opacity-40"><Icon name="plus" className="h-[15px] w-[15px]" strokeWidth={2} />{addLabel}</Button>)}
         </div>
     </section>;
 }

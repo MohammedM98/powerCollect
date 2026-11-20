@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Icon from '@/Components/Icon';
@@ -258,9 +259,8 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
                         const colorful = menu.colorful ? (COLORFUL[item.tone] ?? COLORFUL.graphite) : null;
 
                         return (
-                            <button
+                            <Button
                                 key={item.label}
-                                type="button"
                                 role="menuitem"
                                 tabIndex={-1}
                                 aria-disabled={unavailable || undefined}
@@ -306,7 +306,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
                                         </kbd>
                                     )
                                 )}
-                            </button>
+                            </Button>
                         );
                     })}
                 </div>

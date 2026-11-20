@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { useState } from 'react';
 import Icon from '@/Components/Icon';
 import InlineNameEditor from './InlineNameEditor';
@@ -52,20 +53,18 @@ export default function HierarchyColumn({
         <section className={`min-w-0 flex-col border-gray-100 lg:flex lg:border-s lg:first:border-s-0 ${active ? 'flex' : 'hidden'}`}>
             <div className="flex items-center gap-2.5 px-4 pb-2.5 pt-3.5">
                 {onBack && (
-                    <button
-                        type="button"
+                    <Button
                         onClick={onBack}
                         aria-label="رجوع"
                         className="grid h-9 w-9 place-items-center rounded-lg border border-gray-200 bg-surface text-gray-700 lg:hidden"
                     >
                         <Icon name="chevron-right" className="h-4 w-4" strokeWidth={2} />
-                    </button>
+                    </Button>
                 )}
                 <h2 className="font-luxe text-lg font-bold text-gray-900">{title}</h2>
                 {items && <small className="font-display text-[13.5px] font-semibold text-gray-700">{count}</small>}
                 {items && canAdd && (
-                    <button
-                        type="button"
+                    <Button
                         onClick={() => {
                             setAdding(true);
                             setEditingId(null);
@@ -74,7 +73,7 @@ export default function HierarchyColumn({
                     >
                         <Icon name="plus" className="h-4 w-4" strokeWidth={2} />
                         إضافة
-                    </button>
+                    </Button>
                 )}
             </div>
 
@@ -84,7 +83,7 @@ export default function HierarchyColumn({
                 <>
                     {(count > SEARCHABLE_FROM || query) && (
                         <div className="px-3 pb-2">
-                            <input
+                            <Input
                                 type="search"
                                 value={searchesOnServer ? search : localSearch}
                                 onChange={(event) => (searchesOnServer ? onSearchChange : setLocalSearch)(event.target.value)}
@@ -166,14 +165,13 @@ function Row({ item, selected, onPick, subtitle, onEdit, onDelete }) {
             }`}
         >
             {pickable ? (
-                <button
-                    type="button"
+                <Button
                     aria-pressed={selected}
                     onClick={pick}
                     className="min-w-0 flex-1 self-stretch rounded text-start focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                 >
                     {name}
-                </button>
+                </Button>
             ) : (
                 <span className="min-w-0">{name}</span>
             )}
@@ -197,8 +195,7 @@ function Row({ item, selected, onPick, subtitle, onEdit, onDelete }) {
 /** The pencil / bin on a row: shown on hover, focus and on the picked row — always on touch screens. */
 function RowIconButton({ label, icon, visible, onClick }) {
     return (
-        <button
-            type="button"
+        <Button
             aria-label={label}
             title={label}
             onClick={(event) => {
@@ -210,7 +207,7 @@ function RowIconButton({ label, icon, visible, onClick }) {
             }`}
         >
             <Icon name={icon} className="h-4 w-4" />
-        </button>
+        </Button>
     );
 }
 

@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import InputError from '@/Components/InputError';
 import { formatMoney, normalizeDecimalInput } from '@/lib/format';
 import LedgerLine from './LedgerLine';
@@ -21,7 +22,7 @@ export default function OnceDiscountLine({ balance, balanceAfter, data, errors, 
                 description={
                     <div className="gl-cl-in" data-invalid={errors.notes ? true : undefined}>
                         <label htmlFor="discount_notes" className="sr-only">ملاحظات</label>
-                        <input
+                        <Input
                             id="discount_notes"
                             name="notes"
                             maxLength={1000}
@@ -34,7 +35,7 @@ export default function OnceDiscountLine({ balance, balanceAfter, data, errors, 
                 }
                 amount={
                     <div className="gl-cl-in is-amount" data-invalid={errors.value || invalid ? true : undefined}>
-                        <input
+                        <Input
                             ref={valueInput}
                             id="value"
                             name="value"
@@ -56,14 +57,14 @@ export default function OnceDiscountLine({ balance, balanceAfter, data, errors, 
             <div className="gl-cl-under">
                 <div className="gl-cl-quick">
                     {QUICK_VALUES.map((quick) => (
-                        <button key={quick} type="button" className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setValue(quick)}>
+                        <Button key={quick} className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setValue(quick)}>
                             {quick}
-                        </button>
+                        </Button>
                     ))}
                     {owed > 0 && (
-                        <button type="button" className="is-settle" onClick={() => setValue(owed)}>
+                        <Button className="is-settle" onClick={() => setValue(owed)}>
                             كل ما عليه <bdi className="gl-num">{formatMoney(owed)}</bdi>
-                        </button>
+                        </Button>
                     )}
                 </div>
                 <span className="gl-cl-hint ms-auto">يُنزَّل مرة واحدة من الرصيد المستحق، ولا يزيد عليه.</span>

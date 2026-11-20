@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { useId } from 'react';
 import Icon from '@/Components/Icon';
 import ChoiceChips from '@/Components/ChoiceChips';
@@ -67,7 +68,7 @@ export function NumberField({ label, value, onChange, min, max, step = 1 }) {
     return (
         <Field label={label}>
             {(id) => (
-                <input
+                <Input
                     id={id}
                     type="number"
                     min={min}
@@ -217,7 +218,7 @@ export function Highlights({ rules, columns, onChange }) {
                             ))}
                         </select>
                         {!['empty', 'notEmpty'].includes(rule.operator) && (
-                            <input
+                            <Input
                                 aria-label={`قيمة القاعدة ${index + 1}`}
                                 type="text"
                                 maxLength={100}
@@ -229,9 +230,8 @@ export function Highlights({ rules, columns, onChange }) {
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                         {HIGHLIGHT_COLORS.map((color) => (
-                            <button
+                            <Button
                                 key={color.value}
-                                type="button"
                                 aria-label={color.label}
                                 aria-pressed={rule.color === color.value}
                                 title={color.label}
@@ -280,10 +280,9 @@ export function Highlights({ rules, columns, onChange }) {
 /** A small icon-only button, named for screen readers and in its tooltip. */
 export function IconButton({ icon, label, onClick, disabled = false, tone = 'gray' }) {
     return (
-        <button
-            type="button"
+        <Button
             onClick={onClick}
-            disabled={disabled}
+            isDisabled={disabled}
             aria-label={label}
             title={label}
             className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-surface transition hover:border-gray-300 disabled:cursor-not-allowed disabled:opacity-30 ${
@@ -291,6 +290,6 @@ export function IconButton({ icon, label, onClick, disabled = false, tone = 'gra
             } ${FOCUS_RING}`}
         >
             <Icon name={icon} className="h-4 w-4" />
-        </button>
+        </Button>
     );
 }

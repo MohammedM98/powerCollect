@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import Icon from '@/Components/Icon';
 import InfoTip from '@/Components/InfoTip';
@@ -66,12 +67,12 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                             { value: 'off', label: 'لنفسه فقط' },
                         ]}
                     />
-                    <button type="button" disabled={disabled || keyed === held.length} onClick={() => setAll(held, true)} className="pm-grant-button">
+                    <Button isDisabled={disabled || keyed === held.length} onClick={() => setAll(held, true)} className="pm-grant-button">
                         منح الكل
-                    </button>
-                    <button type="button" disabled={disabled || keyed === 0} onClick={() => onChange([])} className="pm-grant-button">
+                    </Button>
+                    <Button isDisabled={disabled || keyed === 0} onClick={() => onChange([])} className="pm-grant-button">
                         لا شيء
-                    </button>
+                    </Button>
                 </div>
             </div>
 
@@ -132,13 +133,12 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                                         const on = grantable.includes(entry.id);
 
                                         return (
-                                            <button
+                                            <Button
                                                 key={entry.id}
-                                                type="button"
                                                 role="checkbox"
                                                 aria-checked={on}
                                                 aria-label={`يمنح «${entry.label}» لموظفي فرعه`}
-                                                disabled={disabled}
+                                                isDisabled={disabled}
                                                 onClick={() => toggle(entry.id)}
                                                 className={`pm-grant-row ${on ? 'is-on' : ''}`}
                                             >
@@ -164,7 +164,7 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                                                 <span className={`pm-check ${on ? 'is-on' : ''}`} aria-hidden="true">
                                                     <Icon name="check" className="h-4 w-4" strokeWidth={3} />
                                                 </span>
-                                            </button>
+                                            </Button>
                                         );
                                     })}
                                 </div>

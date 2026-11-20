@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
@@ -90,8 +91,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                     <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-side-logo" aria-label={`${companyName}، الصفحة الرئيسية`}>
                         <BrandLogo alt="" markSize={40} className="h-10 w-auto max-w-[56px] object-contain" />
                     </Link>
-                    <button
-                        type="button"
+                    <Button
                         className="tn-side-pin"
                         onClick={() => setSideMode(wideSide ? 'rail' : 'wide')}
                         aria-pressed={wideSide}
@@ -99,7 +99,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                         title={wideSide ? 'إلغاء التثبيت' : 'تثبيت الشريط مفتوحًا'}
                     >
                         <Icon name="thumbtack" />
-                    </button>
+                    </Button>
                     <nav
                         ref={navRef}
                         className="tn-sections"
@@ -158,10 +158,9 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             const badge = badgeOf(item.group, badges);
 
                             return (
-                                <button
+                                <Button
                                     key={item.key}
                                     ref={register}
-                                    type="button"
                                     className="tn-section"
                                     data-item={item.key}
                                     data-lit={litKey === item.key}
@@ -186,7 +185,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                                     )}
                                     {/* The section opens a menu of its pages (MegaMenu): its arrow points toward it, once the bar is open. */}
                                     <Icon name="chevron-left" className="tn-section-chev" />
-                                </button>
+                                </Button>
                             );
                         })}
                     </nav>
@@ -197,25 +196,24 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             <span className="tn-section-label">الملف الشخصي</span>
                         </Link>
                         <LogoutForm>
-                            <button type="submit" className="tn-section" title="تسجيل الخروج">
+                            <Button type="submit" className="tn-section" title="تسجيل الخروج">
                                 <Icon name="door" className="tn-section-icon" />
                                 <span className="tn-section-label">خارج النظام</span>
-                            </button>
+                            </Button>
                         </LogoutForm>
                     </div>
                 </aside>
 
                 <div className="tn-bar">
                     <div className="tn-context flex min-w-0 items-center">
-                        <button
-                            type="button"
+                        <Button
                             className="tn-tool tn-side-mode tn-desktop-only"
                             onClick={() => setSideMode(NEXT_MODE[sideMode])}
                             aria-label={`وضع القائمة الجانبية: ${MODE_LABELS[sideMode]}، التالي ${MODE_LABELS[NEXT_MODE[sideMode]]}`}
                             title="وضع القائمة: موسّعة ← أيقونات ← مخفية"
                         >
                             <Icon name="layout-side" />
-                        </button>
+                        </Button>
                         <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-brand" data-tour="brand" aria-label={`${companyName}، ${branchLabel ?? tagline}، الصفحة الرئيسية`}>
                             <span className="tn-top-logo"><BrandLogo alt="" markSize={38} /></span>
                             <span className="tn-brand-divider" aria-hidden="true" />
@@ -238,17 +236,17 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             </Link>
                         )}
                         {/* Named by the words it shows, so a voice command that says them reaches it, even when the narrow bar hides them. */}
-                        <button type="button" className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label={`${searchText} Ctrl K`} aria-keyshortcuts="Control+K" title="بحث وأوامر، Ctrl K">
+                        <Button className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label={`${searchText} Ctrl K`} aria-keyshortcuts="Control+K" title="بحث وأوامر، Ctrl K">
                             <Icon name="search" />
                             <span className="tn-search-text flex-1 text-start">{searchText}</span>
                             <span className="tn-kbd" dir="ltr">Ctrl K</span>
-                        </button>
+                        </Button>
                         <QuickActionsMenu onPickSubscriber={onOpenPalette} />
                         <AppearanceMenu onShowShortcuts={onShowShortcuts} onStartTour={onStartTour} />
                         <ActivityBell open={popover === 'bell'} onToggle={() => togglePopover('bell')} onClose={() => setPopover(null)} />
-                        <button type="button" className="tn-tool tn-mobile-only" data-tour="menu" onClick={onOpenDrawer} aria-label="القائمة" aria-expanded={drawerOpen}>
+                        <Button className="tn-tool tn-mobile-only" data-tour="menu" onClick={onOpenDrawer} aria-label="القائمة" aria-expanded={drawerOpen}>
                             <Icon name="menu" />
-                        </button>
+                        </Button>
                     </div>
                     {subnav && <div className="tn-bar-tabs">{subnav}</div>}
                 </div>

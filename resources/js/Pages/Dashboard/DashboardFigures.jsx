@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { Link } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import ChartStudio from '@/Components/ChartStudio';
@@ -112,9 +113,9 @@ export function DebtorsPanel({ debts, can, openStatement }) {
                             </small>
                         </div>
                         {can?.viewSubscriptions && (
-                            <button type="button" className="gl-btn gl-sec gl-sm" onClick={() => openStatement(debtor)} aria-haspopup="dialog" aria-label={`كشف حساب ${debtor.name}`}>
+                            <Button className="gl-btn gl-sec gl-sm" onClick={() => openStatement(debtor)} aria-haspopup="dialog" aria-label={`كشف حساب ${debtor.name}`}>
                                 كشف
-                            </button>
+                            </Button>
                         )}
                     </div>
                 ))

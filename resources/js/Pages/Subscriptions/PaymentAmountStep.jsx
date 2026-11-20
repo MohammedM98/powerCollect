@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import SearchableSelect from '@/Components/SearchableSelect';
@@ -31,7 +32,7 @@ export default function PaymentAmountStep({
                 </label>
                 <div className="gl-amount" data-invalid={errors.amount ? true : undefined}>
                     <div className="flex items-center gap-3">
-                        <input
+                        <Input
                             ref={amountInput}
                             id="amount"
                             name="amount"
@@ -78,20 +79,19 @@ export default function PaymentAmountStep({
                     )}
                     <div className="gl-amount-quick">
                         {owed > 0 && (
-                            <button
-                                type="button"
-                                disabled={data.currency !== 'ILS' && !(Number(exchangeRate) > 0)}
+                            <Button
+                                isDisabled={data.currency !== 'ILS' && !(Number(exchangeRate) > 0)}
                                 onClick={() => setAmount(String(Number((owed / (data.currency === 'ILS' ? 1 : Number(exchangeRate))).toFixed(2))))}
                                 className="gl-chip gl-chip-sm"
                                 style={{ color: 'var(--gl-ok)', borderColor: 'color-mix(in srgb, var(--gl-ok) 40%, transparent)' }}
                             >
                                 تسديد كامل الدين
-                            </button>
+                            </Button>
                         )}
                         {QUICK_AMOUNTS.map((quick) => (
-                            <button key={quick} type="button" onClick={() => setAmount(String(quick))} className="gl-chip gl-chip-sm gl-num">
+                            <Button key={quick} onClick={() => setAmount(String(quick))} className="gl-chip gl-chip-sm gl-num">
                                 {quick}
-                            </button>
+                            </Button>
                         ))}
                     </div>
                 </div>

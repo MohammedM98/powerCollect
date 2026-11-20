@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import SecondaryButton from '@/Components/SecondaryButton';
@@ -35,7 +36,7 @@ function PartRow({ part, onAmount, onRemove, error }) {
                 <td className="gl-num" data-tone={now.tone}>{balanceText(now)}</td>
                 <td>
                     <div className="gl-cl-in is-amount" data-invalid={error ? true : undefined}>
-                        <input
+                        <Input
                             id={`part-${part.subscription.id}`}
                             inputMode="decimal"
                             autoComplete="off"
@@ -50,9 +51,9 @@ function PartRow({ part, onAmount, onRemove, error }) {
                 </td>
                 <td><b className="gl-sp-after gl-num" data-tone={after.tone}>{balanceText(after)}</b></td>
                 <td>
-                    <button type="button" onClick={onRemove} aria-label={`إزالة ${part.subscription.fullName}`} className="gl-sp-x">
+                    <Button onClick={onRemove} aria-label={`إزالة ${part.subscription.fullName}`} className="gl-sp-x">
                         <Icon name="close" className="h-[18px] w-[18px]" />
-                    </button>
+                    </Button>
                 </td>
             </tr>
             {error && (
@@ -115,7 +116,7 @@ export default function SplitRecipientsSection({
             <div className="flex flex-wrap items-start gap-3">
                 <div className="gl-sp-search relative min-w-0 flex-1 basis-72">
                     <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-4 my-auto h-[18px] w-[18px] text-gray-400" />
-                    <input
+                    <Input
                         id="split_search"
                         type="search"
                         aria-label="إضافة مشترك إلى هذه الدفعة"
@@ -136,9 +137,8 @@ export default function SplitRecipientsSection({
 
                                 return (
                                     <li key={subscription.id}>
-                                        <button
-                                            type="button"
-                                            disabled={added}
+                                        <Button
+                                            isDisabled={added}
                                             onClick={() => addSubscription(subscription)}
                                             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition hover:bg-gray-50 disabled:opacity-40"
                                         >
@@ -156,7 +156,7 @@ export default function SplitRecipientsSection({
                                             >
                                                 {added ? 'مُضاف' : balanceText(describeBalance(subscription.balance))}
                                             </span>
-                                        </button>
+                                        </Button>
                                     </li>
                                 );
                             })}

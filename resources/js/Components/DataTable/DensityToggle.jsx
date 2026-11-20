@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import { useTableDensity } from '@/hooks/useTableDensity';
 
@@ -16,9 +17,8 @@ export default function DensityToggle() {
     return (
         <div role="group" aria-label="كثافة الصفوف" className="inline-flex gap-0.5 rounded-control border border-gray-100 bg-gray-50 p-[3px]">
             {DENSITIES.map((option) => (
-                <button
+                <Button
                     key={option.value}
-                    type="button"
                     aria-pressed={density === option.value}
                     aria-label={option.label}
                     title={option.label}
@@ -28,7 +28,7 @@ export default function DensityToggle() {
                     }`}
                 >
                     <Icon name={option.icon} className="h-4 w-4" />
-                </button>
+                </Button>
             ))}
         </div>
     );

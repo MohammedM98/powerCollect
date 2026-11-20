@@ -1,4 +1,4 @@
-import { Card, Chip } from '@heroui/react';
+import { Button, Card, Chip } from '@heroui/react';
 import Balance from '@/Components/Balance';
 import Icon from '@/Components/Icon';
 
@@ -71,12 +71,11 @@ export default function SubscriptionSwitcher({ subscriberNumber, subscriptions, 
                     const current = subscription.id === currentId;
 
                     return (
-                        <button
+                        <Button
                             key={subscription.id}
-                            type="button"
                             aria-current={current ? 'true' : undefined}
                             aria-label={`عرض كشف الاشتراك ${subscription.accountNumber}`}
-                            disabled={current}
+                            isDisabled={current}
                             onClick={() => onSelect(subscription)}
                             className="gl-sub-card"
                         >
@@ -106,7 +105,7 @@ export default function SubscriptionSwitcher({ subscriberNumber, subscriptions, 
                                     </span>
                                 )}
                             </span>
-                        </button>
+                        </Button>
                     );
                 })}
             </div>

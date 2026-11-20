@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react';
 import { Head, usePage } from '@inertiajs/react';
-import { Card } from '@heroui/react';
+import { Button, Card } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import { printFieldsProps, printRowProps } from '@/lib/print';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -204,9 +204,9 @@ export default function Index({ debtors, summary, collection = null, buckets, sc
                                     <Fragment key={debtor.id}>
                                     <tr {...rowClick(can?.viewSubscriptions ? () => openStatement(debtor) : null)} {...printRowProps({ lastPayment: lastPaymentText(debtor) })} className={open ? 'is-open' : undefined}>
                                         <td className="dt-exp">
-                                            <button type="button" className="dt-exp-btn" aria-expanded={open} aria-controls={`debtor-details-${debtor.id}`} aria-label={`${open ? 'إخفاء' : 'عرض'} تفاصيل ${debtor.name}`} onClick={(event) => { event.stopPropagation(); toggleRow(debtor.id); }}>
+                                            <Button className="dt-exp-btn" aria-expanded={open} aria-controls={`debtor-details-${debtor.id}`} aria-label={`${open ? 'إخفاء' : 'عرض'} تفاصيل ${debtor.name}`} onClick={(event) => { event.stopPropagation(); toggleRow(debtor.id); }}>
                                                 <Icon name="chevron-down" className="h-4 w-4" />
-                                            </button>
+                                            </Button>
                                         </td>
                                         <td>
                                             <RowIdentity
