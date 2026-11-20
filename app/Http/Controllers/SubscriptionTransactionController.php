@@ -19,7 +19,6 @@ use App\Support\Ledger\CorrectLine;
 use App\Support\Ledger\EraseLine;
 use App\Support\Ledger\LedgerAmounts;
 use App\Support\Ledger\LinePresenter;
-use App\Support\Ledger\PaymentReferences;
 use App\Support\Ledger\RecordCharge;
 use App\Support\Ledger\RecordClearing;
 use App\Support\Ledger\RecordDiscount;
@@ -82,9 +81,8 @@ class SubscriptionTransactionController extends Controller
         $actor = $request->user();
         $details = $request->safe()->except(['correction_reason', 'correction_notes']);
 
-        // A corrected part of a split transfer stays a part of it, so it still shares the transfer's reference.
-        if ($transaction->isPayment() && $transaction->split_payment_id !== null
-            && PaymentReferences::normalizeReference($details['reference_number'] ?? null) === PaymentReferences::normalizeReference($transaction->reference_number)) {
+        // A corrected part of a split transfer stays a part of it (the request keeps its reference and method).
+        if ($transaction->isPayment() && $transaction->split_payment_id !== null) {
             $details['split_payment_id'] = $transaction->split_payment_id;
         }
 
