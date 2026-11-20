@@ -93,8 +93,8 @@ extension _ShellSync on _FieldShellState {
     final reviewNotes = <String>[];
     String? interruption;
     try {
+      final sending = <Map<String, dynamic>>[];
       for (final reading in reviewed) {
-        if (!mounted) break;
         final id = reading['mobile_operation_id'] as String;
         if (!widget.store.queuedReadings
             .any((item) => item['mobile_operation_id'] == id)) {
@@ -106,12 +106,47 @@ extension _ShellSync on _FieldShellState {
           failed++;
           continue;
         }
+        sending.add(reading);
+      }
+      // Marked uncertain before they leave: an answer lost on the way leaves
+      // them to be sent again as they are, never recorded twice.
+      for (final reading in sending) {
+        await widget.store
+            .markReadingUncertain(reading['mobile_operation_id'] as String);
+      }
+      Map<String, Object> outcomes;
+      try {
+        outcomes = sending.isEmpty
+            ? const {}
+            : await widget.api.sendReadings([
+                for (final reading in sending)
+                  {...reading}
+                    ..remove('sync_error')
+                    ..remove('upload_uncertain')
+                    ..remove('review')
+              ]);
+      } on ApiException catch (error) {
+        outcomes = {
+          for (final reading in sending)
+            reading['mobile_operation_id'] as String: error
+        };
+      }
+      // Whether the stop left it unknown if the server recorded them (the
+      // connection dropped) rather than refusing them before reading any.
+      var answerLost = false;
+      for (final reading in sending) {
+        if (!mounted) break;
+        final id = reading['mobile_operation_id'] as String;
+        final outcome = outcomes[id];
+        if (interruption != null || outcome == null) {
+          if (outcome == null || !answerLost) {
+            await widget.store.markReadingUncertain(id, uncertain: false);
+          }
+          continue;
+        }
         try {
-          await widget.store.markReadingUncertain(id);
-          final response = await widget.api.sendReading({...reading}
-            ..remove('sync_error')
-            ..remove('upload_uncertain')
-            ..remove('review'));
+          if (outcome is ApiException) throw outcome;
+          final response = outcome as Map<String, dynamic>;
           final subscribers = widget.store.subscribers;
           for (final subscriber in subscribers) {
             if (subscriber['id'] == reading['subscription_id'] &&
@@ -136,8 +171,9 @@ extension _ShellSync on _FieldShellState {
           if (error.isNetwork || error.statusCode >= 500) {
             interruption =
                 'انقطع الاتصال أو تعذّر معرفة نتيجة الرفع. بقيت القراءات على الجهاز؛ أعد المحاولة بنفسها لتجنب التكرار.';
+            answerLost = true;
             if (mounted) change(() => online = false);
-            break;
+            continue;
           }
           if (error.statusCode == 401 || error.statusCode == 403) {
             await widget.store.markReadingUncertain(id, uncertain: false);
@@ -147,14 +183,21 @@ extension _ShellSync on _FieldShellState {
             if (mounted) {
               change(() => requiresLogin = error.statusCode == 401);
             }
-            break;
+            continue;
           }
           if (error.statusCode == 426) {
             // The server turned this old app away before reading anything,
             // so the readings stay on the phone until the app is updated.
             await widget.store.markReadingUncertain(id, uncertain: false);
             interruption = error.message;
-            break;
+            continue;
+          }
+          if (error.statusCode == 429) {
+            // Too many requests: refused before reading any, so they stay to send again.
+            await widget.store.markReadingUncertain(id, uncertain: false);
+            interruption =
+                'أُرسلت طلبات كثيرة في وقت قصير. بقيت القراءات على الجهاز؛ أعد الرفع بعد دقيقة.';
+            continue;
           }
           final details = error.errors.values
               .expand((value) => value is List ? value : [value])
