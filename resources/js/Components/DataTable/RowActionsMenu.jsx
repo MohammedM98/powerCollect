@@ -42,7 +42,7 @@ const TONES = {
  *   financial ledger).
  * - `menuController`: shares a useRowActionsMenu controller with the row's
  *   context-click and keyboard handlers, so every trigger opens one menu.
- * - children, e.g. <RowActionsMenu><Button type="submit" onClick={…}>تعديل</Button></RowActionsMenu>:
+ * - children, e.g. <RowActionsMenu><Button data-raw="" variant="ghost" type="submit" onClick={…}>تعديل</Button></RowActionsMenu>:
  *   each becomes a same-size icon button with its word as the tooltip
  *   (and its color, for تعديل, حذف, طباعة and Excel).
  */
@@ -80,31 +80,31 @@ export default function RowActionsMenu({ onView, viewLabel = 'عرض', viewIcon 
                 })}
 
                 {menu && !onView && (
-                    <Button className={`row-action ${coloredMenu ? 'row-action-menu' : ''}`.trim()} {...menuProps('إجراءات أخرى')}>
+                    <Button data-raw="" variant="ghost" className={`row-action ${coloredMenu ? 'row-action-menu' : ''}`.trim()} {...menuProps('إجراءات أخرى')}>
                         <Icon name="dots" className="h-[18px] w-[18px]" strokeWidth={2} />
                     </Button>
                 )}
 
                 {onDelete && (
-                    <Button className="row-action row-action-delete" title="حذف" aria-label="حذف" onClick={onDelete}>
+                    <Button data-raw="" variant="ghost" className="row-action row-action-delete" title="حذف" aria-label="حذف" onClick={onDelete}>
                         <Icon name="trash" className="h-[18px] w-[18px]" />
                     </Button>
                 )}
 
                 {onEdit && (
-                    <Button className="row-action row-action-edit" title="تعديل" aria-label="تعديل" onClick={onEdit}>
+                    <Button data-raw="" variant="ghost" className="row-action row-action-edit" title="تعديل" aria-label="تعديل" onClick={onEdit}>
                         <Icon name="pencil" className="h-[18px] w-[18px]" />
                     </Button>
                 )}
 
                 {onView && (
                     <span className="row-action-view">
-                        <Button onClick={onView}>
+                        <Button data-raw="" variant="ghost" onClick={onView}>
                             <Icon name={viewIcon} className="h-4 w-4" />
                             {viewLabel}
                         </Button>
                         {menu && (
-                            <Button {...menuProps('إجراءات أخرى')}>
+                            <Button data-raw="" variant="ghost" {...menuProps('إجراءات أخرى')}>
                                 <Icon name="chevron-down" className="h-4 w-4" strokeWidth={2} />
                             </Button>
                         )}

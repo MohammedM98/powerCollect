@@ -240,14 +240,14 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                                     {look.quick.length > 0 && (
                                         <div className="gl-cl-quick">
                                             {look.quick.map((quick) => (
-                                                <Button key={quick} className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setAmount(String(quick))}>
+                                                <Button data-raw="" variant="ghost" key={quick} className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setAmount(String(quick))}>
                                                     {quick}
                                                 </Button>
                                             ))}
                                         </div>
                                     )}
                                     {isMinimumCharge && (
-                                        <Button aria-pressed={data.override_minimum_amount} onClick={() => {
+                                        <Button data-raw="" variant="ghost" aria-pressed={data.override_minimum_amount} onClick={() => {
                                             if (data.override_minimum_amount) {
                                                 setData((current) => ({ ...current, amount: String(subscription.minimumPayment ?? '0'), override_minimum_amount: false }));
                                                 form.clearErrors('amount');

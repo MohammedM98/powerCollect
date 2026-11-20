@@ -41,7 +41,7 @@ export default function ResultReport({ result, onClose }) {
                         )}
                     </p>
                 </div>
-                <Button onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-1.5 text-gray-500 hover:bg-gray-100">
+                <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-1.5 text-gray-500 hover:bg-gray-100">
                     <Icon name="close" className="h-4 w-4" />
                 </Button>
             </div>

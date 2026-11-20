@@ -33,7 +33,7 @@ export default function MessageRecipientList({
             }
             actions={
                 withPhone.length > 0 && (
-                    <Button
+                    <Button data-raw="" variant="ghost"
                         onClick={() => setSelected(new Set(allSelected ? [] : withPhone.map((recipient) => recipient.id)))}
                         className={`rounded text-xs font-semibold text-brand-600 hover:underline ${FOCUS_RING}`}
                     >
@@ -76,7 +76,7 @@ export default function MessageRecipientList({
                                 onChange={() => toggle(recipient.id)}
                                 aria-label={`إرسال إلى ${recipient.name}`}
                             />
-                            <Button
+                            <Button data-raw="" variant="ghost"
                                 onClick={() => setPreviewId(recipient.id)}
                                 aria-pressed={previewId === recipient.id}
                                 aria-label={`معاينة رسالة ${recipient.name}`}

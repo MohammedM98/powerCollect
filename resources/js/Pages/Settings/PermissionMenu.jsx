@@ -65,7 +65,7 @@ export function MenuButton({ icon, label, children, className = '' }) {
 
     return (
         <div ref={ref} className="relative">
-            <Button aria-haspopup="menu" aria-expanded={open} onClick={toggle} className={className}>
+            <Button data-raw="" variant="ghost" aria-haspopup="menu" aria-expanded={open} onClick={toggle} className={className}>
                 <Icon name={icon} className="h-4 w-4" />
                 {label}
                 <Icon name="chevron-down" className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`} />

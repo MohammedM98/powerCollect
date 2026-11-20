@@ -43,7 +43,7 @@ export default function DistributionTable({ boxes, allBoxes = boxes, readers, se
                                 <td colSpan={canSelect ? 6 : 5}>
                                     <div className="flex flex-wrap items-center justify-between gap-3 py-1">
                                         <span className="font-bold text-gray-900">{group[0].subAreaName ?? 'بدون منطقة 2'} <span className="font-normal text-gray-500">({formatNumber(matchingArea.length)} طبلون ضمن النتائج)</span></span>
-                                        {canSelect && <Button isDisabled={busy} onClick={() => onToggleGroup(matchingArea)} className="text-xs font-semibold text-brand-600 hover:underline">{matchingArea.every((box) => selected.has(box.id)) ? 'إلغاء تحديد المنطقة' : 'تحديد المنطقة كاملة'}</Button>}
+                                        {canSelect && <Button data-raw="" variant="ghost" isDisabled={busy} onClick={() => onToggleGroup(matchingArea)} className="text-xs font-semibold text-brand-600 hover:underline">{matchingArea.every((box) => selected.has(box.id)) ? 'إلغاء تحديد المنطقة' : 'تحديد المنطقة كاملة'}</Button>}
                                     </div>
                                 </td>
                             </tr>

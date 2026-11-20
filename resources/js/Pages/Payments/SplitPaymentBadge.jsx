@@ -17,7 +17,7 @@ export default function SplitPaymentBadge({ split, compact = false, className = 
 
     return (
         <>
-            <Button
+            <Button data-raw="" variant="ghost"
                 onClick={(event) => {
                     // A row that opens on click must not open under the badge's own click.
                     event.stopPropagation();

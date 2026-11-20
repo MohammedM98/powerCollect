@@ -188,6 +188,7 @@ export default function SearchableSelect({
     return (
         <div ref={containerRef} className={`relative ${className}`}>
             <Button
+                variant="ghost"
                 ref={buttonRef}
                 id={id}
                 isDisabled={disabled}

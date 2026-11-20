@@ -28,7 +28,7 @@ export default function ExcelCompanyTemplates({
                 <ul className="mb-3 overflow-hidden rounded-control border border-gray-100">
                     {company.templates.map((template) => (
                         <li key={template.id} className="flex items-center gap-1.5 border-b border-gray-100 px-3 py-2 last:border-b-0">
-                            <Button
+                            <Button data-raw="" variant="ghost"
                                 className="min-w-0 flex-1 text-start text-sm"
                                 onClick={() => applyTemplate(template.settings)}
                                 title="تطبيق القالب"
@@ -45,7 +45,7 @@ export default function ExcelCompanyTemplates({
                             )}
                             {company.canManage && (
                                 <>
-                                    <Button
+                                    <Button data-raw="" variant="ghost"
                                         isDisabled={saveHttp.processing}
                                         onClick={() => sendCompany('put', `/excel-templates/${template.id}`, { settings: layout() })}
                                         className="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-40"
@@ -54,7 +54,7 @@ export default function ExcelCompanyTemplates({
                                     >
                                         <Icon name="check" className="h-4 w-4" />
                                     </Button>
-                                    <Button
+                                    <Button data-raw="" variant="ghost"
                                         isDisabled={saveHttp.processing}
                                         onClick={() => sendCompany('put', `/excel-templates/${template.id}`, { is_default: !template.isDefault })}
                                         className="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-40"
@@ -65,7 +65,7 @@ export default function ExcelCompanyTemplates({
                                     >
                                         <Icon name="pin" className="h-4 w-4" />
                                     </Button>
-                                    <Button
+                                    <Button data-raw="" variant="ghost"
                                         isDisabled={saveHttp.processing}
                                         onClick={() =>
                                             window.confirm(`حذف القالب «${template.name}» لجميع المستخدمين؟`) &&

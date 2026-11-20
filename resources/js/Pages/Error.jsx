@@ -62,7 +62,7 @@ export default function Error({ status, blank = false }) {
                     <Icon name={signedIn ? 'home' : 'enter'} className="h-4 w-4" />
                     {signedIn ? 'العودة إلى لوحة التحكم' : 'تسجيل الدخول'}
                 </RecoveryLink>
-                <Button onClick={() => window.history.back()} className="gl-btn gl-sec">
+                <Button data-raw="" variant="ghost" onClick={() => window.history.back()} className="gl-btn gl-sec">
                     رجوع
                 </Button>
             </div>

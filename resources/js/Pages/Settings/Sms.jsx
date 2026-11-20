@@ -66,14 +66,14 @@ function SecretField({ id, label, hint, saved, cleared, value, error, onChange, 
                 {hint && !saved && <InfoTip label={`عن حقل ${label}`}>{hint}</InfoTip>}
                 {state === 'is-saved' && <span className="sm-secret-state"><Icon name="lock" />محفوظة ومشفّرة</span>}
                 {state === 'is-cleared' && <span className="sm-secret-state is-cleared"><Icon name="warning" />تُزال عند الحفظ</span>}
-                {saved && !cleared && !value && <Button className="sm-link" onClick={onClear}>إزالة</Button>}
-                {cleared && <Button className="sm-link" onClick={onUndoClear}>تراجع</Button>}
+                {saved && !cleared && !value && <Button data-raw="" variant="ghost" className="sm-link" onClick={onClear}>إزالة</Button>}
+                {cleared && <Button data-raw="" variant="ghost" className="sm-link" onClick={onUndoClear}>تراجع</Button>}
             </span>
             <div className="sm-secret">
                 <Input id={id} className="sm-input is-code" type={visible ? 'text' : 'password'} autoComplete="new-password" value={value}
                     placeholder={saved && !cleared ? '••••••••' : ''} onChange={(event) => onChange(event.target.value)}
                     aria-invalid={Boolean(error)} />
-                <Button className="sm-icon-button" onClick={() => setVisible(!visible)} aria-label={visible ? 'إخفاء' : 'إظهار'} title={visible ? 'إخفاء' : 'إظهار'}>
+                <Button data-raw="" variant="ghost" className="sm-icon-button" onClick={() => setVisible(!visible)} aria-label={visible ? 'إخفاء' : 'إظهار'} title={visible ? 'إخفاء' : 'إظهار'}>
                     <Icon name={visible ? 'eye-off' : 'eye'} />
                 </Button>
             </div>
@@ -189,10 +189,10 @@ export default function Sms({ setting, delivery, week }) {
                     </div>
                     <div>
                         <div className="rs-modes" role="group" aria-label="حالة البوابة">
-                            <Button aria-pressed={data.enabled} isDisabled={processing || missing.length > 0} onClick={() => setData('enabled', true)}>
+                            <Button data-raw="" variant="ghost" aria-pressed={data.enabled} isDisabled={processing || missing.length > 0} onClick={() => setData('enabled', true)}>
                                 <Icon name="send" />مفعّلة
                             </Button>
-                            <Button aria-pressed={!data.enabled} isDisabled={processing} onClick={() => setData('enabled', false)}>
+                            <Button data-raw="" variant="ghost" aria-pressed={!data.enabled} isDisabled={processing} onClick={() => setData('enabled', false)}>
                                 <Icon name="power" />متوقفة
                             </Button>
                         </div>
@@ -309,7 +309,7 @@ export default function Sms({ setting, delivery, week }) {
                                 </div>
                             </div>
                             <div className="sm-test-actions">
-                                <Button className="sm-send" onClick={sendTest} isDisabled={testing || processing || !data.url || !testPhone.trim()}>
+                                <Button data-raw="" variant="ghost" className="sm-send" onClick={sendTest} isDisabled={testing || processing || !data.url || !testPhone.trim()}>
                                     <Icon name="send" />{testing ? 'جارٍ الإرسال…' : 'إرسال رسالة تجربة'}
                                 </Button>
                                 {!data.url && <span className="sm-test-note">أدخل رابط الإرسال أولًا.</span>}

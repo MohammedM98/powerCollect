@@ -289,7 +289,7 @@ export default function QuickMessageModal({ subscriptionIds = [], selection = nu
                                 رسالة سريعة
                             </h3>
                         </div>
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             onClick={onClose}
                             aria-label="إغلاق"
                             className="rounded-xl p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-900"

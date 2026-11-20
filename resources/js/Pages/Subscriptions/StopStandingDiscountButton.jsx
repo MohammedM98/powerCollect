@@ -24,7 +24,7 @@ export default function StopStandingDiscountButton({ subscriptionId, subscriptio
 
     return (
         <>
-            <Button
+            <Button data-raw="" variant="ghost"
                 onClick={() => setConfirming(true)}
                 isDisabled={stopping}
                 className={`gl-pill-danger ${className}`}

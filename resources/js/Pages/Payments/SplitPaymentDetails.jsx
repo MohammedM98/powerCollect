@@ -39,7 +39,7 @@ export default function SplitPaymentDetails({ id, onClose }) {
                             {split && <p className="text-[13px] text-gray-500">تحويل بنكي واحد وُزّع على {split.partsCount} اشتراكات</p>}
                         </div>
                     </div>
-                    <Button onClick={onClose} aria-label="إغلاق" className="shrink-0 rounded-xl p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-900">
+                    <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق" className="shrink-0 rounded-xl p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-900">
                         <Icon name="close" />
                     </Button>
                 </div>

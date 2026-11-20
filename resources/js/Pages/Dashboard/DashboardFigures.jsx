@@ -113,7 +113,7 @@ export function DebtorsPanel({ debts, can, openStatement }) {
                             </small>
                         </div>
                         {can?.viewSubscriptions && (
-                            <Button className="gl-btn gl-sec gl-sm" onClick={() => openStatement(debtor)} aria-haspopup="dialog" aria-label={`كشف حساب ${debtor.name}`}>
+                            <Button data-raw="" variant="ghost" className="gl-btn gl-sec gl-sm" onClick={() => openStatement(debtor)} aria-haspopup="dialog" aria-label={`كشف حساب ${debtor.name}`}>
                                 كشف
                             </Button>
                         )}

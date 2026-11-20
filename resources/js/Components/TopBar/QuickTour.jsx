@@ -152,9 +152,9 @@ export default function QuickTour({ open, onClose, searchesSubscribers }) {
                     <div className="flex gap-1">
                         {steps.map(([name], dot) => <i key={name} className={`h-1.5 rounded-full ${dot === index ? 'w-5 bg-white' : 'w-1.5 bg-white/30'}`} />)}
                     </div>
-                    <Button onClick={onClose} className="ms-auto h-9 rounded-xl px-3 text-[13.5px] font-semibold text-[rgb(var(--silver-200))] hover:bg-white/10">إنهاء</Button>
-                    {index > 0 && <Button onClick={() => move(-1)} className="h-9 rounded-xl px-3 text-[13.5px] font-semibold hover:bg-white/10">السابق</Button>}
-                    <Button data-next onClick={() => move(1)} className="h-9 rounded-xl bg-white px-4 text-[13.5px] font-bold text-gray-900 dark:text-[rgb(var(--graphite-900))]">
+                    <Button data-raw="" variant="ghost" onClick={onClose} className="ms-auto h-9 rounded-xl px-3 text-[13.5px] font-semibold text-[rgb(var(--silver-200))] hover:bg-white/10">إنهاء</Button>
+                    {index > 0 && <Button data-raw="" variant="ghost" onClick={() => move(-1)} className="h-9 rounded-xl px-3 text-[13.5px] font-semibold hover:bg-white/10">السابق</Button>}
+                    <Button data-raw="" variant="ghost" data-next onClick={() => move(1)} className="h-9 rounded-xl bg-white px-4 text-[13.5px] font-bold text-gray-900 dark:text-[rgb(var(--graphite-900))]">
                         {index === steps.length - 1 ? 'تم' : 'التالي'}
                     </Button>
                 </div>

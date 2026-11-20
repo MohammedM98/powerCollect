@@ -91,7 +91,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                     <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-side-logo" aria-label={`${companyName}، الصفحة الرئيسية`}>
                         <BrandLogo alt="" markSize={40} className="h-10 w-auto max-w-[56px] object-contain" />
                     </Link>
-                    <Button
+                    <Button data-raw="" variant="ghost"
                         className="tn-side-pin"
                         onClick={() => setSideMode(wideSide ? 'rail' : 'wide')}
                         aria-pressed={wideSide}
@@ -158,7 +158,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             const badge = badgeOf(item.group, badges);
 
                             return (
-                                <Button
+                                <Button data-raw="" variant="ghost"
                                     key={item.key}
                                     ref={register}
                                     className="tn-section"
@@ -196,7 +196,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             <span className="tn-section-label">الملف الشخصي</span>
                         </Link>
                         <LogoutForm>
-                            <Button type="submit" className="tn-section" title="تسجيل الخروج">
+                            <Button data-raw="" variant="ghost" type="submit" className="tn-section" title="تسجيل الخروج">
                                 <Icon name="door" className="tn-section-icon" />
                                 <span className="tn-section-label">خارج النظام</span>
                             </Button>
@@ -206,7 +206,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
 
                 <div className="tn-bar">
                     <div className="tn-context flex min-w-0 items-center">
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             className="tn-tool tn-side-mode tn-desktop-only"
                             onClick={() => setSideMode(NEXT_MODE[sideMode])}
                             aria-label={`وضع القائمة الجانبية: ${MODE_LABELS[sideMode]}، التالي ${MODE_LABELS[NEXT_MODE[sideMode]]}`}
@@ -236,7 +236,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             </Link>
                         )}
                         {/* Named by the words it shows, so a voice command that says them reaches it, even when the narrow bar hides them. */}
-                        <Button className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label={`${searchText} Ctrl K`} aria-keyshortcuts="Control+K" title="بحث وأوامر، Ctrl K">
+                        <Button data-raw="" variant="ghost" className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label={`${searchText} Ctrl K`} aria-keyshortcuts="Control+K" title="بحث وأوامر، Ctrl K">
                             <Icon name="search" />
                             <span className="tn-search-text flex-1 text-start">{searchText}</span>
                             <span className="tn-kbd" dir="ltr">Ctrl K</span>
@@ -244,7 +244,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                         <QuickActionsMenu onPickSubscriber={onOpenPalette} />
                         <AppearanceMenu onShowShortcuts={onShowShortcuts} onStartTour={onStartTour} />
                         <ActivityBell open={popover === 'bell'} onToggle={() => togglePopover('bell')} onClose={() => setPopover(null)} />
-                        <Button className="tn-tool tn-mobile-only" data-tour="menu" onClick={onOpenDrawer} aria-label="القائمة" aria-expanded={drawerOpen}>
+                        <Button data-raw="" variant="ghost" className="tn-tool tn-mobile-only" data-tour="menu" onClick={onOpenDrawer} aria-label="القائمة" aria-expanded={drawerOpen}>
                             <Icon name="menu" />
                         </Button>
                     </div>

@@ -33,8 +33,8 @@ export default function UpdateProfileInformationForm({ user }) {
                 </div>
                 <div className="pp-actions">
                     <span className="pp-note" role="status">{isDirty ? 'تغييرات غير محفوظة' : recentlySuccessful ? 'حُفظ الاسم' : ''}</span>
-                    {isDirty && <Button className="pp-button" isDisabled={processing} onClick={() => { reset(); clearErrors(); }}>تراجع</Button>}
-                    <Button type="submit" className="pp-button primary" isDisabled={processing || !isDirty || !data.name.trim()}><Icon name="check" />{processing ? 'جارٍ الحفظ…' : 'حفظ الاسم'}</Button>
+                    {isDirty && <Button data-raw="" variant="ghost" className="pp-button" isDisabled={processing} onClick={() => { reset(); clearErrors(); }}>تراجع</Button>}
+                    <Button data-raw="" variant="ghost" type="submit" className="pp-button primary" isDisabled={processing || !isDirty || !data.name.trim()}><Icon name="check" />{processing ? 'جارٍ الحفظ…' : 'حفظ الاسم'}</Button>
                 </div>
             </form>
         </section>

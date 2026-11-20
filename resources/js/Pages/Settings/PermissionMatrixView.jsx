@@ -69,7 +69,7 @@ export default function PermissionMatrixView({
                     </div>
                     <div className="pm-modes" role="group" aria-label="تصفية الأقسام">
                         {MODES.map(([value, label]) => (
-                            <Button key={value} onClick={() => setMode(value)} aria-pressed={mode === value} className="pm-mode">
+                            <Button data-raw="" variant="ghost" key={value} onClick={() => setMode(value)} aria-pressed={mode === value} className="pm-mode">
                                 {label}
                                 <span className="font-display">{filterSections(sections, selected, saved, '', value).length}</span>
                             </Button>
@@ -79,7 +79,7 @@ export default function PermissionMatrixView({
                         <span className="me-2 inline-flex items-center">
                             <Switch checked={explaining} onChange={setExplaining} label="الشرح" ariaLabel="إظهار شرح الأقسام والأزرار" />
                         </span>
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             className="pm-ghost-button"
                             isDisabled={processing || matching.length === 0}
                             title="يجعل كل قسم معروض للعرض فقط"
@@ -88,7 +88,7 @@ export default function PermissionMatrixView({
                             <Icon name="eye" className="h-4 w-4" />
                             عرض فقط
                         </Button>
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             className="pm-ghost-button"
                             isDisabled={processing || matching.length === 0}
                             title="يسحب صلاحيات الأقسام المعروضة"
@@ -97,14 +97,14 @@ export default function PermissionMatrixView({
                             <Icon name="close" className="h-4 w-4" />
                             سحب الكل
                         </Button>
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             className="pm-ghost-button"
                             onClick={() => setOpenSections(allOpen ? new Set() : new Set(matching.map((section) => section.key)))}
                         >
                             <Icon name={allOpen ? 'collapse' : 'expand'} className="h-4 w-4" />
                             {allOpen ? 'طيّ الكل' : 'فتح الكل'}
                         </Button>
-                        <Button className="pm-ghost-button is-brand" onClick={() => setGuideAudience('all')}>
+                        <Button data-raw="" variant="ghost" className="pm-ghost-button is-brand" onClick={() => setGuideAudience('all')}>
                             <Icon name="document" className="h-4 w-4" />
                             دليل الصلاحيات
                         </Button>
@@ -146,7 +146,7 @@ export default function PermissionMatrixView({
                         <div className="px-5 py-12 text-center text-sm text-gray-500">
                             <Icon name="search" className="mx-auto h-8 w-8 text-gray-300" />
                             <p className="mt-2">لا توجد صلاحيات تطابق البحث أو التصفية.</p>
-                            <Button
+                            <Button data-raw="" variant="ghost"
                                 onClick={() => {
                                     search('');
                                     setMode('all');
@@ -177,7 +177,7 @@ export default function PermissionMatrixView({
                                         </span>
                                         <span className="flex-1" />
                                         {group.sections.some((section) => section.ladder?.actions.includes('view') || section.key === 'reports') && (
-                                            <Button
+                                            <Button data-raw="" variant="ghost"
                                                 onClick={() => setSelected(withGroupAccess(group.sections, selected, true))}
                                                 isDisabled={processing}
                                                 className="pm-link-button"

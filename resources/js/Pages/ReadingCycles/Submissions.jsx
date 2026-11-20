@@ -91,8 +91,8 @@ export default function Submissions({ cycle, submissions, canReview, filters, fi
                                                 <div className="flex min-w-56 flex-col gap-2">
                                                     <Input type="text" placeholder="ملاحظة (اختياري)" value={notes[submission.id] ?? ''} onChange={(event) => setNotes((current) => ({ ...current, [submission.id]: event.target.value }))} className="block w-full text-xs" />
                                                     <div className="flex gap-2">
-                                                        <Button onClick={() => review(submission, 'accept')} className="rounded-control bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700">قبول كقراءة الأسبوع</Button>
-                                                        <Button onClick={() => review(submission, 'reject')} className="rounded-control border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">رفض</Button>
+                                                        <Button data-raw="" variant="ghost" onClick={() => review(submission, 'accept')} className="rounded-control bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700">قبول كقراءة الأسبوع</Button>
+                                                        <Button data-raw="" variant="ghost" onClick={() => review(submission, 'reject')} className="rounded-control border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">رفض</Button>
                                                     </div>
                                                 </div>
                                             ) : (

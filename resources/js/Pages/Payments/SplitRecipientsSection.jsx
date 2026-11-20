@@ -51,7 +51,7 @@ function PartRow({ part, onAmount, onRemove, error }) {
                 </td>
                 <td><b className="gl-sp-after gl-num" data-tone={after.tone}>{balanceText(after)}</b></td>
                 <td>
-                    <Button onClick={onRemove} aria-label={`إزالة ${part.subscription.fullName}`} className="gl-sp-x">
+                    <Button data-raw="" variant="ghost" onClick={onRemove} aria-label={`إزالة ${part.subscription.fullName}`} className="gl-sp-x">
                         <Icon name="close" className="h-[18px] w-[18px]" />
                     </Button>
                 </td>
@@ -137,7 +137,7 @@ export default function SplitRecipientsSection({
 
                                 return (
                                     <li key={subscription.id}>
-                                        <Button
+                                        <Button data-raw="" variant="ghost"
                                             isDisabled={added}
                                             onClick={() => addSubscription(subscription)}
                                             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition hover:bg-gray-50 disabled:opacity-40"

@@ -16,7 +16,7 @@ export default function SurfaceToggle({ className = '' }) {
     return (
         <div role="group" aria-label="شكل الأسطح" className={`gl-seg tn-surface ${className}`}>
             {options.map((option) => (
-                <Button key={option.value} aria-pressed={surface === option.value} onClick={() => changeSurface(option.value)}>
+                <Button data-raw="" variant="ghost" key={option.value} aria-pressed={surface === option.value} onClick={() => changeSurface(option.value)}>
                     <Icon name={option.icon} className="h-[15px] w-[15px]" />
                     {option.label}
                 </Button>

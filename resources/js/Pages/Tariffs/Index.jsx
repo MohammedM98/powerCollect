@@ -96,7 +96,7 @@ function RateEditor({ tariff, dark, onDone }) {
                 </label>
                 <div className="flex gap-1.5">
                     {RATE_STEPS.map((step) => (
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             key={step}
                             onClick={() => setText(stepRate(text, step))}
                             className={`h-9 rounded-full border px-3 text-[13.5px] font-semibold transition ${
@@ -148,13 +148,13 @@ function RateEditor({ tariff, dark, onDone }) {
             </p>
 
             <div className="flex flex-wrap items-center gap-2">
-                <Button
+                <Button data-raw="" variant="ghost"
                     onClick={onDone}
                     className="gl-btn gl-sec"
                 >
                     إلغاء
                 </Button>
-                <Button
+                <Button data-raw="" variant="ghost"
                     onClick={save}
                     isDisabled={!change.valid || !change.changed || saving}
                     className="gl-btn ms-auto"

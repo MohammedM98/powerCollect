@@ -25,7 +25,7 @@ export function LatestPayments({ payments, latestPayments, period, search, onSea
                 </form>
                 <div className="gl-seg" role="group" aria-label="طريقة الدفع">
                     {[['', 'الكل'], ['cash', 'نقدي'], ['transfer', 'حوالات']].map(([value, label]) => (
-                        <Button key={value} aria-pressed={(filters.method ?? '') === value} onClick={() => onVisit({ method: value || null }, ['latestPayments', 'filters'])}>{label}</Button>
+                        <Button data-raw="" variant="ghost" key={value} aria-pressed={(filters.method ?? '') === value} onClick={() => onVisit({ method: value || null }, ['latestPayments', 'filters'])}>{label}</Button>
                     ))}
                 </div>
             </div>
@@ -52,7 +52,7 @@ export function LatestPayments({ payments, latestPayments, period, search, onSea
                             <tr key={payment.id} data-clickable={can?.viewSubscriptions || undefined} onClick={can?.viewSubscriptions ? () => onOpenStatement(payment) : undefined}>
                                 <td>
                                     {can?.viewSubscriptions ? (
-                                        <Button onClick={(event) => { event.stopPropagation(); onOpenStatement(payment); }} aria-haspopup="dialog" title="كشف الحساب" className="font-semibold">{payment.subscriber}</Button>
+                                        <Button data-raw="" variant="ghost" onClick={(event) => { event.stopPropagation(); onOpenStatement(payment); }} aria-haspopup="dialog" title="كشف الحساب" className="font-semibold">{payment.subscriber}</Button>
                                     ) : <b className="font-semibold">{payment.subscriber}</b>}
                                 </td>
                                 <td className="gl-mono" dir="ltr">{payment.accountNumber}</td>

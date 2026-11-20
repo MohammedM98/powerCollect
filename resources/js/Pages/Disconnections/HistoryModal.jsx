@@ -45,7 +45,7 @@ export default function HistoryModal({ history, loading, reasonOptions, onClose 
                             </p>
                         )}
                     </div>
-                    <Button onClick={onClose} aria-label="إغلاق" className="rounded-xl p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900">
+                    <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق" className="rounded-xl p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900">
                         <Icon name="close" />
                     </Button>
                 </div>

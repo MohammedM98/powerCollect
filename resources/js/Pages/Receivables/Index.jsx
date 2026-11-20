@@ -204,7 +204,7 @@ export default function Index({ debtors, summary, collection = null, buckets, sc
                                     <Fragment key={debtor.id}>
                                     <tr {...rowClick(can?.viewSubscriptions ? () => openStatement(debtor) : null)} {...printRowProps({ lastPayment: lastPaymentText(debtor) })} className={open ? 'is-open' : undefined}>
                                         <td className="dt-exp">
-                                            <Button className="dt-exp-btn" aria-expanded={open} aria-controls={`debtor-details-${debtor.id}`} aria-label={`${open ? 'إخفاء' : 'عرض'} تفاصيل ${debtor.name}`} onClick={(event) => { event.stopPropagation(); toggleRow(debtor.id); }}>
+                                            <Button data-raw="" variant="ghost" className="dt-exp-btn" aria-expanded={open} aria-controls={`debtor-details-${debtor.id}`} aria-label={`${open ? 'إخفاء' : 'عرض'} تفاصيل ${debtor.name}`} onClick={(event) => { event.stopPropagation(); toggleRow(debtor.id); }}>
                                                 <Icon name="chevron-down" className="h-4 w-4" />
                                             </Button>
                                         </td>

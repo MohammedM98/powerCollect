@@ -8,7 +8,7 @@ export default function PermissionPanel({ title, summary, icon = 'shield', count
     const [localOpen, setLocalOpen] = useState(false);
     const open = controlledOpen ?? localOpen;
     return <section className={`permission-panel ${open ? 'is-open' : ''} ${changed ? 'is-changed' : ''} ${className}`}>
-        <Button className="permission-panel-heading" aria-expanded={open} aria-controls={id} onClick={() => onToggle ? onToggle(!open) : setLocalOpen(!open)}>
+        <Button data-raw="" variant="ghost" className="permission-panel-heading" aria-expanded={open} aria-controls={id} onClick={() => onToggle ? onToggle(!open) : setLocalOpen(!open)}>
             <span className="permission-panel-icon"><Icon name={icon} className="h-5 w-5" /></span>
             <span className="permission-panel-copy"><b>{title}</b>{summary && <small>{summary}</small>}</span>
             {changed && <span className="permission-change-label">تغيّر</span>}

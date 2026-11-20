@@ -66,7 +66,7 @@ export default function PhoneQuickEdit({ subscription }) {
 
     if (!editing) {
         return (
-            <Button
+            <Button data-raw="" variant="ghost"
                 onClick={start}
                 aria-label={subscription.contact_phone ? `${subscription.contact_phone} تعديل رقم جوال ${subscription.display_name}` : `إضافة رقم جوال ${subscription.display_name}`}
                 title="تعديل رقم الجوال"
@@ -113,7 +113,7 @@ export default function PhoneQuickEdit({ subscription }) {
                     placeholder="05XXXXXXXX"
                     className="block w-32 rounded-lg! px-2! py-1! text-sm"
                 />
-                <Button
+                <Button data-raw="" variant="ghost"
                     onClick={requestSave}
                     isDisabled={saving}
                     aria-label="حفظ الرقم"
@@ -122,7 +122,7 @@ export default function PhoneQuickEdit({ subscription }) {
                 >
                     <Icon name="check" className="h-4 w-4" strokeWidth={2.5} />
                 </Button>
-                <Button
+                <Button data-raw="" variant="ghost"
                     onClick={() => setEditing(false)}
                     aria-label="إلغاء"
                     title="إلغاء (Esc)"

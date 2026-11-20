@@ -127,11 +127,11 @@ function DateRange({ period, range, today, onChange, errors }) {
         <div className="per">
             <div className="pt2" role="group" aria-label="الفترة">
                 {PERIODS.map(([value, label]) => (
-                    <Button key={value} aria-pressed={period === value} onClick={() => value === 'custom' ? toggle() : onChange(value)}>{label}</Button>
+                    <Button data-raw="" variant="ghost" key={value} aria-pressed={period === value} onClick={() => value === 'custom' ? toggle() : onChange(value)}>{label}</Button>
                 ))}
             </div>
             <div className="range" ref={root}>
-                <Button className="rbtn" ref={trigger} onClick={toggle} aria-expanded={open} aria-controls="ledger-date-range">
+                <Button data-raw="" variant="ghost" className="rbtn" ref={trigger} onClick={toggle} aria-expanded={open} aria-controls="ledger-date-range">
                     <Icon name="calendar" /><small>الفترة</small><bdi className="num" dir="ltr">{shortDate(range.from)} — {shortDate(range.to)}</bdi>
                 </Button>
                 {open && (
@@ -139,7 +139,7 @@ function DateRange({ period, range, today, onChange, errors }) {
                         <div className="range-heading">
                             <span className="range-heading-icon"><Icon name="calendar" /></span>
                             <div><h3 id="ledger-range-title">فترة مخصصة</h3><p>حدّد الفترة لعرض حركات السجل المالي.</p></div>
-                            <Button className="range-close" aria-label="إغلاق اختيار الفترة" onClick={() => { setOpen(false); trigger.current?.focus(); }}><Icon name="close" /></Button>
+                            <Button data-raw="" variant="ghost" className="range-close" aria-label="إغلاق اختيار الفترة" onClick={() => { setOpen(false); trigger.current?.focus(); }}><Icon name="close" /></Button>
                         </div>
                         <div className="two">
                             <label htmlFor="ledger-from">تاريخ البداية<DateInput id="ledger-from" className="range-date-input" buttonRef={firstInput} required max={to || undefined} value={from} onChange={setFrom} /></label>
@@ -147,14 +147,14 @@ function DateRange({ period, range, today, onChange, errors }) {
                         </div>
                         <span className="range-presets-label">اختيار سريع</span>
                         <div className="qk">
-                            <Button onClick={() => quickRange('7')}>آخر 7 أيام</Button>
-                            <Button onClick={() => quickRange('month')}>هذا الشهر</Button>
-                            <Button onClick={() => quickRange('previous')}>الشهر الماضي</Button>
+                            <Button data-raw="" variant="ghost" onClick={() => quickRange('7')}>آخر 7 أيام</Button>
+                            <Button data-raw="" variant="ghost" onClick={() => quickRange('month')}>هذا الشهر</Button>
+                            <Button data-raw="" variant="ghost" onClick={() => quickRange('previous')}>الشهر الماضي</Button>
                         </div>
                         {(error || errors.from || errors.to) && <p className="err" role="alert"><Icon name="info" />{error || errors.from || errors.to}</p>}
                         <div className="ft">
-                            <Button type="submit" className="btn pr"><Icon name="check" />تطبيق الفترة</Button>
-                            <Button className="btn" onClick={() => { setOpen(false); trigger.current?.focus(); }}>إلغاء</Button>
+                            <Button data-raw="" variant="ghost" type="submit" className="btn pr"><Icon name="check" />تطبيق الفترة</Button>
+                            <Button data-raw="" variant="ghost" className="btn" onClick={() => { setOpen(false); trigger.current?.focus(); }}>إلغاء</Button>
                         </div>
                     </form>
                 )}
@@ -226,7 +226,7 @@ function TransactionRow({ entry, grouped, onOpen, rowClick, open, onToggle, runn
         <>
         <tr className={`row ${entry.isCancelled ? 'cx' : ''} ${open ? 'is-open' : ''}`} {...rowClick(onOpen)}>
             <td className="xp-c">
-                <Button className="dt-exp-btn" aria-expanded={open} aria-controls={`ledger-details-${entry.id}`} aria-label={`${open ? 'إخفاء' : 'عرض'} تفاصيل القيد`} onClick={(event) => { event.stopPropagation(); onToggle(); }}>
+                <Button data-raw="" variant="ghost" className="dt-exp-btn" aria-expanded={open} aria-controls={`ledger-details-${entry.id}`} aria-label={`${open ? 'إخفاء' : 'عرض'} تفاصيل القيد`} onClick={(event) => { event.stopPropagation(); onToggle(); }}>
                     <Icon name="chevron-down" />
                 </Button>
             </td>
@@ -244,7 +244,7 @@ function TransactionRow({ entry, grouped, onOpen, rowClick, open, onToggle, runn
             </td>
             <td className="who-c">
                 <div className="who"><span className="av" aria-hidden="true">{initials}</span><div>
-                    <b>{onOpen ? <Button className="name-btn" onClick={onOpen} aria-label={`فتح كشف حساب ${entry.subscriptionName}`}>{entry.subscriptionName}</Button> : entry.subscriptionName}</b>
+                    <b>{onOpen ? <Button data-raw="" variant="ghost" className="name-btn" onClick={onOpen} aria-label={`فتح كشف حساب ${entry.subscriptionName}`}>{entry.subscriptionName}</Button> : entry.subscriptionName}</b>
                     <small><bdi>{entry.subscriptionAccountNumber}</bdi>، {entry.branchName}</small>
                 </div></div>
             </td>
@@ -320,7 +320,7 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
     }
 
     function sortHeading(column, label) {
-        return <th scope="col" aria-sort={filters.sort === column ? filters.direction === 'asc' ? 'ascending' : 'descending' : 'none'}><Button onClick={() => sort(column)}>{label}{filters.sort === column && <Icon name="chevron-down" className={filters.direction === 'asc' ? 'rotate-180' : ''} />}</Button></th>;
+        return <th scope="col" aria-sort={filters.sort === column ? filters.direction === 'asc' ? 'ascending' : 'descending' : 'none'}><Button data-raw="" variant="ghost" onClick={() => sort(column)}>{label}{filters.sort === column && <Icon name="chevron-down" className={filters.direction === 'asc' ? 'rotate-180' : ''} />}</Button></th>;
     }
 
     return (
@@ -354,7 +354,7 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
                             </div>
                             <DateRange period={period} range={dateRange} today={today} onChange={changePeriod} errors={errors} />
                         </div>
-                        <Button className="btn fbtn" onClick={() => setFiltersOpen(!filtersOpen)} aria-expanded={filtersOpen} aria-controls="ledger-filters"><Icon name="filter" />الفلاتر{activeFilters > 0 && <span className="num">{activeFilters}</span>}</Button>
+                        <Button data-raw="" variant="ghost" className="btn fbtn" onClick={() => setFiltersOpen(!filtersOpen)} aria-expanded={filtersOpen} aria-controls="ledger-filters"><Icon name="filter" />الفلاتر{activeFilters > 0 && <span className="num">{activeFilters}</span>}</Button>
                         {can?.printAuditReports !== false && <TableExportActions title="السجل المالي" />}
                     </div>
                     <div className={`fb ${filtersOpen ? 'open' : ''}`} id="ledger-filters">
@@ -367,7 +367,7 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
                                 <Label>إظهار الملغاة</Label>
                             </Switch.Content>
                         </Switch>
-                        {activeFilters > 0 && <Button className="clr" onClick={clearPanelFilters}>مسح الفلاتر</Button>}
+                        {activeFilters > 0 && <Button data-raw="" variant="ghost" className="clr" onClick={clearPanelFilters}>مسح الفلاتر</Button>}
                     </div>
                     <table data-excel-source="custom" className="ledger-table" aria-label="السجل المالي">
                         <thead><tr><th scope="col"><span className="sr-only">تفاصيل</span></th>{sortHeading('created_at', 'الوقت')}<th scope="col">المشترك</th><th scope="col">النوع</th><th scope="col">السند</th><th scope="col">سجّله</th>{sortHeading('amount', 'مدين (عليه)')}<th scope="col">دائن (له)</th><th scope="col">{runningBalances ? 'رصيد السجل بعده' : 'رصيد المشترك بعده'}</th></tr></thead>

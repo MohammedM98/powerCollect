@@ -29,7 +29,7 @@ export default function ReadingPricingField({ reading, field }) {
     }
 
     return <>
-        <span className="rh-last-value"><span dir="ltr">{saved != null ? formatMoney(saved) : '—'}</span>{allowed && <Button className="rh-last-pencil" aria-label={`تعديل ${label}`} title={`تعديل ${label} لهذه القراءة فقط`} onClick={() => { setValue(String(saved)); setError(null); setOpen(true); }}><Icon name="pencil" /></Button>}</span>
+        <span className="rh-last-value"><span dir="ltr">{saved != null ? formatMoney(saved) : '—'}</span>{allowed && <Button data-raw="" variant="ghost" className="rh-last-pencil" aria-label={`تعديل ${label}`} title={`تعديل ${label} لهذه القراءة فقط`} onClick={() => { setValue(String(saved)); setError(null); setOpen(true); }}><Icon name="pencil" /></Button>}</span>
         <Modal show={open} onClose={saving ? undefined : () => setOpen(false)} maxWidth="lg">
             <form onSubmit={submit} className="space-y-4 p-6" dir="rtl">
                 <h3 className="text-lg font-bold">تعديل {label} لهذه القراءة</h3>

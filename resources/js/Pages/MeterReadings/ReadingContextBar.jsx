@@ -152,7 +152,7 @@ export default function ReadingContextBar({ anchorRef, sectionRef, week, weekEnd
                     )}
                 </div>
                 <span className="re-context-count"><b>{Number(total ?? 0).toLocaleString('en')}</b> مشترك</span>
-                <Button className="re-context-edit" onClick={showFilters}>
+                <Button data-raw="" variant="ghost" className="re-context-edit" onClick={showFilters}>
                     <Icon name="filter" className="h-4 w-4" />
                     تغيير الفلاتر
                 </Button>

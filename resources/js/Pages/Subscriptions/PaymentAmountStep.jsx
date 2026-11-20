@@ -80,7 +80,7 @@ export default function PaymentAmountStep({
                     )}
                     <div className="gl-amount-quick">
                         {owed > 0 && (
-                            <Button
+                            <Button data-raw="" variant="ghost"
                                 isDisabled={data.currency !== 'ILS' && !(Number(exchangeRate) > 0)}
                                 onClick={() => setAmount(String(Number((owed / (data.currency === 'ILS' ? 1 : Number(exchangeRate))).toFixed(2))))}
                                 className="gl-chip gl-chip-sm"
@@ -90,7 +90,7 @@ export default function PaymentAmountStep({
                             </Button>
                         )}
                         {QUICK_AMOUNTS.map((quick) => (
-                            <Button key={quick} onClick={() => setAmount(String(quick))} className="gl-chip gl-chip-sm gl-num">
+                            <Button data-raw="" variant="ghost" key={quick} onClick={() => setAmount(String(quick))} className="gl-chip gl-chip-sm gl-num">
                                 {quick}
                             </Button>
                         ))}

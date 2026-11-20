@@ -48,7 +48,7 @@ export default function UpdatePasswordForm() {
                 </div>
                 <div className="pp-actions">
                     <span className="pp-note" role="status">{recentlySuccessful ? 'تم تغيير كلمة المرور' : 'بعد التغيير يبقى هذا الجهاز مسجّل الدخول.'}</span>
-                    <Button type="submit" className="pp-button primary" isDisabled={processing}><Icon name="key" />{processing ? 'جارٍ الحفظ…' : 'تغيير كلمة المرور'}</Button>
+                    <Button data-raw="" variant="ghost" type="submit" className="pp-button primary" isDisabled={processing}><Icon name="key" />{processing ? 'جارٍ الحفظ…' : 'تغيير كلمة المرور'}</Button>
                 </div>
             </form>
         </section>

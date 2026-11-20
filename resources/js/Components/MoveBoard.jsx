@@ -254,7 +254,7 @@ export default function MoveBoard({ lanes, items, laneOf, itemKey, itemLabel, re
                                 );
                             })}
                             {laneItems.length > limit && (
-                                <Button
+                                <Button data-raw="" variant="ghost"
                                     className="gl-btn gl-ghost gl-sm"
                                     aria-expanded={expanded.has(lane.key)}
                                     onClick={() => toggleLane(lane.key)}

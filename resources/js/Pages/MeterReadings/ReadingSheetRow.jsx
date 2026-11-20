@@ -63,7 +63,7 @@ export function LastReadingCell({ row }) {
                 <span className="re-last-value">
                     <span className="re-last-number">{row.previousReading}</span>
                     {lastReading?.canEdit && (
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             className="re-last-pencil"
                             onClick={editor.open}
                             aria-label={`تعديل القراءة السابقة لـ ${row.fullName}`}
@@ -220,7 +220,7 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
             </td>
             <LastReadingCell row={row} />
             <td className="re-input-cell">
-                <div className="re-input" dir="ltr"><Button tabIndex={-1} className="re-step" aria-label={`إنقاص قراءة ${row.fullName}`} onMouseDown={(e) => e.preventDefault()} onClick={() => step(-1)} isDisabled={!row.canEdit || saving || (value !== '' && Number(value) <= Number(row.previousReading))}>−</Button><Input
+                <div className="re-input" dir="ltr"><Button data-raw="" variant="ghost" tabIndex={-1} className="re-step" aria-label={`إنقاص قراءة ${row.fullName}`} onMouseDown={(e) => e.preventDefault()} onClick={() => step(-1)} isDisabled={!row.canEdit || saving || (value !== '' && Number(value) <= Number(row.previousReading))}>−</Button><Input
                     type="number"
                     inputMode="decimal"
                     step="0.01"
@@ -274,7 +274,7 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
                         }
                     }}
                     className={error ? 'has-error' : missed ? 'is-missed' : isSaved ? 'is-saved' : ''}
-                /><Button tabIndex={-1} className="re-step" aria-label={`زيادة قراءة ${row.fullName}`} onMouseDown={(e) => e.preventDefault()} onClick={() => step(1)} isDisabled={!row.canEdit || saving}>+</Button></div>
+                /><Button data-raw="" variant="ghost" tabIndex={-1} className="re-step" aria-label={`زيادة قراءة ${row.fullName}`} onMouseDown={(e) => e.preventDefault()} onClick={() => step(1)} isDisabled={!row.canEdit || saving}>+</Button></div>
             </td>
             <td className={`re-diff re-number ${charges && charges.consumption < 0 ? 'text-red-600' : 'text-brand-700'}`}>
                 {charges ? charges.consumption : '—'}
@@ -315,7 +315,7 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
                     <span className="re-saved" role="status"><Icon name="check" strokeWidth={2.4} />حُفظت</span>
                 ) : row.reading ? (
                     <div className="re-pills">
-                        {approvable && row.canApprove && row.reading.status === 'pending' && !row.reading.requiresReentry ? <Button className="re-pill pending re-pill-action" isDisabled={!isSaved || approving} onClick={() => onApprove(row.reading.id)} title={isSaved ? 'اضغط لمراجعة واعتماد هذه القراءة فقط' : 'احفظ تعديل القراءة أولًا'} aria-label={`اعتماد قراءة ${row.fullName}`}><i />بانتظار الاعتماد<Icon name="check" className="h-3.5 w-3.5" /></Button> : <span className={`re-pill ${row.reading.status}`}><i />{row.reading.requiresReentry ? 'بانتظار إدخال الحالية' : row.reading.status === 'pending' ? 'بانتظار الاعتماد' : row.reading.statusLabel}</span>}
+                        {approvable && row.canApprove && row.reading.status === 'pending' && !row.reading.requiresReentry ? <Button data-raw="" variant="ghost" className="re-pill pending re-pill-action" isDisabled={!isSaved || approving} onClick={() => onApprove(row.reading.id)} title={isSaved ? 'اضغط لمراجعة واعتماد هذه القراءة فقط' : 'احفظ تعديل القراءة أولًا'} aria-label={`اعتماد قراءة ${row.fullName}`}><i />بانتظار الاعتماد<Icon name="check" className="h-3.5 w-3.5" /></Button> : <span className={`re-pill ${row.reading.status}`}><i />{row.reading.requiresReentry ? 'بانتظار إدخال الحالية' : row.reading.status === 'pending' ? 'بانتظار الاعتماد' : row.reading.statusLabel}</span>}
                         {billCancelled && !isDraft && (
                             <span className="re-pill unbilled" title="أُلغيت فاتورة هذه القراءة من كشف حساب المشترك، فلا تُحمَّل عليه.">
                                 <i />الفاتورة ملغاة

@@ -17,7 +17,7 @@ export default function DensityToggle() {
     return (
         <div role="group" aria-label="كثافة الصفوف" className="inline-flex gap-0.5 rounded-control border border-gray-100 bg-gray-50 p-[3px]">
             {DENSITIES.map((option) => (
-                <Button
+                <Button data-raw="" variant="ghost"
                     key={option.value}
                     aria-pressed={density === option.value}
                     aria-label={option.label}

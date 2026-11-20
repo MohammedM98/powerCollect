@@ -53,7 +53,7 @@ export default function HierarchyColumn({
         <section className={`min-w-0 flex-col border-gray-100 lg:flex lg:border-s lg:first:border-s-0 ${active ? 'flex' : 'hidden'}`}>
             <div className="flex items-center gap-2.5 px-4 pb-2.5 pt-3.5">
                 {onBack && (
-                    <Button
+                    <Button data-raw="" variant="ghost"
                         onClick={onBack}
                         aria-label="رجوع"
                         className="grid h-9 w-9 place-items-center rounded-lg border border-gray-200 bg-surface text-gray-700 lg:hidden"
@@ -64,7 +64,7 @@ export default function HierarchyColumn({
                 <h2 className="font-luxe text-lg font-bold text-gray-900">{title}</h2>
                 {items && <small className="font-display text-[13.5px] font-semibold text-gray-700">{count}</small>}
                 {items && canAdd && (
-                    <Button
+                    <Button data-raw="" variant="ghost"
                         onClick={() => {
                             setAdding(true);
                             setEditingId(null);
@@ -165,7 +165,7 @@ function Row({ item, selected, onPick, subtitle, onEdit, onDelete }) {
             }`}
         >
             {pickable ? (
-                <Button
+                <Button data-raw="" variant="ghost"
                     aria-pressed={selected}
                     onClick={pick}
                     className="min-w-0 flex-1 self-stretch rounded text-start focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
@@ -195,7 +195,7 @@ function Row({ item, selected, onPick, subtitle, onEdit, onDelete }) {
 /** The pencil / bin on a row: shown on hover, focus and on the picked row — always on touch screens. */
 function RowIconButton({ label, icon, visible, onClick }) {
     return (
-        <Button
+        <Button data-raw="" variant="ghost"
             aria-label={label}
             title={label}
             onClick={(event) => {

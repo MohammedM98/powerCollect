@@ -131,7 +131,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
 
             {children}
             <div className="relative" ref={menuRef}>
-                <Button
+                <Button data-raw="" variant="ghost"
                     onClick={() => setOpen((current) => !current)}
                     aria-expanded={open}
                     className="gl-filter-trigger"
@@ -169,7 +169,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
             </div>
 
             {activeCount > 0 && (
-                <Button
+                <Button data-raw="" variant="ghost"
                     onClick={onClear}
                     className="gl-filter-clear"
                 >

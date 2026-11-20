@@ -267,7 +267,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                             {warningTemplates.length > 0 && (
                                 <div className="flex flex-wrap gap-2">
                                     {warningTemplates.map((template) => (
-                                        <Button key={template.id} onClick={() => setBody(template.body)} className="rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50">
+                                        <Button data-raw="" variant="ghost" key={template.id} onClick={() => setBody(template.body)} className="rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50">
                                             {template.name}
                                         </Button>
                                     ))}
@@ -279,7 +279,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                                 <p className="mt-1 flex flex-wrap gap-1.5 text-xs text-gray-500">
                                     الحقول:
                                     {placeholders.map((name) => (
-                                        <Button key={name} onClick={() => setBody((current) => `${current} {${name}}`)} className="rounded bg-gray-100 px-1.5 font-display">{`{${name}}`}</Button>
+                                        <Button data-raw="" variant="ghost" key={name} onClick={() => setBody((current) => `${current} {${name}}`)} className="rounded bg-gray-100 px-1.5 font-display">{`{${name}}`}</Button>
                                     ))}
                                 </p>
                                 <InputError message={errors.body} className="mt-1" />

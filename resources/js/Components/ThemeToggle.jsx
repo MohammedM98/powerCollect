@@ -15,7 +15,7 @@ export default function ThemeToggle({ className = '' }) {
     }
 
     return (
-        <Button
+        <Button data-raw="" variant="ghost"
             onClick={toggle}
             aria-label={dark ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الغامق'}
             title={dark ? 'الوضع الفاتح' : 'الوضع الغامق'}

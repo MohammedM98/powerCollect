@@ -8,7 +8,7 @@ export default function SortableTh({ column, label, sortState, onSort, className
 
     return (
         <th aria-sort={active ? (direction === 'asc' ? 'ascending' : 'descending') : 'none'} className={className}>
-            <Button
+            <Button data-raw="" variant="ghost"
                 onClick={() => onSort(column)}
                 className={`-mx-2 inline-flex items-center gap-1.5 rounded-lg px-2 py-1 font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${
                     active ? 'text-gray-900' : 'hover:bg-gray-900/5 hover:text-gray-900'

@@ -101,7 +101,7 @@ export default function StatementModal({ subscription, statement, initialForm = 
                             </div>
                             <div className="flex shrink-0 items-center gap-2">
                                 {onEdit && statement?.canUpdate && (
-                                    <Button onClick={() => onEdit(header)} aria-label="تعديل البيانات" title="تعديل البيانات" className="gl-ib">
+                                    <Button data-raw="" variant="ghost" onClick={() => onEdit(header)} aria-label="تعديل البيانات" title="تعديل البيانات" className="gl-ib">
                                         <Icon name="pencil" className="h-[18px] w-[18px]" />
                                     </Button>
                                 )}
@@ -113,7 +113,7 @@ export default function StatementModal({ subscription, statement, initialForm = 
                                 >
                                     <Icon name="external" className="h-[18px] w-[18px]" />
                                 </Link>
-                                <Button onClick={onClose} aria-label="إخفاء الكشف" title="إخفاء (Esc)" className="gl-ib">
+                                <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إخفاء الكشف" title="إخفاء (Esc)" className="gl-ib">
                                     <Icon name="close" className="h-[18px] w-[18px]" />
                                 </Button>
                             </div>

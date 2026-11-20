@@ -33,7 +33,7 @@ export default function BulkActionsMenu({ abilities, onChoose }) {
     return (
         <>
             <div className={`${groupActionSurfaceClass} items-stretch`}>
-                <Button
+                <Button data-raw="" variant="ghost"
                     onClick={(event) => {
                         const opener = event.currentTarget;
                         setAnchor((current) => (current ? null : opener));

@@ -14,7 +14,7 @@ export default function AsyncState({ loading = false, error = null, empty = fals
                 <Icon name="alert" className="h-6 w-6" />
                 <p className="leading-7">{error}</p>
                 {onRetry && (
-                    <Button onClick={onRetry} className="gl-btn gl-ghost gl-sm">
+                    <Button data-raw="" variant="ghost" onClick={onRetry} className="gl-btn gl-ghost gl-sm">
                         <Icon name="repeat" className="h-4 w-4" />
                         إعادة المحاولة
                     </Button>

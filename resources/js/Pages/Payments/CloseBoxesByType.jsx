@@ -78,7 +78,7 @@ export default function CloseBoxesByType({ boxes, branchId, userId, initialType,
                     <p className="mt-1 text-sm leading-6 text-gray-500">اختر النوع ثم الصناديق المفتوحة{userId ? ' للموظف المختار' : ''} التي تريد إغلاقها، وراجع ملخصها قبل التأكيد. بعد التأكيد تُقفل حركاتها وتذهب إلى التدقيق.</p>
                 </div>
             </div>
-            <Button onClick={onClose} aria-label="إغلاق النافذة" className="rounded-control p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"><Icon name="close" className="h-5 w-5" /></Button>
+            <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق النافذة" className="rounded-control p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"><Icon name="close" className="h-5 w-5" /></Button>
             </div>
             <CloseSteps steps={steps} current={current} onGo={(key) => sections[key].current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
         </header>
@@ -89,7 +89,7 @@ export default function CloseBoxesByType({ boxes, branchId, userId, initialType,
                 {types.map((value) => {
                     const ofType = boxes.filter((box) => box.type === value);
                     const chosen = value === type;
-                    return <Button key={value} aria-pressed={chosen} onClick={() => pickType(value)} className={`flex items-center gap-3 rounded-2xl border bg-surface p-3 text-start transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${chosen ? 'border-gray-900 shadow-[0_0_0_3px_rgb(var(--gray-900)/0.08)]' : 'border-gray-100 hover:border-gray-300'}`}>
+                    return <Button data-raw="" variant="ghost" key={value} aria-pressed={chosen} onClick={() => pickType(value)} className={`flex items-center gap-3 rounded-2xl border bg-surface p-3 text-start transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${chosen ? 'border-gray-900 shadow-[0_0_0_3px_rgb(var(--gray-900)/0.08)]' : 'border-gray-100 hover:border-gray-300'}`}>
                         <span className="relative shrink-0"><BoxTypeIcon type={value} className="h-10 w-10" />{chosen && <span className="absolute -inset-e-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-900 text-surface ring-2 ring-surface"><Icon name="check" className="h-2.5 w-2.5" strokeWidth={3} /></span>}</span>
                         <span className="min-w-0">
                             <span className="block font-semibold text-gray-900">{boxTypeStyles[value].label}</span>
@@ -105,7 +105,7 @@ export default function CloseBoxesByType({ boxes, branchId, userId, initialType,
             <section ref={sections.boxes} aria-label="الصناديق المفتوحة" className="scroll-mt-4 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <StepHeading number={2} title="اختر الصناديق" done={selected.length > 0} active={current === 'boxes'} hint={`${selected.length} من ${shown.length}`} />
-                    {shown.length > 1 && <Button onClick={toggleAll} className="rounded-lg px-2 py-1 text-sm font-semibold text-brand-600 transition hover:bg-brand-500/10">{allSelected ? 'إلغاء تحديد الكل' : 'تحديد الكل'}</Button>}
+                    {shown.length > 1 && <Button data-raw="" variant="ghost" onClick={toggleAll} className="rounded-lg px-2 py-1 text-sm font-semibold text-brand-600 transition hover:bg-brand-500/10">{allSelected ? 'إلغاء تحديد الكل' : 'تحديد الكل'}</Button>}
                 </div>
                 {!shown.length ? <p className="rounded-2xl border border-dashed border-gray-200 bg-surface p-6 text-center text-sm text-gray-500">لا توجد صناديق مفتوحة من هذا النوع يمكنك إغلاقها.</p> : <ul className="grid gap-2 sm:grid-cols-2">
                     {shown.map((box) => {
@@ -165,7 +165,7 @@ function CloseSteps({ steps, current, onGo }) {
             const active = step.key === current;
             const state = active ? 'current' : step.done ? 'done' : 'ahead';
             return <li key={step.key} className="min-w-0">
-                <Button onClick={() => onGo(step.key)} aria-current={active ? 'step' : undefined} className={`flex w-full min-w-0 items-center gap-2.5 rounded-xl border px-2.5 py-2 text-start transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${state === 'current' ? 'border-gray-900 bg-gray-900 text-surface shadow-xs' : state === 'done' ? 'border-emerald-500/25 bg-emerald-500/5 hover:border-emerald-500/40' : 'border-gray-100 bg-gray-50 hover:border-gray-200'}`}>
+                <Button data-raw="" variant="ghost" onClick={() => onGo(step.key)} aria-current={active ? 'step' : undefined} className={`flex w-full min-w-0 items-center gap-2.5 rounded-xl border px-2.5 py-2 text-start transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${state === 'current' ? 'border-gray-900 bg-gray-900 text-surface shadow-xs' : state === 'done' ? 'border-emerald-500/25 bg-emerald-500/5 hover:border-emerald-500/40' : 'border-gray-100 bg-gray-50 hover:border-gray-200'}`}>
                     <span aria-hidden="true" className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-display text-sm font-bold ${state === 'current' ? 'bg-surface text-gray-900' : state === 'done' ? 'bg-emerald-600 text-white' : 'bg-gray-200 text-gray-500'}`}>{step.done ? <Icon name="check" className="h-4 w-4" strokeWidth={3} /> : index + 1}</span>
                     <span className="min-w-0">
                         <span className={`block truncate text-xs font-bold sm:text-sm ${state === 'current' ? 'text-surface' : state === 'done' ? 'text-gray-900' : 'text-gray-500'}`}>{step.label}</span>

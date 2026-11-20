@@ -274,7 +274,7 @@ export default function Index({
                                 {groupByRegion && <tr className="meter-box-region-header"><td colSpan={5}>
                                     <div className="flex flex-wrap items-center gap-3 text-sm">
                                         <Icon name="pin" className="h-5 w-5 text-brand-600" />
-                                        {region.id === 'none' ? <b>{region.name}</b> : <Button onClick={() => setFilter('sub_area_id', String(region.id))} className="font-bold text-gray-900 underline-offset-4 hover:text-brand-600 hover:underline" aria-label={`عرض طبلونات ${region.name}`}>{region.name}</Button>}
+                                        {region.id === 'none' ? <b>{region.name}</b> : <Button data-raw="" variant="ghost" onClick={() => setFilter('sub_area_id', String(region.id))} className="font-bold text-gray-900 underline-offset-4 hover:text-brand-600 hover:underline" aria-label={`عرض طبلونات ${region.name}`}>{region.name}</Button>}
                                         <span className="rounded-control bg-surface px-2.5 py-1 text-[13.5px] font-semibold text-gray-700">{formatNumber(region.boxes.length)} طبلون في هذه الصفحة</span>
                                     </div>
                                 </td></tr>}
@@ -299,13 +299,13 @@ export default function Index({
                                     </td>
                                     <td data-actions="" className="text-end">
                                         <div className="flex items-center justify-end gap-2">
-                                        {canViewSubscriptions && <Button className="row-action row-action-quiet" aria-expanded={isExpanded(meterBox.id)} aria-controls={`meter-box-subscriptions-${meterBox.id}`} aria-label={`${isExpanded(meterBox.id) ? 'إخفاء' : 'عرض'} مشتركي ${meterBox.box_number}`} title="المشتركون" onClick={() => toggleExpanded(meterBox.id)}><Icon name="chevron-down" className={`h-4 w-4 transition-transform ${isExpanded(meterBox.id) ? 'rotate-180' : ''}`} /></Button>}
+                                        {canViewSubscriptions && <Button data-raw="" variant="ghost" className="row-action row-action-quiet" aria-expanded={isExpanded(meterBox.id)} aria-controls={`meter-box-subscriptions-${meterBox.id}`} aria-label={`${isExpanded(meterBox.id) ? 'إخفاء' : 'عرض'} مشتركي ${meterBox.box_number}`} title="المشتركون" onClick={() => toggleExpanded(meterBox.id)}><Icon name="chevron-down" className={`h-4 w-4 transition-transform ${isExpanded(meterBox.id) ? 'rotate-180' : ''}`} /></Button>}
                                         {(meterBox.canUpdate || meterBox.canDelete) && (
                                             <RowActionsMenu>
                                                 {meterBox.canDelete && (
-                                                    <Button type="submit" onClick={() => requestDelete(`/meter-boxes/${meterBox.id}`, meterBox.display_name)}>حذف</Button>
+                                                    <Button data-raw="" variant="ghost" type="submit" onClick={() => requestDelete(`/meter-boxes/${meterBox.id}`, meterBox.display_name)}>حذف</Button>
                                                 )}
-                                                {meterBox.canUpdate && <Button type="submit" onClick={() => setModalMeterBox(meterBox)}>تعديل</Button>}
+                                                {meterBox.canUpdate && <Button data-raw="" variant="ghost" type="submit" onClick={() => setModalMeterBox(meterBox)}>تعديل</Button>}
                                             </RowActionsMenu>
                                         )}
                                         </div>

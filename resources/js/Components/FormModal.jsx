@@ -144,7 +144,7 @@ export default function FormModal({
                                     <FormProgress sections={outline} done={done} />
                                     <span className="flex-1" />
                                     {form.isEdit && form.isDirty && <span className="gl-unsaved" role="status">تغييرات غير محفوظة</span>}
-                                    <Button onClick={requestClose} className="gl-btn gl-sec">إلغاء</Button>
+                                    <Button data-raw="" variant="ghost" onClick={requestClose} className="gl-btn gl-sec">إلغاء</Button>
                                     <PrimaryButton disabled={form.processing} className="min-w-[120px]">
                                         <Icon name="check" className="h-[18px] w-[18px]" />
                                         {form.processing ? 'جارٍ الحفظ...' : (action?.submitLabel ?? 'حفظ')}
@@ -165,7 +165,7 @@ export default function FormModal({
                                 <span className="gl-sheet-keys"><span className="kbd" dir="ltr">Esc</span> إغلاق</span>
                                 <span className="flex-1" />
                                 {form.isEdit && form.isDirty && <span className="gl-unsaved" role="status">تغييرات غير محفوظة</span>}
-                                <Button onClick={requestClose} className="gl-btn gl-sec gl-lg">إلغاء</Button>
+                                <Button data-raw="" variant="ghost" onClick={requestClose} className="gl-btn gl-sec gl-lg">إلغاء</Button>
                                 <PrimaryButton disabled={form.processing} className="gl-lg min-w-[148px]">
                                     <Icon name="check" className="h-[18px] w-[18px]" />
                                     {form.processing ? 'جارٍ الحفظ...' : (action?.submitLabel ?? 'حفظ')}

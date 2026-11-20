@@ -37,7 +37,7 @@ function DetailsModal({ change, details, onClose }) {
                             {change.changedCount.toLocaleString('en')} مشترك — {DATE_TIME_FORMAT.format(new Date(change.createdAt))}
                         </p>
                     </div>
-                    <Button onClick={onClose} aria-label="إغلاق" className={`rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 ${FOCUS_RING}`}>
+                    <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق" className={`rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 ${FOCUS_RING}`}>
                         <Icon name="close" className="h-5 w-5" />
                     </Button>
                 </div>

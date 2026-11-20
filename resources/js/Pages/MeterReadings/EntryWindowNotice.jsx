@@ -32,7 +32,7 @@ export function EntryWindowNotice({ entryWindow, canRecord, canApprove, weekIsVi
                     <p className="font-semibold text-gray-900">هذا أسبوع سابق — قراءاته للعرض فقط.</p>
                     <p className="mt-1 text-gray-500">يمكن إدخال القراءات وتعديلها للأسبوع الأخير فقط.</p>
                 </div>
-                <Button onClick={onShowLatestWeek} className="text-sm font-semibold text-brand-600 hover:underline">
+                <Button data-raw="" variant="ghost" onClick={onShowLatestWeek} className="text-sm font-semibold text-brand-600 hover:underline">
                     الانتقال إلى الأسبوع الأخير
                 </Button>
             </div>

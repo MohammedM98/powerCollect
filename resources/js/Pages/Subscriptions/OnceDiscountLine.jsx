@@ -57,12 +57,12 @@ export default function OnceDiscountLine({ balance, balanceAfter, data, errors, 
             <div className="gl-cl-under">
                 <div className="gl-cl-quick">
                     {QUICK_VALUES.map((quick) => (
-                        <Button key={quick} className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setValue(quick)}>
+                        <Button data-raw="" variant="ghost" key={quick} className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setValue(quick)}>
                             {quick}
                         </Button>
                     ))}
                     {owed > 0 && (
-                        <Button className="is-settle" onClick={() => setValue(owed)}>
+                        <Button data-raw="" variant="ghost" className="is-settle" onClick={() => setValue(owed)}>
                             كل ما عليه <bdi className="gl-num">{formatMoney(owed)}</bdi>
                         </Button>
                     )}

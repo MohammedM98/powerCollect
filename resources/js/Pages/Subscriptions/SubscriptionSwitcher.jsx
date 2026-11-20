@@ -71,7 +71,7 @@ export default function SubscriptionSwitcher({ subscriberNumber, subscriptions, 
                     const current = subscription.id === currentId;
 
                     return (
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             key={subscription.id}
                             aria-current={current ? 'true' : undefined}
                             aria-label={`عرض كشف الاشتراك ${subscription.accountNumber}`}

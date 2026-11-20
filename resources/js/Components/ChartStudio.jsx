@@ -97,7 +97,7 @@ export default function ChartStudio({ title, total, change, unit = '₪', format
     if (bare) {
         return (
             <div className="gl-chart-bare">
-                <Button className="gl-tog" aria-pressed={comparing} onClick={() => setComparing(!comparing)}>الفترة السابقة</Button>
+                <Button data-raw="" variant="ghost" className="gl-tog" aria-pressed={comparing} onClick={() => setComparing(!comparing)}>الفترة السابقة</Button>
                 <AreaChart
                     key={`${period}-${series.length}`}
                     values={series.map((day) => Number(day.value) || 0)}
@@ -120,11 +120,11 @@ export default function ChartStudio({ title, total, change, unit = '₪', format
                     </span>
                 </div>
                 <div className="gl-sp" />
-                <Button className="gl-tog" aria-pressed={comparing} onClick={() => setComparing(!comparing)}>الفترة السابقة</Button>
+                <Button data-raw="" variant="ghost" className="gl-tog" aria-pressed={comparing} onClick={() => setComparing(!comparing)}>الفترة السابقة</Button>
                 {periods.length > 0 && (
                     <div className="gl-seg" role="group" aria-label="الفترة">
                         {periods.map((option) => (
-                            <Button key={option.value} aria-pressed={period === option.value} onClick={() => onPeriodChange(option.value)}>{option.label}</Button>
+                            <Button data-raw="" variant="ghost" key={option.value} aria-pressed={period === option.value} onClick={() => onPeriodChange(option.value)}>{option.label}</Button>
                         ))}
                     </div>
                 )}

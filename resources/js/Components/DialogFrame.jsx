@@ -26,7 +26,7 @@ export function DialogHeader({ titleId, title, description = null, descriptionId
                 <h2 id={titleId} className="wrap-break-word text-xl font-extrabold leading-snug font-(family-name:--gl-head)!">{title}</h2>
                 {description && <p id={descriptionId} className="gl-sub mt-1 wrap-break-word text-sm!">{description}</p>}
             </div>
-            <Button onClick={onClose} isDisabled={closeDisabled} aria-label="إغلاق النافذة" className="gl-ib disabled:opacity-40"><Icon name="close" className="h-4 w-4" /></Button>
+            <Button data-raw="" variant="ghost" onClick={onClose} isDisabled={closeDisabled} aria-label="إغلاق النافذة" className="gl-ib disabled:opacity-40"><Icon name="close" className="h-4 w-4" /></Button>
         </header>
     );
 }

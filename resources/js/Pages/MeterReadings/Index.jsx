@@ -190,11 +190,11 @@ export default function Index({
                 </Link>
             )}
             <div className="re-week" role="group" aria-label="أسبوع القراءة">
-                <Button aria-label="الأسبوع السابق" isDisabled={weekIndex < 0 || weekIndex === weekOptions.length - 1} onClick={() => changeWeek(weekOptions[weekIndex + 1].value)}><Icon name="chevron-right" /></Button>
+                <Button data-raw="" variant="ghost" aria-label="الأسبوع السابق" isDisabled={weekIndex < 0 || weekIndex === weekOptions.length - 1} onClick={() => changeWeek(weekOptions[weekIndex + 1].value)}><Icon name="chevron-right" /></Button>
                 <div className="re-week-field re-week-year"><label htmlFor="reading-week-year" className="sr-only">السنة</label><SearchableSelect id="reading-week-year" variant="pill" value={currentYear} onChange={changePeriod} options={yearOptions.map((year) => ({ value: year, label: year }))} clearable={false} searchable={false} className="[&>div.absolute]:min-w-0" /></div>
                 <div className="re-week-field re-week-month"><label htmlFor="reading-week-month" className="sr-only">الشهر</label><SearchableSelect id="reading-week-month" variant="pill" value={currentMonth} onChange={changePeriod} options={monthOptions.map((month) => ({ value: month, label: formatMonthName(`${month}-01`) }))} clearable={false} searchable={false} className="[&>div.absolute]:min-w-0" /></div>
                 <div className="re-week-field re-week-range"><label htmlFor="reading-week-range" className="sr-only">أسبوع القراءة</label><SearchableSelect id="reading-week-range" variant="pill" value={week} onChange={changeWeek} options={weeksOfMonth.map((option) => ({ value: option.value, label: `\u202A${fullDate(option.value)} – ${fullDate(option.end)}\u202C` }))} clearable={false} searchable={false} className="[&>div.absolute]:min-w-0" /></div>
-                <Button aria-label="الأسبوع التالي" isDisabled={weekIndex <= 0} onClick={() => changeWeek(weekOptions[weekIndex - 1].value)}><Icon name="chevron-left" /></Button>
+                <Button data-raw="" variant="ghost" aria-label="الأسبوع التالي" isDisabled={weekIndex <= 0} onClick={() => changeWeek(weekOptions[weekIndex - 1].value)}><Icon name="chevron-left" /></Button>
             </div>
             <span role="status" className={`re-open ${entryWindow.isOpen ? 'is-open' : ''}`}><i />الإدخال {entryWindow.isOpen ? 'مفتوح' : 'مغلق'}</span>
         </div>
@@ -303,7 +303,7 @@ export default function Index({
                                     {isFiltered ? (
                                         <>
                                             <b>لا يوجد مشتركون مطابقون للبحث والتصفية.</b>
-                                            <Button className="gl-btn gl-sec gl-sm" onClick={() => { setSearch(''); clearFilters(); }}>مسح البحث والفلاتر</Button>
+                                            <Button data-raw="" variant="ghost" className="gl-btn gl-sec gl-sm" onClick={() => { setSearch(''); clearFilters(); }}>مسح البحث والفلاتر</Button>
                                         </>
                                     ) : (
                                         <b>لا يوجد مشتركون بقراءات في هذا الأسبوع.</b>

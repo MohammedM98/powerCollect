@@ -96,7 +96,7 @@ export function PermissionSaveBar({ dirty, errors, changes, auditChanges, firstN
                     </span>
                 )}
             </p>
-            <Button
+            <Button data-raw="" variant="ghost"
                 onClick={onDiscard}
                 isDisabled={processing || !dirty}
                 className="inline-flex items-center gap-1.5 rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-white disabled:opacity-40"

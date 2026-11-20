@@ -206,12 +206,12 @@ export default function ClearingModal({ show, onClose, subscription, balance, re
                                 <div className="gl-cl-under">
                                     <div className="gl-cl-quick">
                                         {QUICK_AMOUNTS.map((quick) => (
-                                            <Button key={quick} className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setAmount(String(quick))}>
+                                            <Button data-raw="" variant="ghost" key={quick} className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setAmount(String(quick))}>
                                                 {quick}
                                             </Button>
                                         ))}
                                         {owed > 0 && (
-                                            <Button className="is-settle" onClick={() => setAmount(String(owed))}>
+                                            <Button data-raw="" variant="ghost" className="is-settle" onClick={() => setAmount(String(owed))}>
                                                 كل ما عليه <bdi className="gl-num">{formatMoney(owed)}</bdi>
                                             </Button>
                                         )}
