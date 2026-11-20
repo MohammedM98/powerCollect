@@ -2,10 +2,39 @@ import { Fragment, useState } from 'react';
 import Icon from '@/Components/Icon';
 import { useRowClick } from '@/hooks/useRowClick';
 import { formatMoney } from '@/lib/format';
-import { activeBoxEntries, financialBoxTotals, isFlaggedEntry } from '@/lib/financialBoxes';
+import { activeBoxEntries, boxReconciliation, financialBoxTotals, isFlaggedEntry } from '@/lib/financialBoxes';
+import { Chip } from '@heroui/react';
 import { BoxStage, boxTypeStyles, currencies } from './CollectorCashBox';
-import { BoxPerson, FinancialBoxButton, FinancialBoxDates, FinancialBoxEntries, FinancialBoxMark, FinancialBoxStatus, FinancialBoxTimes, financialAmountsLine } from './FinancialBoxComponents';
+import { BoxPerson, FinancialBoxButton, FinancialBoxDates, FinancialBoxEntries, FinancialBoxMark, FinancialBoxTimes, financialAmountsLine } from './FinancialBoxComponents';
 import './financial-boxes.css';
+
+
+const STEP_LABELS = ['مفتوح، لم يُسلَّم', 'مُسلَّم، بانتظار العدّ أو المطابقة', 'مطابَق، بانتظار الاعتماد', 'معتمد من التدقيق'];
+
+/** The box's way from open to approved as four steps, the current one coloured, with its words under it. */
+function BoxSteps({ reconciliation }) {
+    const { step, problem } = reconciliation;
+    const label = problem && step < 3 ? 'فيه فرق، بانتظار التدقيق' : STEP_LABELS[step];
+    const tone = problem && step < 3 ? 'owe' : step === 3 ? 'pay' : step === 0 ? 'warn' : 'muted';
+
+    return (
+        <span className="gl-rc-steps" data-tone={tone}>
+            <span className="gl-rc-track" role="img" aria-label={`المرحلة ${step + 1} من 4: ${label}`}>
+                {[0, 1, 2, 3].map((index) => <i key={index} data-state={index < step ? 'done' : index === step ? (problem && step < 3 ? 'bad' : step === 3 ? 'done' : 'now') : undefined} />)}
+            </span>
+            <small>{label}</small>
+        </span>
+    );
+}
+
+/** A shekel figure for the reconciliation columns, a dash while there is none. */
+function Shekels({ value, tone = null }) {
+    if (value === null) {
+        return <span className="gl-rc-none">—</span>;
+    }
+
+    return <bdi dir="ltr" className="gl-cb-money" data-tone={tone ?? undefined}>{value > 0 && tone ? '+' : ''}{formatMoney(value)}</bdi>;
+}
 
 /** A box's entries in a word: how many, and how many were cancelled or found wrong. */
 function EntriesCount({ box }) {
@@ -84,9 +113,16 @@ export default function FinancialBoxList({ boxes, onOpen, periodFor, sortState, 
                         <th className="gl-cb-x"><span className="sr-only">تفاصيل</span></th>
                         <th>{heading('number', 'الصندوق')}</th>
                         <th>{collector ? 'أغلقه / المستلم' : 'الموظف'}</th>
-                        <th>الحركات</th>
-                        <th className="gl-cb-cash">{heading('total', 'الإجمالي')}</th>
-                        <th>{heading('status', 'الحالة')}</th>
+                        {collector ? <>
+                            <th>الحركات</th>
+                            <th className="gl-cb-cash">{heading('total', 'الإجمالي')}</th>
+                            <th>{heading('status', 'الحالة')}</th>
+                        </> : <>
+                            <th>{heading('status', 'المرحلة')}</th>
+                            <th className="gl-cb-cash">{heading('total', 'المتوقع')}</th>
+                            <th className="gl-cb-cash">المؤكَّد</th>
+                            <th className="gl-cb-cash">الفرق</th>
+                        </>}
                         <th className="gl-cb-act"><span className="sr-only">الإجراءات</span></th>
                     </tr>
                 </thead>
@@ -94,6 +130,7 @@ export default function FinancialBoxList({ boxes, onOpen, periodFor, sortState, 
                     {boxes.map((box) => {
                         const open = opened.has(box.id);
                         const period = periodFor ? periodFor(box) : null;
+                        const reconciliation = collector ? null : boxReconciliation(box);
 
                         return (
                             <Fragment key={box.id}>
@@ -121,15 +158,29 @@ export default function FinancialBoxList({ boxes, onOpen, periodFor, sortState, 
                                             <BoxPerson name={box.user?.name} suffix={box.isOwn ? '(أنت)' : null} note={box.branchName} />
                                         )}
                                     </td>
-                                    <td className="gl-cb-n"><EntriesCount box={box} /></td>
-                                    <td className="gl-cb-cash"><BoxTotal box={box} /></td>
-                                    <td>{collector ? <BoxStage box={box} /> : <FinancialBoxStatus box={box} />}</td>
+                                    {collector ? <>
+                                        <td className="gl-cb-n"><EntriesCount box={box} /></td>
+                                        <td className="gl-cb-cash"><BoxTotal box={box} /></td>
+                                        <td><BoxStage box={box} /></td>
+                                    </> : <>
+                                        <td><BoxSteps reconciliation={reconciliation} /></td>
+                                        <td className="gl-cb-cash"><BoxTotal box={box} /><small className="gl-rc-count"><EntriesCount box={box} /></small></td>
+                                        <td className="gl-cb-cash">
+                                            <Shekels value={reconciliation.confirmed} />
+                                            {reconciliation.toReview > 0 && box.type !== 'cash' && (
+                                                <Chip size="sm" variant="soft" className="gl-rc-chip" data-tone={reconciliation.reviewed === reconciliation.toReview ? 'pay' : 'warn'}>
+                                                    طوبق {reconciliation.reviewed} من {reconciliation.toReview}
+                                                </Chip>
+                                            )}
+                                        </td>
+                                        <td className="gl-cb-cash"><Shekels value={reconciliation.difference} tone={reconciliation.problem ? (reconciliation.difference < 0 ? 'owe' : 'warn') : 'pay'} /></td>
+                                    </>}
                                     <td className="gl-cb-act">{renderActions ? renderActions(box) : <FinancialBoxButton box={box} onOpen={onOpen} />}</td>
                                 </tr>
                                 {open && (
                                     <tr className="gl-st-detail gl-cb-detail">
                                         <td />
-                                        <td colSpan={6}>
+                                        <td colSpan={collector ? 6 : 7}>
                                             <dl>
                                                 <div>
                                                     <dt>{collector ? 'فُتح ← أُغلق' : 'الأوقات'}</dt>

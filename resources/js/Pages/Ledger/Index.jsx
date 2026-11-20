@@ -1,5 +1,5 @@
 import { FilterField } from '@/Components/DataTable/DataTableFilterMenu';
-import { Label, Switch } from '@heroui/react';
+import { Card, Label, Switch } from '@heroui/react';
 import BankReceivedDate from '@/Components/BankReceivedDate';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
 import { BranchFilterBanner, splitBranchFilter } from '@/Components/BranchBanner';
@@ -162,41 +162,53 @@ function DateRange({ period, range, today, onChange, errors }) {
     );
 }
 
-function SummaryCards({ totals, summary, side }) {
-    const netSide = totals.net > 0 ? 'للشركة' : totals.net < 0 ? 'للمشترك' : 'مسدّد';
+/** A shekel figure in whole cents, so sums carry no float error. */
+const toCents = (value) => Math.round(Number(value ?? 0) * 100);
+
+/**
+ * The period as an accountant reads it, on HeroUI cards: what the listed
+ * subscribers owed when it began, plus its charges (مدين), less its credits
+ * (دائن), equals what they owe at its end. Cancelled lines stay out.
+ */
+function PeriodEquation({ totals, summary, side, opening }) {
+    const closing = (toCents(opening) + toCents(totals.net)) / 100;
+
     return (
-        <div className="kp">
-            <section className="k hero" aria-label="إجمالي التحميل">
-                <small>إجمالي التحميل (عليه)
+        <section className="gl-eq" aria-label="معادلة الفترة">
+            <Card className="gl-eq-term">
+                <small>الرصيد الافتتاحي</small>
+                <b><Money amount={opening} balance colored={false} /></b>
+                <p>ما على المشتركين عند بداية الفترة</p>
+            </Card>
+            <span className="gl-eq-op" aria-hidden="true">+</span>
+            <Card className="gl-eq-term" data-tone="owe">
+                <small><i aria-hidden="true" />مدين (عليه)
                     {side === 'debit' && summary.changePct !== null && (
-                        <span className={`chg ${summary.changePct >= 0 ? 'up' : 'dn'}`} title="مقارنة بالفترة السابقة"><bdi dir="ltr">{summary.changePct >= 0 ? '+' : '−'}{Math.abs(summary.changePct)}%</bdi></span>
+                        <span className={`gl-eq-chg ${summary.changePct >= 0 ? 'up' : 'dn'}`} title="مقارنة بالفترة السابقة"><bdi dir="ltr">{summary.changePct >= 0 ? '+' : '−'}{Math.abs(summary.changePct)}%</bdi></span>
                     )}
                 </small>
                 <b><Money amount={totals.charged} /></b>
-                <p>{formatNumber(totals.debitCount)} قيد تحميل، ضمن الفترة والفلاتر</p>
-            </section>
-            <section className="k cr" aria-label="إجمالي له">
-                <small><span className="dot bg-emerald-600 dark:bg-emerald-400" />إجمالي له (تسديد وخصم ومقاصة)</small>
+                <p>{formatNumber(totals.debitCount)} قيد: قراءات ورسوم وغرامات</p>
+            </Card>
+            <span className="gl-eq-op" aria-hidden="true">−</span>
+            <Card className="gl-eq-term" data-tone="pay">
+                <small><i aria-hidden="true" />دائن (له)</small>
                 <b><Money amount={totals.credited} /></b>
-                <p>{formatNumber(totals.creditCount)} قيد، دفعات وخصم ومقاصة</p>
-            </section>
-            <section className="k" aria-label="الصافي">
-                <small>الصافي (عليه − له)</small>
-                <b><Money amount={totals.net} balance /> <span>{netSide}</span></b>
-                <p>لنفس الفترة والفلاتر</p>
-            </section>
-            <section className="k cx" aria-label="القيود الملغاة">
-                <small><Icon name="close" />الملغاة</small>
-                <b><Money amount={totals.cancelled} /></b>
-                <p>{formatNumber(totals.cancelledCount)} قيد، خارج المجاميع</p>
-            </section>
-        </div>
+                <p>{formatNumber(totals.creditCount)} قيد: دفعات وخصومات ومقاصات</p>
+            </Card>
+            <span className="gl-eq-op" aria-hidden="true">=</span>
+            <Card className="gl-eq-term is-total">
+                <small>الرصيد الختامي</small>
+                <b><Money amount={closing} balance colored={false} /></b>
+                <p>{totals.cancelledCount > 0 ? <>{formatNumber(totals.cancelledCount)} قيد ملغى بقيمة <Money amount={totals.cancelled} />، خارج المعادلة</> : 'لا قيود ملغاة في الفترة'}</p>
+            </Card>
+        </section>
     );
 }
 
 function DayHeader({ day, totals, today }) {
     return (
-        <tr className="data-table-group day-row"><td colSpan={8}>
+        <tr className="data-table-group day-row"><td colSpan={9}>
             <div className="day"><b>{formatDayLabel(day)}</b>{day === today && <span className="tod">اليوم</span>}
                 {totals && <span className="sum"><span>{formatNumber(totals.count)} قيد</span><span>عليه <em><Money amount={totals.charged} /></em></span><span>له <em className="g"><Money amount={totals.credited} /></em></span></span>}
             </div>
@@ -204,7 +216,7 @@ function DayHeader({ day, totals, today }) {
     );
 }
 
-function TransactionRow({ entry, grouped, onOpen, rowClick, open, onToggle }) {
+function TransactionRow({ entry, grouped, onOpen, rowClick, open, onToggle, running }) {
     const initials = entry.subscriptionName.split(/\s+/).filter(Boolean).slice(0, 2).map((word) => word[0]).join('');
     const balance = Number(entry.balanceAfter ?? 0);
     const time = grouped ? formatClock(entry.time) : `${formatShortDay(entry.day)}، ${formatClock(entry.time)}`;
@@ -238,10 +250,16 @@ function TransactionRow({ entry, grouped, onOpen, rowClick, open, onToggle }) {
             <td className="ty-c"><span className={`ty ${entry.isCancelled ? 'rv' : entry.isCredit ? 'cr' : 'dr'}`}>{entry.typeLabel}</span>{entry.isCancelled && entry.type !== 'reversal' && <div><span className="cxb">ملغاة</span></div>}</td>
             <td className="vch-c"><bdi className="vch">{entry.voucherNumber ?? '—'}</bdi>{entry.isManualVoucher && <span className="mb">يدوي</span>}</td>
             <td className="by" title={entry.recordedByName ?? undefined}>{entry.recordedByName ?? '—'}</td>
-            <td className="am-c"><span className={`am ${entry.isCredit ? 'cr' : 'dr'}`}><Money amount={entry.amount} />
-                {entry.currency && entry.currency !== 'ILS' && <small><bdi dir="ltr">{formatMoney(entry.currencyAmount)} {entry.currency}{entry.exchangeRate && ` × ${formatMoney(entry.exchangeRate)}`}</bdi></small>}
-            </span></td>
-            <td className="bal-c"><span className="blc">{entry.balanceAfter === null ? '—' : <Money amount={balance} balance colored={false} paperWord />}</span></td>
+            {[false, true].map((creditSide) => (
+                <td key={creditSide ? 'cr' : 'dr'} className={`am-c ${entry.isCredit === creditSide ? '' : 'is-empty'}`}>
+                    {entry.isCredit === creditSide ? (
+                        <span className={`am ${entry.isCredit ? 'cr' : 'dr'}`}><Money amount={entry.amount} />
+                            {entry.currency && entry.currency !== 'ILS' && <small><bdi dir="ltr">{formatMoney(entry.currencyAmount)} {entry.currency}{entry.exchangeRate && ` × ${formatMoney(entry.exchangeRate)}`}</bdi></small>}
+                        </span>
+                    ) : <span className="am-none" aria-hidden="true">—</span>}
+                </td>
+            ))}
+            <td className="bal-c"><span className="blc">{running !== undefined ? <Money amount={running} balance colored={false} /> : entry.balanceAfter === null ? '—' : <Money amount={balance} balance colored={false} paperWord />}</span></td>
         </tr>
         {open && (
             <tr id={`ledger-details-${entry.id}`} className="row-detail">
@@ -251,6 +269,7 @@ function TransactionRow({ entry, grouped, onOpen, rowClick, open, onToggle }) {
                         <div><dt>المرجع</dt><dd><bdi dir="ltr">{entry.referenceNumber ?? '—'}</bdi>{entry.splitPayment && <div className="mt-1"><SplitPaymentBadge split={entry.splitPayment} compact /></div>}</dd></div>
                         <div><dt>التاريخ</dt><dd>{formatShortDay(entry.day)}، {formatClock(entry.time)}</dd></div>
                         <div><dt>الفرع</dt><dd>{entry.branchName}</dd></div>
+                        {running !== undefined && <div><dt>رصيد المشترك بعده</dt><dd>{entry.balanceAfter === null ? '—' : <Money amount={balance} balance colored={false} paperWord />}</dd></div>}
                     </dl>
                 </td>
             </tr>
@@ -259,7 +278,7 @@ function TransactionRow({ entry, grouped, onOpen, rowClick, open, onToggle }) {
     );
 }
 
-export default function Index({ entries, period, dateBasis = 'recorded', side, summary, ledgerTotals, dateRange, dayTotals, today, scopeLabel, branchScope, filters, filterOptions, statement }) {
+export default function Index({ entries, period, dateBasis = 'recorded', side, summary, ledgerTotals, openingBalance = '0.00', newerNet = null, dateRange, dayTotals, today, scopeLabel, branchScope, filters, filterOptions, statement }) {
     const { can, errors = {} } = usePage().props;
     const extraParams = { period, date_basis: dateBasis, ...(period === 'custom' ? dateRange : {}) };
     const { search, setSearch, sort, setPerPage, filterValues, setFilter, setFilters, clearFilters } = useDataTable('/ledger', filters, extraParams);
@@ -269,6 +288,22 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
     const rowClick = useRowClick();
     const statementWindow = useStatementWindow(statement);
     const grouped = filters.sort !== 'amount';
+    // The log's running balance, newest first: the closing balance less the lines on the pages before, then each line's side.
+    const runningBalances = (() => {
+        if (newerNet === null) {
+            return null;
+        }
+        let cents = toCents(openingBalance) + toCents(ledgerTotals.net) - toCents(newerNet);
+
+        return entries.data.map((entry) => {
+            const after = cents / 100;
+            if (!entry.isCancelled) {
+                cents -= (entry.isCredit ? -1 : 1) * toCents(entry.amount);
+            }
+
+            return after;
+        });
+    })();
     // An auditor of several branches picks the branch in the banner above the log, not among the filters; clearing those keeps it.
     const branchFilter = splitBranchFilter(branchScope, filterOptions, filterValues);
     const activeFilters = Object.values(branchFilter.values).filter((value) => value !== '' && value !== null && value !== undefined).length;
@@ -301,7 +336,7 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
             {branchScope && <BranchFilterBanner scope={branchScope} eyebrow="يعرض السجل المالي لـ" group={branchFilter.branch} value={filterValues.branch_id} onChange={(value) => setFilter('branch_id', value)} />}
             <div className="ledger-page">
                 {!errors.from && !errors.to ? null : <p role="alert" className="err">{errors.from || errors.to}</p>}
-                <SummaryCards totals={ledgerTotals} summary={summary} side={side} />
+                <PeriodEquation totals={ledgerTotals} summary={summary} side={side} opening={openingBalance} />
                 <section className="pn" aria-label="القيود المالية">
                     <div className="tb">
                         <div className="srch">
@@ -333,13 +368,14 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
                         {activeFilters > 0 && <button type="button" className="clr" onClick={clearPanelFilters}>مسح الفلاتر</button>}
                     </div>
                     <table data-excel-source="custom" className="ledger-table" aria-label="السجل المالي">
-                        <thead><tr><th scope="col"><span className="sr-only">تفاصيل</span></th>{sortHeading('created_at', 'الوقت')}<th scope="col">المشترك</th><th scope="col">النوع</th><th scope="col">السند</th><th scope="col">سجّله</th>{sortHeading('amount', 'المبلغ')}<th scope="col">الرصيد بعده</th></tr></thead>
-                        <tbody>{entries.data.length === 0 ? <tr className="empty"><td colSpan={8}><b>لا توجد قيود مطابقة</b>جرّب فترة أخرى أو غيّر البحث والفلاتر.</td></tr> : entries.data.map((entry, index) => <Fragment key={entry.id}>{grouped && entry.day !== entries.data[index - 1]?.day && <DayHeader day={entry.day} totals={dayTotals[entry.day]} today={today} />}<TransactionRow entry={entry} grouped={grouped} rowClick={rowClick} onOpen={can?.viewSubscriptions ? () => openStatement(entry) : null} open={openIds.has(entry.id)} onToggle={() => toggleRow(entry.id)} /></Fragment>)}</tbody>
+                        <thead><tr><th scope="col"><span className="sr-only">تفاصيل</span></th>{sortHeading('created_at', 'الوقت')}<th scope="col">المشترك</th><th scope="col">النوع</th><th scope="col">السند</th><th scope="col">سجّله</th>{sortHeading('amount', 'مدين (عليه)')}<th scope="col">دائن (له)</th><th scope="col">{runningBalances ? 'رصيد السجل بعده' : 'رصيد المشترك بعده'}</th></tr></thead>
+                        <tbody>{entries.data.length === 0 ? <tr className="empty"><td colSpan={9}><b>لا توجد قيود مطابقة</b>جرّب فترة أخرى أو غيّر البحث والفلاتر.</td></tr> : entries.data.map((entry, index) => <Fragment key={entry.id}>{grouped && entry.day !== entries.data[index - 1]?.day && <DayHeader day={entry.day} totals={dayTotals[entry.day]} today={today} />}<TransactionRow entry={entry} grouped={grouped} rowClick={rowClick} onOpen={can?.viewSubscriptions ? () => openStatement(entry) : null} open={openIds.has(entry.id)} onToggle={() => toggleRow(entry.id)} running={runningBalances ? runningBalances[index] : undefined} /></Fragment>)}</tbody>
                     </table>
                     <div className="foot data-table-totals">
-                        <div>إجمالي التحميل<b><Money amount={ledgerTotals.charged} /></b></div>
-                        <div>إجمالي له<b className="g"><Money amount={ledgerTotals.credited} /></b></div>
-                        <div>الصافي<b><Money amount={ledgerTotals.net} balance /> <span>{ledgerTotals.net > 0 ? 'للشركة' : ledgerTotals.net < 0 ? 'للمشترك' : 'مسدّد'}</span></b></div>
+                        <div>الافتتاحي<b><Money amount={openingBalance} balance colored={false} /></b></div>
+                        <div>مدين (عليه)<b className="dr"><Money amount={ledgerTotals.charged} /></b></div>
+                        <div>دائن (له)<b className="g"><Money amount={ledgerTotals.credited} /></b></div>
+                        <div>الختامي<b><Money amount={(toCents(openingBalance) + toCents(ledgerTotals.net)) / 100} balance colored={false} /></b></div>
                         <span className="r">{formatNumber(entries.total)} قيد مطابق، الملغاة خارج المجاميع</span>
                     </div>
                     <div className="ledger-pagination">

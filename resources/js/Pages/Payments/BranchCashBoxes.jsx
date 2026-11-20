@@ -8,7 +8,8 @@ import SegmentedChoice from '@/Components/SegmentedChoice';
 import { FilterField } from '@/Components/DataTable/DataTableFilterMenu';
 import { Button, Card, Chip, SearchField } from '@heroui/react';
 import { formatMoney } from '@/lib/format';
-import { boxEntryMatches, financialBoxMatches, financialBoxesTotals, sortFinancialBoxes } from '@/lib/financialBoxes';
+import { boxEntryMatches, boxReconciliation, financialBoxMatches, financialBoxesTotals, sortFinancialBoxes } from '@/lib/financialBoxes';
+import MoneyFlow from '@/Components/Finance/MoneyFlow';
 import AuditApprovalDialog from './AuditApprovalDialog';
 import AuditTransferSearch from './AuditTransferSearch';
 import BankTransferAuditForm from './BankTransferAuditForm';
@@ -44,12 +45,25 @@ const emptyPlace = {
 
 /** One type of box above the boxes, as a tile in its colour: their total and how many there are; a click narrows the list to it. */
 function SummaryTile({ type, label, boxes, hint, active, onClick }) {
+    const rows = boxes.map(boxReconciliation);
+    const expected = rows.reduce((sum, row) => sum + row.expected, 0);
+    const checked = rows.filter((row) => row.confirmed !== null);
+    const confirmed = checked.reduce((sum, row) => sum + row.confirmed, 0);
+    const difference = Math.round(checked.reduce((sum, row) => sum + (row.difference ?? 0), 0) * 100) / 100;
+    const pending = expected - checked.reduce((sum, row) => sum + row.expected, 0);
+
     return (
-        <button type="button" onClick={onClick} aria-pressed={active} className="gl-cb-tile" data-tone={BOX_TONES[type]}>
-            <span className="gl-cb-tile-icon" aria-hidden="true"><Icon name={boxTypeStyles[type].icon} className="h-5 w-5" /></span>
-            <small>{label}</small>
-            <b><bdi dir="ltr">{formatMoney(financialBoxesTotals(boxes).ILS)}</bdi> <span>₪</span></b>
-            <span>{boxes.length} {hint}</span>
+        <button type="button" onClick={onClick} aria-pressed={active} className="gl-cb-tile gl-rc-tile" data-tone={BOX_TONES[type]}>
+            <span className="gl-rc-tile-head">
+                <span className="gl-cb-tile-icon" aria-hidden="true"><Icon name={boxTypeStyles[type].icon} className="h-5 w-5" /></span>
+                <small>{label}</small>
+                <span className="gl-rc-tile-count">{boxes.length} {hint}</span>
+            </span>
+            <span className="gl-rc-terms">
+                <span><small>المتوقع</small><b><bdi dir="ltr">{formatMoney(expected)}</bdi></b></span>
+                <span><small>{type === 'cash' ? 'المعدود' : 'المطابَق'}</small><b><bdi dir="ltr">{formatMoney(confirmed)}</bdi></b></span>
+                <span><small>{checked.length ? 'الفرق' : 'لم يُراجع'}</small><b data-tone={checked.length ? (Math.abs(difference) < 0.005 ? 'pay' : difference < 0 ? 'owe' : 'warn') : 'warn'}><bdi dir="ltr">{formatMoney(checked.length ? difference : pending)}</bdi></b></span>
+            </span>
         </button>
     );
 }
@@ -124,6 +138,7 @@ export default function BranchCashBoxes({ branch, branches, branchScope = null, 
         <Head title="الصناديق المالية" />
         <BoxTabs tabs={tabs} current={place} hint={started && !searchingTransfers ? placeHints[place] : null} />
         {branchScope && <BranchFilterBanner scope={branchScope} eyebrow="تعرض الآن صناديق" group={{ options: branches.map((item) => ({ value: String(item.id), label: item.name })) }} value={branch ? String(branch.id) : ''} onChange={(value) => router.get(urls.index, { place, branch_id: value })} />}
+        <MoneyFlow branchId={branch?.id ?? null} />
         {!branch && place === 'closed' && <p className="mb-4 text-sm text-gray-500">تعرض الصناديق من آخر فترة متاحة لكل فرع. اختر فرعًا لعرض فتراته الأسبوعية أو اعتماد فترة كاملة.</p>}
         {!started ? <div className="flex flex-wrap items-center justify-between gap-4 rounded-panel border border-dashed border-gray-200 bg-surface p-6 text-sm leading-7 text-gray-500">
             <p>تُفتح الصناديق تلقائيًا عند تسجيل أول دفعة أو مقاصة في الفرع، وتُضاف كل حركة إلى صندوق الموظف حسب نوعها.</p>

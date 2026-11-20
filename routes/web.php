@@ -31,6 +31,7 @@ use App\Http\Controllers\MeterBoxSubscriptionController;
 use App\Http\Controllers\MeterReadingAdjustmentController;
 use App\Http\Controllers\MeterReadingController;
 use App\Http\Controllers\MobileAppDownloadController;
+use App\Http\Controllers\MoneyFlowController;
 use App\Http\Controllers\PaperSheetController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentSettingController;
@@ -97,6 +98,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::get('/payments/summary', [PaymentController::class, 'summary'])->name('payments.summary');
     Route::get('/payments/cash-boxes', [CashBoxController::class, 'cashBoxes'])->name('payments.cash-boxes');
+    Route::get('/payments/money-flow', MoneyFlowController::class)->name('payments.money-flow');
     Route::get('/payments/cash-boxes/report', CashBoxReportController::class)->name('payments.cash-boxes.report');
     Route::post('/payments/cash-boxes/audit-period', [PeriodAuditController::class, 'store'])->name('payments.period-audits.store');
     Route::get('/payments/cash-boxes/entries/{entry}/audit', [BankTransferAuditController::class, 'show'])->whereNumber('entry')->name('payments.bank-audits.show');

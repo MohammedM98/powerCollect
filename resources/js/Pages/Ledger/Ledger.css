@@ -246,3 +246,9 @@
 .ledger-page .pt2 button[aria-pressed=true] { background: rgb(var(--panel-bg)); color: var(--ledger-ink); box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.04), 0 1px 2px 0 rgb(0 0 0 / 0.06), 0 0 1px 0 rgb(0 0 0 / 0.06); }
 .dark .ledger-page .pt2 button[aria-pressed=true] { background: rgb(var(--gray-200)); }
 .ledger-page .rbtn { height: 40px; border-radius: 999px; }
+
+/* Debit and credit in their own columns, then the running balance (the accountant's ledger). */
+.ledger-page .row,
+.ledger-page .ledger-table thead tr { grid-template-columns: 28px 70px minmax(190px,2fr) 120px 96px minmax(100px,1fr) 118px 118px 140px; }
+.ledger-page .ledger-table th:nth-last-child(-n+3) { text-align: left; }
+@container ledger (max-width:1180px) { .ledger-page .row .am-c.is-empty { display: none; } }

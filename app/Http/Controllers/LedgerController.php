@@ -75,6 +75,8 @@ class LedgerController extends Controller
                 'to' => $until->setTimezone(config('app.business_timezone'))->subDay()->toDateString(),
             ],
             'ledgerTotals' => LedgerPage::ledgerTotals($inPeriod()),
+            'openingBalance' => LedgerPage::openingBalance($ledger(), $from, $dateBasis),
+            'newerNet' => LedgerPage::newerNet(LedgerPage::sortEntries($inPeriod(), $request), $request, ($entries->currentPage() - 1) * $entries->perPage(), $dateBasis),
             'side' => $side,
             'summary' => LedgerPage::summary($onSide($inPeriod()), $from && $days ? $onSide($ledger()) : null, $from, $days, $inPeriod(), $dateBasis),
             'dayTotals' => $groupedByDay ? LedgerPage::dayTotals($inPeriod(), collect($entries->items())->pluck('day')->unique()->all()) : [],

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { auditApprovalSummary, boxBankOptions, filterBoxEntries, boxEntryMatches, financialBoxMatches, boxStatus, entryStatus, financialBoxTotals, financialBoxesTotals, filterFinancialBoxes, sortFinancialBoxes } from '../../resources/js/lib/financialBoxes.js';
+import { auditApprovalSummary, boxReconciliation, boxBankOptions, filterBoxEntries, boxEntryMatches, financialBoxMatches, boxStatus, entryStatus, financialBoxTotals, financialBoxesTotals, filterFinancialBoxes, sortFinancialBoxes } from '../../resources/js/lib/financialBoxes.js';
 
 test('bank options count each receiving bank or wallet across all entries, including legacy and unspecified banks', () => {
     const entries = [
@@ -133,4 +133,19 @@ test('approval preview separates new debits and credits and excludes finalized a
         { status: 'open', type: 'bank_transfer', payments: [draft('999')] },
     ]);
     assert.deepEqual(summary, { boxes: 2, transfers: 5, exceptions: 2, automaticMatches: 1, debit: 50.25, credit: 20.5 });
+});
+
+test('reconciliation reads a cash box against its count, a transfer box against its audit, and its step to approval', () => {
+    const entry = (amount, status = 'active') => ({ currency: 'ILS', amount, transaction: { status } });
+    const open = boxReconciliation({ type: 'cash', status: 'open', payments: [entry('100'), entry('40'), entry('999', 'cancelled')] });
+    assert.deepEqual([open.expected, open.confirmed, open.difference, open.step, open.problem], [140, null, null, 0, false]);
+
+    const short = boxReconciliation({ type: 'cash', status: 'received', payments: [entry('330')], expected_counts: { ILS: '330.00' }, head_counts: { ILS: '320.00' } });
+    assert.deepEqual([short.expected, short.confirmed, short.difference, short.step, short.problem], [330, 320, -10, 2, true]);
+
+    const matching = boxReconciliation({ type: 'bank_transfer', status: 'received', payments: [entry('300'), entry('140')], auditSummary: { total: 2, reviewed: 1, verified: '300.00', difference: '0.00' } });
+    assert.deepEqual([matching.confirmed, matching.difference, matching.reviewed, matching.toReview, matching.step, matching.problem], [300, 0, 1, 2, 1, false]);
+
+    const approved = boxReconciliation({ type: 'bank_transfer', status: 'received', payments: [entry('300')], auditSummary: { total: 1, reviewed: 1, verified: '300.00', difference: '0.00' }, audit: { id: 1 } });
+    assert.equal(approved.step, 3);
 });
