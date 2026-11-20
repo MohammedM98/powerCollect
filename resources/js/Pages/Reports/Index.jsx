@@ -161,7 +161,7 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                 )}
 
                 <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold text-gray-900">{current.heading}</h2><InfoTip label={`معلومة عن ${current.heading}`}>{current.hint}</InfoTip></div>
-                {hasFigures && section === 'overview' && <OverviewView flow={flow} collections={collections} branchSummary={branchSummary ?? []} readings={readings} />}
+                {hasFigures && section === 'overview' && <OverviewView flow={flow} collections={collections} comparison={comparison} branchSummary={branchSummary ?? []} readings={readings} />}
                 {hasFigures && section === 'collections' && <CollectionsView collections={collections} comparison={comparison} days={days} onOpenDay={openDay} />}
                 {section === 'boxes' && <BoxesReport data={boxData} />}
                 {section === 'debts' && <DebtReport key={filters.branch} data={debts} visit={visit} />}

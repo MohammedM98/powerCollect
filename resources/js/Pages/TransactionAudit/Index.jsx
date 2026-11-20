@@ -6,25 +6,60 @@ import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import Pagination from '@/Components/DataTable/Pagination';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Icon from '@/Components/Icon';
-import KpiTile from '@/Components/KpiTile';
+import { Chip } from '@heroui/react';
+import { Figure } from '@/Pages/Reports/ReportViews';
 import PeriodTabs, { periodCaption } from '@/Components/PeriodTabs';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useRowClick } from '@/hooks/useRowClick';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
-import { formatClock, formatDayLabel, formatNumber } from '@/lib/format';
+import { formatClock, formatDayLabel, formatMoney, formatNumber } from '@/lib/format';
 import StatementModal from '@/Pages/Subscriptions/StatementModal';
 import PageHeader from '@/Components/PageHeader';
 
 const STATUS_DOTS = { active: 'green', suspended: 'amber', disconnected: 'gray' };
 
-/** Each kind of change's badge: blue to edit, amber to correct, burgundy to delete for good. */
+/** Each kind of change as a HeroUI chip in its MA tone: blue to edit, violet to correct, green to refund, amber to cancel, red to delete for good. */
 const KIND_STYLES = {
-    amendment: { icon: 'pencil', className: 'border-blue-500/25 bg-blue-500/10 text-blue-700 dark:text-blue-500' },
-    cancellation: { icon: 'close', className: 'border-gray-200 bg-gray-50 text-gray-700' },
-    correction: { icon: 'repeat', className: 'border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-400' },
-    refund: { icon: 'undo', className: 'border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400' },
-    deletion: { icon: 'trash', className: 'border-brand-500/25 bg-brand-500/10 text-brand-700' },
+    amendment: { icon: 'pencil', tone: 'clr' },
+    cancellation: { icon: 'close', tone: 'warn' },
+    correction: { icon: 'repeat', tone: 'disc' },
+    refund: { icon: 'undo', tone: 'pay' },
+    deletion: { icon: 'trash', tone: 'owe' },
 };
+
+/** What a change moved the subscriber's balance by: owed more (red, +), owed less (green, −), or nothing. */
+function Impact({ value }) {
+    const amount = Number(value ?? 0);
+    if (amount === 0) {
+        return <span className="gl-au-zero">0</span>;
+    }
+
+    return (
+        <span className="gl-au-impact" data-tone={amount > 0 ? 'owe' : 'pay'}>
+            <bdi dir="ltr">{amount > 0 ? '+' : '−'}{formatMoney(Math.abs(amount))}</bdi>
+            <small>{amount > 0 ? 'على المشترك' : 'لصالح المشترك'}</small>
+        </span>
+    );
+}
+
+/** The value before and after the change: an edited field's old and new value, or the amount reversed and the corrected one. */
+function BeforeAfter({ event, side }) {
+    if (event.changes.length > 0) {
+        return (
+            <span className="gl-au-values">
+                {event.changes.map((change) => (
+                    <span key={change.label}>
+                        <small>{change.label}</small>
+                        {(side === 'before' ? change.from : change.to) === null || (side === 'before' ? change.from : change.to) === '' ? <Dash /> : <bdi className={side === 'before' ? 'gl-au-was' : 'gl-au-now'}>{valueText(side === 'before' ? change.from : change.to)}</bdi>}
+                    </span>
+                ))}
+            </span>
+        );
+    }
+    const value = event[side];
+
+    return value === null || value === undefined ? <Dash /> : <bdi dir="ltr" className={side === 'before' ? 'gl-au-was' : 'gl-au-now'}>{formatMoney(value)}</bdi>;
+}
 
 function Dash() {
     return <span className="text-gray-300">—</span>;
@@ -38,34 +73,13 @@ function valueText(value) {
 function DayHeader({ day, isToday }) {
     return (
         <tr className="data-table-group">
-            <td colSpan={6}>
-                <span className="flex items-center gap-2 font-bold text-gray-900">
+            <td colSpan={10}>
+                <span className="gl-au-day">
                     {formatDayLabel(day)}
-                    {isToday && <span className="rounded-full bg-brand-500 px-2 py-0.5 text-[12px] font-bold text-white">اليوم</span>}
+                    {isToday && <Chip size="sm" className="gl-au-today">اليوم</Chip>}
                 </span>
             </td>
         </tr>
-    );
-}
-
-/** What the change did: the fields edited (old → new), and why. */
-function ChangeDetails({ event }) {
-    return (
-        <div className="grid min-w-[220px] gap-1 whitespace-normal text-xs text-gray-700">
-            {event.changes.map((change) => (
-                <span key={change.label}>
-                    <b className="font-semibold text-gray-900">{change.label}:</b> <bdi>{valueText(change.from)}</bdi> <span dir="ltr">→</span>{' '}
-                    <bdi>{valueText(change.to)}</bdi>
-                </span>
-            ))}
-            {event.reason && (
-                <span>
-                    <b className="font-semibold text-gray-900">السبب:</b> {event.reason}
-                </span>
-            )}
-            {event.notes && <span className="text-gray-500">{event.notes}</span>}
-            {event.changes.length === 0 && !event.reason && !event.notes && <Dash />}
-        </div>
     );
 }
 
@@ -75,7 +89,7 @@ function ChangeDetails({ event }) {
  * permanent deletions — newest first and grouped by day, with who made it
  * and why. The figures follow the period, the search and the filters.
  */
-export default function Index({ events, period, counts, today, scopeLabel, filters, filterOptions, statement }) {
+export default function Index({ events, period, counts, impactSummary = null, today, scopeLabel, filters, filterOptions, statement }) {
     const { can } = usePage().props;
     const { search, setSearch, setPerPage, filterValues, setFilter, setFilters, clearFilters } = useDataTable('/transaction-audit', filters, { period });
     const rowClick = useRowClick();
@@ -116,22 +130,11 @@ export default function Index({ events, period, counts, today, scopeLabel, filte
         >
             <Head title="سجل التدقيق" />
 
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                <KpiTile
-                    hero
-                    label={`إجراءات على الحركات، ${caption}`}
-                    value={formatNumber(total)}
-                    unit="إجراء"
-                    hint={`منها ${formatNumber(counts.refund)} إرجاع`}
-                />
-                <KpiTile icon="pencil" label="تعديلات" value={formatNumber(counts.amendment)} hint="بيانات أو مبالغ عُدّلت في مكانها" />
-                <KpiTile
-                    icon="repeat"
-                    label="إلغاءات وتصحيحات"
-                    value={formatNumber(counts.cancellation + counts.correction)}
-                    hint={`${formatNumber(counts.correction)} تصحيح، ${formatNumber(counts.cancellation)} إلغاء`}
-                />
-                <KpiTile icon="trash" label="حذف نهائي" value={formatNumber(counts.deletion)} hint="حركات أُزيلت من الكشف" />
+            <div className="gl-rp-figs">
+                <Figure dark label={`إجراءات على الحركات، ${caption}`} hint={impactSummary ? `من ${formatNumber(impactSummary.users)} موظف، صافي الأثر ${Number(impactSummary.net) > 0 ? '+' : ''}${formatMoney(impactSummary.net)} ₪` : `منها ${formatNumber(counts.refund)} إرجاع`}>{formatNumber(total)}</Figure>
+                <Figure tone="clr" label="تعديلات" hint="بيانات عُدّلت في مكانها، دون تغيير المبالغ">{formatNumber(counts.amendment)}</Figure>
+                <Figure tone="disc" label="إلغاءات وتصحيحات وإرجاعات" hint={impactSummary ? `بقيمة ${formatMoney(impactSummary.cancelled)} ₪` : `${formatNumber(counts.correction)} تصحيح، ${formatNumber(counts.cancellation)} إلغاء`}>{formatNumber(counts.cancellation + counts.correction + counts.refund)}</Figure>
+                <Figure tone="owe" label="حسّاسة تحتاج مراجعة" hint="حذف نهائي، أو على حركة من صندوق مستلم">{impactSummary ? formatNumber(impactSummary.sensitive) : formatNumber(counts.deletion)}</Figure>
             </div>
 
             <div className="mt-5">
@@ -155,21 +158,24 @@ export default function Index({ events, period, counts, today, scopeLabel, filte
                 />
 
                 <div className="data-table-container">
-                    <table className="data-table w-full text-start text-sm">
+                    <table className="data-table gl-au-table w-full text-start text-sm">
                         <thead>
                             <tr>
                                 <th>الوقت</th>
                                 <th>الإجراء</th>
                                 <th>المشترك</th>
                                 <th>الحركة</th>
-                                <th>التفاصيل</th>
+                                <th>قبل</th>
+                                <th>بعد</th>
+                                <th className="num">الأثر ₪</th>
+                                <th>السبب</th>
                                 <th>بواسطة</th>
                             </tr>
                         </thead>
                         <tbody>
                             {events.data.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6}>لا توجد إجراءات مطابقة في هذه الفترة.</td>
+                                    <td colSpan={9}>لا توجد إجراءات مطابقة في هذه الفترة.</td>
                                 </tr>
                             ) : (
                                 events.data.map((event, index) => {
@@ -178,7 +184,7 @@ export default function Index({ events, period, counts, today, scopeLabel, filte
                                     return (
                                         <Fragment key={event.key}>
                                             {event.day !== events.data[index - 1]?.day && <DayHeader day={event.day} isToday={event.day === today} />}
-                                            <tr {...rowClick(can?.viewSubscriptions && event.subscription ? () => openStatement(event.subscription) : null)}>
+                                            <tr className={event.sensitive ? 'gl-au-flag' : undefined} {...rowClick(can?.viewSubscriptions && event.subscription ? () => openStatement(event.subscription) : null)}>
                                                 <td className="whitespace-nowrap">
                                                     <span className="inline-flex items-center gap-1.5 font-semibold text-gray-900">
                                                         <Icon name="clock" className="h-4 w-4 text-gray-400" />
@@ -186,12 +192,11 @@ export default function Index({ events, period, counts, today, scopeLabel, filte
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <span
-                                                        className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-semibold ${style.className}`}
-                                                    >
+                                                    <Chip size="sm" variant="soft" className="gl-au-kind" data-tone={style.tone}>
                                                         <Icon name={style.icon} className="h-3.5 w-3.5" />
                                                         {event.kindLabel}
-                                                    </span>
+                                                    </Chip>
+                                                    {event.sensitive && <small className="gl-au-sensitive" title={event.sensitiveReason}>حسّاس، {event.sensitiveReason}</small>}
                                                     {event.kindNote && <span className="mt-1 block text-xs text-gray-500">{event.kindNote}</span>}
                                                 </td>
                                                 <td>
@@ -222,10 +227,11 @@ export default function Index({ events, period, counts, today, scopeLabel, filte
                                                         ))}
                                                     </div>
                                                 </td>
-                                                <td>
-                                                    <ChangeDetails event={event} />
-                                                </td>
-                                                <td className="text-gray-600">{event.userName ?? 'مستخدم محذوف'}</td>
+                                                <td><BeforeAfter event={event} side="before" /></td>
+                                                <td><BeforeAfter event={event} side="after" /></td>
+                                                <td className="num"><Impact value={event.impact} /></td>
+                                                <td className="gl-au-reason">{event.reason ?? <Dash />}{event.notes && <small>{event.notes}</small>}</td>
+                                                <td className="gl-au-by">{event.userName ?? 'مستخدم محذوف'}</td>
                                             </tr>
                                         </Fragment>
                                     );

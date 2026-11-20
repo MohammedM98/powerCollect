@@ -50,7 +50,7 @@ function ShareBar({ value, tone = 'pay' }) {
  * equation, the receipts reconciled from recorded to confirmed, each
  * branch's receipts and collection rate, and the readings of the period.
  */
-export function OverviewView({ flow, collections, branchSummary = [], readings }) {
+export function OverviewView({ flow, collections, comparison = null, branchSummary = [], readings }) {
     const receipts = collections.receipts;
     const charged = flow.charges.map((line) => line.label).join(' و');
     const credited = flow.credits.map((line) => `${reportMoney(line.total)} ${line.label}`).join('، ');
@@ -75,6 +75,17 @@ export function OverviewView({ flow, collections, branchSummary = [], readings }
                 <span className="gl-eq-op" aria-hidden="true">=</span>
                 <Card className="gl-eq-term is-total"><small>الرصيد الختامي</small><b><Shekels value={flow.closing} /></b><p>نسبة التحصيل {collectionRate}%</p></Card>
             </section>
+
+            {comparison && <section aria-label="المقارنة بالفترة السابقة" className="gl-rp-compare">
+                <span className="gl-set-ico" data-tone={cents(comparison.difference) >= 0 ? 'pay' : 'owe'} aria-hidden="true"><Icon name="trend" /></span>
+                <div className="min-w-0">
+                    <b>المقبوضات مقارنة بالفترة السابقة</b>
+                    <small>{shortDate(comparison.from, true)} إلى {shortDate(comparison.to, true)}، حُصّل فيها <bdi dir="ltr">{reportMoney(comparison.total)}</bdi> ₪</small>
+                </div>
+                <span className="gl-rp-delta" data-tone={cents(comparison.difference) >= 0 ? 'pay' : 'owe'}>
+                    {cents(comparison.difference) >= 0 ? 'زيادة' : 'انخفاض'} <bdi dir="ltr">{reportMoney(Math.abs(Number(comparison.difference)))}</bdi> ₪{comparison.percentage !== null && <> (<bdi dir="ltr">{Math.abs(comparison.percentage)}%</bdi>)</>}
+                </span>
+            </section>}
 
             <div className="gl-rp-split">
                 {receipts && <Panel icon="scale" tone="clr" title="كشف تسوية المقبوضات" note="من المسجّل إلى المؤكَّد">

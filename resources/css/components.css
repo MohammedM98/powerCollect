@@ -9600,3 +9600,137 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-bp tr[data-quiet] td {
     color: var(--ma-muted);
 }
+
+/* The audit log's table: the kind as a chip in its tone, before struck in red and after in green, the impact signed, a sensitive row tinted with a red edge. */
+.gl-au-table .num {
+    text-align: left;
+    white-space: nowrap;
+}
+
+.gl-au-kind.chip {
+    gap: 5px;
+    background: var(--ts);
+    color: var(--t);
+    font-weight: 800;
+}
+
+.gl-au-sensitive {
+    display: block;
+    margin-top: 5px;
+    color: var(--ma-owe);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.gl-au-was {
+    color: var(--ma-owe);
+    font-weight: 700;
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+}
+
+.gl-au-now {
+    color: var(--ma-pay);
+    font-weight: 800;
+}
+
+.gl-au-values {
+    display: grid;
+    gap: 4px;
+}
+
+.gl-au-values small {
+    display: block;
+    color: var(--ma-muted);
+    font-size: 11.5px;
+}
+
+.gl-au-impact {
+    display: inline-grid;
+    color: var(--t);
+    font-weight: 900;
+    text-align: left;
+}
+
+.gl-au-impact small {
+    color: var(--ma-muted);
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+.gl-au-zero {
+    color: var(--ma-faint);
+}
+
+.gl-au-reason small {
+    display: block;
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.gl-au-by {
+    color: var(--ma-muted);
+    white-space: nowrap;
+}
+
+.gl-au-table tr.gl-au-flag td {
+    background: color-mix(in oklab, var(--ma-owe-s) 70%, transparent);
+}
+
+.gl-au-table tr.gl-au-flag td:first-child {
+    box-shadow: inset -3px 0 0 var(--ma-owe);
+}
+
+.gl-au-day {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ma-ink);
+    font-weight: 800;
+}
+
+.gl-au-today.chip {
+    background: var(--ma-brand);
+    color: #fff;
+    font-weight: 800;
+}
+
+.gl-rp-compare {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 18px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-rp-compare .gl-set-ico {
+    background: var(--ts);
+    color: var(--t);
+}
+
+.gl-rp-compare b {
+    display: block;
+    color: var(--ma-ink);
+    font-weight: 800;
+}
+
+.gl-rp-compare small {
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.gl-rp-delta {
+    margin-inline-start: auto;
+    padding: 4px 12px;
+    border-radius: 99px;
+    background: var(--ts);
+    color: var(--t);
+    font-weight: 900;
+}
+.gl-rp-panel .gl-rp-fig:not([data-tone]) { --t: var(--ma-ink); }
+.gl-rp-panel .gl-rp-fig:not([data-tone]) small i { display: none; }

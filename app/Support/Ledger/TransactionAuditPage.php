@@ -83,9 +83,9 @@ class TransactionAuditPage
     public static function rows(Collection $events): Collection
     {
         $ids = fn (array $kinds): array => $events->whereIn('kind', $kinds)->pluck('event_id')->all();
-        $amendments = TransactionAmendment::query()->with(['user', 'transaction.subscription.branch'])->findMany($ids(['amendment']))->keyBy('id');
+        $amendments = TransactionAmendment::query()->with(['user', 'transaction.subscription.branch', 'transaction.boxEntry.box'])->findMany($ids(['amendment']))->keyBy('id');
         $reversals = SubscriptionTransaction::query()
-            ->with(['recordedBy', 'subscription.branch', 'reverses.correction'])
+            ->with(['recordedBy', 'subscription.branch', 'reverses.correction', 'reverses.boxEntry.box'])
             ->findMany($ids(['cancellation', 'correction', 'refund']))
             ->keyBy('id');
         $deletions = TransactionDeletion::query()->with(['user', 'subscription.branch'])->findMany($ids(['deletion']))->keyBy('id');
@@ -98,6 +98,24 @@ class TransactionAuditPage
             })
             ->filter()
             ->values();
+    }
+
+    /**
+     * The period's changes in two figures: their net effect on subscribers'
+     * balances (positive when they now owe more), how many changes and
+     * people made them, and how many an auditor must look at.
+     *
+     * @param  Collection<int, array<string, mixed>>  $rows
+     * @return array{net: string, users: int, sensitive: int, cancelled: string}
+     */
+    public static function impactSummary(Collection $rows): array
+    {
+        return [
+            'net' => Money::sum($rows->pluck('impact')->all()),
+            'users' => $rows->pluck('userName')->filter()->unique()->count(),
+            'sensitive' => $rows->where('sensitive', true)->count(),
+            'cancelled' => Money::sum($rows->whereIn('kind', ['cancellation', 'correction', 'refund'])->map(fn (array $row): string => Money::amount(abs((float) $row['impact'])))->all()),
+        ];
     }
 
     /**
@@ -117,6 +135,9 @@ class TransactionAuditPage
             ])->values()->all(),
             'reason' => $amendment->reason,
             'notes' => null,
+            // Details only: an amount changes by a correction, never in place.
+            'impact' => '0',
+            ...self::sensitivity(false, $line),
         ];
     }
 
@@ -144,6 +165,11 @@ class TransactionAuditPage
             // A partial refund leaves the payment standing, without a reason of its own.
             'reason' => $original?->cancellation_reason && ($kind !== 'refund' || $isFullRefund) ? __($original->cancellation_reason->label()) : null,
             'notes' => $kind !== 'refund' || $isFullRefund ? $original?->cancellation_notes : null,
+            // What the subscriber's balance moved by: the reversal, plus the corrected line that replaced the original.
+            'impact' => LedgerAmounts::formatAmount((float) $reversal->amount + ($kind === 'correction' ? (float) ($original?->correction?->amount ?? 0) : 0)),
+            'before' => $original ? LedgerAmounts::formatAmount(abs((float) $original->amount)) : null,
+            'after' => $kind === 'correction' && $original?->correction ? LedgerAmounts::formatAmount(abs((float) $original->correction->amount)) : null,
+            ...self::sensitivity(false, $original),
         ];
     }
 
@@ -172,6 +198,27 @@ class TransactionAuditPage
             'changes' => [],
             'reason' => $deletion->reason,
             'notes' => null,
+            // Taking lines off the account moves the balance by the opposite of their sum.
+            'impact' => LedgerAmounts::formatAmount(-collect($deletion->transactions)->sum(fn (array $line): float => (float) ($line['amount'] ?? 0))),
+            'before' => LedgerAmounts::formatAmount(abs(collect($deletion->transactions)->sum(fn (array $line): float => (float) ($line['amount'] ?? 0)))),
+            'after' => null,
+            ...self::sensitivity(true, null),
+        ];
+    }
+
+    /**
+     * Whether an auditor must look at the change: a permanent deletion, or a
+     * change to a line whose box was already handed over and received.
+     *
+     * @return array{sensitive: bool, sensitiveReason: ?string}
+     */
+    public static function sensitivity(bool $deleted, ?SubscriptionTransaction $line): array
+    {
+        $closedBox = $line?->boxEntry?->box?->status === 'received';
+
+        return [
+            'sensitive' => $deleted || $closedBox,
+            'sensitiveReason' => $deleted ? __('Deleted from the statement for good') : ($closedBox ? __('On a line from a received box') : null),
         ];
     }
 
