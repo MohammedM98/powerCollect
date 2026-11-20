@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button, Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
@@ -121,9 +122,7 @@ export default function PaymentAmountStep({
                         </p>
                         {overpayment === 'confirm' && (
                             <label className="mt-2 flex cursor-pointer items-center gap-2 font-semibold">
-                                <input
-                                    type="checkbox"
-                                    className="h-[18px] w-[18px]"
+                                <CheckBox
                                     checked={data.confirm_overpayment}
                                     onChange={(e) => setData('confirm_overpayment', e.target.checked)}
                                 />

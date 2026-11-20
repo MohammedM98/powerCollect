@@ -219,7 +219,7 @@ async function grant(page, person, labels) {
     await page.getByRole('button', { name: 'مراجعة وحفظ' }).click();
     const review = page.getByRole('dialog').last();
     const acknowledge = review.getByRole('checkbox');
-    if (await acknowledge.count()) await acknowledge.check();
+    if (await acknowledge.count()) await acknowledge.check({ force: true });
     await review.getByRole('button', { name: 'تأكيد وحفظ الصلاحيات' }).click();
     await review.waitFor({ state: 'hidden' });
     await snap(page, `permissions-${person}`);
@@ -375,7 +375,7 @@ step('the auditor checks the transfer against the bank and approves the period',
     const approval = page.getByRole('alertdialog', { name: 'اعتماد تدقيق الفترة كاملة؟' });
     await approval.getByText('تحميل على المشتركين').waitFor();
     assert.match((await approval.innerText()).replace(/\s+/g, ' '), /حوالات فيها فروق 1 .*تحميل على المشتركين 20 (?:شيكل|₪)/);
-    await approval.getByRole('checkbox').check();
+    await approval.getByRole('checkbox').check({ force: true });
     const hold = approval.getByRole('button', { name: /اعتماد التدقيق/ });
     await hold.hover();
     await page.mouse.down();

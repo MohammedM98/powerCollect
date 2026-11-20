@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
@@ -201,11 +202,9 @@ export function PermissionReviewDialog({
                     )}
                     {dangerousGrants.length > 0 && (
                         <label className="mx-5 mb-5 flex cursor-pointer items-start gap-2.5 rounded-control bg-red-500/[0.07] px-3.5 py-3 text-sm text-red-800 dark:text-red-300 sm:mx-7">
-                            <input
-                                type="checkbox"
+                            <CheckBox
                                 checked={acknowledged}
                                 onChange={(event) => onAcknowledgedChange(event.target.checked)}
-                                className="mt-0.5 rounded border-gray-300 text-brand-600"
                             />
                             <span>
                                 يحصل {firstName} على صلاحيات خطيرة: <b>{dangerousGrants.map((item) => item.label).join('، ')}</b>. أؤكد أنه

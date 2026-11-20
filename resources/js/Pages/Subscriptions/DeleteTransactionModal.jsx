@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { useEffect, useEffectEvent, useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import FormModal from '@/Components/FormModal';
@@ -99,9 +100,7 @@ export default function DeleteTransactionModal({ onClose, subscription, balance,
 
             {isReadingCharge && (
                 <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm">
-                    <input
-                        type="checkbox"
-                        className="mt-1 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                    <CheckBox
                         checked={form.data.reopen_reading}
                         onChange={(event) => form.setData('reopen_reading', event.target.checked)}
                     />
@@ -123,9 +122,7 @@ export default function DeleteTransactionModal({ onClose, subscription, balance,
                     </p>
                     {onRecordPayment && (
                         <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm">
-                            <input
-                                type="checkbox"
-                                className="mt-1 rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                            <CheckBox
                                 checked={recordNewPayment}
                                 onChange={(event) => setRecordNewPayment(event.target.checked)}
                             />

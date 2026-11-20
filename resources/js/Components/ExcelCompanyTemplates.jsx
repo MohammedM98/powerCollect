@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import SecondaryButton from '@/Components/SecondaryButton';
@@ -99,9 +100,7 @@ export default function ExcelCompanyTemplates({
                         </SecondaryButton>
                     </div>
                     <label className="mt-2 flex items-center gap-2 text-xs font-semibold text-gray-600">
-                        <input
-                            type="checkbox"
-                            className="rounded border-gray-300 text-excel-600 focus:ring-excel-500"
+                        <CheckBox
                             checked={companyDefault}
                             onChange={(event) => setCompanyDefault(event.target.checked)}
                         />

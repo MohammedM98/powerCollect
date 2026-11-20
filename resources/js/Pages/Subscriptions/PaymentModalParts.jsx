@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -164,8 +165,7 @@ export function TransferFields({ data, setData, errors, transferBanks, senderBan
                                 </a>
                             </p>
                             <label className="mt-1.5 flex items-center gap-2">
-                                <input
-                                    type="checkbox"
+                                <CheckBox
                                     checked={Boolean(data.confirm_duplicate_reference)}
                                     onChange={(e) => setData('confirm_duplicate_reference', e.target.checked)}
                                 />

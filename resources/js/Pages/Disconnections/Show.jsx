@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -233,7 +234,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
                         <tr>
                             {canSelect && (
                                 <th data-actions="" className="w-10">
-                                    <input ref={headerCheckbox} type="checkbox" checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)} onChange={togglePage} aria-label="تحديد كل مشتركي هذه الصفحة" className="rounded border-gray-300 text-brand-600" />
+                                    <CheckBox checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)} indeterminate={!allMatching && pageSelectedCount > 0 && pageSelectedCount < pageIds.length} onChange={togglePage} aria-label="تحديد كل مشتركي هذه الصفحة" />
                                 </th>
                             )}
                             <th>المشترك</th>
@@ -255,7 +256,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
                                 <tr key={item.id} className={allMatching || selectedIds.has(item.id) ? 'bg-brand-50' : undefined} {...printRowProps(Object.fromEntries(PRINT_FIELDS.map((field) => [field.key, item[field.key]])))}>
                                     {canSelect && (
                                         <td>
-                                            <input type="checkbox" checked={allMatching || selectedIds.has(item.id)} onChange={() => toggle(item.id)} aria-label={`تحديد ${item.name}`} className="rounded border-gray-300 text-brand-600" />
+                                            <CheckBox checked={allMatching || selectedIds.has(item.id)} onChange={() => toggle(item.id)} aria-label={`تحديد ${item.name}`} />
                                         </td>
                                     )}
                                     <td data-label="المشترك">

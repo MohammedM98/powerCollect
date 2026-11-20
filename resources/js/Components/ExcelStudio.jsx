@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button, Input } from '@heroui/react';
 import { useEffect, useEffectEvent, useId, useMemo, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
@@ -220,7 +221,7 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                     <ul className="space-y-1.5">
                                         {parts.map((candidate) => (
                                             <li key={candidate.key} className={`flex items-center gap-2 rounded-control border px-3 py-2 ${editing === candidate.key ? 'border-excel-500/50 bg-excel-500/5' : 'border-gray-100'}`}>
-                                                <input type="checkbox" className="rounded border-gray-300 text-excel-600 focus:ring-excel-500" checked={settings.parts[candidate.key].on} onChange={(event) => changePart(candidate.key, { on: event.target.checked })} aria-label={`تضمين ${candidate.name}`} />
+                                                <CheckBox checked={settings.parts[candidate.key].on} onChange={(event) => changePart(candidate.key, { on: event.target.checked })} aria-label={`تضمين ${candidate.name}`} />
                                                 <Button className="flex min-w-0 flex-1 items-center justify-between gap-2 text-start text-sm" onClick={() => setEditing(candidate.key)}>
                                                     <span className="truncate font-semibold text-gray-900">{candidate.name}</span>
                                                     <span className="shrink-0 font-display text-xs text-gray-500">{candidate.rows.length.toLocaleString('en')} صف</span>
@@ -238,7 +239,7 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                                 return (
                                                     <li key={column.key} className="flex items-center gap-2 border-b border-gray-100 px-3 py-1.5 last:border-b-0">
                                                         <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-sm">
-                                                            <input type="checkbox" className="rounded border-gray-300 text-excel-600 focus:ring-excel-500" checked={column.on} onChange={() => changePart(part.key, { columns: partSettings.columns.map((candidate) => (candidate.key === column.key ? { ...candidate, on: !candidate.on } : candidate)) })} />
+                                                            <CheckBox checked={column.on} onChange={() => changePart(part.key, { columns: partSettings.columns.map((candidate) => (candidate.key === column.key ? { ...candidate, on: !candidate.on } : candidate)) })} />
                                                             <span className="truncate">{definition.label}</span>
                                                             {definition.sum && <span className="text-xs text-gray-400">مجموع</span>}
                                                         </label>

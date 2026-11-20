@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button, TextArea } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -169,7 +170,7 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
                     <thead>
                         <tr>
                             <th data-actions="" className="w-10">
-                                <input ref={headerCheckbox} type="checkbox" checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)} onChange={togglePage} aria-label="تحديد كل مشتركي هذه الصفحة" className="rounded border-gray-300 text-brand-600" />
+                                <CheckBox checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)} indeterminate={!allMatching && pageSelectedCount > 0 && pageSelectedCount < pageIds.length} onChange={togglePage} aria-label="تحديد كل مشتركي هذه الصفحة" />
                             </th>
                             <SortableTh column="display_name" label="المشترك" sortState={filters} onSort={sort} />
                             <th>الطبلون</th>
@@ -187,7 +188,7 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
                             subscriptions.data.map((row) => (
                                 <tr key={row.id} className={allMatching || selectedIds.has(row.id) ? 'bg-brand-50' : undefined}>
                                     <td>
-                                        <input type="checkbox" disabled={Boolean(row.waitingOn)} checked={!row.waitingOn && (allMatching || selectedIds.has(row.id))} onChange={() => toggle(row.id)} aria-label={`تحديد ${row.name}`} className="rounded border-gray-300 text-brand-600 disabled:opacity-40" />
+                                        <CheckBox disabled={Boolean(row.waitingOn)} checked={!row.waitingOn && (allMatching || selectedIds.has(row.id))} onChange={() => toggle(row.id)} aria-label={`تحديد ${row.name}`} />
                                     </td>
                                     <td data-label="المشترك"><RowIdentity name={row.name} subtitle={row.accountNumber} subtitleDir="ltr" /></td>
                                     <td data-label="الطبلون" className="text-gray-600">{row.meterBoxNumber ? <span className="data-chip">{row.meterBoxNumber}</span> : '—'}</td>

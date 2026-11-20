@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button, Input } from '@heroui/react';
 import { useState } from 'react';
 import Icon from '@/Components/Icon';
@@ -40,7 +41,7 @@ export default function DistributionAreas({ areas, chosen, onChange, disabled, f
             <div className="max-h-60 overflow-y-auto p-2 lg:max-h-120">
                 {matching.length === 0 && <p className="px-3 py-6 text-center text-sm text-gray-500">لا توجد مناطق مطابقة للبحث وحالة التوزيع. غيّر البحث أو اختر «الكل».</p>}
                 {matching.map((area) => <label key={area.id} className={`flex cursor-pointer items-start gap-3 rounded-control px-3 py-3 hover:bg-gray-50 ${chosen.includes(area.id) ? 'bg-brand-500/5' : ''}`}>
-                    <input type="checkbox" checked={chosen.includes(area.id)} disabled={disabled} onChange={() => toggle(area.id)} aria-label={`عرض منطقة ${area.name}`} className="mt-1 rounded border-gray-300 text-brand-600" />
+                    <CheckBox checked={chosen.includes(area.id)} disabled={disabled} onChange={() => toggle(area.id)} aria-label={`عرض منطقة ${area.name}`} />
                     <span className="flex min-w-0 flex-1 flex-col gap-1">
                         <span className="block text-sm font-semibold text-gray-900">{area.name}</span>
                         <span className="text-xs text-gray-500">{formatNumber(area.matchingBoxes)} طبلون{filter ? ' مطابق' : ''}، {formatNumber(area.matchingSubscribers)} مشترك</span>

@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button, Input } from '@heroui/react';
 import { useId, useRef, useState } from 'react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
@@ -227,7 +228,7 @@ export default function ClearingModal({ show, onClose, subscription, balance, re
                                             <b className="gl-num">{formatMoney(creditLeft)} ₪</b>.
                                         </p>
                                         <label>
-                                            <input type="checkbox" checked={Boolean(data.confirm_over_balance)} onChange={(e) => setData('confirm_over_balance', e.target.checked)} />
+                                            <CheckBox checked={Boolean(data.confirm_over_balance)} onChange={(e) => setData('confirm_over_balance', e.target.checked)} />
                                             نعم، أريد فعلًا إضافة هذه المقاصة لهذا المشترك
                                         </label>
                                         <InputError message={errors.confirm_over_balance} className="mt-1" />

@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button, Input, TextArea } from '@heroui/react';
 import { useEffect, useEffectEvent, useId, useMemo, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
@@ -324,7 +325,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                                 عند التأكيد تتحول خدمة كل مشترك إلى «مفصول» وتُحمَّل عليه رسوم قطع الخدمة المبيّنة مرة واحدة. إن تغيّرت حالة الخدمة بعد هذه المعاينة يُستثنى المشترك ويظهر في التقرير.
                             </p>
                             <label className="flex items-start gap-3 rounded-control border border-gray-200 p-3 text-sm font-semibold text-gray-800">
-                                <input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} className="mt-0.5 rounded border-gray-300 text-red-700" />
+                                <CheckBox checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} />
                                 أؤكد أن قطع الخدمة قد نُفّذ فعليًا للمشتركين المحددين.
                             </label>
                             <InputError message={errors.confirmed} />

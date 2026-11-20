@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button } from '@heroui/react';
 import { useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
@@ -130,7 +131,7 @@ export default function CloseBoxesByType({ boxes, branchId, userId, initialType,
         </div>
         <footer className="shrink-0 space-y-3 border-t border-gray-100 bg-surface p-4 sm:px-6">
             {cash && selected.length > 0 && <label className="flex cursor-pointer items-start gap-3 rounded-control border border-emerald-500/25 bg-emerald-500/5 p-3 text-sm text-gray-800">
-                <input type="checkbox" className="mt-0.5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" checked={cashCounted} onChange={(event) => setCashCounted(event.target.checked)} />
+                <CheckBox checked={cashCounted} onChange={(event) => setCashCounted(event.target.checked)} />
                 <span>عددتُ نقد كل صندوق من الصناديق المختارة ووجدته مطابقًا لإجماليه: <b className="text-gray-900">{financialAmountsLine(totals)}</b></span>
             </label>}
             <div className="flex flex-wrap items-center justify-between gap-3">

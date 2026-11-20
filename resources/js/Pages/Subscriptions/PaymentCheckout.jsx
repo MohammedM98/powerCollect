@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { usePage } from '@inertiajs/react';
 import { Button, Input, Label, Radio, RadioGroup, Switch, TextField } from '@heroui/react';
 import Icon from '@/Components/Icon';
@@ -154,7 +155,7 @@ function CheckoutAmount({ amountInput, currencies, currencyLabel, currencyMark, 
                     </p>
                     {overpayment === 'confirm' && (
                         <label className="mt-2 flex cursor-pointer items-center gap-2 font-semibold">
-                            <input type="checkbox" className="h-[18px] w-[18px]" checked={data.confirm_overpayment} onChange={(e) => setData('confirm_overpayment', e.target.checked)} />
+                            <CheckBox checked={data.confirm_overpayment} onChange={(e) => setData('confirm_overpayment', e.target.checked)} />
                             أؤكد أن المبلغ <bdi className="gl-num">{formatMoney(data.amount)}</bdi> {currencyMark} صحيح
                         </label>
                     )}
@@ -259,7 +260,7 @@ function CheckoutTransfer({ data, errors, referenceCheck, referenceStatus, sende
                                 </a>
                             </p>
                             <label className="mt-1.5 flex items-center gap-2">
-                                <input type="checkbox" checked={Boolean(data.confirm_duplicate_reference)} onChange={(e) => setData('confirm_duplicate_reference', e.target.checked)} />
+                                <CheckBox checked={Boolean(data.confirm_duplicate_reference)} onChange={(e) => setData('confirm_duplicate_reference', e.target.checked)} />
                                 أؤكد تسجيل الدفعة بالرقم نفسه
                             </label>
                         </div>

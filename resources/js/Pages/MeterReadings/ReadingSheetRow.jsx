@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button, Input } from '@heroui/react';
 import { useEffect, useState, useRef } from 'react';
 import { router } from '@inertiajs/react';
@@ -194,8 +195,7 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
             <td className="re-sub">
                 <div className="flex items-center gap-3">
                     {approvable && (
-                        <input
-                            type="checkbox"
+                        <CheckBox
                             checked={selected}
                             onChange={onToggleSelected}
                             disabled={!row.canApprove}
