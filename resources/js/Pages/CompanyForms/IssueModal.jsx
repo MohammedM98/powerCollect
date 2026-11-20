@@ -4,14 +4,12 @@ import { useForm, useHttp } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
 import FormField from '@/Components/Form/FormField';
-import SearchableSelect from '@/Components/SearchableSelect';
 import ChoiceChips from '@/Components/ChoiceChips';
 import InputError from '@/Components/InputError';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import CompanyFormPaper from './CompanyFormPaper';
 import useCompanySource from './useCompanySource';
 import DateInput from '@/Components/DateInput';
+import { PrimaryKey, SearchableSelect, SecondaryKey } from '@/Components/UI';
 
 const MODE_OPTIONS = [{ value: 'blank', label: 'نموذج فارغ', icon: 'document' }, { value: 'filled', label: 'نسخة معبأة', icon: 'user' }];
 const ARCHIVE_LAYOUT = { paper: 'A4', orientation: 'portrait', margin: 16, fontSize: 15, header: { enabled: false }, watermark: { enabled: false }, footer: '', pages: [{ id: 'archive', blocks: [] }], overlays: [] };
@@ -93,7 +91,7 @@ export default function IssueModal({ templateId = null, mode = 'blank', onClose 
         <form onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="company-issue-title" className="flex max-h-[88dvh] min-h-0 flex-col">
             <header className="flex shrink-0 items-start justify-between gap-4 border-b border-gray-100 px-5 py-5 sm:px-7"><div className="flex items-center gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600"><Icon name={archive ? 'history' : 'printer'} /></span><div><h3 id="company-issue-title" className="text-xl font-bold text-gray-900">{archive ? 'أرشفة طلب ورقي' : loaded?.template.name ?? 'تجهيز النموذج'}</h3><p className="mt-1 text-sm text-gray-500">{archive ? 'حفظ الورقة بعد إدخالها يدويًا، مع رقمها وتاريخها.' : 'راجع النسخة قبل حفظها وفتح الطباعة.'}</p></div></div><Button data-raw="" variant="ghost" isDisabled={processing} onClick={onClose} aria-label="إغلاق" className="rounded-control p-2 text-gray-500 hover:bg-gray-100"><Icon name="close" className="h-5 w-5" /></Button></header>
             <div className="min-h-0 flex-1 overflow-y-auto bg-gray-50 px-5 py-5 sm:px-7">
-                {setupError ? <div role="alert" className="space-y-3 rounded-card bg-surface p-6"><p>{setupError}</p><SecondaryButton onClick={() => setAttempt((old) => old + 1)}>إعادة المحاولة</SecondaryButton></div> : !archive && !loaded ? <div role="status" className="animate-pulse rounded-card bg-surface p-10 text-center text-gray-500">جارٍ تحميل النموذج…</div> : <div className="grid items-start gap-5 lg:grid-cols-[340px_minmax(0,1fr)]">
+                {setupError ? <div role="alert" className="space-y-3 rounded-card bg-surface p-6"><p>{setupError}</p><SecondaryKey onClick={() => setAttempt((old) => old + 1)}>إعادة المحاولة</SecondaryKey></div> : !archive && !loaded ? <div role="status" className="animate-pulse rounded-card bg-surface p-10 text-center text-gray-500">جارٍ تحميل النموذج…</div> : <div className="grid items-start gap-5 lg:grid-cols-[340px_minmax(0,1fr)]">
                     <div className="space-y-5 rounded-card border border-gray-100 bg-surface p-5">
                         {!archive && <ChoiceChips label="طريقة تعبئة النموذج" options={MODE_OPTIONS} value={data.mode} onChange={changeMode} disabled={processing} />}
                         {data.mode === 'blank' && <p className="rounded-control bg-gray-50 p-3 text-sm leading-7 text-gray-600">تُطبع الترويسة والنصوص الثابتة، وتبقى بيانات المشترك والتوقيعات فارغة للتعبئة اليدوية.</p>}
@@ -105,7 +103,7 @@ export default function IssueModal({ templateId = null, mode = 'blank', onClose 
                             <FormField id="company-paper-reference" label="رقم الطلب الورقي" required error={errors.paper_reference}><Input value={data.paper_reference} onChange={(event) => setData('paper_reference', event.target.value)} className="w-full" maxLength={100} required /></FormField>
                             <FormField id="company-paper-date" label="تاريخ الطلب الورقي" required error={errors.paper_date}><DateInput name="paper_date" value={data.paper_date} onChange={(value) => setData('paper_date', value)} required /></FormField>
                             <input ref={fileInput} type="file" className="sr-only" accept=".pdf,.png,.jpg,.jpeg,.webp" onChange={(event) => { selectAttachment(event.target.files?.[0]); event.target.value = ''; }} />
-                            <SecondaryButton onClick={() => fileInput.current.click()}><Icon name="document-plus" className="h-4 w-4" />{data.attachment ? 'استبدال الملف' : 'اختيار صورة الطلب أو PDF'}</SecondaryButton>
+                            <SecondaryKey onClick={() => fileInput.current.click()}><Icon name="document-plus" className="h-4 w-4" />{data.attachment ? 'استبدال الملف' : 'اختيار صورة الطلب أو PDF'}</SecondaryKey>
                             <p className="wrap-break-word text-xs text-gray-500">{data.attachment?.name ?? 'حتى 10 ميجابايت و10 صفحات.'}</p><InputError message={errors.attachment || fileError} />
                         </>}
                         <FormField id="company-document-notes" label="ملاحظات داخلية" error={errors.notes}><TextArea value={data.notes} onChange={(event) => setData('notes', event.target.value)} className="w-full" rows={3} maxLength={2000} /></FormField>
@@ -118,7 +116,7 @@ export default function IssueModal({ templateId = null, mode = 'blank', onClose 
                     </div>
                 </div>}
             </div>
-            <footer className="flex shrink-0 items-center justify-end gap-3 border-t border-gray-100 bg-surface px-5 py-4 sm:px-7"><SecondaryButton disabled={processing} onClick={onClose}>إلغاء</SecondaryButton><PrimaryButton type="submit" disabled={!ready || processing}><Icon name={archive ? 'check' : 'printer'} className="h-4 w-4" />{processing ? 'جارٍ الحفظ…' : archive ? 'حفظ الطلب الورقي' : 'حفظ النسخة وفتح الطباعة'}</PrimaryButton></footer>
+            <footer className="flex shrink-0 items-center justify-end gap-3 border-t border-gray-100 bg-surface px-5 py-4 sm:px-7"><SecondaryKey disabled={processing} onClick={onClose}>إلغاء</SecondaryKey><PrimaryKey type="submit" disabled={!ready || processing}><Icon name={archive ? 'check' : 'printer'} className="h-4 w-4" />{processing ? 'جارٍ الحفظ…' : archive ? 'حفظ الطلب الورقي' : 'حفظ النسخة وفتح الطباعة'}</PrimaryKey></footer>
         </form>
     </Modal>;
 }

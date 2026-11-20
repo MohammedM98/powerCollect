@@ -1,9 +1,9 @@
 import { Button } from '@heroui/react';
 import { useEffect, useState } from 'react';
 import Icon from '@/Components/Icon';
-import SearchableSelect from '@/Components/SearchableSelect';
 import { activeFilterChips } from '@/lib/readingSheet';
 import { childOptions, nestFilterGroups, parentChange, parentValue, scopedOptions, withStaleCleared } from '@/lib/filterGroups';
+import { SearchableSelect } from '@/Components/UI';
 
 /** How far below the top of the window the pinned bar sits: under the app's own floating bar. */
 const TOP_OFFSET = 74;

@@ -1,7 +1,6 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
-import AddButton from '@/Components/AddButton';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import DataTableSortControls from '@/Components/DataTable/DataTableSortControls';
@@ -13,8 +12,7 @@ import Pagination from '@/Components/DataTable/Pagination';
 import ActionsTh from '@/Components/DataTable/ActionsTh';
 import Icon from '@/Components/Icon';
 import { Button, ToggleButton } from '@heroui/react';
-import SegmentedChoice from '@/Components/SegmentedChoice';
-import { Figure } from '@/Components/UI';
+import { AddKey, Figure, SearchableSelect, SegmentedChoice } from '@/Components/UI';
 import { formatNumber } from '@/lib/format';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useDeleteRecord } from '@/hooks/useDeleteRecord';
@@ -23,7 +21,6 @@ import MeterBoxModal from './MeterBoxModal';
 import MeterBoxSubscriptions from './MeterBoxSubscriptions';
 import './meter-boxes.css';
 import PageHeader from '@/Components/PageHeader';
-import SearchableSelect from '@/Components/SearchableSelect';
 import { readingPrintUrl } from '@/Components/PrintButton';
 import { queryString } from '@/lib/pageUrl';
 
@@ -184,7 +181,7 @@ export default function Index({
         <SettingsLayout
             scope={branchScope?.name ?? null}
             header={
-                <PageHeader title="الطبلونات" info={canViewSubscriptions ? 'كل طبلون برقمه ومنطقته. افتح الصف لعرض المشتركين وترتيب أسمائهم.' : null} actions={canCreate && <AddButton onClick={() => setCreating(true)}>طبلون جديد</AddButton>} />
+                <PageHeader title="الطبلونات" info={canViewSubscriptions ? 'كل طبلون برقمه ومنطقته. افتح الصف لعرض المشتركين وترتيب أسمائهم.' : null} actions={canCreate && <AddKey onClick={() => setCreating(true)}>طبلون جديد</AddKey>} />
             }
         >
             <Head title="الطبلونات" />

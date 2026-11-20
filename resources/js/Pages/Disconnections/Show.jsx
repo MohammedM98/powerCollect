@@ -1,13 +1,10 @@
-import CheckBox from '@/Components/CheckBox';
 import { Button } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import AddButton from '@/Components/AddButton';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import SortableTh from '@/Components/DataTable/SortableTh';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import Pagination from '@/Components/DataTable/Pagination';
@@ -21,9 +18,9 @@ import { itemTone } from '@/lib/disconnections';
 import ActionModal from './ActionModal';
 import HistoryModal from './HistoryModal';
 import ResultReport from './ResultReport';
-import { secondaryButtonClass } from '@/Components/SecondaryButton';
 import PageHeader from '@/Components/PageHeader';
 import { urlWithout } from '@/lib/pageUrl';
+import { AddKey, CheckBox, StatusPill, secondaryButtonClass } from '@/Components/UI';
 
 const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white';
 
@@ -179,7 +176,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
                                 {list.isClosed ? 'إعادة فتح القائمة' : 'إغلاق القائمة'}
                             </Button>
                         )}
-                        {abilities.manage && <AddButton href={`/disconnection-lists/${list.id}/candidates`}>إضافة مشتركين</AddButton>}
+                        {abilities.manage && <AddKey href={`/disconnection-lists/${list.id}/candidates`}>إضافة مشتركين</AddKey>}
                     </div>
                 </>
             }

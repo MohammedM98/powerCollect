@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Button, Card, Input } from '@heroui/react';
 import { Head, router } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
-import AddButton from '@/Components/AddButton';
 import ClassificationChips from '@/Components/ClassificationChips';
 import Icon from '@/Components/Icon';
 import { useDeleteRecord } from '@/hooks/useDeleteRecord';
@@ -10,6 +9,7 @@ import { formatMoney, formatNumber, normalizeDecimalInput } from '@/lib/format';
 import { rateChange, stepRate } from '@/lib/tariffs';
 import TariffModal from './TariffModal';
 import PageHeader from '@/Components/PageHeader';
+import { AddKey } from '@/Components/UI';
 
 const CATEGORY_ICONS = { residential: 'home', commercial: 'shop' };
 const RATE_STEPS = [-0.25, -0.1, 0.1, 0.25];
@@ -308,7 +308,7 @@ export default function Index({ tariffs, segments, canCreate, canCreateSegment, 
                 <PageHeader
                     title="التعرفات"
                     info="سعر الكيلو لكل فئة. تُحسب كل قراءة على السعر الساري وقتها، فتغيير السعر لا يمسّ القراءات السابقة."
-                    actions={canCreate && <AddButton onClick={() => setCreating(true)}>تعرفة جديدة</AddButton>}
+                    actions={canCreate && <AddKey onClick={() => setCreating(true)}>تعرفة جديدة</AddKey>}
                 />
             }
         >

@@ -1,4 +1,3 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Input, TextArea } from '@heroui/react';
 import { BankReceivedDateField } from '@/Components/BankReceivedDate';
 import { useForm } from '@inertiajs/react';
@@ -9,8 +8,8 @@ import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
 import InputLabel from '@/Components/InputLabel';
 import InputError from '@/Components/InputError';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { formatMoney } from '@/lib/format';
+import { ChoiceSelect, SecondaryKey } from '@/Components/UI';
 
 export function SplitPaymentEditor({ split, onClose, transferBanks = [], senderBanks = [] }) {
     const form = useForm({
@@ -143,7 +142,7 @@ export default function EditSplitPaymentModal({ id, onClose, transferBanks, send
             <div className="space-y-5 p-7">
                 <h3 className="text-xl font-bold text-gray-900">تعديل الحوالة المقسّمة</h3>
                 <AsyncState loading={loading} error={error} onRetry={retry} loadingLabel="جارٍ تحميل بيانات الحوالة وحصص المشتركين…" />
-                <SecondaryButton onClick={onClose}>إغلاق</SecondaryButton>
+                <SecondaryKey onClick={onClose}>إغلاق</SecondaryKey>
             </div>
         </Modal>
     );

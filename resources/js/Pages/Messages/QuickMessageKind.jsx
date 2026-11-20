@@ -1,10 +1,9 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Input } from '@heroui/react';
 import ChoiceChips from '@/Components/ChoiceChips';
-import Switch from '@/Components/Switch';
 import InputError from '@/Components/InputError';
 import { KIND_HINTS, KIND_ICONS, withIcons } from './MessageParts';
 import { Section } from './MessageFormParts';
+import { ChoiceSelect, Switch } from '@/Components/UI';
 
 /** What the quick message is about, and the kind's own choices: the reading week and approved-only, or the least balance. */
 export default function QuickMessageKind({

@@ -1,7 +1,6 @@
 import { Button } from '@heroui/react';
 import BankReceivedDate from '@/Components/BankReceivedDate';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import Balance from '@/Components/Balance';
 import LatePaymentDetails from '@/Components/LatePaymentDetails';
 import { chainColor, followsLineAbove, hasLineMenu, netOfReadingDiscount, rowClass } from '@/lib/accountStatement';
@@ -12,6 +11,7 @@ import { useRowActionsMenu } from '@/hooks/useRowActionsMenu';
 import { withLtrDates, Dash, StatementDate, CancellationNote, CorrectsNote, ReversalNote, LinkedReversalNote, HistoryToggle, ReadingDiscountNote, AmendmentBadge } from './StatementNotes';
 import { lineActionsMenu } from './statementLineActions';
 import { formatMoney } from '@/lib/format';
+import { StatusPill } from '@/Components/UI';
 
 /**
  * One statement line. In the compact view a line may carry its reading's

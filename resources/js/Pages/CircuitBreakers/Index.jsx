@@ -2,7 +2,6 @@ import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
-import AddButton from '@/Components/AddButton';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import SortableTh from '@/Components/DataTable/SortableTh';
@@ -16,6 +15,7 @@ import { useRowClick } from '@/hooks/useRowClick';
 import { formatShekels } from '@/lib/currency';
 import CircuitBreakerModal from './CircuitBreakerModal';
 import PageHeader from '@/Components/PageHeader';
+import { AddKey } from '@/Components/UI';
 
 export default function Index({ circuitBreakers, canCreate, filters, filterOptions }) {
     const [modalCircuitBreaker, setModalCircuitBreaker] = useState(null);
@@ -27,7 +27,7 @@ export default function Index({ circuitBreakers, canCreate, filters, filterOptio
     return (
         <SettingsLayout
             header={
-                <PageHeader title="القواطع" actions={canCreate && <AddButton onClick={() => setCreating(true)}>قاطع جديد</AddButton>} />
+                <PageHeader title="القواطع" actions={canCreate && <AddKey onClick={() => setCreating(true)}>قاطع جديد</AddKey>} />
             }
         >
             <Head title="القواطع" />

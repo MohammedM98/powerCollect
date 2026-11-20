@@ -1,9 +1,7 @@
-import CheckBox from '@/Components/CheckBox';
 import { usePage } from '@inertiajs/react';
 import { Button, Input, Label, Radio, RadioGroup, Switch, TextField } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
-import SearchableSelect from '@/Components/SearchableSelect';
 import BrandLogo from '@/Components/BrandLogo';
 import { BankReceivedDateField } from '@/Components/BankReceivedDate';
 import { BankDropdown, BankMark } from '@/Components/Banks';
@@ -11,6 +9,7 @@ import { useBrand } from '@/hooks/useBrand';
 import { describeBalance } from '@/lib/accountStatement';
 import { formatMoney, normalizeDecimalInput } from '@/lib/format';
 import { balanceText, FormHeader } from './AccountFormParts';
+import { CheckBox, SearchableSelect } from '@/Components/UI';
 
 const QUICK_AMOUNTS = [50, 100, 200];
 

@@ -3,8 +3,7 @@ import FormSelect, { namedOptions } from '@/Components/Form/FormSelect';
 import FormSection from '@/Components/Form/FormSection';
 import SettingRow from '@/Components/Form/SettingRow';
 import InputError from '@/Components/InputError';
-import Switch from '@/Components/Switch';
-import TextInput from '@/Components/TextInput';
+import { Switch, TextInput } from '@/Components/UI';
 
 /**
  * The form's starting values: the branch's own when editing, otherwise

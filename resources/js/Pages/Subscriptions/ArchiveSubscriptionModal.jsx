@@ -1,15 +1,13 @@
-import CheckBox from '@/Components/CheckBox';
 import { TextArea } from '@heroui/react';
 import { useId } from 'react';
 import { useForm } from '@inertiajs/react';
 import DialogFrame from '@/Components/DialogFrame';
 import InputLabel from '@/Components/InputLabel';
 import InputError from '@/Components/InputError';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import Balance from '@/Components/Balance';
 import { balanceWord } from '@/lib/balance';
 import DateInput from '@/Components/DateInput';
+import { CheckBox, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 export default function ArchiveSubscriptionModal({ subscription, today, onClose }) {
     const id = useId();
@@ -24,7 +22,7 @@ export default function ArchiveSubscriptionModal({ subscription, today, onClose 
     }
     return <DialogFrame show onClose={onClose} title={title} icon={restoring ? 'history' : 'folder'} busy={processing}
         description="يُطبَّق على هذا الاشتراك فقط. تبقى الاشتراكات الأخرى للشخص كما هي."
-        footer={<><SecondaryButton onClick={onClose} disabled={processing}>إلغاء</SecondaryButton><PrimaryButton type="submit" form={id} disabled={processing || !data.confirmed || !data.reason.trim()}>{processing ? 'جارٍ الحفظ…' : title}</PrimaryButton></>}>
+        footer={<><SecondaryKey onClick={onClose} disabled={processing}>إلغاء</SecondaryKey><PrimaryKey type="submit" form={id} disabled={processing || !data.confirmed || !data.reason.trim()}>{processing ? 'جارٍ الحفظ…' : title}</PrimaryKey></>}>
         <form id={id} onSubmit={submit} className="space-y-5">
             <div className="rounded-card border border-gray-200 bg-gray-50 p-5">
                 <p className="font-bold text-gray-900">{subscription.display_name}</p>

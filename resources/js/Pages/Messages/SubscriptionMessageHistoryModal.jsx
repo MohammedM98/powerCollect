@@ -3,10 +3,9 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
-import SearchableSelect from '@/Components/SearchableSelect';
-import SecondaryButton from '@/Components/SecondaryButton';
 import Pagination from '@/Components/DataTable/Pagination';
 import { ChannelLabel, KindPill, MessageStatusPill } from './MessageParts';
+import { SearchableSelect, SecondaryKey } from '@/Components/UI';
 
 const DATE_TIME = new Intl.DateTimeFormat('ar-EG-u-nu-latn', { dateStyle: 'medium', timeStyle: 'short' });
 const dateTime = (value) => value ? DATE_TIME.format(new Date(value)) : '—';
@@ -64,7 +63,7 @@ export default function SubscriptionMessageHistoryModal({ subscription, onClose 
                     {!current ? (
                         <div role="status" aria-label="جارٍ تحميل سجل الرسائل" className="animate-pulse space-y-3">{[1, 2, 3].map((row) => <div key={row} className="h-36 rounded-card border border-gray-100 bg-surface" />)}</div>
                     ) : current.error ? (
-                        <div role="alert" className="rounded-card border border-gray-200 bg-surface p-7 text-center"><p className="mb-4 text-base text-gray-700">{current.error}</p><SecondaryButton onClick={() => setAttempt((value) => value + 1)}>إعادة المحاولة</SecondaryButton></div>
+                        <div role="alert" className="rounded-card border border-gray-200 bg-surface p-7 text-center"><p className="mb-4 text-base text-gray-700">{current.error}</p><SecondaryKey onClick={() => setAttempt((value) => value + 1)}>إعادة المحاولة</SecondaryKey></div>
                     ) : messages.data.length === 0 ? (
                         <div className="rounded-card border border-gray-100 bg-surface px-5 py-12 text-center"><Icon name="messages" className="mx-auto mb-3 h-8 w-8 text-gray-400" /><p className="text-base text-gray-700">{kind || status ? 'لا توجد رسائل مطابقة للتصفية.' : 'لا توجد رسائل مسجلة لهذا الاشتراك بعد.'}</p></div>
                     ) : (
@@ -92,7 +91,7 @@ export default function SubscriptionMessageHistoryModal({ subscription, onClose 
                 </div>
                 <footer className="flex shrink-0 items-center justify-between gap-3 border-t border-gray-100 bg-surface px-5 py-4 sm:px-7">
                     <p role="status" className="text-sm text-gray-500">{messages ? `${messages.total.toLocaleString('en')} رسالة${kind || status ? ' مطابقة' : ' مسجلة'}` : 'سجل الرسائل للاشتراك المختار'}</p>
-                    <SecondaryButton onClick={onClose}>إغلاق</SecondaryButton>
+                    <SecondaryKey onClick={onClose}>إغلاق</SecondaryKey>
                 </footer>
             </section>
         </Modal>

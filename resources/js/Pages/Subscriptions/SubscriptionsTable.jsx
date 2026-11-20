@@ -6,7 +6,6 @@ import MeterBoxCell from '@/Components/DataTable/MeterBoxCell';
 import SortableTh from '@/Components/DataTable/SortableTh';
 import TariffTag from '@/Components/DataTable/TariffTag';
 import { isFarBehind } from '@/lib/balance';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import ActionsTh from '@/Components/DataTable/ActionsTh';
@@ -15,6 +14,7 @@ import { formatShekels } from '@/lib/currency';
 import PhoneQuickEdit from './PhoneQuickEdit';
 import Balance from '@/Components/Balance';
 import { formatDate } from '@/lib/format';
+import { StatusPill } from '@/Components/UI';
 
 const STATUS_TONES = {
     active: 'green',

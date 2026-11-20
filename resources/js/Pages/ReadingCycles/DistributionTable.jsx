@@ -1,9 +1,8 @@
-import CheckBox from '@/Components/CheckBox';
 import { Button } from '@heroui/react';
 import { Fragment } from 'react';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import { formatNumber } from '@/lib/format';
+import { CheckBox, StatusPill } from '@/Components/UI';
 
 export default function DistributionTable({ boxes, allBoxes = boxes, readers, selected, canSelect, busy, onToggle, onToggleGroup }) {
     const groups = new Map();

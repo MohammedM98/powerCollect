@@ -1,14 +1,11 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
-import CheckBox from '@/Components/CheckBox';
 import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { distributionAreaBreakdown, distributionTargetPreview, columnTotals } from '@/lib/readingBoard';
 import { formatNumber } from '@/lib/format';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import InputError from '@/Components/InputError';
 import DistributionDialog from './DistributionDialog';
 import DistributionAreaBreakdown from './DistributionAreaBreakdown';
+import { CheckBox, ChoiceSelect, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 export default function DistributionActionModal({ boards, selectedBoxes, readers, abilities, busy, errors, target, onTargetChange, recurring, onRecurringChange, hiddenSelected, onRemoveHidden, onClose, onAssign, onCreateSheet, allocationReport }) {
     const [mode, setMode] = useState(target === 'paper' || target === 'available' ? target : 'reader');
@@ -22,9 +19,9 @@ export default function DistributionActionModal({ boards, selectedBoxes, readers
     }
 
     return <DistributionDialog title="إجراء على الطبلونات المحددة" subtitle={`${formatNumber(totals.boxes)} طبلون، ${formatNumber(totals.subscribers)} مشترك، يشمل التحديد جميع صفحات النتائج`} busy={busy} onClose={onClose}
-        footer={<><SecondaryButton disabled={busy} onClick={onClose}>متابعة التحديد</SecondaryButton><div className="flex flex-wrap gap-2">
-            {abilities.printSheets && paperCount > 0 && <SecondaryButton disabled={busy || paperCount > 200} onClick={onCreateSheet}>إنشاء كشف للطباعة ({formatNumber(paperCount)})</SecondaryButton>}
-            {abilities.manage && <PrimaryButton onClick={onAssign} disabled={busy || !target || selectedBoxes.length === 0 || selectedBoxes.length > 1000}>{busy ? 'جارٍ الحفظ…' : abilities.approve ? 'حفظ التوزيع' : 'حفظ للمراجعة'}</PrimaryButton>}
+        footer={<><SecondaryKey disabled={busy} onClick={onClose}>متابعة التحديد</SecondaryKey><div className="flex flex-wrap gap-2">
+            {abilities.printSheets && paperCount > 0 && <SecondaryKey disabled={busy || paperCount > 200} onClick={onCreateSheet}>إنشاء كشف للطباعة ({formatNumber(paperCount)})</SecondaryKey>}
+            {abilities.manage && <PrimaryKey onClick={onAssign} disabled={busy || !target || selectedBoxes.length === 0 || selectedBoxes.length > 1000}>{busy ? 'جارٍ الحفظ…' : abilities.approve ? 'حفظ التوزيع' : 'حفظ للمراجعة'}</PrimaryKey>}
         </div></>}>
         {hiddenSelected > 0 && <div role="status" className="rounded-control bg-amber-500/10 p-3 text-xs leading-6 text-amber-700">يشمل التحديد {formatNumber(hiddenSelected)} طبلون خارج النتائج الظاهرة، وسيشملها الحفظ أيضًا. <Button data-raw="" variant="ghost" isDisabled={busy} onClick={onRemoveHidden} className="font-bold underline">إلغاء تحديد المخفي</Button></div>}
         {allocationReport}

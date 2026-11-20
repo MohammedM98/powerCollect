@@ -1,6 +1,5 @@
 import { Button, Input } from '@heroui/react';
 import { useId, useRef, useState } from 'react';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
@@ -22,6 +21,7 @@ import {
 } from './AccountFormParts';
 import { CorrectionReasonFields, EMPTY_CORRECTION, OriginalLine } from './CorrectionFields';
 import LedgerLine, { LedgerFooter, recentStatementLines } from './LedgerLine';
+import { ConfirmDialog } from '@/Components/UI';
 
 /** How each type of charge looks in the form: its icon, a hint, quick amounts and an example note. */
 const TYPE_LOOKS = {

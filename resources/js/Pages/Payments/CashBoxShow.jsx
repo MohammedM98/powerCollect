@@ -3,12 +3,12 @@ import TableExportActions from '@/Components/DataTable/TableExportActions';
 import { Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import KpiTile from '@/Components/KpiTile';
-import PrimaryButton from '@/Components/PrimaryButton';
 import Icon from '@/Components/Icon';
 import { formatMoney } from '@/lib/format';
 import { isPrintMode } from '@/lib/print';
 import { boxTypes, currencies, dateTime, BoxEntriesTable, BoxStage, BoxTypeChip, BoxTypeIcon, CountSummary, CashBoxAction, boxAction, actionLabel } from './CollectorCashBox';
 import PageHeader, { BackLink } from '@/Components/PageHeader';
+import { PrimaryKey } from '@/Components/UI';
 
 /** A link that looks like the quiet outlined button. */
 /** Where each type of box goes when it closes. */
@@ -49,7 +49,7 @@ export default function CashBoxShow({ box, entries, collectionUrls, pendingCount
                     <div className="flex flex-wrap items-center gap-2"><BoxTypeChip type={box.type} /><BoxStage box={box} /></div>
                     <div className="flex flex-wrap items-center gap-2">
                         <TableExportActions title="تقرير تفاصيل الصندوق" base={`/payments/cash-boxes/report?box=${box.id}`} />
-                        {action && <PrimaryButton onClick={() => setShowAction(true)}>{actionLabel(box)}</PrimaryButton>}
+                        {action && <PrimaryKey onClick={() => setShowAction(true)}>{actionLabel(box)}</PrimaryKey>}
                     </div>
                 </div>
                 <ol className={`grid gap-3 sm:grid-cols-2 ${timeline.length > 3 ? 'md:grid-cols-4' : 'md:grid-cols-3'}`} aria-label="مراحل الصندوق">

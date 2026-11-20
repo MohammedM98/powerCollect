@@ -3,8 +3,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import BranchBanner from '@/Components/BranchBanner';
 import Icon from '@/Components/Icon';
 import PageHeader from '@/Components/PageHeader';
-import { secondaryButtonClass } from '@/Components/SecondaryButton';
 import { formatDate } from '@/lib/format';
+import { secondaryButtonClass } from '@/Components/UI';
 
 /** Each branch keeps its own reading week when the company's schedules differ. */
 export default function Branches({ branches, branchScope }) {

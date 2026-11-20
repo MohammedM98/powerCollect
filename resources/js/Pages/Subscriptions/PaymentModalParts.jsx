@@ -1,15 +1,12 @@
-import CheckBox from '@/Components/CheckBox';
 import { Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { describeBalance } from '@/lib/accountStatement';
 import { formatMoney } from '@/lib/format';
 import InputError from '@/Components/InputError';
-import Switch from '@/Components/Switch';
 import { BankReceivedDateField } from '@/Components/BankReceivedDate';
 import { BankChips, BankDropdown } from '@/Components/Banks';
 import { balanceText, FieldLabel } from './AccountFormParts';
+import { CheckBox, PrimaryKey, SecondaryKey, Switch } from '@/Components/UI';
 
 export const inputClass = 'block h-[46px] w-full px-4 text-base';
 
@@ -60,24 +57,24 @@ export function PaymentReceipt({ receipt, subscriptionName, title, onAnother, on
             </dl>
             <div className="mt-6 flex flex-wrap justify-center gap-2.5">
                 {receipt.receiptUrl && (
-                    <SecondaryButton
+                    <SecondaryKey
                         onClick={() => window.open(receipt.receiptUrl, '_blank')}
                         title="يُفتح سند القبض في نافذة جديدة جاهزًا للطباعة"
                         className="tone-print h-12 rounded-[14px] px-5 text-[15.5px]"
                     >
                         <Icon name="printer" className="h-[18px] w-[18px]" />
                         طباعة السند
-                    </SecondaryButton>
+                    </SecondaryKey>
                 )}
                 {onAnother && (
-                    <SecondaryButton onClick={onAnother} className="h-12 rounded-[14px] px-5 text-[15.5px]">
+                    <SecondaryKey onClick={onAnother} className="h-12 rounded-[14px] px-5 text-[15.5px]">
                         <Icon name="plus" className="h-[18px] w-[18px]" strokeWidth={2} />
                         دفعة جديدة
-                    </SecondaryButton>
+                    </SecondaryKey>
                 )}
-                <PrimaryButton type="button" onClick={onDone} autoFocus className="h-12 min-w-28 rounded-[14px] px-5 text-[15.5px]">
+                <PrimaryKey type="button" onClick={onDone} autoFocus className="h-12 min-w-28 rounded-[14px] px-5 text-[15.5px]">
                     تم
-                </PrimaryButton>
+                </PrimaryKey>
             </div>
         </div>
     );

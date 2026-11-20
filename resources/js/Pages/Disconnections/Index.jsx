@@ -1,18 +1,16 @@
 import { useState } from 'react';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import AddButton from '@/Components/AddButton';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import { BranchFilterBanner, splitBranchFilter } from '@/Components/BranchBanner';
 import SortableTh from '@/Components/DataTable/SortableTh';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Pagination from '@/Components/DataTable/Pagination';
 import ActionsTh from '@/Components/DataTable/ActionsTh';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import { Button, FieldError, Input, Label, TextArea, TextField } from '@heroui/react';
-import { Figure } from '@/Components/UI';
+import { AddKey, Figure, StatusPill } from '@/Components/UI';
 import Modal from '@/Components/Modal';
 import FormSelect from '@/Components/Form/FormSelect';
 import Icon from '@/Components/Icon';
@@ -96,7 +94,7 @@ export default function Index({ lists, summary, canCreate, branchOptions, branch
         <AuthenticatedLayout
             scope={branchScope?.name ?? null}
             header={
-                <PageHeader title="قوائم القطع" info="قوائم يديرها كل فرع يدويًا: الإدراج والمواعيد والإنذارات وتأكيد القطع الفعلي." actions={canCreate && <AddButton onClick={() => setCreating(true)}>قائمة جديدة</AddButton>} />
+                <PageHeader title="قوائم القطع" info="قوائم يديرها كل فرع يدويًا: الإدراج والمواعيد والإنذارات وتأكيد القطع الفعلي." actions={canCreate && <AddKey onClick={() => setCreating(true)}>قائمة جديدة</AddKey>} />
             }
         >
             <Head title="قوائم القطع" />

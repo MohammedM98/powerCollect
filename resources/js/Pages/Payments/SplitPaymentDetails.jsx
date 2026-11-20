@@ -3,8 +3,8 @@ import Icon from '@/Components/Icon';
 import AsyncState from '@/Components/AsyncState';
 import { useJsonResource } from '@/hooks/useJsonResource';
 import Modal from '@/Components/Modal';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { formatMoney, formatDate } from '@/lib/format';
+import { SecondaryKey } from '@/Components/UI';
 
 /** One line of the transfer's own details. */
 function Detail({ label, children, ltr = false }) {
@@ -121,7 +121,7 @@ export default function SplitPaymentDetails({ id, onClose }) {
                 </div>
 
                 <div className="flex items-center justify-end border-t border-gray-100 bg-gray-50 px-7 py-4">
-                    <SecondaryButton onClick={onClose}>إغلاق</SecondaryButton>
+                    <SecondaryKey onClick={onClose}>إغلاق</SecondaryKey>
                 </div>
             </div>
         </Modal>

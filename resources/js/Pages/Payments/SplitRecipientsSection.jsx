@@ -1,11 +1,11 @@
 import { Button, Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { describeBalance } from '@/lib/accountStatement';
 import { initials, normalizeDecimalInput } from '@/lib/format';
 import { balanceText, BALANCE_CHIPS, FieldLabel } from '@/Pages/Subscriptions/AccountFormParts';
 import { inputClass } from '@/Pages/Subscriptions/PaymentModal';
+import { SecondaryKey } from '@/Components/UI';
 
 /**
  * One subscription of the split as a line of the distribution sheet: who,
@@ -167,10 +167,10 @@ export default function SplitRecipientsSection({
                     )}
                 </div>
                 {parts.length > 0 && (
-                    <SecondaryButton onClick={addIdentitySiblings} className="h-[50px]">
+                    <SecondaryKey onClick={addIdentitySiblings} className="h-[50px]">
                         <Icon name="users" className="h-4 w-4" />
                         كل اشتراكات هذه الهوية
-                    </SecondaryButton>
+                    </SecondaryKey>
                 )}
             </div>
             {identityNote && <p className="mt-2 text-[13.5px] text-gray-600">{identityNote}</p>}

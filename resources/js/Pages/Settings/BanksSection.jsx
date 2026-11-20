@@ -1,19 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useForm } from '@inertiajs/react';
-import AddButton from '@/Components/AddButton';
 import FormModal from '@/Components/FormModal';
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
 import FormPreview, { countFilled } from '@/Components/Form/FormPreview';
 import Icon from '@/Components/Icon';
-import TextInput from '@/Components/TextInput';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import ActionsTh from '@/Components/DataTable/ActionsTh';
 import Pagination from '@/Components/DataTable/Pagination';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import { BankMark } from '@/Components/Banks';
 import { SettingSwitch, SettingsHeading } from '@/Components/Settings/SettingsKit';
+import { AddKey, StatusPill, TextInput } from '@/Components/UI';
 
 function BankLogoInput({ id, file, currentLogo, bankName, onChange, disabled, ...props }) {
     const [preview, setPreview] = useState(null);
@@ -83,7 +81,7 @@ export default function BanksSection({ banks, storeUrl }) {
     const meta = { current_page: currentPage, last_page: lastPage, from: (currentPage - 1) * perPage + 1, to: Math.min(currentPage * perPage, filtered.length), total: filtered.length };
 
     return <section aria-labelledby="payment-banks-title" className="space-y-4">
-        <SettingsHeading id="payment-banks-title" icon="bank" tone="split" title="البنوك والمحافظ" description="البنوك والمحافظ التي تُستلم بها دفعات المشتركين أو تُرسل منها، وشعار كل منها." action={<AddButton onClick={() => setCreating(true)}>إضافة بنك أو محفظة</AddButton>} />
+        <SettingsHeading id="payment-banks-title" icon="bank" tone="split" title="البنوك والمحافظ" description="البنوك والمحافظ التي تُستلم بها دفعات المشتركين أو تُرسل منها، وشعار كل منها." action={<AddKey onClick={() => setCreating(true)}>إضافة بنك أو محفظة</AddKey>} />
         <DataTableToolbar search={search} onSearchChange={(value) => { setSearch(value); setPage(1); }} perPage={perPage} onPerPageChange={(value) => { setPerPage(value); setPage(1); }} placeholder="ابحث باسم البنك أو المحفظة" total={filtered.length} printable={false} />
         <div className="data-table-container"><table className="data-table w-full text-start text-sm">
             <thead><tr><th>البنك أو المحفظة</th><th>الاستخدام</th><th>الحالة</th><ActionsTh /></tr></thead>

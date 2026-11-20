@@ -2,11 +2,10 @@ import { Button } from '@heroui/react';
 import { useMemo } from 'react';
 import { boardCounters, branchDistributionSummary } from '@/lib/readingBoard';
 import { formatNumber, formatDate } from '@/lib/format';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import InputError from '@/Components/InputError';
 import DistributionDialog from './DistributionDialog';
 import DistributionAreaBreakdown from './DistributionAreaBreakdown';
+import { PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 export default function DistributionSummaryModal({ cycle, boards, readers, paperSheets, abilities, busy, errors, result, onClose, onApprove, onPaper, onPreparePaper, onRemaining }) {
     const columns = useMemo(() => branchDistributionSummary(boards, readers), [boards, readers]);
@@ -17,7 +16,7 @@ export default function DistributionSummaryModal({ cycle, boards, readers, paper
     const printed = paperSheets.filter((sheet) => sheet.printCount > 0).length;
 
     return <DistributionDialog title="ملخّص توزيع الفرع" subtitle={`${cycle.branchName}، قراءة ${formatDate(cycle.readingDate)}، يشمل جميع طبلونات الفرع دون تأثير البحث والتصفية`} busy={busy} onClose={onClose}
-        footer={<><SecondaryButton disabled={busy} onClick={onClose}>العودة للتوزيع</SecondaryButton>{abilities.approve && counters.draft > 0 && <PrimaryButton disabled={busy} onClick={onApprove}>اعتماد كل الجاهز ({formatNumber(counters.draft)})</PrimaryButton>}</>}>
+        footer={<><SecondaryKey disabled={busy} onClick={onClose}>العودة للتوزيع</SecondaryKey>{abilities.approve && counters.draft > 0 && <PrimaryKey disabled={busy} onClick={onApprove}>اعتماد كل الجاهز ({formatNumber(counters.draft)})</PrimaryKey>}</>}>
         {result && <p role="status" className={`rounded-control p-3 text-sm ${result.conflicts.length ? 'bg-amber-500/10 text-amber-700' : 'bg-emerald-500/10 text-emerald-700'}`}>
             {result.action === 'approve' ? 'اعتُمد' : 'حُدّث توزيع'} {formatNumber(result.moved)} طبلون.
             {result.conflicts.length > 0 && <> توجد طبلونات تعذّر تحديثها. <Button data-raw="" variant="ghost" onClick={onClose} className="font-bold underline">عرض أسباب التعارض</Button></>}
@@ -47,14 +46,14 @@ export default function DistributionSummaryModal({ cycle, boards, readers, paper
                 <h3 className="font-bold text-gray-900">الكشوف الورقية <span className="font-display">({formatNumber(paper.boxes)})</span></h3>
                 <p className="mt-2 text-xs leading-6 text-gray-500">{formatNumber(paper.subscribers)} مشترك، {formatNumber(paperSheets.length)} كشف منشأ: {formatNumber(printed)} مطبوع، {formatNumber(paperSheets.length - printed)} لم يُطبع.</p>
                 <DistributionAreaBreakdown areas={paper.areas} />
-                {abilities.printSheets && paper.boxes > 0 && <SecondaryButton className="mt-3 w-full" disabled={busy} onClick={onPreparePaper}>تجهيز الطبلونات الورقية ({formatNumber(paper.boxes)})</SecondaryButton>}
-                {(abilities.printSheets || paperSheets.length > 0) && <SecondaryButton className="mt-3 w-full" disabled={busy} onClick={onPaper}>مراجعة الكشوف والطباعة</SecondaryButton>}
+                {abilities.printSheets && paper.boxes > 0 && <SecondaryKey className="mt-3 w-full" disabled={busy} onClick={onPreparePaper}>تجهيز الطبلونات الورقية ({formatNumber(paper.boxes)})</SecondaryKey>}
+                {(abilities.printSheets || paperSheets.length > 0) && <SecondaryKey className="mt-3 w-full" disabled={busy} onClick={onPaper}>مراجعة الكشوف والطباعة</SecondaryKey>}
             </section>
             <section className="min-w-0 rounded-card border border-amber-500/30 bg-amber-500/5 p-4" aria-label="الطبلونات المتبقية">
                 <h3 className="font-bold text-gray-900">غير موزع <span className="font-display">({formatNumber(available.boxes)})</span></h3>
                 <p className="mt-2 text-xs leading-6 text-gray-500">{available.boxes ? `${formatNumber(available.subscribers)} مشترك بانتظار تحديد قارئ أو كشف ورقي.` : 'تم توزيع جميع الطبلونات في الفرع.'}</p>
                 <DistributionAreaBreakdown areas={available.areas} />
-                {abilities.manage && available.boxes > 0 && <SecondaryButton className="mt-3 w-full" disabled={busy} onClick={onRemaining}>توزيع المتبقي ({formatNumber(available.boxes)})</SecondaryButton>}
+                {abilities.manage && available.boxes > 0 && <SecondaryKey className="mt-3 w-full" disabled={busy} onClick={onRemaining}>توزيع المتبقي ({formatNumber(available.boxes)})</SecondaryKey>}
             </section>
         </div>
         {counters.available > 0 && counters.draft > 0 && abilities.approve && <p className="text-xs leading-6 text-amber-700">الاعتماد يشمل الطبلونات الجاهزة فقط؛ تبقى الطبلونات غير الموزعة بحاجة إلى توزيع.</p>}

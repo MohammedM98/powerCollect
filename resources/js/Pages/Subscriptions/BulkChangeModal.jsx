@@ -4,11 +4,9 @@ import { router, useHttp, usePage } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
 import ChoiceChips from '@/Components/ChoiceChips';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import InputError from '@/Components/InputError';
-import SearchableSelect from '@/Components/SearchableSelect';
 import { normalizeDecimalInput } from '@/lib/format';
+import { PrimaryKey, SearchableSelect, SecondaryKey } from '@/Components/UI';
 
 const TITLES = {
     minimum_charge: { title: 'تغيير الحد الأدنى', icon: 'wallet' },
@@ -150,12 +148,12 @@ export default function BulkChangeModal({ field, selection, count, statusOptions
                 </div>
 
                 <div className="flex flex-wrap items-center justify-end gap-3 rounded-b-panel border-t border-gray-100 bg-gray-50 px-7 py-4">
-                    <SecondaryButton disabled={saving} onClick={onClose}>إلغاء</SecondaryButton>
-                    {reviewing && <SecondaryButton disabled={saving} onClick={() => setReviewing(false)}>تعديل القيمة</SecondaryButton>}
-                    <PrimaryButton type="submit" disabled={saving || !validValue || (needsValue && value === '')} aria-busy={saving}>
+                    <SecondaryKey disabled={saving} onClick={onClose}>إلغاء</SecondaryKey>
+                    {reviewing && <SecondaryKey disabled={saving} onClick={() => setReviewing(false)}>تعديل القيمة</SecondaryKey>}
+                    <PrimaryKey type="submit" disabled={saving || !validValue || (needsValue && value === '')} aria-busy={saving}>
                         <Icon name="check" className="h-4 w-4" />
                         {saving ? 'جارٍ التطبيق...' : reviewing ? `تأكيد التطبيق على ${count.toLocaleString('en')} اشتراك` : 'مراجعة التعديل'}
-                    </PrimaryButton>
+                    </PrimaryKey>
                 </div>
             </form>
         </Modal>

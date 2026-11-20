@@ -1,8 +1,8 @@
 import BankReceivedDate from '@/Components/BankReceivedDate';
 import './financial-boxes.css';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import LatePaymentDetails from '@/Components/LatePaymentDetails';
 import { formatMoney } from '@/lib/format';
+import { StatusPill } from '@/Components/UI';
 
 const currencyLabels = { ILS: 'شيكل', USD: 'دولار', JOD: 'دينار' };
 

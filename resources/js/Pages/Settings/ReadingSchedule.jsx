@@ -6,12 +6,12 @@ import SettingsLayout from '@/Layouts/SettingsLayout';
 import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
 import InfoTip from '@/Components/InfoTip';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import BranchScopeBar from './BranchScopeBar';
 import { WEEK_DAYS, formatWeekDay, weekDayName } from '@/lib/weekDays';
 import { businessClock, entryDaysFrom, isEntryOpen, nextScheduleChange, shiftEntryDays, upcomingWeeks, validEntryHours, weekDates } from '@/lib/readingSchedule';
 import './ReadingSchedule.css';
 import PageHeader from '@/Components/PageHeader';
+import { ConfirmDialog } from '@/Components/UI';
 
 const MODES = {
     automatic: { label: 'تلقائي', icon: 'clock' },

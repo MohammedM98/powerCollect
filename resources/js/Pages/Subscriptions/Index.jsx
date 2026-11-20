@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import AddButton from '@/Components/AddButton';
 import { BranchFilterBanner, splitBranchFilter } from '@/Components/BranchBanner';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
@@ -17,7 +16,6 @@ import BulkActionsMenu from './BulkActionsMenu';
 import BalanceFilter from './BalanceFilter';
 import { BALANCE_FILTER_KEYS, balanceFilterLabel, subscriptionFilterKey } from '@/lib/subscriptionBalance';
 import { Button } from '@heroui/react';
-import SegmentedChoice from '@/Components/SegmentedChoice';
 import { DEBTORS_FILTER, SubscriptionFigures, SubscriptionQuickFilters } from './SubscriptionsOverview';
 import PageHeader from '@/Components/PageHeader';
 import InfoTip from '@/Components/InfoTip';
@@ -26,6 +24,7 @@ import SubscriptionsTable from './SubscriptionsTable';
 import { useSubscriptionSelection } from './useSubscriptionSelection';
 import { needsPermission } from '@/lib/permissions';
 import { statementHeader } from '@/lib/accountStatement';
+import { AddKey, SegmentedChoice } from '@/Components/UI';
 
 /**
  * @param {import('@/types/pages').SubscriptionsIndexProps} props
@@ -260,7 +259,7 @@ export default function Index({
                     actions={
                         <>
                             {!showArchived && <BulkActionsMenu abilities={bulkActions} onChoose={chooseBulkAction} />}
-                            {canCreate && <AddButton onClick={() => setCreating(true)}>مشترك جديد</AddButton>}
+                            {canCreate && <AddKey onClick={() => setCreating(true)}>مشترك جديد</AddKey>}
                         </>
                     }
                 />

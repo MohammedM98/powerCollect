@@ -1,8 +1,7 @@
 import { Link } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { FOCUS_RING } from './MessageFormParts';
+import { PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 /** The quick message's footer: who it reaches, why sending is held back, and cancel and send. */
 export default function QuickMessageFooter({ canSend, fullPageUrl, id, onClose, pickedIds, reachedIds, sendBlocker, sending, setConfirming, setup }) {
@@ -23,8 +22,8 @@ export default function QuickMessageFooter({ canSend, fullPageUrl, id, onClose, 
                     {sendBlocker}
                 </p>
             )}
-            <SecondaryButton onClick={onClose}>إلغاء</SecondaryButton>
-            <PrimaryButton
+            <SecondaryKey onClick={onClose}>إلغاء</SecondaryKey>
+            <PrimaryKey
                 type="button"
                 onClick={() => setConfirming(true)}
                 disabled={!canSend}
@@ -33,7 +32,7 @@ export default function QuickMessageFooter({ canSend, fullPageUrl, id, onClose, 
             >
                 <Icon name="send" className="h-4 w-4" />
                 {sending ? 'جارٍ الإرسال...' : `إرسال إلى ${reachedIds.length.toLocaleString('en')} مشترك`}
-            </PrimaryButton>
+            </PrimaryKey>
         </div>
     );
 }

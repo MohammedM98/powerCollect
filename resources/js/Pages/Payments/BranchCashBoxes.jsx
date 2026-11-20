@@ -1,11 +1,8 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import { useEffect, useRef, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { BranchFilterBanner } from '@/Components/BranchBanner';
 import Icon from '@/Components/Icon';
-import SearchableSelect from '@/Components/SearchableSelect';
-import SegmentedChoice from '@/Components/SegmentedChoice';
 import { FilterField } from '@/Components/DataTable/DataTableFilterMenu';
 import { Button, Card, Chip, SearchField } from '@heroui/react';
 import { formatMoney } from '@/lib/format';
@@ -21,6 +18,7 @@ import { boxTypes, boxTypeStyles } from './CollectorCashBox';
 import { BOX_TONES, FinancialBoxCard, financialAmountsLine } from './FinancialBoxComponents';
 import PageHeader from '@/Components/PageHeader';
 import { queryValue, urlWithout } from '@/lib/pageUrl';
+import { ChoiceSelect, SearchableSelect, SegmentedChoice } from '@/Components/UI';
 
 const periodDate = (date) => new Intl.DateTimeFormat('ar-u-nu-latn', { dateStyle: 'medium', timeZone: 'Asia/Gaza' }).format(new Date(`${date}T12:00:00Z`));
 

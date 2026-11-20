@@ -1,11 +1,9 @@
-import CheckBox from '@/Components/CheckBox';
 import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { permissionsWord } from '@/lib/permissions';
 import { RiskBadge } from './PermissionMatrix';
+import { CheckBox, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 /** «+3 −1»: what a change would grant and take away. */
 export function Delta({ added, removed }) {
@@ -104,10 +102,10 @@ export function PermissionSaveBar({ dirty, errors, changes, auditChanges, firstN
                 <Icon name="undo" className="h-4 w-4" />
                 تراجع
             </Button>
-            <PrimaryButton type="button" onClick={onSave} disabled={processing || !dirty} title="Ctrl + S">
+            <PrimaryKey type="button" onClick={onSave} disabled={processing || !dirty} title="Ctrl + S">
                 <Icon name="check" className="h-4 w-4" strokeWidth={2} />
                 {processing ? 'جارٍ الحفظ...' : 'مراجعة وحفظ'}
-            </PrimaryButton>
+            </PrimaryKey>
         </div>
     );
 }
@@ -214,16 +212,16 @@ export function PermissionReviewDialog({
                     )}
                 </div>
                 <div className="flex shrink-0 flex-wrap justify-end gap-3 border-t border-gray-100 bg-gray-50 px-5 py-4 sm:px-7">
-                    <SecondaryButton onClick={onCancel} disabled={processing} autoFocus>
+                    <SecondaryKey onClick={onCancel} disabled={processing} autoFocus>
                         العودة للتعديل
-                    </SecondaryButton>
-                    <PrimaryButton
+                    </SecondaryKey>
+                    <PrimaryKey
                         type="button"
                         onClick={onConfirm}
                         disabled={processing || !dirty || (dangerousGrants.length > 0 && !acknowledged)}
                     >
                         {processing ? 'جارٍ الحفظ...' : 'تأكيد وحفظ الصلاحيات'}
-                    </PrimaryButton>
+                    </PrimaryKey>
                 </div>
             </div>
         </Modal>

@@ -1,16 +1,15 @@
-import CheckBox from '@/Components/CheckBox';
 import { useForm } from '@inertiajs/react';
 import DialogFrame from '@/Components/DialogFrame';
 import HoldToConfirm from '@/Components/HoldToConfirm';
-import SecondaryButton from '@/Components/SecondaryButton';
 import InputError from '@/Components/InputError';
 import { formatMoney } from '@/lib/format';
+import { CheckBox, SecondaryKey } from '@/Components/UI';
 
 /** Final financial approval, scoped to the full box or branch week shown here. */
 export default function AuditApprovalDialog({ title, scope, summary, url, payload = {}, onClose }) {
     const form = useForm({ ...payload, confirmed: false });
 
-    return <DialogFrame show onClose={onClose} busy={form.processing} title={title} description={scope} icon="check" maxWidth="3xl" role="alertdialog" footer={<SecondaryButton disabled={form.processing} onClick={onClose}>العودة للمراجعة</SecondaryButton>}>
+    return <DialogFrame show onClose={onClose} busy={form.processing} title={title} description={scope} icon="check" maxWidth="3xl" role="alertdialog" footer={<SecondaryKey disabled={form.processing} onClick={onClose}>العودة للمراجعة</SecondaryKey>}>
         <dl className="grid grid-cols-2 gap-x-5 gap-y-4 border-b border-gray-100 pb-5">
             {[['الصناديق', summary.boxes], ['الحوالات', summary.transfers], ['حوالات فيها فروق', summary.exceptions], ['ستُعتمد مطابقة تلقائيًا', summary.automaticMatches]].map(([label, value]) => <div key={label}><dt className="text-base text-gray-600">{label}</dt><dd className="mt-1 font-display text-2xl font-bold text-gray-900">{value}</dd></div>)}
         </dl>

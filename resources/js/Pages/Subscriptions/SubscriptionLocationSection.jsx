@@ -1,10 +1,8 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
 import InputLabel from '@/Components/InputLabel';
-import SearchableSelect from '@/Components/SearchableSelect';
-import TextInput from '@/Components/TextInput';
 import Icon from '@/Components/Icon';
+import { ChoiceSelect, SearchableSelect, TextInput } from '@/Components/UI';
 
 function ReadOnlyField({ id, label, value, dir }) {
     return (

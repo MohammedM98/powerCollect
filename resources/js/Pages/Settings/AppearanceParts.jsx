@@ -1,12 +1,10 @@
 import { Button, Input } from '@heroui/react';
 import { useRef } from 'react';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
-import DangerButton from '@/Components/DangerButton';
 import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
 import { brandPalette, contrastWithWhite, isHex, MIN_CONTRAST } from '@/lib/brandPalette';
 import { useFileUrl } from './useAppearanceFiles';
+import { DangerKey, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 export const LOGOS = [
     { key: 'main', label: 'الشعار الرئيسي', hint: 'يظهر في الشريط والقائمة والفوتر وشاشة الدخول.' },
@@ -53,12 +51,12 @@ export function LogoSlot({ slot, current, own, file, removed, error, onFile, onR
                         aria-label={`ملف ${slot.label}`}
                         onChange={(event) => onFile(event.target.files?.[0] ?? null)}
                     />
-                    <SecondaryButton className="px-3! py-1.5! text-[13px]" onClick={() => input.current?.click()}>
+                    <SecondaryKey className="px-3! py-1.5! text-[13px]" onClick={() => input.current?.click()}>
                         <Icon name="arrow-up" className="h-4 w-4" />
                         {own || file ? 'تغيير' : 'رفع صورة'}
-                    </SecondaryButton>
+                    </SecondaryKey>
                     {file && (
-                        <SecondaryButton
+                        <SecondaryKey
                             className="px-3! py-1.5! text-[13px]"
                             onClick={() => {
                                 onFile(null);
@@ -66,19 +64,19 @@ export function LogoSlot({ slot, current, own, file, removed, error, onFile, onR
                             }}
                         >
                             تراجع
-                        </SecondaryButton>
+                        </SecondaryKey>
                     )}
                     {slot.key !== 'main' &&
                         own &&
                         !file &&
                         (removed ? (
-                            <SecondaryButton className="px-3! py-1.5! text-[13px]" onClick={onUndo}>
+                            <SecondaryKey className="px-3! py-1.5! text-[13px]" onClick={onUndo}>
                                 إبقاء الشعار
-                            </SecondaryButton>
+                            </SecondaryKey>
                         ) : (
-                            <SecondaryButton className="px-3! py-1.5! text-[13px]" onClick={onRemove}>
+                            <SecondaryKey className="px-3! py-1.5! text-[13px]" onClick={onRemove}>
                                 إزالة
-                            </SecondaryButton>
+                            </SecondaryKey>
                         ))}
                 </div>
                 <InputError message={error} className="mt-1" />
@@ -214,12 +212,12 @@ export function Sample({ brand }) {
             <div className="rounded-card border border-gray-100 bg-surface p-5 shadow-card">
                 <b className="text-sm text-gray-500">الأزرار</b>
                 <div className="mt-3 flex flex-wrap gap-2">
-                    <PrimaryButton type="button">
+                    <PrimaryKey type="button">
                         <Icon name="check" className="h-4 w-4" />
                         حفظ الدفعة
-                    </PrimaryButton>
-                    <SecondaryButton>إلغاء</SecondaryButton>
-                    <DangerButton type="button">حذف</DangerButton>
+                    </PrimaryKey>
+                    <SecondaryKey>إلغاء</SecondaryKey>
+                    <DangerKey type="button">حذف</DangerKey>
                 </div>
                 {palette && (
                     <div className="ap-swatches mt-4" aria-label="درجات اللون الرئيسي">

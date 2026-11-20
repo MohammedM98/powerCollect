@@ -1,4 +1,3 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import { TextArea } from '@heroui/react';
 import BankReceivedDate from '@/Components/BankReceivedDate';
 import { useEffect, useEffectEvent, useId, useState } from 'react';
@@ -8,13 +7,11 @@ import LatePaymentDetails from '@/Components/LatePaymentDetails';
 import FormField from '@/Components/Form/FormField';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
-import TextInput from '@/Components/TextInput';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { formatMoney } from '@/lib/format';
 import { bankAuditReasonChoice, bankAuditReasonPresets, splitAuditTotal } from '@/lib/bankAudit';
 import { httpErrorMessage } from '@/lib/httpError';
 import { ledgerOf } from './LedgerColumns';
+import { ChoiceSelect, PrimaryKey, SecondaryKey, TextInput } from '@/Components/UI';
 
 const loadFailed = 'تعذر تحميل مراجعة الحوالة. حدّث الصفحة وأعد فتح النافذة.';
 
@@ -55,8 +52,8 @@ export default function BankTransferAuditForm({ entry, onClose }) {
     }
 
     return <DialogFrame show onClose={onClose} busy={processing} title={split ? 'تدقيق الحوالة المقسّمة' : 'تعديل الحوالة البنكية'} description={split ? 'مراجعة الحوالة وتوزيع المبلغ الواصل على جميع المشتركين' : entry.transaction.subscription?.subscription_name || entry.transaction.subscription?.full_name} icon="pencil" maxWidth="2xl" footer={<>
-        <SecondaryButton onClick={onClose} disabled={processing}>إلغاء</SecondaryButton>
-        <PrimaryButton type="submit" form={`${id}-form`} disabled={processing || review.loading || Boolean(review.error) || allocationMismatch}>{processing ? 'جارٍ الحفظ…' : 'حفظ مراجعة الحوالة'}</PrimaryButton>
+        <SecondaryKey onClick={onClose} disabled={processing}>إلغاء</SecondaryKey>
+        <PrimaryKey type="submit" form={`${id}-form`} disabled={processing || review.loading || Boolean(review.error) || allocationMismatch}>{processing ? 'جارٍ الحفظ…' : 'حفظ مراجعة الحوالة'}</PrimaryKey>
     </>}>
         {review.loading ? <div role="status" className="animate-pulse space-y-4 py-4"><p className="text-base text-gray-600">جارٍ تحميل بيانات الحوالة…</p><div className="h-24 rounded-control bg-gray-100" /></div> : review.error ? <InputError message={review.error} /> : <form id={`${id}-form`} onSubmit={submit} className="space-y-5">
             <LatePaymentDetails paidOn={ledger.paidOn} recordedAt={ledger.date} reason={ledger.lateReason} />

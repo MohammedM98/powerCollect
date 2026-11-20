@@ -8,14 +8,12 @@ import ColumnWidths, { fixedTableStyle } from '@/Components/DataTable/ColumnWidt
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import Modal from '@/Components/Modal';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import { formatMoney } from '@/lib/format';
 import { periodLabel, periodRange } from '@/lib/closingPeriods';
 import { boxStatus, entryStatus } from '@/lib/financialBoxes';
 import { printUrl } from '@/lib/print';
 import { ledgerColumns, ledgerOf, ledgerTableClass, BoxNumberCell, LedgerLeadCells, LedgerTrailCells } from './LedgerColumns';
+import { PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
 
 export const currencies = { ILS: 'شيكل', USD: 'دولار', JOD: 'دينار' };
 export const boxTypes = { cash: 'الصندوق النقدي', bank_transfer: 'صندوق الحوالات البنكية', clearing: 'صندوق المقاصات' };
@@ -160,8 +158,8 @@ export function CashBoxAction({ box, onClose, onSuccess }) {
                 </div>
                 <InputError message={form.errors.action ?? form.errors.branch_id} />
                 <div className="flex flex-wrap justify-end gap-3 border-t border-gray-100 pt-4">
-                    <SecondaryButton type="button" onClick={close} disabled={form.processing}>إلغاء</SecondaryButton>
-                    <PrimaryButton type="submit" disabled={form.processing}>{form.processing ? 'جارٍ الحفظ…' : 'تأكيد التسليم'}</PrimaryButton>
+                    <SecondaryKey type="button" onClick={close} disabled={form.processing}>إلغاء</SecondaryKey>
+                    <PrimaryKey type="submit" disabled={form.processing}>{form.processing ? 'جارٍ الحفظ…' : 'تأكيد التسليم'}</PrimaryKey>
                 </div>
             </form>
         </Modal>
@@ -328,7 +326,7 @@ export function AuditNoteReply({ note, onSaved }) {
             />
             <InputError message={form.errors.body ?? form.errors.action} />
             <div className="flex justify-end">
-                <PrimaryButton type="submit" disabled={form.processing || !form.data.body.trim()}>{form.processing ? 'جارٍ الإرسال…' : 'إرسال الرد'}</PrimaryButton>
+                <PrimaryKey type="submit" disabled={form.processing || !form.data.body.trim()}>{form.processing ? 'جارٍ الإرسال…' : 'إرسال الرد'}</PrimaryKey>
             </div>
         </form>
     );

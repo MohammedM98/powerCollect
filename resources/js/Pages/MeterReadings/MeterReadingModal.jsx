@@ -1,14 +1,11 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
-import CheckBox from '@/Components/CheckBox';
 import { TextArea } from '@heroui/react';
 import FormModal from '@/Components/FormModal';
 import InputLabel from '@/Components/InputLabel';
-import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
-import SearchableSelect from '@/Components/SearchableSelect';
 import { useResourceForm } from '@/hooks/useResourceForm';
 import { consumptionBetween } from '@/lib/readings';
 import { formatDate } from '@/lib/format';
+import { CheckBox, ChoiceSelect, SearchableSelect, TextInput } from '@/Components/UI';
 
 const APPROVED_READING_WARNING = 'هذه القراءة معتمدة. تعديلها يعيدها إلى قيد المراجعة ويزيل مبلغها من المعاملات المالية للمشترك حتى يُعاد اعتمادها.';
 const APPROVE_NOW_NOTE = 'هذه القراءة معتمدة. سيُلغى مبلغها السابق بقيد عكسي يبقى في الكشف، وتُعتمد القراءة المصحّحة ويُحمَّل مبلغها الجديد فورًا.';

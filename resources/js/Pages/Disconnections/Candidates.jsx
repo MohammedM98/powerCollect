@@ -1,4 +1,3 @@
-import CheckBox from '@/Components/CheckBox';
 import { Button, TextArea } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -6,13 +5,10 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import SortableTh from '@/Components/DataTable/SortableTh';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Pagination from '@/Components/DataTable/Pagination';
 import Modal from '@/Components/Modal';
 import ChoiceChips from '@/Components/ChoiceChips';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
 import Balance from '@/Components/Balance';
@@ -20,6 +16,7 @@ import { useDataTable } from '@/hooks/useDataTable';
 import ResultReport from './ResultReport';
 import PageHeader from '@/Components/PageHeader';
 import DateInput from '@/Components/DateInput';
+import { CheckBox, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
 
 /** The reason, note and date for the chosen subscribers, after saying how many. */
 function AddModal({ list, selection, count, reasonOptions, today, onClose, onDone }) {
@@ -67,8 +64,8 @@ function AddModal({ list, selection, count, reasonOptions, today, onClose, onDon
                     </div>
                 </div>
                 <div className="flex justify-end gap-3 border-t border-gray-100 bg-gray-50 px-7 py-4">
-                    <SecondaryButton onClick={onClose}>إلغاء</SecondaryButton>
-                    <PrimaryButton type="submit" disabled={saving || !reason || !date}>{saving ? 'جارٍ الإضافة…' : `إضافة ${count.toLocaleString('en')} مشترك`}</PrimaryButton>
+                    <SecondaryKey onClick={onClose}>إلغاء</SecondaryKey>
+                    <PrimaryKey type="submit" disabled={saving || !reason || !date}>{saving ? 'جارٍ الإضافة…' : `إضافة ${count.toLocaleString('en')} مشترك`}</PrimaryKey>
                 </div>
             </form>
         </Modal>

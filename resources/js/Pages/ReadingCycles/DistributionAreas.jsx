@@ -1,9 +1,9 @@
-import CheckBox from '@/Components/CheckBox';
 import { Button, Input } from '@heroui/react';
 import { useState } from 'react';
 import Icon from '@/Components/Icon';
 import { formatNumber } from '@/lib/format';
 import { readingSearchMatches } from '@/lib/readingBoard';
+import { CheckBox } from '@/Components/UI';
 
 export default function DistributionAreas({ areas, chosen, onChange, disabled, filter, counts, onFilterChange, onDistribute, distributionCount = 0 }) {
     const [search, setSearch] = useState('');

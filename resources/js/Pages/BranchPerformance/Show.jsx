@@ -3,12 +3,12 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import BarChart from '@/Components/Charts/BarChart';
 import MeterBar from '@/Components/Charts/MeterBar';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import Icon from '@/Components/Icon';
 import KpiTile from '@/Components/KpiTile';
 import { formatDayLabel, formatMoney, formatNumber, timeAgo } from '@/lib/format';
 import { branchPlace } from './BranchMark';
 import PageHeader, { BackLink } from '@/Components/PageHeader';
+import { StatusPill } from '@/Components/UI';
 
 /** Status colors, fixed because the card behind them is always graphite; each comes with its word and count. */
 const STATUS_BARS = { active: 'bg-emerald-400', suspended: 'bg-amber-400', disconnected: 'bg-white/40' };

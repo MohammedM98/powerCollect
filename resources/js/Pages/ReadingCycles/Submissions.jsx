@@ -5,10 +5,10 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import SortableTh from '@/Components/DataTable/SortableTh';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import Pagination from '@/Components/DataTable/Pagination';
 import { useDataTable } from '@/hooks/useDataTable';
 import PageHeader from '@/Components/PageHeader';
+import { StatusPill } from '@/Components/UI';
 
 const TONES = { accepted: 'green', needs_review: 'amber', rejected: 'red' };
 

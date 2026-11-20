@@ -1,4 +1,3 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Button } from '@heroui/react';
 import { lazy, Suspense, useMemo, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
@@ -18,6 +17,7 @@ import { BoxesReport, DebtReport, StatementReport } from './ReportDetails';
 import { PeriodCard } from './ReportParts';
 import { CollectionsView, OverviewView } from './ReportViews';
 import { Transactions } from './ReportSections';
+import { ChoiceSelect } from '@/Components/UI';
 
 const ExcelStudio = lazy(() => import('@/Components/ExcelStudio'));
 

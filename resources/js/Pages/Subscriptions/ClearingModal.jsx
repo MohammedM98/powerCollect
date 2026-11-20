@@ -1,7 +1,5 @@
-import CheckBox from '@/Components/CheckBox';
 import { Button, Input } from '@heroui/react';
 import { useId, useRef, useState } from 'react';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import InputError from '@/Components/InputError';
 import Modal from '@/Components/Modal';
 import { useResourceForm } from '@/hooks/useResourceForm';
@@ -20,6 +18,7 @@ import {
 } from './AccountFormParts';
 import { CorrectionReasonFields, EMPTY_CORRECTION, OriginalLine } from './CorrectionFields';
 import LedgerLine, { LedgerFooter, recentStatementLines } from './LedgerLine';
+import { CheckBox, ConfirmDialog } from '@/Components/UI';
 
 const QUICK_AMOUNTS = [50, 100, 200];
 

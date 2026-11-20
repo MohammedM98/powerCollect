@@ -1,6 +1,5 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import InsetList, { InsetRow } from '@/Components/Form/InsetList';
-import TextInput from '@/Components/TextInput';
+import { ChoiceSelect, TextInput } from '@/Components/UI';
 
 /**
  * The form's starting values: the tariff's own when editing, otherwise

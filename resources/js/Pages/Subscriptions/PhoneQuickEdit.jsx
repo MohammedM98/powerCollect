@@ -1,8 +1,8 @@
 import { Button, Input } from '@heroui/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { router } from '@inertiajs/react';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import Icon from '@/Components/Icon';
+import { ConfirmDialog } from '@/Components/UI';
 
 const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
 

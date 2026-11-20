@@ -2,7 +2,6 @@ import { Button } from '@heroui/react';
 import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Icon from '@/Components/Icon';
-import SecondaryButton from '@/Components/SecondaryButton';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import Pagination from '@/Components/DataTable/Pagination';
@@ -10,6 +9,7 @@ import ActionsTh from '@/Components/DataTable/ActionsTh';
 import { useDataTable } from '@/hooks/useDataTable';
 import { ChannelLabel, DeliveryCounts, KIND_ICONS, MessageStatusPill, MessageText } from './MessageParts';
 import PageHeader, { BackLink } from '@/Components/PageHeader';
+import { SecondaryKey } from '@/Components/UI';
 
 const DATE_TIME_FORMAT = new Intl.DateTimeFormat('ar-EG-u-nu-latn', { dateStyle: 'medium', timeStyle: 'short' });
 
@@ -47,10 +47,10 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
                         meta={`${DATE_TIME_FORMAT.format(new Date(batch.createdAt))} — ${batch.createdBy ?? '—'} — ${batch.branchName}`}
                         actions={
                             canUpdate && !isWhatsApp && batch.failed > 0 && (
-                                <SecondaryButton onClick={retry}>
+                                <SecondaryKey onClick={retry}>
                                     <Icon name="repeat" className="h-4 w-4" />
                                     إعادة إرسال ما فشل ({batch.failed})
-                                </SecondaryButton>
+                                </SecondaryKey>
                             )
                         }
                     />

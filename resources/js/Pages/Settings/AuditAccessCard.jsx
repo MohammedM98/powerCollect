@@ -1,6 +1,5 @@
-import CheckBox from '@/Components/CheckBox';
 import Icon from '@/Components/Icon';
-import Switch from '@/Components/Switch';
+import { CheckBox, Switch } from '@/Components/UI';
 
 export function auditScopeLabel(settings, branches) {
     return settings.scope === 'all' ? 'كل الفروع' : branches.filter((branch) => settings.branch_ids.includes(branch.id)).map((branch) => branch.name).join('، ') || 'لم يُحدّد فرع';

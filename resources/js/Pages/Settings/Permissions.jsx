@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import Icon from '@/Components/Icon';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import EmployeeList from './PermissionPeople';
 import { SectionRow } from './PermissionMatrix';
 import { PermissionSummary } from './PermissionInsights';
@@ -13,6 +12,7 @@ import { permissionEntries, riskCounts, riskLevel, roleColors, sectionIds, secti
 import PageHeader from '@/Components/PageHeader';
 import { PermissionChangeReview } from './PermissionReview';
 import { PermissionEditor } from './PermissionEditor';
+import { ConfirmDialog } from '@/Components/UI';
 
 export { SectionRow, PermissionSummary, PermissionChangeReview };
 

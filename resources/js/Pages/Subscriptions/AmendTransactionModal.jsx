@@ -1,4 +1,3 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Input, TextArea } from '@heroui/react';
 import { BankReceivedDateField } from '@/Components/BankReceivedDate';
 import { useForm } from '@inertiajs/react';
@@ -12,6 +11,7 @@ import Balance from '@/Components/Balance';
 import { BalanceAfter } from './AccountSummary';
 import EditSplitPaymentModal from '@/Pages/Payments/EditSplitPaymentModal';
 import { formatMoney } from '@/lib/format';
+import { ChoiceSelect } from '@/Components/UI';
 
 const inputClass = 'mt-2 block w-full';
 

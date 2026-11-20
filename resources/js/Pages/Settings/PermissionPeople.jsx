@@ -1,7 +1,7 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Button, Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import Pagination from '@/Components/DataTable/Pagination';
+import { ChoiceSelect } from '@/Components/UI';
 
 /** An employee's initial on a tile in their job title's colour. */
 export function EmployeeAvatar({ name, color, size = 'md' }) {

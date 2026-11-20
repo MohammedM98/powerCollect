@@ -1,8 +1,8 @@
 import ChoiceChips from '@/Components/ChoiceChips';
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
-import TextInput from '@/Components/TextInput';
 import { plainDigits } from '@/lib/formValidation';
+import { TextInput } from '@/Components/UI';
 
 /** The subscriber's own details: name, national ID, phones and address. */
 export default function SubscriberSection({

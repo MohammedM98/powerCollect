@@ -5,12 +5,11 @@ import { SaveButton } from '@/Components/Settings/SettingsKit';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import { printUrl } from '@/lib/print';
 import { PAPER_SIZES } from '@/lib/printLayout';
 import { timeAgo } from '@/lib/format';
 import PageHeader from '@/Components/PageHeader';
-import AddButton from '@/Components/AddButton';
+import { AddKey, ConfirmDialog } from '@/Components/UI';
 
 /** Open the print designer on a list, with one of its templates (an id) or a new one. */
 function openDesigner(page, template) {
@@ -155,7 +154,7 @@ export default function PrintTemplates({ pages }) {
                     title="قوالب الطباعة"
                     info="صمّم طريقة طباعة كل قائمة، واجعل أحد قوالبها الافتراضي الذي يبدأ منه زر الطباعة."
                     meta={`${total.toLocaleString('en')} قالب محفوظ لكل الشركة`}
-                    actions={<AddButton onClick={() => setCreating(true)}>قالب جديد</AddButton>}
+                    actions={<AddKey onClick={() => setCreating(true)}>قالب جديد</AddKey>}
                 />
             }
         >

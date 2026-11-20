@@ -5,13 +5,12 @@ import SettingsLayout from '@/Layouts/SettingsLayout';
 import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
 import InfoTip from '@/Components/InfoTip';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import { notify } from '@/lib/notify';
 import { SAMPLE_LOCAL_PHONE, missingForSending, phoneAs, requestPreview } from '@/lib/smsSettings';
 import './ReadingSchedule.css';
 import './SmsSettings.css';
 import PageHeader from '@/Components/PageHeader';
-import SegmentedChoice from '@/Components/SegmentedChoice';
+import { ConfirmDialog, SegmentedChoice } from '@/Components/UI';
 
 const TEST_MESSAGE = 'رسالة تجربة من نظام التحصيل: إذا وصلتك فالربط يعمل.';
 const FIELDS = [

@@ -11,7 +11,6 @@ import MeterBoxCell from '@/Components/DataTable/MeterBoxCell';
 import Pagination from '@/Components/DataTable/Pagination';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import SortableTh from '@/Components/DataTable/SortableTh';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import Icon from '@/Components/Icon';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useRowClick } from '@/hooks/useRowClick';
@@ -27,6 +26,7 @@ import StatementModal from '@/Pages/Subscriptions/StatementModal';
 import SplitPaymentModal from './SplitPaymentModal';
 import PageHeader from '@/Components/PageHeader';
 import { needsPermission } from '@/lib/permissions';
+import { StatusPill } from '@/Components/UI';
 
 const STATUS_TONES = { active: 'green', suspended: 'amber', disconnected: 'gray' };
 

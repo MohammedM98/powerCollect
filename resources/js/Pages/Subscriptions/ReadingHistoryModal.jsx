@@ -1,7 +1,6 @@
 import { Button, Input } from '@heroui/react';
 import { Fragment, useEffect, useId, useRef, useState } from 'react';
 import { router } from '@inertiajs/react';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import LastReadingConfirmDialog from '@/Components/LastReadingConfirmDialog';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
@@ -15,6 +14,7 @@ import { useLastReadingEdit } from '@/hooks/useLastReadingEdit';
 import ReadingPricingField from './ReadingPricingField';
 import ReadingApprovalDialog from '@/Pages/MeterReadings/ReadingApprovalDialog';
 import './ReadingHistoryModal.css';
+import { ConfirmDialog } from '@/Components/UI';
 
 const PERIODS = [['12', 'آخر 12 أسبوعًا'], ['26', '6 أشهر'], ['52', 'سنة'], ['all', 'الكل']];
 const STATUSES = [['all', 'الكل'], ['approved', 'معتمدة'], ['pending', 'قيد المراجعة']];

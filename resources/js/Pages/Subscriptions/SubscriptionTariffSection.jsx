@@ -1,15 +1,13 @@
 import { Button } from '@heroui/react';
 import Affix from '@/Components/Affix';
 import ChoiceChips from '@/Components/ChoiceChips';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
-import SearchableSelect from '@/Components/SearchableSelect';
-import TextInput from '@/Components/TextInput';
 import { formatAmount } from '@/lib/currency';
 import { formatMoney } from '@/lib/format';
+import { ConfirmDialog, SearchableSelect, TextInput } from '@/Components/UI';
 
 const ACCOUNTING_TYPE_OPTIONS = [
     { value: 'weekly', label: 'أسبوعي' },

@@ -1,17 +1,14 @@
-import CheckBox from '@/Components/CheckBox';
 import { Button } from '@heroui/react';
 import { useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { formatMoney } from '@/lib/format';
 import { boxTypes, boxTypeStyles, BoxTypeIcon } from './CollectorCashBox';
 import { BoxPersonAvatar, financialAmountsLine } from './FinancialBoxComponents';
 import { financialBoxesTotals } from '@/lib/financialBoxes';
 import BoxBreakdown from './BoxBreakdown';
+import { CheckBox, ConfirmDialog, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 /**
  * Closes the open boxes of one type the closer ticks, together, for those
@@ -137,8 +134,8 @@ export default function CloseBoxesByType({ boxes, branchId, userId, initialType,
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="text-sm text-gray-600">{selected.length ? <>{selected.length === 1 ? 'صندوق واحد مختار' : <><b className="font-display text-gray-900">{selected.length}</b> صناديق مختارة</>}، <b className="text-gray-900">{financialAmountsLine(totals)}</b></> : 'لم تختر أي صندوق بعد'}</p>
                 <div className="flex flex-wrap items-center gap-2">
-                    <SecondaryButton onClick={onClose}>إلغاء</SecondaryButton>
-                    <PrimaryButton disabled={processing || !selected.length || (cash && !cashCounted)} onClick={() => setConfirming(true)}><Icon name="check" className="h-4 w-4" />{selected.length === 1 ? 'تأكيد إغلاق الصندوق' : selected.length ? `تأكيد إغلاق ${selected.length} صناديق` : 'تأكيد الإغلاق'}</PrimaryButton>
+                    <SecondaryKey onClick={onClose}>إلغاء</SecondaryKey>
+                    <PrimaryKey disabled={processing || !selected.length || (cash && !cashCounted)} onClick={() => setConfirming(true)}><Icon name="check" className="h-4 w-4" />{selected.length === 1 ? 'تأكيد إغلاق الصندوق' : selected.length ? `تأكيد إغلاق ${selected.length} صناديق` : 'تأكيد الإغلاق'}</PrimaryKey>
                 </div>
             </div>
         </footer>

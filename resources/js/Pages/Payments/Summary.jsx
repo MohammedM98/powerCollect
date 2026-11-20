@@ -3,7 +3,6 @@ import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Icon from '@/Components/Icon';
 import { Card } from '@heroui/react';
-import PrimaryButton from '@/Components/PrimaryButton';
 import { useDataTable } from '@/hooks/useDataTable';
 import { formatMoney } from '@/lib/format';
 import {
@@ -20,6 +19,7 @@ import {
 import OpenEntriesTable from './OpenEntriesTable';
 import PageHeader from '@/Components/PageHeader';
 import InfoTip from '@/Components/InfoTip';
+import { PrimaryKey } from '@/Components/UI';
 
 /**
  * What the user collected today, on the prototype's charcoal card: the
@@ -165,7 +165,7 @@ export default function Summary({ today, recentDays = [], cashBox, current, entr
         {cashBox.started ? <div className="space-y-8">
             {needsAction.length > 0 && <section className="space-y-3 rounded-panel border border-amber-500/25 bg-amber-500/5 p-5">
                 <h3 className="font-bold text-gray-900">تحتاج إجراء منك</h3>
-                {needsAction.map((box) => <div key={box.id} className="flex flex-wrap items-center justify-between gap-3 border-t border-amber-500/15 pt-3"><div className="flex items-center gap-3"><BoxTypeIcon type={box.type} className="h-10 w-10" /><div className="space-y-2"><Link href={box.urls.show} prefetch className="font-semibold text-gray-900">{boxTypes[box.type]}، <bdi dir="ltr" className="font-display text-xs">{box.number}</bdi></Link><BoxStage box={box} /></div></div><PrimaryButton onClick={() => setSelected({ box, action: boxAction(box) })}>{actionLabel(box)}</PrimaryButton></div>)}
+                {needsAction.map((box) => <div key={box.id} className="flex flex-wrap items-center justify-between gap-3 border-t border-amber-500/15 pt-3"><div className="flex items-center gap-3"><BoxTypeIcon type={box.type} className="h-10 w-10" /><div className="space-y-2"><Link href={box.urls.show} prefetch className="font-semibold text-gray-900">{boxTypes[box.type]}، <bdi dir="ltr" className="font-display text-xs">{box.number}</bdi></Link><BoxStage box={box} /></div></div><PrimaryKey onClick={() => setSelected({ box, action: boxAction(box) })}>{actionLabel(box)}</PrimaryKey></div>)}
             </section>}
             <CollectorAuditNotes notes={cashBox.auditNotes} onSaved={() => setSaved('أُرسل ردّك إلى الفرع.')} />
             <CollectorDebts debts={cashBox.debts} />

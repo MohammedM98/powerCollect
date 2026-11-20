@@ -1,4 +1,3 @@
-import CheckBox from '@/Components/CheckBox';
 import { useState } from 'react';
 import ChoiceChips from '@/Components/ChoiceChips';
 import FormField from '@/Components/Form/FormField';
@@ -9,9 +8,9 @@ import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import PasswordInput from '@/Components/PasswordInput';
 import { SettingSwitch } from '@/Components/Settings/SettingsKit';
-import TextInput from '@/Components/TextInput';
 import { initials } from '@/lib/format';
 import UserTypeSelect from './UserTypeSelect';
+import { CheckBox, TextInput } from '@/Components/UI';
 
 function DeviceResetCheckbox({ id, checked, onChange }) {
     return <label htmlFor={id} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-control border border-gray-200 px-3 py-2 text-sm leading-6">

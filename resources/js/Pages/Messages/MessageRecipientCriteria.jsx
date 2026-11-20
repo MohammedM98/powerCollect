@@ -1,10 +1,8 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Button, Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
-import Switch from '@/Components/Switch';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { withStaleCleared } from '@/lib/filterGroups';
 import { Card, Field, FOCUS_RING } from './MessageFormParts';
+import { ChoiceSelect, SecondaryKey, Switch } from '@/Components/UI';
 
 /** Who the message is for: the kind, the branch, box, breaker, status and the kind's own criteria, and loading the list. */
 export default function MessageRecipientCriteria({
@@ -185,10 +183,10 @@ export default function MessageRecipientCriteria({
             )}
 
             <div className="mt-5">
-                <SecondaryButton onClick={loadRecipients} disabled={loading} aria-busy={loading}>
+                <SecondaryKey onClick={loadRecipients} disabled={loading} aria-busy={loading}>
                     <Icon name="users" className="h-4 w-4" />
                     {loading ? 'جارٍ التحميل...' : recipients === null ? 'عرض المستلمين' : 'تحديث المستلمين'}
-                </SecondaryButton>
+                </SecondaryKey>
             </div>
         </Card>
     );

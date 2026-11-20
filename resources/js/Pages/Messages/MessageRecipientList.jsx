@@ -1,9 +1,8 @@
-import CheckBox from '@/Components/CheckBox';
 import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
-import PrimaryButton from '@/Components/PrimaryButton';
 import InputError from '@/Components/InputError';
 import { Card, FOCUS_RING } from './MessageFormParts';
+import { CheckBox, PrimaryKey } from '@/Components/UI';
 
 /** The recipients found: who has a phone, who is chosen, the stale-list warning and the message preview for each. */
 export default function MessageRecipientList({
@@ -112,7 +111,7 @@ export default function MessageRecipientList({
                         {sendBlocker}
                     </p>
                 )}
-                <PrimaryButton
+                <PrimaryKey
                     type="button"
                     onClick={() => setConfirming(true)}
                     disabled={!canSend}
@@ -121,7 +120,7 @@ export default function MessageRecipientList({
                 >
                     <Icon name="send" className="h-4 w-4" />
                     {sending ? 'جارٍ الإرسال...' : `إرسال إلى ${selected.size.toLocaleString('en')} مشترك`}
-                </PrimaryButton>
+                </PrimaryKey>
             </div>
         </Card>
     );
