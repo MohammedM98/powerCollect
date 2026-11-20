@@ -1,45 +1,42 @@
 import { useEffect, useId, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
+import { Button, Card, Chip, FieldError, Input, Label, Radio, RadioGroup, TextField } from '@heroui/react';
+import { SaveButton } from '@/Components/Settings/SettingsKit';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import ConfirmDialog from '@/Components/ConfirmDialog';
-import InputError from '@/Components/InputError';
-import ActionsTh from '@/Components/DataTable/ActionsTh';
 import { printUrl } from '@/lib/print';
 import { PAPER_SIZES } from '@/lib/printLayout';
 import { timeAgo } from '@/lib/format';
 import PageHeader from '@/Components/PageHeader';
 import AddButton from '@/Components/AddButton';
 
-const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
-
 /** Open the print designer on a list, with one of its templates (an id) or a new one. */
 function openDesigner(page, template) {
     window.open(`${printUrl(page.label, page.path)}&print_template=${template}`, '_blank');
 }
 
-/** A small labelled action button with its icon. */
-function ActionButton({ icon, label, onClick, tone = 'gray', srLabel }) {
-    const tones = {
-        gray: 'border-gray-200 text-gray-700 hover:border-gray-300 hover:text-gray-900',
-        brand: 'border-brand-500/30 text-brand-600 hover:bg-brand-500/5',
-        green: 'border-emerald-500/30 text-emerald-700 hover:bg-emerald-500/5 dark:text-emerald-400',
-    };
-
+/** One of a template's keys: HeroUI's icon-only Button, its name for screen readers and as a tooltip, in its tone. */
+function TemplateKey({ icon, label, onPress, tone = 'ink' }) {
     return (
-        <button
-            type="button"
-            onClick={onClick}
-            aria-label={srLabel}
-            title={srLabel}
-            className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-control border bg-surface px-2.5 py-1.5 text-xs font-semibold transition ${tones[tone]} ${FOCUS_RING}`}
-        >
+        <Button isIconOnly size="sm" aria-label={label} onPress={onPress} className="gl-pt-key" data-tone={tone}>
             <Icon name={icon} className="h-4 w-4" />
-            {label}
-        </button>
+            <span className="gl-pt-tip" aria-hidden="true">{label}</span>
+        </Button>
+    );
+}
+
+/** A settings window's head: its icon on the MA tile, its title and a line under it. */
+function WindowHead({ id, icon, title, description = null }) {
+    return (
+        <div className="gl-win-head">
+            <span className="gl-set-ico" aria-hidden="true"><Icon name={icon} /></span>
+            <div className="min-w-0">
+                <h2 id={id} className="gl-set-title">{title}</h2>
+                {description && <p className="gl-set-desc">{description}</p>}
+            </div>
+        </div>
     );
 }
 
@@ -57,24 +54,18 @@ function RenameModal({ template, onClose }) {
 
     return (
         <Modal show onClose={onClose} maxWidth="md">
-            <form onSubmit={save} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`}>
-                <div className="px-7 pb-4 pt-7">
-                    <h2 id={`${id}-title`} className="font-sans flex items-center gap-2 text-lg font-bold text-gray-900">
-                        <Icon name="pencil" className="h-5 w-5" />
-                        إعادة تسمية القالب
-                    </h2>
-                    <label htmlFor={`${id}-name`} className="mb-1.5 mt-5 block text-sm font-semibold text-gray-700">
-                        الاسم الجديد
-                    </label>
-                    <input id={`${id}-name`} type="text" value={name} onChange={(e) => setName(e.target.value)} className="block w-full text-sm" autoFocus />
-                    <InputError message={errors.name} className="mt-1" />
+            <form onSubmit={save} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} className="gl-win">
+                <WindowHead id={`${id}-title`} icon="tag" title="إعادة تسمية القالب" description={`الاسم الحالي: ${template.name}`} />
+                <div className="gl-win-body">
+                    <TextField isRequired isInvalid={Boolean(errors.name)} value={name} onChange={setName} className="gl-set-field" autoFocus>
+                        <Label>الاسم الجديد</Label>
+                        <Input id={`${id}-name`} />
+                        <FieldError>{errors.name}</FieldError>
+                    </TextField>
                 </div>
-                <div className="flex justify-end gap-3 border-t border-gray-100 bg-gray-50 px-7 py-4">
-                    <SecondaryButton onClick={onClose}>إلغاء</SecondaryButton>
-                    <PrimaryButton type="submit" disabled={saving || name.trim() === ''}>
-                        <Icon name="check" className="h-4 w-4" />
-                        حفظ الاسم
-                    </PrimaryButton>
+                <div className="gl-win-foot">
+                    <Button type="button" onPress={onClose} className="gl-win-cancel">إلغاء</Button>
+                    <SaveButton processing={saving} isDisabled={name.trim() === ''}>حفظ الاسم</SaveButton>
                 </div>
             </form>
         </Modal>
@@ -86,44 +77,36 @@ function NewTemplateModal({ pages, onClose }) {
     const [path, setPath] = useState(pages[0]?.path ?? '');
 
     return (
-        <Modal show onClose={onClose} maxWidth="lg">
-            <div role="dialog" aria-modal="true" aria-labelledby={`${id}-title`}>
-                <div className="px-7 pb-4 pt-7">
-                    <h2 id={`${id}-title`} className="font-sans flex items-center gap-2 text-lg font-bold text-gray-900">
-                        <Icon name="plus" className="h-5 w-5" />
-                        قالب طباعة جديد
-                    </h2>
-                    <p className="mt-1.5 text-sm text-gray-600">اختر القائمة، فيُفتح مصمم الطباعة على بياناتها. صمّم كما تريد ثم احفظه كقالب.</p>
-                    <fieldset className="mt-5">
-                        <legend className="mb-2 text-sm font-semibold text-gray-700">القائمة</legend>
-                        <div className="grid grid-cols-2 gap-2">
-                            {pages.map((page) => (
-                                <label
-                                    key={page.path}
-                                    className={`flex cursor-pointer items-center gap-2 rounded-control border px-3 py-2.5 text-sm font-semibold transition ${
-                                        path === page.path ? 'border-gray-900 bg-gray-900 text-surface' : 'border-gray-200 text-gray-700 hover:border-gray-300'
-                                    }`}
-                                >
-                                    <input type="radio" name={`${id}-page`} value={page.path} checked={path === page.path} onChange={() => setPath(page.path)} className="sr-only" />
-                                    <Icon name={page.icon} className="h-4 w-4" />
-                                    {page.label}
-                                </label>
-                            ))}
-                        </div>
-                    </fieldset>
+        <Modal show onClose={onClose} maxWidth="2xl">
+            <div role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} className="gl-win">
+                <WindowHead id={`${id}-title`} icon="printer" title="قالب طباعة جديد" description="اختر القائمة، فيُفتح مصمم الطباعة على بياناتها. صمّم كما تريد ثم احفظه كقالب." />
+                <div className="gl-win-body">
+                    <RadioGroup aria-label="القائمة" value={path} onChange={setPath} className="gl-pt-pick">
+                        {pages.map((page) => (
+                            <Radio key={page.path} value={page.path} className="gl-pt-pick-item">
+                                <Radio.Content>
+                                    <span className="gl-pt-pick-ico" aria-hidden="true"><Icon name={page.icon} /></span>
+                                    <span className="gl-pt-pick-name">{page.label}</span>
+                                    <span className="gl-pt-pick-count">{page.templates.length ? `${page.templates.length} قالب` : 'جديد'}</span>
+                                    <Radio.Control className="sr-only"><Radio.Indicator /></Radio.Control>
+                                </Radio.Content>
+                            </Radio>
+                        ))}
+                    </RadioGroup>
                 </div>
-                <div className="flex justify-end gap-3 border-t border-gray-100 bg-gray-50 px-7 py-4">
-                    <SecondaryButton onClick={onClose}>إلغاء</SecondaryButton>
-                    <PrimaryButton
+                <div className="gl-win-foot">
+                    <Button type="button" onPress={onClose} className="gl-win-cancel">إلغاء</Button>
+                    <Button
                         type="button"
-                        onClick={() => {
+                        className="gl-set-save"
+                        onPress={() => {
                             openDesigner(pages.find((page) => page.path === path), 'new');
                             onClose();
                         }}
                     >
                         <Icon name="external" className="h-4 w-4" />
                         فتح المصمم
-                    </PrimaryButton>
+                    </Button>
                 </div>
             </div>
         </Modal>
@@ -170,6 +153,7 @@ export default function PrintTemplates({ pages }) {
             header={
                 <PageHeader
                     title="قوالب الطباعة"
+                    info="صمّم طريقة طباعة كل قائمة، واجعل أحد قوالبها الافتراضي الذي يبدأ منه زر الطباعة."
                     meta={`${total.toLocaleString('en')} قالب محفوظ لكل الشركة`}
                     actions={<AddButton onClick={() => setCreating(true)}>قالب جديد</AddButton>}
                 />
@@ -177,85 +161,58 @@ export default function PrintTemplates({ pages }) {
         >
             <Head title="قوالب الطباعة" />
 
-            <div className="space-y-6">
+            <div className="gl-pt-grid">
                 {pages.map((page) => (
-                    <section key={page.path} aria-labelledby={`list-${page.path}`} className="rounded-card border border-gray-100 bg-surface p-5 shadow-card sm:p-6">
-                        <div className="mb-4 flex flex-wrap items-center gap-3">
-                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-graphite-gradient text-white dark:ring-1 dark:ring-white/10">
-                                <Icon name={page.icon} className="h-5 w-5" />
+                    <Card key={page.path} className="gl-set-card gl-pt-card" aria-labelledby={`list-${page.path}`} data-empty={page.templates.length === 0 || undefined}>
+                        <Card.Header className="gl-set-head gl-pt-head">
+                            <span className="gl-set-ico" aria-hidden="true">
+                                <Icon name={page.icon} />
                             </span>
                             <div className="min-w-0 flex-1">
-                                <h2 id={`list-${page.path}`} className="font-sans font-bold text-gray-900">
-                                    {page.label}
-                                </h2>
-                                <p className="text-xs text-gray-500">{page.templates.length === 0 ? 'لا توجد قوالب بعد' : `${page.templates.length} قالب`}</p>
+                                <Card.Title id={`list-${page.path}`} className="gl-set-title">{page.label}</Card.Title>
+                                <Card.Description className="gl-set-desc">{page.templates.length === 0 ? 'لا توجد قوالب بعد' : `${page.templates.length} قالب`}</Card.Description>
                             </div>
-                            <ActionButton icon="plus" label="قالب جديد لها" srLabel={`قالب طباعة جديد لـ«${page.label}»`} onClick={() => openDesigner(page, 'new')} />
-                        </div>
+                            <Button size="sm" className="gl-pt-add" aria-label={`قالب طباعة جديد لـ«${page.label}»`} onPress={() => openDesigner(page, 'new')}>
+                                <Icon name="plus" className="h-4 w-4" />
+                                قالب جديد لها
+                            </Button>
+                        </Card.Header>
 
                         {page.templates.length > 0 && (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-start text-sm">
-                                    <thead>
-                                        <tr className="border-b border-gray-100 text-xs text-gray-600">
-                                            <th className="py-2 pe-3 text-start font-semibold">القالب</th>
-                                            <th className="px-3 py-2 text-start font-semibold">الورق والأعمدة</th>
-                                            <th className="px-3 py-2 text-start font-semibold">آخر تعديل</th>
-                                            <ActionsTh />
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {page.templates.map((template) => (
-                                            <tr key={template.id} className="border-b border-gray-100 last:border-0">
-                                                <td className="py-3 pe-3">
-                                                    <span className="flex flex-wrap items-center gap-2 font-semibold text-gray-900">
-                                                        {template.name}
-                                                        {template.isDefault && (
-                                                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-800 dark:text-emerald-300">
-                                                                <Icon name="check" className="h-3 w-3" strokeWidth={2.5} />
-                                                                الافتراضي
-                                                            </span>
-                                                        )}
-                                                    </span>
-                                                </td>
-                                                <td className="px-3 py-3 text-gray-600">{templateSummary(template)}</td>
-                                                <td className="px-3 py-3 text-gray-600">
-                                                    {timeAgo(template.updatedAt)}
-                                                    {template.updatedBy && <span className="block text-xs text-gray-500">{template.updatedBy}</span>}
-                                                </td>
-                                                <td className="py-3 ps-3">
-                                                    <div className="flex flex-wrap justify-end gap-1.5">
-                                                        <ActionButton
-                                                            icon="pencil"
-                                                            label="تصميم"
-                                                            tone="brand"
-                                                            srLabel={`فتح «${template.name}» في مصمم الطباعة`}
-                                                            onClick={() => openDesigner(page, template.id)}
-                                                        />
-                                                        <ActionButton
-                                                            icon={template.isDefault ? 'close' : 'check'}
-                                                            label={template.isDefault ? 'إلغاء الافتراضي' : 'جعله الافتراضي'}
-                                                            tone={template.isDefault ? 'gray' : 'green'}
-                                                            srLabel={template.isDefault ? `إلغاء كون «${template.name}» الافتراضي` : `جعل «${template.name}» الافتراضي لـ«${page.label}»`}
-                                                            onClick={() => update(template, { is_default: !template.isDefault })}
-                                                        />
-                                                        <ActionButton
-                                                            icon="document-plus"
-                                                            label="نسخ"
-                                                            srLabel={`نسخ «${template.name}»`}
-                                                            onClick={() => router.post(`/print-templates/${template.id}/duplicate`, {}, { preserveScroll: true })}
-                                                        />
-                                                        <ActionButton icon="tag" label="تسمية" srLabel={`إعادة تسمية «${template.name}»`} onClick={() => setRenaming(template)} />
-                                                        <ActionButton icon="trash" label="حذف" tone="brand" srLabel={`حذف «${template.name}»`} onClick={() => setDeleting(template)} />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                            <Card.Content className="gl-pt-list">
+                                {page.templates.map((template) => (
+                                    <div key={template.id} className="gl-pt-item" data-default={template.isDefault || undefined}>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="gl-pt-name">
+                                                <b>{template.name}</b>
+                                                {template.isDefault && (
+                                                    <Chip size="sm" variant="soft" color="success" className="gl-set-chip">
+                                                        <Icon name="check" className="h-3 w-3" strokeWidth={2.5} />
+                                                        الافتراضي
+                                                    </Chip>
+                                                )}
+                                            </div>
+                                            <p className="gl-pt-meta">
+                                                {templateSummary(template)}، {timeAgo(template.updatedAt)}{template.updatedBy && `، ${template.updatedBy}`}
+                                            </p>
+                                        </div>
+                                        <div className="gl-pt-keys">
+                                            <TemplateKey icon="pencil" tone="brand" label={`فتح «${template.name}» في مصمم الطباعة`} onPress={() => openDesigner(page, template.id)} />
+                                            <TemplateKey
+                                                icon={template.isDefault ? 'close' : 'check'}
+                                                tone={template.isDefault ? 'muted' : 'pay'}
+                                                label={template.isDefault ? `إلغاء كون «${template.name}» الافتراضي` : `جعل «${template.name}» الافتراضي لـ«${page.label}»`}
+                                                onPress={() => update(template, { is_default: !template.isDefault })}
+                                            />
+                                            <TemplateKey icon="document-plus" label={`نسخ «${template.name}»`} onPress={() => router.post(`/print-templates/${template.id}/duplicate`, {}, { preserveScroll: true })} />
+                                            <TemplateKey icon="tag" label={`إعادة تسمية «${template.name}»`} onPress={() => setRenaming(template)} />
+                                            <TemplateKey icon="trash" tone="owe" label={`حذف «${template.name}»`} onPress={() => setDeleting(template)} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </Card.Content>
                         )}
-                    </section>
+                    </Card>
                 ))}
             </div>
 

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button, Card } from '@heroui/react';
 import { Head, router } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import AddButton from '@/Components/AddButton';
@@ -174,20 +175,7 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
     const muted = dark ? 'text-white/60' : 'text-gray-500';
 
     return (
-        <section
-            className={`relative flex flex-col gap-4 overflow-hidden rounded-[26px] p-5 sm:p-6 ${
-                dark ? 'bg-brand-gradient text-white shadow-lift' : 'border border-gray-100 bg-surface text-gray-900 shadow-card'
-            }`}
-        >
-            {dark && (
-                <>
-                    <span className="absolute inset-x-0 top-0 h-[3px] bg-spectrum" aria-hidden="true" />
-                    <span
-                        className="pointer-events-none absolute -bottom-36 -inset-s-16 h-[340px] w-[340px] rounded-full bg-[radial-gradient(closest-side,rgb(var(--brand-solid)/0.22),transparent)]"
-                        aria-hidden="true"
-                    />
-                </>
-            )}
+        <Card className="gl-tariff-card" data-dark={dark || undefined} aria-label={`تعرفة ${tariff.categoryLabel}`}>
 
             <div className="relative flex items-center gap-3">
                 <span
@@ -201,29 +189,20 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
                 </div>
                 <div className="ms-auto flex items-center gap-2">
                     {tariff.canDelete && !editing && (
-                        <button
-                            type="button"
-                            onClick={onDelete}
-                            title="حذف التعرفة"
+                        <Button
+                            isIconOnly
+                            onPress={onDelete}
                             aria-label={`حذف تعرفة ${tariff.categoryLabel}`}
-                            className={`flex h-11 w-11 items-center justify-center rounded-[13px] border transition ${
-                                dark
-                                    ? 'border-white/15 bg-white/5 text-red-300 hover:bg-white/10'
-                                    : 'border-brand-500/25 bg-brand-500/5 text-brand-600 hover:border-transparent hover:bg-brand-600 hover:text-white'
-                            }`}
+                            className="gl-tariff-key is-delete"
                         >
                             <Icon name="trash" className="h-[18px] w-[18px]" />
-                        </button>
+                        </Button>
                     )}
                     {tariff.canUpdate && !editing && (
-                        <button
-                            type="button"
-                            onClick={onEdit}
-                            className={dark ? 'inline-flex h-11 items-center gap-2 whitespace-nowrap rounded-full border border-white/15 bg-white/5 px-4 text-[15px] font-bold text-white transition hover:bg-white/10' : 'gl-btn gl-sec whitespace-nowrap'}
-                        >
+                        <Button onPress={onEdit} className="gl-tariff-key">
                             <Icon name="pencil" className="h-[17px] w-[17px]" />
                             تعديل السعر
-                        </button>
+                        </Button>
                     )}
                 </div>
             </div>
@@ -275,7 +254,7 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
                     ))}
                 </p>
             )}
-        </section>
+        </Card>
     );
 }
 
@@ -285,15 +264,12 @@ function QuickCalculator({ tariffs }) {
     const amount = Number(kilos) || 0;
 
     return (
-        <section
-            aria-label="حاسبة سريعة"
-            className="mt-4 flex flex-wrap items-center gap-4 rounded-card border border-gray-100 bg-surface px-5 py-4 shadow-card sm:px-6"
-        >
+        <Card aria-label="حاسبة سريعة" className="gl-set-card gl-tariff-calc">
             <div>
                 <h2 className="font-luxe text-lg font-bold text-gray-900">حاسبة سريعة</h2>
                 <p className="text-[13.5px] text-gray-500">كم يدفع المشترك عن استهلاك معيّن؟</p>
             </div>
-            <label className="flex items-center gap-2 rounded-[14px] border-[1.5px] border-gray-200 bg-surface px-3 py-1 focus-within:border-brand-500">
+            <label className="gl-tariff-kilos">
                 <input
                     value={kilos}
                     inputMode="decimal"
@@ -306,7 +282,7 @@ function QuickCalculator({ tariffs }) {
             </label>
             <div className="flex w-full flex-wrap gap-2.5 sm:ms-auto sm:w-auto">
                 {tariffs.map((tariff) => (
-                    <div key={tariff.id} className="min-w-[150px] flex-1 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-2.5">
+                    <div key={tariff.id} className="gl-tariff-sum">
                         <small className="block text-[12.5px] text-gray-500">
                             {tariff.categoryLabel}، {formatMoney(tariff.rate, { cents: true })} ₪
                         </small>
@@ -314,7 +290,7 @@ function QuickCalculator({ tariffs }) {
                     </div>
                 ))}
             </div>
-        </section>
+        </Card>
     );
 }
 

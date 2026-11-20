@@ -7324,3 +7324,1060 @@ html:root[data-ui-background='graphite'] .pm-hero {
     color: #fff;
 }
 
+
+/*
+ * ═════ Settings (SettingsKit.jsx): HeroUI cards in the MA look ═════
+ * A section is a glass card: its icon on a tile tinted by the section's
+ * tone, its title and line, then its settings as rows (name and line on one
+ * side, the control on the other) divided by the MA line. Tiles inside a
+ * section (a currency, a template) are the soft MA tile, raised white
+ * where they hold a form.
+ */
+.gl-set-page {
+    display: grid;
+    gap: 20px;
+    min-width: 0;
+}
+
+.gl-set-card,
+.gl-set-card.card {
+    --t: var(--ma-brand);
+    --ts: var(--ma-brand-soft);
+    gap: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 22px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+}
+
+:is(.gl-set-card, .gl-set-heading)[data-tone='pay'] { --t: var(--ma-pay); --ts: var(--ma-pay-s); }
+:is(.gl-set-card, .gl-set-heading)[data-tone='owe'] { --t: var(--ma-owe); --ts: var(--ma-owe-s); }
+:is(.gl-set-card, .gl-set-heading)[data-tone='disc'] { --t: var(--ma-disc); --ts: var(--ma-disc-s); }
+:is(.gl-set-card, .gl-set-heading)[data-tone='clr'] { --t: var(--ma-clr); --ts: var(--ma-clr-s); }
+:is(.gl-set-card, .gl-set-heading)[data-tone='split'] { --t: var(--ma-split); --ts: var(--ma-split-s); }
+:is(.gl-set-card, .gl-set-heading)[data-tone='warn'] { --t: var(--ma-warn); --ts: var(--ma-warn-s); }
+.gl-set-heading { --t: var(--ma-brand); --ts: var(--ma-brand-soft); }
+
+.gl-set-head,
+.gl-set-heading {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.gl-set-head {
+    padding: 20px 22px 6px;
+}
+
+.gl-set-heading {
+    align-items: center;
+    padding: 2px 2px 0;
+}
+
+.gl-set-ico {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: var(--ts);
+    color: var(--t);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-set-ico svg {
+    width: 21px;
+    height: 21px;
+}
+
+.gl-set-title,
+.gl-set-card .gl-set-title {
+    margin: 0;
+    color: var(--ma-ink);
+    font: 800 18px/1.35 var(--font-heading, 'Zain'), sans-serif;
+}
+
+.gl-set-desc,
+.gl-set-card .gl-set-desc {
+    max-width: 72ch;
+    margin: 3px 0 0;
+    color: var(--ma-muted);
+    font-size: 13.5px;
+    line-height: 1.65;
+}
+
+.gl-set-aside {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+}
+
+.gl-set-chip.chip {
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    font-weight: 700;
+    box-shadow: var(--ma-hl);
+}
+
+.gl-set-chip.chip[data-color='success'],
+.gl-set-chip.chip.chip--success {
+    background: var(--ma-pay-s);
+    color: var(--ma-pay);
+}
+
+.gl-set-chip.chip[data-color='warning'],
+.gl-set-chip.chip.chip--warning {
+    background: var(--ma-warn-s);
+    color: var(--ma-warn);
+}
+
+.gl-set-body {
+    display: grid;
+    gap: 14px;
+    padding: 12px 22px 22px;
+}
+
+.gl-set-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 14px 22px 18px;
+    border-top: 1px solid var(--ma-line);
+}
+
+.gl-set-form {
+    display: grid;
+    gap: 0;
+}
+
+/* A setting: its name and line, then its control, one row each across the card. */
+.gl-set-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 340px);
+    align-items: center;
+    gap: 10px 28px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--ma-line);
+}
+
+.gl-set-row:first-child {
+    padding-top: 6px;
+}
+
+.gl-set-row-text {
+    min-width: 0;
+}
+
+.gl-set-label {
+    display: block;
+    color: var(--ma-ink);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.gl-set-hint {
+    margin: 3px 0 0;
+    color: var(--ma-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.gl-set-row-control {
+    min-width: 0;
+}
+
+.gl-set-value {
+    color: var(--ma-ink);
+    font-weight: 800;
+}
+
+@media (max-width: 720px) {
+    .gl-set-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* HeroUI's Select as a soft MA field. */
+.gl-set-select {
+    width: 100%;
+}
+
+.gl-set-select-trigger,
+.gl-set-select .select__trigger {
+    width: 100%;
+    min-height: 44px;
+    padding-inline: 14px 12px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    box-shadow: var(--ma-hl);
+    font-weight: 700;
+}
+
+.gl-set-select-trigger:hover,
+.gl-set-select .select__trigger:hover {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-set-select-trigger[data-focus-visible],
+.gl-set-select .select__trigger[data-focus-visible] {
+    outline: 2px solid var(--ma-brand);
+    outline-offset: 2px;
+}
+
+/* The week a box period covers: seven day pills, the first and the closing day in the section's colour. */
+.gl-set-week {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.gl-set-week li {
+    display: grid;
+    place-items: center;
+    gap: 1px;
+    min-height: 54px;
+    padding: 8px 4px;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    color: var(--ma-muted);
+    text-align: center;
+    box-shadow: var(--ma-hl);
+}
+
+.gl-set-week b {
+    font-size: 13.5px;
+    font-weight: 800;
+}
+
+.gl-set-week small {
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+.gl-set-week li[data-edge] {
+    background: var(--ts, var(--ma-clr-s));
+    color: var(--t, var(--ma-clr));
+}
+
+@media (max-width: 560px) {
+    .gl-set-week {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.gl-set-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 18px;
+}
+
+/* The save key: raised dark, as the MA primary key. */
+.gl-set-save.button,
+.gl-set-save {
+    min-height: 42px;
+    gap: 8px;
+    padding-inline: 18px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-act);
+    color: #fff;
+    font-weight: 800;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 10px 22px -12px rgb(10 12 16 / 0.7);
+}
+
+.gl-set-save:hover:not([data-disabled]) {
+    filter: brightness(1.12);
+}
+
+.gl-set-save[data-disabled] {
+    opacity: 0.45;
+    box-shadow: none;
+}
+
+.gl-set-status.alert {
+    border: 0;
+    border-radius: 18px;
+    background: var(--ma-pay-s);
+    color: var(--ma-pay);
+    box-shadow: var(--ma-hl);
+}
+
+/* A tile inside a section: a currency, a template, a schedule. */
+.gl-set-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-set-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+.gl-set-code {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    min-width: 52px;
+    height: 36px;
+    padding-inline: 10px;
+    border-radius: 11px;
+    background: var(--ts, var(--ma-tile));
+    color: var(--t, var(--ma-ink));
+    font: 800 13.5px ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.04em;
+}
+
+.gl-set-currency-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gl-set-currency-name {
+    margin: 0;
+    color: var(--ma-ink);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.gl-set-currency-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--ma-line);
+}
+
+.gl-set-currency-foot .gl-set-hint {
+    margin: 0;
+}
+
+/* HeroUI's text field in a settings tile: its label above, the field soft. */
+.gl-set-field {
+    display: grid;
+    gap: 6px;
+}
+
+.gl-set-field .label,
+.gl-set-field > label {
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.gl-set-field .input-group,
+.gl-set-field [data-slot='input-group'] {
+    min-height: 44px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-set-field .input-group:focus-within {
+    outline: 2px solid var(--ma-brand);
+    outline-offset: 2px;
+}
+
+.gl-set-field .input-group input,
+.gl-set-field input {
+    background: transparent;
+    color: var(--ma-ink);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.gl-set-field .input-group__suffix,
+.gl-set-field .input-group__prefix {
+    color: var(--ma-muted);
+    font-weight: 800;
+}
+
+/* The base currency: one quiet line, its rate locked. */
+.gl-set-base {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-set-base b {
+    display: block;
+    color: var(--ma-ink);
+    font-weight: 800;
+}
+
+.gl-set-base small {
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.gl-set-lock {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* The users table: the username as a quiet code pill, the type and branch as HeroUI chips in their tones. */
+.gl-user-handle {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 9px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    font: 700 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.gl-user-chip.chip {
+    gap: 5px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    font-weight: 700;
+}
+
+.gl-user-chip.chip[data-tone='disc'] { background: var(--ma-disc-s); color: var(--ma-disc); }
+.gl-user-chip.chip[data-tone='clr'] { background: var(--ma-clr-s); color: var(--ma-clr); }
+.gl-user-chip.chip[data-tone='brand'] { background: var(--ma-brand-soft); color: var(--ma-brand); }
+
+/* Print templates: one HeroUI card per list, side by side; its templates as soft rows with icon keys. */
+.gl-pt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+    align-items: start;
+    gap: 16px;
+}
+
+.gl-pt-head {
+    align-items: center;
+    padding-bottom: 18px;
+}
+
+.gl-pt-card[data-empty] .gl-set-ico {
+    background: var(--ma-tile);
+    color: var(--ma-muted);
+}
+
+.gl-pt-add.button {
+    gap: 6px;
+    height: 36px;
+    padding-inline: 12px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    font-weight: 800;
+    box-shadow: var(--ma-hl);
+}
+
+.gl-pt-add.button:hover {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-pt-list {
+    display: grid;
+    gap: 8px;
+    padding: 0 18px 18px;
+}
+
+.gl-pt-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 12px;
+    padding: 12px 14px;
+    border-radius: 15px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-pt-item[data-default] {
+    box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--ma-pay) 45%, transparent);
+}
+
+.gl-pt-name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: var(--ma-ink);
+    font-size: 15px;
+}
+
+.gl-pt-meta {
+    margin: 2px 0 0;
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.gl-pt-keys {
+    display: flex;
+    gap: 6px;
+    margin-inline-start: auto;
+}
+
+.gl-pt-key.button {
+    --k: var(--ma-ink);
+    position: relative;
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: var(--ma-solid);
+    color: var(--k);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-pt-key[data-tone='brand'] { --k: var(--ma-brand); }
+.gl-pt-key[data-tone='pay'] { --k: var(--ma-pay); }
+.gl-pt-key[data-tone='owe'] { --k: var(--ma-owe); }
+.gl-pt-key[data-tone='muted'] { --k: var(--ma-muted); }
+
+.gl-pt-key.button:hover {
+    background: var(--k);
+    color: #fff;
+}
+
+/* The key's name, shown above it on hover or focus. */
+.gl-pt-tip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    z-index: 5;
+    max-width: 240px;
+    padding: 5px 9px;
+    border-radius: 9px;
+    background: var(--ma-act);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 4px);
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+.gl-pt-key:is(:hover, [data-focus-visible]) .gl-pt-tip {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* The field app's page: the release on the prototype's charcoal card, then the steps as numbered rows. */
+.gl-app-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 20px;
+}
+
+@media (max-width: 980px) {
+    .gl-app-page {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.gl-app-hero {
+    position: relative;
+    display: grid;
+    gap: 16px;
+    overflow: hidden;
+    padding: 24px;
+    border-radius: 22px;
+    background: radial-gradient(120% 140% at 100% 0%, #3a3f49 0%, #22252c 55%, #191b20 100%);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 18px 40px -20px rgb(10 12 16 / 0.7);
+}
+
+.gl-app-hero::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: -50px;
+    bottom: -80px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(226 100 42 / 0.28), transparent 70%);
+    pointer-events: none;
+}
+
+.gl-app-hero > * {
+    position: relative;
+    z-index: 1;
+}
+
+.gl-app-icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    background: rgb(255 255 255 / 0.1);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
+}
+
+.gl-app-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.gl-app-hero small {
+    color: rgb(255 255 255 / 0.7);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.gl-app-hero h2 {
+    margin: 2px 0 6px;
+    font: 900 26px/1.25 var(--font-heading, 'Zain'), sans-serif;
+}
+
+.gl-app-hero p {
+    margin: 0;
+    color: rgb(255 255 255 / 0.8);
+    font-size: 14.5px;
+    line-height: 1.75;
+}
+
+.gl-app-release {
+    display: grid;
+    gap: 14px;
+    padding-top: 16px;
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+}
+
+.gl-app-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.gl-app-chip.chip {
+    gap: 5px;
+    background: rgb(255 255 255 / 0.1);
+    color: #fff;
+    font-weight: 700;
+}
+
+.gl-app-download {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    justify-self: start;
+    gap: 10px;
+    min-height: 48px;
+    padding-inline: 22px;
+    border-radius: 14px;
+    background: var(--ma-pay-btn);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 12px 26px -12px rgb(0 0 0 / 0.8);
+}
+
+.gl-app-download:hover {
+    filter: brightness(1.08);
+}
+
+.gl-app-download:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+
+.gl-app-hero .gl-app-note {
+    color: rgb(255 255 255 / 0.62);
+    font-size: 12.5px;
+}
+
+.gl-app-missing {
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgb(240 168 60 / 0.16);
+    color: #ffd79a !important;
+}
+
+.gl-app-steps {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.gl-app-steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 15px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-app-step-no {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    background: var(--ma-pay-s);
+    color: var(--ma-pay);
+    font-weight: 900;
+}
+
+.gl-app-steps b {
+    color: var(--ma-ink);
+    font-size: 15px;
+}
+
+.gl-app-steps p {
+    margin: 2px 0 0;
+    color: var(--ma-muted);
+    font-size: 13.5px;
+    line-height: 1.65;
+}
+
+.gl-app-alert.alert {
+    border: 0;
+    border-radius: 15px;
+    background: var(--ma-clr-s);
+    color: var(--ma-ink);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-app-alert .alert__indicator,
+.gl-app-alert .alert__title {
+    color: var(--ma-clr);
+}
+
+.gl-app-alert .alert__description {
+    color: var(--ma-ink);
+}
+
+/* On narrow screens a section's head wraps: the chip or the add key goes under the title, never squeezing it. */
+.gl-set-head,
+.gl-set-heading {
+    flex-wrap: wrap;
+}
+
+.gl-set-head > .min-w-0,
+.gl-set-heading > .min-w-0 {
+    flex: 1 1 220px;
+}
+
+@media (max-width: 640px) {
+    .gl-set-head {
+        padding: 16px 16px 4px;
+    }
+
+    .gl-set-body {
+        padding: 10px 16px 18px;
+    }
+
+    .gl-set-aside,
+    .gl-set-heading > :last-child:not(.min-w-0):not(.gl-set-ico) {
+        flex-basis: 100%;
+    }
+}
+.gl-set-base > .min-w-0 { flex: 1 1 160px; }
+
+/* HeroUI's Switch in a settings window: the track soft when off, the pay green when on, the knob white. */
+.gl-set-switch-wrap {
+    display: grid;
+    gap: 4px;
+}
+
+.gl-set-switch .switch__content {
+    gap: 10px;
+    color: var(--ma-ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.gl-set-switch .switch__control {
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl), inset 0 0 0 1px var(--ma-line);
+}
+
+.gl-set-switch[data-selected] .switch__control,
+.gl-set-switch .switch__content[data-selected] .switch__control {
+    background: var(--ma-pay-btn);
+    box-shadow: none;
+}
+
+.gl-set-switch .switch__thumb {
+    background: #fff;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.3);
+}
+
+/* A settings window (the template windows): its head with the icon tile, its body, its keys at the foot. */
+.gl-win {
+    color: var(--ma-ink);
+}
+
+.gl-win-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 22px 22px 6px;
+}
+
+.gl-win-body {
+    padding: 14px 22px 20px;
+}
+
+.gl-win-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 22px 18px;
+    border-top: 1px solid var(--ma-line);
+}
+
+.gl-win-cancel.button {
+    min-height: 42px;
+    padding-inline: 18px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    font-weight: 800;
+    box-shadow: var(--ma-hl);
+}
+
+.gl-win-cancel.button:hover {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-set-field .input {
+    min-height: 44px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+/* The list a new template is for: HeroUI radios as tiles, the chosen one raised with the brand ring. */
+.gl-pt-pick {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 8px;
+}
+
+.gl-pt-pick-item {
+    display: block;
+}
+
+.gl-pt-pick-item .radio__content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s;
+}
+
+.gl-pt-pick-item:hover .radio__content {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-pt-pick-item[data-selected] .radio__content {
+    background: var(--ma-brand-soft);
+    box-shadow: inset 0 0 0 1.5px var(--ma-brand);
+}
+
+.gl-pt-pick-item[data-focus-visible] .radio__content {
+    outline: 2px solid var(--ma-brand);
+    outline-offset: 2px;
+}
+
+.gl-pt-pick-ico {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: var(--ma-solid);
+    color: var(--ma-muted);
+}
+
+.gl-pt-pick-item[data-selected] .gl-pt-pick-ico {
+    background: var(--ma-brand);
+    color: #fff;
+}
+
+.gl-pt-pick-ico svg {
+    width: 16px;
+    height: 16px;
+}
+
+.gl-pt-pick-name {
+    flex: 1;
+    min-width: 0;
+    color: var(--ma-ink);
+    font-size: 14.5px;
+    font-weight: 800;
+}
+
+.gl-pt-pick-count {
+    color: var(--ma-muted);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* The selected state sits on the switch's button (switch__content) in this HeroUI build: slide the knob to the end from there. */
+.gl-set-switch .switch__content[data-selected] .switch__thumb {
+    inset-inline-start: var(--switch-thumb-offset);
+}
+
+/* Tariffs: each tariff a HeroUI card on glass, the featured one on the prototype's charcoal; its keys soft MA keys. */
+.gl-tariff-card.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: hidden;
+    padding: 22px;
+    border: 0;
+    border-radius: 22px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+}
+
+.gl-tariff-card.card[data-dark] {
+    background: radial-gradient(120% 140% at 100% 0%, #3a3f49 0%, #22252c 55%, #191b20 100%);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 18px 40px -20px rgb(10 12 16 / 0.7);
+}
+
+.gl-tariff-card[data-dark]::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: -50px;
+    bottom: -90px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(226 100 42 / 0.26), transparent 70%);
+    pointer-events: none;
+}
+
+.gl-tariff-key.button {
+    gap: 8px;
+    height: 42px;
+    min-width: 42px;
+    padding-inline: 16px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    font-weight: 800;
+    box-shadow: var(--ma-hl);
+}
+
+.gl-tariff-key.button:hover {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-tariff-key.is-delete.button {
+    padding: 0;
+    color: var(--ma-owe);
+}
+
+.gl-tariff-key.is-delete.button:hover {
+    background: var(--ma-owe);
+    color: #fff;
+}
+
+.gl-tariff-card[data-dark] .gl-tariff-key.button {
+    background: rgb(255 255 255 / 0.1);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+
+.gl-tariff-card[data-dark] .gl-tariff-key.is-delete.button {
+    color: #f3a59e;
+}
+
+.gl-tariff-calc.card {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 18px 22px;
+}
+
+.gl-tariff-kilos {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 14px;
+    border-radius: 14px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-tariff-kilos:focus-within {
+    outline: 2px solid var(--ma-brand);
+    outline-offset: 2px;
+}
+
+.gl-tariff-sum {
+    flex: 1;
+    min-width: 150px;
+    padding: 10px 16px;
+    border-radius: 16px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}

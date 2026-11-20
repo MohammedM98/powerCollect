@@ -174,3 +174,282 @@
     .rs-weeks li { flex-wrap: wrap; gap: 6px; }
 }
 @media (prefers-reduced-motion: reduce) { .rs-status.is-open .rs-status-dot i { animation: none; } .rs-day { transition: none; } }
+
+/*
+ * ═════ The MA look (the reading schedule and SMS settings) ═════
+ * The page's own tokens follow the MA palette; its panels are HeroUI cards
+ * on glass, its status the prototype's charcoal card with the orange glow,
+ * its modes and keys HeroUI buttons, its save bar a floating dark glass.
+ */
+.reading-schedule, .sms-settings {
+    --rs-surface: var(--ma-panel);
+    --rs-raised: var(--ma-solid);
+    --rs-sunken: var(--ma-tile);
+    --rs-line: var(--ma-line);
+    --rs-line2: var(--ma-line);
+    --rs-ink: var(--ma-ink);
+    --rs-ink2: var(--ma-ink);
+    --rs-faint: var(--ma-muted);
+    --rs-brand: var(--ma-brand);
+    --rs-success: var(--ma-pay);
+    --rs-success-t: var(--ma-pay-s);
+    --rs-info: var(--ma-clr);
+    --rs-info-t: var(--ma-clr-s);
+    --rs-warn: var(--ma-warn);
+    --rs-warn-t: var(--ma-warn-s);
+    --rs-shadow: var(--ma-depth);
+}
+
+.reading-schedule .rs-panel.card,
+.sms-settings .rs-panel.card,
+.reading-schedule .rs-panel,
+.sms-settings .rs-panel {
+    display: block;
+    padding: 20px 22px;
+    border: 0;
+    border-radius: 22px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+}
+
+.rs-panel h2 {
+    font: 800 18px/1.35 var(--font-heading, 'Zain'), sans-serif;
+}
+
+.rs-panel-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    color: var(--ma-muted);
+    box-shadow: var(--ma-hl);
+}
+
+.rs-status {
+    border-radius: 22px;
+    background: radial-gradient(120% 140% at 100% 0%, #3a3f49 0%, #22252c 55%, #191b20 100%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 18px 40px -20px rgb(10 12 16 / 0.7);
+}
+
+.rs-status::before {
+    display: none;
+}
+
+.rs-status::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: -40px;
+    bottom: -80px;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(226 100 42 / 0.26), transparent 70%);
+    pointer-events: none;
+}
+
+.rs-status > * {
+    position: relative;
+    z-index: 1;
+}
+
+.rs-status.is-open .rs-status-dot i {
+    background: #6dbf98;
+    box-shadow: 0 0 0 6px rgb(109 191 152 / 0.22);
+}
+
+.rs-modes {
+    border: 0;
+    border-radius: 14px;
+    background: rgb(255 255 255 / 0.08);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+
+.rs-modes .rs-mode.button {
+    height: 38px;
+    min-width: 0;
+    padding: 0 14px;
+    border-radius: 11px;
+    background: transparent;
+    color: rgb(255 255 255 / 0.78);
+    font-weight: 700;
+    box-shadow: none;
+}
+
+.rs-modes .rs-mode.button:hover {
+    background: rgb(255 255 255 / 0.1);
+    color: #fff;
+}
+
+.rs-modes .rs-mode.button.is-on {
+    background: #fff;
+    color: #191b20;
+    box-shadow: 0 6px 14px -8px rgb(0 0 0 / 0.6);
+}
+
+.rs-modes .rs-mode svg {
+    width: 15px;
+    height: 15px;
+}
+
+/* A day: the soft MA tile, the chosen one in the brand (reading day) or the pay green (entry days). */
+.rs-day {
+    border: 0;
+    border-radius: 15px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+.rs-day:hover {
+    border: 0;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.rs-day.is-selected {
+    border: 0;
+    background: var(--ma-brand-soft);
+    box-shadow: inset 0 0 0 1.5px var(--ma-brand);
+}
+
+.rs-day.is-selected b,
+.rs-day:hover b {
+    color: var(--ma-brand);
+}
+
+.rs-open-days .rs-day.is-selected {
+    background: var(--ma-pay-s);
+    box-shadow: inset 0 0 0 1.5px var(--ma-pay);
+}
+
+.rs-open-days .rs-day.is-selected b {
+    color: var(--ma-pay);
+}
+
+.rs-check {
+    box-shadow: 0 0 0 2px var(--ma-solid);
+}
+
+.rs-quick .rs-quick-key.button {
+    height: 32px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--ma-tile);
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: var(--ma-hl);
+}
+
+.rs-quick .rs-quick-key.button:hover {
+    background: var(--ma-solid);
+    color: var(--ma-ink);
+    box-shadow: var(--ma-depth);
+}
+
+.rs-time-fields input,
+.rs-time-fields .input {
+    min-height: 44px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    box-shadow: var(--ma-hl);
+    font-weight: 800;
+}
+
+.rs-time-fields input:focus {
+    outline: 2px solid var(--ma-brand);
+    outline-offset: 2px;
+    box-shadow: var(--ma-hl);
+}
+
+.rs-field-label {
+    display: block;
+    margin: 12px 0 8px;
+    color: var(--ma-ink);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.rs-hint {
+    border: 0;
+    border-radius: 15px;
+    box-shadow: var(--ma-hl);
+}
+
+.rs-week-day {
+    border: 0;
+    border-radius: 15px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+.rs-week-day.is-open {
+    background: var(--ma-pay-s);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ma-pay) 30%, transparent);
+}
+
+.rs-week-day.is-today {
+    box-shadow: inset 0 0 0 2px var(--ma-ink);
+}
+
+.rs-reading-tag {
+    background: var(--ma-brand);
+}
+
+.rs-today-tag {
+    background: var(--ma-ink);
+    color: var(--ma-solid);
+}
+
+.rs-weeks li {
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+.rs-weeks li.is-current {
+    background: var(--ma-brand-soft);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ma-brand) 35%, transparent);
+}
+
+.rs-weeks li.is-transition {
+    border: 0;
+    box-shadow: inset 0 0 0 1px var(--ma-warn);
+}
+
+.rs-avatar {
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+}
+
+/* The save bar: dark floating glass, the HeroUI keys in it. */
+.rs-savebar {
+    border-radius: 20px;
+    background: color-mix(in oklab, #191b20 90%, transparent);
+    -webkit-backdrop-filter: blur(22px) saturate(1.6);
+    backdrop-filter: blur(22px) saturate(1.6);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.08), 0 24px 50px -18px #000c;
+}
+
+.rs-savebar .button {
+    height: 44px;
+    border-radius: 13px;
+    font-weight: 800;
+}
+
+.rs-savebar .rs-revert.button {
+    background: rgb(255 255 255 / 0.1);
+    color: #fff;
+}
+
+.rs-savebar .rs-save.button {
+    background: var(--ma-pay-btn);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), 0 10px 22px -12px rgb(0 0 0 / 0.7);
+}

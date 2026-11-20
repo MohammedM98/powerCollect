@@ -7,7 +7,7 @@ import FormSection from '@/Components/Form/FormSection';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import PasswordInput from '@/Components/PasswordInput';
-import Switch from '@/Components/Switch';
+import { SettingSwitch } from '@/Components/Settings/SettingsKit';
 import TextInput from '@/Components/TextInput';
 import { initials } from '@/lib/format';
 import UserTypeSelect from './UserTypeSelect';
@@ -152,7 +152,7 @@ export default function UserForm({ data, setData, errors, isEdit, branches, canC
                 )}
 
                 <div className="sm:col-span-2">
-                    <Switch checked={data.is_active} onChange={(checked) => setData('is_active', checked)} label="حساب نشط" ariaLabel="حساب نشط" hint="الحساب الموقوف لا يستطيع تسجيل الدخول." />
+                    <SettingSwitch isSelected={data.is_active} onChange={(checked) => setData('is_active', checked)} label="حساب نشط" hint="الحساب الموقوف لا يستطيع تسجيل الدخول." />
                     <InputError message={errors.is_active} className="mt-1" />
                 </div>
             </FormSection>

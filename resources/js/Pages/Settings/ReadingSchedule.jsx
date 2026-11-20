@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
+import { Button, Card, Input } from '@heroui/react';
+import { SettingsSelect } from '@/Components/Settings/SettingsKit';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
@@ -141,9 +143,9 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                     </div>
                     <div className="rs-modes" role="group" aria-label="طريقة الفتح">
                         {Object.entries(MODES).map(([value, mode]) => (
-                            <button key={value} type="button" aria-pressed={data.mode === value} onClick={() => setData('mode', value)} disabled={processing}>
+                            <Button key={value} type="button" aria-pressed={data.mode === value} onPress={() => setData('mode', value)} isDisabled={processing} className={`rs-mode ${data.mode === value ? 'is-on' : ''}`}>
                                 <Icon name={mode.icon} />{mode.label}
-                            </button>
+                            </Button>
                         ))}
                     </div>
                 </section>
@@ -151,7 +153,7 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
 
                 <div className="rs-grid">
                     <div className="rs-column">
-                        <section className="rs-panel">
+                        <Card className="rs-panel">
                             <PanelTitle icon="flag" info="ينتهي كل أسبوع قراءة في هذا اليوم، ويبدأ الأسبوع التالي في اليوم الذي يليه.">يوم القراءة الأسبوعي</PanelTitle>
                             <div className="rs-days" role="radiogroup" aria-label="يوم القراءة الأسبوعي">
                                 {WEEK_DAYS.map((day) => (
@@ -166,9 +168,9 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                                     <div>تبقى الأسابيع المنتهية كما هي، وآخرها انتهى <b>{formatWeekDay(setting.latestWeekEnd)}</b>. أول أسبوع على يوم <b>{dayLabel(data.reading_day)}</b> من <b>{shortDate(firstWeek.start)}</b> إلى <b>{shortDate(firstWeek.end)}</b> ({dayCount(weekDates(firstWeek).length)})، ثم تعود الأسابيع كاملة سبعة أيام.</div>
                                 </div>
                             )}
-                        </section>
+                        </Card>
 
-                        <section className="rs-panel">
+                        <Card className="rs-panel">
                             <PanelTitle icon="door">أيام فتح الإدخال</PanelTitle>
                             <p>{automatic ? 'اختر أيام إدخال قراءة الأسبوع، بدءًا من يوم القراءة وحتى اليوم السابق للقراءة التالية، خلال ساعات الفتح بتوقيت الشركة.' : 'تُستخدم في الوضع التلقائي فقط. الوضع اليدوي يتجاوز الأيام والساعات.'}</p>
                             <p>تبقى القراءة الناقصة لنفس الأسبوع حتى بداية يوم القراءة التالي؛ أيام الفتح بعد يوم القراءة مخصصة لاستكمالها، ولا تفتح قراءة الأسبوع القادم مسبقًا.</p>
@@ -182,7 +184,7 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                             {automatic && (
                                 <div className="rs-quick">
                                     {['يوم القراءة فقط', 'يوم القراءة واليوم الذي يليه', 'يوم القراءة ويومان بعده'].map((label, index) => (
-                                        <button key={label} type="button" disabled={processing} onClick={() => selectOpenDays(Array.from({ length: index + 1 }, (_, offset) => (data.reading_day + offset) % 7))}>{label}</button>
+                                        <Button key={label} type="button" size="sm" isDisabled={processing} className="rs-quick-key" onPress={() => selectOpenDays(Array.from({ length: index + 1 }, (_, offset) => (data.reading_day + offset) % 7))}>{label}</Button>
                                     ))}
                                 </div>
                             )}
@@ -197,36 +199,34 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                                 <div className="rs-time-fields">
                                     <div className="rs-time-field">
                                         <label htmlFor="opens-at">من الساعة</label>
-                                        <input id="opens-at" type="time" step="60" required value={data.opens_at} disabled={!automatic || processing}
+                                        <Input id="opens-at" type="time" step="60" required value={data.opens_at} disabled={!automatic || processing}
                                             onInput={(event) => setData('opens_at', event.currentTarget.value)} aria-invalid={!!errors.opens_at} aria-describedby="opens-at-error" />
                                         <span id="opens-at-error"><InputError message={errors.opens_at} /></span>
                                     </div>
                                     <div className="rs-time-field">
                                         <label htmlFor="closes-at">إلى الساعة</label>
-                                        <input id="closes-at" type="time" step="60" required value={data.closes_at} disabled={!automatic || processing}
+                                        <Input id="closes-at" type="time" step="60" required value={data.closes_at} disabled={!automatic || processing}
                                             onInput={(event) => setData('closes_at', event.currentTarget.value)} aria-invalid={!!errors.closes_at || hoursError} aria-describedby="closes-at-error" />
                                         <span id="closes-at-error"><InputError message={errors.closes_at || (hoursError ? 'يجب أن تكون ساعة النهاية بعد البداية في اليوم نفسه.' : null)} /></span>
                                     </div>
                                 </div>
                                 <span className="rs-timezone">بتوقيت الشركة، {businessTimezone}</span>
                             </div>
-                        </section>
-                        <section className="rs-panel">
+                        </Card>
+                        <Card className="rs-panel">
                             <PanelTitle icon="calendar">إتاحة مهام القرّاء</PanelTitle>
                             <p>يُجهّز التوزيع الثابت تلقائيًا قبل موعد القراءة، لتتاح المهام للمكلّفين في الموعد المحدد.</p>
-                            <label htmlFor="assignment-lead-days" className="mb-2 block text-sm font-semibold text-gray-700">إتاحة المهام قبل يوم القراءة</label>
-                            <select id="assignment-lead-days" value={data.assignment_lead_days} onChange={(event) => setData('assignment_lead_days', Number(event.target.value))} disabled={processing} className="w-full text-sm">
-                                <option value={0}>في يوم القراءة</option>
-                                <option value={1}>قبل يوم واحد</option>
-                                {[2, 3, 4, 5, 6].map((days) => <option key={days} value={days}>قبل {days} أيام</option>)}
-                            </select>
+                            <span className="rs-field-label">إتاحة المهام قبل يوم القراءة</span>
+                            <SettingsSelect label="إتاحة المهام قبل يوم القراءة" name="assignment_lead_days" value={data.assignment_lead_days} isDisabled={processing}
+                                options={[{ value: 0, label: 'في يوم القراءة' }, { value: 1, label: 'قبل يوم واحد' }, ...[2, 3, 4, 5, 6].map((days) => ({ value: days, label: `قبل ${days} أيام` }))]}
+                                onChange={(value) => setData('assignment_lead_days', Number(value))} />
                             <InputError message={errors.assignment_lead_days} />
                             <p>إتاحة المهام للتحضير لا تفتح إدخال القراءات قبل موعده.</p>
-                        </section>
+                        </Card>
                     </div>
 
                     <div className="rs-column">
-                        <section className="rs-panel">
+                        <Card className="rs-panel">
                             <PanelTitle icon="eye">معاينة الأسبوع الحالي</PanelTitle>
                             <p>من {weekDayName(currentWeek.start)} {shortDate(currentWeek.start)} إلى {weekDayName(currentWeek.end)} {shortDate(currentWeek.end)}{days.length !== 7 ? `، أسبوع انتقالي (${dayCount(days.length)})` : ''}{isDirty ? '، حسب الإعدادات الجديدة' : ''}</p>
                             <div className="rs-week" style={{ '--week-days': days.length }} tabIndex={0} role="region" aria-label="أيام الأسبوع الحالي">
@@ -249,9 +249,9 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                                 <span><i className="rs-open-key" />الإدخال مفتوح</span><span><i className="rs-reading-key" />يوم القراءة (نهاية الأسبوع)</span><span><i className="rs-today-key" />اليوم</span>
                             </div>
                             {automatic && <p className="rs-preview-hours">أيام الفتح: من <b dir="ltr">{data.opens_at || '—'}</b> إلى <b dir="ltr">{data.closes_at || '—'}</b></p>}
-                        </section>
+                        </Card>
 
-                        <section className="rs-panel">
+                        <Card className="rs-panel">
                             <PanelTitle icon="menu">الأسابيع القادمة</PanelTitle>
                             <ol className="rs-weeks">
                                 {weeks.map((week, index) => {
@@ -266,9 +266,9 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                                     );
                                 })}
                             </ol>
-                        </section>
+                        </Card>
 
-                        <section className="rs-panel">
+                        <Card className="rs-panel">
                             <PanelTitle icon="history">سجل التغييرات</PanelTitle>
                             {history.length ? (
                                 <ul className="rs-history">
@@ -276,11 +276,11 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                                 </ul>
                             ) : <p className="rs-empty-history">لم يتغير يوم القراءة الأسبوعي بعد.</p>}
                             {setting.updatedByName && <div className="rs-who"><span className="rs-avatar">{setting.updatedByName.split(' ').slice(0, 2).map((name) => name[0]).join('')}</span><span>آخر تعديل للإعدادات: {setting.updatedByName}، <bdi>{setting.updatedAt}</bdi></span></div>}
-                        </section>
+                        </Card>
                     </div>
                 </div>
 
-                {(isDirty || canApplyCompany) && <div className="rs-savebar"><span role="status">{isDirty ? 'لديك تغييرات غير محفوظة' : 'يمكنك إعادة تعميم إعدادات الشركة على جميع الفروع'}</span>{isDirty && <button type="button" className="rs-revert" disabled={processing} onClick={() => resetAndClearErrors()}>تراجع</button>}<button type="submit" className="rs-save" disabled={!canSave}>{processing ? 'جارٍ الحفظ...' : 'حفظ'}</button></div>}
+                {(isDirty || canApplyCompany) && <div className="rs-savebar"><span role="status">{isDirty ? 'لديك تغييرات غير محفوظة' : 'يمكنك إعادة تعميم إعدادات الشركة على جميع الفروع'}</span>{isDirty && <Button type="button" className="rs-revert" isDisabled={processing} onPress={() => resetAndClearErrors()}>تراجع</Button>}<Button type="submit" className="rs-save" isDisabled={!canSave}>{processing ? 'جارٍ الحفظ...' : 'حفظ'}</Button></div>}
             </form>
             <ConfirmDialog show={confirmingSave} onConfirm={save} onCancel={() => setConfirmingSave(false)} title="حفظ مواعيد القراءات؟"
                 message={confirmation} confirmLabel="نعم، احفظ" cancelLabel="مراجعة الإعدادات" icon="calendar" />

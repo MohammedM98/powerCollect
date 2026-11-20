@@ -7,13 +7,13 @@ import FormSection from '@/Components/Form/FormSection';
 import FormPreview, { countFilled } from '@/Components/Form/FormPreview';
 import Icon from '@/Components/Icon';
 import TextInput from '@/Components/TextInput';
-import Switch from '@/Components/Switch';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import ActionsTh from '@/Components/DataTable/ActionsTh';
 import Pagination from '@/Components/DataTable/Pagination';
 import StatusPill from '@/Components/DataTable/StatusPill';
 import { BankMark } from '@/Components/Banks';
+import { SettingSwitch, SettingsHeading } from '@/Components/Settings/SettingsKit';
 
 function BankLogoInput({ id, file, currentLogo, bankName, onChange, disabled, ...props }) {
     const [preview, setPreview] = useState(null);
@@ -62,9 +62,9 @@ function BankModal({ bank, storeUrl, onClose }) {
                 </FormField>
             </FormSection>
             <FormSection icon="card" title="الاستخدام والحالة" columns={2}>
-                <FormField id="bank-receiver" label="البنك المستلم" error={form.errors.is_receiver}><Switch checked={form.data.is_receiver} onChange={(value) => form.setData('is_receiver', value)} label="متاح لاستلام دفعات المشتركين" /></FormField>
-                <FormField id="bank-sender" label="البنك المرسل" error={form.errors.is_sender}><Switch checked={form.data.is_sender} onChange={(value) => form.setData('is_sender', value)} label="متاح كبنك مرسل" /></FormField>
-                <FormField id="bank-active" label="الحالة" span="sm:col-span-2" error={form.errors.is_active}><Switch checked={form.data.is_active} onChange={(value) => form.setData('is_active', value)} label="نشط ويظهر عند تسجيل دفعة جديدة" /></FormField>
+                <FormField id="bank-receiver" label="البنك المستلم" error={form.errors.is_receiver}><SettingSwitch isSelected={form.data.is_receiver} onChange={(value) => form.setData('is_receiver', value)} label="متاح لاستلام دفعات المشتركين" /></FormField>
+                <FormField id="bank-sender" label="البنك المرسل" error={form.errors.is_sender}><SettingSwitch isSelected={form.data.is_sender} onChange={(value) => form.setData('is_sender', value)} label="متاح كبنك مرسل" /></FormField>
+                <FormField id="bank-active" label="الحالة" span="sm:col-span-2" error={form.errors.is_active}><SettingSwitch isSelected={form.data.is_active} onChange={(value) => form.setData('is_active', value)} label="نشط ويظهر عند تسجيل دفعة جديدة" /></FormField>
             </FormSection>
         </div>
     </FormModal>;
@@ -83,7 +83,7 @@ export default function BanksSection({ banks, storeUrl }) {
     const meta = { current_page: currentPage, last_page: lastPage, from: (currentPage - 1) * perPage + 1, to: Math.min(currentPage * perPage, filtered.length), total: filtered.length };
 
     return <section aria-labelledby="payment-banks-title" className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3"><h3 id="payment-banks-title" className="text-xl font-bold text-gray-900">البنوك والمحافظ</h3><AddButton onClick={() => setCreating(true)}>إضافة بنك أو محفظة</AddButton></div>
+        <SettingsHeading id="payment-banks-title" icon="bank" tone="split" title="البنوك والمحافظ" description="البنوك والمحافظ التي تُستلم بها دفعات المشتركين أو تُرسل منها، وشعار كل منها." action={<AddButton onClick={() => setCreating(true)}>إضافة بنك أو محفظة</AddButton>} />
         <DataTableToolbar search={search} onSearchChange={(value) => { setSearch(value); setPage(1); }} perPage={perPage} onPerPageChange={(value) => { setPerPage(value); setPage(1); }} placeholder="ابحث باسم البنك أو المحفظة" total={filtered.length} printable={false} />
         <div className="data-table-container"><table className="data-table w-full text-start text-sm">
             <thead><tr><th>البنك أو المحفظة</th><th>الاستخدام</th><th>الحالة</th><ActionsTh /></tr></thead>

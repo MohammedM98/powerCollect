@@ -413,3 +413,34 @@
 .pm-grant-risk{width:7px;height:7px;border-radius:50%}
 .pm-grant-risk.is-danger{background:rgb(var(--danger-600))}
 .pm-grant-risk.is-sensitive{background:rgb(var(--warning-500))}
+
+/* ═════ The MA look: glass cards, solid sticky heads, soft groups ═════ */
+.pm-people, .pm-card {
+    border: 0;
+    border-radius: 22px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+}
+.pm-head { border-bottom-color: var(--ma-line); background: var(--ma-solid); color: var(--ma-muted); }
+.pm-group { border: 0; border-radius: 18px; background: var(--ma-solid); box-shadow: var(--ma-depth); }
+.pm-group-head { background: var(--ma-tile); }
+.pm-option-group { border: 0; border-radius: 16px; background: var(--ma-tile); box-shadow: var(--ma-hl); }
+.permission-panel { border: 0; border-radius: 18px; background: var(--ma-solid); box-shadow: var(--ma-depth); }
+.permission-panel-body { background: var(--ma-solid); }
+.permission-panel-icon { background: var(--ma-tile); color: var(--ma-muted); }
+.permission-design-tabs { background: var(--ma-tile); box-shadow: var(--ma-hl); }
+.permission-design-tab { border: 0; background: transparent; color: var(--ma-muted); }
+.permission-design-tab.active { background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-depth); }
+.permission-design-tab.active:after { opacity: 0; }
+.pm-soft-button { border-color: transparent; background: var(--ma-tile); color: var(--ma-ink); box-shadow: var(--ma-hl); }
+/* An open or hovered panel: raised white with the brand mark at its edge, not the dark band. */
+.permission-panel:hover, .permission-panel:focus-within, .permission-panel.is-open { border: 0; box-shadow: var(--ma-depth), inset 3px 0 0 var(--ma-brand); }
+.permission-panel:hover > .permission-panel-heading, .permission-panel:focus-within > .permission-panel-heading, .permission-panel.is-open > .permission-panel-heading { background: var(--ma-tile); color: var(--ma-ink); }
+.permission-panel-heading:after { display: none; }
+.permission-panel:hover > .permission-panel-heading .permission-panel-icon, .permission-panel:focus-within > .permission-panel-heading .permission-panel-icon, .permission-panel.is-open > .permission-panel-heading .permission-panel-icon { background: var(--ma-brand-soft); color: var(--ma-brand); }
+.permission-panel:hover > .permission-panel-heading small, .permission-panel:focus-within > .permission-panel-heading small, .permission-panel.is-open > .permission-panel-heading small { color: var(--ma-muted); }
+.permission-panel-count { background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-hl); }
+.permission-help-dialog:hover .permission-help-header, .permission-help-dialog:focus-within .permission-help-header { background: transparent; color: inherit; border-bottom: 1px solid var(--ma-line); }

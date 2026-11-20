@@ -1,14 +1,14 @@
 import { useForm } from '@inertiajs/react';
-import FormField from '@/Components/Form/FormField';
-import FormSection from '@/Components/Form/FormSection';
-import TextInput from '@/Components/TextInput';
-import PrimaryButton from '@/Components/PrimaryButton';
+import { Chip, FieldError, InputGroup, Label, TextField } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import { formatMoney } from '@/lib/format';
-import StatusPill from '@/Components/DataTable/StatusPill';
+import { SaveButton, SettingsSection } from '@/Components/Settings/SettingsKit';
 
+/** One currency's rate: its code on a tile, the rate in shekels, what ten of it come to, and its own save key. */
 function CurrencyEditor({ currency }) {
     const form = useForm({ rate: currency.rate ?? '' });
+    const rate = Number(form.data.rate);
+    const isPayable = rate > 0;
 
     function save(event) {
         event.preventDefault();
@@ -16,28 +16,27 @@ function CurrencyEditor({ currency }) {
     }
 
     return (
-        <form onSubmit={save} aria-labelledby={`currency-${currency.code}`} className="flex min-w-0 flex-col gap-5 rounded-row border border-gray-200 bg-surface p-5">
-            <div className="flex items-center gap-3">
-                <bdi className="flex h-12 w-16 shrink-0 items-center justify-center rounded-control bg-gray-50 font-display text-sm font-semibold text-gray-700">{currency.code}</bdi>
-                <div className="min-w-0">
-                    <h3 id={`currency-${currency.code}`} className="font-bold text-gray-900">{currency.label}</h3>
-                </div>
+        <form onSubmit={save} aria-labelledby={`currency-${currency.code}`} className="gl-set-tile gl-set-currency">
+            <div className="gl-set-currency-head">
+                <bdi className="gl-set-code">{currency.code}</bdi>
+                <h3 id={`currency-${currency.code}`} className="gl-set-currency-name">{currency.label}</h3>
+                <Chip size="sm" variant="soft" color={isPayable ? 'success' : 'warning'} className="gl-set-chip ms-auto">
+                    {isPayable ? 'مفعّلة للدفع' : 'غير مفعّلة للدفع'}
+                </Chip>
             </div>
-            <FormField id={`rate-${currency.code}`} label="سعر الصرف بالشيكل" required error={form.errors.rate}>
-                <TextInput name="rate" type="number" min="0.0001" max="10000" step="0.0001" required dir="ltr" className="w-full font-display tabular-nums" value={form.data.rate} onChange={(event) => form.setData('rate', event.target.value)} />
-            </FormField>
-            <div className="mt-auto flex flex-col items-start gap-4 border-t border-gray-100 pt-4">
-                {Number(form.data.rate) > 0 ? (
-                    <p className="text-xs leading-relaxed text-gray-500">
-                        10 {currency.label} = <bdi className="font-display font-semibold text-gray-700">{formatMoney(Number(form.data.rate) * 10)}</bdi> شيكل
-                    </p>
-                ) : (
-                    <StatusPill tone="amber" label="غير مفعّلة للدفع" />
-                )}
-                <PrimaryButton type="submit" className="self-end" disabled={form.processing || !form.isDirty}>
-                    <Icon name="check" className="h-4 w-4" />
-                    {form.processing ? 'جارٍ الحفظ…' : 'حفظ السعر'}
-                </PrimaryButton>
+            <TextField isRequired isInvalid={Boolean(form.errors.rate)} className="gl-set-field" value={String(form.data.rate)} onChange={(value) => form.setData('rate', value)}>
+                <Label>سعر الصرف بالشيكل</Label>
+                <InputGroup>
+                    <InputGroup.Input id={`rate-${currency.code}`} name="rate" type="number" min="0.0001" max="10000" step="0.0001" dir="ltr" className="gl-num" />
+                    <InputGroup.Suffix>₪</InputGroup.Suffix>
+                </InputGroup>
+                <FieldError>{form.errors.rate}</FieldError>
+            </TextField>
+            <div className="gl-set-currency-foot">
+                <p className="gl-set-hint">
+                    {isPayable ? <>10 {currency.label} = <bdi className="gl-num font-bold text-[var(--ma-ink)]">{formatMoney(rate * 10)}</bdi> شيكل</> : 'أدخل سعرًا لتظهر هذه العملة عند تسجيل الدفعات.'}
+                </p>
+                <SaveButton processing={form.processing} isDisabled={!form.isDirty}>حفظ السعر</SaveButton>
             </div>
         </form>
     );
@@ -47,24 +46,31 @@ export default function CurrencyRatesSection({ currencies }) {
     const baseCurrency = currencies.find((currency) => currency.code === 'ILS');
 
     return (
-        <FormSection icon="currency" title="العملات وأسعار الصرف" info="تُطبّق الأسعار تلقائيًا عند تسجيل الدفعات الجديدة. تبقى الدفعات السابقة بسعر الصرف المسجّل وقت الدفع." columns={1}>
+        <SettingsSection
+            id="currency-rates"
+            icon="currency"
+            tone="pay"
+            title="العملات وأسعار الصرف"
+            description="تُطبّق الأسعار تلقائيًا على الدفعات الجديدة. تبقى الدفعات السابقة بسعر الصرف المسجّل وقت الدفع."
+        >
             {baseCurrency && (
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-gray-100 bg-gray-50 px-4 py-3">
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <span className="font-semibold text-gray-900">{baseCurrency.label} <bdi className="font-display text-sm">{baseCurrency.code}</bdi></span>
-                        <span className="text-xs text-gray-500">عملة الحساب الأساسية</span>
+                <div className="gl-set-base">
+                    <bdi className="gl-set-code">{baseCurrency.code}</bdi>
+                    <div className="min-w-0 flex-1">
+                        <b>{baseCurrency.label}</b>
+                        <small>عملة الحساب الأساسية</small>
                     </div>
-                    <span className="inline-flex items-center gap-2 text-xs font-medium text-gray-600">
+                    <span className="gl-set-lock">
                         <Icon name="lock" className="h-4 w-4" />
-                        السعر ثابت: 1 شيكل
+                        السعر ثابت: <bdi className="gl-num">1</bdi> شيكل
                     </span>
                 </div>
             )}
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <div className="gl-set-grid">
                 {currencies.filter((currency) => currency.code !== 'ILS').map((currency) => (
                     <CurrencyEditor key={`${currency.id}-${currency.rate}`} currency={currency} />
                 ))}
             </div>
-        </FormSection>
+        </SettingsSection>
     );
 }

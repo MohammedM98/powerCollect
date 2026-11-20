@@ -196,3 +196,35 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - IMPORTANT: Activate `inertia-react-development` when working with Inertia React client-side patterns.
 
 </laravel-boost-guidelines>
+
+# PowerCollect design system (MA) — agreed rules
+
+These rules record the redesign the owner approved. Follow them on every page, window and component; do not deviate from them without the owner's approval.
+
+## Source of truth
+- The look follows the owner's MA prototype exactly: its colours, glass, tables, buttons, spacing and alignment. When in doubt, match the prototype rather than inventing.
+- Build every control from **HeroUI** (`@heroui/react`) and its component kits: `Card`, `Chip`, `Button`, `Switch`, `Tabs`, `SearchField`, `Input`/`TextField`, `Select`, `Dropdown`, `Popover`, `Modal`, etc. Do not hand-roll a control HeroUI provides. Check sibling pages for the existing wrappers (`SearchableSelect`, `FilterField`, `DateInput`, `StatementViewTabs`, `RowMenu`) and reuse them.
+- RTL Arabic throughout; numbers, account numbers and money in `<bdi dir="ltr">`.
+
+## Colour tokens (resources/css/app.css, the final MA block)
+- Use the `--ma-*` tokens only: `--ma-bg`, `--ma-solid`, `--ma-tile`, `--ma-line`, `--ma-ink`, `--ma-muted`, `--ma-faint`, `--ma-brand`, `--ma-act`, the tone pairs `--ma-pay/-s` (paid, green), `--ma-owe/-s` (owed, red), `--ma-disc/-s` (discount, violet), `--ma-clr/-s` (clearing, blue-teal), `--ma-split/-s`, `--ma-warn/-s`, and the effects `--ma-hl`, `--ma-depth`, `--ma-float`, `--ma-panel`, `--ma-blur`, `--ma-pop`, `--ma-ambient`. The pay button green is `--ma-pay-btn` (#2d855c).
+- Every pair must pass contrast in light and dark; the tokens are already tuned for it, so never substitute raw colours.
+
+## Surfaces
+- Glass is the default (`<html data-surface="glass">`); solid is the user's choice from the account menu (SurfaceToggle). Every surface must work in both, and in light and dark.
+- Cards and sections: `background: var(--ma-panel)`, `backdrop-filter: var(--ma-blur)`, `box-shadow: var(--ma-depth)`, no border, radius 18–22px. Windows: radius 28px, `--ma-float`.
+- Soft controls (filters, segmented pills, secondary keys): `--ma-tile` with `--ma-hl`; the selected or raised key is `--ma-solid` with `--ma-depth`.
+- Every floating surface (drop-downs, menus, lists, calendars, the side bar's flyout) uses `--ma-pop` (near-solid frosted). A blurred container must drop its own blur while a menu inside it is open (see `.data-table-toolbar:has(.gl-pop)`), so the menu never shows what is under it.
+
+## Patterns
+- Tables: the MA table (soft header on `--ma-tile`, `--ma-line` row lines). «عرض» is always visible as a white key with a blue eye; edit and delete keys use `.row-action-edit` and `.row-action-delete`; menu icons are coloured by tone (`row-menu-ico` with `data-menu-tone`).
+- Primary actions above a table: the dark raised key; payment actions use the green pay key.
+- Money windows (payment, charge, discount, clearing, split): the ledger-line layout with `data-ledger-tone`.
+- Account statement: option «أ» on the page and in its window. Charcoal balance card plus four tone figures, one toolbar row, all 14 columns, month bands, and the floating glass dock of raised coloured keys.
+- Subscriber profile window: its three tabs (البيانات، الحساب، الاستهلاك) use glass section cards, tone figures and the statement's kind chips.
+- The working branch is chosen from the top-bar chip and persists across pages. Pages show no big branch bar.
+- Spacing and alignment are part of the design: consistent padding, aligned columns, no wrapping toolbars on desktop, and no horizontal page scroll on phones.
+
+## Checks before merging
+- `npm run lint`, `npm test`, `npx vitest run`, the browser suites (`node tests/Browser/run.mjs` and the relevant `--flag`), `php artisan test --compact` when PHP changes, and `vendor/bin/pint --dirty --format agent` for PHP.
+- Look at the change in light and dark, glass and solid, and at phone width before calling it done.

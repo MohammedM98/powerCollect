@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { Button } from '@heroui/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
@@ -10,6 +11,7 @@ import { SAMPLE_LOCAL_PHONE, missingForSending, phoneAs, requestPreview } from '
 import './ReadingSchedule.css';
 import './SmsSettings.css';
 import PageHeader from '@/Components/PageHeader';
+import SegmentedChoice from '@/Components/SegmentedChoice';
 
 const TEST_MESSAGE = 'رسالة تجربة من نظام التحصيل: إذا وصلتك فالربط يعمل.';
 const FIELDS = [
@@ -34,16 +36,18 @@ function Field({ id, label, hint, error, wide = false, code = false, value, onCh
     );
 }
 
-/** Two or three choices as one control, the page's own segmented buttons. */
+/** Two or three choices as one control: HeroUI's segmented group (SegmentedChoice), each option's hint beside its name. */
 function Segments({ label, options, value, onChange, disabled = false }) {
     return (
-        <div className="sm-segments" role="group" aria-label={label}>
-            {options.map((option) => (
-                <button key={option.value} type="button" aria-pressed={value === option.value} disabled={disabled} onClick={() => onChange(option.value)}>
-                    {option.label}{option.hint && <small>{option.hint}</small>}
-                </button>
-            ))}
-        </div>
+        <fieldset disabled={disabled} className="sm-segments-wrap">
+            <SegmentedChoice
+                label={label}
+                value={value}
+                onChange={onChange}
+                className="sm-seg"
+                options={options.map((option) => ({ value: option.value, label: <>{option.label}{option.hint && <small>{option.hint}</small>}</> }))}
+            />
+        </fieldset>
     );
 }
 
@@ -345,7 +349,7 @@ export default function Sms({ setting, delivery, week }) {
                     </div>
                 </div>
 
-                {isDirty && <div className="rs-savebar"><span role="status">لديك تغييرات غير محفوظة</span><button type="button" className="rs-revert" disabled={processing} onClick={() => resetAndClearErrors()}>تراجع</button><button type="submit" className="rs-save" disabled={processing}>{processing ? 'جارٍ الحفظ...' : 'حفظ'}</button></div>}
+                {isDirty && <div className="rs-savebar"><span role="status">لديك تغييرات غير محفوظة</span><Button type="button" className="rs-revert" isDisabled={processing} onPress={() => resetAndClearErrors()}>تراجع</Button><Button type="submit" className="rs-save" isDisabled={processing}>{processing ? 'جارٍ الحفظ...' : 'حفظ'}</Button></div>}
             </form>
             <ConfirmDialog show={confirmingSave} onConfirm={save} onCancel={() => setConfirmingSave(false)} title="حفظ إعدادات الرسائل؟"
                 message={confirmation} confirmLabel="نعم، احفظ" cancelLabel="مراجعة الإعدادات" icon="send" />
