@@ -621,4 +621,16 @@ class BranchReportTest extends TestCase
 
         return $result;
     }
+
+    public function test_the_csv_download_escapes_text_that_a_spreadsheet_would_run_as_a_formula(): void
+    {
+        $this->subscription->update(['full_name' => '=HYPERLINK("https://evil.example","x")']);
+        $this->at('2026-10-01 08:10', fn () => $this->pay('40'));
+        $this->actingAs($this->preparer());
+
+        $csv = $this->get(route('reports.export'))->streamedContent();
+
+        $this->assertStringContainsString("\"'=HYPERLINK(", $csv);
+        $this->assertStringNotContainsString(',"=HYPERLINK(', $csv);
+    }
 }
