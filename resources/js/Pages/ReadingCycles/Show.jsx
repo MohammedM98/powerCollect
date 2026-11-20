@@ -6,7 +6,7 @@ import Icon from '@/Components/Icon';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton, { secondaryButtonClass } from '@/Components/SecondaryButton';
 import { formatNumber, formatDate } from '@/lib/format';
-import { STAGES, assignmentMatches, boardColumns, boardCounters, boxMatches, columnTotals, distributionAreas, distributionBoxOptions, movePayload, toggleBoxSelection } from '@/lib/readingBoard';
+import { STAGES, stagedMoveGroups, assignmentMatches, boardColumns, boardCounters, boxMatches, columnTotals, distributionAreas, distributionBoxOptions, movePayload, toggleBoxSelection } from '@/lib/readingBoard';
 import PageHeader from '@/Components/PageHeader';
 import DistributionTable from './DistributionTable';
 import DistributionAreas from './DistributionAreas';
@@ -15,13 +15,12 @@ import DistributionActionModal from './DistributionActionModal';
 import SearchableSelect from '@/Components/SearchableSelect';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import PrintButton from '@/Components/PrintButton';
-import MoveBoard from '@/Components/MoveBoard';
+import DistributionBoard, { DistributionMission, DistributionTray } from './DistributionBoard';
 import SegmentedTabs from '@/Components/SegmentedTabs';
-import ConfirmDialog from '@/Components/ConfirmDialog';
-import { DistributionSummary, AllocationReport, ReadingDayModal, LANE_LOOKS, BoxCard } from './CycleParts';
+import { AllocationReport, ReadingDayModal } from './CycleParts';
 
 /** Weekly allocations grouped by area, with standing and one-week changes. */
-export default function Show({ cycle, boards, readers, paperSheets, reviewCount, abilities, showBranchSelector = false }) {
+export default function Show({ cycle, boards, readers, paperSheets, reviewCount, abilities, showBranchSelector = false, today = null }) {
     const { flash, props } = usePage();
     const errors = props.errors ?? {};
     const [selected, setSelected] = useState(() => new Set());
@@ -39,9 +38,12 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
     const [boxId, setBoxId] = useState('');
     const [perPage, setPerPage] = useState(25);
     const [page, setPage] = useState(1);
-    const [view, setView] = useState('table');
-    const [pendingMove, setPendingMove] = useState(null);
-    const [moveRecurring, setMoveRecurring] = useState(true);
+    const [view, setView] = useState('board');
+    // Moves made on the board wait here (box id → column) until «حفظ التوزيع»; each drop also goes on the undo list.
+    const [staged, setStaged] = useState({});
+    const [stageHistory, setStageHistory] = useState([]);
+    const [boardRecurring, setBoardRecurring] = useState(true);
+    const [lastBoardMove, setLastBoardMove] = useState(null);
     const boxOptions = useMemo(() => distributionBoxOptions(boards, subAreaIds, assignmentFilter), [boards, subAreaIds, assignmentFilter]);
     const visibleBoxes = boards.filter((box) => boxMatches(box, search, subAreaIds, boxId) && assignmentMatches(box, assignmentFilter));
     const remainingBoxes = visibleBoxes.filter((box) => box.column === 'available');
@@ -56,13 +58,23 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
     const totalPages = Math.max(1, Math.ceil(visibleBoxes.length / perPage));
     const currentPage = Math.min(page, totalPages);
     const pageBoxes = visibleBoxes.slice((currentPage - 1) * perPage, currentPage * perPage);
-    const stage = STAGES[cycle.stage];
+    const stagedGroups = stagedMoveGroups(boards, staged);
+    const changedCount = stagedGroups.reduce((sum, group) => sum + group.boxIds.length, 0);
 
     useEffect(() => {
         if (flash?.allocationResult) {
             setResult(flash.allocationResult);
         }
     }, [flash]);
+
+    // Once the server has a move, its box sits where it was staged: it drops out of what waits to be saved.
+    useEffect(() => {
+        setStaged((current) => {
+            const next = Object.fromEntries(Object.entries(current).filter(([id, column]) => boards.find((box) => String(box.id) === id)?.column !== column));
+
+            return Object.keys(next).length === Object.keys(current).length ? current : next;
+        });
+    }, [boards]);
 
     useEffect(() => {
         if (boxId && !boxOptions.some((option) => option.value === boxId)) {
@@ -105,16 +117,46 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
         });
     }
 
-    /** A board drop waits here for confirmation; nothing is saved until it is confirmed. */
-    function askToMove(box, lane) {
-        setMoveRecurring(recurring);
-        setPendingMove({ box, column: lane });
+    function stage(next) {
+        setStageHistory((history) => [...history, staged]);
+        setStaged(next);
     }
 
-    function confirmMove() {
-        const { box, column } = pendingMove;
-        setPendingMove(null);
-        move([box.id], column, false, moveRecurring, false);
+    /**
+     * Saves the board's waiting moves, one request per destination in turn;
+     * a refusal stops there and leaves the rest waiting, with the reasons shown.
+     */
+    function saveStaged() {
+        if (busy || stagedGroups.length === 0) {
+            return;
+        }
+
+        const saveRecurring = abilities.approve && boardRecurring;
+        setBusy(true);
+        setResult(null);
+
+        const send = (index) => {
+            const group = stagedGroups[index];
+            const column = columns.find((candidate) => candidate.key === group.column);
+            setLastMove({ boxIds: group.boxIds, column, recurring: saveRecurring });
+            router.post(`/reading-cycles/${cycle.id}/assignments`, { ...movePayload(group.boxIds, column, boards), recurring: saveRecurring, publish: abilities.approve }, {
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: () => {
+                    if (index + 1 < stagedGroups.length) {
+                        send(index + 1);
+                    } else {
+                        setBusy(false);
+                        setStageHistory([]);
+                        setLastBoardMove(null);
+                    }
+                },
+                onError: () => setBusy(false),
+                onCancel: () => setBusy(false),
+            });
+        };
+
+        send(0);
     }
 
     function approve(data) {
@@ -168,9 +210,8 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                 <>
                     <PageHeader
                         eyebrow={showBranchSelector ? <><Link href="/reading-cycles" className="hover:underline">الفروع</Link> / {cycle.branchName}</> : 'توزيع القراءة القادمة'}
-                        title={<>قراءة {cycle.readingDayName} <span dir="ltr" className="font-display">{formatDate(cycle.readingDate)}</span></>}
-                        titleAddon={<StatusPill tone={stage.tone} label={stage.label} />}
-                        meta={<>أسبوع القراءة <span dir="ltr">{formatDate(cycle.weekStart)}</span> — <span dir="ltr">{formatDate(cycle.weekEnd)}</span>، إتاحة المهام <span dir="ltr">{formatDate(cycle.availableOn)}</span>{cycle.readingDate !== cycle.weekEnd && '، يوم القراءة مؤجل لهذه الدورة'}</>}
+                        title="توزيع القراءات"
+                        titleAddon={<StatusPill tone={STAGES[cycle.stage].tone} label={STAGES[cycle.stage].label} />}
                     />
                     <div className="flex shrink-0 flex-wrap items-center gap-2">
                         <SecondaryButton disabled={busy} onClick={() => setSummaryOpen(true)}>ملخّص توزيع الفرع</SecondaryButton>
@@ -203,8 +244,30 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
             {!actionsOpen && allocationReport}
             {(errors.box_ids || errors.approve || errors.copy) && !result && <p className="mb-4 rounded-control bg-red-500/10 px-4 py-2 text-sm text-red-700">{errors.box_ids ?? errors.approve ?? errors.copy}</p>}
 
-            <DistributionSummary boxes={visibleBoxes} />
+            <DistributionMission cycle={cycle} boards={boards} readers={readers} staged={staged} today={today} />
 
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm gl-text-muted">{view === 'board' ? (abilities.manage ? 'اسحب المنطقة كاملة إلى قارئ، أو افتحها واسحب طبلونات بعينها؛ لا يُحفظ شيء حتى «حفظ التوزيع».' : 'توزيع الطبلونات على القرّاء.') : 'الطبلونات حسب المنطقة.'}</p>
+                <SegmentedTabs label="طريقة العرض" value={view} onChange={setView} options={[{ value: 'board', label: 'لوحة التوزيع' }, { value: 'table', label: 'جدول' }]} />
+            </div>
+
+            {view === 'board' ? (
+                <>
+                    <DistributionBoard boards={boards} readers={readers} staged={staged} onStage={stage} canMove={abilities.manage} busy={busy} onMoved={setLastBoardMove} />
+                    <DistributionTray
+                        lastMove={lastBoardMove}
+                        changedCount={changedCount}
+                        recurring={boardRecurring}
+                        onRecurringChange={setBoardRecurring}
+                        canChooseRecurring={abilities.approve}
+                        onUndo={() => { setStaged(stageHistory.at(-1) ?? {}); setStageHistory((history) => history.slice(0, -1)); }}
+                        onDiscard={() => { setStaged({}); setStageHistory([]); setLastBoardMove(null); }}
+                        onSave={saveStaged}
+                        busy={busy}
+                        availableOn={cycle.availableOn ? formatDate(cycle.availableOn) : null}
+                    />
+                </>
+            ) : (
             <div className="grid items-start gap-4 lg:grid-cols-[17rem_minmax(0,1fr)]">
                 <DistributionAreas areas={areas} chosen={subAreaIds} onChange={(ids) => { setSubAreaIds(ids); setPage(1); }} disabled={busy}
                     onDistribute={abilities.manage || abilities.printSheets ? () => openActions(visibleBoxes) : null} distributionCount={visibleBoxes.length}
@@ -214,10 +277,6 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                         <div><p role="status" className="text-sm text-gray-700"><b className="font-display text-lg text-brand-600">{formatNumber(selectedTotals.boxes)}</b> طبلون محدد، {formatNumber(selectedTotals.subscribers)} مشترك</p>{hiddenSelected > 0 && <p className="mt-1 text-xs text-amber-700">منها {formatNumber(hiddenSelected)} خارج النتائج الظاهرة.</p>}</div>
                         <div className="flex flex-wrap items-center gap-3"><button type="button" disabled={busy} onClick={() => setSelected(new Set())} className="text-[13.5px] font-semibold text-gray-700 hover:underline">إلغاء التحديد كله</button><PrimaryButton disabled={busy} onClick={() => setActionsOpen(true)}>{abilities.manage ? 'توزيع المحدد' : 'إجراء على المحدد'} ({formatNumber(selectedTotals.boxes)})</PrimaryButton></div>
                     </section>}
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-sm gl-text-muted">{view === 'board' ? (abilities.manage ? 'اسحب الطبلون إلى قارئ أو إلى الكشوف الورقية؛ يُطلب تأكيد قبل الحفظ.' : 'توزيع الطبلونات على القرّاء.') : 'الطبلونات حسب المنطقة.'}</p>
-                        <SegmentedTabs label="طريقة العرض" value={view} onChange={setView} options={[{ value: 'table', label: 'جدول' }, { value: 'board', label: 'لوحة التوزيع' }]} />
-                    </div>
                     <div>
                         <DataTableToolbar search={search} onSearchChange={(value) => { setSearch(value); setPage(1); }} placeholder="ابحث باسم المنطقة أو الطبلون أو رقمه..." perPage={perPage} onPerPageChange={(size) => { setPerPage(size); setPage(1); }} total={visibleBoxes.length} printable={false}
                             filterMenu={<div className="flex w-full flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-3">
@@ -239,26 +298,13 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                                 {(abilities.manage || abilities.printSheets) && <SecondaryButton disabled={busy || visibleBoxes.length === 0} onClick={() => toggleColumn(visibleBoxes)}>{allVisibleSelected ? 'إلغاء تحديد النتائج' : 'تحديد كل النتائج'} ({formatNumber(visibleBoxes.length)})</SecondaryButton>}
                             </div>}
                         />
-                        {view === 'board' ? (
-                            <MoveBoard
-                                label="لوحة توزيع الطبلونات"
-                                lanes={columns.map((column) => ({ ...column, ...LANE_LOOKS[column.key === 'available' || column.key === 'paper' ? column.key : 'reader'] }))}
-                                items={visibleBoxes}
-                                laneOf={(box) => box.column}
-                                itemKey={(box) => box.id}
-                                itemLabel={(box) => `الطبلون ${box.name} (${box.number})، ${formatNumber(box.subscribers)} مشترك`}
-                                renderCard={(box) => <BoxCard box={box} />}
-                                canMove={abilities.manage}
-                                busy={busy}
-                                onMove={askToMove}
-                            />
-                        ) : <>
+                        <>
                         <DistributionTable boxes={pageBoxes} allBoxes={visibleBoxes} readers={readers} selected={selected} canSelect={abilities.manage || abilities.printSheets} busy={busy} onToggle={toggle} onToggleGroup={toggleColumn} />
                         {totalPages > 1 && <nav aria-label="صفحات الطبلونات" className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-gray-500">
                             <span>الصفحة {formatNumber(currentPage)} من {formatNumber(totalPages)}، التحديد يشمل جميع صفحات النتائج</span>
                             <div className="flex gap-2"><SecondaryButton disabled={busy || currentPage === 1} onClick={() => setPage(currentPage - 1)}>السابق</SecondaryButton><SecondaryButton disabled={busy || currentPage === totalPages} onClick={() => setPage(currentPage + 1)}>التالي</SecondaryButton></div>
                         </nav>}
-                        </>}
+                        </>
                     </div>
 
                     {remainingBoxes.length > 0 && abilities.manage && <div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm text-gray-700">
@@ -268,6 +314,7 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
 
                 </div>
             </div>
+            )}
 
             {(abilities.printSheets || paperSheets.length > 0) && (
                 <section className="mt-6 rounded-card border border-gray-100 bg-surface p-5 shadow-card" aria-labelledby="sheets-title">
@@ -303,17 +350,6 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
 
             {summaryOpen && <DistributionSummaryModal cycle={cycle} boards={boards} readers={readers} paperSheets={paperSheets} abilities={abilities} busy={busy} errors={errors} result={result} onClose={() => setSummaryOpen(false)} onApprove={() => approve({})} onPaper={showPaperSheets} onPreparePaper={() => openActions(boards.filter((box) => box.column === 'paper'), 'paper')} onRemaining={() => openActions(boards.filter((box) => box.column === 'available'), 'paper')} />}
             {actionsOpen && <DistributionActionModal boards={boards} selectedBoxes={selectedBoxes} readers={readers} abilities={abilities} busy={busy} errors={errors} target={target} onTargetChange={setTarget} recurring={recurring} onRecurringChange={setRecurring} hiddenSelected={hiddenSelected} onRemoveHidden={() => setSelected(new Set(selectedBoxes.filter((box) => visibleIds.has(box.id)).map((box) => box.id)))} onClose={() => setActionsOpen(false)} onAssign={assignSelected} onCreateSheet={createSheet} allocationReport={errors.box_ids ? allocationReport : null} />}
-            <ConfirmDialog
-                show={Boolean(pendingMove)}
-                title={pendingMove ? `نقل الطبلون ${pendingMove.box.number} إلى ${pendingMove.column.label}؟` : ''}
-                message={pendingMove && <><bdi>{pendingMove.box.name}</bdi>، {formatNumber(pendingMove.box.subscribers)} مشترك{pendingMove.box.downloaded && '. نزّل القارئ مهام هذا الطبلون؛ إن كان ذلك مانعًا ستظهر لك التفاصيل قبل النقل.'}</>}
-                confirmLabel="نقل"
-                icon="layers"
-                onCancel={() => setPendingMove(null)}
-                onConfirm={confirmMove}
-            >
-                {abilities.approve && <label className="flex items-start gap-2 text-sm leading-6"><input type="checkbox" checked={moveRecurring} onChange={(event) => setMoveRecurring(event.target.checked)} className="mt-1 rounded" /><span>حفظ هذا التوزيع للقراءات القادمة أيضًا<span className="block text-xs gl-text-muted">{moveRecurring ? 'يصبح التوزيع الثابت لهذا الطبلون.' : 'لهذه القراءة فقط؛ يبقى التوزيع الثابت للقراءات التالية.'}</span></span></label>}
-            </ConfirmDialog>
             {editingDay && <ReadingDayModal cycle={cycle} onClose={() => setEditingDay(false)} />}
         </AuthenticatedLayout>
     );
