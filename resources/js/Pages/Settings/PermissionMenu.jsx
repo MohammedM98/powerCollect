@@ -90,7 +90,8 @@ export function MenuButton({ icon, label, children, className = '' }) {
 
 export function MenuItem({ title, subtitle, trailing, onSelect, leading }) {
     return (
-        <Button
+        <button
+            type="button"
             role="menuitem"
             onClick={onSelect}
             className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-start text-sm transition hover:bg-gray-50 focus-visible:bg-gray-50 focus-visible:outline-hidden"
@@ -101,6 +102,6 @@ export function MenuItem({ title, subtitle, trailing, onSelect, leading }) {
                 {subtitle && <span className="block truncate text-xs text-gray-500">{subtitle}</span>}
             </span>
             {trailing}
-        </Button>
+        </button>
     );
 }

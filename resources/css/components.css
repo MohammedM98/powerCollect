@@ -9991,3 +9991,14 @@ html:root[data-ui-background='graphite'] .pm-hero {
     font-weight: inherit;
     white-space: normal;
 }
+
+/* While a window is open the notifications sit at the top, clear of its keys at the bottom, on every screen. */
+body:has([role='dialog'], [role='alertdialog']) .gl-toasts {
+    top: calc(14px + env(safe-area-inset-top, 0px));
+    bottom: auto;
+    align-items: center;
+}
+
+body:has([role='dialog'], [role='alertdialog']) .gl-toast {
+    width: min(440px, 100%);
+}

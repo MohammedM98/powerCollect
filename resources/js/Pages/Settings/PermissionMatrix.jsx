@@ -65,17 +65,18 @@ function Mark({ text, query }) {
 /** One cell of the grid: a check that shows the permission's risk and whether it changed since saving. */
 function MatrixCheck({ checked, dirty, risk, label, disabled, onChange, hit }) {
     return (
-        <Button
+        <button
+            type="button"
             role="checkbox"
             aria-checked={checked}
             aria-label={label}
             title={[label, risk ? RISK_LABELS[risk] : '', dirty ? 'لم يُحفظ بعد' : ''].filter(Boolean).join('، ')}
-            isDisabled={disabled}
+            disabled={disabled}
             onClick={() => onChange(!checked)}
             className={`pm-check ${checked ? 'is-on' : ''} ${risk ? `is-${risk}` : ''} ${dirty ? 'is-dirty' : ''} ${hit ? 'is-hit' : ''}`}
         >
             <Icon name="check" className="h-4 w-4" strokeWidth={3} />
-        </Button>
+        </button>
     );
 }
 
@@ -85,18 +86,19 @@ export function TriToggle({ ids, selected, onChange, disabled, label }) {
     const state = ids.length === 0 ? 'none' : held === ids.length ? 'on' : held > 0 ? 'mixed' : 'off';
 
     return (
-        <Button
+        <button
+            type="button"
             role="checkbox"
             aria-checked={state === 'on' ? 'true' : state === 'mixed' ? 'mixed' : 'false'}
             aria-label={label}
             title={state === 'on' ? 'سحب الكل' : 'منح الكل'}
-            isDisabled={disabled || state === 'none'}
+            disabled={disabled || state === 'none'}
             onClick={() => onChange(state !== 'on')}
             className={`pm-tri is-${state}`}
         >
             {state === 'on' && <Icon name="check" className="h-3.5 w-3.5" strokeWidth={3} />}
             {state === 'mixed' && <i aria-hidden="true" className="pm-tri-dash" />}
-        </Button>
+        </button>
     );
 }
 

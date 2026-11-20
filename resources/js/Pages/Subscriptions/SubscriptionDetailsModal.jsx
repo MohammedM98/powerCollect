@@ -189,13 +189,13 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
                     </div>
                     <div className="sp-header-bottom">
                         <div className="sp-tabs" role="tablist" aria-label="أقسام ملف المشترك">
-                            {TABS.map(([tab, label], index) => <Button key={tab} id={`${tabsId}-${tab}`} role="tab" aria-selected={activeTab === tab} aria-controls={`${tabsId}-${tab}-panel`} tabIndex={activeTab === tab ? 0 : -1} onClick={() => selectTab(tab)} onKeyDown={(event) => {
+                            {TABS.map(([tab, label], index) => <button key={tab} type="button" id={`${tabsId}-${tab}`} role="tab" aria-selected={activeTab === tab} aria-controls={`${tabsId}-${tab}-panel`} tabIndex={activeTab === tab ? 0 : -1} onClick={() => selectTab(tab)} onKeyDown={(event) => {
                                 if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
                                     event.preventDefault();
                                     const next = event.key === 'Home' ? 0 : event.key === 'End' ? 2 : (index + (event.key === 'ArrowLeft' ? 1 : 2)) % 3;
                                     selectTab(TABS[next][0], true);
                                 }
-                            }}>{label}{tab === 'transactions' && statement && <span>{statement.entries.length}</span>}</Button>)}
+                            }}>{label}{tab === 'transactions' && statement && <span>{statement.entries.length}</span>}</button>)}
                         </div>
                         <div className="sp-quick-actions">
                             {subscription.canRecordPayment && <Button className="sp-pay" onClick={() => onOpenStatement('payment')}><Icon name="banknotes" /><span>تسجيل دفعة</span></Button>}

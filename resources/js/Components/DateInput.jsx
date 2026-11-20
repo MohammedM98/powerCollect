@@ -274,15 +274,16 @@ export default function DateInput({
                                             const inMonth = sameMonth(day, shownMonth);
 
                                             return (
-                                                <Button
+                                                <button
                                                     key={day}
+                                                    type="button"
                                                     role="gridcell"
                                                     data-day={day}
                                                     tabIndex={day === focusedDay ? 0 : -1}
                                                     aria-selected={selected}
                                                     aria-current={day === today ? 'date' : undefined}
                                                     aria-label={formatWeekDay(day)}
-                                                    isDisabled={blocked}
+                                                    disabled={blocked}
                                                     onClick={() => pick(day)}
                                                     onKeyDown={(event) => {
                                                         if (event.key === 'Enter' || event.key === ' ') {
@@ -298,7 +299,7 @@ export default function DateInput({
                                                 >
                                                     {Number(day.slice(8))}
                                                     {day === today && !selected && <span aria-hidden="true" className="absolute bottom-1.5 h-1 w-1 rounded-full bg-brand-500" />}
-                                                </Button>
+                                                </button>
                                             );
                                         })}
                                     </div>

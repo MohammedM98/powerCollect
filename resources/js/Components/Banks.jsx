@@ -132,7 +132,8 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
                     className="animate-modal-panel absolute inset-x-0 z-30 mt-2 max-h-80 overflow-y-auto rounded-2xl p-1.5 gl-pop"
                 >
                     <li role="none">
-                        <Button
+                        <button
+                            type="button"
                             role="option"
                             aria-selected={!value}
                             onClick={() => select('')}
@@ -145,7 +146,7 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
                             </span>
                             <span className="text-sm">غير محدد</span>
                             {!value && <Icon name="check" className="ms-auto h-4 w-4 text-brand-600" strokeWidth={2} />}
-                        </Button>
+                        </button>
                     </li>
                     {banks.map((bank) => {
                         const isSelected = value === bank;
@@ -153,7 +154,8 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
 
                         return (
                             <li key={bank} role="none">
-                                <Button
+                                <button
+                                    type="button"
                                     role="option"
                                     aria-selected={isSelected}
                                     onClick={() => select(bank)}
@@ -168,7 +170,7 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
                                         <small className="block text-xs font-medium text-gray-500">{look?.kind ?? 'تحويل'}</small>
                                     </span>
                                     {isSelected && <Icon name="check" className="ms-auto h-4 w-4 shrink-0 text-brand-600" strokeWidth={2} />}
-                                </Button>
+                                </button>
                             </li>
                         );
                     })}

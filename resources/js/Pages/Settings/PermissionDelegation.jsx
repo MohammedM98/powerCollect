@@ -133,12 +133,13 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                                         const on = grantable.includes(entry.id);
 
                                         return (
-                                            <Button
+                                            <button
                                                 key={entry.id}
+                                                type="button"
                                                 role="checkbox"
                                                 aria-checked={on}
                                                 aria-label={`يمنح «${entry.label}» لموظفي فرعه`}
-                                                isDisabled={disabled}
+                                                disabled={disabled}
                                                 onClick={() => toggle(entry.id)}
                                                 className={`pm-grant-row ${on ? 'is-on' : ''}`}
                                             >
@@ -164,7 +165,7 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                                                 <span className={`pm-check ${on ? 'is-on' : ''}`} aria-hidden="true">
                                                     <Icon name="check" className="h-4 w-4" strokeWidth={3} />
                                                 </span>
-                                            </Button>
+                                            </button>
                                         );
                                     })}
                                 </div>

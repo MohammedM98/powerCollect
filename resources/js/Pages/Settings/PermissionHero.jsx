@@ -154,9 +154,10 @@ export default function PermissionHero({
 
             <div className="pm-tabs" role="tablist" aria-label="عرض صلاحيات الموظف">
                 {tabs.map((item) => (
-                    <Button
+                    <button
                         key={item.key}
                         id={`permission-tab-${item.key}`}
+                        type="button"
                         role="tab"
                         aria-selected={activeTab === item.key}
                         aria-controls={`permission-view-${item.key}`}
@@ -168,7 +169,7 @@ export default function PermissionHero({
                         <Icon name={item.icon} className="h-4 w-4" />
                         {item.label}
                         {item.key === 'matrix' && dirty && <span className="pm-unsaved" title="تغييرات لم تُحفظ" />}
-                    </Button>
+                    </button>
                 ))}
             </div>
         </section>

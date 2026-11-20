@@ -1,4 +1,3 @@
-import { Button } from '@heroui/react';
 import { useRef } from 'react';
 import Icon from '@/Components/Icon';
 
@@ -44,11 +43,12 @@ export default function ChoiceChips({ id, name, value, onChange, options, label,
                 const checked = index === selectedIndex;
 
                 return (
-                    <Button
+                    <button
                         key={option.value}
+                        type="button"
                         role="radio"
                         aria-checked={checked}
-                        isDisabled={disabled || option.disabled}
+                        disabled={disabled || option.disabled}
                         title={option.title}
                         tabIndex={checked || (selectedIndex === -1 && index === 0) ? 0 : -1}
                         onClick={() => onChange(String(option.value))}
@@ -61,7 +61,7 @@ export default function ChoiceChips({ id, name, value, onChange, options, label,
                         {option.hint && (
                             <span className="gl-num text-xs font-medium opacity-75">{option.hint}</span>
                         )}
-                    </Button>
+                    </button>
                 );
             })}
 

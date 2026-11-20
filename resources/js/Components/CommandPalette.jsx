@@ -1,4 +1,4 @@
-import { Button, Input } from '@heroui/react';
+import { Input } from '@heroui/react';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
@@ -226,8 +226,9 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
                                 const index = position++;
 
                                 return (
-                                    <Button
+                                    <button
                                         key={`${item.kind}-${item.href ?? item.id}`}
+                                        type="button"
                                         id={`tn-palette-item-${index}`}
                                         role="option"
                                         aria-selected={index === active}
@@ -241,7 +242,7 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
                                         </span>
                                         {item.key && <span className="tn-kbd">{item.key}</span>}
                                         <Icon name="arrow-left" className="tn-enter" />
-                                    </Button>
+                                    </button>
                                 );
                             })}
                         </Fragment>

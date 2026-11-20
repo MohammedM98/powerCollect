@@ -1,4 +1,4 @@
-import { Button, Input } from '@heroui/react';
+import { Input } from '@heroui/react';
 import { useState } from 'react';
 import ChoiceChips from '@/Components/ChoiceChips';
 import Switch from '@/Components/Switch';
@@ -171,8 +171,9 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
                 <Group label="اللون الأساسي (العنوان ورأس الجدول)">
                     <div role="radiogroup" aria-label="اللون الأساسي" className="flex flex-wrap items-center gap-2">
                         {ACCENTS.map((accent) => (
-                            <Button
+                            <button
                                 key={accent.value}
+                                type="button"
                                 role="radio"
                                 aria-checked={layout.table.accent.toLowerCase() === accent.value.toLowerCase()}
                                 aria-label={accent.label}
