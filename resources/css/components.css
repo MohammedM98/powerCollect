@@ -10101,3 +10101,16 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     backdrop-filter: blur(30px) saturate(1.5);
     box-shadow: var(--ma-float);
 }
+
+/* HeroUI paints a ticked box through its control's ::before: the MA dark here, and nothing under the permission grid's own drawing. */
+@layer components {
+    .checkbox[class][data-selected='true'] .checkbox__control::before,
+    .checkbox[class][data-indeterminate='true'] .checkbox__control::before {
+        background-color: var(--ma-act);
+    }
+}
+
+.pm-check-field .checkbox__control::before,
+.pm-grant-field .checkbox__control::before {
+    content: none;
+}
