@@ -113,8 +113,9 @@ async function fillFields(scope, fields) {
         } else if (value && typeof value === 'object' && 'chip' in value) {
             await scope.getByRole('radiogroup', { name: label }).getByRole('radio', { name: value.chip }).click();
         } else if (value && typeof value === 'object' && 'switch' in value) {
+            // HeroUI's switch: a visually hidden input, pressed through its visible label.
             const toggle = scope.getByRole('switch', { name: label });
-            if (((await toggle.getAttribute('aria-checked')) === 'true') !== value.switch) await toggle.click();
+            if ((await toggle.isChecked()) !== value.switch) await toggle.locator('xpath=ancestor::label[1]').click();
         } else if (value && typeof value === 'object' && 'check' in value) {
             if ((await field.isChecked()) !== value.check) await field.click();
         } else {
