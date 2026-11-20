@@ -131,17 +131,13 @@ extension _ShellSync on _FieldShellState {
             reading['mobile_operation_id'] as String: error
         };
       }
-      // Whether the stop left it unknown if the server recorded them (the
-      // connection dropped) rather than refusing them before reading any.
-      var answerLost = false;
+      // Each reading takes its own answer, even after the sending stopped or
+      // the screen closed; one left without an answer was never sent.
       for (final reading in sending) {
-        if (!mounted) break;
         final id = reading['mobile_operation_id'] as String;
         final outcome = outcomes[id];
-        if (interruption != null || outcome == null) {
-          if (outcome == null || !answerLost) {
-            await widget.store.markReadingUncertain(id, uncertain: false);
-          }
+        if (outcome == null) {
+          await widget.store.markReadingUncertain(id, uncertain: false);
           continue;
         }
         try {
@@ -171,7 +167,6 @@ extension _ShellSync on _FieldShellState {
           if (error.isNetwork || error.statusCode >= 500) {
             interruption =
                 'انقطع الاتصال أو تعذّر معرفة نتيجة الرفع. بقيت القراءات على الجهاز؛ أعد المحاولة بنفسها لتجنب التكرار.';
-            answerLost = true;
             if (mounted) change(() => online = false);
             continue;
           }

@@ -125,15 +125,38 @@ class ApiClient {
         readings.where((reading) => reading['assignment_id'] == null).toList());
     final assigned =
         readings.where((reading) => reading['assignment_id'] != null).toList();
-    for (var start = 0; start < assigned.length; start += readingBatchSize) {
+    for (var start = 0;
+        start < assigned.length && !outcomes.values.any(stopsSending);
+        start += readingBatchSize) {
       final batch = assigned.sublist(
           start, (start + readingBatchSize).clamp(0, assigned.length));
-      for (final result in await postAssignmentReadings(batch)) {
-        outcomes['${result['operation_id']}'] = _assignmentOutcome(result);
+      try {
+        for (final result in await postAssignmentReadings(batch)) {
+          outcomes['${result['operation_id']}'] = _assignmentOutcome(result);
+        }
+      } on ApiException catch (error) {
+        if (error.statusCode == 422) {
+          // The request refuses one reading by refusing them all: each goes
+          // on its own, so only that one keeps its error.
+          outcomes.addAll(await sendReadingsOneByOne(batch));
+        } else {
+          for (final reading in batch) {
+            outcomes[reading['mobile_operation_id'] as String] = error;
+          }
+        }
       }
     }
     return outcomes;
   }
+
+  /// Whether a failure refuses the readings after it too, so sending stops:
+  /// offline, the server failing, signed out, not allowed, too old an app,
+  /// or too many requests.
+  static bool stopsSending(Object outcome) =>
+      outcome is ApiException &&
+      (outcome.isNetwork ||
+          outcome.statusCode >= 500 ||
+          const [401, 403, 426, 429].contains(outcome.statusCode));
 
   /// Sends readings one request each, stopping at the first failure that
   /// would refuse the rest too; the ones after it are left unanswered.
@@ -146,11 +169,7 @@ class ApiClient {
         outcomes[id] = await sendReading(reading);
       } on ApiException catch (error) {
         outcomes[id] = error;
-        if (error.isNetwork ||
-            error.statusCode >= 500 ||
-            const [401, 403, 426, 429].contains(error.statusCode)) {
-          break;
-        }
+        if (stopsSending(error)) break;
       }
     }
     return outcomes;
