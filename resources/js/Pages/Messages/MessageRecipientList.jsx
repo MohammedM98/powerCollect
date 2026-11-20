@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import PrimaryButton from '@/Components/PrimaryButton';
 import InputError from '@/Components/InputError';
@@ -31,13 +32,12 @@ export default function MessageRecipientList({
             }
             actions={
                 withPhone.length > 0 && (
-                    <button
-                        type="button"
+                    <Button
                         onClick={() => setSelected(new Set(allSelected ? [] : withPhone.map((recipient) => recipient.id)))}
                         className={`rounded text-xs font-semibold text-brand-600 hover:underline ${FOCUS_RING}`}
                     >
                         {allSelected ? 'إلغاء الكل' : 'تحديد الكل'}
-                    </button>
+                    </Button>
                 )
             }
         >
@@ -77,8 +77,7 @@ export default function MessageRecipientList({
                                 aria-label={`إرسال إلى ${recipient.name}`}
                                 className="rounded border-gray-300 text-brand-600 disabled:opacity-40"
                             />
-                            <button
-                                type="button"
+                            <Button
                                 onClick={() => setPreviewId(recipient.id)}
                                 aria-pressed={previewId === recipient.id}
                                 aria-label={`معاينة رسالة ${recipient.name}`}
@@ -90,7 +89,7 @@ export default function MessageRecipientList({
                                     {recipient.accountNumber}
                                     {recipient.branchName && branchOptions.length > 0 && <> — {recipient.branchName}</>}
                                 </span>
-                            </button>
+                            </Button>
                             {recipient.phone ? (
                                 <span dir="ltr" className="shrink-0 text-xs text-gray-600">
                                     {recipient.phone}

@@ -1,3 +1,4 @@
+import { TextArea } from '@heroui/react';
 import BankReceivedDate from '@/Components/BankReceivedDate';
 import { useEffect, useEffectEvent, useId, useState } from 'react';
 import { useForm, useHttp } from '@inertiajs/react';
@@ -81,7 +82,7 @@ export default function BankTransferAuditForm({ entry, onClose }) {
                         <option value="">توضيح جاهز (اختياري)</option>
                         {bankAuditReasonPresets.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                     </select>
-                    <textarea id={`${id}-reason`} rows="3" maxLength="1000" value={data.reason} onChange={(event) => setData('reason', event.target.value)} required={needsReason} disabled={processing} aria-describedby={`${id}-reason-hint`} aria-invalid={Boolean(errors.reason)} placeholder="اكتب توضيحك هنا، أو اختر من القائمة أعلاه…" className="block w-full rounded-none border-0 p-4 text-base leading-8 focus:ring-0" />
+                    <TextArea id={`${id}-reason`} rows="3" maxLength="1000" value={data.reason} onChange={(event) => setData('reason', event.target.value)} required={needsReason} disabled={processing} aria-describedby={`${id}-reason-hint`} aria-invalid={Boolean(errors.reason)} placeholder="اكتب توضيحك هنا، أو اختر من القائمة أعلاه…" className="block w-full rounded-none border-0 p-4 text-base leading-8 focus:ring-0" />
                 </div>
                 <p id={`${id}-reason-hint`} className="mt-2 text-sm leading-7 text-gray-600">يمكنك تعديل التوضيح المختار أو كتابة نص خاص.</p>
                 <InputError message={errors.reason} className="mt-1" />

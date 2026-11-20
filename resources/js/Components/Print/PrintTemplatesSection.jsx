@@ -1,3 +1,4 @@
+import { Input } from '@heroui/react';
 import { useState } from 'react';
 import Icon from '@/Components/Icon';
 import Switch from '@/Components/Switch';
@@ -139,7 +140,7 @@ export function TemplatesSection({ templates, onReset, onPreset }) {
                                         }}
                                     >
                                         <div className="flex gap-2">
-                                            <input
+                                            <Input
                                                 id={id}
                                                 type="text"
                                                 value={newName}

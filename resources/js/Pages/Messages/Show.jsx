@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Icon from '@/Components/Icon';
@@ -132,8 +133,7 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
                                     </td>
                                     {isWhatsApp && (
                                         <td className="text-end">
-                                            <button
-                                                type="button"
+                                            <Button
                                                 onClick={() => openWhatsApp(message)}
                                                 aria-label={`${message.status === 'sent' ? 'فتح المحادثة مجددًا مع' : 'إرسال عبر واتساب إلى'} ${message.subscriptionName ?? message.phone}`}
                                                 title={message.status === 'sent' ? 'أُرسلت — افتح المحادثة مجددًا' : 'افتح واتساب والرسالة مكتوبة'}
@@ -145,7 +145,7 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
                                             >
                                                 <Icon name={message.status === 'sent' ? 'repeat' : 'chat'} className="h-3.5 w-3.5" />
                                                 {message.status === 'sent' ? 'فتح مجددًا' : 'إرسال واتساب'}
-                                            </button>
+                                            </Button>
                                         </td>
                                     )}
                                 </tr>

@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { useId, useRef, useState } from 'react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import InputError from '@/Components/InputError';
@@ -168,7 +169,7 @@ export default function ClearingModal({ show, onClose, subscription, balance, re
                                     description={
                                         <div className="gl-cl-in" data-invalid={errors.notes ? true : undefined}>
                                             <label htmlFor="clearing_service" className="sr-only">الخدمة التي قدّمها المشترك للشركة</label>
-                                            <input
+                                            <Input
                                                 id="clearing_service"
                                                 name="notes"
                                                 required
@@ -183,7 +184,7 @@ export default function ClearingModal({ show, onClose, subscription, balance, re
                                     }
                                     amount={
                                         <div className="gl-cl-in is-amount" data-invalid={errors.amount ? true : undefined}>
-                                            <input
+                                            <Input
                                                 ref={amountInput}
                                                 id="amount"
                                                 name="amount"
@@ -204,14 +205,14 @@ export default function ClearingModal({ show, onClose, subscription, balance, re
                                 <div className="gl-cl-under">
                                     <div className="gl-cl-quick">
                                         {QUICK_AMOUNTS.map((quick) => (
-                                            <button key={quick} type="button" className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setAmount(String(quick))}>
+                                            <Button key={quick} className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setAmount(String(quick))}>
                                                 {quick}
-                                            </button>
+                                            </Button>
                                         ))}
                                         {owed > 0 && (
-                                            <button type="button" className="is-settle" onClick={() => setAmount(String(owed))}>
+                                            <Button className="is-settle" onClick={() => setAmount(String(owed))}>
                                                 كل ما عليه <bdi className="gl-num">{formatMoney(owed)}</bdi>
-                                            </button>
+                                            </Button>
                                         )}
                                     </div>
                                     <span className="gl-cl-hint ms-auto">الخدمة إلزامية، تُكتب في خانة البيان وتظهر في الكشف.</span>
@@ -239,7 +240,7 @@ export default function ClearingModal({ show, onClose, subscription, balance, re
                                 <div className="gl-cl-extra">
                                     <label htmlFor="clearing_manual_voucher_number">رقم السند اليدوي <small className="font-medium">(اختياري، رقم السند الورقي)</small></label>
                                     <div className="gl-cl-in">
-                                        <input
+                                        <Input
                                             id="clearing_manual_voucher_number"
                                             name="manual_voucher_number"
                                             dir="ltr"

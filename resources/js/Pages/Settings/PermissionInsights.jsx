@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import Icon from '@/Components/Icon';
 import { EmployeeAvatar } from './PermissionPeople';
@@ -250,9 +251,8 @@ export function PermissionCompare({ employee, sections, selected, colleagues, co
             ) : (
                 <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="الموظف الذي تقارن به">
                     {colleagues.map((user) => (
-                        <button
+                        <Button
                             key={user.id}
-                            type="button"
                             aria-pressed={user.id === otherId}
                             onClick={() => setOtherId(user.id === otherId ? null : user.id)}
                             className="pm-colleague"
@@ -263,7 +263,7 @@ export function PermissionCompare({ employee, sections, selected, colleagues, co
                                 <b className="block truncate text-sm">{user.name}</b>
                                 <small className="block truncate text-[12px] text-gray-500">{user.roleLabel}</small>
                             </span>
-                        </button>
+                        </Button>
                     ))}
                 </div>
             )}
@@ -288,24 +288,22 @@ export function PermissionCompare({ employee, sections, selected, colleagues, co
                         />
                     </div>
                     <div className="flex flex-wrap gap-2">
-                        <button
-                            type="button"
+                        <Button
                             className="pm-soft-button"
-                            disabled={disabled || result.onlyTheirs.length === 0}
+                            isDisabled={disabled || result.onlyTheirs.length === 0}
                             onClick={() => onAddMissing(result.onlyTheirs.map((item) => item.id))}
                         >
                             <Icon name="plus" className="h-4 w-4" />
                             أضف ما ينقصه ({result.onlyTheirs.length})
-                        </button>
-                        <button
-                            type="button"
+                        </Button>
+                        <Button
                             className="pm-soft-button"
-                            disabled={disabled || (result.onlyTheirs.length === 0 && result.onlyMine.length === 0)}
+                            isDisabled={disabled || (result.onlyTheirs.length === 0 && result.onlyMine.length === 0)}
                             onClick={() => onMatch(other)}
                         >
                             <Icon name="repeat" className="h-4 w-4" />
                             طابق صلاحيات العمل
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )}

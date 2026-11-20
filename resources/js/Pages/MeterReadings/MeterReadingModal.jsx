@@ -1,3 +1,4 @@
+import { TextArea } from '@heroui/react';
 import FormModal from '@/Components/FormModal';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
@@ -168,7 +169,7 @@ export default function MeterReadingModal({ show, onClose, reading, subscription
 
             <div>
                 <InputLabel htmlFor="notes" value="ملاحظات" />
-                <textarea id="notes" rows={2} className="mt-1 block w-full" value={data.notes} onChange={(e) => setData('notes', e.target.value)} />
+                <TextArea id="notes" rows={2} className="mt-1 block w-full" value={data.notes} onChange={(e) => setData('notes', e.target.value)} />
                 <InputError message={errors.notes} className="mt-2" />
             </div>
         </FormModal>

@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 
 import { formatDate, formatMoney } from '@/lib/format';
@@ -38,9 +39,9 @@ export function CancellationNote({ cancellation, onJump }) {
             <Icon name={cancellation.wasCorrected ? 'repeat' : 'close'} className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-400" />
             <span>
                 {cancellation.wasCorrected ? (
-                    <button type="button" onClick={() => onJump(cancellation.correctionId)} className="font-semibold text-amber-700 hover:underline">
+                    <Button onClick={() => onJump(cancellation.correctionId)} className="font-semibold text-amber-700 hover:underline">
                         صُحّحت بالحركة #{cancellation.correctionLineNumber}
-                    </button>
+                    </Button>
                 ) : <b className="font-semibold text-gray-700">أُلغيت</b>}
                 <>: {cancellation.reasonLabel}</>
                 {cancellation.notes && <> — {cancellation.notes}</>}
@@ -58,9 +59,9 @@ export function CorrectsNote({ corrects, onJump }) {
     return (
         <p className="ledger-description mt-1.5 flex items-center gap-1.5 text-xs font-normal text-amber-700 dark:text-amber-400">
             <Icon name="repeat" className="h-3.5 w-3.5 shrink-0" />
-            <button type="button" onClick={() => onJump(corrects.id)} className="font-semibold hover:underline">
+            <Button onClick={() => onJump(corrects.id)} className="font-semibold hover:underline">
                 تصحيح للحركة #{corrects.lineNumber} ↑
-            </button>
+            </Button>
         </p>
     );
 }
@@ -69,9 +70,9 @@ export function ReversalNote({ entry, reverses, onJump }) {
     return (
         <p className="ledger-description mt-1.5 flex items-center gap-1.5 text-xs font-normal text-blue-700">
             <Icon name="repeat" className="h-3.5 w-3.5 shrink-0" />
-            <button type="button" onClick={() => onJump(reverses.id)} className="font-semibold hover:underline">
+            <Button onClick={() => onJump(reverses.id)} className="font-semibold hover:underline">
                 {entry.type === 'refund' ? 'يُرجع الدفعة' : 'يُلغي الحركة'} #{reverses.lineNumber} ↑
-            </button>
+            </Button>
         </p>
     );
 }
@@ -80,9 +81,9 @@ export function LinkedReversalNote({ reversal, onJump }) {
     return (
         <p className="ledger-description mt-1.5 flex items-center gap-1.5 text-xs font-normal text-blue-700 dark:text-blue-400">
             <Icon name="repeat" className="h-3.5 w-3.5 shrink-0" />
-            <button type="button" onClick={() => onJump(reversal.id)} className="font-semibold hover:underline">
+            <Button onClick={() => onJump(reversal.id)} className="font-semibold hover:underline">
                 {reversal.type === 'refund' ? 'أُرجعت بالحركة' : 'أُلغيت بالحركة'} #{reversal.lineNumber} ↓
-            </button>
+            </Button>
         </p>
     );
 }
@@ -96,15 +97,14 @@ export function HistoryToggle({ entry, isOpen, onToggle }) {
 
     return (
         <p className="ledger-description mt-1.5 flex items-center gap-1.5 text-xs font-normal">
-            <button
-                type="button"
+            <Button
                 onClick={onToggle}
                 aria-expanded={isOpen}
                 className="statement-screen-only inline-flex items-center gap-1.5 font-semibold text-amber-700 hover:underline dark:text-amber-400"
             >
                 <Icon name="history" className="h-3.5 w-3.5 shrink-0" />
                 {wasCorrected ? 'صُحّحت' : 'لها حركات ملغاة'}، {isOpen ? 'إخفاء السجل' : `السجل (${entry.history.length})`}
-            </button>
+            </Button>
         </p>
     );
 }
@@ -129,14 +129,13 @@ export function amendmentValue(value) {
 export function AmendmentBadge({ amendments }) {
     return (
         <span className="group/amend relative inline-flex">
-            <button
-                type="button"
+            <Button
                 aria-label={`سجل تعديلات البيانات، ${amendments.length}`}
                 className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-blue-500/25 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-600 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             >
                 <Icon name="history" className="h-3.5 w-3.5" />
                 معدّلة
-            </button>
+            </Button>
             <span
                 role="tooltip"
                 className="pointer-events-none invisible absolute inset-e-0 top-full z-40 mt-2 grid w-[min(360px,calc(100vw-2rem))] gap-3 rounded-2xl p-4 text-start opacity-0 gl-pop transition group-hover/amend:visible group-hover/amend:opacity-100 group-focus-within/amend:visible group-focus-within/amend:opacity-100"

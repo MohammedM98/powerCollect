@@ -1,3 +1,4 @@
+import { TextArea } from '@heroui/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
 import Affix from '@/Components/Affix';
@@ -381,7 +382,7 @@ export default function SubscriptionForm({
             <div id="subscription-extra" className="scroll-mt-4">
                 <FormSection icon="note" title="معلومات إضافية" description="العنوان وأي معلومة أخرى">
                     <FormField id="address" label="العنوان" error={errors.address} span="sm:col-span-2 lg:col-span-3">
-                        <textarea
+                        <TextArea
                             rows={2}
                             className="block w-full"
                             value={data.address}
@@ -391,7 +392,7 @@ export default function SubscriptionForm({
                     </FormField>
 
                     <FormField id="notes" label="معلومات أخرى" error={errors.notes} span="sm:col-span-2 lg:col-span-3">
-                        <textarea rows={2} className="block w-full" value={data.notes} onChange={(e) => setData('notes', e.target.value)} />
+                        <TextArea rows={2} className="block w-full" value={data.notes} onChange={(e) => setData('notes', e.target.value)} />
                     </FormField>
                 </FormSection>
             </div>

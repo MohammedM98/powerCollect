@@ -1,3 +1,4 @@
+import { Input } from '@heroui/react';
 import { useCallback, useId, useRef, useState } from 'react';
 import { router, useHttp, usePage } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
@@ -114,7 +115,7 @@ export default function BulkChangeModal({ field, selection, count, statusOptions
                                     <label htmlFor={`${id}-value`} className="mb-1.5 block text-sm font-semibold text-gray-700">
                                         الحد الأدنى الأسبوعي الجديد (شيكل)
                                     </label>
-                                    <input
+                                    <Input
                                         id={`${id}-value`}
                                         type="text"
                                         inputMode="decimal"

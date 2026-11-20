@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { useState } from 'react';
 import Icon from '@/Components/Icon';
 import { formatNumber } from '@/lib/format';
@@ -17,7 +18,7 @@ export default function DistributionAreas({ areas, chosen, onChange, disabled, f
             <div className="flex flex-col gap-3 border-b border-gray-100 p-4">
                 <div className="flex items-center justify-between gap-2">
                     <h2 className="flex items-center gap-2 font-bold text-gray-900"><Icon name="pin" className="h-4 w-4 text-brand-600" />المناطق</h2>
-                    {chosen.length > 0 && <button type="button" disabled={disabled} onClick={() => onChange([])} className="text-xs font-semibold text-brand-600 hover:underline">عرض الكل</button>}
+                    {chosen.length > 0 && <Button isDisabled={disabled} onClick={() => onChange([])} className="text-xs font-semibold text-brand-600 hover:underline">عرض الكل</Button>}
                 </div>
                 <p className="text-xs leading-6 text-gray-500">اختر منطقة أو أكثر، ثم حدّد الطبلونات التي تريد توزيعها.</p>
                 <div role="group" aria-label="تصفية المناطق حسب حالة التوزيع" className="grid grid-cols-3 gap-1 rounded-control border border-gray-100 bg-gray-50 p-1">
@@ -25,15 +26,15 @@ export default function DistributionAreas({ areas, chosen, onChange, disabled, f
                         { value: '', label: 'الكل', count: counts.all },
                         { value: 'assigned', label: 'موزع', count: counts.assigned },
                         { value: 'available', label: 'غير موزع', count: counts.available },
-                    ].map((status) => <button key={status.value} type="button" disabled={disabled} aria-pressed={activeStatus === status.value} onClick={() => onFilterChange(status.value)} className={`flex flex-col items-center gap-1 rounded-lg px-1 py-2 text-xs font-semibold transition ${activeStatus === status.value ? 'bg-surface text-brand-600 shadow-xs' : 'text-gray-500 hover:text-gray-900'}`}>
+                    ].map((status) => <Button key={status.value} isDisabled={disabled} aria-pressed={activeStatus === status.value} onClick={() => onFilterChange(status.value)} className={`flex flex-col items-center gap-1 rounded-lg px-1 py-2 text-xs font-semibold transition ${activeStatus === status.value ? 'bg-surface text-brand-600 shadow-xs' : 'text-gray-500 hover:text-gray-900'}`}>
                         <span>{status.label}</span><span className="font-display text-sm">{formatNumber(status.count)}</span>
-                    </button>)}
+                    </Button>)}
                 </div>
                 <label className="sr-only" htmlFor="distribution-area-search">البحث عن منطقة</label>
-                <input id="distribution-area-search" type="search" value={search} disabled={disabled} onChange={(event) => setSearch(event.target.value)} placeholder="ابحث عن منطقة..." className="block w-full text-sm" />
+                <Input id="distribution-area-search" type="search" value={search} disabled={disabled} onChange={(event) => setSearch(event.target.value)} placeholder="ابحث عن منطقة..." className="block w-full text-sm" />
                 <div className="flex items-center justify-between gap-2 text-xs">
                     <span className="text-gray-500">{formatNumber(matching.length)} منطقة{chosen.length > 0 && `، اختيرت ${formatNumber(chosen.length)}`}</span>
-                    {matching.length > 0 && <button type="button" disabled={disabled} onClick={() => onChange([...new Set([...chosen, ...matching.map((area) => area.id)])])} className="font-semibold text-brand-600 hover:underline">اختيار كل نتائج المناطق</button>}
+                    {matching.length > 0 && <Button isDisabled={disabled} onClick={() => onChange([...new Set([...chosen, ...matching.map((area) => area.id)])])} className="font-semibold text-brand-600 hover:underline">اختيار كل نتائج المناطق</Button>}
                 </div>
             </div>
             <div className="max-h-60 overflow-y-auto p-2 lg:max-h-120">
@@ -50,7 +51,7 @@ export default function DistributionAreas({ areas, chosen, onChange, disabled, f
                     </span>
                 </label>)}
             </div>
-            {chosen.length > 0 && onDistribute && <div className="border-t border-gray-100 p-4"><button type="button" disabled={disabled || distributionCount === 0} onClick={onDistribute} className="gl-btn w-full">إجراء على المناطق المختارة ({formatNumber(distributionCount)})</button><p className="mt-2 text-xs leading-6 text-gray-500">يشمل الطبلونات المطابقة للتصفية في كل الصفحات.</p></div>}
+            {chosen.length > 0 && onDistribute && <div className="border-t border-gray-100 p-4"><Button isDisabled={disabled || distributionCount === 0} onClick={onDistribute} className="gl-btn w-full">إجراء على المناطق المختارة ({formatNumber(distributionCount)})</Button><p className="mt-2 text-xs leading-6 text-gray-500">يشمل الطبلونات المطابقة للتصفية في كل الصفحات.</p></div>}
         </aside>
     );
 }

@@ -1,3 +1,4 @@
+import { TextArea } from '@heroui/react';
 import InputError from '@/Components/InputError';
 import { FormStep } from './AccountFormParts';
 import { inputClass } from './DiscountSegmentStep';
@@ -10,7 +11,7 @@ export default function DiscountNotesStep({ data, errors, setData, steps }) {
                 <label htmlFor="discount_notes" className="sr-only">
                     ملاحظات
                 </label>
-                <textarea
+                <TextArea
                     id="discount_notes"
                     name="notes"
                     rows={2}

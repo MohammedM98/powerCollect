@@ -3,7 +3,7 @@ import { useForm, useHttp } from '@inertiajs/react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
-import { Button } from '@heroui/react';
+import { Button, Input } from '@heroui/react';
 import { describeBalance } from '@/lib/accountStatement';
 import { formatMoney, normalizeDecimalInput } from '@/lib/format';
 import { AmountBox, balanceText, FieldLabel } from '@/Pages/Subscriptions/AccountFormParts';
@@ -318,7 +318,7 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, onCancel 
                 <FieldLabel htmlFor="split_notes" hint="تظهر في كشف كل مشترك">
                     ملاحظة
                 </FieldLabel>
-                <input id="split_notes" maxLength={1000} autoComplete="off" placeholder="أي تفصيل يُحفظ مع الدفعة" value={data.notes} onChange={(event) => setData('notes', event.target.value)} className={inputClass} />
+                <Input id="split_notes" maxLength={1000} autoComplete="off" placeholder="أي تفصيل يُحفظ مع الدفعة" value={data.notes} onChange={(event) => setData('notes', event.target.value)} className={inputClass} />
                 <InputError message={errors.notes} className="mt-2" />
             </div>
 

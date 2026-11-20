@@ -1,3 +1,4 @@
+import { Button, TextArea } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import { smsParts } from '@/lib/disconnections';
@@ -40,22 +41,21 @@ export default function QuickMessageBody({
             )}
             <div role="group" aria-label="أضف معلومة من بيانات المشترك إلى النص" className="flex flex-wrap gap-1.5">
                 {setup.placeholders[kind].map((name) => (
-                    <button
+                    <Button
                         key={name}
-                        type="button"
                         onClick={() => insertPlaceholder(name)}
                         aria-label={`أضف «${name.replaceAll('_', ' ')}» إلى نص الرسالة`}
                         className={`inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-semibold text-gray-700 transition hover:border-brand-500/40 hover:text-brand-600 ${FOCUS_RING}`}
                     >
                         <Icon name="plus" className="h-3.5 w-3.5" strokeWidth={2} />
                         {name.replaceAll('_', ' ')}
-                    </button>
+                    </Button>
                 ))}
             </div>
             <label htmlFor={`${id}-body`} className="sr-only">
                 نص الرسالة
             </label>
-            <textarea
+            <TextArea
                 ref={bodyRef}
                 id={`${id}-body`}
                 rows={4}

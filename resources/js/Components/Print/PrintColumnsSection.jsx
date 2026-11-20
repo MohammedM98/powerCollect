@@ -1,3 +1,4 @@
+import { Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import SecondaryButton from '@/Components/SecondaryButton';
 import { moveColumn } from '@/lib/printLayout';
@@ -36,7 +37,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                     إخفاء الكل
                 </SecondaryButton>
             </div>
-            <input
+            <Input
                 type="search"
                 aria-label="البحث في أعمدة الطباعة"
                 placeholder="ابحث عن عمود أو حقل إضافي..."
@@ -62,7 +63,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                     title="إظهار العمود في الطباعة"
                                     className="rounded border-gray-300 text-brand-600"
                                 />
-                                <input
+                                <Input
                                     type="text"
                                     value={column.label}
                                     onChange={(e) => setColumn(index, { label: e.target.value })}
@@ -104,7 +105,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                 <div className="mt-2 flex flex-wrap items-center gap-3 ps-6 text-xs">
                                     <label className="flex items-center gap-1.5 text-gray-600">
                                         العرض (مم)
-                                        <input
+                                        <Input
                                             type="number"
                                             min="0"
                                             max="120"

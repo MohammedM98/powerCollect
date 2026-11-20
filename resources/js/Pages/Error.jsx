@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -61,9 +62,9 @@ export default function Error({ status, blank = false }) {
                     <Icon name={signedIn ? 'home' : 'enter'} className="h-4 w-4" />
                     {signedIn ? 'العودة إلى لوحة التحكم' : 'تسجيل الدخول'}
                 </RecoveryLink>
-                <button type="button" onClick={() => window.history.back()} className="gl-btn gl-sec">
+                <Button onClick={() => window.history.back()} className="gl-btn gl-sec">
                     رجوع
-                </button>
+                </Button>
             </div>
         </div>
     );

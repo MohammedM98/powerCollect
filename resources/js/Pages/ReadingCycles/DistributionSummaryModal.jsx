@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useMemo } from 'react';
 import { boardCounters, branchDistributionSummary } from '@/lib/readingBoard';
 import { formatNumber, formatDate } from '@/lib/format';
@@ -19,7 +20,7 @@ export default function DistributionSummaryModal({ cycle, boards, readers, paper
         footer={<><SecondaryButton disabled={busy} onClick={onClose}>العودة للتوزيع</SecondaryButton>{abilities.approve && counters.draft > 0 && <PrimaryButton disabled={busy} onClick={onApprove}>اعتماد كل الجاهز ({formatNumber(counters.draft)})</PrimaryButton>}</>}>
         {result && <p role="status" className={`rounded-control p-3 text-sm ${result.conflicts.length ? 'bg-amber-500/10 text-amber-700' : 'bg-emerald-500/10 text-emerald-700'}`}>
             {result.action === 'approve' ? 'اعتُمد' : 'حُدّث توزيع'} {formatNumber(result.moved)} طبلون.
-            {result.conflicts.length > 0 && <> توجد طبلونات تعذّر تحديثها. <button type="button" onClick={onClose} className="font-bold underline">عرض أسباب التعارض</button></>}
+            {result.conflicts.length > 0 && <> توجد طبلونات تعذّر تحديثها. <Button onClick={onClose} className="font-bold underline">عرض أسباب التعارض</Button></>}
         </p>}
         <InputError message={errors.approve} />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

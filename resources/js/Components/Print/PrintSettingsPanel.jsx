@@ -1,3 +1,4 @@
+import { Input } from '@heroui/react';
 import { useState } from 'react';
 import ChoiceChips from '@/Components/ChoiceChips';
 import Switch from '@/Components/Switch';
@@ -115,7 +116,7 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
                     </Field>
                     <Field label="الهوامش (مم)">
                         {(id) => (
-                            <input
+                            <Input
                                 id={id}
                                 type="number"
                                 min="0"
@@ -211,7 +212,7 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
                 <Switch checked={Boolean(layout.watermark?.enabled)} onChange={(value) => setIn('watermark', 'enabled', value)} label="إظهار العلامة المائية" />
                 {layout.watermark?.enabled && <>
                     <Field label="نص العلامة المائية">
-                        {(id) => <input id={id} type="text" maxLength={60} value={layout.watermark.text ?? ''} onChange={(event) => setIn('watermark', 'text', event.target.value)} placeholder="مثلًا: نسخة القارئ" className="block w-full text-sm" />}
+                        {(id) => <Input id={id} type="text" maxLength={60} value={layout.watermark.text ?? ''} onChange={(event) => setIn('watermark', 'text', event.target.value)} placeholder="مثلًا: نسخة القارئ" className="block w-full text-sm" />}
                     </Field>
                     <Switch checked={Boolean(layout.watermark.logo)} onChange={(value) => setIn('watermark', 'logo', value)} label="إظهار شعار الشركة في العلامة المائية" />
                     <Field label={`وضوح العلامة المائية: ${Math.round((layout.watermark.opacity ?? 0.08) * 100)}%`}>

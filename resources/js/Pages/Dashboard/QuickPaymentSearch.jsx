@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
@@ -101,7 +102,7 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
                 <div className="shrink-0 px-5 pt-5 sm:px-7">
                     <div className="relative">
                         <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-5 w-5 text-gray-400" />
-                        <input
+                        <Input
                             type="search"
                             autoFocus
                             value={query}
@@ -139,8 +140,7 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
 
                                 return (
                                     <li key={subscriber.id} id={`${titleId}-result-${index}`} role="option" aria-selected={index === active}>
-                                        <button
-                                            type="button"
+                                        <Button
                                             onClick={() => onPick(subscriber)}
                                             onPointerEnter={() => setActive(index)}
                                             className={`flex w-full items-center gap-3 rounded-row border px-4 py-3 text-start transition active:scale-[0.99] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${
@@ -163,7 +163,7 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
                                                 <span className="text-xs text-gray-500">{balanceWord(subscriber.balance)}</span>
                                             </span>
                                             <Icon name="chevron-left" className="h-4 w-4 shrink-0 text-gray-400" />
-                                        </button>
+                                        </Button>
                                     </li>
                                 );
                             })}

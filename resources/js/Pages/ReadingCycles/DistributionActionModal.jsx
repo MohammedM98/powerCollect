@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { distributionAreaBreakdown, distributionTargetPreview, columnTotals } from '@/lib/readingBoard';
 import { formatNumber } from '@/lib/format';
@@ -23,7 +24,7 @@ export default function DistributionActionModal({ boards, selectedBoxes, readers
             {abilities.printSheets && paperCount > 0 && <SecondaryButton disabled={busy || paperCount > 200} onClick={onCreateSheet}>إنشاء كشف للطباعة ({formatNumber(paperCount)})</SecondaryButton>}
             {abilities.manage && <PrimaryButton onClick={onAssign} disabled={busy || !target || selectedBoxes.length === 0 || selectedBoxes.length > 1000}>{busy ? 'جارٍ الحفظ…' : abilities.approve ? 'حفظ التوزيع' : 'حفظ للمراجعة'}</PrimaryButton>}
         </div></>}>
-        {hiddenSelected > 0 && <div role="status" className="rounded-control bg-amber-500/10 p-3 text-xs leading-6 text-amber-700">يشمل التحديد {formatNumber(hiddenSelected)} طبلون خارج النتائج الظاهرة، وسيشملها الحفظ أيضًا. <button type="button" disabled={busy} onClick={onRemoveHidden} className="font-bold underline">إلغاء تحديد المخفي</button></div>}
+        {hiddenSelected > 0 && <div role="status" className="rounded-control bg-amber-500/10 p-3 text-xs leading-6 text-amber-700">يشمل التحديد {formatNumber(hiddenSelected)} طبلون خارج النتائج الظاهرة، وسيشملها الحفظ أيضًا. <Button isDisabled={busy} onClick={onRemoveHidden} className="font-bold underline">إلغاء تحديد المخفي</Button></div>}
         {allocationReport}
         <div className="max-h-60 overflow-y-auto rounded-control border border-gray-100 px-4"><DistributionAreaBreakdown areas={distributionAreaBreakdown(boards, selectedBoxes)} /></div>
         {abilities.manage && <>

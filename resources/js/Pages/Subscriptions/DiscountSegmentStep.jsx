@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import InputError from '@/Components/InputError';
 import { FormStep } from './AccountFormParts';
 
@@ -9,7 +10,7 @@ export default function DiscountSegmentStep({ data, discountSegments, errors, se
                 <label htmlFor="discount_segment" className="sr-only">
                     تصنيف الزبون
                 </label>
-                <input
+                <Input
                     id="discount_segment"
                     name="segment"
                     maxLength={100}
@@ -22,9 +23,8 @@ export default function DiscountSegmentStep({ data, discountSegments, errors, se
                 {discountSegments.length > 0 && (
                     <div className="mt-2.5 flex flex-wrap gap-2">
                         {discountSegments.map((segment) => (
-                            <button
+                            <Button
                                 key={segment}
-                                type="button"
                                 aria-pressed={data.segment === segment}
                                 onClick={() => setData('segment', data.segment === segment ? '' : segment)}
                                 className={`rounded-full border px-3 py-1 text-[13.5px] font-semibold transition ${
@@ -34,7 +34,7 @@ export default function DiscountSegmentStep({ data, discountSegments, errors, se
                                 }`}
                             >
                                 {segment}
-                            </button>
+                            </Button>
                         ))}
                     </div>
                 )}

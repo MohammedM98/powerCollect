@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import Icon from '@/Components/Icon';
 import SearchableSelect from '@/Components/SearchableSelect';
@@ -57,13 +58,13 @@ export default function BalanceFilter({ values, onChange, errors = {} }) {
 
     return (
         <div ref={root} className="relative w-full sm:w-auto">
-            <button ref={trigger} type="button" onClick={toggle} aria-expanded={open} aria-controls={`${id}-panel`} data-active={label ? '' : undefined} className="gl-filter-trigger w-full justify-between sm:w-auto">
+            <Button ref={trigger} onClick={toggle} aria-expanded={open} aria-controls={`${id}-panel`} data-active={label ? '' : undefined} className="gl-filter-trigger w-full justify-between sm:w-auto">
                 <span className="gl-filter-name">
                     <Icon name="wallet" className="h-[15px] w-[15px] shrink-0" />
                     {label || 'الرصيد'}
                 </span>
                 <Icon name="chevron-down" className={`h-4 w-4 shrink-0 transition ${open ? 'rotate-180' : ''}`} />
-            </button>
+            </Button>
             {open && (
                 <form id={`${id}-panel`} onSubmit={apply} aria-label="تصفية حسب الرصيد" className="fixed inset-x-4 bottom-4 z-50 max-h-[calc(100dvh-2rem)] space-y-4 overflow-y-auto rounded-2xl border border-gray-100 bg-surface p-5 shadow-lift sm:absolute sm:inset-x-auto sm:inset-s-0 sm:bottom-auto sm:z-30 sm:mt-2 sm:max-h-none sm:w-96 sm:overflow-visible">
                     <div><h3 className="font-bold text-gray-900">تصفية حسب الرصيد</h3><p className="mt-1 text-xs text-gray-500">اختر جهة الرصيد وأدخل المبلغ بالشيكل. الحسابات المسدّدة خارج هذا الفلتر.</p></div>
@@ -72,8 +73,8 @@ export default function BalanceFilter({ values, onChange, errors = {} }) {
                         <div><label htmlFor={`${id}-operator`} className="mb-1.5 block text-xs font-semibold text-gray-700">الشرط</label><SearchableSelect id={`${id}-operator`} value={operator} onChange={setOperator} options={BALANCE_OPERATORS} searchable={false} clearable={false} className="[&>div]:min-w-0" /></div>
                     </div>
                     <div className={`grid gap-3 ${operator === 'between' ? 'grid-cols-2' : ''}`}>
-                        <div><label htmlFor={`${id}-amount`} className="mb-1.5 block text-xs font-semibold text-gray-700">{operator === 'between' ? 'من مبلغ (شيكل)' : 'المبلغ (شيكل)'}</label><input id={`${id}-amount`} type="text" inputMode="decimal" dir="ltr" autoFocus value={amount} onChange={(event) => setAmount(normalizeDecimalInput(event.target.value))} className="block w-full" /></div>
-                        {operator === 'between' && <div><label htmlFor={`${id}-to`} className="mb-1.5 block text-xs font-semibold text-gray-700">إلى مبلغ (شيكل)</label><input id={`${id}-to`} type="text" inputMode="decimal" dir="ltr" value={to} onChange={(event) => setTo(normalizeDecimalInput(event.target.value))} className="block w-full" /></div>}
+                        <div><label htmlFor={`${id}-amount`} className="mb-1.5 block text-xs font-semibold text-gray-700">{operator === 'between' ? 'من مبلغ (شيكل)' : 'المبلغ (شيكل)'}</label><Input id={`${id}-amount`} type="text" inputMode="decimal" dir="ltr" autoFocus value={amount} onChange={(event) => setAmount(normalizeDecimalInput(event.target.value))} className="block w-full" /></div>
+                        {operator === 'between' && <div><label htmlFor={`${id}-to`} className="mb-1.5 block text-xs font-semibold text-gray-700">إلى مبلغ (شيكل)</label><Input id={`${id}-to`} type="text" inputMode="decimal" dir="ltr" value={to} onChange={(event) => setTo(normalizeDecimalInput(event.target.value))} className="block w-full" /></div>}
                     </div>
                     {operator === 'between' && to !== '' && Number(to) < Number(amount) && <p role="alert" className="text-xs text-red-600">المبلغ الأعلى يجب أن يساوي المبلغ الأول أو يزيد عليه.</p>}
                     {BALANCE_FILTER_KEYS.map((key) => errors[`filter.${key}`] && <p key={key} role="alert" className="text-xs text-red-600">{errors[`filter.${key}`]}</p>)}

@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import AsyncState from '@/Components/AsyncState';
 import { useJsonResource } from '@/hooks/useJsonResource';
@@ -38,9 +39,9 @@ export default function SplitPaymentDetails({ id, onClose }) {
                             {split && <p className="text-[13px] text-gray-500">تحويل بنكي واحد وُزّع على {split.partsCount} اشتراكات</p>}
                         </div>
                     </div>
-                    <button type="button" onClick={onClose} aria-label="إغلاق" className="shrink-0 rounded-xl p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-900">
+                    <Button onClick={onClose} aria-label="إغلاق" className="shrink-0 rounded-xl p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-900">
                         <Icon name="close" />
-                    </button>
+                    </Button>
                 </div>
 
                 <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-6 sm:px-7">

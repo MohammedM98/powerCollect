@@ -1,3 +1,4 @@
+import { Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import ChoiceChips from '@/Components/ChoiceChips';
 import Switch from '@/Components/Switch';
@@ -128,7 +129,7 @@ export default function PrintSortSection({ fieldOptions, layout, onChange, set, 
                     />
                     <Field label="كلمة بعد عدد الصفوف في العنوان" hint="مثل «مشترك» لتظهر «(12 مشترك)». اتركها فارغة ليظهر العدد وحده.">
                         {(id) => (
-                            <input
+                            <Input
                                 id={id}
                                 type="text"
                                 maxLength={30}

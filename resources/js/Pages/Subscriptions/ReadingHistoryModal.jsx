@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { Fragment, useEffect, useId, useRef, useState } from 'react';
 import { router } from '@inertiajs/react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
@@ -60,7 +61,7 @@ function ReadingHistoryStatus({ subscription, reading, disabled = false }) {
     }
 
     return <>
-        {canApprove ? <button type="button" className="rh-pill is-pending rh-pill-action" disabled={disabled || approving} onClick={() => setConfirming(true)} aria-label={`اعتماد قراءة ${subscription.display_name}`} title={disabled ? 'احفظ تعديل القراءة أولًا' : 'اضغط لمراجعة واعتماد هذه القراءة فقط'}><i />{approving ? 'جارٍ الاعتماد...' : label}<Icon name="check" className="h-3.5 w-3.5" /></button> : <span className={`rh-pill ${reading.status === 'approved' ? 'is-approved' : 'is-pending'}`}><i />{label}</span>}
+        {canApprove ? <Button className="rh-pill is-pending rh-pill-action" isDisabled={disabled || approving} onClick={() => setConfirming(true)} aria-label={`اعتماد قراءة ${subscription.display_name}`} title={disabled ? 'احفظ تعديل القراءة أولًا' : 'اضغط لمراجعة واعتماد هذه القراءة فقط'}><i />{approving ? 'جارٍ الاعتماد...' : label}<Icon name="check" className="h-3.5 w-3.5" /></Button> : <span className={`rh-pill ${reading.status === 'approved' ? 'is-approved' : 'is-pending'}`}><i />{label}</span>}
         <ReadingApprovalDialog row={confirming ? { fullName: subscription.display_name, previousReading: reading.previous_reading, reading: { ...reading, currentReading: reading.current_reading } } : null} onConfirm={approve} onCancel={() => setConfirming(false)} />
         {error && <small className="rh-live-error" role="alert">{error}</small>}
     </>;
@@ -124,7 +125,7 @@ function HistoryChart({ readings, average }) {
 
     return (
         <section className="rh-chart">
-            <div className="rh-chart-heading"><h3>الاستهلاك الأسبوعي</h3><span>{formatNumber(points.length)} أسبوعًا، الأقدم على اليمين</span>{open && <span className="rh-average"><i />المتوسط</span>}<button type="button" className="rh-chart-toggle" onClick={toggle} aria-expanded={open} aria-controls={plotId}>{open ? 'طي الرسم' : 'عرض الرسم'}<Icon name="chevron-down" className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} /></button></div>
+            <div className="rh-chart-heading"><h3>الاستهلاك الأسبوعي</h3><span>{formatNumber(points.length)} أسبوعًا، الأقدم على اليمين</span>{open && <span className="rh-average"><i />المتوسط</span>}<Button className="rh-chart-toggle" onClick={toggle} aria-expanded={open} aria-controls={plotId}>{open ? 'طي الرسم' : 'عرض الرسم'}<Icon name="chevron-down" className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} /></Button></div>
             <div id={plotId} className="rh-plot" ref={plotRef} style={open ? undefined : { display: 'none' }} onPointerLeave={() => setActiveId(null)}>
                 {points.length > 0 ? <svg viewBox={`0 0 ${width} 170`} preserveAspectRatio="none" role="group" aria-label="الاستهلاك الأسبوعي بالكيلو">
                     <defs><pattern id={hatchId} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" className="rh-hatch-background" /><path d="M0 0V6" className="rh-hatch-line" strokeWidth="2.2" /></pattern></defs>
@@ -172,7 +173,7 @@ function LastReadingField({ subscription, lastReading }) {
         <LastReadingConfirmDialog editor={editor} subscriptionName={subscription.display_name} />
         <span className="rh-last-value">
             <span className="rh-last-number">{formatMoney(savedValue)}</span>
-            <button type="button" className="rh-last-pencil" onClick={editor.open} aria-label="تعديل القراءة السابقة" title={lastReading.isInitial ? 'تعديل قراءة بداية الاشتراك' : `تعديل قراءة الأسبوع ${shortDate(lastReading.weekStart)} – ${shortDate(lastReading.weekEnd)}`}><Icon name="pencil" /></button>
+            <Button className="rh-last-pencil" onClick={editor.open} aria-label="تعديل القراءة السابقة" title={lastReading.isInitial ? 'تعديل قراءة بداية الاشتراك' : `تعديل قراءة الأسبوع ${shortDate(lastReading.weekStart)} – ${shortDate(lastReading.weekEnd)}`}><Icon name="pencil" /></Button>
         </span>
     </>;
 }
@@ -259,8 +260,8 @@ function LiveRow({ subscription, week, reading, maximum, average, editableLastRe
         <td className={`rh-previous rh-number ${editableLastReading ? 'rh-last-cell' : ''}`}>{editableLastReading ? <LastReadingField subscription={subscription} lastReading={editableLastReading} nextReading={reading} /> : formatMoney(previous)}</td>
         <td className="rh-current rh-live-current">
             <div className="rh-stepper" dir="ltr">
-                <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => step(-1)} disabled={saving || !typed && value !== '' || (typed && Number(value) <= Number(previous))} aria-label="إنقاص القراءة">−</button>
-                <input ref={inputRef} type="number" inputMode="decimal" step="0.01" min={previous} dir="ltr" value={value} placeholder="أدخل القراءة" disabled={saving}
+                <Button onMouseDown={(event) => event.preventDefault()} onClick={() => step(-1)} isDisabled={saving || !typed && value !== '' || (typed && Number(value) <= Number(previous))} aria-label="إنقاص القراءة">−</Button>
+                <Input ref={inputRef} type="number" inputMode="decimal" step="0.01" min={previous} dir="ltr" value={value} placeholder="أدخل القراءة" disabled={saving}
                     aria-label="القراءة الجديدة" aria-invalid={Boolean(error) || negative} title={error ?? (negative ? `لا يمكن أن تقل عن القراءة السابقة (${formatMoney(previous)})` : undefined)}
                     onChange={(event) => { setValue(event.target.value); setError(null); }}
                     onBlur={() => save()}
@@ -275,7 +276,7 @@ function LiveRow({ subscription, week, reading, maximum, average, editableLastRe
                         }
                         if (event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); }
                     }} />
-                <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => step(1)} disabled={saving} aria-label="زيادة القراءة">+</button>
+                <Button onMouseDown={(event) => event.preventDefault()} onClick={() => step(1)} isDisabled={saving} aria-label="زيادة القراءة">+</Button>
             </div>
             {(error || negative) && <small className="rh-live-error" role="alert">{error ?? `أقل من السابقة (${formatMoney(previous)})`}</small>}
         </td>
@@ -342,7 +343,7 @@ export default function ReadingHistoryModal({ subscription, onClose, readingWeek
                     </div>
                     <div className="rh-actions">
                         <TableExportActions title={`سجل قراءات ${subscription.display_name}`} onDark disabled={!visibleReadings.length} onPrint={() => window.print()} excelProps={{ storageKey: 'reading-history', templateKind: 'reading-history', loadParts: async () => readingHistoryExcelParts(visibleReadings), meta: { lines: [`رقم الحساب: ${subscription.account_number}`, subscription.branchName].filter(Boolean), criteria: [['الفترة', PERIODS.find(([value]) => value === period)[1]], ['الحالة', STATUSES.find(([value]) => value === status)[1]]] } }} />
-                        <button type="button" className="rh-close" onClick={onClose} aria-label="إغلاق"><Icon name="close" /></button>
+                        <Button className="rh-close" onClick={onClose} aria-label="إغلاق"><Icon name="close" /></Button>
                     </div>
                 </header>
                 <div className="rh-body">
@@ -354,8 +355,8 @@ export default function ReadingHistoryModal({ subscription, onClose, readingWeek
                     </div>
                     <HistoryChart readings={periodReadings} average={average} />
                     <div className="rh-toolbar">
-                        <div className="rh-segments" role="group" aria-label="الفترة">{PERIODS.map(([value, label]) => <button type="button" key={value} aria-pressed={period === value} onClick={() => setPeriod(value)}>{label}</button>)}</div>
-                        <div className="rh-segments" role="group" aria-label="الحالة">{STATUSES.map(([value, label]) => <button type="button" key={value} aria-pressed={status === value} onClick={() => setStatus(value)}>{label}<span>{formatNumber(value === 'all' ? periodReadings.length : periodReadings.filter((reading) => reading.status === value).length)}</span></button>)}</div>
+                        <div className="rh-segments" role="group" aria-label="الفترة">{PERIODS.map(([value, label]) => <Button key={value} aria-pressed={period === value} onClick={() => setPeriod(value)}>{label}</Button>)}</div>
+                        <div className="rh-segments" role="group" aria-label="الحالة">{STATUSES.map(([value, label]) => <Button key={value} aria-pressed={status === value} onClick={() => setStatus(value)}>{label}<span>{formatNumber(value === 'all' ? periodReadings.length : periodReadings.filter((reading) => reading.status === value).length)}</span></Button>)}</div>
                         <span className="rh-count" aria-live="polite">{formatNumber(visibleReadings.length)} قراءة معروضة</span>
                     </div>
                     <p className="rh-print-context">

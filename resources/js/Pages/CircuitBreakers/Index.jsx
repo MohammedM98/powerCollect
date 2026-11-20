@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
@@ -80,16 +81,16 @@ export default function Index({ circuitBreakers, canCreate, filters, filterOptio
                                         {(circuitBreaker.canUpdate || circuitBreaker.canDelete) && (
                                             <RowActionsMenu>
                                                 {circuitBreaker.canDelete && (
-                                                    <button
+                                                    <Button type="submit"
                                                         onClick={() =>
                                                             requestDelete(`/circuit-breakers/${circuitBreaker.id}`, `${circuitBreaker.ampere}A`)
                                                         }
                                                     >
                                                         حذف
-                                                    </button>
+                                                    </Button>
                                                 )}
                                                 {circuitBreaker.canUpdate && (
-                                                    <button onClick={() => setModalCircuitBreaker(circuitBreaker)}>تعديل</button>
+                                                    <Button type="submit" onClick={() => setModalCircuitBreaker(circuitBreaker)}>تعديل</Button>
                                                 )}
                                             </RowActionsMenu>
                                         )}

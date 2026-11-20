@@ -216,7 +216,7 @@ export default function SearchableSelect({
             </Button>
 
             {required && (
-                <input
+                <Input
                     type="text"
                     name={name}
                     required

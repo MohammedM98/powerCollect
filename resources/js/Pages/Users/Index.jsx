@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
-import { Chip } from '@heroui/react';
+import { Button, Chip } from '@heroui/react';
 import PageHeader from '@/Components/PageHeader';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import AddButton from '@/Components/AddButton';
@@ -107,8 +107,8 @@ export default function Index({
                                     <td className="text-end">
                                         {(user.canUpdate || user.canDelete) && (
                                             <RowActionsMenu>
-                                                {user.canDelete && <button onClick={() => requestDelete(`/users/${user.id}`, user.name)}>حذف</button>}
-                                                {user.canUpdate && <button onClick={() => setModalUser(user)}>تعديل</button>}
+                                                {user.canDelete && <Button type="submit" onClick={() => requestDelete(`/users/${user.id}`, user.name)}>حذف</Button>}
+                                                {user.canUpdate && <Button type="submit" onClick={() => setModalUser(user)}>تعديل</Button>}
                                             </RowActionsMenu>
                                         )}
                                     </td>

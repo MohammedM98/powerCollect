@@ -1,3 +1,4 @@
+import { Input, TextArea } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import ChoiceChips from '@/Components/ChoiceChips';
 import Switch from '@/Components/Switch';
@@ -11,7 +12,7 @@ export default function PrintFooterSection({ layout, setIn, setSignature }) {
         <Section icon="page-footer" title="التذييل والتواقيع">
             <Field label="نص أسفل كل صفحة">
                 {(id) => (
-                    <input
+                    <Input
                         id={id}
                         type="text"
                         value={layout.footer.text}
@@ -45,7 +46,7 @@ export default function PrintFooterSection({ layout, setIn, setSignature }) {
             </div>
             <Field label="ملاحظات في نهاية الطباعة">
                 {(id) => (
-                    <textarea
+                    <TextArea
                         id={id}
                         rows={3}
                         value={layout.footer.notes}
@@ -58,7 +59,7 @@ export default function PrintFooterSection({ layout, setIn, setSignature }) {
                 <div className="space-y-2">
                     {layout.footer.signatures.map((label, index) => (
                         <div key={index} className="flex gap-2">
-                            <input
+                            <Input
                                 type="text"
                                 value={label}
                                 onChange={(e) => setSignature(index, e.target.value)}

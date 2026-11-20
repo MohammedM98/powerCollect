@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
@@ -207,18 +208,17 @@ export default function Permissions({
                 <div className="pm-toast" role="status">
                     <Icon name="check" className="h-5 w-5 shrink-0 text-emerald-400" strokeWidth={2.5} />
                     <span className="min-w-0 flex-1">حُفظت صلاحيات {lastSave.name}.</span>
-                    <button type="button" onClick={undoLastSave} disabled={undoing} className="pm-toast-action">
+                    <Button onClick={undoLastSave} isDisabled={undoing} className="pm-toast-action">
                         <Icon name="undo" className="h-4 w-4" />
                         {undoing ? 'جارٍ التراجع...' : 'تراجع عن الحفظ'}
-                    </button>
-                    <button
-                        type="button"
+                    </Button>
+                    <Button
                         onClick={() => setLastSave(null)}
                         aria-label="إخفاء"
                         className="rounded-lg p-1 text-white/70 hover:text-white"
                     >
                         <Icon name="close" className="h-4 w-4" />
-                    </button>
+                    </Button>
                 </div>
             )}
 

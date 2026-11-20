@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import CountUp from '@/Components/CountUp';
 import { ChangePill } from '@/Components/StatStrip';
@@ -96,7 +97,7 @@ export default function ChartStudio({ title, total, change, unit = '₪', format
     if (bare) {
         return (
             <div className="gl-chart-bare">
-                <button type="button" className="gl-tog" aria-pressed={comparing} onClick={() => setComparing(!comparing)}>الفترة السابقة</button>
+                <Button className="gl-tog" aria-pressed={comparing} onClick={() => setComparing(!comparing)}>الفترة السابقة</Button>
                 <AreaChart
                     key={`${period}-${series.length}`}
                     values={series.map((day) => Number(day.value) || 0)}
@@ -119,11 +120,11 @@ export default function ChartStudio({ title, total, change, unit = '₪', format
                     </span>
                 </div>
                 <div className="gl-sp" />
-                <button type="button" className="gl-tog" aria-pressed={comparing} onClick={() => setComparing(!comparing)}>الفترة السابقة</button>
+                <Button className="gl-tog" aria-pressed={comparing} onClick={() => setComparing(!comparing)}>الفترة السابقة</Button>
                 {periods.length > 0 && (
                     <div className="gl-seg" role="group" aria-label="الفترة">
                         {periods.map((option) => (
-                            <button key={option.value} type="button" aria-pressed={period === option.value} onClick={() => onPeriodChange(option.value)}>{option.label}</button>
+                            <Button key={option.value} aria-pressed={period === option.value} onClick={() => onPeriodChange(option.value)}>{option.label}</Button>
                         ))}
                     </div>
                 )}

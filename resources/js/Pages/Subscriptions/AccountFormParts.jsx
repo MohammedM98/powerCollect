@@ -316,9 +316,9 @@ export function FormHeader({ titleId, icon, tone = 'graphite', title, subtitle, 
                 </h3>
                 <p className="gl-sub mt-0.5 text-[13px]!">{subtitle}</p>
             </div>
-            <button type="button" onClick={onClose} aria-label="إغلاق" className="gl-ib ms-auto">
+            <Button onClick={onClose} aria-label="إغلاق" className="gl-ib ms-auto">
                 <Icon name="close" className="h-[18px] w-[18px]" strokeWidth={2} />
-            </button>
+            </Button>
         </div>
     );
 }

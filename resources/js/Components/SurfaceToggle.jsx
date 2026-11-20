@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useSurface } from '@/hooks/useSurface';
 import Icon from '@/Components/Icon';
 
@@ -15,10 +16,10 @@ export default function SurfaceToggle({ className = '' }) {
     return (
         <div role="group" aria-label="شكل الأسطح" className={`gl-seg tn-surface ${className}`}>
             {options.map((option) => (
-                <button key={option.value} type="button" aria-pressed={surface === option.value} onClick={() => changeSurface(option.value)}>
+                <Button key={option.value} aria-pressed={surface === option.value} onClick={() => changeSurface(option.value)}>
                     <Icon name={option.icon} className="h-[15px] w-[15px]" />
                     {option.label}
-                </button>
+                </Button>
             ))}
         </div>
     );

@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Icon from '@/Components/Icon';
@@ -74,9 +75,8 @@ export default function InfoTip({ children, label = 'معلومة', tone = 'info
 
     return (
         <>
-            <button
+            <Button
                 ref={buttonRef}
-                type="button"
                 aria-label={label}
                 aria-describedby={id}
                 aria-expanded={open}
@@ -93,7 +93,7 @@ export default function InfoTip({ children, label = 'معلومة', tone = 'info
                 } ${open ? (warning ? 'bg-amber-500/10' : 'bg-gray-100 text-gray-700') : ''} ${className}`}
             >
                 <Icon name="alert" className="h-[18px] w-[18px]" />
-            </button>
+            </Button>
             <span id={id} className="sr-only">
                 {children}
             </span>

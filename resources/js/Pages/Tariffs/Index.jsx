@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card } from '@heroui/react';
+import { Button, Card, Input } from '@heroui/react';
 import { Head, router } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import AddButton from '@/Components/AddButton';
@@ -81,7 +81,7 @@ function RateEditor({ tariff, dark, onDone }) {
                             : 'border-gray-200 bg-surface focus-within:border-brand-500 focus-within:ring-brand-500/15'
                     }`}
                 >
-                    <input
+                    <Input
                         autoFocus
                         value={text}
                         inputMode="decimal"
@@ -96,9 +96,8 @@ function RateEditor({ tariff, dark, onDone }) {
                 </label>
                 <div className="flex gap-1.5">
                     {RATE_STEPS.map((step) => (
-                        <button
+                        <Button
                             key={step}
-                            type="button"
                             onClick={() => setText(stepRate(text, step))}
                             className={`h-9 rounded-full border px-3 text-[13.5px] font-semibold transition ${
                                 dark
@@ -110,7 +109,7 @@ function RateEditor({ tariff, dark, onDone }) {
                                 {step > 0 ? '+' : '−'}
                                 {Math.abs(step)}
                             </span>
-                        </button>
+                        </Button>
                     ))}
                 </div>
             </div>
@@ -149,21 +148,19 @@ function RateEditor({ tariff, dark, onDone }) {
             </p>
 
             <div className="flex flex-wrap items-center gap-2">
-                <button
-                    type="button"
+                <Button
                     onClick={onDone}
                     className="gl-btn gl-sec"
                 >
                     إلغاء
-                </button>
-                <button
-                    type="button"
+                </Button>
+                <Button
                     onClick={save}
-                    disabled={!change.valid || !change.changed || saving}
+                    isDisabled={!change.valid || !change.changed || saving}
                     className="gl-btn ms-auto"
                 >
                     {saving ? 'جارٍ الحفظ...' : change.valid ? `حفظ ${formatMoney(change.rate, { cents: true })} ₪` : 'حفظ السعر'}
-                </button>
+                </Button>
             </div>
         </div>
     );
@@ -270,7 +267,7 @@ function QuickCalculator({ tariffs }) {
                 <p className="text-[13.5px] text-gray-500">كم يدفع المشترك عن استهلاك معيّن؟</p>
             </div>
             <label className="gl-tariff-kilos">
-                <input
+                <Input
                     value={kilos}
                     inputMode="decimal"
                     dir="ltr"

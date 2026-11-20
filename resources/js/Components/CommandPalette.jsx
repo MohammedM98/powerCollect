@@ -1,3 +1,4 @@
+import { Input } from '@heroui/react';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
@@ -193,7 +194,7 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
             >
                 <div className="flex items-center gap-3 border-b border-gray-200/70 px-5 py-4">
                     <Icon name="search" className="h-5 w-5 text-gray-400" />
-                    <input
+                    <Input
                         ref={inputRef}
                         value={query}
                         onChange={(event) => {

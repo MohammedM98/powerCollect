@@ -1,3 +1,4 @@
+import { Input } from '@heroui/react';
 import { useEffect, useEffectEvent, useId, useRef, useState } from 'react';
 import { useHttp, usePage } from '@inertiajs/react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
@@ -384,7 +385,7 @@ export default function PaymentModal({
                                             <label htmlFor="payment_notes" className="sr-only">
                                                 ملاحظة
                                             </label>
-                                            <input
+                                            <Input
                                                 id="payment_notes"
                                                 name="notes"
                                                 autoComplete="off"

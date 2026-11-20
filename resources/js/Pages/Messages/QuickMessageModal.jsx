@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useEffect, useEffectEvent, useId, useRef, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
@@ -288,14 +289,13 @@ export default function QuickMessageModal({ subscriptionIds = [], selection = nu
                                 رسالة سريعة
                             </h3>
                         </div>
-                        <button
-                            type="button"
+                        <Button
                             onClick={onClose}
                             aria-label="إغلاق"
                             className="rounded-xl p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-900"
                         >
                             <Icon name="close" />
-                        </button>
+                        </Button>
                     </div>
 
                     {setupFailed || setup === null ? (

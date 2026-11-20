@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
@@ -135,16 +136,16 @@ export default function Appearance({ profile, isImported, options, presets, them
 
                     <FormSection icon="building" title="الشركة" columns={2}>
                         <FormField id="brand-name" label="اسم الشركة" required error={form.errors['company.name']}>
-                            <input id="brand-name" className="w-full" value={data.company.name} onChange={(event) => setCompany('name', event.target.value)} maxLength={150} required />
+                            <Input id="brand-name" className="w-full" value={data.company.name} onChange={(event) => setCompany('name', event.target.value)} maxLength={150} required />
                         </FormField>
                         <FormField id="brand-name-en" label="الاسم بالإنجليزية" error={form.errors['company.nameEnglish']}>
-                            <input id="brand-name-en" dir="ltr" className="w-full" value={data.company.nameEnglish} onChange={(event) => setCompany('nameEnglish', event.target.value)} maxLength={150} />
+                            <Input id="brand-name-en" dir="ltr" className="w-full" value={data.company.nameEnglish} onChange={(event) => setCompany('nameEnglish', event.target.value)} maxLength={150} />
                         </FormField>
                         <FormField id="brand-short" label="الاسم المختصر" hint="للعلامة المائية والمساحات الضيقة. يُستخدم الاسم الكامل إن تُرك فارغاً." error={form.errors['company.shortName']}>
-                            <input id="brand-short" className="w-full" value={data.company.shortName} onChange={(event) => setCompany('shortName', event.target.value)} maxLength={80} />
+                            <Input id="brand-short" className="w-full" value={data.company.shortName} onChange={(event) => setCompany('shortName', event.target.value)} maxLength={80} />
                         </FormField>
                         <FormField id="brand-tagline" label="العبارة التعريفية" hint="العنوان الكبير في شاشة الدخول وتحت الاسم في النماذج." error={form.errors['company.tagline']}>
-                            <input id="brand-tagline" className="w-full" value={data.company.tagline} onChange={(event) => setCompany('tagline', event.target.value)} maxLength={150} />
+                            <Input id="brand-tagline" className="w-full" value={data.company.tagline} onChange={(event) => setCompany('tagline', event.target.value)} maxLength={150} />
                         </FormField>
                     </FormSection>
 
@@ -167,10 +168,10 @@ export default function Appearance({ profile, isImported, options, presets, them
 
                     <FormSection icon="swatch" title="الألوان" columns={2} info="من اللون الرئيسي تتولد كل درجات الواجهة في الوضعين الفاتح والغامق. ألوان الأخطاء تبقى حمراء.">
                         <div className="col-span-full flex flex-wrap gap-3" role="group" aria-label="لوحات ألوان الشركة">
-                            {BRAND_PALETTES.map((palette) => <button key={palette.id} type="button" className="rounded-xl border border-gray-200 bg-surface px-4 py-3 text-start text-sm font-semibold text-gray-800 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2" onClick={() => form.setData('colors', { ...data.colors, ...palette.colors })}>
+                            {BRAND_PALETTES.map((palette) => <Button key={palette.id} className="rounded-xl border border-gray-200 bg-surface px-4 py-3 text-start text-sm font-semibold text-gray-800 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2" onClick={() => form.setData('colors', { ...data.colors, ...palette.colors })}>
                                 <span className="mb-2 flex gap-1" aria-hidden="true">{Object.values(palette.colors).filter(Boolean).map((color, index) => <span key={index} className="h-5 w-5 rounded-full border border-gray-200" style={{ backgroundColor: color }} />)}</span>
                                 {palette.name}
-                            </button>)}
+                            </Button>)}
                         </div>
                         <ColorField id="brand-primary" label="اللون الرئيسي" value={data.colors.primary} suggestions={suggestions} error={form.errors['colors.primary']}
                             onChange={(value) => form.setData('colors', { ...data.colors, primary: value })} />

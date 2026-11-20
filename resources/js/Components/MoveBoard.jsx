@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 import { motionOff } from '@/Components/CountUp';
 
@@ -253,14 +254,13 @@ export default function MoveBoard({ lanes, items, laneOf, itemKey, itemLabel, re
                                 );
                             })}
                             {laneItems.length > limit && (
-                                <button
-                                    type="button"
+                                <Button
                                     className="gl-btn gl-ghost gl-sm"
                                     aria-expanded={expanded.has(lane.key)}
                                     onClick={() => toggleLane(lane.key)}
                                 >
                                     {expanded.has(lane.key) ? 'عرض أقل' : `عرض ${(laneItems.length - limit).toLocaleString('en')} أخرى`}
-                                </button>
+                                </Button>
                             )}
                             {laneItems.length === 0 && <div className="gl-empty text-sm">{movable ? 'أفلت هنا' : 'لا شيء هنا'}</div>}
                         </section>

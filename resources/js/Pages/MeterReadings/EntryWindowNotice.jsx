@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { WEEK_DAYS, formatWeekDay } from '@/lib/weekDays';
 
 export function EntryWindowNotice({ entryWindow, canRecord, canApprove, weekIsViewOnly, onShowLatestWeek }) {
@@ -31,9 +32,9 @@ export function EntryWindowNotice({ entryWindow, canRecord, canApprove, weekIsVi
                     <p className="font-semibold text-gray-900">هذا أسبوع سابق — قراءاته للعرض فقط.</p>
                     <p className="mt-1 text-gray-500">يمكن إدخال القراءات وتعديلها للأسبوع الأخير فقط.</p>
                 </div>
-                <button type="button" onClick={onShowLatestWeek} className="text-sm font-semibold text-brand-600 hover:underline">
+                <Button onClick={onShowLatestWeek} className="text-sm font-semibold text-brand-600 hover:underline">
                     الانتقال إلى الأسبوع الأخير
-                </button>
+                </Button>
             </div>
         );
     }

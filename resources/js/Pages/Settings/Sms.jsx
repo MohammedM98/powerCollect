@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
-import { Button } from '@heroui/react';
+import { Button, Input, TextArea } from '@heroui/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
@@ -29,7 +29,7 @@ function Field({ id, label, hint, error, wide = false, code = false, value, onCh
     return (
         <div className={`sm-field ${wide ? 'is-wide' : ''}`}>
             <span className="sm-label"><label htmlFor={id}>{label}</label>{hint && <InfoTip label={`عن حقل ${label}`}>{hint}</InfoTip>}</span>
-            <input id={id} className={`sm-input ${code ? 'is-code' : ''}`} value={value ?? ''} onChange={(event) => onChange(event.target.value)}
+            <Input id={id} className={`sm-input ${code ? 'is-code' : ''}`} value={value ?? ''} onChange={(event) => onChange(event.target.value)}
                 aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} {...input} />
             {error && <span id={`${id}-error`}><InputError message={error} /></span>}
         </div>
@@ -66,16 +66,16 @@ function SecretField({ id, label, hint, saved, cleared, value, error, onChange, 
                 {hint && !saved && <InfoTip label={`عن حقل ${label}`}>{hint}</InfoTip>}
                 {state === 'is-saved' && <span className="sm-secret-state"><Icon name="lock" />محفوظة ومشفّرة</span>}
                 {state === 'is-cleared' && <span className="sm-secret-state is-cleared"><Icon name="warning" />تُزال عند الحفظ</span>}
-                {saved && !cleared && !value && <button type="button" className="sm-link" onClick={onClear}>إزالة</button>}
-                {cleared && <button type="button" className="sm-link" onClick={onUndoClear}>تراجع</button>}
+                {saved && !cleared && !value && <Button className="sm-link" onClick={onClear}>إزالة</Button>}
+                {cleared && <Button className="sm-link" onClick={onUndoClear}>تراجع</Button>}
             </span>
             <div className="sm-secret">
-                <input id={id} className="sm-input is-code" type={visible ? 'text' : 'password'} autoComplete="new-password" value={value}
+                <Input id={id} className="sm-input is-code" type={visible ? 'text' : 'password'} autoComplete="new-password" value={value}
                     placeholder={saved && !cleared ? '••••••••' : ''} onChange={(event) => onChange(event.target.value)}
                     aria-invalid={Boolean(error)} />
-                <button type="button" className="sm-icon-button" onClick={() => setVisible(!visible)} aria-label={visible ? 'إخفاء' : 'إظهار'} title={visible ? 'إخفاء' : 'إظهار'}>
+                <Button className="sm-icon-button" onClick={() => setVisible(!visible)} aria-label={visible ? 'إخفاء' : 'إظهار'} title={visible ? 'إخفاء' : 'إظهار'}>
                     <Icon name={visible ? 'eye-off' : 'eye'} />
-                </button>
+                </Button>
             </div>
             <InputError message={error} />
         </div>
@@ -189,12 +189,12 @@ export default function Sms({ setting, delivery, week }) {
                     </div>
                     <div>
                         <div className="rs-modes" role="group" aria-label="حالة البوابة">
-                            <button type="button" aria-pressed={data.enabled} disabled={processing || missing.length > 0} onClick={() => setData('enabled', true)}>
+                            <Button aria-pressed={data.enabled} isDisabled={processing || missing.length > 0} onClick={() => setData('enabled', true)}>
                                 <Icon name="send" />مفعّلة
-                            </button>
-                            <button type="button" aria-pressed={!data.enabled} disabled={processing} onClick={() => setData('enabled', false)}>
+                            </Button>
+                            <Button aria-pressed={!data.enabled} isDisabled={processing} onClick={() => setData('enabled', false)}>
                                 <Icon name="power" />متوقفة
-                            </button>
+                            </Button>
                         </div>
                         {missing.length > 0 && <p className="sm-switch-note">للتفعيل أدخل: <b>{missing.join('، ')}</b></p>}
                     </div>
@@ -223,14 +223,14 @@ export default function Sms({ setting, delivery, week }) {
                                 <div className="sm-field is-wide">
                                     <span className="sm-label">اسم المستخدم<small>اسم الحقل كما في الوثيقة، ثم القيمة</small></span>
                                     <div className="sm-pair">
-                                        <input className="sm-input is-code" aria-label="اسم حقل المستخدم" placeholder="username" value={data.username_param} onChange={(event) => setData('username_param', event.target.value)} aria-invalid={Boolean(errors.username_param)} />
-                                        <input className="sm-input is-code" aria-label="اسم المستخدم" placeholder="af-power" value={data.username} onChange={(event) => setData('username', event.target.value)} autoComplete="off" />
+                                        <Input className="sm-input is-code" aria-label="اسم حقل المستخدم" placeholder="username" value={data.username_param} onChange={(event) => setData('username_param', event.target.value)} aria-invalid={Boolean(errors.username_param)} />
+                                        <Input className="sm-input is-code" aria-label="اسم المستخدم" placeholder="af-power" value={data.username} onChange={(event) => setData('username', event.target.value)} autoComplete="off" />
                                     </div>
                                     <InputError message={errors.username_param || errors.username} />
                                 </div>
                                 <div className="sm-field">
                                     <label htmlFor="password-param">اسم حقل كلمة المرور</label>
-                                    <input id="password-param" className="sm-input is-code" placeholder="password" value={data.password_param} onChange={(event) => setData('password_param', event.target.value)} aria-invalid={Boolean(errors.password_param)} />
+                                    <Input id="password-param" className="sm-input is-code" placeholder="password" value={data.password_param} onChange={(event) => setData('password_param', event.target.value)} aria-invalid={Boolean(errors.password_param)} />
                                     <InputError message={errors.password_param} />
                                 </div>
                                 <SecretField id="password" label="كلمة المرور" hint="لحساب شركتكم عند المزوّد" saved={setting.hasPassword} cleared={data.clear_password} value={data.password} error={errors.password}
@@ -304,14 +304,14 @@ export default function Sms({ setting, delivery, week }) {
                                 <Field id="test-phone" label="رقم الجوال" wide code type="tel" inputMode="tel" placeholder={SAMPLE_LOCAL_PHONE} value={testPhone} error={testErrors.test_phone} onChange={setTestPhone} />
                                 <div className="sm-field is-wide">
                                     <label htmlFor="test-message">نص الرسالة<small>{testMessage.length} حرف</small></label>
-                                    <textarea id="test-message" className="sm-input" maxLength={300} value={testMessage} onChange={(event) => setTestMessage(event.target.value)} aria-invalid={Boolean(testErrors.test_message)} />
+                                    <TextArea id="test-message" className="sm-input" maxLength={300} value={testMessage} onChange={(event) => setTestMessage(event.target.value)} aria-invalid={Boolean(testErrors.test_message)} />
                                     <InputError message={testErrors.test_message} />
                                 </div>
                             </div>
                             <div className="sm-test-actions">
-                                <button type="button" className="sm-send" onClick={sendTest} disabled={testing || processing || !data.url || !testPhone.trim()}>
+                                <Button className="sm-send" onClick={sendTest} isDisabled={testing || processing || !data.url || !testPhone.trim()}>
                                     <Icon name="send" />{testing ? 'جارٍ الإرسال…' : 'إرسال رسالة تجربة'}
-                                </button>
+                                </Button>
                                 {!data.url && <span className="sm-test-note">أدخل رابط الإرسال أولًا.</span>}
                             </div>
                             {testResult && (

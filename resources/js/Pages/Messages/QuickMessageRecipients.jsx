@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import { FOCUS_RING, Section } from './MessageFormParts';
@@ -44,7 +45,7 @@ export default function QuickMessageRecipients({
                 </label>
                 <div className="relative">
                     <Icon name="search" className="pointer-events-none absolute inset-s-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                    <input
+                    <Input
                         ref={searchRef}
                         id={`${id}-search`}
                         type="search"
@@ -79,10 +80,9 @@ export default function QuickMessageRecipients({
 
                                 return (
                                     <li key={row.id}>
-                                        <button
-                                            type="button"
+                                        <Button
                                             onClick={() => pick(row)}
-                                            disabled={alreadyPicked}
+                                            isDisabled={alreadyPicked}
                                             className={`flex w-full items-center gap-3 px-3 py-2.5 text-start text-sm transition hover:bg-gray-50 disabled:cursor-default disabled:opacity-60 ${FOCUS_RING}`}
                                         >
                                             <Icon name={alreadyPicked ? 'check' : 'plus'} className="h-4 w-4 shrink-0 text-gray-400" />
@@ -93,7 +93,7 @@ export default function QuickMessageRecipients({
                                             <span dir="ltr" className="shrink-0 text-xs text-gray-600">
                                                 {row.phone ?? 'لا يوجد رقم'}
                                             </span>
-                                        </button>
+                                        </Button>
                                     </li>
                                 );
                             })
@@ -122,10 +122,9 @@ export default function QuickMessageRecipients({
                                 key={subscriptionId}
                                 className={`flex items-center gap-3 px-3 py-2 text-sm ${previewRow?.id === subscriptionId ? 'bg-brand-500/5' : ''}`}
                             >
-                                <button
-                                    type="button"
+                                <Button
                                     onClick={() => setPreviewId(subscriptionId)}
-                                    disabled={Boolean(reason) || !person}
+                                    isDisabled={Boolean(reason) || !person}
                                     title="معاينة رسالته"
                                     className={`min-w-0 flex-1 rounded-lg text-start disabled:cursor-default ${FOCUS_RING}`}
                                 >
@@ -141,22 +140,21 @@ export default function QuickMessageRecipients({
                                             </>
                                         )}
                                     </span>
-                                </button>
+                                </Button>
                                 {reason && (
                                     <span className="inline-flex shrink-0 items-center gap-1 text-xs text-amber-700 dark:text-amber-400">
                                         <Icon name="warning" className="h-3.5 w-3.5" />
                                         {reason}
                                     </span>
                                 )}
-                                <button
-                                    type="button"
+                                <Button
                                     onClick={() => unpick(subscriptionId)}
                                     aria-label={`إزالة ${person?.name ?? 'المشترك'}`}
                                     title="إزالة"
                                     className={`shrink-0 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-brand-600 ${FOCUS_RING}`}
                                 >
                                     <Icon name="close" className="h-4 w-4" />
-                                </button>
+                                </Button>
                             </li>
                         );
                     })}

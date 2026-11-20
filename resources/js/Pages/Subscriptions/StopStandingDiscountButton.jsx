@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
@@ -23,14 +24,13 @@ export default function StopStandingDiscountButton({ subscriptionId, subscriptio
 
     return (
         <>
-            <button
-                type="button"
+            <Button
                 onClick={() => setConfirming(true)}
-                disabled={stopping}
+                isDisabled={stopping}
                 className={`gl-pill-danger ${className}`}
             >
                 {stopping ? 'جارٍ الإلغاء...' : 'إلغاء الخصم'}
-            </button>
+            </Button>
 
             <ConfirmDialog
                 show={confirming}

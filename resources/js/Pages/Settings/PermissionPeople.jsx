@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import Pagination from '@/Components/DataTable/Pagination';
 
@@ -66,7 +67,7 @@ export default function EmployeeList({
                 </h2>
                 <div className="relative mt-3">
                     <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
-                    <input
+                    <Input
                         ref={searchRef}
                         type="text"
                         value={search}
@@ -83,9 +84,8 @@ export default function EmployeeList({
                             const pressed = (filterValues.user_type_id ?? '') === option.value;
 
                             return (
-                                <button
+                                <Button
                                     key={option.value}
-                                    type="button"
                                     aria-pressed={pressed}
                                     onClick={() => onFilterChange('user_type_id', option.value)}
                                     className="pm-filter-chip"
@@ -93,7 +93,7 @@ export default function EmployeeList({
                                 >
                                     {option.value && <i aria-hidden="true" />}
                                     {option.label}
-                                </button>
+                                </Button>
                             );
                         })}
                     </div>
@@ -133,8 +133,7 @@ export default function EmployeeList({
 
                                     return (
                                         <li key={user.id}>
-                                            <button
-                                                type="button"
+                                            <Button
                                                 data-employee={user.id}
                                                 onClick={() => onSelect(user)}
                                                 aria-current={isSelected ? 'true' : undefined}
@@ -171,7 +170,7 @@ export default function EmployeeList({
                                                         <i style={{ width: `${Math.max(stats.total ? 4 : 0, stats.share)}%` }} />
                                                     </span>
                                                 </span>
-                                            </button>
+                                            </Button>
                                         </li>
                                     );
                                 })}

@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import { printUrl } from '@/lib/print';
 import { openQuickMessage } from '@/lib/quickMessage';
@@ -9,17 +10,16 @@ const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-vi
 
 function BarButton({ icon, label, onClick, disabled = false, hint, className = '' }) {
     return (
-        <button
-            type="button"
+        <Button
             onClick={onClick}
-            disabled={disabled}
+            isDisabled={disabled}
             title={disabled ? hint : label}
             aria-describedby={undefined}
             className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING} ${className}`}
         >
             <Icon name={icon} className="h-4 w-4" />
             {label}
-        </button>
+        </Button>
     );
 }
 
@@ -73,15 +73,14 @@ export default function BulkActionBar({ count, selection, abilities, onAction, o
                 <BarButton icon="printer" label="طباعة" onClick={print} disabled={tooManyToLink} hint={linkHint} className="tone-print tone-on-dark border" />
                 </>}
             </div>
-            <button
-                type="button"
+            <Button
                 onClick={onClear}
                 aria-label="إلغاء التحديد"
                 title="إلغاء التحديد"
                 className={`flex h-9 w-9 items-center justify-center rounded-control text-white/80 hover:bg-white/10 hover:text-white ${FOCUS_RING}`}
             >
                 <Icon name="close" className="h-5 w-5" />
-            </button>
+            </Button>
         </div>
     );
 }

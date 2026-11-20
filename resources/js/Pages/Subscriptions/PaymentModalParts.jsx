@@ -1,3 +1,4 @@
+import { Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
@@ -123,7 +124,7 @@ export function TransferFields({ data, setData, errors, transferBanks, senderBan
                             ariaLabel="المحوِّل هو المشترك نفسه"
                         />
                     </div>
-                    <input
+                    <Input
                         id="sender_name"
                         name="sender_name"
                         required
@@ -139,7 +140,7 @@ export function TransferFields({ data, setData, errors, transferBanks, senderBan
                     <FieldLabel htmlFor="reference_number" hint="من إشعار الحوالة">
                         الرقم المرجعي
                     </FieldLabel>
-                    <input
+                    <Input
                         id="reference_number"
                         name="reference_number"
                         dir="ltr"

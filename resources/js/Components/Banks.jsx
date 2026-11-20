@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { usePage } from '@inertiajs/react';
-import { Radio, RadioGroup } from '@heroui/react';
+import { Button, Radio, RadioGroup } from '@heroui/react';
 import Icon from '@/Components/Icon';
 
 /**
@@ -100,8 +100,7 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
     return (
         <div ref={containerRef} className="relative">
             <input type="hidden" name={name} value={value} />
-            <button
-                type="button"
+            <Button
                 id={id}
                 aria-controls={listboxId}
                 aria-expanded={open}
@@ -123,7 +122,7 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
                     <span className="text-sm text-gray-400">اختر البنك أو المحفظة المحوّل منها</span>
                 )}
                 <Icon name="chevron-down" className={`ms-auto h-4 w-4 shrink-0 text-gray-400 transition ${open ? 'rotate-180' : ''}`} />
-            </button>
+            </Button>
 
             {open && (
                 <ul

@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import { useRef } from 'react';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
@@ -101,7 +102,7 @@ export function ColorField({ id, label, value, onChange, suggestions = [], allow
                     onChange={(event) => onChange(event.target.value.toUpperCase())}
                     aria-label={`${label}: اختيار اللون`}
                 />
-                <input
+                <Input
                     id={id}
                     dir="ltr"
                     className="w-32 font-mono text-sm uppercase"
@@ -111,9 +112,9 @@ export function ColorField({ id, label, value, onChange, suggestions = [], allow
                     onChange={(event) => onChange(event.target.value.trim() === '' && allowEmpty ? null : event.target.value.trim().toUpperCase())}
                 />
                 {allowEmpty && value && (
-                    <button type="button" className="text-[13px] font-semibold text-gray-500 hover:text-gray-900" onClick={() => onChange(null)}>
+                    <Button className="text-[13px] font-semibold text-gray-500 hover:text-gray-900" onClick={() => onChange(null)}>
                         {emptyLabel}
-                    </button>
+                    </Button>
                 )}
             </div>
             {contrast !== null && contrast < MIN_CONTRAST && (
@@ -125,9 +126,8 @@ export function ColorField({ id, label, value, onChange, suggestions = [], allow
                 <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-[13px] text-gray-500">من الشعار:</span>
                     {suggestions.map((color) => (
-                        <button
+                        <Button
                             key={color}
-                            type="button"
                             className="ap-suggestion"
                             style={{ background: color }}
                             aria-label={`استخدام ${color}`}
@@ -148,7 +148,7 @@ export function PresetCard({ id, preset, active, onPick }) {
     const { design } = preset;
 
     return (
-        <button type="button" className="ap-preset" aria-pressed={active} onClick={() => onPick(id)}>
+        <Button className="ap-preset" aria-pressed={active} onClick={() => onPick(id)}>
             <span
                 className={`ap-sketch nav-${design.navigation} radius-${design.radius} buttons-${design.buttons} tables-${design.tables}`}
                 aria-hidden="true"
@@ -165,7 +165,7 @@ export function PresetCard({ id, preset, active, onPick }) {
             </span>
             <b>{preset.label}</b>
             <small>{preset.description}</small>
-        </button>
+        </Button>
     );
 }
 

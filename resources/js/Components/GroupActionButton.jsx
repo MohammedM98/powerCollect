@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 /** The group actions' look (components.css `gl-group`) as a surface split into parts, and its parts. */
 export const groupActionSurfaceClass = 'gl-btn-surface gl-group';
 export const groupActionControlClass = 'gl-btn-part';
@@ -8,5 +9,5 @@ export const groupActionControlClass = 'gl-btn-part';
  * theme, so it is told apart from the screen's main action and from adding.
  */
 export default function GroupActionButton({ children, className = '', type = 'button', ...props }) {
-    return <button type={type} {...props} className={`gl-btn gl-group ${className}`}>{children}</button>;
+    return <Button type={type} {...props} className={`gl-btn gl-group ${className}`}>{children}</Button>;
 }

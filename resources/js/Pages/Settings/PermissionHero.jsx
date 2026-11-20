@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import { EmployeeAvatar, RoleChip } from './PermissionPeople';
 import { RiskGauge } from './PermissionInsights';
@@ -90,10 +91,10 @@ export default function PermissionHero({
             </div>
 
             <div className="pm-hero-actions">
-                <button type="button" className="pm-hero-button" onClick={() => setGuideAudience('selected')}>
+                <Button className="pm-hero-button" onClick={() => setGuideAudience('selected')}>
                     <Icon name="document" className="h-4 w-4" />
                     دليل الموظف
-                </button>
+                </Button>
                 <MenuButton icon="users" label="نسخ من موظف" className="pm-hero-button">
                     {(close) =>
                         copySources.length === 0 ? (
@@ -140,14 +141,13 @@ export default function PermissionHero({
                         </span>
                     )}
                     {deviations > 0 && (
-                        <button
-                            type="button"
+                        <Button
                             onClick={() => setSelected([...template.permissionIds])}
-                            disabled={processing}
+                            isDisabled={processing}
                             className="ms-auto font-semibold underline-offset-4 hover:underline"
                         >
                             إعادة إلى القالب
-                        </button>
+                        </Button>
                     )}
                 </p>
             )}

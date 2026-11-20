@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useTheme } from '@/hooks/useTheme';
 import Icon from '@/Components/Icon';
 
@@ -14,14 +15,13 @@ export default function ThemeToggle({ className = '' }) {
     }
 
     return (
-        <button
-            type="button"
+        <Button
             onClick={toggle}
             aria-label={dark ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الغامق'}
             title={dark ? 'الوضع الفاتح' : 'الوضع الغامق'}
             className={`gl-ib ${className}`}
         >
             <Icon name={dark ? 'sun' : 'moon'} className="h-[18px] w-[18px]" />
-        </button>
+        </Button>
     );
 }

@@ -1,3 +1,4 @@
+import { Input, TextArea } from '@heroui/react';
 import { useForm } from '@inertiajs/react';
 import FormModal from '@/Components/FormModal';
 import InputError from '@/Components/InputError';
@@ -34,7 +35,7 @@ export default function EditTransactionAmountModal({ onClose, subscription, bala
 
             <div>
                 <InputLabel htmlFor="transaction_amount" value="المبلغ الصحيح" />
-                <input
+                <Input
                     id="transaction_amount"
                     name="amount"
                     type="number"
@@ -50,7 +51,7 @@ export default function EditTransactionAmountModal({ onClose, subscription, bala
 
             <div>
                 <InputLabel htmlFor="amendment_reason" value="سبب التعديل" />
-                <textarea
+                <TextArea
                     id="amendment_reason"
                     name="amendment_reason"
                     rows={2}

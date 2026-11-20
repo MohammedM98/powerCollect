@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useState } from 'react';
 import Icon from '@/Components/Icon';
 import InfoTip from '@/Components/InfoTip';
@@ -66,12 +67,12 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                             { value: 'off', label: 'لنفسه فقط' },
                         ]}
                     />
-                    <button type="button" disabled={disabled || keyed === held.length} onClick={() => setAll(held, true)} className="pm-grant-button">
+                    <Button isDisabled={disabled || keyed === held.length} onClick={() => setAll(held, true)} className="pm-grant-button">
                         منح الكل
-                    </button>
-                    <button type="button" disabled={disabled || keyed === 0} onClick={() => onChange([])} className="pm-grant-button">
+                    </Button>
+                    <Button isDisabled={disabled || keyed === 0} onClick={() => onChange([])} className="pm-grant-button">
                         لا شيء
-                    </button>
+                    </Button>
                 </div>
             </div>
 

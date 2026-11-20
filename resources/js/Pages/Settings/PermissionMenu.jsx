@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Icon from '@/Components/Icon';
@@ -64,11 +65,11 @@ export function MenuButton({ icon, label, children, className = '' }) {
 
     return (
         <div ref={ref} className="relative">
-            <button type="button" aria-haspopup="menu" aria-expanded={open} onClick={toggle} className={className}>
+            <Button aria-haspopup="menu" aria-expanded={open} onClick={toggle} className={className}>
                 <Icon name={icon} className="h-4 w-4" />
                 {label}
                 <Icon name="chevron-down" className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`} />
-            </button>
+            </Button>
             {open &&
                 position &&
                 createPortal(

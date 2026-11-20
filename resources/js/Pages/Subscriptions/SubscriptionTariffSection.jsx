@@ -1,3 +1,4 @@
+import { Button } from '@heroui/react';
 import Affix from '@/Components/Affix';
 import ChoiceChips from '@/Components/ChoiceChips';
 import ConfirmDialog from '@/Components/ConfirmDialog';
@@ -76,18 +77,17 @@ export default function SubscriptionTariffSection({
                 <div className="flex items-center justify-between gap-2">
                     <InputLabel htmlFor="tariff_rate" value="سعر الكيلو" />
                     {canEditKilowattPrice && selectedTariff && !kilowattPriceUnlocked && (
-                        <button
-                            type="button"
+                        <Button
                             onClick={() => setConfirmingKilowattPriceUnlock(true)}
                             className="text-[13px] font-semibold text-brand-600 hover:underline"
                         >
                             تعديل السعر
-                        </button>
+                        </Button>
                     )}
                     {kilowattPriceUnlocked && (
-                        <button type="button" onClick={lockKilowattPrice} className="text-[13.5px] font-semibold text-gray-700 hover:underline">
+                        <Button onClick={lockKilowattPrice} className="text-[13.5px] font-semibold text-gray-700 hover:underline">
                             إلغاء التعديل
-                        </button>
+                        </Button>
                     )}
                 </div>
                 <div>
@@ -156,13 +156,12 @@ export default function SubscriptionTariffSection({
                         <span className="text-red-500"> *</span>
                     </InputLabel>
                     {canEditMinimumCharge && !minimumChargeUnlocked && (
-                        <button
-                            type="button"
+                        <Button
                             onClick={() => setConfirmingMinimumChargeUnlock(true)}
                             className="text-[13px] font-semibold text-brand-600 hover:underline"
                         >
                             تعديل يدوي
-                        </button>
+                        </Button>
                     )}
                 </div>
                 <div>

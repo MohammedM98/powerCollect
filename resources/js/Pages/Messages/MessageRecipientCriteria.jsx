@@ -1,3 +1,4 @@
+import { Button, Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import Switch from '@/Components/Switch';
 import SecondaryButton from '@/Components/SecondaryButton';
@@ -55,7 +56,7 @@ export default function MessageRecipientCriteria({
 
                 {kind === 'balance_reminder' && (
                     <Field label="من عليه رصيد أكبر من (₪)" htmlFor="min_balance">
-                        <input
+                        <Input
                             id="min_balance"
                             type="number"
                             min="0"
@@ -159,7 +160,7 @@ export default function MessageRecipientCriteria({
                 </Field>
 
                 <Field label="بحث" htmlFor="search">
-                    <input
+                    <Input
                         id="search"
                         type="text"
                         value={criteria.search}
@@ -173,13 +174,12 @@ export default function MessageRecipientCriteria({
             {criteria.subscription_ids.length > 0 && (
                 <div className="mt-4 flex items-center justify-between gap-3 rounded-control bg-gray-50 px-3 py-2 text-sm text-gray-600">
                     <span>الرسالة لمشترك محدد من قائمة المشتركين.</span>
-                    <button
-                        type="button"
+                    <Button
                         onClick={() => setCriterion('subscription_ids', [])}
                         className={`rounded font-semibold text-brand-600 hover:underline ${FOCUS_RING}`}
                     >
                         إلغاء التحديد
-                    </button>
+                    </Button>
                 </div>
             )}
 

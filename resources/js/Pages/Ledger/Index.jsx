@@ -1,5 +1,5 @@
 import { FilterField } from '@/Components/DataTable/DataTableFilterMenu';
-import { Card, Label, Switch } from '@heroui/react';
+import { Button, Card, Input, Label, Switch } from '@heroui/react';
 import BankReceivedDate from '@/Components/BankReceivedDate';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
 import { BranchFilterBanner, splitBranchFilter } from '@/Components/BranchBanner';
@@ -127,19 +127,19 @@ function DateRange({ period, range, today, onChange, errors }) {
         <div className="per">
             <div className="pt2" role="group" aria-label="الفترة">
                 {PERIODS.map(([value, label]) => (
-                    <button type="button" key={value} aria-pressed={period === value} onClick={() => value === 'custom' ? toggle() : onChange(value)}>{label}</button>
+                    <Button key={value} aria-pressed={period === value} onClick={() => value === 'custom' ? toggle() : onChange(value)}>{label}</Button>
                 ))}
             </div>
             <div className="range" ref={root}>
-                <button type="button" className="rbtn" ref={trigger} onClick={toggle} aria-expanded={open} aria-controls="ledger-date-range">
+                <Button className="rbtn" ref={trigger} onClick={toggle} aria-expanded={open} aria-controls="ledger-date-range">
                     <Icon name="calendar" /><small>الفترة</small><bdi className="num" dir="ltr">{shortDate(range.from)} — {shortDate(range.to)}</bdi>
-                </button>
+                </Button>
                 {open && (
                     <form id="ledger-date-range" className="rpop" onSubmit={apply} aria-labelledby="ledger-range-title">
                         <div className="range-heading">
                             <span className="range-heading-icon"><Icon name="calendar" /></span>
                             <div><h3 id="ledger-range-title">فترة مخصصة</h3><p>حدّد الفترة لعرض حركات السجل المالي.</p></div>
-                            <button type="button" className="range-close" aria-label="إغلاق اختيار الفترة" onClick={() => { setOpen(false); trigger.current?.focus(); }}><Icon name="close" /></button>
+                            <Button className="range-close" aria-label="إغلاق اختيار الفترة" onClick={() => { setOpen(false); trigger.current?.focus(); }}><Icon name="close" /></Button>
                         </div>
                         <div className="two">
                             <label htmlFor="ledger-from">تاريخ البداية<DateInput id="ledger-from" className="range-date-input" buttonRef={firstInput} required max={to || undefined} value={from} onChange={setFrom} /></label>
@@ -147,14 +147,14 @@ function DateRange({ period, range, today, onChange, errors }) {
                         </div>
                         <span className="range-presets-label">اختيار سريع</span>
                         <div className="qk">
-                            <button type="button" onClick={() => quickRange('7')}>آخر 7 أيام</button>
-                            <button type="button" onClick={() => quickRange('month')}>هذا الشهر</button>
-                            <button type="button" onClick={() => quickRange('previous')}>الشهر الماضي</button>
+                            <Button onClick={() => quickRange('7')}>آخر 7 أيام</Button>
+                            <Button onClick={() => quickRange('month')}>هذا الشهر</Button>
+                            <Button onClick={() => quickRange('previous')}>الشهر الماضي</Button>
                         </div>
                         {(error || errors.from || errors.to) && <p className="err" role="alert"><Icon name="info" />{error || errors.from || errors.to}</p>}
                         <div className="ft">
-                            <button type="submit" className="btn pr"><Icon name="check" />تطبيق الفترة</button>
-                            <button type="button" className="btn" onClick={() => { setOpen(false); trigger.current?.focus(); }}>إلغاء</button>
+                            <Button type="submit" className="btn pr"><Icon name="check" />تطبيق الفترة</Button>
+                            <Button className="btn" onClick={() => { setOpen(false); trigger.current?.focus(); }}>إلغاء</Button>
                         </div>
                     </form>
                 )}
@@ -226,9 +226,9 @@ function TransactionRow({ entry, grouped, onOpen, rowClick, open, onToggle, runn
         <>
         <tr className={`row ${entry.isCancelled ? 'cx' : ''} ${open ? 'is-open' : ''}`} {...rowClick(onOpen)}>
             <td className="xp-c">
-                <button type="button" className="dt-exp-btn" aria-expanded={open} aria-controls={`ledger-details-${entry.id}`} aria-label={`${open ? 'إخفاء' : 'عرض'} تفاصيل القيد`} onClick={(event) => { event.stopPropagation(); onToggle(); }}>
+                <Button className="dt-exp-btn" aria-expanded={open} aria-controls={`ledger-details-${entry.id}`} aria-label={`${open ? 'إخفاء' : 'عرض'} تفاصيل القيد`} onClick={(event) => { event.stopPropagation(); onToggle(); }}>
                     <Icon name="chevron-down" />
-                </button>
+                </Button>
             </td>
             <td className="t"><bdi className="desktop-time">{time}</bdi>
                 <LatePaymentDetails paidOn={entry.paidOn} recordedAt={`${entry.day} ${entry.time}`} reason={entry.lateReason} />
@@ -244,7 +244,7 @@ function TransactionRow({ entry, grouped, onOpen, rowClick, open, onToggle, runn
             </td>
             <td className="who-c">
                 <div className="who"><span className="av" aria-hidden="true">{initials}</span><div>
-                    <b>{onOpen ? <button type="button" className="name-btn" onClick={onOpen} aria-label={`فتح كشف حساب ${entry.subscriptionName}`}>{entry.subscriptionName}</button> : entry.subscriptionName}</b>
+                    <b>{onOpen ? <Button className="name-btn" onClick={onOpen} aria-label={`فتح كشف حساب ${entry.subscriptionName}`}>{entry.subscriptionName}</Button> : entry.subscriptionName}</b>
                     <small><bdi>{entry.subscriptionAccountNumber}</bdi>، {entry.branchName}</small>
                 </div></div>
             </td>
@@ -320,7 +320,7 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
     }
 
     function sortHeading(column, label) {
-        return <th scope="col" aria-sort={filters.sort === column ? filters.direction === 'asc' ? 'ascending' : 'descending' : 'none'}><button type="button" onClick={() => sort(column)}>{label}{filters.sort === column && <Icon name="chevron-down" className={filters.direction === 'asc' ? 'rotate-180' : ''} />}</button></th>;
+        return <th scope="col" aria-sort={filters.sort === column ? filters.direction === 'asc' ? 'ascending' : 'descending' : 'none'}><Button onClick={() => sort(column)}>{label}{filters.sort === column && <Icon name="chevron-down" className={filters.direction === 'asc' ? 'rotate-180' : ''} />}</Button></th>;
     }
 
     return (
@@ -344,7 +344,7 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
                         <div className="srch">
                             <Icon name="search" className="search-icon" />
                             <label htmlFor="ledger-search" className="sr-only">البحث في السجل المالي</label>
-                            <input id="ledger-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="ابحث بالاسم، الهاتف، رقم الحساب، رقم السند أو الرقم المرجعي…" autoComplete="off" aria-describedby="ledger-search-hint" />
+                            <Input id="ledger-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="ابحث بالاسم، الهاتف، رقم الحساب، رقم السند أو الرقم المرجعي…" autoComplete="off" aria-describedby="ledger-search-hint" />
                             <div className="hint sr-only" id="ledger-search-hint">البحث يشمل: <span>الاسم</span><span>الهاتف</span><span>الحساب</span><span>السند</span><span>المرجع</span></div>
                         </div>
                         <div className="per-bar">
@@ -354,7 +354,7 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
                             </div>
                             <DateRange period={period} range={dateRange} today={today} onChange={changePeriod} errors={errors} />
                         </div>
-                        <button type="button" className="btn fbtn" onClick={() => setFiltersOpen(!filtersOpen)} aria-expanded={filtersOpen} aria-controls="ledger-filters"><Icon name="filter" />الفلاتر{activeFilters > 0 && <span className="num">{activeFilters}</span>}</button>
+                        <Button className="btn fbtn" onClick={() => setFiltersOpen(!filtersOpen)} aria-expanded={filtersOpen} aria-controls="ledger-filters"><Icon name="filter" />الفلاتر{activeFilters > 0 && <span className="num">{activeFilters}</span>}</Button>
                         {can?.printAuditReports !== false && <TableExportActions title="السجل المالي" />}
                     </div>
                     <div className={`fb ${filtersOpen ? 'open' : ''}`} id="ledger-filters">
@@ -367,7 +367,7 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
                                 <Label>إظهار الملغاة</Label>
                             </Switch.Content>
                         </Switch>
-                        {activeFilters > 0 && <button type="button" className="clr" onClick={clearPanelFilters}>مسح الفلاتر</button>}
+                        {activeFilters > 0 && <Button className="clr" onClick={clearPanelFilters}>مسح الفلاتر</Button>}
                     </div>
                     <table data-excel-source="custom" className="ledger-table" aria-label="السجل المالي">
                         <thead><tr><th scope="col"><span className="sr-only">تفاصيل</span></th>{sortHeading('created_at', 'الوقت')}<th scope="col">المشترك</th><th scope="col">النوع</th><th scope="col">السند</th><th scope="col">سجّله</th>{sortHeading('amount', 'مدين (عليه)')}<th scope="col">دائن (له)</th><th scope="col">{runningBalances ? 'رصيد السجل بعده' : 'رصيد المشترك بعده'}</th></tr></thead>
