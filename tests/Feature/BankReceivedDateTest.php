@@ -64,7 +64,7 @@ class BankReceivedDateTest extends TestCase
         $this->assertSame($oldLine, SubscriptionTransaction::findOrFail($oldLine['id'])->getAttributes());
         $this->assertSame($date, LinePresenter::ledgerDetails($payment)['bankReceivedOn']);
         $this->get(route('subscriptions.statement', $subscription))->assertInertia(fn (AssertableInertia $page) => $page
-            ->where('canRecordLatePayment', false)->where('entries.1.bankReceivedOn', $date));
+            ->where('entries.1.bankReceivedOn', $date));
         $this->get(route('subscriptions.payments.receipt', [$subscription, $payment]))->assertInertia(fn (AssertableInertia $page) => $page
             ->where('receipt.date', '2026-10-24')->where('receipt.bankReceivedOn', $date));
     }

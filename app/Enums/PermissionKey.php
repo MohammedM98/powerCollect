@@ -225,7 +225,7 @@ enum PermissionKey: string
 
     public function isRetired(): bool
     {
-        return $this === self::SendCashBoxesToAudit
+        return $this === self::SendCashBoxesToAudit || $this === self::RecordLatePayments
             || (! in_array($this, [self::AuditClosings, self::ViewAllClosings], true) && str_starts_with($this->value, 'closings.'));
     }
 

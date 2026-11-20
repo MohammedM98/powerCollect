@@ -95,7 +95,6 @@ export interface StatementProps {
     entries: Record<string, unknown>[];
     summary: Record<string, unknown> & { balance: number | string };
     canRecordPayment: boolean;
-    canRecordLatePayment: boolean;
     paymentToday: string;
     canRecordSplitPayment: boolean;
     canAdjustBalance: boolean;

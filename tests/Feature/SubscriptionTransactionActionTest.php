@@ -420,7 +420,7 @@ class SubscriptionTransactionActionTest extends TestCase
             'correction_notes' => 'محاولة حذف جزئي',
         ]);
 
-        $response->assertSessionHasErrors(['action' => 'هذا الإجراء غير مسموح لهذه الحركة.']);
+        $response->assertSessionHasErrors('action');
         $this->assertModelExists($payment);
         $this->assertDatabaseHas('subscription_transactions', [
             'reference_transaction_id' => $payment->id,
@@ -615,7 +615,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $discountReversal]), [
             'action' => 'delete_reversal',
             'correction_notes' => 'خطأ',
-        ])->assertSessionHasErrors(['action' => 'هذا الإجراء غير مسموح لهذه الحركة.']);
+        ])->assertSessionHasErrors('action');
 
         $this->assertNotNull($discount->refresh()->cancelled_at);
         $this->assertSame('0.00', $subscription->balance());
@@ -690,7 +690,7 @@ class SubscriptionTransactionActionTest extends TestCase
         $this->actingAs($actor)->post(route('subscriptions.transactions.actions.store', [$subscription, $readingDiscount]), [
             'action' => 'delete_tree',
             'correction_notes' => 'خصم ملغى',
-        ])->assertSessionHasErrors(['action' => 'هذا الإجراء غير مسموح لهذه الحركة.']);
+        ])->assertSessionHasErrors('action');
 
         $this->assertDatabaseHas('subscription_transactions', [
             'id' => $readingDiscount->id,

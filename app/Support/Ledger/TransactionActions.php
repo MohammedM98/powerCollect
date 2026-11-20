@@ -85,7 +85,7 @@ class TransactionActions
 
             return $transaction->refresh();
         }
-        if ($split === null || ! in_array($action, [TransactionAction::Refund, TransactionAction::Cancel, TransactionAction::Delete, TransactionAction::DeleteTree, TransactionAction::DeleteReversal], true)) {
+        if ($split === null || ! in_array($action, [TransactionAction::Refund, TransactionAction::Cancel, TransactionAction::Delete], true)) {
             return TransactionActions::applySingleAction($transaction, $actor, $action, $data);
         }
 
@@ -94,7 +94,7 @@ class TransactionActions
             if (! in_array($action->value, TransactionActions::availableActions($selected, $actor, lockForUpdate: true), true)) {
                 throw ValidationException::withMessages(['action' => __('This action is not allowed for this transaction.')]);
             }
-            if (in_array($action, [TransactionAction::Delete, TransactionAction::DeleteTree], true)) {
+            if ($action === TransactionAction::Delete) {
                 TransactionActions::deleteSplitParts($transaction, $actor, $parts, $data);
 
                 return null;
@@ -105,18 +105,6 @@ class TransactionActions
                 $partAction = $action;
                 if (in_array($action, [TransactionAction::Refund, TransactionAction::Cancel], true) && $part->isCancelled()) {
                     continue;
-                }
-                if ($action === TransactionAction::DeleteReversal) {
-                    if (! $part->isCancelled() || $parts->contains('corrects_id', $part->id)) {
-                        continue;
-                    }
-                    $linkedReversals = SubscriptionTransaction::query()->where('subscription_id', $part->subscription_id)
-                        ->where(fn (Builder $query): Builder => $query->where('reverses_id', $part->id)->orWhere('reference_transaction_id', $part->id))
-                        ->whereIn('type', SubscriptionTransaction::REVERSAL_TYPES)->lockForUpdate()->get();
-                    if ($linkedReversals->count() !== 1) {
-                        throw ValidationException::withMessages(['action' => __('This transfer has earlier partial refunds; one refund cannot be deleted to bring back the whole transfer.')]);
-                    }
-                    $target = $linkedReversals->first();
                 }
                 if ($target === null || ! in_array($partAction->value, TransactionActions::availableActions($target, $actor, lockForUpdate: true), true)) {
                     throw ValidationException::withMessages(['action' => __('The action cannot be applied to every part of the split transfer; check your permissions and the state of the boxes and later transactions.')]);
@@ -203,15 +191,7 @@ class TransactionActions
             TransactionAction::EditMetadata => ! $parts->contains(fn (SubscriptionTransaction $part): bool => $part->isCancelled() && ! $replaced($part))
                 && $standing->every(fn (SubscriptionTransaction $part): bool => LineRules::isAmendable($part, $lockForUpdate) && $actor->can('amend', $part)),
             TransactionAction::Refund, TransactionAction::Cancel => $standing->every($offers),
-            TransactionAction::DeleteReversal => $parts->filter(fn (SubscriptionTransaction $part): bool => $part->isCancelled() && ! $replaced($part))
-                ->every(function (SubscriptionTransaction $part) use ($offers): bool {
-                    $reversals = SubscriptionTransaction::query()->where('subscription_id', $part->subscription_id)
-                        ->where(fn (Builder $query): Builder => $query->where('reverses_id', $part->id)->orWhere('reference_transaction_id', $part->id))
-                        ->whereIn('type', SubscriptionTransaction::REVERSAL_TYPES)->get();
-
-                    return $reversals->count() === 1 && $offers($reversals->first());
-                }),
-            TransactionAction::Delete, TransactionAction::DeleteTree => $parts->every(fn (SubscriptionTransaction $part): bool => TransactionActions::isDeletableSplitPart($part, $parts, legacy: false, lockForUpdate: $lockForUpdate)),
+            TransactionAction::Delete => $parts->every(fn (SubscriptionTransaction $part): bool => TransactionActions::isDeletableSplitPart($part, $parts, legacy: false, lockForUpdate: $lockForUpdate)),
             default => true,
         };
     }
@@ -239,8 +219,6 @@ class TransactionActions
                 TransactionAction::Edit => TransactionActions::applyAmountEdit($line, $actor, $data),
                 TransactionAction::EditMetadata => TransactionActions::applyMetadataEdit($line, $actor, $data),
                 TransactionAction::Delete => TransactionActions::applyHardDelete($line, $actor, $data),
-                TransactionAction::DeleteReversal => TransactionActions::applyHardDelete($line, $actor, $data),
-                TransactionAction::DeleteTree => TransactionActions::applyTreeDelete($line, $actor, $data),
                 TransactionAction::Cancel => TransactionActions::applyCancellation($line, $actor, $data),
                 TransactionAction::Refund => TransactionActions::applyRefund($line, $actor, $data),
             };
@@ -307,7 +285,7 @@ class TransactionActions
         return match ($action) {
             TransactionAction::Edit => $actor->hasPermission(PermissionKey::CorrectTransactions),
             TransactionAction::EditMetadata => $actor->hasPermission(PermissionKey::AmendTransactionDetails),
-            TransactionAction::Delete, TransactionAction::DeleteReversal, TransactionAction::DeleteTree => $actor->hasPermission(PermissionKey::ForceDeleteTransactions),
+            TransactionAction::Delete => $actor->hasPermission(PermissionKey::ForceDeleteTransactions),
             TransactionAction::Cancel => $actor->hasPermission(PermissionKey::DeleteTransactions),
             TransactionAction::Refund => $actor->hasPermission(PermissionKey::RefundPayments),
         };
@@ -371,12 +349,6 @@ class TransactionActions
                 ReopenReading::handle($reading);
             }
         }
-    }
-
-    /** @param array<string, mixed> $data */
-    public static function applyTreeDelete(SubscriptionTransaction $transaction, User $actor, array $data): ?SubscriptionTransaction
-    {
-        throw ValidationException::withMessages(['action' => __('The financial record and cancellation lines cannot be deleted.')]);
     }
 
     /** @param array<string, mixed> $data */

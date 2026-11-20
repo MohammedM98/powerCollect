@@ -204,7 +204,7 @@ class ReadingAdjustmentTest extends TestCase
 
         $this->actingAs(User::factory()->superAdmin()->create())->post(route('subscriptions.transactions.actions.store', [$subscription, $reversal]), [
             'action' => 'delete_reversal', 'correction_notes' => 'محاولة إعادة المبلغ السابق',
-        ])->assertSessionHasErrors(['action' => 'هذا الإجراء غير مسموح لهذه الحركة.']);
+        ])->assertSessionHasErrors('action');
 
         $this->assertModelExists($reversal);
         $this->assertSame($transactionsBefore, $subscription->transactions()->orderBy('id')->get()->map->getAttributes()->all());

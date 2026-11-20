@@ -464,8 +464,6 @@ class BranchOperationsSimulationTest extends TestCase
             // Cancelling takes back the line, and a weekly reading's standing discount with it; it never brings back a line it corrected.
             TransactionAction::Cancel => $before - $this->cents($line->amount) + $this->cents((string) ($entry['readingDiscount'] ?? '0')),
             TransactionAction::Delete => $before - $this->cents((string) $entry['actionEffects']['delete']),
-            TransactionAction::DeleteReversal => $before - $this->cents((string) $entry['actionEffects']['delete_reversal']),
-            TransactionAction::DeleteTree => $before - $this->cents((string) $entry['actionEffects']['delete_tree']),
         };
         if ($expected !== null) {
             $this->assertSame($this->money($expected), $subscription->balance(), $this->failure("{$action} on line {$line->id} did not leave the balance the statement previewed"));

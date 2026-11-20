@@ -116,11 +116,6 @@ class SubscriptionPolicy
         return $this->recordAnyPayment($user) && $user->hasPermission(PermissionKey::RecordTransferPayments);
     }
 
-    public function recordLatePayment(User $user, Subscription $subscription): bool
-    {
-        return false;
-    }
-
     public function viewOwnCashBoxes(User $user): bool
     {
         return $user->hasAnyPermission(PermissionKey::RecordCollections, PermissionKey::AddCharges, PermissionKey::AddDiscounts, PermissionKey::AddClearings);

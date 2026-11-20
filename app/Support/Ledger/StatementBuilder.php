@@ -125,7 +125,6 @@ class StatementBuilder
                         || ($line->isReversal() && in_array($line->reverses_id, $partIds, true)))
                         ->sum(fn (SubscriptionTransaction $line): int => self::cents($line->amount));
                     $entry['actionEffects']['delete'] = self::money($effect);
-                    $entry['actionEffects']['delete_tree'] = self::money($effect);
                 }
 
                 return [...$entry, 'readingDiscount' => $readingDiscount ? LedgerAmounts::formatAmount(abs((float) $readingDiscount->amount)) : null];
@@ -179,7 +178,6 @@ class StatementBuilder
                 'clearingsCount' => $clearings->count(),
             ],
             'canRecordPayment' => $actor->can('recordPayment', $subscription),
-            'canRecordLatePayment' => $actor->can('recordLatePayment', $subscription),
             'paymentToday' => now(config('app.business_timezone'))->toDateString(),
             'canRecordSplitPayment' => $actor->can('recordSplitPayment', Subscription::class) && $actor->can('recordPayment', $subscription),
             'canAdjustBalance' => $actor->can('adjustBalance', $subscription),
@@ -326,8 +324,6 @@ class StatementBuilder
             ->whereIn('type', SubscriptionTransaction::REVERSAL_TYPES)
             ->values();
         $linkedReversal = $linkedReversals->last();
-        $treeEffectInCents = self::cents($transaction->amount)
-            + $linkedReversals->sum(fn (SubscriptionTransaction $reversal): int => self::cents($reversal->amount));
         $refundedInCents = $linkedReversals
             ->where('type', SubscriptionTransaction::TYPE_REFUND)
             ->sum(fn (SubscriptionTransaction $refund): int => abs(self::cents($refund->amount)));
@@ -359,8 +355,6 @@ class StatementBuilder
                 'delete' => $transaction->isPayment()
                     ? self::money(-max(0, abs(self::cents($transaction->amount)) - $refundedInCents))
                     : $transaction->amount,
-                'delete_reversal' => $transaction->amount,
-                'delete_tree' => self::money($treeEffectInCents),
             ],
             'refundableAmount' => $transaction->isPayment()
                 ? self::money(max(0, abs(self::cents($transaction->amount)) - $refundedInCents))

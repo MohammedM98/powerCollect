@@ -55,7 +55,7 @@ export function StatementActions({ canRecordPayment, canRecordSplitPayment, canA
 /**
  * The payment, charge, discount and clearing forms of a statement;
  * `openForm` names the one showing ('payment', 'charge', 'discount',
- * 'clearing' or null), or is `{ action: 'edit' | 'edit_metadata' | 'delete' | 'delete_reversal' | 'delete_tree' | 'cancel' | 'refund', entry }`
+ * 'clearing' or null), or is `{ action: 'edit' | 'edit_metadata' | 'delete' | 'cancel' | 'refund', entry }`
  * for one of a line's audit-safe actions, or `{ action: 'correct_reading', entry }` to correct the
  * weekly reading a line was billed from, in the readings page's own form. `statement` is the statement's page props.
  */
@@ -63,7 +63,7 @@ export function StatementForms({ statement, openForm, onClose, onOpen = null }) 
     const { subscription, summary, canRecordPayment, canAddCharge, canAddDiscount, canAddClearing } = statement;
     const amending = openForm?.action === 'edit_metadata' ? openForm.entry : null;
     const editing = openForm?.action === 'edit' ? openForm.entry : null;
-    const deleting = ['delete', 'delete_reversal', 'delete_tree'].includes(openForm?.action) ? openForm.entry : null;
+    const deleting = openForm?.action === 'delete' ? openForm.entry : null;
     const cancelling = openForm?.action === 'cancel' ? openForm.entry : null;
     const refunding = openForm?.action === 'refund' ? openForm.entry : null;
     const correctingReading = openForm?.action === 'correct_reading' ? openForm.entry.reading : null;
