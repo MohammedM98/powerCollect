@@ -2227,7 +2227,7 @@ html.tn-locked {
 
 /*
  * ── The side bar exactly as the MA prototype ─────────────────────────────
- * Glass over the ground (70% of the panel, frosted), a hairline toward the
+ * Near-solid frosted glass over the ground, a hairline toward the
  * page; items 46px with 14px corners, grey until hovered (a soft tile); the
  * current one raised on white with a 3px orange bar just inside its start.
  */
@@ -2235,9 +2235,10 @@ html.tn-locked {
     :root[data-ui-navigation] .tn-side,
     :root[data-ui-background='graphite'][data-ui-navigation] .tn-side {
         border-inline-end: 1px solid var(--ma-line);
-        background: color-mix(in oklab, var(--ma-panel) 70%, transparent);
-        -webkit-backdrop-filter: var(--ma-blur);
-        backdrop-filter: var(--ma-blur);
+        /* Near-solid frosted (--ma-pop), as every floating surface: the page never shows through when it slides open over it. */
+        background: var(--ma-pop);
+        -webkit-backdrop-filter: blur(30px) saturate(1.5);
+        backdrop-filter: blur(30px) saturate(1.5);
     }
 
     :root[data-ui-navigation]:not([data-surface='glass']) .tn-side {
@@ -2411,4 +2412,164 @@ html.tn-locked {
     :root[data-ui-navigation] .tn-header .tn-bar .tn-branch-chip select {
         max-width: 5.5rem;
     }
+}
+
+/*
+ * The top bar's own keys (TopBarMenus.jsx): the working branch as HeroUI's
+ * Select on a soft pill, «إضافة» with its menu, and the appearance key with
+ * its popover. Their menus sit on the frosted pop surface.
+ */
+.tn-branch-select .tn-branch-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    min-width: 168px;
+    padding-inline: 14px 10px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+    color: var(--ma-ink);
+    font-size: 14.5px;
+    font-weight: 800;
+}
+
+.tn-branch-select .tn-branch-trigger:hover,
+.tn-branch-select .tn-branch-trigger[data-pressed='true'] {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.tn-branch-select .select__value {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: start;
+}
+
+.tn-branch-pop,
+.tn-quick-pop,
+.tn-appearance {
+    min-width: 240px;
+    padding: 6px;
+    border-radius: 18px;
+    background: var(--ma-pop);
+    -webkit-backdrop-filter: blur(30px) saturate(1.5);
+    backdrop-filter: blur(30px) saturate(1.5);
+    box-shadow: var(--ma-float);
+}
+
+.tn-branch-pop .list-box-item {
+    gap: 10px;
+    min-height: 44px;
+    padding-inline: 12px;
+    border-radius: 12px;
+    color: var(--ma-ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.tn-branch-pop .list-box-item svg:first-child {
+    color: var(--ma-muted);
+}
+
+.tn-branch-pop .list-box-item[data-selected='true'] {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.tn-quick.button {
+    height: 42px;
+    gap: 6px;
+    padding-inline: 14px;
+}
+
+.tn-quick-pop .menu-item {
+    gap: 12px;
+    min-height: 54px;
+    padding-inline: 10px;
+    border-radius: 12px;
+    color: var(--ma-ink);
+}
+
+.tn-quick-pop .menu-item b {
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.tn-quick-pop .menu-item small {
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.tn-appearance {
+    width: 300px;
+    padding: 14px;
+}
+
+.tn-appearance [role='dialog'] {
+    display: grid;
+    gap: 8px;
+    outline: none;
+}
+
+.tn-appearance-title {
+    margin: 4px 2px 0;
+    color: var(--ma-muted);
+    font-size: 12.5px;
+    font-weight: 800;
+}
+
+.tn-appearance-seg.gl-seg-group {
+    width: 100%;
+}
+
+.tn-appearance-seg .gl-seg-item {
+    flex: 1;
+    gap: 6px;
+}
+
+.tn-appearance-more {
+    display: grid;
+    gap: 2px;
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 1px solid var(--ma-line);
+}
+
+.tn-appearance-more .button {
+    justify-content: flex-start;
+    width: 100%;
+    gap: 10px;
+}
+
+@media (max-width: 760px) {
+    .tn-quick-text {
+        display: none;
+    }
+
+    .tn-branch-select .tn-branch-trigger {
+        min-width: 0;
+        max-width: 150px;
+    }
+}
+
+/* The bar's keys keep their icon beside their words, on one line. */
+.tn-tools .tn-branch-trigger,
+.tn-tools .tn-quick.button {
+    flex-direction: row;
+    white-space: nowrap;
+}
+
+.tn-tools .tn-quick.button {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* The chosen branch shows by its name only; the building on the key already says what it is. */
+.tn-branch-trigger .select__value svg {
+    display: none;
 }

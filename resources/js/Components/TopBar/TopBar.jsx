@@ -6,8 +6,8 @@ import ActivityBell from '@/Components/ActivityBell';
 import { useBrand } from '@/hooks/useBrand';
 import { shouldPrefetchPage, HOME_LINK, currentGroup, topBarItems } from '@/lib/navigation';
 import MegaMenu, { megaWidth } from './MegaMenu';
-import AccountMenu, { LogoutForm } from './AccountMenu';
-import { useTheme } from '@/hooks/useTheme';
+import { LogoutForm } from './AccountMenu';
+import { AppearanceMenu, QuickActionsMenu } from './TopBarMenus';
 import './top-bar.css';
 import { useMegaMenu } from './useMegaMenu';
 
@@ -68,7 +68,6 @@ function badgeOf(group, badges) {
  */
 export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDrawer, drawerOpen, layerOpen, onShowShortcuts, onStartTour, subnav = null, branchChip = null }) {
     const { props, url } = usePage();
-    const { dark, changePreference } = useTheme();
     const { name: companyName, tagline } = useBrand();
     const user = props.auth?.user;
     const branchLabel = props.branchView ? props.branchView.current?.name ?? 'جميع الفروع' : user?.branchName;
@@ -244,24 +243,9 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             <span className="tn-search-text flex-1 text-start">{searchText}</span>
                             <span className="tn-kbd" dir="ltr">Ctrl K</span>
                         </button>
-                        <button type="button" className="tn-tool" onClick={() => changePreference(dark ? 'light' : 'dark')} aria-label={dark ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'} title={dark ? 'الوضع الفاتح' : 'الوضع الداكن'}>
-                            <Icon name={dark ? 'sun' : 'moon'} />
-                        </button>
+                        <QuickActionsMenu onPickSubscriber={onOpenPalette} />
+                        <AppearanceMenu onShowShortcuts={onShowShortcuts} onStartTour={onStartTour} />
                         <ActivityBell open={popover === 'bell'} onToggle={() => togglePopover('bell')} onClose={() => setPopover(null)} />
-                        <span className="tn-separator" aria-hidden="true" />
-                        <AccountMenu
-                            open={popover === 'account'}
-                            onToggle={() => togglePopover('account')}
-                            onClose={() => setPopover(null)}
-                            onShowShortcuts={() => {
-                                setPopover(null);
-                                onShowShortcuts();
-                            }}
-                            onStartTour={() => {
-                                setPopover(null);
-                                onStartTour();
-                            }}
-                        />
                         <button type="button" className="tn-tool tn-mobile-only" data-tour="menu" onClick={onOpenDrawer} aria-label="القائمة" aria-expanded={drawerOpen}>
                             <Icon name="menu" />
                         </button>

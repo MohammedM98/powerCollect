@@ -62,7 +62,8 @@ export default function Index({
     // Looked up from the current page props (not kept as a copy) so the
     // statement refreshes after a reading is saved from inside it.
     const viewingSubscription = subscriptions.data.find((subscription) => subscription.id === viewingSubscriptionId) ?? null;
-    const [creating, setCreating] = useState(false);
+    // «مشترك جديد» from the top bar's quick key arrives as ?create=1 and opens the form at once.
+    const [creating, setCreating] = useState(() => canCreate && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('create') === '1');
     const [subscriptionSource, setSubscriptionSource] = useState(null);
     const [personalDetailsSubscription, setPersonalDetailsSubscription] = useState(null);
     const [readingSubscription, setReadingSubscription] = useState(null);

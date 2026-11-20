@@ -1,18 +1,23 @@
 import { useId } from 'react';
-import DialogFrame from '@/Components/DialogFrame';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
-import DangerButton from '@/Components/DangerButton';
+import { Button } from '@heroui/react';
+import Modal from '@/Components/Modal';
+import Icon from '@/Components/Icon';
+
+/** Each tone's look: its tile and its confirm key (components.css `gl-confirm`). */
+const TONES = { primary: 'primary', brand: 'primary', blue: 'info', warning: 'warning', amber: 'warning', danger: 'danger' };
 
 /**
- * A yes/no question in the app's own modal style, used instead of the
- * browser's confirm(). Closing it (Escape, the backdrop, or the cancel
- * button) counts as "no".
+ * A yes/no question in the app's own window, used instead of the browser's
+ * confirm(), large and plain: the icon on a big tile in its tone, the
+ * question as a big title, the explanation in full-size text, and two big
+ * HeroUI keys. Closing it (Escape, the backdrop, or the cancel key) counts
+ * as "no".
  *
- * `tone="danger"` is for throwing work away: the confirm button turns
- * red and the safe choice (cancel) gets the focus. Otherwise confirm is
- * focused, so Enter answers straight away. `confirmDisabled` holds the
- * confirm button until the question's own condition is met (a typed name).
+ * `tone="danger"` is for throwing work away: the confirm key turns red and
+ * the safe choice (cancel) gets the focus; `tone="warning"` is amber.
+ * Otherwise confirm is focused, so Enter answers straight away.
+ * `confirmDisabled` holds the confirm key until the question's own
+ * condition is met (a typed name).
  */
 export default function ConfirmDialog({
     show,
@@ -28,21 +33,26 @@ export default function ConfirmDialog({
     children,
 }) {
     const id = useId();
-    const isDanger = tone === 'danger';
-    const ConfirmButton = isDanger ? DangerButton : PrimaryButton;
+    const look = TONES[tone] ?? 'primary';
+    const isDanger = look === 'danger';
 
     return (
-        <DialogFrame show={show} onClose={onCancel} title={title} icon={icon} tone={tone} role="alertdialog" maxWidth="xl" footer={<>
-            <SecondaryButton onClick={onCancel} autoFocus={isDanger}>
-                {cancelLabel}
-            </SecondaryButton>
-            <ConfirmButton type="button" onClick={onConfirm} autoFocus={!isDanger} disabled={confirmDisabled}>
-                {confirmLabel}
-            </ConfirmButton>
-        </>}>
-            <div id={`${id}-message`} className="whitespace-pre-line">{message}</div>
-            {children}
-        </DialogFrame>
+        <Modal show={show} onClose={onCancel} maxWidth="lg" presentation="dialog">
+            <div role="alertdialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-message`} dir="rtl" className="gl-confirm" data-tone={look}>
+                <span className="gl-confirm-icon" aria-hidden="true"><Icon name={icon} strokeWidth={2} /></span>
+                <h2 id={`${id}-title`} className="gl-confirm-title">{title}</h2>
+                <div id={`${id}-message`} className="gl-confirm-message">{message}</div>
+                {children && <div className="gl-confirm-extra">{children}</div>}
+                <div className="gl-confirm-keys">
+                    <Button variant={isDanger ? 'danger' : 'primary'} className="gl-confirm-yes" onPress={onConfirm} isDisabled={confirmDisabled} autoFocus={!isDanger}>
+                        {confirmLabel}
+                    </Button>
+                    <Button variant="secondary" className="gl-confirm-no" onPress={onCancel} autoFocus={isDanger}>
+                        {cancelLabel}
+                    </Button>
+                </div>
+            </div>
+        </Modal>
     );
 }
 

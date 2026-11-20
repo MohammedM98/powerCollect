@@ -9864,3 +9864,86 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-empty-how li b { font-size: 14px; color: var(--ma-ink); }
 .gl-empty-how li span { font-size: 12.5px; }
 @media (max-width: 760px) { .gl-empty-how ol { grid-template-columns: minmax(0, 1fr); } }
+
+/*
+ * The confirmation window (ConfirmDialog): big and plain. The icon on a
+ * large tile in its tone, the question as a big title, the explanation at
+ * full reading size, then two big keys side by side (stacked on phones).
+ */
+.gl-confirm { --cf-c: var(--ma-ink); --cf-s: var(--ma-tile); display: grid; justify-items: center; gap: 12px; padding: 30px 28px 24px; text-align: center; color: var(--ma-ink); }
+.gl-confirm[data-tone='primary'] { --cf-c: var(--ma-ink); --cf-s: var(--ma-tile); }
+.gl-confirm[data-tone='info'] { --cf-c: var(--ma-clr); --cf-s: var(--ma-clr-s); }
+.gl-confirm[data-tone='warning'] { --cf-c: var(--ma-warn); --cf-s: var(--ma-warn-s); }
+.gl-confirm[data-tone='danger'] { --cf-c: var(--ma-owe); --cf-s: var(--ma-owe-s); }
+.gl-confirm-icon { width: 72px; height: 72px; display: grid; place-items: center; border-radius: 24px; background: var(--cf-s); color: var(--cf-c); box-shadow: var(--ma-hl); }
+.gl-confirm-icon svg { width: 34px; height: 34px; }
+.gl-confirm-title { margin: 6px 0 0; font-size: 24px; font-weight: 900; line-height: 1.35; overflow-wrap: anywhere; }
+.gl-confirm-message { max-width: 460px; color: var(--ma-muted); font-size: 16.5px; line-height: 1.85; white-space: pre-line; overflow-wrap: anywhere; }
+.gl-confirm-extra { width: 100%; text-align: start; font-size: 15px; }
+.gl-confirm-keys { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 10px; }
+.gl-confirm-keys .button { width: 100%; height: 52px; border-radius: 15px; font-size: 16px; font-weight: 800; }
+.gl-confirm[data-tone='warning'] .gl-confirm-yes.button { background: var(--ma-warn); color: #fff; }
+.gl-confirm[data-tone='info'] .gl-confirm-yes.button { background: var(--ma-clr); color: #fff; }
+.gl-confirm[data-tone='danger'] .gl-confirm-yes.button { background: var(--ma-owe); color: #fff; }
+@media (max-width: 560px) {
+    .gl-confirm { padding: 26px 18px 18px; }
+    .gl-confirm-title { font-size: 21px; }
+    .gl-confirm-keys { grid-template-columns: minmax(0, 1fr); }
+}
+
+/*
+ * Notifications, larger and plainer: a wider card on the near-solid pop
+ * surface with a tone edge, a 44px icon tile, the title at 16px and the
+ * message at reading size. Warnings and errors carry a tinted ground too.
+ */
+.gl-toast {
+    width: min(520px, 100%);
+    border: 0;
+    border-inline-start: 5px solid var(--gl-c);
+    border-radius: 18px;
+    background: var(--ma-pop);
+    -webkit-backdrop-filter: blur(30px) saturate(1.5);
+    backdrop-filter: blur(30px) saturate(1.5);
+    color: var(--ma-ink);
+    font-size: 15.5px;
+    box-shadow: var(--ma-float);
+}
+
+.gl-toast.flash-notification-error {
+    background: color-mix(in oklab, var(--gl-c) 9%, var(--ma-pop));
+}
+
+.gl-toast > div:first-child {
+    gap: 14px;
+    padding: 14px 12px 14px 16px;
+}
+
+.gl-toast-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+}
+
+.gl-toast-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.gl-toast p:first-child {
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.gl-toast p + p {
+    color: var(--ma-muted);
+    font-size: 15px;
+}
+
+.gl-toast .gl-toast-close.button {
+    flex: none;
+    color: var(--ma-muted);
+}
+
+.gl-toast-track {
+    height: 4px;
+}

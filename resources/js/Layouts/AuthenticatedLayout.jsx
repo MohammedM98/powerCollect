@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import TopBar from '@/Components/TopBar/TopBar';
-import { WorkingBranchChip } from '@/Components/BranchViewSwitcher';
+import { WorkingBranchSelect } from '@/Components/TopBar/TopBarMenus';
 import NavigationDrawer from '@/Components/TopBar/NavigationDrawer';
 import { useBrandDocument } from '@/hooks/useBrand';
 import { Breadcrumb, SectionPages } from '@/Components/TopBar/PageTrail';
@@ -215,7 +215,7 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
 
             <TopBar
                 groups={groups}
-                branchChip={<WorkingBranchChip />}
+                branchChip={<WorkingBranchSelect />}
                 badges={badges}
                 where={pastTitle && trail ? { section: trail.group?.shortLabel, page: trail.link.label, scope } : null}
                 drawerOpen={drawerOpen}
