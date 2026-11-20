@@ -18,6 +18,7 @@ use App\Support\Ledger\LinePresenter;
 use App\Support\Ledger\RecordClearing;
 use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
@@ -372,7 +373,7 @@ class CollectorBoxTypesTest extends TestCase
         $this->assertDatabaseHas('cash_boxes', ['id' => $entry->cash_box_id, 'status' => 'open']);
     }
 
-    public function test_refresh_attaches_historical_clearings_to_the_open_box_after_their_week_ended(): void
+    public function test_the_scheduled_processing_attaches_historical_clearings_to_the_open_box_after_their_week_ended(): void
     {
         [$branch, , $collector] = $this->start();
         $closing = app(BranchClosingWorkflow::class)->current($branch->id);
@@ -380,9 +381,25 @@ class CollectorBoxTypesTest extends TestCase
         $this->travelTo($closing->coverage_until);
         $transaction = SubscriptionTransaction::withoutEvents(fn (): SubscriptionTransaction => SubscriptionTransaction::factory()->for(Subscription::factory()->for($branch))->create(['branch_id' => $branch->id, 'recorded_by' => $collector->id, 'type' => 'clearing', 'status' => SubscriptionTransaction::STATUS_ACTIVE, 'source_key' => 'clearing:'.Str::ulid(), 'amount' => '-20', 'notes' => 'صيانة قديمة', 'created_at' => $occurred]));
 
+        // A page load no longer scans the branch's history; the every-minute closings:process does.
+        $this->artisan('closings:process')->assertSuccessful();
         $this->actingAs($collector)->get(route('payments.summary'))->assertInertia(fn (AssertableInertia $page) => $page->where('current.clearing.totals.ILS', '20.00'));
 
         $entry = CashBoxPayment::query()->where('subscription_transaction_id', $transaction->id)->sole();
+        $this->assertSame('open', $entry->box->status);
+    }
+
+    public function test_recording_a_payment_boxes_only_that_payment_without_scanning_the_branchs_history(): void
+    {
+        [$branch, , $collector] = $this->start();
+        DB::enableQueryLog();
+        DB::flushQueryLog();
+
+        $entry = $this->entry($branch, $collector, CashBoxType::Cash);
+
+        $scans = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains($query['query'], 'not in (select "subscription_transaction_id"'))->count();
+        DB::disableQueryLog();
+        $this->assertSame(0, $scans);
         $this->assertSame('open', $entry->box->status);
     }
 

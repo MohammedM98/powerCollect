@@ -12,6 +12,7 @@ use App\Models\SubArea;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Models\UserType;
+use App\Support\Ledger\RecordPayment;
 use App\Support\Readings\ReadingWeeks;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -38,6 +39,24 @@ class PageLoadingPerformanceTest extends TestCase
         $profileQueries = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains($query['query'], 'from "user_types"'));
         DB::disableQueryLog();
         $this->assertCount(0, $profileQueries);
+    }
+
+    public function test_a_statement_does_not_ask_each_lines_box_and_closing_again(): void
+    {
+        $actor = User::factory()->superAdmin()->create();
+        $subscription = Subscription::factory()->create();
+        for ($payment = 0; $payment < 8; $payment++) {
+            RecordPayment::handle($subscription, $actor, ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        }
+        DB::enableQueryLog();
+        DB::flushQueryLog();
+
+        $this->actingAs($actor)->get(route('subscriptions.statement', $subscription))->assertOk();
+
+        $perLine = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains($query['query'], 'from "cash_boxes" where exists')
+            || str_contains($query['query'], 'from "closing_payments" where "subscription_transaction_id" = ?'))->count();
+        DB::disableQueryLog();
+        $this->assertSame(0, $perLine);
     }
 
     public function test_subscription_reading_history_does_not_query_each_readings_parent_or_successors(): void
