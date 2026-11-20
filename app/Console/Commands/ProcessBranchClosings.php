@@ -18,7 +18,7 @@ class ProcessBranchClosings extends Command
     public function handle(BranchClosingWorkflow $workflow): int
     {
         foreach (ClosingSetting::query()->whereNotNull('branch_id')->whereNotNull('workflow_started_at')->get() as $setting) {
-            $workflow->refresh($setting->branch_id);
+            $workflow->refresh($setting->branch_id, attachMissed: true);
         }
 
         return self::SUCCESS;

@@ -1,3 +1,5 @@
+import { westernDigits } from './format.js';
+
 /**
  * The reading cycle board's small rules, kept apart from the page so they
  * can be tested on their own.
@@ -22,9 +24,7 @@ export function boardColumns(readers) {
 
 /** Search Arabic names regardless of vowel marks, hamza forms or digit style. */
 function normalizeSearch(value) {
-    return String(value ?? '').normalize('NFKD').replace(/\p{M}/gu, '').replace(/ـ/g, '').replace(/ى/g, 'ي')
-        .replace(/[٠-٩]/g, (digit) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(digit)))
-        .replace(/[۰-۹]/g, (digit) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(digit))).toLowerCase().trim();
+    return westernDigits(String(value ?? '').normalize('NFKD').replace(/\p{M}/gu, '').replace(/ـ/g, '').replace(/ى/g, 'ي')).toLowerCase().trim();
 }
 
 export function readingSearchMatches(value, search) {

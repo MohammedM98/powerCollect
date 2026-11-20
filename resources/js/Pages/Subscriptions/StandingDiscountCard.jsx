@@ -1,4 +1,4 @@
-import { formatAmount } from '@/lib/currency';
+
 import { formatMoney } from '@/lib/format';
 import { MovementCard } from './AccountFormParts';
 import { standingTerms } from '@/lib/discountTerms';
@@ -18,7 +18,7 @@ export default function StandingDiscountCard({ data, example, exampleBill, examp
                 {
                     label: 'فاتورة الأسبوع المعتادة',
                     value: `${formatMoney(exampleBill.amountDue)} ₪`,
-                    note: `${formatAmount(example.kilos)} كيلو × ${formatMoney(example.unitPrice)} ₪`,
+                    note: `${formatMoney(example.kilos)} كيلو × ${formatMoney(example.unitPrice)} ₪`,
                 },
                 {
                     label: 'الخصم',

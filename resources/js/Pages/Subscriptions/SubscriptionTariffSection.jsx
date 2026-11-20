@@ -8,6 +8,7 @@ import InputLabel from '@/Components/InputLabel';
 import SearchableSelect from '@/Components/SearchableSelect';
 import TextInput from '@/Components/TextInput';
 import { formatAmount } from '@/lib/currency';
+import { formatMoney } from '@/lib/format';
 
 const ACCOUNTING_TYPE_OPTIONS = [
     { value: 'weekly', label: 'أسبوعي' },
@@ -62,7 +63,7 @@ export default function SubscriptionTariffSection({
                     options={tariffs.map((tariff) => ({
                         value: String(tariff.id),
                         label: tariff.categoryLabel,
-                        hint: `${formatAmount(tariff.rate)} ش/ك.و`,
+                        hint: `${formatMoney(tariff.rate)} ش/ك.و`,
                     }))}
                     placeholder="اختر نوع الاشتراك"
                     searchPlaceholder="بحث في أنواع الاشتراك..."
@@ -114,9 +115,9 @@ export default function SubscriptionTariffSection({
                     </Affix>
                 </div>
                 {kilowattPriceUnlocked ? (
-                    <p className="m-0 text-[13px] text-gray-500">سعر التعرفة {formatAmount(tariffRate)} شيكل؛ يمكن أن يكون أقل منه أو أكثر.</p>
+                    <p className="m-0 text-[13px] text-gray-500">سعر التعرفة {formatMoney(tariffRate)} شيكل؛ يمكن أن يكون أقل منه أو أكثر.</p>
                 ) : hasOwnKilowattPrice ? (
-                    <p className="m-0 text-[13px] font-semibold text-brand-600">سعر خاص بهذا المشترك — سعر التعرفة {formatAmount(tariffRate)} شيكل.</p>
+                    <p className="m-0 text-[13px] font-semibold text-brand-600">سعر خاص بهذا المشترك — سعر التعرفة {formatMoney(tariffRate)} شيكل.</p>
                 ) : kilowattPriceDropped ? (
                     <p className="m-0 text-[13px] text-amber-600">أُلغي السعر الخاص بهذا المشترك لتغيير نوع الاشتراك.</p>
                 ) : null}
@@ -126,7 +127,7 @@ export default function SubscriptionTariffSection({
                     onConfirm={unlockKilowattPrice}
                     onCancel={() => setConfirmingKilowattPriceUnlock(false)}
                     title="تعديل سعر الكيلو لهذا المشترك؟"
-                    message={`سيصبح لهذا المشترك سعر كيلو خاص به بدل سعر التعرفة (${selectedTariff ? formatAmount(selectedTariff.rate) : ''} شيكل)، ويُحسب به استهلاكه وخصوماته في القراءات القادمة. هل تريد المتابعة؟`}
+                    message={`سيصبح لهذا المشترك سعر كيلو خاص به بدل سعر التعرفة (${selectedTariff ? formatMoney(selectedTariff.rate) : ''} شيكل)، ويُحسب به استهلاكه وخصوماته في القراءات القادمة. هل تريد المتابعة؟`}
                     confirmLabel="نعم، عدّل"
                     icon="alert"
                 />
@@ -139,7 +140,7 @@ export default function SubscriptionTariffSection({
                     options={circuitBreakers.map((circuitBreaker) => ({
                         value: String(circuitBreaker.id),
                         label: `${circuitBreaker.ampere} أمبير`,
-                        hint: `الحد الأدنى ${formatAmount(circuitBreaker.minimum_payment)} ش`,
+                        hint: `الحد الأدنى ${formatMoney(circuitBreaker.minimum_payment)} ش`,
                     }))}
                     placeholder="بدون قاطع"
                     searchPlaceholder="بحث في القواطع..."

@@ -2,7 +2,6 @@
 
 namespace App\Support\Ledger;
 
-use App\Enums\TransactionAction;
 use App\Http\Controllers\TransactionAuditController;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
@@ -155,9 +154,10 @@ class TransactionAuditPage
     {
         return [
             ...self::eventBase('deletion', $deletion->id, $deletion->created_at, $deletion->user, $deletion->subscription),
+            // Deletions recorded before these two actions were retired keep their note.
             'kindNote' => match ($deletion->action) {
-                TransactionAction::DeleteReversal->value => __('Only the cancellation; the original transaction came back'),
-                TransactionAction::DeleteTree->value => __('The transaction and everything linked to it'),
+                'delete_reversal' => __('Only the cancellation; the original transaction came back'),
+                'delete_tree' => __('The transaction and everything linked to it'),
                 default => null,
             },
             'lines' => collect($deletion->transactions)

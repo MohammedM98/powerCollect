@@ -9,6 +9,7 @@ import {
     formatShortDay,
     initials,
     normalizeDecimalInput,
+    westernDigits,
     percentOf,
     timeAgo,
 } from '../../resources/js/lib/format.js';
@@ -87,4 +88,18 @@ test('wall-clock times read as 12-hour Arabic times', () => {
     assert.equal(formatClock('17:05'), '5:05 م');
     assert.equal(formatClock('00:30'), '12:30 ص');
     assert.equal(formatClock('12:00'), '12:00 م');
+});
+
+test('Arabic-Indic and Persian digits are read as 0-9 everywhere', () => {
+    assert.equal(westernDigits('٠١٢٣٤٥٦٧٨٩'), '0123456789');
+    assert.equal(westernDigits('۰۱۲۳۴۵۶۷۸۹'), '0123456789');
+    assert.equal(westernDigits('صندوق ۱۲3'), 'صندوق 123');
+    assert.equal(westernDigits(null), '');
+});
+
+test('money can always show its cents, for reports and price lists', () => {
+    assert.equal(formatMoney(3, { cents: true }), '3.00');
+    assert.equal(formatMoney(12170.5, { cents: true }), '12,170.50');
+    assert.equal(formatMoney(12170.5), '12,170.50');
+    assert.equal(formatMoney(12170), '12,170');
 });

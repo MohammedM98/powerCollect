@@ -23,18 +23,6 @@ export function actionItem(entry, action) {
             icon: 'trash',
             tone: 'red',
         },
-        delete_reversal: {
-            label: entry.type === 'refund' ? 'حذف الإرجاع فقط' : 'حذف الإلغاء فقط',
-            description: 'تعود الحركة الأصلية إلى الحالة النشطة ويُعاد احتساب الرصيد',
-            icon: 'trash',
-            tone: 'red',
-        },
-        delete_tree: {
-            label: entry.type === 'payment' ? 'حذف الدفعة والإرجاع معًا' : `حذف ${noun} والإلغاء معًا`,
-            description: 'حذف الحركة الأصلية وكل الحركات المرتبطة بها وإعادة موازنة السجل',
-            icon: 'trash',
-            tone: 'red',
-        },
         cancel: {
             label: `إلغاء ${noun}`,
             description: `إضافة حركة إلغاء مرتبطة بـ${noun} في نهاية السجل`,

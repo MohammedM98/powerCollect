@@ -40,10 +40,11 @@ export function formatNumber(value) {
 /**
  * An amount of money with thousands separators, and two decimals only when
  * it has any: 12170 → "12,170", 58.234 → "58.23", 1255.5 → "1,255.50".
+ * With `cents: true` it always shows two (reports, price lists): 3 → "3.00".
  */
-export function formatMoney(amount) {
+export function formatMoney(amount, { cents: alwaysCents = false } = {}) {
     const cents = Math.round(Number(amount ?? 0) * 100);
-    const digits = cents % 100 === 0 ? 0 : 2;
+    const digits = alwaysCents || cents % 100 !== 0 ? 2 : 0;
 
     return ((cents || 0) / 100).toLocaleString('en-US', {
         minimumFractionDigits: digits,
@@ -57,14 +58,21 @@ export function percentOf(part, whole) {
 }
 
 /**
+ * Text with Arabic-Indic (٠-٩) and Persian (۰-۹) digits written 0-9, for
+ * searching and reading numbers whichever keyboard typed them.
+ */
+export function westernDigits(text) {
+    return String(text ?? '').replace(/[\u0660-\u0669\u06f0-\u06f9]/g, (digit) => String(digit.charCodeAt(0) % 16));
+}
+
+/**
  * A typed number as plain digits, for a money field: Arabic-Indic digits
  * become 0-9, the Arabic decimal mark a point, thousands separators and
  * anything else are dropped, and at most `decimals` digits stay after the
  * first point ("١٬٢٥٠٫٥٧٩" → "1250.57").
  */
 export function normalizeDecimalInput(text, decimals = 2) {
-    const [whole, ...fraction] = String(text ?? '')
-        .replace(/[\u0660-\u0669\u06f0-\u06f9]/g, (digit) => String(digit.charCodeAt(0) % 16))
+    const [whole, ...fraction] = westernDigits(text)
         .replace(/\u066b/g, '.')
         .replace(/[^0-9.]/g, '')
         .split('.');

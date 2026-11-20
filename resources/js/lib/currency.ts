@@ -1,11 +1,15 @@
+import { formatMoney } from './format.js';
 import type { Amount } from './types.ts';
 
 /**
- * An amount with two decimal places, or none when it is a whole number:
- * 50 → '50', 617.5 → '617.50'.
+ * An amount as a field takes it, without thousands separators: two decimal
+ * places, or none when it is a whole number (50 → '50', 617.5 → '617.50',
+ * -0.004 → '0'). Shown to people, an amount is written by formatMoney().
  */
 export function formatAmount(amount: Amount): string {
-    return Number(amount).toFixed(2).replace(/\.00$/, '');
+    const cents = Math.round(Number(amount) * 100) || 0;
+
+    return (cents / 100).toFixed(2).replace(/\.00$/, '');
 }
 
 /** Rounded to cents through the decimal text (78.225 → 78.23), as the server rounds it. */
@@ -19,7 +23,7 @@ export function formatShekels(amount: Amount): string {
         return '—';
     }
 
-    return `${formatAmount(amount)} ₪`;
+    return `${formatMoney(amount)} ₪`;
 }
 
 /** An amount with the word for the currency, for running text: 50 → '50 شيكل'. */
@@ -28,7 +32,7 @@ export function formatCurrency(amount: Amount): string {
         return '—';
     }
 
-    return `${formatAmount(amount)} شيكل`;
+    return `${formatMoney(amount)} شيكل`;
 }
 
 /** An amount in whole agorot, so sums of cents never drift. */

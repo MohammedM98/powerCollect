@@ -251,10 +251,8 @@ class ClosedCashBoxPaymentLockTest extends TestCase
         $before = $payment->fresh()->getAttributes();
 
         $this->assertSame([], TransactionActions::availableActions($refund, $head));
-        $this->assertRefused(fn () => TransactionActions::applyAction($refund, $head, TransactionAction::DeleteReversal, ['correction_notes' => 'تصحيح']));
         $this->assertRefused(fn () => EraseLine::erase($refund, $head, 'تصحيح'));
         $this->assertSame([], TransactionActions::availableActions($payment, $head));
-        $this->assertRefused(fn () => TransactionActions::applyAction($payment, $head, TransactionAction::DeleteTree, ['correction_notes' => 'تصحيح']));
 
         $this->assertModelExists($refund);
         $this->assertSame($before, $payment->fresh()->getAttributes());

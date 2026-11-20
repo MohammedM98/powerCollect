@@ -119,8 +119,17 @@ class LineHistory
 
     public static function isPermanentDeletionLocked(SubscriptionTransaction $transaction, bool $lockForUpdate = false): bool
     {
+        // Read, not locked (a statement): the line itself as loaded, and only the lines it points to from the database.
+        if (! $lockForUpdate && LineHistory::isInClosedDay($transaction)) {
+            return true;
+        }
+        $lines = array_filter([$lockForUpdate ? $transaction->id : null, $transaction->reference_transaction_id, $transaction->reverses_id, $transaction->corrects_id]);
+        if ($lines === []) {
+            return false;
+        }
+
         return SubscriptionTransaction::query()
-            ->whereKey(array_filter([$transaction->id, $transaction->reference_transaction_id, $transaction->reverses_id, $transaction->corrects_id]))
+            ->whereKey($lines)
             ->when($lockForUpdate, fn (Builder $query): Builder => $query->lockForUpdate())
             ->get()
             ->contains(fn (SubscriptionTransaction $line): bool => LineHistory::isInClosedDay($line, $lockForUpdate));
@@ -161,6 +170,17 @@ class LineHistory
      */
     public static function isInClosedDay(SubscriptionTransaction $transaction, bool $lockForUpdate = false): bool
     {
+        // A statement loads each line's box and closing already: decide from them, not two queries a line.
+        if (! $lockForUpdate && $transaction->relationLoaded('boxEntry') && $transaction->relationLoaded('closingLine')
+            && ($transaction->boxEntry === null || $transaction->boxEntry->relationLoaded('box'))
+            && ($transaction->closingLine === null || $transaction->closingLine->relationLoaded('closing'))) {
+            $box = $transaction->boxEntry?->box;
+            $closing = $transaction->closingLine?->closing;
+
+            return ($box !== null && ! in_array($box->status, ['open', 'pending'], true))
+                || ($closing !== null && in_array($closing->status, [ClosingStatus::Submitted, ClosingStatus::Approved], true));
+        }
+
         if (CashBox::query()
             ->whereHas('payments', fn (Builder $query): Builder => $query->where('subscription_transaction_id', $transaction->id))
             ->whereNotIn('status', ['open', 'pending'])

@@ -76,7 +76,7 @@ class BranchClosingWorkflow
             $end = $this->nextEnd($startedAt, $settings);
             $start = $end->setTimezone(config('app.business_timezone'))->subWeek()->utc();
             $this->createPeriod($branchId, $start, $end, $settings);
-            $this->refresh($branchId);
+            $this->refresh($branchId, attachMissed: true);
         });
     }
 
@@ -126,9 +126,16 @@ class BranchClosingWorkflow
             ->orderByDesc('coverage_from')->orderBy('id')->firstOrFail();
     }
 
-    public function refresh(int $branchId): void
+    /**
+     * Roll the branch's periods on to now and close expired boxes. With
+     * `attachMissed`, also give a box to every payment since the workflow
+     * started that has none: a scan of the branch's whole history, so only
+     * the scheduled closings:process and the start do it, never each
+     * payment or page.
+     */
+    public function refresh(int $branchId, bool $attachMissed = false): void
     {
-        $this->locked($branchId, function () use ($branchId): void {
+        $this->locked($branchId, function () use ($branchId, $attachMissed): void {
             $setting = ClosingSetting::ownFor($branchId);
             if (! $setting?->workflow_started_at) {
                 return;
@@ -154,6 +161,9 @@ class BranchClosingWorkflow
                 $latest = $this->createPeriod($branchId, $latest->coverage_until, $until, $settings);
             }
             $this->closeExpiredBoxes($branchId);
+            if (! $attachMissed) {
+                return;
+            }
             SubscriptionTransaction::query()->where('branch_id', $branchId)->whereIn('type', [SubscriptionTransaction::TYPE_PAYMENT, SubscriptionTransaction::TYPE_CLEARING])
                 ->where('status', SubscriptionTransaction::STATUS_ACTIVE)->where('created_at', '>=', $setting->workflow_started_at)
                 ->whereNotIn('id', CashBoxPayment::query()->select('subscription_transaction_id'))->orderBy('id')
@@ -178,6 +188,11 @@ class BranchClosingWorkflow
                 return;
             }
             $this->refresh($payment->branch_id);
+            // Only this payment: the scheduled closings:process gives a box to any payment missed before.
+            if ($payment->created_at->greaterThanOrEqualTo(ClosingSetting::ownFor($payment->branch_id)->workflow_started_at)
+                && ! CashBoxPayment::query()->where('subscription_transaction_id', $payment->id)->exists()) {
+                $this->attachEntry($payment);
+            }
         });
     }
 
@@ -276,21 +291,32 @@ class BranchClosingWorkflow
         $this->recountClosed($box);
     }
 
-    /** Keep a corrected share in its transfer's box while attributing the correction to its actual recorder. */
-    public function syncCorrectedSplitPayment(SubscriptionTransaction $original, SubscriptionTransaction $replacement): void
+    /**
+     * Keep a corrected payment in the box that holds the original, while the
+     * correction stays attributed to whoever made it: the collector who took
+     * the money hands it over at closing, not the head who fixed the amount.
+     * A transfer's share must stay with its transfer; any other payment
+     * stays where it was recorded when the original's box is no longer open.
+     */
+    public function syncCorrectedPayment(SubscriptionTransaction $original, SubscriptionTransaction $replacement): void
     {
-        if (! $original->isPayment() || ! $replacement->isPayment() || $original->split_payment_id === null
-            || $original->split_payment_id !== $replacement->split_payment_id) {
+        if (! $original->isPayment() || ! $replacement->isPayment()) {
             return;
         }
+        $share = $original->split_payment_id !== null && $original->split_payment_id === $replacement->split_payment_id;
         $originalEntry = $original->boxEntry()->with('box')->first();
         $replacementEntry = $replacement->boxEntry()->with('box')->first();
         if ($originalEntry === null || $replacementEntry === null || $originalEntry->cash_box_id === $replacementEntry->cash_box_id) {
             return;
         }
-        $this->require($originalEntry->box->isEditable() && $replacementEntry->box->isEditable()
+        $movable = $originalEntry->box->isEditable() && $replacementEntry->box->isEditable()
             && $originalEntry->box->branch_id === $replacementEntry->box->branch_id
-            && $originalEntry->box->type === $replacementEntry->box->type, __('A corrected transfer share cannot be moved out of the original transfer\'s box.'));
+            && $originalEntry->box->type === $replacementEntry->box->type;
+        if ($share) {
+            $this->require($movable, __('A corrected transfer share cannot be moved out of the original transfer\'s box.'));
+        } elseif (! $movable) {
+            return;
+        }
         $replacementEntry->update([
             'cash_box_id' => $originalEntry->cash_box_id,
             'occurred_at' => $originalEntry->occurred_at,

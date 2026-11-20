@@ -93,6 +93,13 @@ class StoreSplitPaymentRequest extends FormRequest
                     return;
                 }
 
+                // A transfer is shared only within one branch: each branch's boxes are audited on their own.
+                if ($this->partSubscriptions()->pluck('branch_id')->unique()->count() > 1) {
+                    $validator->errors()->add('parts', 'لا يمكن توزيع الحوالة على مشتركين من أكثر من فرع؛ وزّعها على مشتركي فرع واحد.');
+
+                    return;
+                }
+
                 $partsInCents = array_sum(array_map(fn (array $part): int => Closing::cents($part['amount']), $parts));
 
                 if ($partsInCents !== Closing::cents($this->input('total_amount'))) {

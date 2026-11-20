@@ -4,12 +4,13 @@ import StatusPill from '@/Components/DataTable/StatusPill';
 import Balance from '@/Components/Balance';
 import LatePaymentDetails from '@/Components/LatePaymentDetails';
 import { chainColor, followsLineAbove, hasLineMenu, netOfReadingDiscount, rowClass } from '@/lib/accountStatement';
-import { formatAmount } from '@/lib/currency';
+
 import SplitPaymentBadge from '@/Pages/Payments/SplitPaymentBadge';
 import { statementRowTotals } from '@/lib/statementPrint';
 import { useRowActionsMenu } from '@/hooks/useRowActionsMenu';
 import { withLtrDates, Dash, StatementDate, CancellationNote, CorrectsNote, ReversalNote, LinkedReversalNote, HistoryToggle, ReadingDiscountNote, AmendmentBadge } from './StatementNotes';
 import { lineActionsMenu } from './statementLineActions';
+import { formatMoney } from '@/lib/format';
 
 /**
  * One statement line. In the compact view a line may carry its reading's
@@ -123,15 +124,15 @@ export function StatementRow({
             >
                 {entry.discountLine ? (
                     <span className="grid gap-0.5">
-                        <span>{formatAmount(netOfReadingDiscount(entry))}</span>
+                        <span>{formatMoney(netOfReadingDiscount(entry))}</span>
                         <span className="font-sans text-xs font-normal text-gray-500" title="القراءة − خصم القراءة الأسبوعية">
                             <bdi dir="ltr">
-                                {formatAmount(entry.amount)} − {formatAmount(entry.discountLine.amount)}
+                                {formatMoney(entry.amount)} − {formatMoney(entry.discountLine.amount)}
                             </bdi>
                         </span>
                     </span>
                 ) : (
-                    <span className="ledger-struck">{formatAmount(entry.amount)}</span>
+                    <span className="ledger-struck">{formatMoney(entry.amount)}</span>
                 )}
             </td>
             <td data-label="العملة" className="text-gray-700">

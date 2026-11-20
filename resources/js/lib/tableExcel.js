@@ -1,4 +1,5 @@
 import { printUrl } from './print.js';
+import { westernDigits } from './format.js';
 
 /** Reuse each list's authorized print source, including its filters and sort. */
 export function excelUrl(title, base) {
@@ -27,7 +28,7 @@ export function tableExcelValue(value, type) {
     if (typeof value === 'number') return Number.isFinite(value) ? value : '';
     const text = String(value).replace(/[\u200e\u200f\u061c\u2066-\u2069]/g, '').trim();
     if (text === '—' || text === '–') return '';
-    const normalized = text.replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 1632)).replace(/[٬,]/g, '').replace(/٫/g, '.');
+    const normalized = westernDigits(text).replace(/[٬,]/g, '').replace(/٫/g, '.');
     const numeric = normalized.replace(/\s*(₪|شيكل|عليه|له)\s*/g, '').trim();
     if (!/^[+-]?\d+(\.\d+)?$/.test(numeric)) return text;
     const amount = Number(numeric);

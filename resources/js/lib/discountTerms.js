@@ -1,4 +1,4 @@
-import { formatAmount } from './currency.ts';
+
 import { formatMoney } from './format.js';
 import { discountAmount } from './accountStatement.js';
 import { weeklyCharges } from './readings.js';
@@ -35,7 +35,7 @@ export function fieldFor(kind, method, kiloPrice) {
 
 /** How a standing discount reads: "10%", "3 كيلو" or "5 شيكل من سعر الكيلو". Mirrors StandingDiscount::termsFor(). */
 export function standingTerms(method, value) {
-    const amount = formatAmount(value);
+    const amount = formatMoney(value);
 
     return { percentage: `${amount}%`, kilowatt: `${amount} كيلو`, shekel: `${amount} شيكل من سعر الكيلو` }[method];
 }

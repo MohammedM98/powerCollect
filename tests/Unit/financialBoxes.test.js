@@ -57,6 +57,8 @@ test('status, employee and trimmed search filters work together', () => {
 
     assert.deepEqual(filterFinancialBoxes(boxes, { status: 'open', person: '3', search: ' أحمد ' }).map((box) => box.number), [12, 13]);
     assert.deepEqual(filterFinancialBoxes(boxes, { search: '13' }).map((box) => box.number), [13]);
+    // A box number typed on a Persian keyboard finds it too.
+    assert.deepEqual(filterFinancialBoxes(boxes, { search: '۱۳' }).map((box) => box.number), [13]);
     assert.deepEqual(filterFinancialBoxes(boxes, { person: '9' }), []);
 });
 

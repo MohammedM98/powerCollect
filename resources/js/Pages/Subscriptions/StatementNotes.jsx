@@ -1,6 +1,6 @@
 import Icon from '@/Components/Icon';
-import { formatAmount } from '@/lib/currency';
-import { formatDate } from '@/lib/format';
+
+import { formatDate, formatMoney } from '@/lib/format';
 
 /** Keeps dates like 2026-09-18 reading left to right inside Arabic text. */
 export function withLtrDates(text) {
@@ -115,7 +115,7 @@ export function ReadingDiscountNote({ discountLine }) {
         <p className="ledger-description mt-1.5 flex items-center gap-1.5 text-xs font-normal text-emerald-700 dark:text-emerald-400">
             <Icon name="tag" className="h-3.5 w-3.5 shrink-0" />
             <span>
-                {withLtrDates(discountLine.description)}: − <bdi dir="ltr">{formatAmount(discountLine.amount)}</bdi>
+                {withLtrDates(discountLine.description)}: − <bdi dir="ltr">{formatMoney(discountLine.amount)}</bdi>
             </span>
         </p>
     );

@@ -10,7 +10,7 @@ import { statementExcelParts } from '@/lib/detailExcelParts';
 import StatementViewTabs from './StatementViewTabs';
 import { COLUMN_WIDTHS, compactStatementEntries, describeBalance, filtersCaption, filterStatementEntries, hasLineMenu, relatedLineChains, STATEMENT_COLUMNS, STATEMENT_SORT_OPTIONS, STATEMENT_VIEWS, withReadingDiscounts } from '@/lib/accountStatement';
 import { balanceTone } from '@/lib/balance';
-import { formatAmount } from '@/lib/currency';
+
 import { notify } from '@/lib/notify';
 import { statementPrintUrl } from '@/lib/statementPrint';
 import './AccountStatement.css';
@@ -18,6 +18,7 @@ import DateInput from '@/Components/DateInput';
 import { StatementRow } from './StatementRow';
 import { PrintHeading } from './StatementParts';
 import StatementLedger from './StatementLedger';
+import { formatMoney } from '@/lib/format';
 
 const EMPTY_FILTERS = { search: '', type: '', method: '', dateFrom: '', dateTo: '', sort: '' };
 
@@ -215,7 +216,7 @@ export default function AccountStatement({ subscription, entries, summary, payme
         return (
             <div data-excel-source="custom" className="statement-print-source">
                 <p className="data-table-totals">
-                    ملخص الحساب الكامل: الرصيد {formatAmount(summary.balance)} شيكل، التحميلات {formatAmount(summary.charged)} شيكل، التسديدات {formatAmount(summary.paid)} شيكل، الخصومات {formatAmount(summary.discounted)} شيكل، المقاصات {formatAmount(summary.cleared)} شيكل.
+                    ملخص الحساب الكامل: الرصيد {formatMoney(summary.balance)} شيكل، التحميلات {formatMoney(summary.charged)} شيكل، التسديدات {formatMoney(summary.paid)} شيكل، الخصومات {formatMoney(summary.discounted)} شيكل، المقاصات {formatMoney(summary.cleared)} شيكل.
                     {printCaption && ` نطاق الطباعة: ${printCaption}.`}
                     {' مجموع عمود المبلغ هو صافي عليه ناقص له، لكل عملة على حدة. الأرصدة بعد الحركات ليست قابلة للجمع.'}
                 </p>
@@ -350,11 +351,11 @@ function BalanceCard({ subscription, summary, entries }) {
             <span>{settled ? 'الحساب مسدّد بالكامل' : 'بعد آخر حركة على الحساب'}</span>
             <dl className="gl-st-acard-facts">
                 {Number(subscription.minimumPayment) > 0 && (
-                    <div><dt>الحد الأدنى</dt><dd><bdi dir="ltr">{formatAmount(subscription.minimumPayment)}</bdi> ₪</dd></div>
+                    <div><dt>الحد الأدنى</dt><dd><bdi dir="ltr">{formatMoney(subscription.minimumPayment)}</bdi> ₪</dd></div>
                 )}
                 <div><dt>آخر دفعة</dt><dd>{lastPayment ?? 'لا دفعات بعد'}</dd></div>
                 {Number(subscription.kiloPrice) > 0 && (
-                    <div><dt>الكيلو</dt><dd><bdi dir="ltr">{formatAmount(subscription.kiloPrice)}</bdi> ₪</dd></div>
+                    <div><dt>الكيلو</dt><dd><bdi dir="ltr">{formatMoney(subscription.kiloPrice)}</bdi> ₪</dd></div>
                 )}
             </dl>
             <BrandLogo alt="" onDark markSize={36} className="gl-st-acard-mark" />
@@ -366,7 +367,7 @@ function SummaryKpi({ label, value, hint, tone }) {
     return (
         <Card className="gl-kpi gl-st-fig" data-tone={tone}>
             <small><i aria-hidden="true" />{label}</small>
-            <b><bdi dir="ltr">{formatAmount(value)}</bdi> <span className="gl-kpi-unit">₪</span></b>
+            <b><bdi dir="ltr">{formatMoney(value)}</bdi> <span className="gl-kpi-unit">₪</span></b>
             <span>{hint}</span>
         </Card>
     );

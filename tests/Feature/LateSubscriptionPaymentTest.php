@@ -89,13 +89,10 @@ class LateSubscriptionPaymentTest extends TestCase
         $this->assertSame('نسيان إدخال الوصل', $payment->late_reason);
         $this->assertEquals(250, $subscription->fresh()->balance());
         $this->assertSame($old, SubscriptionTransaction::findOrFail($old['id'])->getAttributes());
-        $this->archivedPayment($collector, $subscription, $payload);
-        $this->assertDatabaseCount('subscription_transactions', 2);
-        $this->assertEquals(250, $subscription->fresh()->balance());
         $this->get(route('subscriptions.statement', $subscription))->assertInertia(fn (AssertableInertia $page) => $page
             ->where('summary.balance', '250.00')->where('entries.0.balance', '350.00')
             ->where('entries.1.balance', '250.00')->where('entries.1.paidOn', '2026-10-10')
-            ->where('entries.1.lateReason', 'نسيان إدخال الوصل')->where('canRecordLatePayment', false));
+            ->where('entries.1.lateReason', 'نسيان إدخال الوصل'));
     }
 
     public function test_late_cash_enters_the_current_open_box_without_touching_the_closed_box(): void
@@ -158,16 +155,6 @@ class LateSubscriptionPaymentTest extends TestCase
         $this->assertEquals(350, $subscription->fresh()->balance());
     }
 
-    public function test_retry_after_settling_the_account_does_not_demand_overpayment_confirmation_or_charge_twice(): void
-    {
-        [, $collector, $subscription] = $this->account();
-        $payload = [...$this->payload(), 'amount' => '350'];
-        $this->archivedPayment($collector, $subscription, $payload);
-        $this->archivedPayment($collector, $subscription, $payload);
-        $this->assertEquals(0, $subscription->fresh()->balance());
-        $this->assertDatabaseCount('subscription_transactions', 2);
-    }
-
     public function test_late_transfer_preserves_bank_details_and_both_dates_for_auditors(): void
     {
         [, $collector, $subscription] = $this->account();
@@ -195,13 +182,21 @@ class LateSubscriptionPaymentTest extends TestCase
         $this->assertEquals(350, $subscription->fresh()->balance());
     }
 
-    /** Existing archived payments retain their audit history after this feature is retired.
+    /**
+     * A late payment recorded before late registration was retired: a
+     * payment carrying its actual date, reason and request token, as the
+     * existing rows do.
+     *
      * @param  array<string, mixed>  $payload
      */
     private function archivedPayment(User $collector, Subscription $subscription, array $payload): SubscriptionTransaction
     {
         $this->actingAs($collector);
+        $payment = RecordPayment::handle($subscription, $collector, array_diff_key($payload, array_flip(['late_payment', 'paid_on', 'late_reason', 'late_payment_token'])));
+        SubscriptionTransaction::query()->whereKey($payment->id)->update([
+            'paid_on' => $payload['paid_on'], 'late_reason' => $payload['late_reason'], 'late_payment_token' => $payload['late_payment_token'],
+        ]);
 
-        return RecordPayment::handle($subscription, $collector, $payload);
+        return $payment->fresh();
     }
 }

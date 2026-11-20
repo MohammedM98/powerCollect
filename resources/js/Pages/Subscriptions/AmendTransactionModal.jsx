@@ -6,9 +6,10 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import { describeBalance } from '@/lib/accountStatement';
 import Balance from '@/Components/Balance';
-import { formatAmount } from '@/lib/currency';
+
 import { BalanceAfter } from './AccountSummary';
 import EditSplitPaymentModal from '@/Pages/Payments/EditSplitPaymentModal';
+import { formatMoney } from '@/lib/format';
 
 const inputClass = 'mt-2 block w-full';
 
@@ -70,7 +71,7 @@ function SinglePaymentEditor({ onClose, subscription, balance, entry, transferBa
         >
             <div className="grid gap-3 sm:grid-cols-3">
                 <LockedValue label="المبلغ">
-                    {formatAmount(entry.amount)} {entry.currencyLabel}
+                    {formatMoney(entry.amount)} {entry.currencyLabel}
                 </LockedValue>
                 <LockedValue label="طريقة الدفع">{entry.paymentMethodLabel}</LockedValue>
                 <LockedValue label="الرصيد قبل وبعد"><Balance value={balance} /></LockedValue>

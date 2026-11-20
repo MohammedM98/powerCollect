@@ -1,8 +1,8 @@
 import BrandLogo from '@/Components/BrandLogo';
 import FormPreview from '@/Components/Form/FormPreview';
 import Icon from '@/Components/Icon';
-import { formatAmount } from '@/lib/currency';
-import { initials } from '@/lib/format';
+
+import { initials, formatMoney } from '@/lib/format';
 
 export const STATUS_DOTS = {
     active: 'bg-emerald-500',
@@ -27,7 +27,7 @@ export function SubscriptionPreview({ data, tariff, circuitBreaker, filled, tota
             title={name || 'مشترك جديد'}
             subtitle={phone || '05— ——— ——'}
             subtitleDir="ltr"
-            chips={[tariff && `${tariff.categoryLabel}، ${formatAmount(kilowattPrice)} ش/ك.و`, circuitBreaker && `قاطع ${circuitBreaker.ampere} أمبير`].filter(Boolean)}
+            chips={[tariff && `${tariff.categoryLabel}، ${formatMoney(kilowattPrice)} ش/ك.و`, circuitBreaker && `قاطع ${circuitBreaker.ampere} أمبير`].filter(Boolean)}
             filled={filled}
             total={total}
         />
@@ -45,7 +45,7 @@ export function SubscriptionCard({ data, tariff, circuitBreaker }) {
     const kilowattPrice = data.kilowatt_price !== '' ? data.kilowatt_price : tariff?.rate;
     const name = data.subscription_name.trim() || data.full_name.trim();
     const phone = String(data.subscription_phone || data.phone || '').trim();
-    const chips = [tariff && `${tariff.categoryLabel}، ${formatAmount(kilowattPrice)} ش/ك.و`, circuitBreaker && `قاطع ${circuitBreaker.ampere} أمبير`].filter(Boolean);
+    const chips = [tariff && `${tariff.categoryLabel}، ${formatMoney(kilowattPrice)} ش/ك.و`, circuitBreaker && `قاطع ${circuitBreaker.ampere} أمبير`].filter(Boolean);
 
     return (
         <div className="gl-member" aria-live="polite">

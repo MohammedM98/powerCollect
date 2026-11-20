@@ -254,6 +254,21 @@ class SplitPaymentTest extends TestCase
         $this->assertNull(PaymentReferences::activeReferenceConflict('BOP-558201'));
     }
 
+    public function test_a_transfer_cannot_be_split_across_branches_even_by_the_super_admin(): void
+    {
+        $elsewhere = Subscription::factory()->create(['branch_id' => Branch::factory()->create()->id]);
+        $payload = [...$this->payload(), 'parts' => [
+            ['subscription_id' => $this->subscriptions[0]->id, 'amount' => 600],
+            ['subscription_id' => $elsewhere->id, 'amount' => 400],
+        ]];
+
+        $this->actingAs(User::factory()->superAdmin()->create())
+            ->post(route('payments.split.store'), $payload)
+            ->assertSessionHasErrors('parts');
+
+        $this->assertDatabaseCount('split_payments', 0);
+    }
+
     public function test_the_details_list_the_parts_of_the_users_branch_and_only_count_the_rest(): void
     {
         $split = $this->recordSplit();

@@ -1,8 +1,9 @@
+import { formatMoney } from './format.js';
 import type { Amount } from './types.ts';
 
 /** Format report amounts with two decimals, as on the financial reports. */
 export function reportMoney(amount: Amount): string {
-    return Number(amount ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return formatMoney(amount, { cents: true });
 }
 
 /** Format a YYYY-MM-DD report date, optionally including its year. */

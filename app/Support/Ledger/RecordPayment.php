@@ -10,7 +10,6 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Closing\BranchClosingWorkflow;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 /**
  * Records a payment on a subscription's account: converted to shekels, with the next voucher number for cash, its bank details for a transfer, and a refusal of a reference another payment already holds.
@@ -39,23 +38,6 @@ class RecordPayment
         $activeReference = PaymentReferences::normalizeReference($referenceNumber);
 
         return app(BranchClosingWorkflow::class)->locked($subscription->branch_id, function () use ($subscription, $collector, $payment, $currency, $method, $exchangeRate, $inShekels, $referenceNumber, $activeReference): SubscriptionTransaction {
-            $lateToken = $payment['late_payment_token'] ?? null;
-            $lateFingerprint = $lateToken ? hash('sha256', json_encode([
-                'amount' => Money::amount($payment['amount']),
-                'currency' => $currency->value, 'method' => $method->value,
-                'paid_on' => $payment['paid_on'], 'late_reason' => $payment['late_reason'],
-                'bank' => $payment['bank_name'] ?? null, 'sender_bank' => $payment['sender_bank_name'] ?? null,
-                'sender' => $payment['sender_name'] ?? null, 'reference' => $activeReference,
-                'voucher' => $payment['manual_voucher_number'] ?? null, 'notes' => $payment['notes'] ?? null,
-            ], JSON_THROW_ON_ERROR)) : null;
-            if ($lateToken && $existing = SubscriptionTransaction::query()->where('late_payment_token', $lateToken)->first()) {
-                if ($existing->subscription_id !== $subscription->id || $existing->recorded_by !== $collector->id
-                    || ! hash_equals($existing->late_payment_fingerprint, $lateFingerprint)) {
-                    throw ValidationException::withMessages(['late_payment_token' => __('This recording request was already used with different details. Reopen the form for a new payment.')]);
-                }
-
-                return $existing;
-            }
             if (! ($payment['confirm_duplicate_reference'] ?? false)) {
                 PaymentReferences::ensureReferenceIsAvailable($activeReference, $payment['split_payment_id'] ?? null);
             }
@@ -84,10 +66,6 @@ class RecordPayment
                 'manual_voucher_number' => $method === PaymentMethod::Cash ? ($payment['manual_voucher_number'] ?? null) : null,
                 'cash_box' => $method === PaymentMethod::Cash ? ($payment['cash_box'] ?? null) : null,
                 'notes' => $payment['notes'] ?? null,
-                'paid_on' => $lateToken ? $payment['paid_on'] : null,
-                'late_reason' => $lateToken ? $payment['late_reason'] : null,
-                'late_payment_token' => $lateToken,
-                'late_payment_fingerprint' => $lateFingerprint,
             ]);
         });
     }
