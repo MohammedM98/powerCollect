@@ -67,6 +67,22 @@ class CollectorBoxTypesTest extends TestCase
         return ['ILS' => $ils, 'USD' => '0', 'JOD' => '0'];
     }
 
+    public function test_a_payment_the_head_corrects_stays_in_the_collectors_box(): void
+    {
+        [$branch, $head, $collector] = $this->start();
+        $entry = $this->entry($branch, $collector, CashBoxType::Cash);
+        $original = $entry->transaction;
+
+        $this->actingAs($head)->put(route('subscriptions.transactions.update', [$original->subscription, $original]), [
+            'amount' => '120', 'currency' => 'ILS', 'payment_method' => 'cash', 'correction_reason' => 'wrong_amount', 'correction_notes' => 'المبلغ 120',
+        ])->assertSessionHasNoErrors();
+
+        $replacement = $original->fresh()->correction;
+        $this->assertSame($head->id, $replacement->recorded_by);
+        $this->assertSame($entry->cash_box_id, $replacement->boxEntry->cash_box_id);
+        $this->assertSame(0, CashBoxPayment::query()->whereHas('box', fn ($box) => $box->where('user_id', $head->id))->count());
+    }
+
     public function test_cash_transfer_and_clearing_go_into_separate_boxes(): void
     {
         [$branch, $head, $collector] = $this->start();

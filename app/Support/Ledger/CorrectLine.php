@@ -34,7 +34,7 @@ class CorrectLine
                     'late_reason' => $transaction->late_reason,
                 ] : []),
             ]);
-            app(BranchClosingWorkflow::class)->syncCorrectedSplitPayment($transaction, $replacement);
+            app(BranchClosingWorkflow::class)->syncCorrectedPayment($transaction, $replacement);
 
             return $replacement;
         });

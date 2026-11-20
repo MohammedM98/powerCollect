@@ -276,21 +276,32 @@ class BranchClosingWorkflow
         $this->recountClosed($box);
     }
 
-    /** Keep a corrected share in its transfer's box while attributing the correction to its actual recorder. */
-    public function syncCorrectedSplitPayment(SubscriptionTransaction $original, SubscriptionTransaction $replacement): void
+    /**
+     * Keep a corrected payment in the box that holds the original, while the
+     * correction stays attributed to whoever made it: the collector who took
+     * the money hands it over at closing, not the head who fixed the amount.
+     * A transfer's share must stay with its transfer; any other payment
+     * stays where it was recorded when the original's box is no longer open.
+     */
+    public function syncCorrectedPayment(SubscriptionTransaction $original, SubscriptionTransaction $replacement): void
     {
-        if (! $original->isPayment() || ! $replacement->isPayment() || $original->split_payment_id === null
-            || $original->split_payment_id !== $replacement->split_payment_id) {
+        if (! $original->isPayment() || ! $replacement->isPayment()) {
             return;
         }
+        $share = $original->split_payment_id !== null && $original->split_payment_id === $replacement->split_payment_id;
         $originalEntry = $original->boxEntry()->with('box')->first();
         $replacementEntry = $replacement->boxEntry()->with('box')->first();
         if ($originalEntry === null || $replacementEntry === null || $originalEntry->cash_box_id === $replacementEntry->cash_box_id) {
             return;
         }
-        $this->require($originalEntry->box->isEditable() && $replacementEntry->box->isEditable()
+        $movable = $originalEntry->box->isEditable() && $replacementEntry->box->isEditable()
             && $originalEntry->box->branch_id === $replacementEntry->box->branch_id
-            && $originalEntry->box->type === $replacementEntry->box->type, __('A corrected transfer share cannot be moved out of the original transfer\'s box.'));
+            && $originalEntry->box->type === $replacementEntry->box->type;
+        if ($share) {
+            $this->require($movable, __('A corrected transfer share cannot be moved out of the original transfer\'s box.'));
+        } elseif (! $movable) {
+            return;
+        }
         $replacementEntry->update([
             'cash_box_id' => $originalEntry->cash_box_id,
             'occurred_at' => $originalEntry->occurred_at,

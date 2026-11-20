@@ -42,6 +42,11 @@ class EnsureBranchDomainAccess
                 abort(403, 'لا تملك صلاحية الدخول إلى هذا الفرع.');
             }
             $request->attributes->set('branch_domain_authorized', true);
+            // An auditor in a branch that is not their own reviews it; its operations are recorded by its own staff.
+            abort_if(! $actor->isSuperAdmin() && $actor->branch_id !== $branch->id && ! $request->isMethodSafe()
+                && ! $request->routeIs('logout', 'profile.*', 'password.update', 'notifications.*', 'branch-view.*', 'print-selections.store',
+                    'payments.box-audits.*', 'payments.bank-audits.*', 'payments.period-audits.*', 'payments.audit-notes.*', 'payments.cash-boxes.actions'),
+                403, 'رابط هذا الفرع للمراجعة فقط؛ العمليات تُسجَّل من حسابات الفرع نفسه.');
             abort_if(! $request->isMethodSafe() && $request->routeIs('settings.banks.*', 'settings.currencies.*', 'settings.sms.*', 'user-types.*', 'governorates.*', 'areas.*', 'tariffs.*', 'tariff-segments.*', 'circuit-breakers.*', 'print-templates.*', 'excel-templates.*', 'company-forms.*'), 403, 'تعديل البيانات المشتركة للشركة متاح من اللوحة المركزية.');
             abort_if($request->routeIs('branches.*', 'branch-domains.*') || ($actor->isSuperAdmin() && $request->routeIs('settings.permissions.*')), 403, 'إدارة الفروع وصلاحيات الشركة متاحة من اللوحة المركزية.');
             // A form without a branch choice (anyone but the Super Admin) sends it empty: the domain decides the branch.

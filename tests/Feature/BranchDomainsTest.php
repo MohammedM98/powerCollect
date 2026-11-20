@@ -317,6 +317,20 @@ class BranchDomainsTest extends TestCase
         $this->get('https://admin.company.test/ledger')->assertOk();
     }
 
+    public function test_an_auditor_with_operational_permissions_only_reviews_another_branch_from_its_link(): void
+    {
+        $auditor = User::factory()->financialAuditor()
+            ->withPermissions([PermissionKey::RecordCollections, PermissionKey::RecordCashPayments, PermissionKey::UpdateSubscriptions])
+            ->create(['branch_id' => $this->south->id, 'audit_settings' => ['scope' => 'all', 'branch_ids' => [], 'actions' => ['view_ledger']]]);
+        $subscription = Subscription::factory()->create(['branch_id' => $this->north->id]);
+
+        $this->actingAs($auditor)->get('https://north.company.test/ledger')->assertOk();
+        $this->post('https://north.company.test/subscriptions/'.$subscription->id.'/payments', ['amount' => 50, 'currency' => 'ILS', 'payment_method' => 'cash', 'payment_token' => (string) Str::uuid()])->assertForbidden();
+        $this->put('https://north.company.test/subscriptions/'.$subscription->id, ['full_name' => 'Changed'])->assertForbidden();
+        $this->assertSame(0, $subscription->transactions()->count());
+        $this->post('https://north.company.test/notifications/read')->assertSuccessful();
+    }
+
     public function test_session_cookies_are_host_only_even_when_an_old_shared_domain_is_configured(): void
     {
         config(['session.domain' => '.company.test']);
