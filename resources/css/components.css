@@ -9947,3 +9947,37 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-toast-track {
     height: 4px;
 }
+
+/*
+ * Each notification reads by its colour alone: success is green through
+ * and through (a green ground, a green edge, a filled green tile with a
+ * white tick), warnings amber, errors red, in light and dark.
+ */
+.gl-toast.flash-notification {
+    background: color-mix(in oklab, var(--gl-c) 14%, var(--ma-pop));
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--gl-c) 35%, transparent), var(--ma-float);
+}
+
+.gl-toast.flash-notification:not(.flash-notification-error) {
+    --gl-c: var(--ma-pay);
+    background: color-mix(in oklab, var(--ma-pay) 18%, var(--ma-pop));
+}
+
+.gl-toast.flash-notification .gl-toast-icon {
+    background: var(--gl-c);
+    color: #fff;
+    box-shadow: 0 6px 16px -6px var(--gl-c);
+}
+
+/* The filled tile keeps its white tick legible in dark mode too: the pay key's deep green. */
+.gl-toast.flash-notification:not(.flash-notification-error) .gl-toast-icon {
+    background: var(--ma-pay-btn);
+}
+
+.gl-toast.flash-notification:not(.flash-notification-error) p:first-child {
+    color: color-mix(in oklab, var(--ma-pay) 70%, var(--ma-ink));
+}
+
+.gl-toast.flash-notification .gl-toast-track > div {
+    opacity: 1;
+}
