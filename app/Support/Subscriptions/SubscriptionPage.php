@@ -23,6 +23,7 @@ use App\Support\Readings\ReadingConsumption;
 use App\Support\Readings\ReadingWeeks;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Builds the subscription pages: the list's filters, the statement's reading details and the editable last reading.
@@ -46,6 +47,46 @@ class SubscriptionPage
             'amount' => $subscription->subscription_fee,
             'currency_amount' => $subscription->subscription_fee,
         ]);
+    }
+
+    /**
+     * The figures above the subscriptions list, for the current or the
+     * archived list in the chosen branch (other filters aside, so the status
+     * counts stay the same while one of them is picked): how many there are
+     * and in each status, what the debtors owe and how many they are, what
+     * the company holds for those in credit, and how many have no phone.
+     *
+     * @return array{total: int, byStatus: array<string, int>, owed: string, debtors: int, credit: string, creditors: int, withoutPhone: int}
+     */
+    public static function listSummary(User $actor, Request $request, bool $archived): array
+    {
+        $branchId = ((array) $request->input('filter', []))['branch_id'] ?? null;
+        $rows = Subscription::query()
+            ->readableTo($actor)
+            ->when($archived, fn ($query) => $query->whereNotNull('subscriptions.archived_at'), fn ($query) => $query->whereNull('subscriptions.archived_at'))
+            ->when(filled($branchId), fn ($query) => $query->where('subscriptions.branch_id', $branchId))
+            ->select(['subscriptions.status', 'subscriptions.phone', 'subscriptions.subscription_phone'])
+            ->selectSub(SubscriptionTransaction::query()->selectRaw('COALESCE(SUM(amount), 0)')->whereColumn('subscription_id', 'subscriptions.id'), 'balance');
+
+        $totals = DB::query()->fromSub($rows, 'listed')->selectRaw(
+            "COUNT(*) as total,
+            SUM(CASE WHEN balance > 0 THEN balance ELSE 0 END) as owed,
+            SUM(CASE WHEN balance > 0 THEN 1 ELSE 0 END) as debtors,
+            SUM(CASE WHEN balance < 0 THEN -balance ELSE 0 END) as credit,
+            SUM(CASE WHEN balance < 0 THEN 1 ELSE 0 END) as creditors,
+            SUM(CASE WHEN COALESCE(phone, '') = '' AND COALESCE(subscription_phone, '') = '' THEN 1 ELSE 0 END) as without_phone"
+        )->first();
+        $byStatus = DB::query()->fromSub($rows, 'listed')->selectRaw('status, COUNT(*) as count')->groupBy('status')->pluck('count', 'status');
+
+        return [
+            'total' => (int) $totals->total,
+            'byStatus' => collect(SubscriptionStatus::cases())->mapWithKeys(fn (SubscriptionStatus $status): array => [$status->value => (int) ($byStatus[$status->value] ?? 0)])->all(),
+            'owed' => Money::amount($totals->owed ?? 0),
+            'debtors' => (int) $totals->debtors,
+            'credit' => Money::amount($totals->credit ?? 0),
+            'creditors' => (int) $totals->creditors,
+            'withoutPhone' => (int) $totals->without_phone,
+        ];
     }
 
     /**

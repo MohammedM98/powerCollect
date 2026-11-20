@@ -270,4 +270,24 @@ class MeterBoxSubscriptionsTest extends TestCase
         $this->actingAs($actor)->getJson(route('meter-boxes.subscriptions.index', $box))
             ->assertOk()->assertJsonPath('total', 0)->assertJsonCount(0, 'data');
     }
+
+    public function test_the_occupancy_filter_lists_used_or_empty_boxes_while_the_figures_count_them_all(): void
+    {
+        $actor = User::factory()->branchAdmin()->create();
+        $used = MeterBox::factory()->create(['branch_id' => $actor->branch_id, 'box_number' => 'USED-1']);
+        $empty = MeterBox::factory()->create(['branch_id' => $actor->branch_id, 'box_number' => 'EMPTY-1']);
+        Subscription::factory()->create(['branch_id' => $actor->branch_id, 'meter_box_id' => $used->id]);
+
+        $this->actingAs($actor)->get(route('meter-boxes.index', ['filter' => ['occupancy' => 'used']]))->assertInertia(fn ($page) => $page
+            ->where('summary.total', 2)
+            ->where('summary.empty', 1)
+            ->where('meterBoxes.total', 1)
+            ->where('meterBoxes.data.0.id', $used->id));
+
+        $this->get(route('meter-boxes.index', ['filter' => ['occupancy' => 'empty']]))->assertInertia(fn ($page) => $page
+            ->where('meterBoxes.total', 1)
+            ->where('meterBoxes.data.0.id', $empty->id));
+
+        $this->get(route('meter-boxes.index'))->assertInertia(fn ($page) => $page->where('meterBoxes.total', 2));
+    }
 }

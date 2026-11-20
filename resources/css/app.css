@@ -51,6 +51,7 @@
 @import '@heroui/styles/components/menu.css' layer(components);
 @import '@heroui/styles/components/menu-item.css' layer(components);
 @import '@heroui/styles/components/menu-section.css' layer(components);
+@import '@heroui/styles/components/textarea.css' layer(components);
 @import './heroui.css';
 
 @plugin '@tailwindcss/forms';

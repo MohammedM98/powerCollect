@@ -481,4 +481,23 @@ class MessageTest extends TestCase
         $this->actingAs($branchAdmin)->get(route('messages.show', $batch))
             ->assertInertia(fn ($page) => $page->where('messages.data.0.whatsAppLink', 'https://wa.me/970599123456?text='.rawurlencode('مرحبا علي')));
     }
+
+    public function test_the_list_counts_this_months_messages_by_status_in_the_viewers_branch(): void
+    {
+        $this->travelTo('2026-11-20 10:00:00');
+        $admin = User::factory()->branchAdmin()->create();
+        $subscription = Subscription::factory()->create(['branch_id' => $admin->branch_id]);
+        $thisMonth = MessageBatch::factory()->create(['branch_id' => $admin->branch_id, 'created_by' => $admin->id]);
+        $lastMonth = MessageBatch::factory()->create(['branch_id' => $admin->branch_id, 'created_by' => $admin->id, 'created_at' => '2026-10-28 10:00:00']);
+        $otherBranch = MessageBatch::factory()->create();
+        foreach ([MessageStatus::Sent, MessageStatus::Sent, MessageStatus::Pending, MessageStatus::Failed] as $status) {
+            SubscriptionMessage::factory()->create(['message_batch_id' => $thisMonth->id, 'subscription_id' => $subscription->id, 'status' => $status]);
+        }
+        SubscriptionMessage::factory()->create(['message_batch_id' => $lastMonth->id, 'subscription_id' => $subscription->id, 'status' => MessageStatus::Sent]);
+        SubscriptionMessage::factory()->create(['message_batch_id' => $otherBranch->id, 'status' => MessageStatus::Sent]);
+
+        $this->actingAs($admin)->get(route('messages.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->where('monthSummary', ['batches' => 1, 'messages' => 4, 'sent' => 2, 'pending' => 1, 'failed' => 1]));
+    }
 }

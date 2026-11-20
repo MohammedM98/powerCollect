@@ -52,6 +52,7 @@ class MeterBoxController extends Controller
             ->selectRaw('COUNT(DISTINCT sub_area_id) AS regions, COALESCE(SUM(CASE WHEN sub_area_id IS NOT NULL THEN 1 ELSE 0 END), 0) AS located_boxes')
             ->first();
 
+        MeterBoxPage::applyOccupancy($query, $request);
         $meterBoxes = $query->paginate(DataTableFilters::dataTablePerPage($request))
             ->withQueryString()
             ->through(fn (MeterBox $meterBox) => [

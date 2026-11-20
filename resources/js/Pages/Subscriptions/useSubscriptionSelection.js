@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { openQuickMessage } from '@/lib/quickMessage';
 
 /**
  * The subscriptions ticked for a bulk action, kept across pages, or every
  * match of the filters; and the bulk action waiting for a choice. A new
  * search or filter (`filtersKey`) is a new list and starts the choice over.
- * The header checkbox (`headerCheckbox`) shows a page partly ticked.
  */
 export function useSubscriptionSelection(subscriptions, filters, filtersKey, filtersPending) {
     const [selectedIds, setSelectedIds] = useState(() => new Set());
@@ -13,7 +12,6 @@ export function useSubscriptionSelection(subscriptions, filters, filtersKey, fil
     const [bulkField, setBulkField] = useState(null);
     const [pendingAction, setPendingAction] = useState(null);
     const [listKey, setListKey] = useState(filtersKey);
-    const headerCheckbox = useRef(null);
     const pageIds = subscriptions.data.map((subscription) => subscription.id);
     const pageSelectedCount = pageIds.filter((id) => selectedIds.has(id)).length;
     const selectionCount = allMatching ? subscriptions.total : selectedIds.size;
@@ -24,12 +22,6 @@ export function useSubscriptionSelection(subscriptions, filters, filtersKey, fil
         setSelectedIds(new Set());
         setAllMatching(false);
     }
-
-    useEffect(() => {
-        if (headerCheckbox.current) {
-            headerCheckbox.current.indeterminate = !allMatching && pageSelectedCount > 0 && pageSelectedCount < pageIds.length;
-        }
-    });
 
     function toggleSubscription(id) {
         setAllMatching(false);
@@ -87,7 +79,6 @@ export function useSubscriptionSelection(subscriptions, filters, filtersKey, fil
         pageSelectedCount,
         selectionCount,
         selection,
-        headerCheckbox,
         toggleSubscription,
         togglePage,
         selectAllMatching,

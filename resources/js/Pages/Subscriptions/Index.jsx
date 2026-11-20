@@ -16,7 +16,9 @@ import BulkActionBar from './BulkActionBar';
 import BulkActionsMenu from './BulkActionsMenu';
 import BalanceFilter from './BalanceFilter';
 import { BALANCE_FILTER_KEYS, balanceFilterLabel, subscriptionFilterKey } from '@/lib/subscriptionBalance';
-import SegmentedTabs from '@/Components/SegmentedTabs';
+import { Button } from '@heroui/react';
+import SegmentedChoice from '@/Components/SegmentedChoice';
+import { DEBTORS_FILTER, SubscriptionFigures, SubscriptionQuickFilters } from './SubscriptionsOverview';
 import PageHeader from '@/Components/PageHeader';
 import InfoTip from '@/Components/InfoTip';
 import SubscriptionWindows from './SubscriptionWindows';
@@ -52,6 +54,7 @@ export default function Index({
     statement,
     bulkActions,
     statusOptions,
+    listSummary,
 }) {
     const { can, errors = {} } = usePage().props;
     const [modalSubscription, setModalSubscription] = useState(null);
@@ -68,7 +71,7 @@ export default function Index({
     const [archiveSubscription, setArchiveSubscription] = useState(null);
     const historySubscription = subscriptions.data.find((subscription) => subscription.id === historySubscriptionId) ?? null;
     const { search, setSearch, sort, setPage, setPerPage, filterValues, setFilter, setFilters, clearFilters } = useDataTable('/subscriptions', filters, {}, {
-        only: ['subscriptions', 'filters', 'filterOptions', 'branchScope', 'can', 'canCreate', 'canViewArchived', 'showArchived', 'archiveToday', 'canRecordReadings', 'bulkActions', 'canEditMinimumCharge', 'canEditKilowattPrice', 'readingWeekOptions'],
+        only: ['subscriptions', 'listSummary', 'filters', 'filterOptions', 'branchScope', 'can', 'canCreate', 'canViewArchived', 'showArchived', 'archiveToday', 'canRecordReadings', 'bulkActions', 'canEditMinimumCharge', 'canEditKilowattPrice', 'readingWeekOptions'],
     });
     const rowClick = useRowClick();
     const localFilterKey = subscriptionFilterKey(filterValues);
@@ -92,7 +95,6 @@ export default function Index({
         pageSelectedCount,
         selectionCount,
         selection,
-        headerCheckbox,
         toggleSubscription,
         togglePage,
         selectAllMatching,
@@ -267,7 +269,18 @@ export default function Index({
 
             {branchScope && <BranchFilterBanner scope={branchScope} eyebrow="تعرض الآن مشتركي" group={branchFilter.branch} value={filterValues.branch_id} onChange={(value) => setFilter('branch_id', value)} />}
 
-            {canViewArchived && <div className="mb-5 flex flex-wrap items-center gap-2"><SegmentedTabs label="قائمة الاشتراكات" value={showArchived ? 'archived' : 'current'} options={[{ value: 'current', label: 'الاشتراكات الحالية' }, { value: 'archived', label: 'الاشتراكات المؤرشفة' }]} onChange={(value) => setFilter('archived', value === 'archived' ? '1' : '')} /><InfoTip label="عن الأرشيف">{showArchived ? 'ملفات محفوظة بعد إنهاء الخدمة؛ الأرصدة والحركات السابقة باقية.' : 'أرشفة الاشتراك المنتهي متاحة من قائمة إجراءاته حسب الصلاحية.'}</InfoTip></div>}
+            {canViewArchived && <div className="mb-4 flex flex-wrap items-center gap-2"><SegmentedChoice label="قائمة الاشتراكات" value={showArchived ? 'archived' : 'current'} options={[{ value: 'current', label: 'الاشتراكات الحالية' }, { value: 'archived', label: 'الاشتراكات المؤرشفة' }]} onChange={(value) => setFilter('archived', value === 'archived' ? '1' : '')} /><InfoTip label="عن الأرشيف">{showArchived ? 'ملفات محفوظة بعد إنهاء الخدمة؛ الأرصدة والحركات السابقة باقية.' : 'أرشفة الاشتراك المنتهي متاحة من قائمة إجراءاته حسب الصلاحية.'}</InfoTip></div>}
+
+            {listSummary && <SubscriptionFigures summary={listSummary} />}
+            {listSummary && (
+                <SubscriptionQuickFilters
+                    summary={listSummary}
+                    statusOptions={statusOptions}
+                    values={filterValues}
+                    onStatus={(value) => setFilter('status', value)}
+                    onDebtors={(on) => setFilters(on ? DEBTORS_FILTER : Object.fromEntries(Object.keys(DEBTORS_FILTER).map((key) => [key, ''])))}
+                />
+            )}
 
             <DataTableToolbar
                 search={search}
@@ -293,20 +306,16 @@ export default function Index({
             {balanceLabel && (
                 <div role="status" className="flex flex-wrap items-center justify-between gap-3 border-x border-gray-100 bg-brand-500/5 px-5 py-3 text-sm text-gray-700">
                     <span><b className="font-display text-gray-900">{subscriptions.total.toLocaleString('en')}</b> اشتراكًا، {balanceLabel}{filtersPending && '، جارٍ تحديث النتائج…'}</span>
-                    {canSelect && subscriptions.total > 0 && !allMatching && <button type="button" disabled={filtersPending} onClick={selectAllMatching} className="rounded-control border border-brand-500/20 bg-surface px-3 py-2 font-semibold text-brand-600 transition hover:bg-brand-500/10 disabled:opacity-40">تحديد جميع النتائج ({subscriptions.total.toLocaleString('en')})</button>}
+                    {canSelect && subscriptions.total > 0 && !allMatching && <Button variant="secondary" size="sm" isDisabled={filtersPending} onPress={selectAllMatching}>تحديد جميع النتائج ({subscriptions.total.toLocaleString('en')})</Button>}
                 </div>
             )}
 
             {canSelect && !allMatching && pageIds.length > 0 && pageSelectedCount === pageIds.length && subscriptions.total > pageIds.length && (
                 <div role="status" className="flex flex-wrap items-center justify-center gap-2 border-x border-gray-100 bg-brand-500/5 px-4 py-2.5 text-sm text-gray-700">
                     تم تحديد {pageIds.length.toLocaleString('en')} مشترك في هذه الصفحة.
-                    <button
-                        type="button"
-                        onClick={() => setAllMatching(true)}
-                        className="rounded font-semibold text-brand-600 hover:underline focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
-                    >
+                    <Button variant="ghost" size="sm" onPress={() => setAllMatching(true)}>
                         تحديد كل النتائج المطابقة ({subscriptions.total.toLocaleString('en')})
-                    </button>
+                    </Button>
                 </div>
             )}
 
@@ -315,7 +324,6 @@ export default function Index({
                     allMatching={allMatching}
                     canSelect={canSelect}
                     filters={filters}
-                    headerCheckbox={headerCheckbox}
                     openStatement={openStatement}
                     pageIds={pageIds}
                     pageSelectedCount={pageSelectedCount}

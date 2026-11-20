@@ -10,17 +10,18 @@ import ActionsTh from '@/Components/DataTable/ActionsTh';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useRowClick } from '@/hooks/useRowClick';
 import Icon from '@/Components/Icon';
-import { timeAgo } from '@/lib/format';
+import { formatNumber, timeAgo } from '@/lib/format';
 import { openQuickMessage } from '@/lib/quickMessage';
 import { ChannelLabel, DeliveryCounts, KindPill, MessageText } from './MessageParts';
-import { secondaryButtonClass } from '@/Components/SecondaryButton';
+import { Button } from '@heroui/react';
+import { Figure } from '@/Pages/Reports/ReportViews';
 import PageHeader from '@/Components/PageHeader';
 
 /**
  * Every send of messages to subscriptions, newest first; a send opens to
  * its messages one by one.
  */
-export default function Index({ batches, canSend, filters, filterOptions }) {
+export default function Index({ batches, canSend, filters, filterOptions, monthSummary }) {
     const rowClick = useRowClick();
 
     function openBatch(batch) {
@@ -36,15 +37,10 @@ export default function Index({ batches, canSend, filters, filterOptions }) {
                     actions={
                         canSend && (
                             <>
-                            <button
-                                type="button"
-                                onClick={() => openQuickMessage()}
-                                aria-keyshortcuts="M"
-                                className={secondaryButtonClass}
-                            >
+                            <Button variant="secondary" onPress={() => openQuickMessage()} aria-keyshortcuts="M">
                                 <Icon name="send" className="h-4 w-4" />
                                 رسالة سريعة
-                            </button>
+                            </Button>
                             <AddButton href="/messages/create">رسالة جديدة</AddButton>
                             </>
                         )
@@ -53,6 +49,15 @@ export default function Index({ batches, canSend, filters, filterOptions }) {
             }
         >
             <Head title="الرسائل" />
+
+            {monthSummary && (
+                <div className="gl-rp-figs gl-sub-figs">
+                    <Figure dark label="رسائل هذا الشهر" hint={`في ${formatNumber(monthSummary.batches)} إرسال`}>{formatNumber(monthSummary.messages)}</Figure>
+                    <Figure tone="pay" label="أُرسلت" hint={monthSummary.messages ? `${Math.round((monthSummary.sent / monthSummary.messages) * 100)}% من رسائل الشهر` : 'لا رسائل بعد'}>{formatNumber(monthSummary.sent)}</Figure>
+                    <Figure tone="warn" label="بانتظار الإرسال" hint="تُرسل تباعًا">{formatNumber(monthSummary.pending)}</Figure>
+                    <Figure tone={monthSummary.failed > 0 ? 'owe' : null} label="فشلت" hint="افتح الإرسال لمعرفة السبب وإعادته">{formatNumber(monthSummary.failed)}</Figure>
+                </div>
+            )}
 
             <DataTableToolbar
                 search={search}
@@ -90,8 +95,17 @@ export default function Index({ batches, canSend, filters, filterOptions }) {
                     <tbody>
                         {batches.data.length === 0 ? (
                             <tr>
-                                <td className="text-gray-500" colSpan={8}>
-                                    لا توجد رسائل بعد.
+                                <td colSpan={8}>
+                                    {search || Object.values(filterValues).some(Boolean) ? (
+                                        <p className="gl-rp-empty">لا توجد رسائل مطابقة للبحث والتصفية.</p>
+                                    ) : (
+                                        <div className="gl-empty-how">
+                                            <span className="gl-set-ico" data-tone="clr" aria-hidden="true"><Icon name="send" /></span>
+                                            <b>لم تُرسل رسائل بعد</b>
+                                            <p>أرسل للمدينين تذكيرًا بأرصدتهم، أو قراءة الأسبوع لكل مشترك.</p>
+                                            {canSend && <Button onPress={() => router.visit('/messages/create')}><Icon name="plus" className="h-4 w-4" />رسالة جديدة</Button>}
+                                        </div>
+                                    )}
                                 </td>
                             </tr>
                         ) : (

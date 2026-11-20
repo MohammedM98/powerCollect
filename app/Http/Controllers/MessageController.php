@@ -72,6 +72,7 @@ class MessageController extends Controller
             'canSend' => $actor->can('create', MessageBatch::class),
             'filters' => DataTableFilters::dataTableState($request, 'created_at', 'desc'),
             'filterOptions' => $filterOptions,
+            'monthSummary' => fn () => MessagePage::monthSummary($actor),
         ]);
     }
 
