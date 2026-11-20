@@ -3,8 +3,7 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import StatusPill from '@/Components/DataTable/StatusPill';
 import Icon from '@/Components/Icon';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton, { secondaryButtonClass } from '@/Components/SecondaryButton';
+import { Button } from '@heroui/react';
 import { formatNumber, formatDate } from '@/lib/format';
 import { STAGES, stagedMoveGroups, assignmentMatches, boardColumns, boardCounters, boxMatches, columnTotals, distributionAreas, distributionBoxOptions, movePayload, toggleBoxSelection } from '@/lib/readingBoard';
 import PageHeader from '@/Components/PageHeader';
@@ -16,7 +15,7 @@ import SearchableSelect from '@/Components/SearchableSelect';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import PrintButton from '@/Components/PrintButton';
 import DistributionBoard, { DistributionMission, DistributionTray } from './DistributionBoard';
-import SegmentedTabs from '@/Components/SegmentedTabs';
+import SegmentedChoice from '@/Components/SegmentedChoice';
 import { AllocationReport, ReadingDayModal } from './CycleParts';
 
 /** Weekly allocations grouped by area, with standing and one-week changes. */
@@ -214,26 +213,26 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                         titleAddon={<StatusPill tone={STAGES[cycle.stage].tone} label={STAGES[cycle.stage].label} />}
                     />
                     <div className="flex shrink-0 flex-wrap items-center gap-2">
-                        <SecondaryButton disabled={busy} onClick={() => setSummaryOpen(true)}>ملخّص توزيع الفرع</SecondaryButton>
+                        <Button variant="secondary" isDisabled={busy} onPress={() => setSummaryOpen(true)}>ملخّص توزيع الفرع</Button>
                         <PrintButton title={`توزيع القراءات — ${cycle.branchName}`} base="/reading-cycles/print" params={{ cycle: cycle.id, search, area_ids: subAreaIds, box_id: boxId, assignment: assignmentFilter, print_page: currentPage, per_page: perPage }} selectedIds={[...selected]} selectionPage="/reading-cycles/print" />
                         {abilities.review && (
-                            <Link href={`/reading-cycles/${cycle.id}/submissions`} className={secondaryButtonClass}>
+                            <Button variant="secondary" onPress={() => router.visit(`/reading-cycles/${cycle.id}/submissions`)}>
                                 <Icon name="list" className="h-4 w-4" />
                                 القراءات الميدانية
                                 {reviewCount > 0 && <span className="rounded-full bg-amber-500 px-2 text-xs font-bold text-white">{formatNumber(reviewCount)}</span>}
-                            </Link>
+                            </Button>
                         )}
                         {abilities.manage && (
-                            <button type="button" onClick={() => setEditingDay(true)} className={secondaryButtonClass}>
+                            <Button variant="secondary" onPress={() => setEditingDay(true)}>
                                 <Icon name="calendar" className="h-4 w-4" />
                                 يوم القراءة
-                            </button>
+                            </Button>
                         )}
                         {abilities.approve && counters.draft > 0 && (
-                            <PrimaryButton disabled={busy} onClick={() => setSummaryOpen(true)}>
+                            <Button isDisabled={busy} onPress={() => setSummaryOpen(true)}>
                                 <Icon name="check" className="h-4 w-4" />
                                 مراجعة واعتماد ({formatNumber(counters.draft)})
-                            </PrimaryButton>
+                            </Button>
                         )}
                     </div>
                 </>
@@ -248,7 +247,7 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
 
             <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                 <p className="text-sm gl-text-muted">{view === 'board' ? (abilities.manage ? 'اسحب المنطقة كاملة إلى قارئ، أو افتحها واسحب طبلونات بعينها؛ لا يُحفظ شيء حتى «حفظ التوزيع».' : 'توزيع الطبلونات على القرّاء.') : 'الطبلونات حسب المنطقة.'}</p>
-                <SegmentedTabs label="طريقة العرض" value={view} onChange={setView} options={[{ value: 'board', label: 'لوحة التوزيع' }, { value: 'table', label: 'جدول' }]} />
+                <SegmentedChoice label="طريقة العرض" value={view} onChange={setView} options={[{ value: 'board', label: 'لوحة التوزيع' }, { value: 'table', label: 'جدول' }]} />
             </div>
 
             {view === 'board' ? (
@@ -275,7 +274,7 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                 <div className="flex min-w-0 flex-col gap-4">
                     {selectedBoxes.length > 0 && <section aria-label="الطبلونات المحددة" className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-brand-500/30 bg-surface p-4">
                         <div><p role="status" className="text-sm text-gray-700"><b className="font-display text-lg text-brand-600">{formatNumber(selectedTotals.boxes)}</b> طبلون محدد، {formatNumber(selectedTotals.subscribers)} مشترك</p>{hiddenSelected > 0 && <p className="mt-1 text-xs text-amber-700">منها {formatNumber(hiddenSelected)} خارج النتائج الظاهرة.</p>}</div>
-                        <div className="flex flex-wrap items-center gap-3"><button type="button" disabled={busy} onClick={() => setSelected(new Set())} className="text-[13.5px] font-semibold text-gray-700 hover:underline">إلغاء التحديد كله</button><PrimaryButton disabled={busy} onClick={() => setActionsOpen(true)}>{abilities.manage ? 'توزيع المحدد' : 'إجراء على المحدد'} ({formatNumber(selectedTotals.boxes)})</PrimaryButton></div>
+                        <div className="flex flex-wrap items-center gap-3"><Button variant="ghost" isDisabled={busy} onPress={() => setSelected(new Set())}>إلغاء التحديد كله</Button><Button isDisabled={busy} onPress={() => setActionsOpen(true)}>{abilities.manage ? 'توزيع المحدد' : 'إجراء على المحدد'} ({formatNumber(selectedTotals.boxes)})</Button></div>
                     </section>}
                     <div>
                         <DataTableToolbar search={search} onSearchChange={(value) => { setSearch(value); setPage(1); }} placeholder="ابحث باسم المنطقة أو الطبلون أو رقمه..." perPage={perPage} onPerPageChange={(size) => { setPerPage(size); setPage(1); }} total={visibleBoxes.length} printable={false}
@@ -293,23 +292,23 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                                         <label htmlFor="distribution-box-filter" className="mb-1.5 block text-xs font-semibold text-gray-600">الطبلون</label>
                                         <SearchableSelect id="distribution-box-filter" value={boxId} options={boxOptions} disabled={busy} placeholder="كل الطبلونات" searchPlaceholder="ابحث باسم الطبلون أو رقمه..." emptyLabel="لا توجد طبلونات ضمن التصفية الحالية" onChange={(value) => { setBoxId(value); setPage(1); }} />
                                     </div>
-                                    {(search || subAreaIds.length > 0 || assignmentFilter || boxId) && <button type="button" disabled={busy} onClick={() => { setSearch(''); setSubAreaIds([]); setAssignmentFilter(''); setBoxId(''); setPage(1); }} className="justify-self-start text-[13.5px] font-semibold text-gray-700 hover:underline sm:col-span-2">مسح التصفية</button>}
+                                    {(search || subAreaIds.length > 0 || assignmentFilter || boxId) && <Button variant="ghost" size="sm" isDisabled={busy} onPress={() => { setSearch(''); setSubAreaIds([]); setAssignmentFilter(''); setBoxId(''); setPage(1); }} className="justify-self-start sm:col-span-2">مسح التصفية</Button>}
                                 </div>
-                                {(abilities.manage || abilities.printSheets) && <SecondaryButton disabled={busy || visibleBoxes.length === 0} onClick={() => toggleColumn(visibleBoxes)}>{allVisibleSelected ? 'إلغاء تحديد النتائج' : 'تحديد كل النتائج'} ({formatNumber(visibleBoxes.length)})</SecondaryButton>}
+                                {(abilities.manage || abilities.printSheets) && <Button variant="secondary" isDisabled={busy || visibleBoxes.length === 0} onPress={() => toggleColumn(visibleBoxes)}>{allVisibleSelected ? 'إلغاء تحديد النتائج' : 'تحديد كل النتائج'} ({formatNumber(visibleBoxes.length)})</Button>}
                             </div>}
                         />
                         <>
                         <DistributionTable boxes={pageBoxes} allBoxes={visibleBoxes} readers={readers} selected={selected} canSelect={abilities.manage || abilities.printSheets} busy={busy} onToggle={toggle} onToggleGroup={toggleColumn} />
                         {totalPages > 1 && <nav aria-label="صفحات الطبلونات" className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-gray-500">
                             <span>الصفحة {formatNumber(currentPage)} من {formatNumber(totalPages)}، التحديد يشمل جميع صفحات النتائج</span>
-                            <div className="flex gap-2"><SecondaryButton disabled={busy || currentPage === 1} onClick={() => setPage(currentPage - 1)}>السابق</SecondaryButton><SecondaryButton disabled={busy || currentPage === totalPages} onClick={() => setPage(currentPage + 1)}>التالي</SecondaryButton></div>
+                            <div className="flex gap-2"><Button variant="secondary" isDisabled={busy || currentPage === 1} onPress={() => setPage(currentPage - 1)}>السابق</Button><Button variant="secondary" isDisabled={busy || currentPage === totalPages} onPress={() => setPage(currentPage + 1)}>التالي</Button></div>
                         </nav>}
                         </>
                     </div>
 
                     {remainingBoxes.length > 0 && abilities.manage && <div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm text-gray-700">
                         <span>{formatNumber(remainingBoxes.length)} طبلون غير موزع ضمن النتائج الحالية.</span>
-                        <button type="button" disabled={busy} onClick={() => openActions(remainingBoxes, 'paper')} className="font-semibold text-brand-600 hover:underline">تحديد المتبقي للكشوف الورقية</button>
+                        <Button variant="ghost" size="sm" isDisabled={busy} onPress={() => openActions(remainingBoxes, 'paper')}>تحديد المتبقي للكشوف الورقية</Button>
                     </div>}
 
                 </div>
@@ -324,10 +323,10 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                             <p className="text-xs text-gray-500">للقرّاء الذين لا يملكون هواتف: حدّد الطبلونات المخصصة للورق والمعتمدة، ثم أنشئ كشفًا للطباعة. تُدخل القراءات لاحقًا من الموقع.</p>
                         </div>
                         {abilities.printSheets && (
-                            <PrimaryButton onClick={createSheet} disabled={busy || selectedPaperApproved === 0 || selectedPaperApproved > 200}>
+                            <Button onPress={createSheet} isDisabled={busy || selectedPaperApproved === 0 || selectedPaperApproved > 200}>
                                 <Icon name="printer" className="h-4 w-4" />
                                 إنشاء كشف ({formatNumber(selectedPaperApproved)})
-                            </PrimaryButton>
+                            </Button>
                         )}
                     </div>
                     {paperSheets.length > 0 && (

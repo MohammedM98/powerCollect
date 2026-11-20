@@ -28,7 +28,7 @@
 .re-hint button { margin-inline-start: auto; color: var(--re-faint); font-size: 22px; line-height: 1; padding: 4px; }
 /* The readings' status: HeroUI's segmented pill as in the redesign, each with its count. */
 .re-tabs { display: flex; width: fit-content; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
-.re-tabs button span { display: inline-grid; place-items: center; min-width: 22px; height: 20px; padding: 0 6px; border-radius: 99px; background: rgb(var(--gray-900) / 0.07); font: 700 11.5px var(--font-body, 'Zain'), sans-serif; color: var(--re-ink2); }
+.re-tabs .re-tab-count { display: inline-grid; place-items: center; min-width: 22px; height: 20px; padding: 0 6px; border-radius: 99px; background: rgb(var(--gray-900) / 0.07); font: 700 11.5px var(--font-body, 'Zain'), sans-serif; color: var(--re-ink2); }
 /* Three figures, as the redesign's cards: entered, waiting for approval, due this week. */
 .re-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 16px 0; }
 .re-kpis .gl-val small { font-size: 14px; font-weight: 600; color: var(--re-faint); }
@@ -135,7 +135,7 @@
     .re-actions { width: 100%; }
     .re-actions .re-week { flex: 1 1 auto; }
     .re-tabs { width: 100%; }
-    .re-tabs button { flex: 1; padding: 0 8px; gap: 5px; }
+    .re-tabs .gl-seg-item { flex: 1; padding: 0 8px; gap: 5px; }
     .re-table-wrap { overflow: visible; padding: 8px; }
     .re-table tbody tr:last-child td { border-bottom: 0; }
     .re-table, .re-table tbody { display: block; }
@@ -299,13 +299,13 @@
 
 .re-sheet-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 14px 16px 0; }
 .re-select-page { display: inline-flex; align-items: center; gap: 8px; margin-inline-start: auto; font-size: 13.5px; font-weight: 700; color: var(--ma-muted); }
-.re-select-page input { width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid var(--ma-line); color: var(--ma-pay); }
+.re-select-page .checkbox__content { font-size: 13.5px; font-weight: 700; color: var(--ma-muted); }
 
 /* The pinned bar lines up with the sheet (its left and width come from the page), the status pills first. */
 .re-context { inset-inline: auto; padding-inline: 0; }
 .re-context-bar { max-width: none; border: 0; background: var(--ma-pop); backdrop-filter: blur(30px) saturate(1.4); -webkit-backdrop-filter: blur(30px) saturate(1.4); box-shadow: var(--ma-float); }
 .re-context-status { flex: none; }
-.re-context-status .re-tabs button { height: 32px; }
+.re-context-status .re-tabs .gl-seg-item { height: 32px; }
 @media (max-width: 1100px) { .re-context-status { order: 2; flex: 1 1 100%; } .re-context-status .re-tabs { width: 100%; } }
 
 /* Every save answers on its row: a quiet "saving", then a green "saved" that fades. */

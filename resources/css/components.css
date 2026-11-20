@@ -9825,3 +9825,21 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .db-tray-ico { flex: none; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 12px; background: var(--ma-warn-s); color: var(--ma-warn); }
 .db-tray .db-save { background: var(--ma-act); color: #fff; border-color: transparent; }
 @media (prefers-reduced-motion: reduce) { .db-pool, .db-lane, .db-balance-bar i, .db-load-bar i { transition: none; } }
+
+/*
+ * HeroUI's Button in the MA look everywhere, at zero specificity so a page's
+ * own class still wins: primary is the dark raised key, secondary the white
+ * raised key, ghost a quiet text key that tints on hover.
+ */
+:where(.button) { border-radius: 12px; font-weight: 800; }
+:where(.button.button--primary) { background: var(--ma-act); color: #fff; box-shadow: var(--ma-depth); }
+:where(.button.button--secondary) { background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-depth); }
+:where(.button.button--secondary:hover) { background: var(--ma-solid); color: var(--ma-ink); filter: brightness(0.98); }
+:where(.button.button--ghost) { background: transparent; color: var(--ma-ink); box-shadow: none; }
+:where(.button.button--ghost:hover) { background: var(--ma-tile); }
+
+/* The board's cards: HeroUI Card frames, spaced as the board needs. */
+.db-area.card { padding: 0; gap: 0; border-radius: 16px; }
+.db-pool.card, .db-lane.card { padding: 14px; gap: 10px; }
+.db-mission.card { padding: 18px 22px; gap: 16px; }
+.db-tray.card { flex-direction: row; padding: 12px 14px; gap: 10px; }

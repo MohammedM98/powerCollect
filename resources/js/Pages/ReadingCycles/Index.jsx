@@ -1,13 +1,11 @@
 import { useState } from 'react';
-import { Card, Chip } from '@heroui/react';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Button, Card, Chip, SearchField } from '@heroui/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import SecondaryButton, { secondaryButtonClass } from '@/Components/SecondaryButton';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import PageHeader from '@/Components/PageHeader';
-import SegmentedTabs from '@/Components/SegmentedTabs';
-import TextInput from '@/Components/TextInput';
+import SegmentedChoice from '@/Components/SegmentedChoice';
 import { formatNumber, formatDate } from '@/lib/format';
 import { readingSearchMatches } from '@/lib/readingBoard';
 import { Figure } from '@/Pages/Reports/ReportViews';
@@ -39,12 +37,15 @@ function BranchOverview({ branches, canCreate }) {
             </section>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-                <div className="relative w-full sm:max-w-sm">
-                    <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-5 w-5 text-gray-400" />
-                    <TextInput type="search" aria-label="بحث عن فرع" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="بحث عن فرع..." className="w-full py-3 pe-4 ps-11 text-sm" />
-                </div>
-                <div className="max-w-full overflow-x-auto pb-1 [&_button]:whitespace-nowrap">
-                    <SegmentedTabs label="حالة تجهيز القراءة" value={status} onChange={setStatus} options={[
+                <SearchField aria-label="بحث عن فرع" value={search} onChange={setSearch} className="w-full sm:max-w-sm">
+                    <SearchField.Group>
+                        <SearchField.SearchIcon />
+                        <SearchField.Input placeholder="بحث عن فرع..." />
+                        <SearchField.ClearButton />
+                    </SearchField.Group>
+                </SearchField>
+                <div className="max-w-full overflow-x-auto pb-1">
+                    <SegmentedChoice label="حالة تجهيز القراءة" value={status} onChange={setStatus} options={[
                         { value: 'all', label: `الكل (${formatNumber(branches.length)})` },
                         { value: 'prepared', label: `مجهّزة (${formatNumber(prepared)})` },
                         { value: 'waiting', label: `بانتظار التجهيز (${formatNumber(branches.length - prepared)})` },
@@ -74,15 +75,15 @@ function BranchOverview({ branches, canCreate }) {
                                             <td><Chip size="sm" variant="soft" className="gl-rp-chip" data-tone={item.cycleId ? 'pay' : 'warn'}>{item.cycleId ? 'مجهّزة' : 'بانتظار التجهيز'}</Chip></td>
                                             <td className="is-end">
                                                 {item.cycleId ? (
-                                                    <Link href={`/reading-cycles/${item.cycleId}`} className={secondaryButtonClass} aria-label={`فتح توزيع ${item.name}`}>
+                                                    <Button variant="secondary" onPress={() => router.visit(`/reading-cycles/${item.cycleId}`)} aria-label={`فتح توزيع ${item.name}`}>
                                                         فتح التوزيع
                                                         <Icon name="chevron-left" className="h-4 w-4 shrink-0" />
-                                                    </Link>
+                                                    </Button>
                                                 ) : canCreate ? (
-                                                    <SecondaryButton disabled={preparingId !== null} onClick={() => prepare(item)} aria-label={`تجهيز وفتح توزيع ${item.name}`}>
+                                                    <Button variant="secondary" isDisabled={preparingId !== null} onPress={() => prepare(item)} aria-label={`تجهيز وفتح توزيع ${item.name}`}>
                                                         <Icon name={preparingId === item.id ? 'clock' : 'plus'} className="h-4 w-4 shrink-0" />
                                                         {preparingId === item.id ? 'جارٍ تجهيز القراءة...' : 'تجهيز وفتح التوزيع'}
-                                                    </SecondaryButton>
+                                                    </Button>
                                                 ) : <span className="text-sm text-gray-500">بانتظار تجهيز مسؤول التوزيع.</span>}
                                             </td>
                                         </tr>
@@ -95,12 +96,12 @@ function BranchOverview({ branches, canCreate }) {
             )}
 
             {visible.length === 0 && (
-                <div className="flex flex-col items-center gap-3 rounded-card border border-dashed border-gray-200 bg-surface px-5 py-12 text-center">
+                <Card className="gl-rp-panel items-center gap-3 px-5 py-12 text-center">
                     <Icon name={branches.length ? 'search' : 'office'} className="h-9 w-9 text-gray-400" />
                     <h3 className="font-bold text-gray-900">{branches.length ? 'لا توجد فروع مطابقة' : 'لا توجد فروع متاحة للتوزيع'}</h3>
                     <p className="text-sm text-gray-500">{branches.length ? 'غيّر اسم الفرع أو حالة التجهيز لعرض نتائج أخرى.' : 'تظهر هنا الفروع المفعّلة عند إضافتها.'}</p>
-                    {branches.length > 0 && <SecondaryButton onClick={() => { setSearch(''); setStatus('all'); }}>إظهار كل الفروع</SecondaryButton>}
-                </div>
+                    {branches.length > 0 && <Button variant="secondary" onPress={() => { setSearch(''); setStatus('all'); }}>إظهار كل الفروع</Button>}
+                </Card>
             )}
         </div>
     );
