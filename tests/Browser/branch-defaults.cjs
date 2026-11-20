@@ -15,10 +15,11 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await page.waitForURL((url) => !url.pathname.startsWith('/login'));
         // The working branch is picked in the top bar on every page and stays as the owner moves between pages;
         // the page banners only print, as the page's heading.
-        const chip = page.locator('.tn-branch-chip select');
-        const shown = (name) => expect(page.locator('.tn-branch-chip select option:checked')).toHaveText(name);
+        // The working branch is HeroUI's Select: its key shows the branch, its list the options.
+        const shown = (name) => expect(page.locator('.tn-branch-trigger .select__value')).toHaveText(name);
         async function pickBranch(name) {
-            await chip.selectOption(name === 'كل الفروع' ? '' : { label: name });
+            await page.locator('.tn-branch-trigger').click();
+            await page.getByRole('option', { name, exact: true }).click();
             await shown(name);
         }
         for (const path of ['/reports', '/payments/cash-boxes', '/payments/cash-boxes/entries', '/subscriptions', '/ledger', '/meter-readings']) {

@@ -61,12 +61,12 @@ describe('the top bar', () => {
         await waitFor(() => expect(sectionButton().getAttribute('aria-expanded')).toBe('false'));
     });
 
-    it("shows the section's pages as tabs inside the bar, and only the light and dark switch for the look", () => {
+    it("shows the section's pages as tabs inside the bar, one appearance key and no account menu", () => {
         renderBar({ subnav: <nav aria-label="صفحات القسم"><a href="/subscriptions">المشتركون</a></nav> });
 
         const bar = screen.getByRole('banner');
         expect(bar.contains(screen.getByRole('navigation', { name: 'صفحات القسم' }))).toBe(true);
-        expect(screen.getByRole('button', { name: /التبديل إلى الوضع/ })).toBeTruthy();
-        expect(screen.queryByRole('button', { name: /المظهر/ })).toBeNull();
+        expect(screen.getByRole('button', { name: 'المظهر' })).toBeTruthy();
+        expect(screen.queryByRole('button', { name: /^حسابك/ })).toBeNull();
     });
 });

@@ -100,6 +100,7 @@ class HandleInertiaRequests extends Middleware
                 'printAuditReports' => (! $user->hasFinancialAuditAccess()) || $user->canAuditAction(AuditAction::PrintReports),
                 'viewBranches' => $user->can('viewAny', Branch::class),
                 'viewSubscriptions' => $user->can('viewAny', Subscription::class),
+                'createSubscriptions' => $user->can('create', Subscription::class),
                 'recordPayments' => $user->can('recordAnyPayment', Subscription::class),
                 'viewOwnCashBoxes' => $user->can('viewOwnCashBoxes', Subscription::class),
                 'viewCashBoxes' => $user->can('viewOwnCashBoxes', Subscription::class) || BranchClosingAccess::view($user),

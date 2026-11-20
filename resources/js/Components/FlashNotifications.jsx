@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { router } from '@inertiajs/react';
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import { ACTION_MESSAGES, visitReturnsStatus } from '@/lib/actionMessages';
 import { createNotificationQueue } from '@/lib/notificationQueue';
@@ -96,7 +97,7 @@ export default function FlashNotifications({ initialStatus }) {
                     >
                         <div className={`flex gap-3 py-3 pe-2 ps-3 ${appearance.title ? 'items-start' : 'items-center'}`}>
                             <span className="gl-toast-icon">
-                                <Icon name={appearance.icon} className="h-[18px] w-[18px]" strokeWidth={2.25} />
+                                <Icon name={appearance.icon} strokeWidth={2.25} />
                             </span>
                             <div className="min-w-0 flex-1">
                                 {appearance.title && <p className="font-bold leading-7">{appearance.title}</p>}
@@ -104,14 +105,16 @@ export default function FlashNotifications({ initialStatus }) {
                                     {notification.message}
                                 </p>
                             </div>
-                            <button
-                                type="button"
-                                onClick={() => queue.current.dismiss(notification.id)}
+                            <Button
+                                isIconOnly
+                                size="sm"
+                                variant="ghost"
+                                onPress={() => queue.current.dismiss(notification.id)}
                                 aria-label="إغلاق الإشعار"
                                 className="gl-toast-close"
                             >
                                 <Icon name="close" className="h-4 w-4" strokeWidth={2} />
-                            </button>
+                            </Button>
                         </div>
                         <div aria-hidden="true" className="gl-toast-track">
                             <div className="flash-notification-countdown h-full" />
