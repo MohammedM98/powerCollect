@@ -91,7 +91,7 @@ export default function SubscriptionsTable({
                                 onChange={togglePage}
                                 aria-label="تحديد كل مشتركي هذه الصفحة"
                             >
-                                <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
+                                <Checkbox.Content><Checkbox.Control><Checkbox.Indicator /></Checkbox.Control></Checkbox.Content>
                             </Checkbox>
                         </th>
                     )}
@@ -160,7 +160,7 @@ export default function SubscriptionsTable({
                                                 onChange={() => toggleSubscription(subscription.id)}
                                                 aria-label={`تحديد ${subscription.display_name}`}
                                             >
-                                                <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
+                                                <Checkbox.Content><Checkbox.Control><Checkbox.Indicator /></Checkbox.Control></Checkbox.Content>
                                             </Checkbox>
                                         </td>
                                     )}

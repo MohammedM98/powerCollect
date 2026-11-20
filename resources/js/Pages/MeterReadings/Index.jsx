@@ -228,8 +228,7 @@ export default function Index({
                 {statusTabs}
                 {canApprove && approvableRows.length > 0 && (
                     <Checkbox className="re-select-page" isSelected={allOnPageSelected} onChange={toggleAllOnPage} isDisabled={approving}>
-                        <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
-                        <Checkbox.Content>تحديد قراءات هذه الصفحة</Checkbox.Content>
+                        <Checkbox.Content><Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>تحديد قراءات هذه الصفحة</Checkbox.Content>
                     </Checkbox>
                 )}
             </div>
