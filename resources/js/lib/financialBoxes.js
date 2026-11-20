@@ -1,3 +1,5 @@
+import { westernDigits } from './format.js';
+
 const currencyCodes = ['ILS', 'USD', 'JOD'];
 const statusOrder = ['open', 'received'];
 const boxState = (box) => box.status === 'pending' ? 'open' : box.status;
@@ -5,7 +7,7 @@ const boxState = (box) => box.status === 'pending' ? 'open' : box.status;
 export const activeBoxEntries = (box) => (box.payments ?? []).filter((entry) => !entry.transaction || entry.transaction.status === 'active');
 export const boxPersonName = (box) => box.user?.name ?? '—';
 
-const searchableText = (value) => String(value ?? '').replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660)).toLocaleLowerCase('ar').trim();
+const searchableText = (value) => westernDigits(value).toLocaleLowerCase('ar').trim();
 
 /** The receiving bank or wallet, including entries saved before ledger details were available. */
 export const boxEntryBank = (entry) => String(entry.ledger?.bankName ?? entry.transaction?.bank_name ?? '').trim() || 'بنك غير محدد';

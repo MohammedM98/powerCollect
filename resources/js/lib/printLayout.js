@@ -1,3 +1,5 @@
+import { westernDigits } from './format.js';
+
 /**
  * The print designer's layout: everything a printout can be set to, how it
  * is remembered per page, and the pure pieces the designer draws with
@@ -189,7 +191,7 @@ export function fitLayout(saved, fresh) {
 
 /** Whether a cell starts with a number ("1,421.80 شيكل", "-45"), so it sorts as one. */
 function startsWithNumber(text) {
-    return /^\s*-?[\d\u0660-\u0669][\d\u0660-\u0669,]*([.\u066b][\d\u0660-\u0669]+)?(\s|$)/u.test(String(text ?? ''));
+    return /^\s*-?\d[\d,]*([.\u066b]\d+)?(\s|$)/u.test(westernDigits(text));
 }
 
 const TEXT_ORDER = new Intl.Collator('ar', { numeric: true, sensitivity: 'base' });
@@ -338,7 +340,7 @@ export function moveColumn(columns, index, step) {
  * or null when it has none. Arabic-Indic digits count too.
  */
 export function cellNumber(text) {
-    const western = String(text ?? '').replace(/[\u0660-\u0669]/g, (digit) => String(digit.charCodeAt(0) - 0x0660));
+    const western = westernDigits(text);
     // A minus sign counts only at the start of the number, not inside a code such as "BOX-9597".
     const match = western.replace(/\u066b/g, '.').match(/(?:^|[^\p{L}\p{N}])(-?\d[\d,]*(?:\.\d+)?)/u);
 
@@ -393,8 +395,8 @@ export function rowColumnTotal(rows, key) {
 
 /** The words around a cell's number, e.g. "شيكل" in "942.80 شيكل". */
 function unitOf(text) {
-    return String(text)
-        .replace(/[\u0660-\u0669\u066b\d.,-]+/g, ' ')
+    return westernDigits(text)
+        .replace(/[\u066b\d.,-]+/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
 }

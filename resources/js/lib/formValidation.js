@@ -1,3 +1,4 @@
+import { westernDigits } from './format.js';
 /**
  * The Arabic message for a field that fails its own rules (required, min,
  * pattern…), in place of the browser's English pop-up.
@@ -91,8 +92,5 @@ export function clearErrorOnInput(event, form) {
  * 0562222222.
  */
 export function plainDigits(value) {
-    return String(value ?? '')
-        .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - 0x0660))
-        .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - 0x06f0))
-        .replace(/[\s-]+/g, '');
+    return westernDigits(value).replace(/[\s-]+/g, '');
 }

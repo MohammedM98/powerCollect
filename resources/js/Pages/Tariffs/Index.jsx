@@ -13,11 +13,6 @@ import PageHeader from '@/Components/PageHeader';
 const CATEGORY_ICONS = { residential: 'home', commercial: 'shop' };
 const RATE_STEPS = [-0.25, -0.1, 0.1, 0.25];
 
-/** The price with two decimals: 3 → "3.00". */
-function price(amount) {
-    return Number(amount ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
 /** One figure in a card's row of three. */
 function Stat({ dark, label, value, unit }) {
     return (
@@ -34,7 +29,7 @@ function Stat({ dark, label, value, unit }) {
  * what it changes, and save. Enter saves and Esc cancels.
  */
 function RateEditor({ tariff, dark, onDone }) {
-    const [text, setText] = useState(price(tariff.rate));
+    const [text, setText] = useState(formatMoney(tariff.rate, { cents: true }));
     const [saving, setSaving] = useState(false);
     const change = rateChange(tariff.rate, text);
     const average = Number(tariff.averageConsumption ?? 0);
@@ -124,7 +119,7 @@ function RateEditor({ tariff, dark, onDone }) {
                     <small className={`block text-xs ${muted}`}>التغيير</small>
                     <b className={`font-display ${tone}`} dir="ltr">
                         {change.valid
-                            ? `${change.difference > 0 ? '+' : change.difference < 0 ? '−' : ''}${price(Math.abs(change.difference))} ₪`
+                            ? `${change.difference > 0 ? '+' : change.difference < 0 ? '−' : ''}${formatMoney(Math.abs(change.difference), { cents: true })} ₪`
                             : '—'}
                     </b>
                 </div>
@@ -136,7 +131,7 @@ function RateEditor({ tariff, dark, onDone }) {
                 </div>
                 <div className={`rounded-xl border px-3 py-2 ${box}`}>
                     <small className={`block text-xs ${muted}`}>متوسط القراءة الجديد</small>
-                    <b className="font-display">{average > 0 && change.valid ? `${price(average * change.rate)} ₪` : '—'}</b>
+                    <b className="font-display">{average > 0 && change.valid ? `${formatMoney(average * change.rate, { cents: true })} ₪` : '—'}</b>
                 </div>
             </div>
 
@@ -166,7 +161,7 @@ function RateEditor({ tariff, dark, onDone }) {
                     disabled={!change.valid || !change.changed || saving}
                     className="gl-btn ms-auto"
                 >
-                    {saving ? 'جارٍ الحفظ...' : change.valid ? `حفظ ${price(change.rate)} ₪` : 'حفظ السعر'}
+                    {saving ? 'جارٍ الحفظ...' : change.valid ? `حفظ ${formatMoney(change.rate, { cents: true })} ₪` : 'حفظ السعر'}
                 </button>
             </div>
         </div>
@@ -235,7 +230,7 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
 
             <div className="relative flex flex-wrap items-end gap-2.5">
                 <span className="font-display text-[44px] font-extrabold leading-none tracking-tight sm:text-[56px]" dir="ltr">
-                    {price(tariff.rate)}
+                    {formatMoney(tariff.rate, { cents: true })}
                 </span>
                 <span className={`pb-2 text-base font-semibold ${muted}`}>₪ للكيلو</span>
                 {tariff.rateSince && (
@@ -262,7 +257,7 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
                 <Stat
                     dark={dark}
                     label="متوسط القراءة"
-                    value={average === null ? '—' : price(average * Number(tariff.rate))}
+                    value={average === null ? '—' : formatMoney(average * Number(tariff.rate), { cents: true })}
                     unit={average === null ? null : '₪/أسبوع'}
                 />
             </div>
@@ -275,7 +270,7 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
                     {tariff.history.map((change, index) => (
                         <span key={change.id} className="inline-flex items-center gap-1.5">
                             {index > 0 && <i className="h-1 w-1 rounded-full bg-current opacity-50" aria-hidden="true" />}
-                            {change.date} <b className={`font-display font-bold ${dark ? 'text-white/85' : 'text-gray-700'}`}>{price(change.rate)}</b>
+                            {change.date} <b className={`font-display font-bold ${dark ? 'text-white/85' : 'text-gray-700'}`}>{formatMoney(change.rate, { cents: true })}</b>
                         </span>
                     ))}
                 </p>
@@ -313,9 +308,9 @@ function QuickCalculator({ tariffs }) {
                 {tariffs.map((tariff) => (
                     <div key={tariff.id} className="min-w-[150px] flex-1 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-2.5">
                         <small className="block text-[12.5px] text-gray-500">
-                            {tariff.categoryLabel}، {price(tariff.rate)} ₪
+                            {tariff.categoryLabel}، {formatMoney(tariff.rate, { cents: true })} ₪
                         </small>
-                        <b className="font-display text-[22px] font-extrabold text-gray-900">{price(amount * Number(tariff.rate))} ₪</b>
+                        <b className="font-display text-[22px] font-extrabold text-gray-900">{formatMoney(amount * Number(tariff.rate), { cents: true })} ₪</b>
                     </div>
                 ))}
             </div>

@@ -2,8 +2,8 @@ import ChoiceChips from '@/Components/ChoiceChips';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
-import { formatAmount } from '@/lib/currency';
-import { formatDate } from '@/lib/format';
+
+import { formatDate, formatMoney } from '@/lib/format';
 
 /**
  * The line being corrected, cancelled or erased, in that action's colour.
@@ -25,7 +25,7 @@ export function OriginalLine({ entry, tone = 'correction' }) {
                 <p className="mt-0.5 font-semibold text-gray-900">
                     {entry.description}،{' '}
                     <span className="font-display tabular-nums">
-                        {formatAmount(entry.amount)} {entry.currencyLabel}
+                        {formatMoney(entry.amount)} {entry.currencyLabel}
                     </span>
                 </p>
                 <p className="mt-0.5 text-xs text-gray-500">

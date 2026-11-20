@@ -1,7 +1,7 @@
 import { csvText } from './csv.ts';
-import { formatAmount, roundToCents } from './currency.ts';
+import { roundToCents } from './currency.ts';
 import { balanceInText, signedBalance } from './balance.js';
-import { formatDate } from './format.js';
+import { formatDate, formatMoney } from './format.js';
 
 export const STATEMENT_SORT_OPTIONS = [
     { value: '', label: 'تسلسل كشف الحساب' },
@@ -309,11 +309,11 @@ export function describeBalance(balance) {
     const value = Number(balance) || 0;
 
     if (value > 0) {
-        return { value, amount: formatAmount(value), signed: signedBalance(value), label: 'عليه', tone: 'owes' };
+        return { value, amount: formatMoney(value), signed: signedBalance(value), label: 'عليه', tone: 'owes' };
     }
 
     if (value < 0) {
-        return { value, amount: formatAmount(-value), signed: signedBalance(value), label: 'له', tone: 'credit' };
+        return { value, amount: formatMoney(-value), signed: signedBalance(value), label: 'له', tone: 'credit' };
     }
 
     return { value: 0, amount: '0', signed: '0', label: 'مسدّد', tone: 'settled' };

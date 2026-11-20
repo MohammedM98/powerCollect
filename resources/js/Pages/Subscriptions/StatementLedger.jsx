@@ -7,8 +7,8 @@ import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import SplitPaymentBadge from '@/Pages/Payments/SplitPaymentBadge';
 import { useRowActionsMenu } from '@/hooks/useRowActionsMenu';
 import { chainColor, followsLineAbove, hasLineMenu, lineTone, monthBands, netOfReadingDiscount, rowClass } from '@/lib/accountStatement';
-import { formatAmount } from '@/lib/currency';
-import { formatDate } from '@/lib/format';
+
+import { formatDate, formatMoney } from '@/lib/format';
 import { AmendmentBadge, CancellationNote, CorrectsNote, HistoryToggle, LinkedReversalNote, ReadingDiscountNote, ReversalNote, withLtrDates } from './StatementNotes';
 import { lineActionsMenu } from './statementLineActions';
 
@@ -25,10 +25,10 @@ const none = <span className="gl-st-none">—</span>;
 function LineAmount({ entry }) {
     return (
         <span className="gl-st-amount" data-side={entry.isCredit ? 'credit' : 'debit'}>
-            <bdi dir="ltr" className="gl-st-money ledger-struck">{entry.isCredit ? '−' : '+'}{formatAmount(entry.discountLine ? netOfReadingDiscount(entry) : entry.amount)}</bdi>
+            <bdi dir="ltr" className="gl-st-money ledger-struck">{entry.isCredit ? '−' : '+'}{formatMoney(entry.discountLine ? netOfReadingDiscount(entry) : entry.amount)}</bdi>
             {entry.discountLine && (
                 <small title="القراءة − خصم القراءة الأسبوعية">
-                    <bdi dir="ltr">{formatAmount(entry.amount)} − {formatAmount(entry.discountLine.amount)}</bdi>
+                    <bdi dir="ltr">{formatMoney(entry.amount)} − {formatMoney(entry.discountLine.amount)}</bdi>
                 </small>
             )}
         </span>
@@ -177,8 +177,8 @@ export default function StatementLedger({ rows, empty, banded, isCompact, openHi
                                         </td>
                                         <td colSpan={columnCount - 2}>
                                             <span className="gl-st-month-sum">
-                                                {band.entries.length} حركة، عليه <bdi dir="ltr">{formatAmount(band.charged)}</bdi>، له <bdi dir="ltr">{formatAmount(band.credited)}</bdi>
-                                                {band.entries.at(-1)?.balance !== undefined && <>، الرصيد آخر الشهر <bdi dir="ltr">{formatAmount(band.entries.at(-1).balance)}</bdi> ₪</>}
+                                                {band.entries.length} حركة، عليه <bdi dir="ltr">{formatMoney(band.charged)}</bdi>، له <bdi dir="ltr">{formatMoney(band.credited)}</bdi>
+                                                {band.entries.at(-1)?.balance !== undefined && <>، الرصيد آخر الشهر <bdi dir="ltr">{formatMoney(band.entries.at(-1).balance)}</bdi> ₪</>}
                                             </span>
                                         </td>
                                     </tr>
