@@ -123,7 +123,7 @@ const pickChoice = (field, choice) => field.locator('xpath=ancestor-or-self::*[c
         await page.keyboard.press('Escape');
         await page.getByRole('checkbox', { name: 'تحديد الطبلون 110301', exact: true }).check({ force: true });
         await page.getByRole('button', { name: 'توزيع المحدد (1)', exact: true }).click();
-        await actions().getByRole('radio', { name: 'إلغاء التخصيص', exact: true }).check({ force: true });
+        await actions().getByRole('radio', { name: 'إلغاء التخصيص', exact: true }).locator("xpath=ancestor::label[1]").click();
         await actions().getByRole('checkbox', { name: /حفظ هذا التوزيع للقراءات القادمة/ }).uncheck({ force: true });
         await actions().getByRole('button', { name: 'حفظ التوزيع', exact: true }).click();
         await actions().getByRole('button', { name: /أؤكد نقل الطبلونات التي نزّلها القارئ/ }).click();
@@ -181,7 +181,7 @@ const pickChoice = (field, choice) => field.locator('xpath=ancestor-or-self::*[c
         await page.goto(`/meter-readings?${new URLSearchParams({ 'filter[branch_id]': fixture.branchId, search: fixture.baselineAccountNumber })}`);
         await page.getByRole('button', { name: `تعديل القراءة السابقة لـ ${fixture.baselineSubscriptionName}`, exact: true }).click();
         const baselineDialog = page.getByRole('dialog', { name: 'تعديل القراءة السابقة', exact: true });
-        await baselineDialog.locator('input[value="correction"]').check({ force: true });
+        await baselineDialog.locator('input[value="correction"]').locator("xpath=ancestor::label[1]").click();
         await baselineDialog.getByRole('button', { name: 'متابعة', exact: true }).click();
         await baselineDialog.getByRole('spinbutton', { name: 'القراءة السابقة الجديدة', exact: true }).fill('125');
         await baselineDialog.getByRole('button', { name: 'مراجعة التعديل', exact: true }).click();
