@@ -30,7 +30,7 @@ class EnsureBranchDomainAccess
         }
         // Those who manage the branches from the central site do the branches' own work from each branch's link.
         if (! $branch && $actor && config('powercollect.branch_domains_enabled') && ! $actor->isSuperAdmin() && ! $actor->hasFinancialAuditAccess()
-            && ! $request->routeIs('branch-access.*', 'login', 'logout', 'profile.*', 'password.*', 'notifications.*', 'branches.*', 'branch-domains.*', 'settings.*', 'users.*', 'user-types.*', 'governorates.*', 'areas.*', 'sub-areas.*', 'tariffs.*', 'tariff-segments.*', 'circuit-breakers.*', 'print-templates.*', 'excel-templates.*', 'company-forms.*')) {
+            && ! $request->routeIs('branch-access.*', 'login', 'logout', 'profile.*', 'password.*', 'notifications.*', 'branches.*', 'branch-domains.*', 'settings.*', 'users.*', 'user-types.*', 'governorates.*', 'areas.*', 'sub-areas.*', 'tariffs.*', 'tariff-segments.*', 'circuit-breakers.*', 'print-templates.*', 'excel-templates.*', 'company-forms.*', 'message-templates.*')) {
             if ($request->isMethod('GET')) {
                 return redirect()->route('branch-access.index');
             }

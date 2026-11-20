@@ -52,4 +52,20 @@ class MessageTemplateTest extends TestCase
 
         $this->assertModelMissing($template);
     }
+
+    public function test_on_a_branch_link_even_the_owner_is_offered_no_template_changes(): void
+    {
+        config(['app.url' => 'https://admin.company.test', 'powercollect.branch_domains_enabled' => true]);
+        Branch::factory()->create(['domain' => 'north.company.test', 'domain_enabled' => true]);
+        $owner = User::factory()->superAdmin()->create();
+        $template = MessageTemplate::factory()->create();
+
+        $this->actingAs($owner)->get('https://north.company.test/messages/create')
+            ->assertInertia(fn (AssertableInertia $page) => $page->where('canManageTemplates', false));
+        $this->delete('https://north.company.test/message-templates/'.$template->id)->assertForbidden();
+        $this->get('https://admin.company.test/messages/create')
+            ->assertInertia(fn (AssertableInertia $page) => $page->where('canManageTemplates', true));
+
+        $this->assertModelExists($template);
+    }
 }
