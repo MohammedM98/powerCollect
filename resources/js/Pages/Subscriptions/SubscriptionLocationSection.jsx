@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
 import InputLabel from '@/Components/InputLabel';
@@ -43,14 +44,14 @@ export default function SubscriptionLocationSection({
                         {branches.length === 0 ? (
                             <p className="text-sm text-gray-500">لا توجد فروع بعد — أنشئ فرعًا أولاً.</p>
                         ) : (
-                            <select required className="block w-full" value={data.branch_id} onChange={(e) => onBranchChange(e.target.value)}>
+                            <ChoiceSelect required className="block w-full" value={data.branch_id} onChange={(e) => onBranchChange(e.target.value)}>
                                 <option value="">— اختر فرعًا —</option>
                                 {branches.map((branch) => (
                                     <option key={branch.id} value={branch.id}>
                                         {branch.name}
                                     </option>
                                 ))}
-                            </select>
+                            </ChoiceSelect>
                         )}
                     </FormField>
                 )}

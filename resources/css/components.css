@@ -10091,3 +10091,13 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
         background: transparent;
     }
 }
+
+/* ChoiceSelect's list on the frosted pop surface, as every floating surface. */
+.gl-choice-pop {
+    padding: 6px;
+    border-radius: 16px;
+    background: var(--ma-pop);
+    -webkit-backdrop-filter: blur(30px) saturate(1.5);
+    backdrop-filter: blur(30px) saturate(1.5);
+    box-shadow: var(--ma-float);
+}

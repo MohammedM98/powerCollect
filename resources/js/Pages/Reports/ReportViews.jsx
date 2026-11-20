@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Button, Card, Chip, Label, Switch } from '@heroui/react';
 import Icon from '@/Components/Icon';
+import Figure from '@/Components/UI/Figure';
 import { cents, reportMoney, shortDate } from '@/lib/reportFormatting';
 import { weekDayName } from '@/lib/weekDays';
 
@@ -13,16 +14,8 @@ function Shekels({ value }) {
     return <><bdi dir="ltr">{reportMoney(value)}</bdi> <span className="gl-rp-unit">₪</span></>;
 }
 
-/** One headline figure on a HeroUI card: `tone` colours its mark and number, `dark` puts it on the charcoal. */
-export function Figure({ label, children, hint = null, tone = null, dark = false, ...props }) {
-    return (
-        <Card className="gl-rp-fig" data-tone={tone ?? undefined} data-dark={dark || undefined} {...props}>
-            <small>{tone && <i aria-hidden="true" />}{label}</small>
-            <b>{children}</b>
-            {hint && <p>{hint}</p>}
-        </Card>
-    );
-}
+/** The headline figure lives in the kit (Components/UI); kept here for the pages that import it from the reports. */
+export { Figure };
 
 /** A report section's glass card: its icon tile, title and a line, then its content. */
 function Panel({ icon, tone = 'brand', title, note = null, aside = null, children, flush = false }) {

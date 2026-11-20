@@ -14,7 +14,7 @@ import ActionsTh from '@/Components/DataTable/ActionsTh';
 import Icon from '@/Components/Icon';
 import { Button, ToggleButton } from '@heroui/react';
 import SegmentedChoice from '@/Components/SegmentedChoice';
-import { Figure } from '@/Pages/Reports/ReportViews';
+import { Figure } from '@/Components/UI';
 import { formatNumber } from '@/lib/format';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useDeleteRecord } from '@/hooks/useDeleteRecord';

@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Link } from '@inertiajs/react';
 import { useState } from 'react';
 import Icon from '@/Components/Icon';
@@ -78,7 +79,7 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
                     <label className="flex w-full flex-col gap-1.5 sm:w-60 print:hidden">
                         <span className="gl-label">تغيير الفرع</span>
                         <span className="relative">
-                            <select
+                            <ChoiceSelect
                                 aria-label="تغيير الفرع"
                                 value={pickerValue ?? ''}
                                 disabled={view.switching}
@@ -91,7 +92,7 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
                                         {option.label}
                                     </option>
                                 ))}
-                            </select>
+                            </ChoiceSelect>
                             <Icon name="chevron-down" className="pointer-events-none absolute inset-e-3.5 top-1/2 h-4 w-4 -translate-y-1/2" />
                         </span>
                     </label>

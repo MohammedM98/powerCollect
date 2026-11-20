@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Button } from '@heroui/react';
 import { Link, router } from '@inertiajs/react';
 import ActionsTh from '@/Components/DataTable/ActionsTh';
@@ -37,7 +38,7 @@ export default function OpenEntriesTable({ table, entries, filters, counts, url,
             perPage={filters.per_page}
             onPerPageChange={setPerPage}
             total={entries.total}
-            filterMenu={<div className="flex w-full flex-wrap items-center gap-3"><SegmentedTabs label="نوع الصندوق" value={type} onChange={(value) => setFilter('type', value)} options={typeFilters} />{people && <select aria-label="الموظف" value={filterValues.user ?? ''} onChange={(event) => setFilter('user', event.target.value)} className="py-2 text-sm sm:w-56"><option value="">كل الموظفين</option>{people.map((person) => <option key={person.id} value={String(person.id)}>{person.name}</option>)}</select>}</div>}
+            filterMenu={<div className="flex w-full flex-wrap items-center gap-3"><SegmentedTabs label="نوع الصندوق" value={type} onChange={(value) => setFilter('type', value)} options={typeFilters} />{people && <ChoiceSelect aria-label="الموظف" value={filterValues.user ?? ''} onChange={(event) => setFilter('user', event.target.value)} className="py-2 text-sm sm:w-56"><option value="">كل الموظفين</option>{people.map((person) => <option key={person.id} value={String(person.id)}>{person.name}</option>)}</ChoiceSelect>}</div>}
         />
         <div className="data-table-container financial-ledger-container">
             <table className={ledgerTableClass} style={fixedTableStyle(columnWidths)}>

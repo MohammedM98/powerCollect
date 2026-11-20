@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { useEffect, useMemo, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -282,11 +283,11 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                                 <div className="grid w-full min-w-0 flex-1 gap-3 sm:grid-cols-2">
                                     <div className="min-w-0">
                                         <label htmlFor="assignment-filter" className="mb-1.5 block text-xs font-semibold text-gray-600">عرض التوزيع</label>
-                                        <select id="assignment-filter" value={assignmentFilter} disabled={busy} onChange={(event) => { setAssignmentFilter(event.target.value); setPage(1); }} className="block w-full text-sm">
+                                        <ChoiceSelect id="assignment-filter" value={assignmentFilter} disabled={busy} onChange={(event) => { setAssignmentFilter(event.target.value); setPage(1); }} className="block w-full text-sm">
                                             <option value="">كل حالات التوزيع</option>
                                             <option value="assigned">كل الطبلونات الموزعة</option>
                                             {columns.map((column) => <option key={column.key} value={column.key}>{column.key === 'available' ? 'غير موزع' : column.label}</option>)}
-                                        </select>
+                                        </ChoiceSelect>
                                     </div>
                                     <div className="min-w-0">
                                         <label htmlFor="distribution-box-filter" className="mb-1.5 block text-xs font-semibold text-gray-600">الطبلون</label>

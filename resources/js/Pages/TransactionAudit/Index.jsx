@@ -7,7 +7,7 @@ import Pagination from '@/Components/DataTable/Pagination';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Icon from '@/Components/Icon';
 import { Chip } from '@heroui/react';
-import { Figure } from '@/Pages/Reports/ReportViews';
+import { Figure } from '@/Components/UI';
 import PeriodTabs, { periodCaption } from '@/Components/PeriodTabs';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useRowClick } from '@/hooks/useRowClick';

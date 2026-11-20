@@ -2,6 +2,9 @@ const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 
+/** Pick in a HeroUI select (ChoiceSelect) through its hidden native list, by value or { label }. */
+const pickChoice = (field, choice) => field.locator('xpath=ancestor-or-self::*[contains(concat(" ", normalize-space(@class), " "), " gl-choice ")][1]').locator('select').selectOption(choice, { force: true });
+
 (async () => {
     const fixture = JSON.parse(readFileSync(`${process.env.OUT_DIR}/fixture.json`, 'utf8'));
     const browser = await chromium.launch({ headless: !process.env.HEADED,
@@ -65,7 +68,7 @@ const { readFileSync } = require('node:fs');
         await actions().getByRole('button', { name: 'إلغاء تحديد المخفي', exact: true }).click();
         assert.match(await actions().innerText(), /20 طبلون/);
         assert.doesNotMatch(await actions().innerText(), /خارج النتائج الظاهرة/);
-        await actions().getByLabel('القارئ المكلّف', { exact: true }).selectOption(`reader:${fixture.readerId}`);
+        await pickChoice(actions().getByLabel('القارئ المكلّف', { exact: true }), `reader:${fixture.readerId}`);
         assert.match(await actions().innerText(), /بعد الحفظ: 40 طبلون/);
         await actions().getByRole('checkbox', { name: /حفظ هذا التوزيع للقراءات القادمة/ }).uncheck({ force: true });
         await page.screenshot({ path: `${process.env.OUT_DIR}/distribution-action-desktop.png` });
@@ -171,7 +174,7 @@ const { readFileSync } = require('node:fs');
         await page.setViewportSize({ width: 1600, height: 1100 });
         await page.getByRole('link', { name: 'إرسال رسائل القراءات المعتمدة', exact: true }).click();
         await page.getByRole('region', { name: 'معاينة الرسالة', exact: true }).getByText(`كما تصل إلى ${fixture.messageSubscriptionName}`, { exact: true }).waitFor();
-        assert.equal(await page.locator('#week_start').inputValue(), fixture.messageWeek, 'the message keeps the selected historical reading week');
+        assert.equal(await page.locator('#week_start').locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " gl-choice ")][1]').locator('select').inputValue(), fixture.messageWeek, 'the message keeps the selected historical reading week');
         await page.getByRole('button', { name: 'أضف «سعر الكيلو» إلى نص الرسالة', exact: true }).waitFor();
         await page.getByRole('button', { name: 'أضف «يوم القراءة» إلى نص الرسالة', exact: true }).waitFor();
         await page.screenshot({ path: `${process.env.OUT_DIR}/reading-message-preview.png`, fullPage: true });

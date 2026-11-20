@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Button, TextArea } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
@@ -29,14 +30,14 @@ export default function QuickMessageBody({
                     <label htmlFor={`${id}-template`} className="mb-1.5 block text-sm font-semibold text-gray-700">
                         القالب
                     </label>
-                    <select id={`${id}-template`} value={templateId} onChange={(e) => pickTemplate(e.target.value)} className="block w-full text-sm">
+                    <ChoiceSelect id={`${id}-template`} value={templateId} onChange={(e) => pickTemplate(e.target.value)} className="block w-full text-sm">
                         <option value="">— بدون قالب —</option>
                         {kindTemplates.map((template) => (
                             <option key={template.id} value={template.id}>
                                 {template.name}
                             </option>
                         ))}
-                    </select>
+                    </ChoiceSelect>
                 </div>
             )}
             <div role="group" aria-label="أضف معلومة من بيانات المشترك إلى النص" className="flex flex-wrap gap-1.5">

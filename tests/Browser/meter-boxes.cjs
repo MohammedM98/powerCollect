@@ -1,6 +1,9 @@
 const { chromium, expect: browserExpect } = require('playwright/test');
 const assert = require('node:assert/strict');
 const ExcelJS = require('exceljs');
+
+/** Pick in a HeroUI select (ChoiceSelect) through its hidden native list, by value or { label }. */
+const pickChoice = (field, choice) => field.locator('xpath=ancestor-or-self::*[contains(concat(" ", normalize-space(@class), " "), " gl-choice ")][1]').locator('select').selectOption(choice, { force: true });
 const expect = browserExpect.configure({ timeout: 15_000 });
 
 (async () => {
@@ -221,10 +224,10 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await form.locator('#name').fill('طبلون الفرع الثاني');
         await form.locator('#box_number').fill('260');
         await expect(form.locator('#sub_area_id')).toBeDisabled();
-        await form.locator('#governorate_id').selectOption({ label: 'محافظة التجربة' });
-        await form.locator('#area_id').selectOption({ label: 'منطقة باء الإدارية' });
+        await pickChoice(form.locator('#governorate_id'), { label: 'محافظة التجربة' });
+        await pickChoice(form.locator('#area_id'), { label: 'منطقة باء الإدارية' });
         await expect(form.locator('#sub_area_id')).toBeDisabled();
-        await form.locator('#branch_id').selectOption({ label: 'فرع باء' });
+        await pickChoice(form.locator('#branch_id'), { label: 'فرع باء' });
         await form.locator('#sub_area_id').click();
         await expect(page.locator('ul button').filter({ hasText: /^حي ألف الجديد$/ })).toHaveCount(0);
         await page.getByPlaceholder('بحث...', { exact: true }).fill('حي باء الجديد');
@@ -299,7 +302,7 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await userForm.locator('#username').fill('inline.employee');
         await userForm.locator('#password').fill('Strong-Pass-2026');
         await userForm.locator('#password_confirmation').fill('Strong-Pass-2026');
-        await userForm.locator('#branch_id').selectOption({ label: 'فرع ألف' });
+        await pickChoice(userForm.locator('#branch_id'), { label: 'فرع ألف' });
         await userForm.locator('#user_type_id').click();
         await page.getByPlaceholder('ابحث عن نوع المستخدم...', { exact: true }).fill('أمين مستودع');
         await page.getByRole('button', { name: 'إضافة نوع مستخدم جديد: أمين مستودع', exact: true }).click();
@@ -329,7 +332,7 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await userForm.locator('#username').fill('inline.employee');
         await userForm.locator('#password').fill('Strong-Pass-2026');
         await userForm.locator('#password_confirmation').fill('Strong-Pass-2026');
-        await userForm.locator('#branch_id').selectOption({ label: 'فرع ألف' });
+        await pickChoice(userForm.locator('#branch_id'), { label: 'فرع ألف' });
         await userForm.locator('#user_type_id').click();
         await page.getByPlaceholder('ابحث عن نوع المستخدم...', { exact: true }).fill('أمين مستودع');
         await page.locator('ul button').filter({ hasText: /^أمين مستودع/ }).click();

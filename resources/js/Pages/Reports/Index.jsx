@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Button } from '@heroui/react';
 import { lazy, Suspense, useMemo, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
@@ -91,10 +92,10 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                         // As in the redesign: what to print, Excel and print in the page's actions row, under the section tabs.
                         <div className="flex flex-wrap items-center gap-2">
                             <label className="reports-print-view flex items-center gap-2 text-sm text-gray-600">محتوى الطباعة
-                                <select aria-label="محتوى الطباعة" value={printView} onChange={(event) => setPrintView(event.target.value)}>
+                                <ChoiceSelect aria-label="محتوى الطباعة" value={printView} onChange={(event) => setPrintView(event.target.value)}>
                                     <option value="summary">الملخص المالي</option>
                                     <option value="lines">الحركات التفصيلية</option>
-                                </select>
+                                </ChoiceSelect>
                             </label>
                             <TableExportActions showExcel={canExport} onExcel={() => setExcelOpenedAt(new Date())} printHref={printUrl(`${printView === 'lines' ? 'الحركات التفصيلية' : 'الملخص المالي'} — ${scopeName} — ${periodText}`, `/reports?${query}&print_view=${printView}`)} />
                         </div>

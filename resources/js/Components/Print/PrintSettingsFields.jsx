@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Button, Input } from '@heroui/react';
 import { useId } from 'react';
 import Icon from '@/Components/Icon';
@@ -52,13 +53,13 @@ export function FontField({ label, value, onChange }) {
     return (
         <Field label={label}>
             {(id) => (
-                <select id={id} value={value ?? 'plex'} onChange={(event) => onChange(event.target.value)} className="block w-full text-sm">
+                <ChoiceSelect id={id} value={value ?? 'plex'} onChange={(event) => onChange(event.target.value)} className="block w-full text-sm">
                     {Object.entries(PRINT_FONTS).map(([key, font]) => (
                         <option key={key} value={key}>
                             {font.label}
                         </option>
                     ))}
-                </select>
+                </ChoiceSelect>
             )}
         </Field>
     );
@@ -93,11 +94,11 @@ export function HeaderTypography({ label, header, onChange, font, size, bold, al
             </div>
             <Field label={`محاذاة ${label}`}>
                 {(id) => (
-                    <select id={id} value={header[align]} onChange={(event) => onChange(align, event.target.value)} className="block w-full text-sm">
+                    <ChoiceSelect id={id} value={header[align]} onChange={(event) => onChange(align, event.target.value)} className="block w-full text-sm">
                         <option value="right">يمين</option>
                         <option value="center">وسط</option>
                         <option value="left">يسار</option>
-                    </select>
+                    </ChoiceSelect>
                 )}
             </Field>
             <Switch label={`${label} بخط عريض`} checked={header[bold]} onChange={(value) => onChange(bold, value)} />
@@ -121,7 +122,7 @@ export function HeadingStyles({ levels, styles, onChange }) {
                         <p className="text-xs font-semibold text-gray-700">عنوان «{label}»</p>
                         <Field label={`حجم خط عنوان «${label}»`}>
                             {(id) => (
-                                <select
+                                <ChoiceSelect
                                     id={id}
                                     value={look.size ? String(look.size) : ''}
                                     onChange={(event) => setLevel(index, { size: event.target.value === '' ? null : Number(event.target.value) })}
@@ -132,7 +133,7 @@ export function HeadingStyles({ levels, styles, onChange }) {
                                             {size.label}
                                         </option>
                                     ))}
-                                </select>
+                                </ChoiceSelect>
                             )}
                         </Field>
                         <div className="grid grid-cols-2 gap-3">
@@ -185,7 +186,7 @@ export function Highlights({ rules, columns, onChange }) {
             {rules.map((rule, index) => (
                 <div key={index} className="space-y-2 rounded-control border border-gray-200 p-2.5">
                     <div className="flex items-center gap-2">
-                        <select
+                        <ChoiceSelect
                             aria-label={`عمود القاعدة ${index + 1}`}
                             value={rule.key}
                             onChange={(event) => setRule(index, { key: event.target.value })}
@@ -196,7 +197,7 @@ export function Highlights({ rules, columns, onChange }) {
                                     {column.label}
                                 </option>
                             ))}
-                        </select>
+                        </ChoiceSelect>
                         <IconButton
                             icon="trash"
                             tone="danger"
@@ -205,7 +206,7 @@ export function Highlights({ rules, columns, onChange }) {
                         />
                     </div>
                     <div className="flex gap-2">
-                        <select
+                        <ChoiceSelect
                             aria-label={`شرط القاعدة ${index + 1}`}
                             value={rule.operator}
                             onChange={(event) => setRule(index, { operator: event.target.value })}
@@ -216,7 +217,7 @@ export function Highlights({ rules, columns, onChange }) {
                                     {label}
                                 </option>
                             ))}
-                        </select>
+                        </ChoiceSelect>
                         {!['empty', 'notEmpty'].includes(rule.operator) && (
                             <Input
                                 aria-label={`قيمة القاعدة ${index + 1}`}

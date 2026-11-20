@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Input, TextArea } from '@heroui/react';
 import { BankReceivedDateField } from '@/Components/BankReceivedDate';
 import { useForm } from '@inertiajs/react';
@@ -71,7 +72,7 @@ export function SplitPaymentEditor({ split, onClose, transferBanks = [], senderB
                 {[['bank_name', 'البنك المستلم', transferBanks], ['sender_bank_name', 'البنك المرسل', senderBanks]].map(([field, label, banks]) => (
                     <div key={field}>
                         <InputLabel htmlFor={`split_${field}`} value={label} />
-                        <select
+                        <ChoiceSelect
                             id={`split_${field}`}
                             name={field}
                             required={field === 'bank_name'}
@@ -81,7 +82,7 @@ export function SplitPaymentEditor({ split, onClose, transferBanks = [], senderB
                         >
                             <option value="">{field === 'bank_name' ? 'اختر البنك المستلم' : 'غير محدد'}</option>
                             {banks.map((bank) => <option key={bank} value={bank}>{bank}</option>)}
-                        </select>
+                        </ChoiceSelect>
                         <InputError message={form.errors[field]} className="mt-2" />
                     </div>
                 ))}

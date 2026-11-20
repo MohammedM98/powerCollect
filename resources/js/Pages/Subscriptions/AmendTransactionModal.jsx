@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Input, TextArea } from '@heroui/react';
 import { BankReceivedDateField } from '@/Components/BankReceivedDate';
 import { useForm } from '@inertiajs/react';
@@ -82,7 +83,7 @@ function SinglePaymentEditor({ onClose, subscription, balance, entry, transferBa
                 <div className="grid items-start gap-x-5 gap-y-5 sm:grid-cols-2">
                     <div>
                         <InputLabel htmlFor="amend_bank_name" value="البنك المستلم" />
-                        <select
+                        <ChoiceSelect
                             id="amend_bank_name"
                             name="bank_name"
                             required
@@ -96,13 +97,13 @@ function SinglePaymentEditor({ onClose, subscription, balance, entry, transferBa
                                     {bank}
                                 </option>
                             ))}
-                        </select>
+                        </ChoiceSelect>
                         <InputError message={form.errors.bank_name} className="mt-2" />
                     </div>
 
                     <div>
                         <InputLabel htmlFor="amend_sender_bank_name" value="البنك المرسل" />
-                        <select
+                        <ChoiceSelect
                             id="amend_sender_bank_name"
                             name="sender_bank_name"
                             className={inputClass}
@@ -115,7 +116,7 @@ function SinglePaymentEditor({ onClose, subscription, balance, entry, transferBa
                                     {bank}
                                 </option>
                             ))}
-                        </select>
+                        </ChoiceSelect>
                         <InputError message={form.errors.sender_bank_name} className="mt-2" />
                     </div>
 

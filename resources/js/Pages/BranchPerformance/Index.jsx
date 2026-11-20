@@ -3,7 +3,7 @@ import { Card, Chip } from '@heroui/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Sparkline from '@/Components/Charts/Sparkline';
 import SegmentedChoice from '@/Components/SegmentedChoice';
-import { Figure } from '@/Pages/Reports/ReportViews';
+import { Figure } from '@/Components/UI';
 import { formatMoney, formatNumber, percentOf, timeAgo } from '@/lib/format';
 import { branchPlace } from './BranchMark';
 import PageHeader from '@/Components/PageHeader';

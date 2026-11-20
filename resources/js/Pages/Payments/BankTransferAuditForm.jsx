@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { TextArea } from '@heroui/react';
 import BankReceivedDate from '@/Components/BankReceivedDate';
 import { useEffect, useEffectEvent, useId, useState } from 'react';
@@ -78,10 +79,10 @@ export default function BankTransferAuditForm({ entry, onClose }) {
             <div>
                 <InputLabel htmlFor={`${id}-reason`}>{needsReason ? 'سبب الفرق' : 'ملاحظات (اختياري)'}{needsReason && <span className="text-red-500"> *</span>}</InputLabel>
                 <div className="mt-2 overflow-hidden rounded-control border border-gray-200 transition focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20">
-                    <select aria-label="توضيحات التدقيق الجاهزة" value={bankAuditReasonPresets.find((option) => option.label === data.reason)?.value ?? ''} onChange={(event) => setData(bankAuditReasonChoice(data, event.target.value))} disabled={processing} className="block w-full rounded-none border-0 border-b border-gray-200 bg-gray-50 py-3 text-base text-gray-700 focus:ring-0">
+                    <ChoiceSelect aria-label="توضيحات التدقيق الجاهزة" value={bankAuditReasonPresets.find((option) => option.label === data.reason)?.value ?? ''} onChange={(event) => setData(bankAuditReasonChoice(data, event.target.value))} disabled={processing} className="block w-full rounded-none border-0 border-b border-gray-200 bg-gray-50 py-3 text-base text-gray-700 focus:ring-0">
                         <option value="">توضيح جاهز (اختياري)</option>
                         {bankAuditReasonPresets.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                    </select>
+                    </ChoiceSelect>
                     <TextArea id={`${id}-reason`} rows="3" maxLength="1000" value={data.reason} onChange={(event) => setData('reason', event.target.value)} required={needsReason} disabled={processing} aria-describedby={`${id}-reason-hint`} aria-invalid={Boolean(errors.reason)} placeholder="اكتب توضيحك هنا، أو اختر من القائمة أعلاه…" className="block w-full rounded-none border-0 p-4 text-base leading-8 focus:ring-0" />
                 </div>
                 <p id={`${id}-reason-hint`} className="mt-2 text-sm leading-7 text-gray-600">يمكنك تعديل التوضيح المختار أو كتابة نص خاص.</p>

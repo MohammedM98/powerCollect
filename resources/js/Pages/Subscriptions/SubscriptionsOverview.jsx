@@ -1,6 +1,6 @@
 import { ToggleButton } from '@heroui/react';
 import SegmentedChoice from '@/Components/SegmentedChoice';
-import { Figure } from '@/Pages/Reports/ReportViews';
+import { Figure } from '@/Components/UI';
 import { formatMoney, formatNumber } from '@/lib/format';
 
 /** The balance filter that lists only those who owe: their balance above zero on the company's side. */

@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { useEffect, useRef, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -134,7 +135,7 @@ export default function BranchCashBoxes({ branch, branches, branchScope = null, 
 
     const summary = Object.keys(boxTypes).map((key) => ({ key, type: key, label: boxTypes[key], boxes: inPlace.filter((box) => box.type === key), hint: { open: 'صناديق مفتوحة', closed: 'صناديق مغلقة في الفترة' }[place], active: type === key, onClick: () => setType(type === key ? '' : key) }));
 
-    return <AuthenticatedLayout badges={{ '/payments/summary': pendingCount }} scope={branchScope?.name ?? null} header={<PageHeader title="الصناديق المالية" info={branchScope || branches.length <= 1 ? (branch?.name ?? 'جميع الفروع') : null} meta={!branchScope && branches.length > 1 ? <select aria-label="الفرع" className="rounded-control border-gray-200 py-1 text-sm" value={branch?.id ?? ''} onChange={(event) => router.get(urls.index, { ...navigation, branch_id: event.target.value })}><option value="">جميع الفروع</option>{branches.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select> : null} />}>
+    return <AuthenticatedLayout badges={{ '/payments/summary': pendingCount }} scope={branchScope?.name ?? null} header={<PageHeader title="الصناديق المالية" info={branchScope || branches.length <= 1 ? (branch?.name ?? 'جميع الفروع') : null} meta={!branchScope && branches.length > 1 ? <ChoiceSelect aria-label="الفرع" className="rounded-control border-gray-200 py-1 text-sm" value={branch?.id ?? ''} onChange={(event) => router.get(urls.index, { ...navigation, branch_id: event.target.value })}><option value="">جميع الفروع</option>{branches.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</ChoiceSelect> : null} />}>
         <Head title="الصناديق المالية" />
         <BoxTabs tabs={tabs} current={place} hint={started && !searchingTransfers ? placeHints[place] : null} />
         {branchScope && <BranchFilterBanner scope={branchScope} eyebrow="تعرض الآن صناديق" group={{ options: branches.map((item) => ({ value: String(item.id), label: item.name })) }} value={branch ? String(branch.id) : ''} onChange={(value) => router.get(urls.index, { place, branch_id: value })} />}

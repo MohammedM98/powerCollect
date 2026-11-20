@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import ChoiceChips from '@/Components/ChoiceChips';
@@ -13,7 +14,7 @@ export default function PrintSortSection({ fieldOptions, layout, onChange, set, 
             <p className="text-xs text-gray-500">رتّب الصفوف بأي حقل ولو كان مخفيًا، وجمّعها مثلًا حسب الطبلون. بدون ترتيب تبقى بترتيب الجدول.</p>
             <Field label="تجميع الصفوف حسب">
                 {(id) => (
-                    <select
+                    <ChoiceSelect
                         id={id}
                         value={layout.group.key}
                         onChange={(event) =>
@@ -27,7 +28,7 @@ export default function PrintSortSection({ fieldOptions, layout, onChange, set, 
                     >
                         <option value="">بدون تجميع</option>
                         {fieldOptions}
-                    </select>
+                    </ChoiceSelect>
                 )}
             </Field>
             {layout.group.key !== '' && (
@@ -35,7 +36,7 @@ export default function PrintSortSection({ fieldOptions, layout, onChange, set, 
                     {(layout.group.then ?? []).map((key, index) => (
                         <div key={index} className="flex items-center gap-2">
                             <span className="text-xs text-gray-600">ثم حسب</span>
-                            <select
+                            <ChoiceSelect
                                 aria-label={`التجميع الإضافي ${index + 1}`}
                                 value={key}
                                 onChange={(event) =>
@@ -59,7 +60,7 @@ export default function PrintSortSection({ fieldOptions, layout, onChange, set, 
                                             {column.label}
                                         </option>
                                     ))}
-                            </select>
+                            </ChoiceSelect>
                             <IconButton
                                 icon="trash"
                                 label={`حذف التجميع ${index + 1}`}
@@ -204,14 +205,14 @@ export default function PrintSortSection({ fieldOptions, layout, onChange, set, 
                         <li key={index} className="rounded-control border border-gray-200 p-2.5">
                             <div className="flex items-center gap-2">
                                 <span className="w-14 shrink-0 text-xs font-semibold text-gray-600">{index === 0 ? 'حسب' : 'ثم حسب'}</span>
-                                <select
+                                <ChoiceSelect
                                     value={level.key}
                                     onChange={(e) => setSortLevel(index, { key: e.target.value })}
                                     aria-label={`حقل الترتيب ${index + 1}`}
                                     className="block min-w-0 flex-1 py-1! text-sm"
                                 >
                                     {fieldOptions}
-                                </select>
+                                </ChoiceSelect>
                                 <IconButton
                                     icon="trash"
                                     tone="danger"
