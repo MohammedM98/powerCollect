@@ -6986,6 +6986,9 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-seg.reports-sections button {
     min-height: 34px;
     font-size: 13.5px;
+    /* On a phone the row scrolls sideways instead of squeezing the labels over each other. */
+    flex: none;
+    white-space: nowrap;
 }
 
 /* The print contents beside the export buttons in the page's actions row. */
