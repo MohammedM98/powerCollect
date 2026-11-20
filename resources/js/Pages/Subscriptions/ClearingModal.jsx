@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button, Input } from '@heroui/react';
 import { useId, useRef, useState } from 'react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
@@ -205,12 +206,12 @@ export default function ClearingModal({ show, onClose, subscription, balance, re
                                 <div className="gl-cl-under">
                                     <div className="gl-cl-quick">
                                         {QUICK_AMOUNTS.map((quick) => (
-                                            <Button key={quick} className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setAmount(String(quick))}>
+                                            <Button data-raw="" variant="ghost" key={quick} className="gl-num" aria-label={`${quick} شيكل`} onClick={() => setAmount(String(quick))}>
                                                 {quick}
                                             </Button>
                                         ))}
                                         {owed > 0 && (
-                                            <Button className="is-settle" onClick={() => setAmount(String(owed))}>
+                                            <Button data-raw="" variant="ghost" className="is-settle" onClick={() => setAmount(String(owed))}>
                                                 كل ما عليه <bdi className="gl-num">{formatMoney(owed)}</bdi>
                                             </Button>
                                         )}
@@ -227,7 +228,7 @@ export default function ClearingModal({ show, onClose, subscription, balance, re
                                             <b className="gl-num">{formatMoney(creditLeft)} ₪</b>.
                                         </p>
                                         <label>
-                                            <input type="checkbox" checked={Boolean(data.confirm_over_balance)} onChange={(e) => setData('confirm_over_balance', e.target.checked)} />
+                                            <CheckBox checked={Boolean(data.confirm_over_balance)} onChange={(e) => setData('confirm_over_balance', e.target.checked)} />
                                             نعم، أريد فعلًا إضافة هذه المقاصة لهذا المشترك
                                         </label>
                                         <InputError message={errors.confirm_over_balance} className="mt-1" />

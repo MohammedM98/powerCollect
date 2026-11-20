@@ -9827,16 +9827,18 @@ html:root[data-ui-background='graphite'] .pm-hero {
 @media (prefers-reduced-motion: reduce) { .db-pool, .db-lane, .db-balance-bar i, .db-load-bar i { transition: none; } }
 
 /*
- * HeroUI's Button in the MA look everywhere, at zero specificity so a page's
- * own class still wins: primary is the dark raised key, secondary the white
+ * HeroUI's Button in the MA look everywhere, in the components layer so a
+ * page's own class and Tailwind's utilities still win: primary is the dark raised key, secondary the white
  * raised key, ghost a quiet text key that tints on hover.
  */
-:where(.button) { border-radius: 12px; font-weight: 800; }
-:where(.button.button--primary) { background: var(--ma-act); color: #fff; box-shadow: var(--ma-depth); }
-:where(.button.button--secondary) { background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-depth); }
-:where(.button.button--secondary:hover) { background: var(--ma-solid); color: var(--ma-ink); filter: brightness(0.98); }
-:where(.button.button--ghost) { background: transparent; color: var(--ma-ink); box-shadow: none; }
-:where(.button.button--ghost:hover) { background: var(--ma-tile); }
+@layer components {
+    .button[class] { border-radius: 12px; font-weight: 800; }
+    .button[class].button--primary { background: var(--ma-act); color: #fff; box-shadow: var(--ma-depth); }
+    .button[class].button--secondary { background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-depth); }
+    .button[class].button--secondary:hover { background: var(--ma-solid); color: var(--ma-ink); filter: brightness(0.98); }
+    .button[class].button--ghost { background: transparent; color: inherit; box-shadow: none; }
+    .button[class].button--ghost:hover { background: var(--ma-tile); }
+}
 
 /* The board's cards: HeroUI Card frames, spaced as the board needs. */
 .db-area.card { padding: 0; gap: 0; border-radius: 16px; }
@@ -10001,4 +10003,91 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toasts {
 
 body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     width: min(440px, 100%);
+}
+
+/* HeroUI tick boxes in the MA look: a clear 20px box with a visible edge, dark when ticked, in light and dark. */
+@layer components {
+.checkbox .checkbox__control {
+    width: 20px;
+    height: 20px;
+    border-radius: 7px;
+    border: 1.5px solid color-mix(in oklab, var(--ma-ink) 32%, transparent);
+    background: var(--ma-solid);
+    box-shadow: var(--ma-hl);
+}
+
+.checkbox[data-selected='true'] .checkbox__control,
+.checkbox[data-indeterminate='true'] .checkbox__control {
+    border-color: var(--ma-act);
+    background: var(--ma-act);
+    color: #fff;
+}
+
+.checkbox[data-disabled='true'] .checkbox__control {
+    opacity: 0.5;
+}
+
+.checkbox .checkbox__content {
+    gap: 10px;
+}
+}
+
+/*
+ * HeroUI's Input and TextArea take the app's field look (app.css base
+ * fields): the field ground with its soft shadow, 14px corners, a fine
+ * ring on hover and the company's ring while typing. In the components
+ * layer above HeroUI's own field styles, so Tailwind's utilities and a
+ * page's own class (gl-set-field, say) still win.
+ */
+@layer components {
+.input[class],
+.textarea[class] {
+    border: 1px solid transparent;
+    border-radius: calc(14px * var(--radius-scale, 1));
+    background-color: rgb(var(--panel-field));
+    box-shadow: var(--field-shadow);
+    color: var(--gl-ink);
+}
+
+.input[class]:hover:not(:focus, :disabled, [data-disabled='true']),
+.textarea[class]:hover:not(:focus, :disabled, [data-disabled='true']) {
+    box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+}
+
+.input[class]:focus,
+.input[class][data-focused='true'],
+.textarea[class]:focus,
+.textarea[class][data-focused='true'] {
+    border-color: transparent;
+    box-shadow: 0 0 0 2px rgb(var(--brand-solid));
+    outline: none;
+}
+}
+
+/*
+ * Keys that were plain buttons before HeroUI (data-raw) keep a plain
+ * button's box: no set height or padding, the surrounding text's size and
+ * weight, and no fill of their own; their own utility classes draw them.
+ */
+@layer components {
+    .button[class][data-raw] {
+        height: auto;
+        min-height: 0;
+        width: auto;
+        min-width: 0;
+        padding: 0;
+        gap: normal;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        color: inherit;
+        font: inherit;
+        justify-content: normal;
+        text-align: inherit;
+        white-space: normal;
+    }
+
+    .button[class][data-raw]:hover {
+        background: transparent;
+    }
 }

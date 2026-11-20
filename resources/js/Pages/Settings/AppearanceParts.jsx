@@ -112,7 +112,7 @@ export function ColorField({ id, label, value, onChange, suggestions = [], allow
                     onChange={(event) => onChange(event.target.value.trim() === '' && allowEmpty ? null : event.target.value.trim().toUpperCase())}
                 />
                 {allowEmpty && value && (
-                    <Button className="text-[13px] font-semibold text-gray-500 hover:text-gray-900" onClick={() => onChange(null)}>
+                    <Button data-raw="" variant="ghost" className="text-[13px] font-semibold text-gray-500 hover:text-gray-900" onClick={() => onChange(null)}>
                         {emptyLabel}
                     </Button>
                 )}
@@ -126,7 +126,7 @@ export function ColorField({ id, label, value, onChange, suggestions = [], allow
                 <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-[13px] text-gray-500">من الشعار:</span>
                     {suggestions.map((color) => (
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             key={color}
                             className="ap-suggestion"
                             style={{ background: color }}
@@ -148,7 +148,7 @@ export function PresetCard({ id, preset, active, onPick }) {
     const { design } = preset;
 
     return (
-        <Button className="ap-preset" aria-pressed={active} onClick={() => onPick(id)}>
+        <Button data-raw="" variant="ghost" className="ap-preset" aria-pressed={active} onClick={() => onPick(id)}>
             <span
                 className={`ap-sketch nav-${design.navigation} radius-${design.radius} buttons-${design.buttons} tables-${design.tables}`}
                 aria-hidden="true"

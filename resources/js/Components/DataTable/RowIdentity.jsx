@@ -27,7 +27,7 @@ export default function RowIdentity({ icon, name, subtitle, status, subtitleDir,
             </span>
             <span className="row-identity-text min-w-0">
                 {onNameClick ? (
-                    <Button
+                    <Button data-raw="" variant="ghost"
                         onClick={onNameClick}
                         title={nameTitle}
                         className="block min-h-6 max-w-full truncate text-start font-semibold text-gray-900 underline-offset-4 transition hover:text-brand-600 hover:underline focus-visible:rounded focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"

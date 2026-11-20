@@ -25,7 +25,7 @@ export function AllocationReport({ result, onConfirmDownloaded, onClose }) {
                     {formatNumber(result.moved)} طبلون
                     {result.conflicts.length > 0 && <>، راجع الطبلونات التي تعذّر تحديثها أدناه</>}
                 </p>
-                <Button onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-1.5 text-gray-500 hover:bg-gray-100">
+                <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-1.5 text-gray-500 hover:bg-gray-100">
                     <Icon name="close" className="h-4 w-4" />
                 </Button>
             </div>
@@ -40,7 +40,7 @@ export function AllocationReport({ result, onConfirmDownloaded, onClose }) {
                 </ul>
             )}
             {needsConfirmation && onConfirmDownloaded && (
-                <Button
+                <Button data-raw="" variant="ghost"
                     onClick={onConfirmDownloaded}
                     className="mt-3 inline-flex items-center gap-1.5 rounded-control bg-amber-600 px-3 py-2 text-sm font-bold text-white"
                 >

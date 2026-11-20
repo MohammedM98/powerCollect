@@ -10,7 +10,7 @@ const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-vi
 
 function BarButton({ icon, label, onClick, disabled = false, hint, className = '' }) {
     return (
-        <Button
+        <Button data-raw="" variant="ghost"
             onClick={onClick}
             isDisabled={disabled}
             title={disabled ? hint : label}
@@ -73,7 +73,7 @@ export default function BulkActionBar({ count, selection, abilities, onAction, o
                 <BarButton icon="printer" label="طباعة" onClick={print} disabled={tooManyToLink} hint={linkHint} className="tone-print tone-on-dark border" />
                 </>}
             </div>
-            <Button
+            <Button data-raw="" variant="ghost"
                 onClick={onClear}
                 aria-label="إلغاء التحديد"
                 title="إلغاء التحديد"

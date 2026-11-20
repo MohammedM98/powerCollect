@@ -230,7 +230,7 @@ export function Highlights({ rules, columns, onChange }) {
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                         {HIGHLIGHT_COLORS.map((color) => (
-                            <Button
+                            <Button data-raw="" variant="ghost"
                                 key={color.value}
                                 aria-label={color.label}
                                 aria-pressed={rule.color === color.value}
@@ -280,7 +280,7 @@ export function Highlights({ rules, columns, onChange }) {
 /** A small icon-only button, named for screen readers and in its tooltip. */
 export function IconButton({ icon, label, onClick, disabled = false, tone = 'gray' }) {
     return (
-        <Button
+        <Button data-raw="" variant="ghost"
             onClick={onClick}
             isDisabled={disabled}
             aria-label={label}

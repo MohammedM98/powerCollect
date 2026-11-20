@@ -84,7 +84,7 @@ export default function EmployeeList({
                             const pressed = (filterValues.user_type_id ?? '') === option.value;
 
                             return (
-                                <Button
+                                <Button data-raw="" variant="ghost"
                                     key={option.value}
                                     aria-pressed={pressed}
                                     onClick={() => onFilterChange('user_type_id', option.value)}
@@ -133,7 +133,7 @@ export default function EmployeeList({
 
                                     return (
                                         <li key={user.id}>
-                                            <Button
+                                            <Button data-raw="" variant="ghost"
                                                 data-employee={user.id}
                                                 onClick={() => onSelect(user)}
                                                 aria-current={isSelected ? 'true' : undefined}

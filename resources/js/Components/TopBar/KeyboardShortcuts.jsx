@@ -55,7 +55,7 @@ export default function KeyboardShortcuts({ open, onClose, canRecordPayments, ca
                 <div className="mb-3 flex items-center gap-3">
                     <span className="grid h-10 w-10 place-items-center rounded-xl bg-graphite-gradient text-white"><Icon name="keyboard" className="h-5 w-5" /></span>
                     <b className="flex-1 text-[17px]">اختصارات لوحة المفاتيح</b>
-                    <Button ref={closeRef} className="tn-tool" onClick={onClose} aria-label="إغلاق"><Icon name="close" /></Button>
+                    <Button data-raw="" variant="ghost" ref={closeRef} className="tn-tool" onClick={onClose} aria-label="إغلاق"><Icon name="close" /></Button>
                 </div>
                 {keys.map(([key, label]) => (
                     <div key={key} className="flex items-center gap-3 border-b border-gray-200/60 py-2.5 last:border-0">

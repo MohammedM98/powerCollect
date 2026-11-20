@@ -92,7 +92,7 @@ export default function Index({ branches, canCreate, filters, filterOptions, gov
                                     <td className="text-gray-600">{branch.area?.name ?? '—'}</td>
                                     <td onClick={(e) => e.stopPropagation()}><div className="space-y-2">
                                         {branch.domain ? <><p dir="ltr" className="text-start text-xs text-gray-600">{branch.domain}</p><StatusPill tone={branch.domain_enabled ? 'green' : 'gray'} label={branch.domain_enabled ? 'الرابط مفعّل' : 'الرابط متوقف'} /></> : <p className="text-gray-400">لم يُحدد رابط</p>}
-                                        <div className="flex flex-wrap gap-3 text-xs font-semibold">{canManageDomains && <Button onClick={() => setDomainBranch(branch)} className="text-brand-600 hover:underline">إدارة الرابط</Button>}{domainRoutingEnabled && branch.url && <a href={branch.url} className="text-gray-700 hover:underline">فتح الفرع</a>}</div>
+                                        <div className="flex flex-wrap gap-3 text-xs font-semibold">{canManageDomains && <Button data-raw="" variant="ghost" onClick={() => setDomainBranch(branch)} className="text-brand-600 hover:underline">إدارة الرابط</Button>}{domainRoutingEnabled && branch.url && <a href={branch.url} className="text-gray-700 hover:underline">فتح الفرع</a>}</div>
                                     </div></td>
                                     <td>
                                         <StatusPill tone={branch.is_active ? 'green' : 'gray'} label={branch.is_active ? 'نشط' : 'متوقف'} />
@@ -101,9 +101,9 @@ export default function Index({ branches, canCreate, filters, filterOptions, gov
                                         {(branch.canUpdate || branch.canDelete) && (
                                             <RowActionsMenu>
                                                 {branch.canDelete && (
-                                                    <Button type="submit" onClick={() => requestDelete(`/branches/${branch.id}`, branch.name)}>حذف</Button>
+                                                    <Button data-raw="" variant="ghost" type="submit" onClick={() => requestDelete(`/branches/${branch.id}`, branch.name)}>حذف</Button>
                                                 )}
-                                                {branch.canUpdate && <Button type="submit" onClick={() => setModalBranch(branch)}>تعديل</Button>}
+                                                {branch.canUpdate && <Button data-raw="" variant="ghost" type="submit" onClick={() => setModalBranch(branch)}>تعديل</Button>}
                                             </RowActionsMenu>
                                         )}
                                     </td>

@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button, Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
@@ -79,7 +80,7 @@ export default function PaymentAmountStep({
                     )}
                     <div className="gl-amount-quick">
                         {owed > 0 && (
-                            <Button
+                            <Button data-raw="" variant="ghost"
                                 isDisabled={data.currency !== 'ILS' && !(Number(exchangeRate) > 0)}
                                 onClick={() => setAmount(String(Number((owed / (data.currency === 'ILS' ? 1 : Number(exchangeRate))).toFixed(2))))}
                                 className="gl-chip gl-chip-sm"
@@ -89,7 +90,7 @@ export default function PaymentAmountStep({
                             </Button>
                         )}
                         {QUICK_AMOUNTS.map((quick) => (
-                            <Button key={quick} onClick={() => setAmount(String(quick))} className="gl-chip gl-chip-sm gl-num">
+                            <Button data-raw="" variant="ghost" key={quick} onClick={() => setAmount(String(quick))} className="gl-chip gl-chip-sm gl-num">
                                 {quick}
                             </Button>
                         ))}
@@ -121,9 +122,7 @@ export default function PaymentAmountStep({
                         </p>
                         {overpayment === 'confirm' && (
                             <label className="mt-2 flex cursor-pointer items-center gap-2 font-semibold">
-                                <input
-                                    type="checkbox"
-                                    className="h-[18px] w-[18px]"
+                                <CheckBox
                                     checked={data.confirm_overpayment}
                                     onChange={(e) => setData('confirm_overpayment', e.target.checked)}
                                 />

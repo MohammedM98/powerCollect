@@ -129,7 +129,7 @@ function OptionItem({ section, item, selected, saved, onChange, disabled, onExpl
                 )}
             </div>
             {onExplain && (
-                <Button aria-label={`شرح ${item.label}`} onClick={onExplain} className="pm-icon-button">
+                <Button data-raw="" variant="ghost" aria-label={`شرح ${item.label}`} onClick={onExplain} className="pm-icon-button">
                     <Icon name="info" className="h-4 w-4" />
                 </Button>
             )}
@@ -220,7 +220,7 @@ export function SectionRow({
                             />
                             <span className="pm-cell-label">{cell.label}</span>
                             {explaining && onExplain && (
-                                <Button aria-label={`ماذا تتيح «${cell.label}» في ${section.label}`} onClick={explain(cell.id)} className="pm-cell-why">
+                                <Button data-raw="" variant="ghost" aria-label={`ماذا تتيح «${cell.label}» في ${section.label}`} onClick={explain(cell.id)} className="pm-cell-why">
                                     <Icon name="info" className="h-4 w-4" />
                                 </Button>
                             )}
@@ -232,7 +232,7 @@ export function SectionRow({
             ))}
 
             <div className="pm-cell pm-more-cell">
-                <Button
+                <Button data-raw="" variant="ghost"
                     className={`pm-more ${heldOptions > 0 ? 'has-held' : ''}`}
                     aria-expanded={open}
                     aria-controls={bodyId}
@@ -281,7 +281,7 @@ export function SectionRow({
                                         </p>
                                     </div>
                                     {onExplain && (
-                                        <Button aria-label={`شرح ${cell.label}`} onClick={explain(cell.id)} className="pm-icon-button">
+                                        <Button data-raw="" variant="ghost" aria-label={`شرح ${cell.label}`} onClick={explain(cell.id)} className="pm-icon-button">
                                             <Icon name="info" className="h-4 w-4" />
                                         </Button>
                                     )}

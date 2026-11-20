@@ -46,7 +46,7 @@ export default function SubscriptionMessageHistoryModal({ subscription, onClose 
                             <p className="mt-1 text-sm text-gray-600">{subscription.display_name ?? subscription.fullName}، الاشتراك <bdi dir="ltr">{subscription.account_number ?? subscription.accountNumber}</bdi></p>
                         </div>
                     </div>
-                    <Button onClick={onClose} aria-label="إغلاق سجل الرسائل" className="rounded-control p-2 text-gray-500 transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"><Icon name="close" className="h-5 w-5" /></Button>
+                    <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق سجل الرسائل" className="rounded-control p-2 text-gray-500 transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"><Icon name="close" className="h-5 w-5" /></Button>
                 </header>
 
                 <div className="min-h-0 flex-1 overflow-y-auto bg-gray-50 px-5 py-5 sm:px-7" aria-busy={!current}>

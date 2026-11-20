@@ -24,7 +24,7 @@ export default function SplitAllocationMeter({ allocatedCents, distributed, mete
                 </p>
                 <div className="flex items-center gap-3">
                     {parts.length > 0 && remainingCents > 0 && (
-                        <Button onClick={putRemainderOnLast} className="text-[13.5px] font-semibold text-brand-600 hover:underline">
+                        <Button data-raw="" variant="ghost" onClick={putRemainderOnLast} className="text-[13.5px] font-semibold text-brand-600 hover:underline">
                             ضع الباقي على آخر مشترك
                         </Button>
                     )}

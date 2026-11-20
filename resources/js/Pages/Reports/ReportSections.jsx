@@ -348,7 +348,7 @@ export function Transactions({ transactions, kinds, filters, showDay, showBranch
                                 </td>
                                 <td className={`${TD} font-display`}>{line.voucherNumber ?? '—'}</td>
                                 <td className={TD}>
-                                    <span className="font-semibold text-gray-900">{onStatement ? <Button className="text-brand-600 hover:underline" onClick={() => onStatement(line.subscriptionId)}>{line.subscriptionName}</Button> : line.subscriptionName}</span>
+                                    <span className="font-semibold text-gray-900">{onStatement ? <Button data-raw="" variant="ghost" className="text-brand-600 hover:underline" onClick={() => onStatement(line.subscriptionId)}>{line.subscriptionName}</Button> : line.subscriptionName}</span>
                                     <small className="block font-display text-xs text-gray-500">
                                         {line.accountNumber}
                                         {line.meterBoxNumber && `، ${line.meterBoxNumber}`}

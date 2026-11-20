@@ -41,7 +41,7 @@ export default function QuickMessageBody({
             )}
             <div role="group" aria-label="أضف معلومة من بيانات المشترك إلى النص" className="flex flex-wrap gap-1.5">
                 {setup.placeholders[kind].map((name) => (
-                    <Button
+                    <Button data-raw="" variant="ghost"
                         key={name}
                         onClick={() => insertPlaceholder(name)}
                         aria-label={`أضف «${name.replaceAll('_', ' ')}» إلى نص الرسالة`}

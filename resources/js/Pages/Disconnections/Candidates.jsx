@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button, TextArea } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -158,7 +159,7 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
             {!allMatching && pageIds.length > 0 && pageSelectedCount === pageIds.length && subscriptions.total > pageIds.length && (
                 <div role="status" className="flex flex-wrap items-center justify-center gap-2 border-x border-gray-100 bg-brand-500/5 px-4 py-2.5 text-sm text-gray-700">
                     تم تحديد {pageIds.length.toLocaleString('en')} مشترك في هذه الصفحة.
-                    <Button onClick={() => setAllMatching(true)} className="rounded font-semibold text-brand-600 hover:underline">
+                    <Button data-raw="" variant="ghost" onClick={() => setAllMatching(true)} className="rounded font-semibold text-brand-600 hover:underline">
                         تحديد كل النتائج المطابقة ({subscriptions.total.toLocaleString('en')})
                     </Button>
                 </div>
@@ -169,7 +170,7 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
                     <thead>
                         <tr>
                             <th data-actions="" className="w-10">
-                                <input ref={headerCheckbox} type="checkbox" checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)} onChange={togglePage} aria-label="تحديد كل مشتركي هذه الصفحة" className="rounded border-gray-300 text-brand-600" />
+                                <CheckBox checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)} indeterminate={!allMatching && pageSelectedCount > 0 && pageSelectedCount < pageIds.length} onChange={togglePage} aria-label="تحديد كل مشتركي هذه الصفحة" />
                             </th>
                             <SortableTh column="display_name" label="المشترك" sortState={filters} onSort={sort} />
                             <th>الطبلون</th>
@@ -187,7 +188,7 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
                             subscriptions.data.map((row) => (
                                 <tr key={row.id} className={allMatching || selectedIds.has(row.id) ? 'bg-brand-50' : undefined}>
                                     <td>
-                                        <input type="checkbox" disabled={Boolean(row.waitingOn)} checked={!row.waitingOn && (allMatching || selectedIds.has(row.id))} onChange={() => toggle(row.id)} aria-label={`تحديد ${row.name}`} className="rounded border-gray-300 text-brand-600 disabled:opacity-40" />
+                                        <CheckBox disabled={Boolean(row.waitingOn)} checked={!row.waitingOn && (allMatching || selectedIds.has(row.id))} onChange={() => toggle(row.id)} aria-label={`تحديد ${row.name}`} />
                                     </td>
                                     <td data-label="المشترك"><RowIdentity name={row.name} subtitle={row.accountNumber} subtitleDir="ltr" /></td>
                                     <td data-label="الطبلون" className="text-gray-600">{row.meterBoxNumber ? <span className="data-chip">{row.meterBoxNumber}</span> : '—'}</td>
@@ -213,11 +214,11 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
                             <b className="font-display">{selectionCount.toLocaleString('en')}</b> {allMatching ? 'مشترك (كل النتائج المطابقة)' : 'مشترك محدد'}
                         </span>
                         <div className="flex items-center gap-2">
-                            <Button onClick={() => setAdding(true)} className="inline-flex items-center gap-1.5 rounded-control bg-white px-4 py-2 text-sm font-bold text-gray-900">
+                            <Button data-raw="" variant="ghost" onClick={() => setAdding(true)} className="inline-flex items-center gap-1.5 rounded-control bg-white px-4 py-2 text-sm font-bold text-gray-900">
                                 <Icon name="plus" className="h-4 w-4" />
                                 إضافة إلى القائمة
                             </Button>
-                            <Button onClick={() => { setSelectedIds(new Set()); setAllMatching(false); }} aria-label="إلغاء التحديد" className="flex h-9 w-9 items-center justify-center rounded-control text-white/80 hover:bg-white/10">
+                            <Button data-raw="" variant="ghost" onClick={() => { setSelectedIds(new Set()); setAllMatching(false); }} aria-label="إلغاء التحديد" className="flex h-9 w-9 items-center justify-center rounded-control text-white/80 hover:bg-white/10">
                                 <Icon name="close" className="h-5 w-5" />
                             </Button>
                         </div>

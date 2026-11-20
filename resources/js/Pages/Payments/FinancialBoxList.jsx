@@ -93,7 +93,7 @@ export default function FinancialBoxList({ boxes, onOpen, periodFor, sortState, 
         const active = sortState?.sort === column;
 
         return (
-            <Button onClick={() => onSort(column)} className="gl-cb-sort" aria-label={`${label}${active ? (sortState.direction === 'asc' ? '، ترتيب تصاعدي' : '، ترتيب تنازلي') : '، ترتيب'}`}>
+            <Button data-raw="" variant="ghost" onClick={() => onSort(column)} className="gl-cb-sort" aria-label={`${label}${active ? (sortState.direction === 'asc' ? '، ترتيب تصاعدي' : '، ترتيب تنازلي') : '، ترتيب'}`}>
                 {label}
                 <Icon name="chevron-down" className={`h-3.5 w-3.5 ${active ? 'is-active' : ''} ${active && sortState.direction === 'asc' ? 'rotate-180' : ''}`} />
             </Button>
@@ -136,7 +136,7 @@ export default function FinancialBoxList({ boxes, onOpen, periodFor, sortState, 
                             <Fragment key={box.id}>
                                 <tr className={open ? 'is-open' : undefined} {...rowClick(() => onOpen(box))}>
                                     <td className="gl-cb-x">
-                                        <Button className="gl-st-exp" aria-expanded={open} aria-label={`تفاصيل صندوق ${box.number}`} onClick={() => toggle(box.id)}>
+                                        <Button data-raw="" variant="ghost" className="gl-st-exp" aria-expanded={open} aria-label={`تفاصيل صندوق ${box.number}`} onClick={() => toggle(box.id)}>
                                             <Icon name="chevron-down" className="h-4 w-4" />
                                         </Button>
                                     </td>
@@ -144,7 +144,7 @@ export default function FinancialBoxList({ boxes, onOpen, periodFor, sortState, 
                                         <span className="gl-cb-box">
                                             <FinancialBoxMark box={box} />
                                             <span className="min-w-0">
-                                                <Button className="gl-cb-no" onClick={() => onOpen(box)} aria-label={`عرض صندوق ${box.number}`}>
+                                                <Button data-raw="" variant="ghost" className="gl-cb-no" onClick={() => onOpen(box)} aria-label={`عرض صندوق ${box.number}`}>
                                                     <bdi dir="ltr">{box.number}</bdi>
                                                 </Button>
                                                 <small>{boxTypeStyles[box.type].label}{period && period !== '—' ? `، ${period}` : ''}</small>

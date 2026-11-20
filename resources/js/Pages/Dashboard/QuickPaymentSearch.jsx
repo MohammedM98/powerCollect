@@ -140,7 +140,7 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
 
                                 return (
                                     <li key={subscriber.id} id={`${titleId}-result-${index}`} role="option" aria-selected={index === active}>
-                                        <Button
+                                        <Button data-raw="" variant="ghost"
                                             onClick={() => onPick(subscriber)}
                                             onPointerEnter={() => setActive(index)}
                                             className={`flex w-full items-center gap-3 rounded-row border px-4 py-3 text-start transition active:scale-[0.99] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${

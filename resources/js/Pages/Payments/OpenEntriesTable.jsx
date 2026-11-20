@@ -71,8 +71,8 @@ export default function OpenEntriesTable({ table, entries, filters, counts, url,
                             <td className="whitespace-normal!"><StatusPill tone={tone} label={status} />{entry.isLate && <span className="mt-1 block"><StatusPill tone="amber" label="متأخرة" /></span>}</td>
                             <td className="text-end">{(entry.receiptUrl || entry.statementUrl) && (
                                 <RowActionsMenu>
-                                    {entry.statementUrl && <Button type="submit" onClick={() => router.visit(entry.statementUrl)}>كشف الحساب</Button>}
-                                    {entry.receiptUrl && <Button type="submit" onClick={() => window.open(entry.receiptUrl, '_blank', 'noopener')}>طباعة السند</Button>}
+                                    {entry.statementUrl && <Button data-raw="" variant="ghost" type="submit" onClick={() => router.visit(entry.statementUrl)}>كشف الحساب</Button>}
+                                    {entry.receiptUrl && <Button data-raw="" variant="ghost" type="submit" onClick={() => window.open(entry.receiptUrl, '_blank', 'noopener')}>طباعة السند</Button>}
                                 </RowActionsMenu>
                             )}</td>
                         </tr>;

@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button, Input } from '@heroui/react';
 import { useEffect, useEffectEvent, useId, useMemo, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
@@ -220,8 +221,8 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                     <ul className="space-y-1.5">
                                         {parts.map((candidate) => (
                                             <li key={candidate.key} className={`flex items-center gap-2 rounded-control border px-3 py-2 ${editing === candidate.key ? 'border-excel-500/50 bg-excel-500/5' : 'border-gray-100'}`}>
-                                                <input type="checkbox" className="rounded border-gray-300 text-excel-600 focus:ring-excel-500" checked={settings.parts[candidate.key].on} onChange={(event) => changePart(candidate.key, { on: event.target.checked })} aria-label={`تضمين ${candidate.name}`} />
-                                                <Button className="flex min-w-0 flex-1 items-center justify-between gap-2 text-start text-sm" onClick={() => setEditing(candidate.key)}>
+                                                <CheckBox checked={settings.parts[candidate.key].on} onChange={(event) => changePart(candidate.key, { on: event.target.checked })} aria-label={`تضمين ${candidate.name}`} />
+                                                <Button data-raw="" variant="ghost" className="flex min-w-0 flex-1 items-center justify-between gap-2 text-start text-sm" onClick={() => setEditing(candidate.key)}>
                                                     <span className="truncate font-semibold text-gray-900">{candidate.name}</span>
                                                     <span className="shrink-0 font-display text-xs text-gray-500">{candidate.rows.length.toLocaleString('en')} صف</span>
                                                 </Button>
@@ -238,7 +239,7 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                                 return (
                                                     <li key={column.key} className="flex items-center gap-2 border-b border-gray-100 px-3 py-1.5 last:border-b-0">
                                                         <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-sm">
-                                                            <input type="checkbox" className="rounded border-gray-300 text-excel-600 focus:ring-excel-500" checked={column.on} onChange={() => changePart(part.key, { columns: partSettings.columns.map((candidate) => (candidate.key === column.key ? { ...candidate, on: !candidate.on } : candidate)) })} />
+                                                            <CheckBox checked={column.on} onChange={() => changePart(part.key, { columns: partSettings.columns.map((candidate) => (candidate.key === column.key ? { ...candidate, on: !candidate.on } : candidate)) })} />
                                                             <span className="truncate">{definition.label}</span>
                                                             {definition.sum && <span className="text-xs text-gray-400">مجموع</span>}
                                                         </label>
@@ -252,8 +253,8 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                                             aria-label={`عرض عمود ${definition.label}`}
                                                             title="عرض العمود بالأحرف"
                                                         />
-                                                        <Button onClick={() => moveColumn(index, -1)} isDisabled={index === 0} className="rounded p-1 text-gray-500 hover:bg-gray-100 disabled:opacity-30" aria-label={`نقل ${definition.label} للأعلى`}><Icon name="arrow-up" className="h-4 w-4" /></Button>
-                                                        <Button onClick={() => moveColumn(index, 1)} isDisabled={index === partSettings.columns.length - 1} className="rounded p-1 text-gray-500 hover:bg-gray-100 disabled:opacity-30" aria-label={`نقل ${definition.label} للأسفل`}><Icon name="arrow-down" className="h-4 w-4" /></Button>
+                                                        <Button data-raw="" variant="ghost" onClick={() => moveColumn(index, -1)} isDisabled={index === 0} className="rounded p-1 text-gray-500 hover:bg-gray-100 disabled:opacity-30" aria-label={`نقل ${definition.label} للأعلى`}><Icon name="arrow-up" className="h-4 w-4" /></Button>
+                                                        <Button data-raw="" variant="ghost" onClick={() => moveColumn(index, 1)} isDisabled={index === partSettings.columns.length - 1} className="rounded p-1 text-gray-500 hover:bg-gray-100 disabled:opacity-30" aria-label={`نقل ${definition.label} للأسفل`}><Icon name="arrow-down" className="h-4 w-4" /></Button>
                                                     </li>
                                                 );
                                             })}
@@ -261,7 +262,7 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                         <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
                                             <span>الرقم بجانب كل عمود: عرضه بالأحرف ({COLUMN_WIDTH_RANGE[0]}–{COLUMN_WIDTH_RANGE[1]}).</span>
                                             {partSettings.columns.some((column) => column.width !== undefined) && (
-                                                <Button className="font-semibold text-gray-700 hover:text-gray-900" onClick={() => changePart(part.key, { columns: partSettings.columns.map(({ width: _width, ...column }) => column) })}>
+                                                <Button data-raw="" variant="ghost" className="font-semibold text-gray-700 hover:text-gray-900" onClick={() => changePart(part.key, { columns: partSettings.columns.map(({ width: _width, ...column }) => column) })}>
                                                     العرض الافتراضي
                                                 </Button>
                                             )}
@@ -321,8 +322,8 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                         <div className="mb-3 flex flex-wrap gap-2">
                                             {templates.map((template) => (
                                                 <span key={template.name} className="inline-flex items-center gap-1 rounded-control border border-gray-200 bg-surface ps-3 text-sm font-semibold">
-                                                    <Button className="py-1.5" onClick={() => applyTemplate(template.settings)}>{template.name}</Button>
-                                                    <Button className="rounded p-1.5 text-gray-400 hover:text-red-600" onClick={() => removeTemplate(template.name)} aria-label={`حذف القالب ${template.name}`}><Icon name="close" className="h-3.5 w-3.5" /></Button>
+                                                    <Button data-raw="" variant="ghost" className="py-1.5" onClick={() => applyTemplate(template.settings)}>{template.name}</Button>
+                                                    <Button data-raw="" variant="ghost" className="rounded p-1.5 text-gray-400 hover:text-red-600" onClick={() => removeTemplate(template.name)} aria-label={`حذف القالب ${template.name}`}><Icon name="close" className="h-3.5 w-3.5" /></Button>
                                                 </span>
                                             ))}
                                         </div>

@@ -169,7 +169,7 @@ export default function DateInput({
 
     return (
         <div className={`relative ${className}`}>
-            <Button
+            <Button data-raw="" variant="ghost"
                 ref={buttonRef}
                 id={id}
                 isDisabled={disabled}
@@ -230,7 +230,7 @@ export default function DateInput({
                         className="animate-menu fixed z-70 w-78 rounded-2xl p-3 text-gray-900 gl-pop"
                     >
                         <div className="mb-2 flex items-center justify-between gap-2">
-                            <Button
+                            <Button data-raw="" variant="ghost"
                                 className={headerButton}
                                 aria-label={view === 'days' ? 'الشهر السابق' : 'السنة السابقة'}
                                 isDisabled={view === 'days' ? !canGoBack : Boolean(min) && year - 1 < Number(min.slice(0, 4))}
@@ -238,7 +238,7 @@ export default function DateInput({
                             >
                                 <Icon name="chevron-right" className="h-5 w-5" />
                             </Button>
-                            <Button
+                            <Button data-raw="" variant="ghost"
                                 aria-label={view === 'days' ? 'اختيار الشهر والسنة' : 'العودة إلى الأيام'}
                                 onClick={() => setView(view === 'days' ? 'months' : 'days')}
                                 className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[15px] font-bold transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"
@@ -247,7 +247,7 @@ export default function DateInput({
                                 <span className="font-display">{year}</span>
                                 <Icon name="chevron-down" className={`h-4 w-4 text-gray-400 transition ${view === 'months' ? 'rotate-180' : ''}`} />
                             </Button>
-                            <Button
+                            <Button data-raw="" variant="ghost"
                                 className={headerButton}
                                 aria-label={view === 'days' ? 'الشهر التالي' : 'السنة التالية'}
                                 isDisabled={view === 'days' ? !canGoForward : Boolean(max) && year + 1 > Number(max.slice(0, 4))}
@@ -313,7 +313,7 @@ export default function DateInput({
                                     const current = shownMonth.slice(0, 7) === month;
 
                                     return (
-                                        <Button
+                                        <Button data-raw="" variant="ghost"
                                             key={month}
                                             isDisabled={blocked}
                                             onClick={() => {
@@ -333,7 +333,7 @@ export default function DateInput({
                         )}
 
                         <div className="mt-2 flex items-center justify-between gap-2 border-t border-gray-100 pt-2">
-                            <Button
+                            <Button data-raw="" variant="ghost"
                                 isDisabled={isOutOfRange(today, min, max)}
                                 onClick={() => pick(today)}
                                 className="rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 disabled:opacity-30"
@@ -341,7 +341,7 @@ export default function DateInput({
                                 اليوم
                             </Button>
                             {!required && hasValue && (
-                                <Button
+                                <Button data-raw="" variant="ghost"
                                     onClick={() => {
                                         onChange('');
                                         close();

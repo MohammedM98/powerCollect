@@ -77,7 +77,7 @@ export default function SubscriptionTariffSection({
                 <div className="flex items-center justify-between gap-2">
                     <InputLabel htmlFor="tariff_rate" value="سعر الكيلو" />
                     {canEditKilowattPrice && selectedTariff && !kilowattPriceUnlocked && (
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             onClick={() => setConfirmingKilowattPriceUnlock(true)}
                             className="text-[13px] font-semibold text-brand-600 hover:underline"
                         >
@@ -85,7 +85,7 @@ export default function SubscriptionTariffSection({
                         </Button>
                     )}
                     {kilowattPriceUnlocked && (
-                        <Button onClick={lockKilowattPrice} className="text-[13.5px] font-semibold text-gray-700 hover:underline">
+                        <Button data-raw="" variant="ghost" onClick={lockKilowattPrice} className="text-[13.5px] font-semibold text-gray-700 hover:underline">
                             إلغاء التعديل
                         </Button>
                     )}
@@ -156,7 +156,7 @@ export default function SubscriptionTariffSection({
                         <span className="text-red-500"> *</span>
                     </InputLabel>
                     {canEditMinimumCharge && !minimumChargeUnlocked && (
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             onClick={() => setConfirmingMinimumChargeUnlock(true)}
                             className="text-[13px] font-semibold text-brand-600 hover:underline"
                         >

@@ -91,7 +91,7 @@ export default function PermissionHero({
             </div>
 
             <div className="pm-hero-actions">
-                <Button className="pm-hero-button" onClick={() => setGuideAudience('selected')}>
+                <Button data-raw="" variant="ghost" className="pm-hero-button" onClick={() => setGuideAudience('selected')}>
                     <Icon name="document" className="h-4 w-4" />
                     دليل الموظف
                 </Button>
@@ -141,7 +141,7 @@ export default function PermissionHero({
                         </span>
                     )}
                     {deviations > 0 && (
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             onClick={() => setSelected([...template.permissionIds])}
                             isDisabled={processing}
                             className="ms-auto font-semibold underline-offset-4 hover:underline"

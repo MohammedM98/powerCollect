@@ -133,7 +133,7 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
                                     </td>
                                     {isWhatsApp && (
                                         <td className="text-end">
-                                            <Button
+                                            <Button data-raw="" variant="ghost"
                                                 onClick={() => openWhatsApp(message)}
                                                 aria-label={`${message.status === 'sent' ? 'فتح المحادثة مجددًا مع' : 'إرسال عبر واتساب إلى'} ${message.subscriptionName ?? message.phone}`}
                                                 title={message.status === 'sent' ? 'أُرسلت — افتح المحادثة مجددًا' : 'افتح واتساب والرسالة مكتوبة'}

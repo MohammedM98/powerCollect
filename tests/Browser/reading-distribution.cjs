@@ -46,19 +46,20 @@ const { readFileSync } = require('node:fs');
         await page.screenshot({ path: `${process.env.OUT_DIR}/distribution-summary-desktop.png` });
         await page.keyboard.press('Escape');
 
-        await page.getByRole('checkbox', { name: 'عرض منطقة المخيم', exact: true }).check();
+        // HeroUI tick boxes keep their input visually hidden, so the tests press them through their label (force).
+        await page.getByRole('checkbox', { name: 'عرض منطقة المخيم', exact: true }).check({ force: true });
         assert.equal(await page.getByRole('table', { name: 'توزيع الطبلونات حسب المنطقة' }).locator('tbody input').count(), 20);
         await openSummary();
         assert.match(await summary().getByText('إجمالي الطبلونات', { exact: true }).locator('..').innerText(), /100/);
         await page.keyboard.press('Escape');
-        await page.getByRole('checkbox', { name: 'عرض منطقة أبو ذر', exact: true }).check();
+        await page.getByRole('checkbox', { name: 'عرض منطقة أبو ذر', exact: true }).check({ force: true });
         await page.getByRole('button', { name: 'إجراء على المناطق المختارة (40)', exact: true }).click();
         assert.match(await actions().innerText(), /40 طبلون/);
         await actions().getByRole('button', { name: 'متابعة التحديد', exact: true }).click();
         assert.match(await page.getByRole('region', { name: 'الطبلونات المحددة', exact: true }).innerText(), /40 طبلون/);
         await page.getByRole('button', { name: 'توزيع المحدد (40)', exact: true }).click();
         await page.keyboard.press('Escape');
-        await page.getByRole('checkbox', { name: 'عرض منطقة أبو ذر', exact: true }).uncheck();
+        await page.getByRole('checkbox', { name: 'عرض منطقة أبو ذر', exact: true }).uncheck({ force: true });
         await page.getByRole('button', { name: 'توزيع المحدد (40)', exact: true }).click();
         assert.match(await actions().innerText(), /20 طبلون خارج النتائج الظاهرة/);
         await actions().getByRole('button', { name: 'إلغاء تحديد المخفي', exact: true }).click();
@@ -66,7 +67,7 @@ const { readFileSync } = require('node:fs');
         assert.doesNotMatch(await actions().innerText(), /خارج النتائج الظاهرة/);
         await actions().getByLabel('القارئ المكلّف', { exact: true }).selectOption(`reader:${fixture.readerId}`);
         assert.match(await actions().innerText(), /بعد الحفظ: 40 طبلون/);
-        await actions().getByRole('checkbox', { name: /حفظ هذا التوزيع للقراءات القادمة/ }).uncheck();
+        await actions().getByRole('checkbox', { name: /حفظ هذا التوزيع للقراءات القادمة/ }).uncheck({ force: true });
         await page.screenshot({ path: `${process.env.OUT_DIR}/distribution-action-desktop.png` });
 
         // A server validation failure must retain the selection and allow retry.
@@ -117,10 +118,10 @@ const { readFileSync } = require('node:fs');
         await openSummary();
         assert.match(await summary().getByRole('region', { name: 'ملخّص الكشوف الورقية', exact: true }).innerText(), /1 كشف منشأ: 0 مطبوع، 1 لم يُطبع/);
         await page.keyboard.press('Escape');
-        await page.getByRole('checkbox', { name: 'تحديد الطبلون 110301', exact: true }).check();
+        await page.getByRole('checkbox', { name: 'تحديد الطبلون 110301', exact: true }).check({ force: true });
         await page.getByRole('button', { name: 'توزيع المحدد (1)', exact: true }).click();
         await actions().getByRole('radio', { name: 'إلغاء التخصيص', exact: true }).check();
-        await actions().getByRole('checkbox', { name: /حفظ هذا التوزيع للقراءات القادمة/ }).uncheck();
+        await actions().getByRole('checkbox', { name: /حفظ هذا التوزيع للقراءات القادمة/ }).uncheck({ force: true });
         await actions().getByRole('button', { name: 'حفظ التوزيع', exact: true }).click();
         await actions().getByRole('button', { name: /أؤكد نقل الطبلونات التي نزّلها القارئ/ }).click();
         await summary().getByRole('button', { name: 'توزيع المتبقي (1)', exact: true }).click();

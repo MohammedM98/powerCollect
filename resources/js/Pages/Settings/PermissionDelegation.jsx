@@ -67,10 +67,10 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                             { value: 'off', label: 'لنفسه فقط' },
                         ]}
                     />
-                    <Button isDisabled={disabled || keyed === held.length} onClick={() => setAll(held, true)} className="pm-grant-button">
+                    <Button data-raw="" variant="ghost" isDisabled={disabled || keyed === held.length} onClick={() => setAll(held, true)} className="pm-grant-button">
                         منح الكل
                     </Button>
-                    <Button isDisabled={disabled || keyed === 0} onClick={() => onChange([])} className="pm-grant-button">
+                    <Button data-raw="" variant="ghost" isDisabled={disabled || keyed === 0} onClick={() => onChange([])} className="pm-grant-button">
                         لا شيء
                     </Button>
                 </div>

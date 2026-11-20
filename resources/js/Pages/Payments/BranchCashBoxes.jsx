@@ -53,7 +53,7 @@ function SummaryTile({ type, label, boxes, hint, active, onClick }) {
     const pending = expected - checked.reduce((sum, row) => sum + row.expected, 0);
 
     return (
-        <Button onClick={onClick} aria-pressed={active} className="gl-cb-tile gl-rc-tile" data-tone={BOX_TONES[type]}>
+        <Button data-raw="" variant="ghost" onClick={onClick} aria-pressed={active} className="gl-cb-tile gl-rc-tile" data-tone={BOX_TONES[type]}>
             <span className="gl-rc-tile-head">
                 <span className="gl-cb-tile-icon" aria-hidden="true"><Icon name={boxTypeStyles[type].icon} className="h-5 w-5" /></span>
                 <small>{label}</small>
@@ -170,7 +170,7 @@ export default function BranchCashBoxes({ branch, branches, branchScope = null, 
                     <FilterField group={{ label: 'الموظف', options: people.map(([id, name]) => ({ value: String(id), label: name })) }} value={person} onChange={(value) => setPerson(value ?? '')} icon="user" />
                     <FilterField group={{ label: 'الترتيب', options: sortOptions.map(([value, label]) => ({ value, label })) }} value={`${sort.key}:${sort.direction}`} onChange={(value) => { const [key, direction] = String(value).split(':'); setSort({ key, direction }); }} clearable={false} icon="sort" isDefault={sort.key === 'dates' && sort.direction === 'desc'} />
                     {place === 'closed' && <FilterField group={{ label: 'حالة التدقيق', options: [{ value: 'waiting', label: 'بانتظار التدقيق' }, { value: 'reviewed', label: 'تم التدقيق' }] }} value={auditState} onChange={(value) => setAuditState(value ?? '')} icon="check" />}
-                    {type && <Button onClick={() => setType('')} className="gl-filter-clear"><Icon name="close" className="h-3.5 w-3.5" />{boxTypes[type]}</Button>}
+                    {type && <Button data-raw="" variant="ghost" onClick={() => setType('')} className="gl-filter-clear"><Icon name="close" className="h-3.5 w-3.5" />{boxTypes[type]}</Button>}
                     <span className="flex-1" />
                     <div data-table-export-slot className="flex items-center empty:hidden" />
                     <SegmentedChoice label="طريقة العرض" value={view} onChange={setView} options={[{ value: 'table', label: <><Icon name="table" className="h-4 w-4" />جدول</> }, { value: 'cards', label: <><Icon name="grid" className="h-4 w-4" />بطاقات</> }]} />

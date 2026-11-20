@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import InputError from '@/Components/InputError';
@@ -56,9 +57,7 @@ export default function Login() {
 
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <label className="flex items-center gap-2.5 font-semibold">
-                        <input
-                            type="checkbox"
-                            className="h-[18px] w-[18px]"
+                        <CheckBox
                             checked={data.remember}
                             onChange={(e) => setData('remember', e.target.checked)}
                         />

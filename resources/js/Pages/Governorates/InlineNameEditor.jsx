@@ -75,14 +75,14 @@ export default function InlineNameEditor({ initialName = '', placeholder, reques
                     aria-invalid={Boolean(error)}
                     className="min-w-0 flex-1 border-0 bg-transparent px-1.5 py-1 text-sm font-semibold text-gray-900 focus:ring-0"
                 />
-                <Button
+                <Button data-raw="" variant="ghost"
                     onClick={save}
                     isDisabled={processing}
                     className="h-8 rounded-lg bg-gray-900 px-2.5 text-xs font-bold text-surface transition hover:bg-gray-800 disabled:opacity-60"
                 >
                     حفظ
                 </Button>
-                <Button
+                <Button data-raw="" variant="ghost"
                     onClick={onDone}
                     className="h-8 rounded-lg bg-gray-100 px-2.5 text-xs font-bold text-gray-700 transition hover:bg-gray-200"
                 >
@@ -93,7 +93,7 @@ export default function InlineNameEditor({ initialName = '', placeholder, reques
                 <div className="flex items-center gap-2 px-1.5 pt-1">
                     {error && <p className="text-xs text-brand-600">{error}</p>}
                     {onMore && (
-                        <Button onClick={onMore} className="ms-auto text-[13.5px] font-semibold text-gray-700 hover:text-brand-600">
+                        <Button data-raw="" variant="ghost" onClick={onMore} className="ms-auto text-[13.5px] font-semibold text-gray-700 hover:text-brand-600">
                             تعديل كامل…
                         </Button>
                     )}

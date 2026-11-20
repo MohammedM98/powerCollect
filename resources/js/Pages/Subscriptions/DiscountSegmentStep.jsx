@@ -23,7 +23,7 @@ export default function DiscountSegmentStep({ data, discountSegments, errors, se
                 {discountSegments.length > 0 && (
                     <div className="mt-2.5 flex flex-wrap gap-2">
                         {discountSegments.map((segment) => (
-                            <Button
+                            <Button data-raw="" variant="ghost"
                                 key={segment}
                                 aria-pressed={data.segment === segment}
                                 onClick={() => setData('segment', data.segment === segment ? '' : segment)}

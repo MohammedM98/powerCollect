@@ -15,7 +15,7 @@ export default function ThemeSegments({ className = '' }) {
     return (
         <div role="group" aria-label="المظهر" className={`tn-segments grid grid-cols-3 gap-1 rounded-xl bg-gray-100 p-1 ${className}`}>
             {OPTIONS.map(([value, icon, label]) => (
-                <Button key={value} aria-pressed={preference === value} onClick={() => changePreference(value)}>
+                <Button data-raw="" variant="ghost" key={value} aria-pressed={preference === value} onClick={() => changePreference(value)}>
                     <Icon name={icon} />
                     {label}
                 </Button>

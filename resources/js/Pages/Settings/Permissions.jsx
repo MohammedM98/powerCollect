@@ -208,11 +208,11 @@ export default function Permissions({
                 <div className="pm-toast" role="status">
                     <Icon name="check" className="h-5 w-5 shrink-0 text-emerald-400" strokeWidth={2.5} />
                     <span className="min-w-0 flex-1">حُفظت صلاحيات {lastSave.name}.</span>
-                    <Button onClick={undoLastSave} isDisabled={undoing} className="pm-toast-action">
+                    <Button data-raw="" variant="ghost" onClick={undoLastSave} isDisabled={undoing} className="pm-toast-action">
                         <Icon name="undo" className="h-4 w-4" />
                         {undoing ? 'جارٍ التراجع...' : 'تراجع عن الحفظ'}
                     </Button>
-                    <Button
+                    <Button data-raw="" variant="ghost"
                         onClick={() => setLastSave(null)}
                         aria-label="إخفاء"
                         className="rounded-lg p-1 text-white/70 hover:text-white"

@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Input } from '@heroui/react';
 import { BankReceivedDateField } from '@/Components/BankReceivedDate';
 import Icon from '@/Components/Icon';
@@ -104,9 +105,7 @@ export default function SplitTransferDetails({
                         . يمكنك المتابعة بعد التأكيد.
                     </p>
                     <label className="flex cursor-pointer items-center gap-2 font-semibold">
-                        <input
-                            type="checkbox"
-                            className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                        <CheckBox
                             checked={data.confirm_duplicate_reference}
                             onChange={(event) => setData('confirm_duplicate_reference', event.target.checked)}
                         />

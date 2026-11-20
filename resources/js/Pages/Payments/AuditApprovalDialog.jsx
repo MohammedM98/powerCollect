@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { useForm } from '@inertiajs/react';
 import DialogFrame from '@/Components/DialogFrame';
 import HoldToConfirm from '@/Components/HoldToConfirm';
@@ -29,7 +30,7 @@ export default function AuditApprovalDialog({ title, scope, summary, url, payloa
                 <li>اعتماد بقية الحوالات كمطابقة لكشف البنك.</li>
             </ul>
         </details>
-        <label className="flex cursor-pointer items-start gap-3 rounded-control border border-gray-200 p-4 text-base leading-8 text-gray-900"><input type="checkbox" checked={form.data.confirmed} onChange={(event) => form.setData('confirmed', event.target.checked)} disabled={form.processing} className="mt-2 h-5 w-5 shrink-0 rounded border-gray-300 text-brand-600" /><span>راجعت جميع الحوالات وسجّلت الفروق، والبقية مطابقة لكشف البنك.</span></label>
+        <label className="flex cursor-pointer items-start gap-3 rounded-control border border-gray-200 p-4 text-base leading-8 text-gray-900"><CheckBox checked={form.data.confirmed} onChange={(event) => form.setData('confirmed', event.target.checked)} disabled={form.processing} /><span>راجعت جميع الحوالات وسجّلت الفروق، والبقية مطابقة لكشف البنك.</span></label>
         <InputError message={form.errors.confirmed || form.errors.action || form.errors.snapshot || form.errors.box_ids || form.errors.week || form.errors.branch_id} />
         <HoldToConfirm count={summary.boxes} noun="الصناديق" tone="primary" icon="check" disabled={!form.data.confirmed || summary.boxes === 0} busy={form.processing} label="اضغط ٣ ثوانٍ لاعتماد التدقيق" confirmLabel="اعتماد التدقيق نهائيًا" onConfirm={() => form.post(url, { preserveScroll: true, onSuccess: onClose })} />
     </DialogFrame>;

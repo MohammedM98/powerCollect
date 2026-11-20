@@ -24,7 +24,7 @@ export default function NavigationMenu({ groups, badges, expanded, onExpandedCha
     const searchLabel = props.can?.recordPayments && props.can?.viewSubscriptions ? 'ابحث عن صفحة أو مشترك…' : 'ابحث عن صفحة أو أمر…';
 
     return <>
-        <Button onClick={onOpenPalette} className="tn-nav-search mb-3 flex h-12 w-full items-center gap-2.5 rounded-2xl border border-gray-200 bg-gray-50 px-3.5 text-[15px] text-gray-500" aria-label={compact ? searchLabel : undefined} title={compact ? searchLabel : undefined}>
+        <Button data-raw="" variant="ghost" onClick={onOpenPalette} className="tn-nav-search mb-3 flex h-12 w-full items-center gap-2.5 rounded-2xl border border-gray-200 bg-gray-50 px-3.5 text-[15px] text-gray-500" aria-label={compact ? searchLabel : undefined} title={compact ? searchLabel : undefined}>
             <Icon name="search" className="h-5 w-5 shrink-0" />
             <span className="tn-nav-label">{searchLabel}</span>
         </Button>
@@ -39,7 +39,7 @@ export default function NavigationMenu({ groups, badges, expanded, onExpandedCha
 
                 return (
                     <div key={group.id}>
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             className="tn-drawer-group"
                             aria-expanded={isOpen}
                             aria-label={compact ? group.label : undefined}
@@ -86,7 +86,7 @@ export function NavigationAccount({ compact = false }) {
                 </span>}
             </Link>
             <LogoutForm>
-                <Button type="submit" className="tn-tool" aria-label="تسجيل الخروج"><Icon name="logout" /></Button>
+                <Button data-raw="" variant="ghost" type="submit" className="tn-tool" aria-label="تسجيل الخروج"><Icon name="logout" /></Button>
             </LogoutForm>
         </div>
         {!compact && <ThemeSegments />}

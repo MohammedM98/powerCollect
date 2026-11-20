@@ -251,7 +251,7 @@ export function PermissionCompare({ employee, sections, selected, colleagues, co
             ) : (
                 <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="الموظف الذي تقارن به">
                     {colleagues.map((user) => (
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             key={user.id}
                             aria-pressed={user.id === otherId}
                             onClick={() => setOtherId(user.id === otherId ? null : user.id)}
@@ -288,7 +288,7 @@ export function PermissionCompare({ employee, sections, selected, colleagues, co
                         />
                     </div>
                     <div className="flex flex-wrap gap-2">
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             className="pm-soft-button"
                             isDisabled={disabled || result.onlyTheirs.length === 0}
                             onClick={() => onAddMissing(result.onlyTheirs.map((item) => item.id))}
@@ -296,7 +296,7 @@ export function PermissionCompare({ employee, sections, selected, colleagues, co
                             <Icon name="plus" className="h-4 w-4" />
                             أضف ما ينقصه ({result.onlyTheirs.length})
                         </Button>
-                        <Button
+                        <Button data-raw="" variant="ghost"
                             className="pm-soft-button"
                             isDisabled={disabled || (result.onlyTheirs.length === 0 && result.onlyMine.length === 0)}
                             onClick={() => onMatch(other)}

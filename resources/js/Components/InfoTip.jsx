@@ -75,7 +75,7 @@ export default function InfoTip({ children, label = 'معلومة', tone = 'info
 
     return (
         <>
-            <Button
+            <Button data-raw="" variant="ghost"
                 ref={buttonRef}
                 aria-label={label}
                 aria-describedby={id}

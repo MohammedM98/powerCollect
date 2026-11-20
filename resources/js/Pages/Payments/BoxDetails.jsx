@@ -122,7 +122,7 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
             </div>
             <FinancialBoxStatus box={editable ? box : { ...box, audit: box.audit ?? null }} />
             {box.canPrint !== false && <TableExportActions title="تقرير تفاصيل الصندوق" base={`/payments/cash-boxes/report?box=${box.id}`} />}
-            <Button onClick={onClose} aria-label="إغلاق النافذة" className="gl-ib"><Icon name="close" className="h-[18px] w-[18px]" /></Button>
+            <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق النافذة" className="gl-ib"><Icon name="close" className="h-[18px] w-[18px]" /></Button>
         </header>
 
         <div className="gl-bd-body">
@@ -201,7 +201,7 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
                                     <td className="whitespace-normal!"><Chip size="sm" className="gl-cb-chip" data-state={{ green: 'closed', red: 'bad', amber: 'waiting', blue: 'open' }[tone] ?? 'cancelled'}><i aria-hidden="true" />{label}</Chip></td>
                                     {bankAudit && <td className="whitespace-normal!">{entry.audit ? <div className="space-y-1"><StatusPill tone={entry.audit.outcome === 'missing' ? 'red' : entry.audit.outcome === 'matched' ? 'green' : 'amber'} label={{ matched: 'مطابقة', missing: 'غير موجودة', short: 'نقص في المبلغ', over: 'زيادة لصالح المشترك' }[entry.audit.outcome]} /><p className="text-xs font-semibold text-gray-600">{entry.audit.posted_at || entry.audit.adjustment_transaction_id ? 'معتمدة نهائيًا' : 'مسودة، لم تُرحّل ماليًا'}</p><p className="text-xs text-gray-600">المثبت: {formatMoney(entry.audit.bank_amount)} {ledger.currencyLabel}</p><p className="text-xs text-gray-500">{entry.audit.auditor?.name}، {dateTime(entry.audit.audited_at)}</p>{entry.audit.reason && <p className="text-xs text-gray-600">{entry.audit.reason}</p>}</div> : <StatusPill tone="gray" label={live ? 'تُطابق عند اعتماد الصندوق' : 'حركة غير سارية'} />}</td>}
                                     <td className="whitespace-normal!"><div className="flex flex-wrap items-center gap-1">
-                                        {bankAudit && (box.canReviewTransfers ?? box.canAudit) && live && !entry.audit?.posted_at && !entry.audit?.adjustment_transaction_id && <Button onClick={() => setAuditingEntry(entry)} className={auditEditButton}><Icon name="pencil" className="h-3.5 w-3.5" />تعديل الحوالة</Button>}
+                                        {bankAudit && (box.canReviewTransfers ?? box.canAudit) && live && !entry.audit?.posted_at && !entry.audit?.adjustment_transaction_id && <Button data-raw="" variant="ghost" onClick={() => setAuditingEntry(entry)} className={auditEditButton}><Icon name="pencil" className="h-3.5 w-3.5" />تعديل الحوالة</Button>}
                                         {box.canPrint !== false && entry.receipt_url && <a href={entry.receipt_url} target="_blank" rel="noopener noreferrer" className={`${rowButton} tone-print border`}><Icon name="printer" className="h-3.5 w-3.5" />السند</a>}
                                     </div></td>
                                 </tr>;

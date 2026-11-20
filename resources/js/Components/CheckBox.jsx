@@ -1,0 +1,30 @@
+import { Checkbox } from '@heroui/react';
+
+/**
+ * A tick box: HeroUI's Checkbox, taking a native checkbox's props so a page
+ * swaps one for the other unchanged. `onChange` gets an event-like object
+ * (`event.target.checked`, `value`, `name`), `disabled`, `name`, `value`,
+ * `id` and `aria-label` pass through, and `indeterminate` shows a page
+ * partly ticked. Its words are `children`; with none, the box sits inside
+ * the page's own label, which still names it.
+ */
+export default function CheckBox({ checked = false, onChange, disabled = false, indeterminate = false, name, value, id, className = '', children = null, ...props }) {
+    return (
+        <Checkbox
+            {...props}
+            id={id}
+            name={name}
+            value={value === undefined ? undefined : String(value)}
+            isSelected={Boolean(checked)}
+            isIndeterminate={indeterminate}
+            isDisabled={disabled}
+            onChange={(isSelected) => onChange?.({ target: { checked: isSelected, value, name }, currentTarget: { checked: isSelected, value, name } })}
+            className={`gl-check ${className}`}
+        >
+            <Checkbox.Content>
+                <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
+                {children}
+            </Checkbox.Content>
+        </Checkbox>
+    );
+}

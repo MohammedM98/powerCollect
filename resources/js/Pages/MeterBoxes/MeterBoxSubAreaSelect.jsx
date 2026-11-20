@@ -82,8 +82,8 @@ export default function MeterBoxSubAreaSelect({ id, value, onChange, onCreated, 
                 />
                 <InputError message={http.errors.name || http.errors.area_id || (failed ? 'تعذّر إضافة المنطقة. حاول مرة أخرى.' : null)} />
                 <div className="flex flex-wrap gap-2">
-                    <Button onClick={save} isDisabled={http.processing || !http.data.name.trim()} className="rounded-control bg-brand-500 px-3 py-2 text-xs font-bold text-white transition hover:bg-brand-600 disabled:opacity-50">{http.processing ? 'جارٍ الإضافة...' : 'إضافة واختيار المنطقة'}</Button>
-                    <Button onClick={() => setAdding(false)} isDisabled={http.processing} className="rounded-control px-3 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100">إلغاء</Button>
+                    <Button data-raw="" variant="ghost" onClick={save} isDisabled={http.processing || !http.data.name.trim()} className="rounded-control bg-brand-500 px-3 py-2 text-xs font-bold text-white transition hover:bg-brand-600 disabled:opacity-50">{http.processing ? 'جارٍ الإضافة...' : 'إضافة واختيار المنطقة'}</Button>
+                    <Button data-raw="" variant="ghost" onClick={() => setAdding(false)} isDisabled={http.processing} className="rounded-control px-3 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100">إلغاء</Button>
                 </div>
             </div>}
             {!adding && subAreas.some((item) => item.isNew && String(item.id) === String(value)) && <p role="status" className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600"><Icon name="check" className="h-3.5 w-3.5" />أُضيفت المنطقة واختيرت للطبلون.</p>}

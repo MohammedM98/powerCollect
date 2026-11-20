@@ -100,8 +100,8 @@ export function PeriodCard({ branches, branchScope, scopeLabel, filters, presets
                     />
                 </div>
                 <div className="order-1 flex items-center gap-1 sm:order-3">
-                    <Button aria-label="الفترة السابقة" isDisabled={!period?.previous} className={stepClass} onClick={() => period?.previous && visit({ ...period.previous, page: undefined })}><Icon name="chevron-right" className="h-4 w-4" /></Button>
-                    <Button aria-label="الفترة التالية" isDisabled={!period?.next} className={stepClass} onClick={() => period?.next && visit({ ...period.next, page: undefined })}><Icon name="chevron-left" className="h-4 w-4" /></Button>
+                    <Button data-raw="" variant="ghost" aria-label="الفترة السابقة" isDisabled={!period?.previous} className={stepClass} onClick={() => period?.previous && visit({ ...period.previous, page: undefined })}><Icon name="chevron-right" className="h-4 w-4" /></Button>
+                    <Button data-raw="" variant="ghost" aria-label="الفترة التالية" isDisabled={!period?.next} className={stepClass} onClick={() => period?.next && visit({ ...period.next, page: undefined })}><Icon name="chevron-left" className="h-4 w-4" /></Button>
                 </div>
             </div>
             {datesOpen && <div className="mt-3 flex flex-wrap items-end gap-3 border-t pt-3 border-(--gl-line)!">
@@ -109,7 +109,7 @@ export function PeriodCard({ branches, branchScope, scopeLabel, filters, presets
                     <label className="flex min-w-0 flex-1 flex-col gap-1.5 gl-label text-xs sm:flex-none"><span>من تاريخ</span><DateInput aria-label="من تاريخ" className="w-full sm:w-52" required value={filters.from} max={filters.to} onChange={(value) => value && visit({ from: value, page: undefined })} /></label>
                     <label className="flex min-w-0 flex-1 flex-col gap-1.5 gl-label text-xs sm:flex-none"><span>إلى تاريخ</span><DateInput aria-label="إلى تاريخ" className="w-full sm:w-52" required value={filters.to} min={filters.from} max={today} onChange={(value) => value && visit({ to: value, page: undefined })} /></label>
                 </div>
-                <Button className={stepClass} onClick={() => setDatesOpen(false)}>إغلاق<Icon name="close" className="h-4 w-4" /></Button>
+                <Button data-raw="" variant="ghost" className={stepClass} onClick={() => setDatesOpen(false)}>إغلاق<Icon name="close" className="h-4 w-4" /></Button>
             </div>}
         </section>
     );

@@ -100,7 +100,7 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
     return (
         <div ref={containerRef} className="relative">
             <input type="hidden" name={name} value={value} />
-            <Button
+            <Button data-raw="" variant="ghost"
                 id={id}
                 aria-controls={listboxId}
                 aria-expanded={open}

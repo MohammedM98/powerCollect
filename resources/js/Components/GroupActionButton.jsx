@@ -9,5 +9,5 @@ export const groupActionControlClass = 'gl-btn-part';
  * theme, so it is told apart from the screen's main action and from adding.
  */
 export default function GroupActionButton({ children, className = '', type = 'button', ...props }) {
-    return <Button type={type} {...props} className={`gl-btn gl-group ${className}`}>{children}</Button>;
+    return <Button data-raw="" variant="ghost" type={type} {...props} className={`gl-btn gl-group ${className}`}>{children}</Button>;
 }

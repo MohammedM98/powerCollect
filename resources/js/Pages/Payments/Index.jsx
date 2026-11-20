@@ -109,7 +109,7 @@ export default function Index({
                     actions={
                         canSplitPayments && (
                             // A split payment in its own colour, as every split is across the site (the redesign's money tones).
-                            <Button className="gl-act is-solid" data-tone="split" onClick={() => setSplitting({})}>
+                            <Button data-raw="" variant="ghost" className="gl-act is-solid" data-tone="split" onClick={() => setSplitting({})}>
                                 <Icon name="layers" className="h-4 w-4" />
                                 دفعة مقسّمة على عدة مشتركين
                             </Button>

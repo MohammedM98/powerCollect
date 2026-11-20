@@ -107,8 +107,8 @@ export default function Index({
                                     <td className="text-end">
                                         {(user.canUpdate || user.canDelete) && (
                                             <RowActionsMenu>
-                                                {user.canDelete && <Button type="submit" onClick={() => requestDelete(`/users/${user.id}`, user.name)}>حذف</Button>}
-                                                {user.canUpdate && <Button type="submit" onClick={() => setModalUser(user)}>تعديل</Button>}
+                                                {user.canDelete && <Button data-raw="" variant="ghost" type="submit" onClick={() => requestDelete(`/users/${user.id}`, user.name)}>حذف</Button>}
+                                                {user.canUpdate && <Button data-raw="" variant="ghost" type="submit" onClick={() => setModalUser(user)}>تعديل</Button>}
                                             </RowActionsMenu>
                                         )}
                                     </td>

@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { TextArea } from '@heroui/react';
 import { useEffect, useId, useState } from 'react';
 import DialogFrame from '@/Components/DialogFrame';
@@ -89,7 +90,7 @@ export default function LastReadingConfirmDialog({ editor, subscriptionName }) {
                         {Number(preview.removedCurrentAmount ?? 0) !== 0 && <li>يُلغى مبلغ الحالية السابق ({formatMoney(preview.removedCurrentAmount)} ₪) حتى إدخالها واعتمادها مجددًا.</li>}
                     </ul>
                 </details>}
-                {unusual && <label className="flex items-start gap-3 rounded-control border border-amber-300 p-4 text-base text-amber-800 dark:text-amber-300"><input type="checkbox" checked={confirmedUnusual} onChange={(event) => setConfirmedUnusual(event.target.checked)} className="mt-2 h-5 w-5 shrink-0 rounded border-gray-300 text-amber-600" />أؤكد صحة الاستهلاك رغم أنه أعلى من المعتاد.</label>}
+                {unusual && <label className="flex items-start gap-3 rounded-control border border-amber-300 p-4 text-base text-amber-800 dark:text-amber-300"><CheckBox checked={confirmedUnusual} onChange={(event) => setConfirmedUnusual(event.target.checked)} />أؤكد صحة الاستهلاك رغم أنه أعلى من المعتاد.</label>}
             </>}
             {editor.error && <div role="alert"><InputError message={editor.error} /></div>}
         </form>

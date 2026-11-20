@@ -81,7 +81,7 @@ export default function Index({ circuitBreakers, canCreate, filters, filterOptio
                                         {(circuitBreaker.canUpdate || circuitBreaker.canDelete) && (
                                             <RowActionsMenu>
                                                 {circuitBreaker.canDelete && (
-                                                    <Button type="submit"
+                                                    <Button data-raw="" variant="ghost" type="submit"
                                                         onClick={() =>
                                                             requestDelete(`/circuit-breakers/${circuitBreaker.id}`, `${circuitBreaker.ampere}A`)
                                                         }
@@ -90,7 +90,7 @@ export default function Index({ circuitBreakers, canCreate, filters, filterOptio
                                                     </Button>
                                                 )}
                                                 {circuitBreaker.canUpdate && (
-                                                    <Button type="submit" onClick={() => setModalCircuitBreaker(circuitBreaker)}>تعديل</Button>
+                                                    <Button data-raw="" variant="ghost" type="submit" onClick={() => setModalCircuitBreaker(circuitBreaker)}>تعديل</Button>
                                                 )}
                                             </RowActionsMenu>
                                         )}

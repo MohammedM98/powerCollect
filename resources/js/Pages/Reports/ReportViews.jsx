@@ -213,7 +213,7 @@ export function CollectionsView({ collections, comparison, days = [], onOpenDay 
                     <thead><tr><th>اليوم</th><th className="num">التحميلات</th><th className="num">الدفعات</th><th className="num">الخصومات</th><th className="num">الإلغاءات</th><th className="num">الرصيد الختامي</th></tr></thead>
                     <tbody>{shownDays.map((day) => (
                         <tr key={day.day} data-empty={day.lines === 0 || undefined}>
-                            <td><Button className="gl-rp-day" onClick={() => onOpenDay(day.day)}>{weekDayName(day.day)} {shortDate(day.day)}</Button></td>
+                            <td><Button data-raw="" variant="ghost" className="gl-rp-day" onClick={() => onOpenDay(day.day)}>{weekDayName(day.day)} {shortDate(day.day)}</Button></td>
                             <td className="num" data-tone="owe"><bdi dir="ltr">{reportMoney(day.charges)}</bdi></td>
                             <td className="num" data-tone="pay"><bdi dir="ltr">{reportMoney(day.payments)}</bdi></td>
                             <td className="num"><bdi dir="ltr">{reportMoney(day.discounts)}</bdi></td>

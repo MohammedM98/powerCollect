@@ -80,7 +80,7 @@ export default function QuickMessageRecipients({
 
                                 return (
                                     <li key={row.id}>
-                                        <Button
+                                        <Button data-raw="" variant="ghost"
                                             onClick={() => pick(row)}
                                             isDisabled={alreadyPicked}
                                             className={`flex w-full items-center gap-3 px-3 py-2.5 text-start text-sm transition hover:bg-gray-50 disabled:cursor-default disabled:opacity-60 ${FOCUS_RING}`}
@@ -122,7 +122,7 @@ export default function QuickMessageRecipients({
                                 key={subscriptionId}
                                 className={`flex items-center gap-3 px-3 py-2 text-sm ${previewRow?.id === subscriptionId ? 'bg-brand-500/5' : ''}`}
                             >
-                                <Button
+                                <Button data-raw="" variant="ghost"
                                     onClick={() => setPreviewId(subscriptionId)}
                                     isDisabled={Boolean(reason) || !person}
                                     title="معاينة رسالته"
@@ -147,7 +147,7 @@ export default function QuickMessageRecipients({
                                         {reason}
                                     </span>
                                 )}
-                                <Button
+                                <Button data-raw="" variant="ghost"
                                     onClick={() => unpick(subscriptionId)}
                                     aria-label={`إزالة ${person?.name ?? 'المشترك'}`}
                                     title="إزالة"

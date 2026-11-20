@@ -79,7 +79,7 @@ export default function ActivityBell({ open, onToggle, onClose }) {
 
     return (
         <>
-            <Button
+            <Button data-raw="" variant="ghost"
                 ref={anchorRef}
                 className="tn-tool"
                 data-tour="bell"
@@ -98,13 +98,13 @@ export default function ActivityBell({ open, onToggle, onClose }) {
                     <div className="flex items-center gap-2 px-4 pb-2 pt-4">
                         <b className="text-[16px]">الإشعارات</b>
                         {unreadCount > 0 && <span className="rounded-full bg-brand-500 px-2 text-[12px] font-bold leading-5 text-white">{unreadCount}</span>}
-                        <Button onClick={markAllRead} isDisabled={unreadCount === 0} className="ms-auto text-[13px] font-semibold text-gray-500 hover:text-gray-900 disabled:opacity-40">
+                        <Button data-raw="" variant="ghost" onClick={markAllRead} isDisabled={unreadCount === 0} className="ms-auto text-[13px] font-semibold text-gray-500 hover:text-gray-900 disabled:opacity-40">
                             تحديد الكل كمقروء
                         </Button>
                     </div>
                     <div className="tn-segments mx-4 mb-2 grid grid-cols-2 gap-1 rounded-xl bg-gray-100 p-1">
-                        <Button aria-pressed={tab === 'all'} onClick={() => setTab('all')}>الكل</Button>
-                        <Button aria-pressed={tab === 'unread'} onClick={() => setTab('unread')}>غير المقروءة{unreadCount > 0 ? ` (${unreadCount})` : ''}</Button>
+                        <Button data-raw="" variant="ghost" aria-pressed={tab === 'all'} onClick={() => setTab('all')}>الكل</Button>
+                        <Button data-raw="" variant="ghost" aria-pressed={tab === 'unread'} onClick={() => setTab('unread')}>غير المقروءة{unreadCount > 0 ? ` (${unreadCount})` : ''}</Button>
                     </div>
                     <div className="grid max-h-[360px] gap-0.5 overflow-y-auto px-2 pb-2">
                         {shown.length > 0 ? shown.map((item) => (

@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { useEffect, useRef, useState } from 'react';
 import { useForm, useHttp } from '@inertiajs/react';
 import ConfirmDialog from '@/Components/ConfirmDialog';
@@ -303,9 +304,7 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, onCancel 
                         <span>{errors.confirm_overpayment}</span>
                     </p>
                     <label className="mt-2 flex cursor-pointer items-center gap-2 font-semibold">
-                        <input
-                            type="checkbox"
-                            className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                        <CheckBox
                             checked={data.confirm_overpayment}
                             onChange={(event) => setData('confirm_overpayment', event.target.checked)}
                         />

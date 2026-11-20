@@ -39,7 +39,7 @@ export function CancellationNote({ cancellation, onJump }) {
             <Icon name={cancellation.wasCorrected ? 'repeat' : 'close'} className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-400" />
             <span>
                 {cancellation.wasCorrected ? (
-                    <Button onClick={() => onJump(cancellation.correctionId)} className="font-semibold text-amber-700 hover:underline">
+                    <Button data-raw="" variant="ghost" onClick={() => onJump(cancellation.correctionId)} className="font-semibold text-amber-700 hover:underline">
                         صُحّحت بالحركة #{cancellation.correctionLineNumber}
                     </Button>
                 ) : <b className="font-semibold text-gray-700">أُلغيت</b>}
@@ -59,7 +59,7 @@ export function CorrectsNote({ corrects, onJump }) {
     return (
         <p className="ledger-description mt-1.5 flex items-center gap-1.5 text-xs font-normal text-amber-700 dark:text-amber-400">
             <Icon name="repeat" className="h-3.5 w-3.5 shrink-0" />
-            <Button onClick={() => onJump(corrects.id)} className="font-semibold hover:underline">
+            <Button data-raw="" variant="ghost" onClick={() => onJump(corrects.id)} className="font-semibold hover:underline">
                 تصحيح للحركة #{corrects.lineNumber} ↑
             </Button>
         </p>
@@ -70,7 +70,7 @@ export function ReversalNote({ entry, reverses, onJump }) {
     return (
         <p className="ledger-description mt-1.5 flex items-center gap-1.5 text-xs font-normal text-blue-700">
             <Icon name="repeat" className="h-3.5 w-3.5 shrink-0" />
-            <Button onClick={() => onJump(reverses.id)} className="font-semibold hover:underline">
+            <Button data-raw="" variant="ghost" onClick={() => onJump(reverses.id)} className="font-semibold hover:underline">
                 {entry.type === 'refund' ? 'يُرجع الدفعة' : 'يُلغي الحركة'} #{reverses.lineNumber} ↑
             </Button>
         </p>
@@ -81,7 +81,7 @@ export function LinkedReversalNote({ reversal, onJump }) {
     return (
         <p className="ledger-description mt-1.5 flex items-center gap-1.5 text-xs font-normal text-blue-700 dark:text-blue-400">
             <Icon name="repeat" className="h-3.5 w-3.5 shrink-0" />
-            <Button onClick={() => onJump(reversal.id)} className="font-semibold hover:underline">
+            <Button data-raw="" variant="ghost" onClick={() => onJump(reversal.id)} className="font-semibold hover:underline">
                 {reversal.type === 'refund' ? 'أُرجعت بالحركة' : 'أُلغيت بالحركة'} #{reversal.lineNumber} ↓
             </Button>
         </p>
@@ -97,7 +97,7 @@ export function HistoryToggle({ entry, isOpen, onToggle }) {
 
     return (
         <p className="ledger-description mt-1.5 flex items-center gap-1.5 text-xs font-normal">
-            <Button
+            <Button data-raw="" variant="ghost"
                 onClick={onToggle}
                 aria-expanded={isOpen}
                 className="statement-screen-only inline-flex items-center gap-1.5 font-semibold text-amber-700 hover:underline dark:text-amber-400"
@@ -129,7 +129,7 @@ export function amendmentValue(value) {
 export function AmendmentBadge({ amendments }) {
     return (
         <span className="group/amend relative inline-flex">
-            <Button
+            <Button data-raw="" variant="ghost"
                 aria-label={`سجل تعديلات البيانات، ${amendments.length}`}
                 className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-blue-500/25 bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-600 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             >

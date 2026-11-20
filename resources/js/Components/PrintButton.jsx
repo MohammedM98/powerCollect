@@ -53,7 +53,7 @@ export default function PrintButton({ title, base, params = {}, selectedIds = []
     return <div className="flex flex-wrap items-center gap-2">
         <ExcelButton title={title} base={href} className={`${secondaryButtonClass} ${buttonClassName}`} />
         <a href={href} target="_blank" rel="noopener noreferrer" className={`${secondaryButtonClass} tone-print ${buttonClassName}`}><Icon name="printer" className="h-4 w-4" />طباعة وتخصيص</a>
-        {selectionPage && selectedIds.length > 0 && <Button className={`${secondaryButtonClass} ${buttonClassName}`} isDisabled={http.processing} onClick={printSelected}>طباعة المحدد ({selectedIds.length})</Button>}
+        {selectionPage && selectedIds.length > 0 && <Button data-raw="" variant="ghost" className={`${secondaryButtonClass} ${buttonClassName}`} isDisabled={http.processing} onClick={printSelected}>طباعة المحدد ({selectedIds.length})</Button>}
         {error && <p role="alert" className="text-xs text-red-600">{error}</p>}
     </div>;
 }

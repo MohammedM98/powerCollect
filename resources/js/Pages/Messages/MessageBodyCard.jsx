@@ -93,7 +93,7 @@ export default function MessageBodyCard({
             </p>
             <div role="group" aria-labelledby="placeholders-hint" className="mb-3 flex flex-wrap gap-1.5">
                 {placeholders[kind].map((name) => (
-                    <Button
+                    <Button data-raw="" variant="ghost"
                         key={name}
                         onClick={() => insertPlaceholder(name)}
                         aria-label={`أضف «${name.replaceAll('_', ' ')}» إلى نص الرسالة`}

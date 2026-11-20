@@ -122,7 +122,7 @@ export default function NavigationDrawer({ open, groups, badges, onClose, onOpen
                         <b dir="auto" className="block text-[16px]">{companyName}</b>
                         <small dir="auto" className="block text-[12.5px] text-gray-500">{user?.branchName ?? tagline}</small>
                     </span>
-                    <Button className="tn-tool" onClick={onClose} aria-label="إغلاق القائمة"><Icon name="close" /></Button>
+                    <Button data-raw="" variant="ghost" className="tn-tool" onClick={onClose} aria-label="إغلاق القائمة"><Icon name="close" /></Button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-3">

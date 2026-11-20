@@ -28,7 +28,7 @@ export default function DashboardActions({ actions }) {
                 );
 
                 return action.onClick ? (
-                    <Button key={action.href} className={className} data-tone={action.main ? 'pay' : undefined} onClick={action.onClick} aria-haspopup="dialog" title={action.subtitle}>
+                    <Button data-raw="" variant="ghost" key={action.href} className={className} data-tone={action.main ? 'pay' : undefined} onClick={action.onClick} aria-haspopup="dialog" title={action.subtitle}>
                         {content}
                     </Button>
                 ) : (

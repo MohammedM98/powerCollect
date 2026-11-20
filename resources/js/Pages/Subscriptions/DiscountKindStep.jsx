@@ -26,7 +26,7 @@ export default function DiscountKindStep({ changeKind, data, isStanding, setConf
                             {standingDiscount.grantedByName && `، أعطاه ${standingDiscount.grantedByName}`}. الخصم الجديد يحلّ محلّه.
                         </small>
                     </div>
-                    <Button
+                    <Button data-raw="" variant="ghost"
                         onClick={() => setConfirmingStop(true)}
                         isDisabled={stopping}
                         className="h-9 shrink-0 rounded-xl border border-gray-200 bg-surface px-3 text-[13.5px] font-bold text-brand-600 transition hover:bg-gray-50 disabled:opacity-50"

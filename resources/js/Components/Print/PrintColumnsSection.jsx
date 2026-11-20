@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import SecondaryButton from '@/Components/SecondaryButton';
@@ -55,13 +56,11 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                             className={`rounded-control border p-2.5 ${column.visible ? 'border-gray-200 bg-surface' : 'border-dashed border-gray-200 bg-gray-50'}`}
                         >
                             <div className="flex items-center gap-2">
-                                <input
-                                    type="checkbox"
+                                <CheckBox
                                     checked={column.visible}
                                     onChange={(e) => setColumn(index, { visible: e.target.checked })}
                                     aria-label={`طباعة عمود «${column.label}»`}
                                     title="إظهار العمود في الطباعة"
-                                    className="rounded border-gray-300 text-brand-600"
                                 />
                                 <Input
                                     type="text"
@@ -118,11 +117,9 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                         <span>0 تلقائي</span>
                                     </label>
                                     <label className="flex items-center gap-1.5 text-gray-600">
-                                        <input
-                                            type="checkbox"
+                                        <CheckBox
                                             checked={Boolean(column.blank)}
                                             onChange={(event) => setColumn(index, { blank: event.target.checked, total: false })}
-                                            className="rounded border-gray-300 text-brand-600"
                                         />
                                         خانة فارغة للكتابة
                                     </label>
@@ -161,11 +158,9 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                         </select>
                                     </label>
                                     <label className="flex items-center gap-1.5 text-gray-600">
-                                        <input
-                                            type="checkbox"
+                                        <CheckBox
                                             checked={column.total}
                                             onChange={(e) => setColumn(index, { total: e.target.checked })}
-                                            className="rounded border-gray-300 text-brand-600"
                                         />
                                         مجموع في الأسفل
                                     </label>

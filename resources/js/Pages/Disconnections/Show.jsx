@@ -1,3 +1,4 @@
+import CheckBox from '@/Components/CheckBox';
 import { Button } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -38,7 +39,7 @@ const PRINT_FIELDS = [
 
 function BarButton({ icon, label, onClick, className = '' }) {
     return (
-        <Button onClick={onClick} className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 ${FOCUS_RING} ${className}`}>
+        <Button data-raw="" variant="ghost" onClick={onClick} className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 ${FOCUS_RING} ${className}`}>
             <Icon name={icon} className="h-4 w-4" />
             {label}
         </Button>
@@ -173,7 +174,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
                     />
                     <div className="flex shrink-0 flex-wrap items-center gap-2">
                         {abilities.manageList && (
-                            <Button onClick={toggleClosed} className={secondaryButtonClass}>
+                            <Button data-raw="" variant="ghost" onClick={toggleClosed} className={secondaryButtonClass}>
                                 <Icon name={list.isClosed ? 'unlock' : 'lock'} className="h-4 w-4" />
                                 {list.isClosed ? 'إعادة فتح القائمة' : 'إغلاق القائمة'}
                             </Button>
@@ -198,7 +199,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
 
             <div className="mb-5 flex flex-wrap gap-2 text-xs">
                 {summary.reasons.map((reason) => (
-                    <Button key={reason.value} onClick={() => setFilter('reason', filterValues.reason === reason.value ? '' : reason.value)} aria-pressed={filterValues.reason === reason.value} className={`rounded-full border px-3 py-1 font-semibold ${filterValues.reason === reason.value ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                    <Button data-raw="" variant="ghost" key={reason.value} onClick={() => setFilter('reason', filterValues.reason === reason.value ? '' : reason.value)} aria-pressed={filterValues.reason === reason.value} className={`rounded-full border px-3 py-1 font-semibold ${filterValues.reason === reason.value ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
                         {reason.label} <b className="font-display">{formatNumber(reason.count)}</b>
                     </Button>
                 ))}
@@ -221,7 +222,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
             {canSelect && !allMatching && pageIds.length > 0 && pageSelectedCount === pageIds.length && items.total > pageIds.length && (
                 <div role="status" className="flex flex-wrap items-center justify-center gap-2 border-x border-gray-100 bg-brand-500/5 px-4 py-2.5 text-sm text-gray-700">
                     تم تحديد {pageIds.length.toLocaleString('en')} مشترك في هذه الصفحة.
-                    <Button onClick={() => setAllMatching(true)} className="rounded font-semibold text-brand-600 hover:underline">
+                    <Button data-raw="" variant="ghost" onClick={() => setAllMatching(true)} className="rounded font-semibold text-brand-600 hover:underline">
                         تحديد كل النتائج المطابقة ({items.total.toLocaleString('en')})
                     </Button>
                 </div>
@@ -233,7 +234,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
                         <tr>
                             {canSelect && (
                                 <th data-actions="" className="w-10">
-                                    <input ref={headerCheckbox} type="checkbox" checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)} onChange={togglePage} aria-label="تحديد كل مشتركي هذه الصفحة" className="rounded border-gray-300 text-brand-600" />
+                                    <CheckBox checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)} indeterminate={!allMatching && pageSelectedCount > 0 && pageSelectedCount < pageIds.length} onChange={togglePage} aria-label="تحديد كل مشتركي هذه الصفحة" />
                                 </th>
                             )}
                             <th>المشترك</th>
@@ -255,7 +256,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
                                 <tr key={item.id} className={allMatching || selectedIds.has(item.id) ? 'bg-brand-50' : undefined} {...printRowProps(Object.fromEntries(PRINT_FIELDS.map((field) => [field.key, item[field.key]])))}>
                                     {canSelect && (
                                         <td>
-                                            <input type="checkbox" checked={allMatching || selectedIds.has(item.id)} onChange={() => toggle(item.id)} aria-label={`تحديد ${item.name}`} className="rounded border-gray-300 text-brand-600" />
+                                            <CheckBox checked={allMatching || selectedIds.has(item.id)} onChange={() => toggle(item.id)} aria-label={`تحديد ${item.name}`} />
                                         </td>
                                     )}
                                     <td data-label="المشترك">
@@ -319,7 +320,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
                             {abilities.execute && <BarButton icon="power" label="تأكيد القطع" onClick={() => setAction('confirm')} className="bg-red-700/80 hover:bg-red-700" />}
                             {abilities.manage && <BarButton icon="undo" label="إزالة" onClick={() => setAction('remove')} />}
                         </div>
-                        <Button onClick={clearSelection} aria-label="إلغاء التحديد" className={`flex h-9 w-9 items-center justify-center rounded-control text-white/80 hover:bg-white/10 ${FOCUS_RING}`}>
+                        <Button data-raw="" variant="ghost" onClick={clearSelection} aria-label="إلغاء التحديد" className={`flex h-9 w-9 items-center justify-center rounded-control text-white/80 hover:bg-white/10 ${FOCUS_RING}`}>
                             <Icon name="close" className="h-5 w-5" />
                         </Button>
                     </div>
