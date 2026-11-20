@@ -45,6 +45,7 @@ class MessagePage
             'channels' => MessageChannel::options(),
             'smsDeliversMessages' => app(SmsGateway::class)->deliversMessages(),
             'templates' => MessageTemplate::query()->orderBy('name')->get(['id', 'name', 'kind', 'body']),
+            'canManageTemplates' => $actor->can('create', MessageTemplate::class),
             'placeholders' => collect(MessageKind::composable())
                 ->mapWithKeys(fn (MessageKind $kind) => [$kind->value => MessageComposer::placeholdersFor($kind)]),
             'weekOptions' => ReadingWeeks::recentWeekOptionsFor($actor),
