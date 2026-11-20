@@ -6,7 +6,9 @@ use App\Http\Middleware\HandleInertiaRequests;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Inertia\Testing\AssertableInertia;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class ErrorPagesTest extends TestCase
@@ -105,5 +107,43 @@ class ErrorPagesTest extends TestCase
         $this->actingAs(User::factory()->collector()->create())->getJson('/users')->assertForbidden()->assertJsonStructure(['message']);
         $this->getJson('/api/no-such-endpoint')->assertNotFound()->assertJsonStructure(['message']);
         $this->get('/api/no-such-endpoint')->assertNotFound()->assertHeader('Content-Type', 'application/json');
+    }
+
+    public function test_too_many_requests_shows_the_429_page_and_keeps_when_to_retry(): void
+    {
+        $user = User::factory()->create();
+        foreach (range(1, 6) as $try) {
+            $this->actingAs($user)->from(route('profile.edit'))->delete(route('profile.devices.destroy'), ['password' => 'wrong-password']);
+        }
+
+        $response = $this->actingAs($user)->from(route('profile.edit'))->delete(route('profile.devices.destroy'), ['password' => 'wrong-password']);
+
+        $response->assertTooManyRequests();
+        $response->assertHeader('Retry-After');
+        $response->assertInertia(fn (AssertableInertia $page) => $page->component('Error')->where('status', 429));
+    }
+
+    /**
+     * @return array<string, array{0: int, 1: callable(): never}>
+     */
+    public static function serverFailures(): array
+    {
+        return [
+            'an expired form' => [419, fn () => abort(419)],
+            'an unexpected error' => [500, fn () => throw new \RuntimeException('boom')],
+            'maintenance' => [503, fn () => abort(503)],
+        ];
+    }
+
+    #[DataProvider('serverFailures')]
+    public function test_a_server_failure_shows_the_arabic_error_page_when_debugging_is_off(int $status, callable $fail): void
+    {
+        config(['app.debug' => false]);
+        Route::middleware(['web', 'auth'])->post('/testing/fails', $fail);
+
+        $response = $this->actingAs(User::factory()->create())->post('/testing/fails');
+
+        $response->assertStatus($status);
+        $response->assertInertia(fn (AssertableInertia $page) => $page->component('Error')->where('status', $status)->has('auth.user'));
     }
 }
