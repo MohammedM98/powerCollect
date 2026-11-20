@@ -232,6 +232,36 @@ class PaymentPage
     }
 
     /**
+     * What the user collected on each of the last `$days` days, business
+     * time, oldest first: cash and transfers apart. Cancelled payments stay
+     * out.
+     *
+     * @return list<array{date: string, cash: string, transfers: string}>
+     */
+    public static function recentDays(User $actor, int $days = 7): array
+    {
+        $payments = SubscriptionTransaction::query()
+            ->where('type', SubscriptionTransaction::TYPE_PAYMENT)
+            ->whereNull('cancelled_at')
+            ->where('recorded_by', $actor->id)
+            ->where('created_at', '>=', DailySeries::startOfDay($days - 1))
+            ->get(['amount', 'payment_method', 'created_at'])
+            ->groupBy(fn (SubscriptionTransaction $payment): string => DailySeries::localDate($payment->created_at));
+        $sum = fn (Collection $lines): string => number_format($lines->sum(fn (SubscriptionTransaction $payment): float => -(float) $payment->amount), 2, '.', '');
+
+        return collect(range($days - 1, 0))->map(function (int $daysAgo) use ($payments, $sum): array {
+            $date = DailySeries::today()->subDays($daysAgo)->toDateString();
+            $lines = $payments->get($date, collect());
+
+            return [
+                'date' => $date,
+                'cash' => $sum($lines->filter(fn (SubscriptionTransaction $payment): bool => $payment->payment_method === PaymentMethod::Cash)),
+                'transfers' => $sum($lines->reject(fn (SubscriptionTransaction $payment): bool => $payment->payment_method === PaymentMethod::Cash)),
+            ];
+        })->all();
+    }
+
+    /**
      * What the user has collected in the current business day: the totals
      * (cancelled payments left out), and their latest payments.
      *

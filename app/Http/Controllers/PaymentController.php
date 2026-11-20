@@ -97,6 +97,7 @@ class PaymentController extends Controller
 
         return Inertia::render('Payments/Summary', [
             'today' => PaymentPage::todaysPayments($actor),
+            'recentDays' => PaymentPage::recentDays($actor),
             'cashBox' => $cashBox,
             'current' => $cashBox['current'],
             ...CashBoxPresenter::entryList($request, PaymentPage::ownOpenEntries($actor), fn (CashBox $box): string => route('payments.cash-boxes.show', $box)),

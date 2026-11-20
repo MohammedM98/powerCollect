@@ -19,6 +19,7 @@ import SplitPaymentBadge from '@/Pages/Payments/SplitPaymentBadge';
 import StatementModal from '@/Pages/Subscriptions/StatementModal';
 import './Ledger.css';
 import PageHeader from '@/Components/PageHeader';
+import MoneyFlow from '@/Components/Finance/MoneyFlow';
 import InfoTip from '@/Components/InfoTip';
 import DateInput from '@/Components/DateInput';
 
@@ -334,6 +335,7 @@ export default function Index({ entries, period, dateBasis = 'recorded', side, s
         >
             <Head title="السجل المالي" />
             {branchScope && <BranchFilterBanner scope={branchScope} eyebrow="يعرض السجل المالي لـ" group={branchFilter.branch} value={filterValues.branch_id} onChange={(value) => setFilter('branch_id', value)} />}
+            <MoneyFlow />
             <div className="ledger-page">
                 {!errors.from && !errors.to ? null : <p role="alert" className="err">{errors.from || errors.to}</p>}
                 <PeriodEquation totals={ledgerTotals} summary={summary} side={side} opening={openingBalance} />

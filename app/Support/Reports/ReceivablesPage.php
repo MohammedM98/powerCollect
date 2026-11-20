@@ -5,6 +5,7 @@ namespace App\Support\Reports;
 use App\Enums\SubscriptionStatus;
 use App\Models\Branch;
 use App\Models\Subscription;
+use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Queries\DataTableFilters;
 use Illuminate\Database\Eloquent\Builder;
@@ -129,6 +130,34 @@ class ReceivablesPage
                     'share' => $total > 0 ? (int) round($amount / $total * 100) : 0,
                 ];
             })->all(),
+        ];
+    }
+
+    /**
+     * How quickly the listed subscriptions pay, beside what they owe: the
+     * last 30 days' charges and payments (with the collection rate, paid as a
+     * share of charged), and days sales outstanding, what is owed now over
+     * the average day's charges across the last 90 days. Cancelled and
+     * reversed lines stay out. Null figures where there is nothing to divide.
+     *
+     * @param  Builder<Subscription>  $subscriptions
+     * @return array{charged30: float, collected30: float, collectionRate: ?int, dso: ?int}
+     */
+    public static function collection(Builder $subscriptions, int $outstandingCents): array
+    {
+        $lines = fn (int $days): Builder => SubscriptionTransaction::query()
+            ->whereIn('subscription_id', (clone $subscriptions)->select('subscriptions.id'))
+            ->where('created_at', '>=', DailySeries::startOfDay($days - 1));
+        $cents = fn (Builder $query): int => (int) round((float) $query->toBase()->selectRaw('coalesce(sum(abs(amount)), 0) as total')->value('total') * 100);
+        $charged30 = $cents($lines(30)->charges());
+        $collected30 = $cents($lines(30)->counted()->whereIn('type', [SubscriptionTransaction::TYPE_PAYMENT]));
+        $charged90 = $cents($lines(90)->charges());
+
+        return [
+            'charged30' => self::shekels($charged30),
+            'collected30' => self::shekels($collected30),
+            'collectionRate' => $charged30 > 0 ? (int) round($collected30 / $charged30 * 100) : null,
+            'dso' => $charged90 > 0 ? (int) round($outstandingCents / ($charged90 / 90)) : null,
         ];
     }
 
