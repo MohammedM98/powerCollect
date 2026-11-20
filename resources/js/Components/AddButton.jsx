@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 
 /** The add look (components.css `gl-add`): teal, so adding is told apart from the screen's main action. */
@@ -21,8 +22,8 @@ export default function AddButton({ href, onClick, children }) {
             {content}
         </Link>
     ) : (
-        <button type="button" onClick={onClick} className={addButtonClass}>
+        <Button onPress={onClick} className={addButtonClass}>
             {content}
-        </button>
+        </Button>
     );
 }

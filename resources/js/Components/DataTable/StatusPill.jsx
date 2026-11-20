@@ -1,6 +1,9 @@
+import { Chip } from '@heroui/react';
+
 /**
- * A status pill (components.css `gl-pill`): its label in the
- * status colour over a 15% tint of it, so it never reads by colour alone.
+ * A status as HeroUI's Chip (components.css `gl-pill`): its label in the
+ * status colour over a tint of it, with a dot, so it never reads by colour
+ * alone.
  */
 const TONES = {
     green: 'gl-ok',
@@ -12,8 +15,8 @@ const TONES = {
 
 export default function StatusPill({ tone = 'gray', label }) {
     return (
-        <span data-tone={tone} className={`ui-badge gl-pill ${TONES[tone] ?? ''}`}>
+        <Chip size="sm" variant="soft" data-tone={tone} className={`ui-badge gl-pill ${TONES[tone] ?? ''}`}>
             {label}
-        </span>
+        </Chip>
     );
 }
