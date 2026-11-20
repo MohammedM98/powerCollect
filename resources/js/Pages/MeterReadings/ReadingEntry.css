@@ -124,8 +124,6 @@
 /* Narrower sheets tighten their cells, so the last column stays in view. */
 @container (max-width: 1520px) { .re-table th, .re-table td { padding-inline: 7px; } }
 @container (max-width: 1400px) { .re-table th, .re-table td { padding-inline: 5px; } }
-@media (max-width: 1250px) { .re-rate, .re-min { display: none; } }
-@container (max-width: 1250px) { .re-table .re-rate, .re-table .re-min { display: none; } }
 @media (max-width: 760px) {
     .re-week { display: grid; width: 100%; border-radius: 22px; grid-template-columns: 34px minmax(0, 1fr) minmax(0, 1fr) 34px; }
     .re-week-field { width: 100%; }
@@ -136,10 +134,8 @@
     .re-week-range { grid-column: 1 / -1; grid-row: 2; }
     .re-actions { width: 100%; }
     .re-actions .re-week { flex: 1 1 auto; }
-    .re-kpis { grid-template-columns: 1fr; gap: 10px; }
     .re-tabs { width: 100%; }
     .re-tabs button { flex: 1; padding: 0 8px; gap: 5px; }
-    .re-hint { font-size: 13px; }
     .re-table-wrap { overflow: visible; padding: 8px; }
     .re-table tbody tr:last-child td { border-bottom: 0; }
     .re-table, .re-table tbody { display: block; }
@@ -155,7 +151,7 @@
     .re-input-cell { grid-column: 1 / -1; grid-row: 3; }
     .re-input-cell .re-input { width: 100%; }
     .re-by { grid-column: 1 / -1; grid-row: 4; padding-top: 8px !important; border-top: 1px solid var(--re-line2) !important; }
-    .re-table .re-diff, .re-table .re-rate, .re-table .re-fee, .re-table .re-min { display: none; }
+    .re-table .re-diff { display: none; }
     .re-last::before { content: 'القراءة السابقة: '; font: 13px var(--font-body, 'IBM Plex Sans Arabic'), sans-serif; }
     .re-table.has-last-edit .re-last { min-width: 0; text-align: start; }
     .re-table .re-last { text-align: start; }
@@ -267,3 +263,59 @@
     border-radius: 0;
     box-shadow: none;
 }
+
+/*
+ * The week in one strip (ReadingSummary): progress, what the week comes to,
+ * and the approve key, then the sheet with its status pills at its head.
+ */
+.reading-entry .re-summary { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) auto; align-items: center; gap: 12px 28px; margin-bottom: 14px; padding: 16px 20px; border-radius: 20px; background: var(--ma-panel); backdrop-filter: var(--ma-blur); -webkit-backdrop-filter: var(--ma-blur); box-shadow: var(--ma-depth); }
+.re-summary-count { display: flex; align-items: baseline; gap: 8px; margin: 0; }
+.re-summary-count b { font: 800 28px/1 var(--font-body, 'Zain'), sans-serif; color: var(--ma-ink); }
+.re-summary-count span { font-size: 14px; font-weight: 700; color: var(--ma-muted); }
+.re-summary-count em { margin-inline-start: auto; font-style: normal; font-weight: 800; color: var(--ma-ink); }
+.re-summary-bar { display: flex; height: 9px; margin: 10px 0 8px; border-radius: 99px; overflow: hidden; background: var(--ma-line); }
+.re-summary-bar i, .re-summary-legend i { background: var(--ma-faint); }
+.re-summary-bar i { height: 100%; transition: width .3s ease; }
+.reading-entry .re-summary i.approved { background: var(--ma-pay); }
+.reading-entry .re-summary i.pending { background: var(--ma-warn); }
+.re-summary-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0; font-size: 13px; color: var(--ma-muted); }
+.re-summary-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.re-summary-legend i { width: 8px; height: 8px; border-radius: 3px; }
+.re-summary-legend b { color: var(--ma-ink); }
+.re-summary-figure { display: grid; gap: 2px; padding-inline-start: 24px; border-inline-start: 1px solid var(--ma-line); }
+.re-summary-figure small { font-size: 12.5px; font-weight: 700; color: var(--ma-muted); }
+.re-summary-figure b { font: 800 26px/1.15 var(--font-body, 'Zain'), sans-serif; color: var(--ma-ink); }
+.re-summary-figure b span { font-size: 15px; color: var(--ma-muted); }
+.re-summary-approve { display: grid; justify-items: end; gap: 6px; text-align: end; }
+.re-summary-approve small { max-width: 240px; font-size: 12.5px; color: var(--ma-muted); }
+.reading-entry .re-approve-all, .reading-entry .re-approve-selected { height: 42px; padding: 0 18px; border: 0; border-radius: 13px; background: var(--ma-pay-btn); color: #fff; font-weight: 800; gap: 8px; box-shadow: var(--ma-depth); }
+.re-approve-all .re-count { min-width: 24px; height: 22px; padding: 0 7px; border-radius: 99px; background: rgb(255 255 255 / 0.2); display: inline-grid; place-items: center; font-size: 13px; }
+.re-summary-done { display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 8px 12px; border-radius: 12px; background: var(--ma-pay-s); color: var(--ma-pay); font-size: 13px; font-weight: 800; }
+@media (max-width: 900px) {
+    .reading-entry .re-summary { grid-template-columns: minmax(0, 1fr); }
+    .re-summary-figure { padding: 12px 0 0; border-inline-start: 0; border-top: 1px solid var(--ma-line); }
+    .re-summary-approve { justify-items: stretch; text-align: start; }
+}
+
+.re-sheet-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 14px 16px 0; }
+.re-select-page { display: inline-flex; align-items: center; gap: 8px; margin-inline-start: auto; font-size: 13.5px; font-weight: 700; color: var(--ma-muted); }
+.re-select-page input { width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid var(--ma-line); color: var(--ma-pay); }
+
+/* The pinned bar lines up with the sheet (its left and width come from the page), the status pills first. */
+.re-context { inset-inline: auto; padding-inline: 0; }
+.re-context-bar { max-width: none; border: 0; background: var(--ma-pop); backdrop-filter: blur(30px) saturate(1.4); -webkit-backdrop-filter: blur(30px) saturate(1.4); box-shadow: var(--ma-float); }
+.re-context-status { flex: none; }
+.re-context-status .re-tabs button { height: 32px; }
+@media (max-width: 1100px) { .re-context-status { order: 2; flex: 1 1 100%; } .re-context-status .re-tabs { width: 100%; } }
+
+/* Every save answers on its row: a quiet "saving", then a green "saved" that fades. */
+.re-saving, .re-saved { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 800; }
+.re-saving { color: var(--ma-muted); }
+.re-saving i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: re-spin .7s linear infinite; }
+.re-saved { padding: 4px 10px; border-radius: 99px; background: var(--ma-pay-s); color: var(--ma-pay); }
+.re-saved svg { width: 14px; height: 14px; }
+.reading-entry .re-row.is-just-saved td { animation: re-saved-flash 1.6s ease; }
+.reading-entry .re-row.is-just-saved .re-input { border-color: var(--ma-pay); }
+@keyframes re-spin { to { transform: rotate(360deg); } }
+@keyframes re-saved-flash { 0%, 35% { background: var(--ma-pay-s); } 100% { background: transparent; } }
+@media (prefers-reduced-motion: reduce) { .re-saving i, .reading-entry .re-row.is-just-saved td { animation: none; } }

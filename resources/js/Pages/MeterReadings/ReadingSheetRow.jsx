@@ -85,6 +85,8 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
     const [value, setValue] = useState(savedValue);
     const [error, setError] = useState(null);
     const [saving, setSaving] = useState(false);
+    // A moment of "saved" on the row after each save, so a fast entry still sees every reading land.
+    const [justSaved, setJustSaved] = useState(false);
     const inputRef = useRef(null);
     // Set when the arrows or Enter move on from the field: skipping a subscription that way is on purpose.
     const skippedByKey = useRef(false);
@@ -111,6 +113,16 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
         }
     }, [error, saving]);
 
+    useEffect(() => {
+        if (!justSaved) {
+            return undefined;
+        }
+
+        const timer = window.setTimeout(() => setJustSaved(false), 1600);
+
+        return () => window.clearTimeout(timer);
+    }, [justSaved]);
+
     const isDraft = value !== savedValue;
     const charges = !isDraft && row.reading && !row.reading.requiresReentry ? { ...row.reading, minimumApplies: Number(row.reading.readingFee) < Number(row.minimumPayment) && !row.discount } : calculateCharges(value, row);
     const belowMinimum = charges?.minimumApplies;
@@ -118,11 +130,16 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
     // Approved, but its bill was cancelled from the subscription's statement: it is not charged to them.
     const billCancelled = row.reading?.status === 'approved' && row.reading.billed === false;
     // What the amount due notes, on one line under it so the row keeps its height.
+    // The price the amount comes from sits under it, so the sheet needs no columns of its own for it.
     const dueNotes = [
         billCancelled && !isDraft && { text: 'لم تُحمَّل على المشترك' },
         charges?.discountAmount > 0 && charges.consumption >= 0 && { text: `بعد خصم ${formatCurrency(charges.discountAmount)}`, className: 'text-emerald-700 dark:text-emerald-400' },
-        belowMinimum && charges.consumption >= 0 && { text: 'الحد الأدنى' },
+        belowMinimum && charges.consumption >= 0 && { text: `الحد الأدنى ${formatShekels(row.minimumPayment)}` },
+        !belowMinimum && charges && charges.consumption >= 0 && { text: `${formatShekels(row.unitPrice)} للكيلو` },
     ].filter(Boolean);
+    const dueBreakdown = charges && charges.consumption >= 0
+        ? `${charges.consumption} كيلو × ${formatShekels(row.unitPrice)} = ${formatShekels(charges.readingFee)}، الحد الأدنى ${formatShekels(row.minimumPayment)}`
+        : undefined;
     // What hovering the field says: why it was refused, that it was left empty, or what was saved.
     const hoverText = error
         ?? (missed ? 'لم تُدخل قراءة هذا المشترك' : null)
@@ -155,7 +172,10 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
             async: true,
             onStart: () => setSaving(true),
             onFinish: () => setSaving(false),
-            onSuccess: () => setError(null),
+            onSuccess: () => {
+                setError(null);
+                setJustSaved(true);
+            },
             onError: (errors) => setError(Object.values(errors)[0] ?? 'تعذّر حفظ القراءة.'),
         };
 
@@ -168,7 +188,7 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
 
     return (
         <tr
-            className={`re-row ${selected ? 'is-selected' : ''} ${error ? 'has-error' : ''} ${isDraft ? 'is-draft' : ''} ${row.reading?.unusual ? 'is-unusual' : ''}`}
+            className={`re-row ${justSaved ? 'is-just-saved' : ''} ${selected ? 'is-selected' : ''} ${error ? 'has-error' : ''} ${isDraft ? 'is-draft' : ''} ${row.reading?.unusual ? 'is-unusual' : ''}`}
             {...printRowProps(Object.fromEntries(PRINT_FIELDS.map((field) => [field.key, row[field.key]])))}
         >
             <td className="re-sub">
@@ -259,14 +279,7 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
             <td className={`re-diff re-number ${charges && charges.consumption < 0 ? 'text-red-600' : 'text-brand-700'}`}>
                 {charges ? charges.consumption : '—'}
             </td>
-            <td className="re-rate re-number">{formatShekels(row.unitPrice)}</td>
-            <td className={`re-fee re-number ${belowMinimum ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
-                {charges ? formatShekels(charges.readingFee) : '—'}
-            </td>
-            <td className={`re-min re-number ${belowMinimum ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>
-                {formatShekels(row.minimumPayment)}
-            </td>
-            <td className={`re-due re-number ${billCancelled && !isDraft ? 'text-gray-400' : ''}`}>
+            <td className={`re-due re-number ${billCancelled && !isDraft ? 'text-gray-400' : ''}`} title={dueBreakdown}>
                 {charges && charges.consumption >= 0 ? <span className={billCancelled && !isDraft ? 'line-through' : ''}>{formatShekels(charges.amountDue)}</span> : '—'}
                 {dueNotes.length > 0 && (
                     <p className="re-line text-xs font-normal text-gray-500" title={dueNotes.map((note) => note.text).join('، ')}>
@@ -297,7 +310,9 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
                     icon="alert"
                 />
                 {saving ? (
-                    <span className="text-xs text-gray-500">جارٍ الحفظ...</span>
+                    <span className="re-saving" role="status"><i />جارٍ الحفظ</span>
+                ) : justSaved ? (
+                    <span className="re-saved" role="status"><Icon name="check" strokeWidth={2.4} />حُفظت</span>
                 ) : row.reading ? (
                     <div className="re-pills">
                         {approvable && row.canApprove && row.reading.status === 'pending' && !row.reading.requiresReentry ? <button type="button" className="re-pill pending re-pill-action" disabled={!isSaved || approving} onClick={() => onApprove(row.reading.id)} title={isSaved ? 'اضغط لمراجعة واعتماد هذه القراءة فقط' : 'احفظ تعديل القراءة أولًا'} aria-label={`اعتماد قراءة ${row.fullName}`}><i />بانتظار الاعتماد<Icon name="check" className="h-3.5 w-3.5" /></button> : <span className={`re-pill ${row.reading.status}`}><i />{row.reading.requiresReentry ? 'بانتظار إدخال الحالية' : row.reading.status === 'pending' ? 'بانتظار الاعتماد' : row.reading.statusLabel}</span>}
