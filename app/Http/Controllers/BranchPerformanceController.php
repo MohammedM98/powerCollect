@@ -31,6 +31,8 @@ class BranchPerformanceController extends Controller
         'revenue' => 'chargesTotal',
         'subscriptions' => 'activeSubscriptions',
         'activity' => 'weekEntries',
+        'collection' => 'collectionRate',
+        'debts' => 'owed',
     ];
 
     public const SPARKLINE_DAYS = 14;
@@ -57,9 +59,10 @@ class BranchPerformanceController extends Controller
         $branches = BranchPerformancePage::withFigures(Branch::query())->with(['governorate', 'area'])->orderBy('name')->get();
         $entries = BranchPerformancePage::entriesPerDay($branches->modelKeys(), self::SPARKLINE_DAYS);
 
+        $debts = BranchPerformancePage::debtsByBranch($branches->modelKeys());
         $summaries = $branches
-            ->map(fn (Branch $branch): array => BranchPerformancePage::branchSummary($branch, $entries[$branch->id] ?? []))
-            ->sortByDesc(self::SORTS[$sort])
+            ->map(fn (Branch $branch): array => [...BranchPerformancePage::branchSummary($branch, $entries[$branch->id] ?? []), ...$debts[$branch->id]])
+            ->sortByDesc(fn (array $branch): float => (float) ($branch[self::SORTS[$sort]] ?? -1))
             ->values()
             ->map(fn (array $branch, int $index): array => [...$branch, 'rank' => $index + 1]);
 
@@ -69,6 +72,9 @@ class BranchPerformanceController extends Controller
                 'branches' => $branches->count(),
                 'activeBranches' => $branches->where('is_active', true)->count(),
                 'chargesTotal' => Money::sum($summaries->pluck('chargesTotal')),
+                'collectedTotal' => Money::sum($summaries->pluck('collectedTotal')),
+                'owed' => Money::sum($summaries->pluck('owed')),
+                'older' => Money::sum($summaries->pluck('older')),
                 'subscriptions' => $summaries->sum('subscriptions'),
                 'activeSubscriptions' => $summaries->sum('activeSubscriptions'),
                 'weekEntries' => $summaries->sum('weekEntries'),

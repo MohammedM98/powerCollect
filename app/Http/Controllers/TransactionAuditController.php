@@ -70,6 +70,8 @@ class TransactionAuditController extends Controller
             'events' => $events,
             'period' => $period,
             'counts' => TransactionAuditPage::counts($inPeriod()),
+            // Across every change in the period, not only this page: what they moved and how many need a look.
+            'impactSummary' => fn () => TransactionAuditPage::impactSummary(TransactionAuditPage::rows($inPeriod()->get())),
             'today' => DailySeries::today()->toDateString(),
             'scopeLabel' => $actor->hasFinancialAuditAccess() ? ($actor->auditSettings()['scope'] === 'selected' ? 'الفروع المحددة للتدقيق' : 'كل الفروع') : ($actor->workBranch()?->name ?? '—'),
             'filters' => DataTableFilters::dataTableState($request, 'happened_at', 'desc', self::DEFAULT_PER_PAGE),

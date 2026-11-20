@@ -94,7 +94,32 @@ class TransactionAuditTest extends TestCase
                 ->where('events.data.3.notes', 'مكررة')
                 ->where('events.data.4.kind', 'amendment')
                 ->where('events.data.4.changes', [['label' => 'الملاحظات', 'from' => null, 'to' => 'دفعة أيلول']])
-                ->where('events.data.4.reason', 'توضيح'));
+                ->where('events.data.4.reason', 'توضيح')
+                // What each change moved the subscriber's balance by, and what it was before and after.
+                ->where('events.data.0.impact', '-5')
+                ->where('events.data.1.impact', '100')
+                ->where('events.data.2.impact', '5')
+                ->where('events.data.2.before', '10')
+                ->where('events.data.2.after', '15')
+                ->where('events.data.3.impact', '-30')
+                ->where('events.data.4.impact', '0')
+                ->where('events.data.0.sensitive', false)
+                ->where('impactSummary', ['net' => '70.00', 'users' => 2, 'sensitive' => 0, 'cancelled' => '140.00']));
+    }
+
+    public function test_a_change_to_a_line_in_a_received_box_is_marked_for_the_auditor(): void
+    {
+        $this->travelTo('2026-09-01 12:00:00');
+        $payment = RecordPayment::handle($this->subscription, $this->branchAdmin, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'cash']);
+        AmendLine::amend($payment, $this->branchAdmin, ['notes' => 'قبل الإغلاق'], 'توضيح');
+        $payment->boxEntry->box->update(['status' => 'received', 'closed_at' => now(), 'received_at' => now()]);
+        $this->travelTo('2026-09-20 12:00:00');
+
+        $this->actingAs($this->branchAdmin)->get(route('transaction-audit.index'))
+            ->assertInertia(fn ($page) => $page
+                ->where('events.data.0.sensitive', true)
+                ->where('events.data.0.sensitiveReason', 'على حركة من صندوق مستلم')
+                ->where('impactSummary.sensitive', 1));
     }
 
     public function test_the_log_filters_by_kind_and_by_who_made_the_change(): void

@@ -2,6 +2,7 @@
 
 namespace App\Support\Reports;
 
+use App\Enums\CashBoxType;
 use App\Models\Branch;
 use App\Models\CashBox;
 use App\Models\CashBoxPayment;
@@ -71,11 +72,14 @@ class ReportDetails
             });
         }
         $rows = $rows->sortByDesc(fn (array $row): int => Closing::cents($row['balance']))->values();
+        $owed = $rows->sum(fn (array $row): int => Closing::cents($row['balance']));
 
         return [
             'rows' => $rows, 'asOf' => $this->to->toDateString(), 'count' => $rows->count(), 'bucketLabels' => array_map(fn (string $label): string => __($label), DebtAging::BUCKET_LABELS),
             'total' => Closing::money($rows->sum(fn (array $row): int => Closing::cents($row['balance']))),
             'credit' => Closing::money($credit), 'creditCount' => $creditCount,
+            // How much of what is owed sits with the ten largest debtors.
+            'topTenShare' => $owed > 0 ? (int) round($rows->take(10)->sum(fn (array $row): int => Closing::cents($row['balance'])) / $owed * 100) : 0,
             'buckets' => collect(DebtAging::BUCKET_LABELS)->map(fn (string $label, string $key): array => ['key' => $key, 'label' => __($label), 'total' => Closing::money($rows->sum(fn (array $row): int => Closing::cents($row['buckets'][$key])))])->values(),
         ];
     }
@@ -107,7 +111,7 @@ class ReportDetails
                 foreach ($payments->groupBy('currency') as $currency => $entries) {
                     $rows->push([
                         'id' => $box->id.'-'.$currency, 'boxId' => $box->id, 'number' => $box->number, 'collector' => $box->user?->name,
-                        'branchName' => $branch->name, 'type' => __($box->type->label()), 'currency' => $currency, 'count' => $entries->count(),
+                        'branchName' => $branch->name, 'type' => __($box->type->label()), 'typeKey' => $box->type->value, 'currency' => $currency, 'count' => $entries->count(),
                         'amount' => Closing::money($entries->sum(fn (CashBoxPayment $entry): int => Closing::cents($entry->amount))),
                         'status' => $received ? __('Received box') : ($closed ? __('Closed') : __('Open')), 'openedAt' => DailySeries::localDate($box->opened_at),
                     ]);
@@ -115,9 +119,20 @@ class ReportDetails
             }
         }
 
+        $shekels = $rows->where('currency', 'ILS');
+
         return [
             'asOf' => $this->to->toDateString(),
             'rows' => $rows->values(),
+            // The shekel entries by type of box and where the box stands, for the report's pivot.
+            'byType' => collect(CashBoxType::cases())->map(fn (CashBoxType $type): array => [
+                'type' => $type->value, 'label' => __($type->label()),
+                'stages' => collect([__('Open'), __('Closed'), __('Received box')])->map(fn (string $status): array => [
+                    'status' => $status,
+                    'boxes' => $shekels->where('typeKey', $type->value)->where('status', $status)->unique('boxId')->count(),
+                    'amount' => Closing::money($shekels->where('typeKey', $type->value)->where('status', $status)->sum(fn (array $row): int => Closing::cents($row['amount']))),
+                ])->all(),
+            ])->all(),
             'byStatus' => collect([__('Open'), __('Closed'), __('Received box')])->map(fn (string $status): array => [
                 'status' => $status,
                 'boxes' => $rows->where('status', $status)->unique('boxId')->count(),
