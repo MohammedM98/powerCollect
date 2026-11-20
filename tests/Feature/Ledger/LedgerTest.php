@@ -375,6 +375,28 @@ class LedgerTest extends TestCase
      * A line on the subscription's account, recorded at `$at` (UTC; now when
      * null). Payments and discounts are negative, as the app stores them.
      */
+    public function test_the_period_opens_with_what_was_owed_before_it_and_a_later_page_carries_the_running_balance(): void
+    {
+        $this->line($this->subscription, 'meter_reading', '100.00', '2026-09-01 09:00:00');
+        $this->line($this->subscription, 'payment', '-30.00', '2026-09-02 09:00:00');
+        $this->line($this->subscription, 'payment', '-20.00', '2026-09-12 09:00:00');
+        foreach (range(1, 15) as $hour) {
+            $this->line($this->subscription, 'meter_reading', '1.00', sprintf('2026-09-15 %02d:00:00', $hour));
+        }
+
+        $period = ['period' => 'custom', 'from' => '2026-09-10', 'to' => '2026-09-20', 'per_page' => 15];
+        $this->actingAs($this->branchAdmin)->get(route('ledger.index', $period))
+            ->assertInertia(fn ($page) => $page->where('openingBalance', '70.00')->where('ledgerTotals.net', '-5.00')->where('newerNet', '0.00'));
+
+        // The second page starts after the fifteen newest lines.
+        $this->get(route('ledger.index', [...$period, 'page' => 2]))
+            ->assertInertia(fn ($page) => $page->where('newerNet', '15.00'));
+
+        // Sorted by amount, a running balance would mean nothing.
+        $this->get(route('ledger.index', [...$period, 'sort' => 'amount']))
+            ->assertInertia(fn ($page) => $page->where('newerNet', null));
+    }
+
     private function line(Subscription $subscription, string $type, string $amount, ?string $at = null, ?User $recordedBy = null): SubscriptionTransaction
     {
         return SubscriptionTransaction::factory()->for($subscription)->create([

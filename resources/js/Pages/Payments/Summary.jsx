@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Icon from '@/Components/Icon';
-import KpiTile from '@/Components/KpiTile';
+import { Card } from '@heroui/react';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { useDataTable } from '@/hooks/useDataTable';
 import { formatMoney } from '@/lib/format';
@@ -21,34 +21,67 @@ import OpenEntriesTable from './OpenEntriesTable';
 import PageHeader from '@/Components/PageHeader';
 import InfoTip from '@/Components/InfoTip';
 
-/** What the user collected today, in one wide card at the top of the page: the total, and how much in cash and by transfer. */
+/**
+ * What the user collected today, on the prototype's charcoal card: the
+ * total, then one bar split by how it came in (cash and transfers) with the
+ * amounts beside it.
+ */
 function TodaysSummary({ today }) {
+    const total = Number(today.total) || 0;
     const parts = [
-        { icon: 'banknotes', label: 'نقدًا', value: today.cash },
-        { icon: 'bank', label: 'تحويلات بنكية', value: today.transfers },
+        { key: 'cash', label: 'نقدًا', value: Number(today.cash), color: '#6dbf98' },
+        { key: 'transfers', label: 'تحويلات بنكية', value: Number(today.transfers), color: '#93b2d8' },
     ];
 
     return (
-        <section aria-label="ما حصّلته اليوم" className="mb-6">
-            <KpiTile hero label="ما حصّلته اليوم" value={formatMoney(today.total)} unit="₪" hint={`${today.count.toLocaleString('en')} ${today.count === 1 ? 'دفعة' : 'دفعات'}`}>
-                <dl className="mt-5 grid gap-3 border-t border-white/10 pt-4 sm:grid-cols-2">
-                    {parts.map((part) => (
-                        <div key={part.label} className="flex items-center gap-3">
-                            <dt className="flex items-center gap-3 text-sm text-white/70">
-                                <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white/80">
-                                    <Icon name={part.icon} className="h-[18px] w-[18px]" />
-                                </span>
-                                {part.label}
-                            </dt>
-                            <dd className="ms-auto flex items-baseline gap-1.5 sm:ms-0">
-                                <span className="font-display text-2xl font-bold">{formatMoney(part.value)}</span>
-                                <span className="text-xs text-white/60">₪</span>
-                            </dd>
-                        </div>
+        <Card aria-label="ما حصّلته اليوم" className="gl-today">
+            <small>ما حصّلته اليوم</small>
+            <b><bdi dir="ltr">{formatMoney(today.total)}</bdi> <span>₪</span></b>
+            <p>{today.count.toLocaleString('en')} {today.count === 1 ? 'دفعة' : 'دفعات'}</p>
+            <div className="gl-today-split" aria-hidden="true">
+                {total > 0 && parts.map((part) => part.value > 0 && <span key={part.key} style={{ width: `${(part.value / total) * 100}%`, background: part.color }} />)}
+            </div>
+            <dl className="gl-today-parts">
+                {parts.map((part) => (
+                    <div key={part.key}>
+                        <dt><i style={{ background: part.color }} aria-hidden="true" />{part.label}</dt>
+                        <dd><bdi dir="ltr">{formatMoney(part.value)}</bdi> ₪</dd>
+                    </div>
+                ))}
+            </dl>
+        </Card>
+    );
+}
+
+const dayName = (date) => new Intl.DateTimeFormat('ar', { weekday: 'long', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`));
+
+/** The user's last seven days of collection as columns, cash and transfers stacked, each day's total above it. */
+function RecentDays({ days }) {
+    const totals = days.map((day) => Number(day.cash) + Number(day.transfers));
+    const largest = Math.max(1, ...totals);
+
+    return (
+        <Card className="gl-week" aria-labelledby="recent-days-title">
+            <Card.Header className="gl-flow-head">
+                <span className="gl-set-ico" aria-hidden="true"><Icon name="chart" /></span>
+                <Card.Title id="recent-days-title" className="gl-set-title">تحصيلك في آخر 7 أيام</Card.Title>
+                <span className="gl-flow-week"><i className="gl-week-key" style={{ background: '#2d855c' }} />نقدًا <i className="gl-week-key" style={{ background: 'var(--ma-clr)' }} />تحويلات</span>
+            </Card.Header>
+            <Card.Content>
+                <ol className="gl-week-days">
+                    {days.map((day, index) => (
+                        <li key={day.date} aria-label={`${dayName(day.date)}: ${formatMoney(totals[index])} شيكل، منها نقدًا ${formatMoney(day.cash)}`}>
+                            <b><bdi dir="ltr">{formatMoney(totals[index])}</bdi></b>
+                            <span className="gl-week-col" style={{ height: `${Math.max(2, (totals[index] / largest) * 100)}%` }}>
+                                {Number(day.transfers) > 0 && <span style={{ flex: Number(day.transfers), background: 'var(--ma-clr)' }} />}
+                                {Number(day.cash) > 0 && <span style={{ flex: Number(day.cash), background: '#2d855c' }} />}
+                            </span>
+                            <small>{dayName(day.date)}</small>
+                        </li>
                     ))}
-                </dl>
-            </KpiTile>
-        </section>
+                </ol>
+            </Card.Content>
+        </Card>
     );
 }
 
@@ -104,7 +137,7 @@ function TodaysPayments({ today }) {
  * and narrowed to one type of box (a box's card picks its type), and their
  * latest payments today with receipts.
  */
-export default function Summary({ today, cashBox, current, entries, filters, counts, needsAction, pendingCount, collectionUrls }) {
+export default function Summary({ today, recentDays = [], cashBox, current, entries, filters, counts, needsAction, pendingCount, collectionUrls }) {
     const [selected, setSelected] = useState(null);
     const [saved, setSaved] = useState(null);
     const table = useDataTable(collectionUrls.summary, filters);
@@ -125,7 +158,10 @@ export default function Summary({ today, cashBox, current, entries, filters, cou
     return <AuthenticatedLayout badges={{ '/payments/summary': pendingCount }} header={<PageHeader eyebrow={cashBox.branchName ?? 'حسابك الحالي'} title="ملخص التحصيل" />}>
         <Head title="ملخص التحصيل" />
         {saved && <p role="status" className="mb-4 rounded-control bg-emerald-500/10 p-4 text-sm text-emerald-700">{saved}</p>}
-        <TodaysSummary today={today} />
+        <div className="gl-today-row">
+            <TodaysSummary today={today} />
+            {recentDays.length > 0 && <RecentDays days={recentDays} />}
+        </div>
         {cashBox.started ? <div className="space-y-8">
             {needsAction.length > 0 && <section className="space-y-3 rounded-panel border border-amber-500/25 bg-amber-500/5 p-5">
                 <h3 className="font-bold text-gray-900">تحتاج إجراء منك</h3>

@@ -375,6 +375,37 @@ class LedgerPage
     }
 
     /**
+     * What the listed subscribers owed when the period began: the same
+     * filters' charges less their credits before its start, nothing when the
+     * period has no start. The period's closing balance is this plus its net.
+     *
+     * @param  Builder<SubscriptionTransaction>  $ledger
+     */
+    public static function openingBalance(Builder $ledger, ?CarbonImmutable $from, string $dateBasis): string
+    {
+        return $from ? self::ledgerTotals(self::dateFiltered($ledger, null, $from, $dateBasis))['net'] : '0.00';
+    }
+
+    /**
+     * The net of the lines listed on the pages before this one, newest
+     * first, so the page can carry the running balance on from the closing
+     * balance. Null when the list is not in that order, where a running
+     * balance would mean nothing.
+     *
+     * @param  Builder<SubscriptionTransaction>  $sorted  the period's lines in the list's order
+     */
+    public static function newerNet(Builder $sorted, Request $request, int $offset, string $dateBasis): ?string
+    {
+        if ($dateBasis !== 'recorded' || self::sortedByAmount($request) || ($request->input('sort') !== null && $request->string('direction')->lower()->value() === 'asc')) {
+            return null;
+        }
+
+        return $offset > 0
+            ? self::ledgerTotals(SubscriptionTransaction::query()->whereIn('id', (clone $sorted)->limit($offset)->pluck('subscription_transactions.id')))['net']
+            : '0.00';
+    }
+
+    /**
      * @param  Builder<SubscriptionTransaction>  $lines
      */
     public static function export(Builder $lines): StreamedResponse

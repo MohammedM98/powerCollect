@@ -54,6 +54,7 @@ class ReceivableController extends Controller
                 );
             },
             'summary' => fn () => ReceivablesPage::summary($debtors()),
+            'collection' => fn () => ReceivablesPage::collection(ReceivablesPage::filteredSubscriptions($request, $actor), (int) $debtors()->sum('balance')),
             'buckets' => collect(DebtAging::BUCKET_LABELS)->map(fn (string $label, string $key): array => ['key' => $key, 'label' => __($label)])->values(),
             'today' => DailySeries::today()->toDateString(),
             'scopeLabel' => ReceivablesPage::scopeLabel($request, $actor),

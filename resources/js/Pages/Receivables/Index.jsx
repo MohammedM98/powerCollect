@@ -1,32 +1,25 @@
 import { Fragment, useState } from 'react';
 import { Head, usePage } from '@inertiajs/react';
+import { Card } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import { printFieldsProps, printRowProps } from '@/lib/print';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { BranchFilterBanner, splitBranchFilter } from '@/Components/BranchBanner';
-import MeterBar from '@/Components/Charts/MeterBar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import Pagination from '@/Components/DataTable/Pagination';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import SortableTh from '@/Components/DataTable/SortableTh';
-import KpiTile from '@/Components/KpiTile';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useRowClick } from '@/hooks/useRowClick';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
 import { formatMoney, formatNumber, formatShortDay } from '@/lib/format';
 import StatementModal from '@/Pages/Subscriptions/StatementModal';
 import PageHeader from '@/Components/PageHeader';
+import MoneyFlow from '@/Components/Finance/MoneyFlow';
 
 const STATUS_DOTS = { active: 'green', suspended: 'amber', disconnected: 'gray' };
 
-/** Each age bucket's amount color in the table: older debt reads more urgent. */
-const BUCKET_TONES = {
-    current: 'text-gray-900',
-    days_60: 'text-amber-700 dark:text-amber-400',
-    days_90: 'text-orange-700 dark:text-orange-400',
-    older: 'text-brand-600',
-};
 
 /** Each age bucket's column title: short, so the table fits beside the menu; the page says they are days. */
 const BUCKET_COLUMNS = { current: 'حتى 30', days_60: '31–60', days_90: '61–90', older: 'فوق 90' };
@@ -56,41 +49,59 @@ function daysAgo(days) {
     return days === 0 ? 'اليوم' : `منذ ${formatNumber(days)} يوم`;
 }
 
-/** The debt split by age: each bucket's amount, how many owe in it, and its share of the total. */
+const BUCKET_COLORS = { current: 'var(--ma-pay)', days_60: 'var(--ma-warn)', days_90: 'color-mix(in oklab, var(--ma-owe) 60%, var(--ma-warn))', older: 'var(--ma-owe)' };
+
+/**
+ * The debt split by age, as an aged-receivables report draws it: one bar
+ * cut by age from green (recent) to red (oldest), then each bucket's
+ * amount, share and how many owe in it, on HeroUI cards.
+ */
 function AgeBreakdown({ buckets, summary }) {
-    const max = Math.max(1, ...buckets.map((bucket) => summary.buckets[bucket.key].amount));
-
     return (
-        <section className="rise-in rounded-panel border border-gray-100 bg-surface p-6 shadow-card">
-            <div className="flex items-baseline justify-between gap-3">
-                <h3 className="text-lg font-bold text-gray-900">توزيع الديون حسب العمر</h3>
-                <span className="text-xs text-gray-500">الدفعات تسدّد أقدم الديون أولًا</span>
-            </div>
+        <Card className="gl-age">
+            <Card.Header className="gl-age-head">
+                <span className="gl-set-ico" aria-hidden="true"><Icon name="clock" /></span>
+                <Card.Title className="gl-set-title">توزيع المستحق حسب العمر</Card.Title>
+                <span className="gl-age-note">الدفعات تسدّد أقدم الديون أولًا</span>
+            </Card.Header>
+            <Card.Content>
+                {summary.count === 0 ? (
+                    <p className="gl-age-empty">لا توجد ديون مطابقة.</p>
+                ) : (
+                    <>
+                        <div className="gl-age-bar" role="img" aria-label={buckets.map((bucket) => `${bucket.label}: ${summary.buckets[bucket.key].share}%`).join('، ')}>
+                            {buckets.map((bucket) => summary.buckets[bucket.key].share > 0 && (
+                                <span key={bucket.key} style={{ width: `${summary.buckets[bucket.key].share}%`, background: BUCKET_COLORS[bucket.key] }} />
+                            ))}
+                        </div>
+                        <ul className="gl-age-legend">
+                            {buckets.map((bucket) => {
+                                const figures = summary.buckets[bucket.key];
 
-            {summary.count === 0 ? (
-                <p className="py-12 text-center text-sm text-gray-500">لا توجد ديون مطابقة.</p>
-            ) : (
-                <ul className="mt-4 grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
-                    {buckets.map((bucket) => {
-                        const figures = summary.buckets[bucket.key];
+                                return (
+                                    <li key={bucket.key}>
+                                        <small><i style={{ background: BUCKET_COLORS[bucket.key] }} aria-hidden="true" />{bucket.label}</small>
+                                        <b><bdi dir="ltr">{formatMoney(figures.amount)}</bdi> <span>₪</span></b>
+                                        <span>{figures.share}%، {formatNumber(figures.count)} مشترك</span>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </>
+                )}
+            </Card.Content>
+        </Card>
+    );
+}
 
-                        return (
-                            <li key={bucket.key}>
-                                <span className="flex items-baseline justify-between gap-3">
-                                    <span className="truncate font-semibold text-gray-900">{bucket.label}</span>
-                                    <span className="text-xs text-gray-500">{figures.share}%</span>
-                                </span>
-                                <span className="mt-1 block">
-                                    <Shekels amount={figures.amount} className={BUCKET_TONES[bucket.key]} />
-                                </span>
-                                <MeterBar value={figures.amount} max={max} className="mt-2" />
-                                <span className="mt-1 block text-xs text-gray-500">{formatNumber(figures.count)} مشترك</span>
-                            </li>
-                        );
-                    })}
-                </ul>
-            )}
-        </section>
+/** One of the aging figures on a HeroUI card; `dark` puts it on the prototype's charcoal. */
+function Figure({ label, value, unit = null, hint, tone = null, dark = false }) {
+    return (
+        <Card className="gl-age-fig" data-tone={tone ?? undefined} data-dark={dark || undefined}>
+            <small>{label}</small>
+            <b>{value === null ? '—' : <><bdi dir="ltr">{value}</bdi>{unit && <span> {unit}</span>}</>}</b>
+            <p>{hint}</p>
+        </Card>
     );
 }
 
@@ -100,7 +111,7 @@ function AgeBreakdown({ buckets, summary }) {
  * last payment of each. Every figure follows the search and the filters;
  * a row opens the subscription's statement over the page.
  */
-export default function Index({ debtors, summary, buckets, scopeLabel, branchScope, filters, filterOptions, statement }) {
+export default function Index({ debtors, summary, collection = null, buckets, scopeLabel, branchScope, filters, filterOptions, statement }) {
     const { can } = usePage().props;
     const { search, setSearch, sort, setPerPage, filterValues, setFilter, setFilters, clearFilters } = useDataTable('/receivables', filters);
     const rowClick = useRowClick();
@@ -135,26 +146,12 @@ export default function Index({ debtors, summary, buckets, scopeLabel, branchSco
             <Head title="أعمار الديون" />
             {branchScope && <BranchFilterBanner scope={branchScope} eyebrow="تعرض الآن ديون مشتركي" group={branchFilter.branch} value={filterValues.branch_id} onChange={(value) => setFilter('branch_id', value)} />}
 
-            <div className="grid gap-5 sm:grid-cols-3">
-                <KpiTile
-                    hero
-                    label="إجمالي الديون المستحقة"
-                    value={formatMoney(summary.total)}
-                    unit="₪"
-                    hint={`${formatNumber(summary.count)} مشترك مدين`}
-                />
-                <KpiTile
-                    label="أكثر من 90 يومًا"
-                    value={formatMoney(overdue.amount)}
-                    unit="₪"
-                    hint={`${overdue.share}% من الإجمالي، ${formatNumber(overdue.count)} مشترك`}
-                />
-                <KpiTile
-                    label="متوسط الدين"
-                    value={formatMoney(summary.average)}
-                    unit="₪"
-                    hint={`أكبر دين: ${formatMoney(summary.largest)} شيكل`}
-                />
+            <MoneyFlow />
+            <div className="gl-age-figs">
+                <Figure dark label="إجمالي المستحق" value={formatMoney(summary.total)} unit="₪" hint={`${formatNumber(summary.count)} مشترك مدين، متوسط ${formatMoney(summary.average)} ₪`} />
+                <Figure tone="pay" label="نسبة التحصيل، آخر 30 يومًا" value={collection?.collectionRate === null || !collection ? null : `${collection.collectionRate}%`} hint={collection ? `حُصّل ${formatMoney(collection.collected30)} من ${formatMoney(collection.charged30)} ₪ مُحمَّلة` : 'لا تحميل في الفترة'} />
+                <Figure label="متوسط أيام التحصيل (DSO)" value={collection?.dso ?? null} unit={collection?.dso !== null && collection ? 'يومًا' : null} hint="المستحق مقابل متوسط تحميل اليوم في 90 يومًا، كلما قلّ كان أفضل" />
+                <Figure tone="owe" label="أكثر من 90 يومًا" value={formatMoney(overdue.amount)} unit="₪" hint={`${overdue.share}% من المستحق، ${formatNumber(overdue.count)} مشترك`} />
             </div>
 
             <div className="mt-5">
@@ -224,7 +221,7 @@ export default function Index({ debtors, summary, buckets, scopeLabel, branchSco
                                         {buckets.map((bucket) => (
                                             <td key={bucket.key}>
                                                 {debtor.buckets[bucket.key] > 0 ? (
-                                                    <b className={`whitespace-nowrap font-display font-bold ${BUCKET_TONES[bucket.key]}`}>
+                                                    <b className="gl-age-heat" data-bucket={bucket.key}>
                                                         {formatMoney(debtor.buckets[bucket.key])}
                                                     </b>
                                                 ) : (

@@ -147,3 +147,42 @@ export function auditApprovalSummary(boxes) {
         credit: -differences.filter((amount) => amount < 0).reduce((sum, amount) => sum + amount, 0) / 100,
     };
 }
+
+/**
+ * A box's reconciliation, as an accountant reads it: what the system
+ * expects in shekels, what was confirmed (counted by the receiver for a cash
+ * box, matched against the bank by the audit for transfers and clearings),
+ * the difference, and the box's step on the way from open to approved:
+ * 0 open, 1 handed over, 2 counted or matched, 3 approved by the audit.
+ * `problem` marks a difference found on the way.
+ */
+export function boxReconciliation(box) {
+    const expected = Number(financialBoxTotals(box).ILS ?? 0);
+    const counted = box.type === 'cash' && box.head_counts ? Number(box.head_counts.ILS ?? 0) : null;
+    const audit = box.auditSummary ?? null;
+    const reviewed = audit && audit.total > 0 ? audit.reviewed : 0;
+    let confirmed = null;
+    let difference = null;
+
+    if (counted !== null) {
+        confirmed = counted;
+        difference = counted - Number(box.expected_counts?.ILS ?? expected);
+    } else if (reviewed > 0) {
+        confirmed = Number(audit.verified);
+        difference = Number(audit.difference);
+    }
+
+    const handedOver = box.status === 'received';
+    const checked = handedOver && (box.type === 'cash' ? counted !== null || Boolean(box.confirmed_at) : Boolean(audit && audit.total > 0 && reviewed === audit.total));
+    const step = box.audit ? 3 : checked ? 2 : handedOver ? 1 : 0;
+
+    return {
+        expected,
+        confirmed,
+        difference: difference === null ? null : Math.round(difference * 100) / 100,
+        reviewed,
+        toReview: audit?.total ?? 0,
+        step,
+        problem: difference !== null && Math.abs(difference) >= 0.005,
+    };
+}

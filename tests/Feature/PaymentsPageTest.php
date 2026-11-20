@@ -189,7 +189,10 @@ class PaymentsPageTest extends TestCase
                 ->has('today.payments', 2)
                 ->where('today.payments.1.id', $cash->id)
                 ->where('today.payments.1.amount', '100')
-                ->where('today.payments.0.bankName', 'بنك فلسطين'));
+                ->where('today.payments.0.bankName', 'بنك فلسطين')
+                ->has('recentDays', 7)
+                ->where('recentDays.6', ['date' => now(config('app.business_timezone'))->toDateString(), 'cash' => '100.00', 'transfers' => '250.50'])
+                ->where('recentDays.0.cash', '0.00'));
     }
 
     public function test_someone_who_may_only_record_payments_can_print_their_receipt(): void

@@ -227,6 +227,21 @@ class ReceivablesTest extends TestCase
         $this->assertSame($bucket, DebtAging::bucketFor($days));
     }
 
+    public function test_the_aging_shows_how_quickly_the_listed_debts_are_paid(): void
+    {
+        $this->line($this->subscription, 'meter_reading', '200.00', '2026-08-10 09:00:00');
+        $this->line($this->subscription, 'meter_reading', '300.00', '2026-09-10 09:00:00');
+        $this->line($this->subscription, 'payment', '-150.00', '2026-09-15 09:00:00');
+
+        // Owed 350; the last 30 days charged 300 and collected 150; 90 days charged 500, 5.56 a day.
+        $this->actingAs($this->branchAdmin)->get(route('receivables.index'))
+            ->assertInertia(fn ($page) => $page
+                ->where('collection.charged30', 300)
+                ->where('collection.collected30', 150)
+                ->where('collection.collectionRate', 50)
+                ->where('collection.dso', 63));
+    }
+
     private function line(Subscription $subscription, string $type, string $amount, ?string $at = null): SubscriptionTransaction
     {
         return SubscriptionTransaction::factory()->for($subscription)->create([

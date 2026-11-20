@@ -8381,3 +8381,744 @@ html:root[data-ui-background='graphite'] .pm-hero {
     background: var(--ma-solid);
     box-shadow: var(--ma-depth);
 }
+
+/*
+ * ═════ Finance (Components/Finance): the money flow and its kin ═════
+ * The flow strip: one glass card, four stages in a row on the soft tile,
+ * each with its tone mark, amount, line and a bar sized against the
+ * largest stage. A stage that needs action (money left in open boxes for
+ * days) sits on the warn tint.
+ */
+.gl-flow.card {
+    gap: 0;
+    padding: 18px 20px 20px;
+    border: 0;
+    border-radius: 22px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+    margin-bottom: 18px;
+}
+
+.gl-flow-head {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 0 0 14px;
+}
+
+.gl-flow-week {
+    margin-inline-start: auto;
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.gl-flow-stages {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    list-style: none;
+    border-radius: 18px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-flow-stage {
+    --t: var(--ma-muted);
+    display: grid;
+    align-content: start;
+    gap: 2px;
+    min-width: 0;
+    padding: 14px 16px;
+}
+
+.gl-flow-stage + .gl-flow-stage {
+    border-inline-start: 1px solid var(--ma-line);
+}
+
+.gl-flow-stage[data-tone='clr'] { --t: var(--ma-clr); }
+.gl-flow-stage[data-tone='warn'] { --t: var(--ma-warn); }
+.gl-flow-stage[data-tone='split'] { --t: var(--ma-split); }
+.gl-flow-stage[data-tone='pay'] { --t: var(--ma-pay); }
+
+.gl-flow-stage[data-alert] {
+    background: var(--ma-warn-s);
+}
+
+.gl-flow-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.gl-flow-label i {
+    width: 9px;
+    height: 9px;
+    flex: none;
+    border-radius: 3px;
+    background: var(--t);
+}
+
+.gl-flow-amount {
+    color: var(--ma-ink);
+    font: 900 26px/1.2 var(--font-body, 'Zain'), sans-serif;
+    font-variant-numeric: tabular-nums;
+}
+
+.gl-flow-amount small {
+    color: var(--ma-muted);
+    font-size: 14px;
+}
+
+.gl-flow-sub {
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.gl-flow-bar {
+    margin-top: 10px;
+}
+
+.gl-flow-bar .progress-bar__track {
+    height: 6px;
+    border-radius: 6px;
+    background: var(--ma-line);
+}
+
+.gl-flow-bar .progress-bar__fill {
+    border-radius: 6px;
+    background: var(--t);
+}
+
+@media (max-width: 980px) {
+    .gl-flow-stages {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .gl-flow-stage:nth-child(3) {
+        border-inline-start: 0;
+    }
+
+    .gl-flow-stage:nth-child(n + 3) {
+        border-top: 1px solid var(--ma-line);
+    }
+}
+
+@media (max-width: 520px) {
+    .gl-flow-stages {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .gl-flow-stage + .gl-flow-stage {
+        border-inline-start: 0;
+        border-top: 1px solid var(--ma-line);
+    }
+}
+
+/* The boxes table's reconciliation: the four-step track, the expected/confirmed/difference figures. */
+.gl-rc-steps {
+    --t: var(--ma-muted);
+    display: grid;
+    gap: 4px;
+}
+
+.gl-rc-steps[data-tone='warn'] { --t: var(--ma-warn); }
+.gl-rc-steps[data-tone='owe'] { --t: var(--ma-owe); }
+.gl-rc-steps[data-tone='pay'] { --t: var(--ma-pay); }
+
+.gl-rc-track {
+    display: inline-flex;
+    gap: 3px;
+}
+
+.gl-rc-track i {
+    width: 22px;
+    height: 6px;
+    border-radius: 4px;
+    background: var(--ma-line);
+}
+
+.gl-rc-track i[data-state='done'] { background: var(--ma-pay); }
+.gl-rc-track i[data-state='now'] { background: var(--t); }
+.gl-rc-track i[data-state='bad'] { background: var(--ma-owe); }
+
+.gl-rc-steps small {
+    color: var(--t);
+    font-size: 12.5px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.gl-rc-none {
+    color: var(--ma-faint);
+}
+
+.gl-rc-count {
+    display: block;
+    color: var(--ma-muted);
+    font-size: 12px;
+}
+
+.gl-rc-count b {
+    font-weight: 700;
+}
+
+.gl-cb-money[data-tone='pay'] { color: var(--ma-pay); }
+.gl-cb-money[data-tone='owe'] { color: var(--ma-owe); }
+.gl-cb-money[data-tone='warn'] { color: var(--ma-warn); }
+
+.gl-rc-chip.chip {
+    display: flex;
+    width: fit-content;
+    margin-top: 4px;
+    font-weight: 800;
+}
+
+.gl-rc-chip.chip[data-tone='pay'] { background: var(--ma-pay-s); color: var(--ma-pay); }
+.gl-rc-chip.chip[data-tone='warn'] { background: var(--ma-warn-s); color: var(--ma-warn); }
+
+/* A box type's tile: its head, then expected, confirmed and the difference side by side. */
+.gl-rc-tile {
+    display: grid !important;
+    gap: 12px;
+    text-align: start;
+}
+
+.gl-rc-tile-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gl-rc-tile-head small {
+    color: var(--ma-ink);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.gl-rc-tile-count {
+    margin-inline-start: auto;
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.gl-rc-terms {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.gl-rc-terms > span {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+    padding: 9px 11px;
+    border-radius: 13px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-rc-terms small {
+    color: var(--ma-muted);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.gl-rc-terms b {
+    color: var(--ma-ink);
+    font: 900 18px/1.25 var(--font-body, 'Zain'), sans-serif;
+    font-variant-numeric: tabular-nums;
+}
+
+.gl-rc-terms b[data-tone='pay'] { color: var(--ma-pay); }
+.gl-rc-terms b[data-tone='owe'] { color: var(--ma-owe); }
+.gl-rc-terms b[data-tone='warn'] { color: var(--ma-warn); }
+
+/* The reconciliation tile overrides the plain tile's two-column grid. */
+.gl-cb-tile.gl-rc-tile {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    align-items: stretch;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-rc-tile .gl-cb-tile-icon {
+    grid-row: auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+}
+
+.gl-cb-tile.gl-rc-tile > span:last-child {
+    color: inherit;
+    font-size: inherit;
+}
+
+.gl-cb-tile.gl-rc-tile[aria-pressed='true'] {
+    box-shadow: 0 0 0 2px var(--ma-brand), var(--ma-depth);
+}
+
+/* The ledger's period equation: four HeroUI cards with the operators between, the closing one on charcoal. */
+.gl-eq {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.gl-eq-term.card {
+    --t: var(--ma-muted);
+    flex: 1 1 180px;
+    gap: 2px;
+    padding: 14px 16px;
+    border: 0;
+    border-radius: 18px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+}
+
+.gl-eq-term[data-tone='owe'] { --t: var(--ma-owe); }
+.gl-eq-term[data-tone='pay'] { --t: var(--ma-pay); }
+
+.gl-eq-term small {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.gl-eq-term small i {
+    width: 8px;
+    height: 8px;
+    border-radius: 3px;
+    background: var(--t);
+}
+
+.gl-eq-term b {
+    color: var(--t);
+    font: 900 26px/1.2 var(--font-body, 'Zain'), sans-serif;
+    font-variant-numeric: tabular-nums;
+}
+
+.gl-eq-term:not([data-tone]) b {
+    color: var(--ma-ink);
+}
+
+.gl-eq-term b span {
+    color: var(--ma-muted);
+    font-size: 14px;
+}
+
+.gl-eq-term p {
+    margin: 0;
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.gl-eq-term.is-total.card {
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(120% 140% at 100% 0%, #3a3f49 0%, #22252c 55%, #191b20 100%);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 18px 40px -20px rgb(10 12 16 / 0.7);
+}
+
+.gl-eq-term.is-total small,
+.gl-eq-term.is-total p,
+.gl-eq-term.is-total b span {
+    color: rgb(255 255 255 / 0.72);
+}
+
+.gl-eq-term.is-total b {
+    color: #fff;
+}
+
+.gl-eq-op {
+    display: grid;
+    place-items: center;
+    color: var(--ma-muted);
+    font: 900 24px var(--font-body, 'Zain'), sans-serif;
+}
+
+.gl-eq-chg {
+    margin-inline-start: auto;
+    padding: 1px 7px;
+    border-radius: 99px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    font-size: 11.5px;
+}
+
+.ledger-table .am-none {
+    color: var(--ma-faint);
+}
+
+@media (max-width: 760px) {
+    .gl-eq-op {
+        display: none;
+    }
+}
+
+/* Aged receivables: four figures, the age bar on a glass card, and each debt's age cell tinted by its age. */
+.gl-age-figs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 980px) {
+    .gl-age-figs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.gl-age-fig.card {
+    --t: var(--ma-ink);
+    gap: 2px;
+    padding: 16px 18px;
+    border: 0;
+    border-radius: 20px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+}
+
+.gl-age-fig[data-tone='pay'] { --t: var(--ma-pay); }
+.gl-age-fig[data-tone='owe'] { --t: var(--ma-owe); }
+
+.gl-age-fig small {
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.gl-age-fig b {
+    color: var(--t);
+    font: 900 28px/1.2 var(--font-body, 'Zain'), sans-serif;
+    font-variant-numeric: tabular-nums;
+}
+
+.gl-age-fig b span {
+    color: var(--ma-muted);
+    font-size: 14px;
+}
+
+.gl-age-fig p {
+    margin: 0;
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.gl-age-fig.card[data-dark] {
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(120% 140% at 100% 0%, #3a3f49 0%, #22252c 55%, #191b20 100%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 18px 40px -20px rgb(10 12 16 / 0.7);
+}
+
+.gl-age-fig[data-dark] b { color: #fff; }
+
+.gl-age-fig[data-dark] :is(small, p, b span) { color: rgb(255 255 255 / 0.72); }
+
+.gl-age.card {
+    gap: 0;
+    padding: 18px 20px 20px;
+    border: 0;
+    border-radius: 22px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+}
+
+.gl-age-head {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 0 0 12px;
+}
+
+.gl-age-note {
+    margin-inline-start: auto;
+    color: var(--ma-muted);
+    font-size: 13px;
+}
+
+.gl-age-empty {
+    padding: 28px 0;
+    color: var(--ma-muted);
+    text-align: center;
+}
+
+.gl-age-bar {
+    display: flex;
+    height: 16px;
+    overflow: hidden;
+    border-radius: 9px;
+    background: var(--ma-line);
+}
+
+.gl-age-legend {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+@media (max-width: 760px) {
+    .gl-age-legend {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.gl-age-legend li {
+    display: grid;
+    gap: 1px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-age-legend small {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ma-muted);
+    font-size: 12.5px;
+    font-weight: 800;
+}
+
+.gl-age-legend small i {
+    width: 9px;
+    height: 9px;
+    border-radius: 3px;
+}
+
+.gl-age-legend b {
+    color: var(--ma-ink);
+    font: 900 20px/1.25 var(--font-body, 'Zain'), sans-serif;
+}
+
+.gl-age-legend b span,
+.gl-age-legend li > span {
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.gl-age-heat {
+    display: inline-block;
+    min-width: 58px;
+    padding: 3px 9px;
+    border-radius: 9px;
+    font-weight: 800;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.gl-age-heat[data-bucket='current'] { background: var(--ma-pay-s); color: var(--ma-pay); }
+.gl-age-heat[data-bucket='days_60'] { background: var(--ma-warn-s); color: var(--ma-warn); }
+.gl-age-heat[data-bucket='days_90'] { background: var(--ma-owe-s); color: var(--ma-owe); }
+.gl-age-heat[data-bucket='older'] { background: var(--ma-owe); color: #fff; }
+
+/* The collector's day: today on the charcoal card beside the last seven days' columns. */
+.gl-today-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 980px) {
+    .gl-today-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.gl-today.card {
+    position: relative;
+    gap: 2px;
+    overflow: hidden;
+    padding: 20px 22px;
+    border: 0;
+    border-radius: 22px;
+    background: radial-gradient(120% 140% at 100% 0%, #3a3f49 0%, #22252c 55%, #191b20 100%);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 18px 40px -20px rgb(10 12 16 / 0.7);
+}
+
+.gl-today.card::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: -40px;
+    bottom: -80px;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(226 100 42 / 0.26), transparent 70%);
+    pointer-events: none;
+}
+
+.gl-today > * {
+    position: relative;
+    z-index: 1;
+}
+
+.gl-today small,
+.gl-today p {
+    color: rgb(255 255 255 / 0.72);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.gl-today p {
+    margin: 0;
+}
+
+.gl-today > b {
+    font: 900 42px/1.1 var(--font-body, 'Zain'), sans-serif;
+    font-variant-numeric: tabular-nums;
+}
+
+.gl-today > b span {
+    color: rgb(255 255 255 / 0.7);
+    font-size: 16px;
+}
+
+.gl-today-split {
+    display: flex;
+    height: 10px;
+    margin-top: 16px;
+    overflow: hidden;
+    border-radius: 6px;
+    background: rgb(255 255 255 / 0.12);
+}
+
+.gl-today-parts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    margin: 10px 0 0;
+}
+
+.gl-today-parts div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gl-today-parts dt {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgb(255 255 255 / 0.72);
+    font-size: 13px;
+}
+
+.gl-today-parts dt i {
+    width: 9px;
+    height: 9px;
+    border-radius: 3px;
+}
+
+.gl-today-parts dd {
+    margin: 0;
+    font-weight: 800;
+}
+
+.gl-week.card {
+    gap: 0;
+    padding: 18px 20px;
+    border: 0;
+    border-radius: 22px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+}
+
+.gl-week-key {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin-inline: 8px 4px;
+    border-radius: 3px;
+    vertical-align: middle;
+}
+
+.gl-week-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    align-items: end;
+    gap: 10px;
+    height: 170px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.gl-week-days li {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    height: 100%;
+    min-width: 0;
+}
+
+.gl-week-days b {
+    color: var(--ma-ink);
+    font-size: 12.5px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.gl-week-col {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 42px;
+    min-height: 3px;
+    overflow: hidden;
+    border-radius: 10px 10px 4px 4px;
+    background: var(--ma-line);
+}
+
+.gl-week-days small {
+    overflow: hidden;
+    max-width: 100%;
+    color: var(--ma-muted);
+    font-size: 12px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

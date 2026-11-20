@@ -45,6 +45,7 @@
 @import '@heroui/styles/components/popover.css' layer(components);
 @import '@heroui/styles/components/input-group.css' layer(components);
 @import '@heroui/styles/components/alert.css' layer(components);
+@import '@heroui/styles/components/progress-bar.css' layer(components);
 @import './heroui.css';
 
 @plugin '@tailwindcss/forms';
