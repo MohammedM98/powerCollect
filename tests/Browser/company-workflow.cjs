@@ -212,7 +212,7 @@ async function grant(page, person, labels) {
     await page.getByRole('region', { name: `صلاحيات ${person}` }).waitFor();
     await page.getByRole('button', { name: 'فتح الكل' }).click();
     for (const label of labels) {
-        const control = page.locator(`[role=checkbox][aria-label="${label}"], [role=switch][aria-label="${label}"]`).first();
+        const control = page.locator(`[role=checkbox][aria-label="${label}"], [role=switch][aria-label="${label}"], input[type=checkbox][aria-label="${label}"]`).first();
         // HeroUI's switch is a visually hidden input read by `checked`; the grid's own checks carry aria-checked.
         const isInput = await control.evaluate((element) => element.tagName === 'INPUT');
         const isOn = async () => (isInput ? control.isChecked() : (await control.getAttribute('aria-checked')) === 'true');

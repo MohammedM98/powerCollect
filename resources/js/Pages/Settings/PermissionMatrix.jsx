@@ -1,4 +1,4 @@
-import { Button } from '@heroui/react';
+import { Button, Checkbox } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import Switch from '@/Components/Switch';
 import { ICONS, permissionGuideEntries } from '@/lib/permissionGuide';
@@ -65,18 +65,16 @@ function Mark({ text, query }) {
 /** One cell of the grid: a check that shows the permission's risk and whether it changed since saving. */
 function MatrixCheck({ checked, dirty, risk, label, disabled, onChange, hit }) {
     return (
-        <button
-            type="button"
-            role="checkbox"
-            aria-checked={checked}
-            aria-label={label}
-            title={[label, risk ? RISK_LABELS[risk] : '', dirty ? 'لم يُحفظ بعد' : ''].filter(Boolean).join('، ')}
-            disabled={disabled}
-            onClick={() => onChange(!checked)}
-            className={`pm-check ${checked ? 'is-on' : ''} ${risk ? `is-${risk}` : ''} ${dirty ? 'is-dirty' : ''} ${hit ? 'is-hit' : ''}`}
-        >
-            <Icon name="check" className="h-4 w-4" strokeWidth={3} />
-        </button>
+        <Checkbox isSelected={checked} isDisabled={disabled} onChange={onChange} aria-label={label} className="pm-check-field">
+            <Checkbox.Content>
+                <Checkbox.Control
+                    title={[label, risk ? RISK_LABELS[risk] : '', dirty ? 'لم يُحفظ بعد' : ''].filter(Boolean).join('، ')}
+                    className={`pm-check ${checked ? 'is-on' : ''} ${risk ? `is-${risk}` : ''} ${dirty ? 'is-dirty' : ''} ${hit ? 'is-hit' : ''}`}
+                >
+                    <Icon name="check" className="h-4 w-4" strokeWidth={3} />
+                </Checkbox.Control>
+            </Checkbox.Content>
+        </Checkbox>
     );
 }
 
@@ -86,19 +84,21 @@ export function TriToggle({ ids, selected, onChange, disabled, label }) {
     const state = ids.length === 0 ? 'none' : held === ids.length ? 'on' : held > 0 ? 'mixed' : 'off';
 
     return (
-        <button
-            type="button"
-            role="checkbox"
-            aria-checked={state === 'on' ? 'true' : state === 'mixed' ? 'mixed' : 'false'}
+        <Checkbox
+            isSelected={state === 'on'}
+            isIndeterminate={state === 'mixed'}
+            isDisabled={disabled || state === 'none'}
+            onChange={() => onChange(state !== 'on')}
             aria-label={label}
-            title={state === 'on' ? 'سحب الكل' : 'منح الكل'}
-            disabled={disabled || state === 'none'}
-            onClick={() => onChange(state !== 'on')}
-            className={`pm-tri is-${state}`}
+            className="pm-check-field"
         >
-            {state === 'on' && <Icon name="check" className="h-3.5 w-3.5" strokeWidth={3} />}
-            {state === 'mixed' && <i aria-hidden="true" className="pm-tri-dash" />}
-        </button>
+            <Checkbox.Content>
+                <Checkbox.Control title={state === 'on' ? 'سحب الكل' : 'منح الكل'} className={`pm-tri is-${state}`}>
+                    {state === 'on' && <Icon name="check" className="h-3.5 w-3.5" strokeWidth={3} />}
+                    {state === 'mixed' && <i aria-hidden="true" className="pm-tri-dash" />}
+                </Checkbox.Control>
+            </Checkbox.Content>
+        </Checkbox>
     );
 }
 

@@ -1,3 +1,4 @@
+import { ToggleButton, ToggleButtonGroup } from '@heroui/react';
 import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Input } from '@heroui/react';
 import { useState } from 'react';
@@ -170,22 +171,20 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
                     <ChoiceChips options={BORDERS} value={layout.table.borders} onChange={(value) => setIn('table', 'borders', value)} label="خطوط الجدول" />
                 </Group>
                 <Group label="اللون الأساسي (العنوان ورأس الجدول)">
-                    <div role="radiogroup" aria-label="اللون الأساسي" className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <ToggleButtonGroup aria-label="اللون الأساسي" selectionMode="single" selectedKeys={ACCENTS.filter((accent) => accent.value.toLowerCase() === layout.table.accent.toLowerCase()).map((accent) => accent.value)} onSelectionChange={(keys) => { const [next] = keys; if (next !== undefined) { setIn('table', 'accent', String(next)); } }} className="flex flex-wrap items-center gap-2">
                         {ACCENTS.map((accent) => (
-                            <button
+                            <ToggleButton
                                 key={accent.value}
-                                type="button"
-                                role="radio"
-                                aria-checked={layout.table.accent.toLowerCase() === accent.value.toLowerCase()}
+                                id={accent.value}
                                 aria-label={accent.label}
-                                title={accent.label}
-                                onClick={() => setIn('table', 'accent', accent.value)}
                                 className={`h-8 w-8 rounded-full border-2 ${
                                     layout.table.accent.toLowerCase() === accent.value.toLowerCase() ? 'border-gray-900 ring-2 ring-white ring-offset-2 ring-offset-gray-900' : 'border-white shadow-sm'
                                 } ${FOCUS_RING}`}
                                 style={{ backgroundColor: accent.value }}
                             />
                         ))}
+                        </ToggleButtonGroup>
                         <label className="flex items-center gap-1.5 text-xs text-gray-600">
                             لون آخر
                             <input
