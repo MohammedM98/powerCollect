@@ -6,10 +6,6 @@ import PageHeader from '@/Components/PageHeader';
 import FormSection from '@/Components/Form/FormSection';
 import FormField from '@/Components/Form/FormField';
 import ChoiceChips from '@/Components/ChoiceChips';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
-import DangerButton from '@/Components/DangerButton';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
 import { isHex } from '@/lib/brandPalette';
@@ -18,6 +14,7 @@ import { BRAND_PALETTES } from '@/lib/brandPresets';
 import './Appearance.css';
 import { useFileUrl, useLogoColors } from './useAppearanceFiles';
 import { LOGOS, LogoSlot, ColorField, PresetCard, SampleTable, Sample } from './AppearanceParts';
+import { ConfirmDialog, DangerKey, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 /** The form's fields for the saved identity: no new logo files, none to remove. */
 function formFields(profile, themePrimary) {
@@ -119,8 +116,8 @@ export default function Appearance({ profile, isImported, options, presets, them
             actions={<div className="flex flex-wrap gap-2">
                 <a href="/settings/appearance/export" className="inline-flex items-center gap-2 rounded-control border border-gray-200 bg-surface px-3 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-50"><Icon name="arrow-down-tray" className="h-4 w-4" />تنزيل ملف الهوية</a>
                 <input ref={importInput} type="file" accept="application/json,.json" className="sr-only" aria-label="ملف هوية" onChange={(event) => importFile(event.target.files?.[0])} />
-                <SecondaryButton onClick={() => importInput.current?.click()}><Icon name="arrow-up" className="h-4 w-4" />رفع ملف هوية</SecondaryButton>
-                {isImported && <DangerButton type="button" onClick={() => setConfirmReset(true)}>الرجوع للأصل</DangerButton>}
+                <SecondaryKey onClick={() => importInput.current?.click()}><Icon name="arrow-up" className="h-4 w-4" />رفع ملف هوية</SecondaryKey>
+                {isImported && <DangerKey type="button" onClick={() => setConfirmReset(true)}>الرجوع للأصل</DangerKey>}
             </div>}
         />}>
             <Head title="الهوية والمظهر" />
@@ -200,8 +197,8 @@ export default function Appearance({ profile, isImported, options, presets, them
                 <div className="ap-savebar 2xl:col-span-2">
                     <span className="text-sm text-gray-600">{form.isDirty ? 'تغييرات لم تُحفظ بعد: تراها الآن على الواجهة كلها.' : 'لا تغييرات غير محفوظة.'}</span>
                     <div className="flex gap-2">
-                        {form.isDirty && <SecondaryButton onClick={() => form.reset()}>تجاهل التغييرات</SecondaryButton>}
-                        <PrimaryButton disabled={form.processing || !form.isDirty}><Icon name="check" className="h-4 w-4" />حفظ الهوية والمظهر</PrimaryButton>
+                        {form.isDirty && <SecondaryKey onClick={() => form.reset()}>تجاهل التغييرات</SecondaryKey>}
+                        <PrimaryKey disabled={form.processing || !form.isDirty}><Icon name="check" className="h-4 w-4" />حفظ الهوية والمظهر</PrimaryKey>
                     </div>
                 </div>
             </form>

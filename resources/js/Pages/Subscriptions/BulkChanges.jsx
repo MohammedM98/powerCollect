@@ -4,15 +4,13 @@ import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
-import SecondaryButton from '@/Components/SecondaryButton';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import Pagination from '@/Components/DataTable/Pagination';
 import ActionsTh from '@/Components/DataTable/ActionsTh';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import { useDataTable } from '@/hooks/useDataTable';
 import { timeAgo } from '@/lib/format';
 import PageHeader, { BackLink } from '@/Components/PageHeader';
+import { ConfirmDialog, SecondaryKey, StatusPill } from '@/Components/UI';
 
 const FIELD_ICONS = { minimum_charge: 'wallet', status: 'flag', meter_box_id: 'grid' };
 
@@ -149,19 +147,19 @@ export default function BulkChanges({ changes, filters, details }) {
                                     </td>
                                     <td className="text-end">
                                         <div className="flex justify-end gap-1.5">
-                                            <SecondaryButton onClick={() => view(change)} className="px-3! py-1.5! text-xs" aria-label={`عرض مشتركي «${change.description}»`}>
+                                            <SecondaryKey onClick={() => view(change)} className="px-3! py-1.5! text-xs" aria-label={`عرض مشتركي «${change.description}»`}>
                                                 <Icon name="eye" className="h-4 w-4" />
                                                 المشتركون
-                                            </SecondaryButton>
+                                            </SecondaryKey>
                                             {change.canUndo && (
-                                                <SecondaryButton
+                                                <SecondaryKey
                                                     onClick={() => setUndoing(change)}
                                                     className="px-3! py-1.5! text-xs text-brand-600"
                                                     aria-label={`التراجع عن «${change.description}»`}
                                                 >
                                                     <Icon name="undo" className="h-4 w-4" />
                                                     تراجع
-                                                </SecondaryButton>
+                                                </SecondaryKey>
                                             )}
                                         </div>
                                     </td>

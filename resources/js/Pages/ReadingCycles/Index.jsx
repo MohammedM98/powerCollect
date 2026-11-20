@@ -5,10 +5,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import PageHeader from '@/Components/PageHeader';
-import SegmentedChoice from '@/Components/SegmentedChoice';
 import { formatNumber, formatDate } from '@/lib/format';
 import { readingSearchMatches } from '@/lib/readingBoard';
-import { Figure } from '@/Components/UI';
+import { Figure, SegmentedChoice } from '@/Components/UI';
 
 
 function BranchOverview({ branches, canCreate }) {

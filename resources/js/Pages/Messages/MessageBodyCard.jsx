@@ -1,11 +1,9 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Button, Input, TextArea } from '@heroui/react';
 import Icon from '@/Components/Icon';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import InputError from '@/Components/InputError';
 import { Card, Field, FOCUS_RING } from './MessageFormParts';
 import { smsParts } from '@/lib/disconnections';
+import { ChoiceSelect, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 /** Arabic text goes out as Unicode SMS: 70 letters in one message, 67 in each part of a longer one. */
 
@@ -44,13 +42,13 @@ export default function MessageBodyCard({
                     </ChoiceSelect>
                 </Field>
                 {selectedTemplate && selectedTemplate.body !== body && (
-                    <SecondaryButton onClick={updateTemplate}>
+                    <SecondaryKey onClick={updateTemplate}>
                         <Icon name="check" className="h-4 w-4" />
                         حفظ التعديل على القالب
-                    </SecondaryButton>
+                    </SecondaryKey>
                 )}
                 {selectedTemplate && (
-                    <SecondaryButton
+                    <SecondaryKey
                         onClick={() => setConfirmingTemplateDelete(true)}
                         aria-label={`حذف القالب «${selectedTemplate.name}»`}
                         title="حذف القالب"
@@ -58,13 +56,13 @@ export default function MessageBodyCard({
                     >
                         <Icon name="trash" className="h-4 w-4" />
                         <span className="hidden sm:inline">حذف</span>
-                    </SecondaryButton>
+                    </SecondaryKey>
                 )}
                 {templateName === null && (
-                    <SecondaryButton onClick={() => setTemplateName('')} disabled={body.trim() === ''}>
+                    <SecondaryKey onClick={() => setTemplateName('')} disabled={body.trim() === ''}>
                         <Icon name="plus" className="h-4 w-4" />
                         حفظ كقالب جديد
-                    </SecondaryButton>
+                    </SecondaryKey>
                 )}
             </div>
 
@@ -81,11 +79,11 @@ export default function MessageBodyCard({
                         />
                         <InputError message={errors.name} className="mt-1" />
                     </Field>
-                    <PrimaryButton type="button" onClick={saveTemplate} disabled={templateName.trim() === ''}>
+                    <PrimaryKey type="button" onClick={saveTemplate} disabled={templateName.trim() === ''}>
                         <Icon name="check" className="h-4 w-4" />
                         حفظ القالب
-                    </PrimaryButton>
-                    <SecondaryButton onClick={() => setTemplateName(null)}>إلغاء</SecondaryButton>
+                    </PrimaryKey>
+                    <SecondaryKey onClick={() => setTemplateName(null)}>إلغاء</SecondaryKey>
                 </div>
             )}
 

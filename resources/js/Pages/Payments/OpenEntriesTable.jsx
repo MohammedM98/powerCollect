@@ -1,16 +1,15 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Button } from '@heroui/react';
 import { Link, router } from '@inertiajs/react';
 import ActionsTh from '@/Components/DataTable/ActionsTh';
 import ColumnWidths, { fixedTableStyle } from '@/Components/DataTable/ColumnWidths';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import Pagination from '@/Components/DataTable/Pagination';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import SegmentedTabs from '@/Components/SegmentedTabs';
 import { boxTypeStyles } from './CollectorCashBox';
 import { entryStatus } from '@/lib/financialBoxes';
 import { ledgerColumns, ledgerOf, ledgerTableClass, LedgerLeadCells, LedgerTrailCells } from './LedgerColumns';
+import { ChoiceSelect, StatusPill } from '@/Components/UI';
 
 /**
  * Every entry of the open boxes in one table, each as the subscriber's

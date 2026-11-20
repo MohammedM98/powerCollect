@@ -1,9 +1,9 @@
 import { Button } from '@heroui/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import { balanceInText } from '@/lib/balance';
 import { formatMoney, formatDate } from '@/lib/format';
+import { StatusPill } from '@/Components/UI';
 
 const EVENT_ICONS = { added: 'plus', extended: 'calendar', warned: 'send', removed: 'undo', disconnected: 'power' };
 

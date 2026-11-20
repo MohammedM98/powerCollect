@@ -1,5 +1,5 @@
 import Icon from '@/Components/Icon';
-import StatusPill from '@/Components/DataTable/StatusPill';
+import { StatusPill } from '@/Components/UI';
 
 /** Each kind of message and each way of sending has its own icon, the same wherever it shows. */
 export const KIND_ICONS = { weekly_reading: 'gauge', balance_reminder: 'wallet', custom: 'megaphone', disconnection_warning: 'power' };

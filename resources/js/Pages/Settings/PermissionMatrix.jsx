@@ -1,6 +1,5 @@
 import { Button, Checkbox } from '@heroui/react';
 import Icon from '@/Components/Icon';
-import Switch from '@/Components/Switch';
 import { ICONS, permissionGuideEntries } from '@/lib/permissionGuide';
 import {
     MATRIX_COLUMNS,
@@ -13,6 +12,7 @@ import {
     withSectionsAll,
     withToggled,
 } from '@/lib/permissions';
+import { Switch } from '@/Components/UI';
 
 /** The icon, one-line description and page of each section (keyed like PermissionKey::resourceGroups()). */
 export const SECTION_DETAILS = {

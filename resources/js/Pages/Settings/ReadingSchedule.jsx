@@ -6,12 +6,12 @@ import SettingsLayout from '@/Layouts/SettingsLayout';
 import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
 import InfoTip from '@/Components/InfoTip';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import BranchScopeBar from './BranchScopeBar';
 import { WEEK_DAYS, formatWeekDay, weekDayName } from '@/lib/weekDays';
 import { businessClock, entryDaysFrom, isEntryOpen, nextScheduleChange, shiftEntryDays, upcomingWeeks, validEntryHours, weekDates } from '@/lib/readingSchedule';
 import './ReadingSchedule.css';
 import PageHeader from '@/Components/PageHeader';
+import { CheckBox, ConfirmDialog, RadioCards } from '@/Components/UI';
 
 const MODES = {
     automatic: { label: 'تلقائي', icon: 'clock' },
@@ -27,14 +27,14 @@ function PanelTitle({ icon, info = null, children }) {
     return <h2><span className="rs-panel-icon"><Icon name={icon} /></span>{children}{info && <InfoTip label={`عن ${children}`}>{info}</InfoTip>}</h2>;
 }
 
-function DayChip({ day, selected, type, name, disabled = false, subtitle, onChange }) {
+/** A day's face inside its choice: the tick mark, its name and a line under it. */
+function DayFace({ day, subtitle }) {
     return (
-        <label className={`rs-day ${selected ? 'is-selected' : ''}`}>
-            <Input type={type} name={name} checked={selected} disabled={disabled} onChange={onChange} aria-label={day.label} />
+        <>
             <span className="rs-check"><Icon name="check" strokeWidth={3} /></span>
             <b>{day.label}</b>
             <small>{subtitle || '\u00a0'}</small>
-        </label>
+        </>
     );
 }
 
@@ -155,12 +155,17 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                     <div className="rs-column">
                         <Card className="rs-panel">
                             <PanelTitle icon="flag" info="ينتهي كل أسبوع قراءة في هذا اليوم، ويبدأ الأسبوع التالي في اليوم الذي يليه.">يوم القراءة الأسبوعي</PanelTitle>
-                            <div className="rs-days" role="radiogroup" aria-label="يوم القراءة الأسبوعي">
-                                {WEEK_DAYS.map((day) => (
-                                    <DayChip key={day.value} day={day} type="radio" name="reading_day" selected={data.reading_day === day.value}
-                                        subtitle={day.value === setting.reading_day ? 'الحالي' : ''} disabled={processing} onChange={() => changeReadingDay(day.value)} />
-                                ))}
-                            </div>
+                            <RadioCards
+                                label="يوم القراءة الأسبوعي"
+                                name="reading_day"
+                                className="rs-days"
+                                value={data.reading_day}
+                                isDisabled={processing}
+                                showControl={false}
+                                onChange={(value) => changeReadingDay(WEEK_DAYS.find((day) => String(day.value) === value).value)}
+                                options={WEEK_DAYS.map((day) => ({ value: day.value, label: <DayFace day={day} subtitle={day.value === setting.reading_day ? 'الحالي' : ''} /> }))}
+                                itemClassName={(option, selected) => `rs-day ${selected ? 'is-selected' : ''}`}
+                            />
                             <InputError message={errors.reading_day} className="mt-2" />
                             {readingDayChanged && (
                                 <div className="rs-hint rs-warn" role="status">
@@ -176,9 +181,11 @@ export default function ReadingSchedule({ setting, branch, branchScope, branches
                             <p>تبقى القراءة الناقصة لنفس الأسبوع حتى بداية يوم القراءة التالي؛ أيام الفتح بعد يوم القراءة مخصصة لاستكمالها، ولا تفتح قراءة الأسبوع القادم مسبقًا.</p>
                             <div className={`rs-days rs-open-days ${automatic ? '' : 'is-disabled'}`} role="group" aria-label="أيام فتح الإدخال">
                                 {entryDays.map((day) => (
-                                    <DayChip key={day.value} day={day} type="checkbox" selected={data.open_days.includes(day.value)}
-                                        subtitle={day.value === data.reading_day ? 'يوم القراءة' : ''} disabled={!automatic || processing}
-                                        onChange={() => selectOpenDays(data.open_days.includes(day.value) ? data.open_days.filter((value) => value !== day.value) : [...data.open_days, day.value])} />
+                                    <CheckBox key={day.value} aria-label={day.label} showControl={false} className={`rs-day ${data.open_days.includes(day.value) ? 'is-selected' : ''}`}
+                                        checked={data.open_days.includes(day.value)} disabled={!automatic || processing}
+                                        onChange={() => selectOpenDays(data.open_days.includes(day.value) ? data.open_days.filter((value) => value !== day.value) : [...data.open_days, day.value])}>
+                                        <DayFace day={day} subtitle={day.value === data.reading_day ? 'يوم القراءة' : ''} />
+                                    </CheckBox>
                                 ))}
                             </div>
                             {automatic && (

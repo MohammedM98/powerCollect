@@ -3,15 +3,11 @@ import TableExportActions from '@/Components/DataTable/TableExportActions';
 import { Link } from '@inertiajs/react';
 import AuditApprovalDialog from './AuditApprovalDialog';
 import BankTransferAuditForm from './BankTransferAuditForm';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import ActionsTh from '@/Components/DataTable/ActionsTh';
 import ColumnWidths, { fixedTableStyle } from '@/Components/DataTable/ColumnWidths';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
-import SegmentedChoice from '@/Components/SegmentedChoice';
 import { Button, Chip, SearchField } from '@heroui/react';
-import SearchableSelect from '@/Components/SearchableSelect';
 import { BankMark } from '@/Components/Banks';
 import { formatMoney } from '@/lib/format';
 import { boxTypes, currencies, dateTime } from './CollectorCashBox';
@@ -20,6 +16,7 @@ import { ledgerColumns, ledgerOf, ledgerTableClass, BoxNumberCell, LedgerLeadCel
 import BoxBreakdown, { breakdownEntry } from './BoxBreakdown';
 import { auditApprovalSummary, boxBankOptions, filterBoxEntries, entryStatus, isFlaggedEntry } from '@/lib/financialBoxes';
 import './financial-boxes.css';
+import { ConfirmDialog, SearchableSelect, SegmentedChoice, StatusPill } from '@/Components/UI';
 
 
 /** A small action in an entry's row. */

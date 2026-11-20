@@ -2,9 +2,8 @@ import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { Link, useHttp } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
-import StatusPill from '@/Components/DataTable/StatusPill';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { formatNumber } from '@/lib/format';
+import { SecondaryKey, StatusPill } from '@/Components/UI';
 
 const STATUS_TONES = { active: 'green', suspended: 'amber', disconnected: 'red' };
 
@@ -93,7 +92,7 @@ export default function MeterBoxSubscriptions({ meterBox, sort, direction, canRe
             {failed ? (
                 <div role="alert" className="rounded-control border border-gray-100 bg-surface p-5 text-center text-sm text-gray-600">
                     <p>تعذّر تحميل المشتركين. حاول مرة أخرى.</p>
-                    <SecondaryButton className="mt-3" onClick={() => load(rows?.current_page ?? 1)}>إعادة المحاولة</SecondaryButton>
+                    <SecondaryKey className="mt-3" onClick={() => load(rows?.current_page ?? 1)}>إعادة المحاولة</SecondaryKey>
                 </div>
             ) : !rows ? (
                 <div role="status" className="rounded-control border border-gray-100 bg-surface p-4">
@@ -112,9 +111,9 @@ export default function MeterBoxSubscriptions({ meterBox, sort, direction, canRe
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-gray-500">
                         <span>عرض <b className="font-display">{rows.from}–{rows.to}</b> من <b className="font-display">{rows.total}</b> مشترك</span>
                         {rows.last_page > 1 && <div className="flex items-center gap-2">
-                            <SecondaryButton className="px-3! py-1.5! text-xs!" disabled={http.processing || rows.current_page === 1} onClick={() => load(rows.current_page - 1)}>السابق</SecondaryButton>
+                            <SecondaryKey className="px-3! py-1.5! text-xs!" disabled={http.processing || rows.current_page === 1} onClick={() => load(rows.current_page - 1)}>السابق</SecondaryKey>
                             <span className="font-display">{rows.current_page} / {rows.last_page}</span>
-                            <SecondaryButton className="px-3! py-1.5! text-xs!" disabled={http.processing || rows.current_page === rows.last_page} onClick={() => load(rows.current_page + 1)}>التالي</SecondaryButton>
+                            <SecondaryKey className="px-3! py-1.5! text-xs!" disabled={http.processing || rows.current_page === rows.last_page} onClick={() => load(rows.current_page + 1)}>التالي</SecondaryKey>
                         </div>}
                     </div>
                 </>

@@ -1,10 +1,10 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Button, TextArea } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import { smsParts } from '@/lib/disconnections';
 import { MessageText } from './MessageParts';
 import { FOCUS_RING, Section } from './MessageFormParts';
+import { ChoiceSelect } from '@/Components/UI';
 
 /** The quick message's text: the kind's templates, the fields to insert, and the preview for one recipient. */
 export default function QuickMessageBody({

@@ -1,5 +1,5 @@
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import { formatShekels } from '@/lib/currency';
+import { ConfirmDialog } from '@/Components/UI';
 
 export default function ReadingApprovalDialog({ row, onConfirm, onCancel }) {
     if (!row) return null;

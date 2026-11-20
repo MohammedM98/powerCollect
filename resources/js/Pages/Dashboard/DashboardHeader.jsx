@@ -1,8 +1,7 @@
 import Icon from '@/Components/Icon';
-import SearchableSelect from '@/Components/SearchableSelect';
-import SegmentedChoice from '@/Components/SegmentedChoice';
 import WordReveal from '@/Components/WordReveal';
 import { formatWeekDay } from '@/lib/weekDays';
+import { SearchableSelect, SegmentedChoice } from '@/Components/UI';
 
 /** The home page's heading, as in the redesign: the greeting and the day; the governorate and branch as filter pills, and the period. */
 export default function DashboardHeader({

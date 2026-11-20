@@ -4,13 +4,13 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card } from '@heroui/react';
 import { PAGE_SIZES } from '@/Components/DataTable/DataTableToolbar';
 import Pagination from '@/Components/DataTable/Pagination';
-import SegmentedChoice from '@/Components/SegmentedChoice';
 import Icon from '@/Components/Icon';
 import { financialBoxesTotals } from '@/lib/financialBoxes';
 import { FinancialBoxCard, FinancialBoxSummary, financialAmountsLine } from './FinancialBoxComponents';
 import FinancialBoxList from './FinancialBoxList';
 import { boxTypeStyles, BoxReportActions } from './CollectorCashBox';
 import PageHeader from '@/Components/PageHeader';
+import { SegmentedChoice } from '@/Components/UI';
 
 const typeFilters = [{ value: '', label: 'الكل' }, ...Object.entries(boxTypeStyles).map(([value, style]) => ({ value, label: style.label }))];
 const stateFilters = [{ value: '', label: 'الكل' }, { value: 'open', label: 'مفتوح' }, { value: 'closed', label: 'مغلق' }];

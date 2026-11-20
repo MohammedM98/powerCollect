@@ -1,7 +1,5 @@
-import CheckBox from '@/Components/CheckBox';
 import { useEffect, useRef, useState } from 'react';
 import { useForm, useHttp } from '@inertiajs/react';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import { Button, Input } from '@heroui/react';
@@ -13,6 +11,7 @@ import { toCents, fromCents } from '@/lib/currency';
 import SplitAllocationMeter from './SplitAllocationMeter';
 import SplitRecipientsSection, { MAX_PARTS } from './SplitRecipientsSection';
 import SplitTransferDetails from './SplitTransferDetails';
+import { CheckBox, ConfirmDialog } from '@/Components/UI';
 
 const SEARCH_DELAY = 300;
 

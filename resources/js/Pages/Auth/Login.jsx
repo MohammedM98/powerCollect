@@ -1,11 +1,9 @@
-import CheckBox from '@/Components/CheckBox';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
-import TextInput from '@/Components/TextInput';
 import PasswordInput from '@/Components/PasswordInput';
-import PrimaryButton from '@/Components/PrimaryButton';
+import { CheckBox, PrimaryKey, TextInput } from '@/Components/UI';
 
 export default function Login() {
     const { branchContext } = usePage().props;
@@ -66,9 +64,9 @@ export default function Login() {
                     <span className="gl-sub">نسيت كلمة المرور؟ اطلبها من مدير النظام</span>
                 </div>
 
-                <PrimaryButton disabled={processing} className="gl-lg mt-2 w-full">
+                <PrimaryKey disabled={processing} className="gl-lg mt-2 w-full">
                     {processing ? <><span className="gl-spin" aria-hidden="true" />جارٍ الدخول</> : 'تسجيل الدخول'}
-                </PrimaryButton>
+                </PrimaryKey>
             </form>
         </GuestLayout>
     );

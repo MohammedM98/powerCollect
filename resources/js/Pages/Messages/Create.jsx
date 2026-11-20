@@ -3,7 +3,6 @@ import { Head, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Icon from '@/Components/Icon';
 import ChoiceChips from '@/Components/ChoiceChips';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import { CHANNEL_ICONS, KIND_HINTS, KIND_ICONS, MessageText, renderMessage, withIcons } from './MessageParts';
 import { scopedOptions } from '@/lib/filterGroups';
 import PageHeader, { BackLink } from '@/Components/PageHeader';
@@ -11,6 +10,7 @@ import MessageRecipientList from './MessageRecipientList';
 import MessageBodyCard from './MessageBodyCard';
 import MessageRecipientCriteria from './MessageRecipientCriteria';
 import { Card } from './MessageFormParts';
+import { ConfirmDialog } from '@/Components/UI';
 
 /**
  * Write a message to subscriptions: pick what it's about, who gets it, the

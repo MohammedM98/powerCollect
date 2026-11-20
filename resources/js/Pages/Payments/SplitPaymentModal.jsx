@@ -1,8 +1,8 @@
 import { useId, useState } from 'react';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import Modal from '@/Components/Modal';
 import { FormHeader, movementStyle, SHEET_FORM_CLASS } from '@/Pages/Subscriptions/AccountFormParts';
 import SplitPaymentForm from './SplitPaymentForm';
+import { ConfirmDialog } from '@/Components/UI';
 
 /**
  * The shared payment, in a window of its own: one bank transfer divided

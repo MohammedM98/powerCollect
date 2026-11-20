@@ -3,7 +3,7 @@ import AuditAccessCard, { auditScopeLabel } from './AuditAccessCard';
 import Icon from '@/Components/Icon';
 import { MatrixHead, MatrixLegend, SectionRow, TriToggle } from './PermissionMatrix';
 import { filterSections, sectionIds, withGroupAccess, withSectionsAll, withToggled } from '@/lib/permissions';
-import Switch from '@/Components/Switch';
+import { Switch } from '@/Components/UI';
 
 const MODES = [
     ['all', 'الكل'],

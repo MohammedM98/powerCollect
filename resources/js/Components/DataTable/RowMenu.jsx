@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { Header, Menu } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import { initials } from '@/lib/format';
 
@@ -132,7 +133,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
     useEffect(() => {
         if (placed) {
             const firstItem = menuRef.current?.querySelector('[role="menuitem"]:not([aria-disabled="true"])');
-            (firstItem ?? menuRef.current)?.focus({ preventScroll: true });
+            (firstItem ?? menuRef.current?.querySelector('[role="menu"]'))?.focus({ preventScroll: true });
         }
     }, [placed]);
 
@@ -179,18 +180,9 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
         item.onSelect();
     }
 
+    /** HeroUI's Menu moves between the items (arrows, Home, End) and runs one (Enter); the frame keeps Esc, Tab and the shortcut letters. */
     function onKeyDown(event) {
-        const enabled = [...menuRef.current.querySelectorAll('[role="menuitem"]:not([aria-disabled="true"])')];
-        const index = enabled.indexOf(document.activeElement);
-        const move = { ArrowDown: 1, ArrowUp: -1 }[event.key];
-
-        if (move) {
-            event.preventDefault();
-            enabled[(index + move + enabled.length) % enabled.length]?.focus();
-        } else if (event.key === 'Home' || event.key === 'End') {
-            event.preventDefault();
-            enabled[event.key === 'Home' ? 0 : enabled.length - 1]?.focus();
-        } else if (event.key === 'Escape') {
+        if (event.key === 'Escape') {
             event.preventDefault();
             event.stopPropagation();
             onClose(true);
@@ -201,6 +193,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
 
             if (item) {
                 event.preventDefault();
+                event.stopPropagation();
                 run(item);
             }
         }
@@ -209,10 +202,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
     const list = (
         <div
             ref={menuRef}
-            role="menu"
-            tabIndex={-1}
-            aria-label={`إجراءات ${menu.title}`}
-            onKeyDown={onKeyDown}
+            onKeyDownCapture={onKeyDown}
             style={
                 phone
                     ? undefined
@@ -232,47 +222,50 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
         >
             {phone && <div className="mx-auto mb-1 mt-1 h-1 w-10 rounded-full bg-gray-200" aria-hidden="true" />}
 
-            <div className="mb-1 flex items-center gap-2.5 border-b border-gray-100 px-2 pb-3 pt-2">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-graphite-gradient font-display text-[12px] font-bold text-white dark:ring-1 dark:ring-white/10">
-                    {initials(menu.title)}
-                </span>
-                <span className="min-w-0">
-                    <b className={`block text-sm text-gray-900 ${menu.description ? 'whitespace-normal wrap-break-word' : 'truncate'}`}>{menu.title}</b>
-                    {menu.description && <span className="mt-1 block whitespace-pre-wrap wrap-break-word text-sm leading-relaxed text-gray-700">{menu.description}</span>}
-                    {menu.subtitle && (
-                        <span className="block truncate text-xs text-gray-500 text-right!" dir="ltr">
-                            {menu.subtitle}
-                        </span>
-                    )}
-                </span>
-            </div>
-
+            <Menu
+                aria-label={`إجراءات ${menu.title}`}
+                className="row-menu-list outline-hidden"
+                disabledKeys={items.filter((item) => item.disabled || item.lockedReason).map((item) => item.label)}
+                onAction={(key) => run(items.find((item) => item.label === key))}
+            >
+            <Menu.Section id="__record" aria-label={menu.title}>
+                <Header className="mb-1 flex items-center gap-2.5 border-b border-gray-100 px-2 pb-3 pt-2">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-graphite-gradient font-display text-[12px] font-bold text-white dark:ring-1 dark:ring-white/10">
+                        {initials(menu.title)}
+                    </span>
+                    <span className="min-w-0">
+                        <b className={`block text-sm text-gray-900 ${menu.description ? 'whitespace-normal wrap-break-word' : 'truncate'}`}>{menu.title}</b>
+                        {menu.description && <span className="mt-1 block whitespace-pre-wrap wrap-break-word text-sm leading-relaxed text-gray-700">{menu.description}</span>}
+                        {menu.subtitle && (
+                            <span className="block truncate text-xs text-gray-500 text-right!" dir="ltr">
+                                {menu.subtitle}
+                            </span>
+                        )}
+                    </span>
+                </Header>
+            </Menu.Section>
             {menu.groups.map((group) => (
-                <div key={group.label} role="group" aria-label={group.label}>
-                    <p className="px-2.5 pb-0.5 pt-2 text-[12px] font-bold text-gray-500" aria-hidden="true">
+                <Menu.Section key={group.label} id={group.label} aria-label={group.label}>
+                    <Header className="px-2.5 pb-0.5 pt-2 text-[12px] font-bold text-gray-500" aria-hidden="true">
                         {group.label}
-                    </p>
+                    </Header>
                     {group.items.map((item) => {
                         const unavailable = Boolean(item.disabled || item.lockedReason);
                         const tone = TONES[item.tone] ?? TONES.graphite;
                         const colorful = menu.colorful ? (COLORFUL[item.tone] ?? COLORFUL.graphite) : null;
 
                         return (
-                            <button
+                            <Menu.Item
                                 key={item.label}
-                                type="button"
-                                role="menuitem"
-                                tabIndex={-1}
-                                aria-disabled={unavailable || undefined}
+                                id={item.label}
+                                textValue={item.label}
                                 aria-keyshortcuts={item.shortcut}
-                                title={item.lockedReason ?? item.hint}
-                                onClick={() => run(item)}
                                 className={`group/item flex w-full items-center gap-2.5 rounded-xl px-2 py-1.5 text-start text-sm font-medium outline-hidden transition ${
                                     unavailable
                                         ? 'cursor-not-allowed opacity-55'
                                         : colorful
                                           ? `${colorful.row} mb-1 last:mb-0`
-                                          : 'text-gray-900 hover:bg-gray-100 focus-visible:bg-gray-100'
+                                          : 'text-gray-900 hover:bg-gray-100 focus-visible:bg-gray-100 data-[focused=true]:bg-gray-100'
                                 }`}
                             >
                                 <span
@@ -287,7 +280,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
                                 >
                                     <Icon name={item.icon} className="h-[17px] w-[17px]" />
                                 </span>
-                                <span className="min-w-0 flex-1">
+                                <span className="min-w-0 flex-1" title={item.lockedReason ?? item.hint}>
                                     <span className={`block truncate ${colorful && !unavailable ? `font-semibold ${colorful.label}` : ''}`}>{item.label}</span>
                                     {item.description && <span className="block text-[12px] font-normal leading-tight text-gray-500">{item.description}</span>}
                                 </span>
@@ -306,11 +299,12 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
                                         </kbd>
                                     )
                                 )}
-                            </button>
+                            </Menu.Item>
                         );
                     })}
-                </div>
+                </Menu.Section>
             ))}
+            </Menu>
         </div>
     );
 

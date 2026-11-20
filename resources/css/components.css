@@ -2683,7 +2683,8 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     outline-offset: 2px;
 }
 
-.gl-method[data-checked] {
+.gl-method[data-checked],
+.gl-method[data-selected='true'] {
     border-color: rgb(var(--gl-brand) / 0.5);
     background: rgb(var(--gl-brand) / 0.16);
 }
@@ -2699,7 +2700,8 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     color: var(--gl-muted);
 }
 
-.gl-method[data-checked] .gl-method-icon {
+.gl-method[data-checked] .gl-method-icon,
+.gl-method[data-selected='true'] .gl-method-icon {
     background: rgb(var(--gl-btn));
     color: rgb(var(--brand-ink));
 }
@@ -2713,7 +2715,8 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     border: 1.5px solid var(--gl-line-strong);
 }
 
-.gl-method[data-checked] .gl-method-dot {
+.gl-method[data-checked] .gl-method-dot,
+.gl-method[data-selected='true'] .gl-method-dot {
     border-color: rgb(var(--gl-btn));
     background: radial-gradient(circle, rgb(var(--brand-ink)) 0 3.5px, rgb(var(--gl-btn)) 4px);
 }
@@ -10114,3 +10117,14 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .pm-grant-field .checkbox__control::before {
     content: none;
 }
+
+/* Payment methods are HeroUI radios: the chosen tile reads data-selected (see .gl-method[data-checked]). */
+.gl-method .radio__content { display: contents; }
+.gl-radio-cards .radio__content { display: flex; align-items: inherit; gap: inherit; width: 100%; }
+
+/* A Dropdown's trigger that wears a page's own key class: the chevron turns while its menu is open. */
+.gl-menu-trigger[aria-expanded='true'] .gl-menu-chevron { transform: rotate(180deg); }
+.pm-menu-pop { width: min(360px, calc(100vw - 16px)); }
+
+/* A row menu's sections fill its width, so the record's header line runs edge to edge. */
+.row-menu-list .menu-section { align-items: stretch; }

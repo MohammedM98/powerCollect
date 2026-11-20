@@ -3,11 +3,10 @@ import { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import InputError from '@/Components/InputError';
 import { formatNumber } from '@/lib/format';
 import DateInput from '@/Components/DateInput';
+import { PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 /** What a move or approval did, with each box it could not move and why. */
 export function AllocationReport({ result, onConfirmDownloaded, onClose }) {
@@ -97,8 +96,8 @@ export function ReadingDayModal({ cycle, onClose }) {
                     القرّاء الذين نزّلوا مهامهم ينزّلونها من جديد ليعرفوا اليوم الجديد؛ القراءات في غير يوم القراءة تُحفظ للمراجعة.
                 </p>
                 <div className="flex justify-end gap-3">
-                    <SecondaryButton onClick={onClose}>إلغاء</SecondaryButton>
-                    <PrimaryButton type="submit">حفظ</PrimaryButton>
+                    <SecondaryKey onClick={onClose}>إلغاء</SecondaryKey>
+                    <PrimaryKey type="submit">حفظ</PrimaryKey>
                 </div>
             </form>
         </Modal>

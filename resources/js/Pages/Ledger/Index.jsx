@@ -9,7 +9,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Pagination from '@/Components/DataTable/Pagination';
 import Icon from '@/Components/Icon';
 import LatePaymentDetails from '@/Components/LatePaymentDetails';
-import SearchableSelect from '@/Components/SearchableSelect';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useRowClick } from '@/hooks/useRowClick';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
@@ -22,6 +21,7 @@ import PageHeader from '@/Components/PageHeader';
 import MoneyFlow from '@/Components/Finance/MoneyFlow';
 import InfoTip from '@/Components/InfoTip';
 import DateInput from '@/Components/DateInput';
+import { SearchableSelect } from '@/Components/UI';
 
 const PERIODS = [['today', 'اليوم'], ['yesterday', 'أمس'], ['7', '7 أيام'], ['30', '30 يوم'], ['month', 'هذا الشهر'], ['custom', 'مخصص']];
 const BANK_LOGOS = {

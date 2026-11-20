@@ -1,15 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import Icon from '@/Components/Icon';
 import { Button, Checkbox } from '@heroui/react';
-import SegmentedChoice from '@/Components/SegmentedChoice';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import SortableTh from '@/Components/DataTable/SortableTh';
 import Pagination from '@/Components/DataTable/Pagination';
-import SearchableSelect from '@/Components/SearchableSelect';
 import { useDataTable } from '@/hooks/useDataTable';
 import { formatMoney, formatMonthName } from '@/lib/format';
 import { activeReadingStatus, countReadings, readingStatusFilters, readingWeekParams } from '@/lib/readingSheet';
@@ -22,6 +19,7 @@ import PageHeader from '@/Components/PageHeader';
 import { EntryWindowNotice } from './EntryWindowNotice';
 import { PRINT_FIELDS, SheetRow } from './ReadingSheetRow';
 import { printFieldsProps } from '@/lib/print';
+import { ConfirmDialog, SearchableSelect, SegmentedChoice } from '@/Components/UI';
 
 /**
  * What each sort is by, and how its two directions read: names go أ – ي or

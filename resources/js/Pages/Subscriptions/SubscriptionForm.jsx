@@ -6,14 +6,13 @@ import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
 import SettingRow from '@/Components/Form/SettingRow';
 import InputError from '@/Components/InputError';
-import Switch from '@/Components/Switch';
-import TextInput from '@/Components/TextInput';
 import DateInput from '@/Components/DateInput';
 import SubscriptionTariffSection from './SubscriptionTariffSection';
 import SubscriptionLocationSection from './SubscriptionLocationSection';
 import SubscriberSection from './SubscriberSection';
 import { FormAsideCard } from '@/Components/Form/FormAside';
 import { SubscriptionCard, SubscriptionPreview } from './SubscriptionPreview';
+import { Switch, TextInput } from '@/Components/UI';
 
 const STATUS_OPTIONS = [
     { value: 'active', label: 'نشط', dot: 'green' },

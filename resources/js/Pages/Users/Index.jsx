@@ -3,13 +3,11 @@ import { Head } from '@inertiajs/react';
 import { Button, Chip } from '@heroui/react';
 import PageHeader from '@/Components/PageHeader';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import AddButton from '@/Components/AddButton';
 import Icon from '@/Components/Icon';
 import GroupActionButton from '@/Components/GroupActionButton';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import SortableTh from '@/Components/DataTable/SortableTh';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Pagination from '@/Components/DataTable/Pagination';
@@ -19,6 +17,7 @@ import { useDeleteRecord } from '@/hooks/useDeleteRecord';
 import { useRowClick } from '@/hooks/useRowClick';
 import UserModal from './UserModal';
 import UserTypesModal from './UserTypesModal';
+import { AddKey, StatusPill } from '@/Components/UI';
 
 export default function Index({
     users,
@@ -47,7 +46,7 @@ export default function Index({
                     info="حسابات الدخول إلى الموقع والتطبيق: نوع كل مستخدم وفرعه وحالته. الصلاحيات تُمنح لكل مستخدم من صفحة الصلاحيات."
                     actions={<>
                         {userTypeItems && <GroupActionButton onClick={() => setManagingTypes(true)} aria-haspopup="dialog" aria-expanded={managingTypes}><Icon name={canCreateUserType ? 'plus' : 'tag'} className="h-4 w-4" />أنواع المستخدمين</GroupActionButton>}
-                        {canCreate && <AddButton onClick={() => setCreating(true)}>مستخدم جديد</AddButton>}
+                        {canCreate && <AddKey onClick={() => setCreating(true)}>مستخدم جديد</AddKey>}
                     </>}
                 />
             }

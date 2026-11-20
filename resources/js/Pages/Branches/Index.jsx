@@ -2,11 +2,9 @@ import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
-import AddButton from '@/Components/AddButton';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import SortableTh from '@/Components/DataTable/SortableTh';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Pagination from '@/Components/DataTable/Pagination';
@@ -17,6 +15,7 @@ import { useRowClick } from '@/hooks/useRowClick';
 import BranchModal from './BranchModal';
 import DomainModal from './DomainModal';
 import PageHeader from '@/Components/PageHeader';
+import { AddKey, StatusPill } from '@/Components/UI';
 
 export default function Index({ branches, canCreate, filters, filterOptions, governorates, areas, canManageDomains = false, domainRoutingEnabled = false }) {
     const [domainBranch, setDomainBranch] = useState(null);
@@ -29,7 +28,7 @@ export default function Index({ branches, canCreate, filters, filterOptions, gov
     return (
         <SettingsLayout
             header={
-                <PageHeader title="الفروع" actions={canCreate && <AddButton onClick={() => setCreating(true)}>فرع جديد</AddButton>} />
+                <PageHeader title="الفروع" actions={canCreate && <AddKey onClick={() => setCreating(true)}>فرع جديد</AddKey>} />
             }
         >
             <Head title="الفروع" />

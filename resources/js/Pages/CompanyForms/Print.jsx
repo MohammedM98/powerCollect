@@ -1,14 +1,13 @@
 import { useCallback, useRef, useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
-import SecondaryButton from '@/Components/SecondaryButton';
-import PrimaryButton from '@/Components/PrimaryButton';
 import CompanyFormPaper from './CompanyFormPaper';
 import useCompanySource from './useCompanySource';
 import { formDimensions, printPageRules } from '@/lib/companyForms';
 import { downloadCompanyFormOffline } from '@/lib/companyFormOffline';
 import paperCss from './CompanyForms.css?raw';
 import { formatDate } from '@/lib/format';
+import { PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 export default function Print({ document: issued }) {
     const { layout, values, source } = issued.snapshot;
@@ -38,7 +37,7 @@ export default function Print({ document: issued }) {
         <Head title={`${issued.title} — مستند ${issued.id}`} />
         <style>{rules}</style>
         <section className="cf-print-toolbar space-y-4 rounded-card border border-gray-100 bg-surface p-5 shadow-card">
-            <div className="flex flex-wrap items-start justify-between gap-4"><div><Link href="/company-forms?view=documents" className="text-sm text-gray-500 hover:text-gray-900">رجوع إلى نماذج الشركة والأرشيف</Link><h1 className="mt-2 text-2xl font-bold text-gray-900">{issued.title}</h1><p className="mt-1 text-sm text-gray-500">مستند #{issued.id}، {issued.mode === 'blank' ? 'نموذج فارغ للتعبئة اليدوية' : issued.mode === 'archive' ? 'طلب ورقي مؤرشف' : 'نسخة معبأة محفوظة'}</p></div><div className="flex flex-wrap gap-2"><PrimaryButton type="button" disabled={!ready || busy} onClick={() => prepare('print')}><Icon name="printer" className="h-4 w-4" />طباعة / حفظ PDF</PrimaryButton><SecondaryButton disabled={!ready || busy} onClick={() => prepare('offline')}><Icon name="document" className="h-4 w-4" />تنزيل نسخة دون إنترنت</SecondaryButton></div></div>
+            <div className="flex flex-wrap items-start justify-between gap-4"><div><Link href="/company-forms?view=documents" className="text-sm text-gray-500 hover:text-gray-900">رجوع إلى نماذج الشركة والأرشيف</Link><h1 className="mt-2 text-2xl font-bold text-gray-900">{issued.title}</h1><p className="mt-1 text-sm text-gray-500">مستند #{issued.id}، {issued.mode === 'blank' ? 'نموذج فارغ للتعبئة اليدوية' : issued.mode === 'archive' ? 'طلب ورقي مؤرشف' : 'نسخة معبأة محفوظة'}</p></div><div className="flex flex-wrap gap-2"><PrimaryKey type="button" disabled={!ready || busy} onClick={() => prepare('print')}><Icon name="printer" className="h-4 w-4" />طباعة / حفظ PDF</PrimaryKey><SecondaryKey disabled={!ready || busy} onClick={() => prepare('offline')}><Icon name="document" className="h-4 w-4" />تنزيل نسخة دون إنترنت</SecondaryKey></div></div>
             <p className="rounded-control bg-gray-50 p-3 text-sm leading-7 text-gray-600">من نافذة الطباعة اختر الطابعة أو «حفظ PDF»، وحجم الورق المناسب، وأوقف ترويسة المتصفح وتذييله. النسخة التي تنزّلها للعمل دون إنترنت تضم الصفحات والشعار داخل ملف واحد.</p>
             {issued.paperReference && <p className="text-sm text-gray-600">رقم الطلب الورقي: <bdi>{issued.paperReference}</bdi>، التاريخ: {formatDate(issued.paperDate)}</p>}
             {issued.notes && <p className="text-sm text-gray-600">ملاحظات داخلية: {issued.notes}</p>}

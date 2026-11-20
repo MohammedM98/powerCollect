@@ -23,7 +23,7 @@ before(async () => {
             if (id === '\0entry') return "export {default as Paper} from '@/Pages/ReadingCycles/PaperSheet'; export {default as Designer} from '@/Components/Print/PrintDesigner'; export {state} from '@inertiajs/react';";
             if (id === '\0css') return '';
             if (id === '\0layout') return "import {state} from '@inertiajs/react'; export default function Layout({children,beforePrint}){state.beforePrint=beforePrint;return children;}";
-            if (id === '\0primary') return `import {createElement} from ${JSON.stringify(import.meta.resolve('react'))}; import {state} from '@inertiajs/react'; export default function Primary(props){if(props.className?.includes('tone-print'))state.printAction=props.onClick;return createElement('button',props,props.children);}`;
+            if (id === '\0primary') return `import {createElement} from ${JSON.stringify(import.meta.resolve('react'))}; import {state} from '@inertiajs/react'; export default function Primary(props){if(props.className?.includes('tone-print'))state.printAction=props.onClick;return createElement('button',props,props.children);} export const primaryButtonClass='';`;
             if (id === '\0inertia') return `
                 export const state={calls:[],beforePrint:null,printAction:null};
                 export const Head=()=>null;

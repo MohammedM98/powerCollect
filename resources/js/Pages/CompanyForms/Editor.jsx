@@ -4,20 +4,16 @@ import { Head, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import FormSection from '@/Components/Form/FormSection';
 import FormField from '@/Components/Form/FormField';
-import SearchableSelect from '@/Components/SearchableSelect';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import ChoiceChips from '@/Components/ChoiceChips';
-import Switch from '@/Components/Switch';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import CompanyFormPaper from './CompanyFormPaper';
 import useCompanySource from './useCompanySource';
 import { FORMAL_LETTERHEAD, MAX_FORM_PAGES, letterhead, moveFormItem } from '@/lib/companyForms';
 import { PRINT_FONTS } from '@/lib/printLayout';
 import { useBrand } from '@/hooks/useBrand';
 import PageHeader, { BackLink } from '@/Components/PageHeader';
+import { ConfirmDialog, PrimaryKey, SearchableSelect, SecondaryKey, Switch } from '@/Components/UI';
 
 const TYPES = [{ value: 'heading', label: 'عنوان', icon: 'document' }, { value: 'paragraph', label: 'نص', icon: 'note' }, { value: 'fields', label: 'حقول بيانات', icon: 'grid' }, { value: 'signatures', label: 'توقيعات', icon: 'pencil' }, { value: 'spacer', label: 'مسافة', icon: 'expand' }];
 const FONT_OPTIONS = Object.entries(PRINT_FONTS).map(([value, font]) => ({ value, label: font.label }));
@@ -114,7 +110,7 @@ export default function Editor({ template, defaultLayout, fields }) {
     }
     const previewPages = source?.url ? sourceState.pages : layout.pages.map(() => null);
 
-    return <AuthenticatedLayout header={<PageHeader eyebrow={<BackLink href="/company-forms">نماذج الشركة</BackLink>} title={template ? 'تخصيص النموذج' : 'نموذج جديد'} actions={<><SecondaryButton onClick={() => window.history.back()}>رجوع</SecondaryButton><PrimaryButton type="submit" form="company-form-editor" disabled={processing || sourceState.loading || Boolean(sourceState.error)}><Icon name="check" className="h-4 w-4" />{processing ? 'جارٍ الحفظ…' : 'حفظ النموذج'}</PrimaryButton></>} />}>
+    return <AuthenticatedLayout header={<PageHeader eyebrow={<BackLink href="/company-forms">نماذج الشركة</BackLink>} title={template ? 'تخصيص النموذج' : 'نموذج جديد'} actions={<><SecondaryKey onClick={() => window.history.back()}>رجوع</SecondaryKey><PrimaryKey type="submit" form="company-form-editor" disabled={processing || sourceState.loading || Boolean(sourceState.error)}><Icon name="check" className="h-4 w-4" />{processing ? 'جارٍ الحفظ…' : 'حفظ النموذج'}</PrimaryKey></>} />}>
         <Head title="تخصيص نماذج الشركة" />
         <form id="company-form-editor" onSubmit={save} className="space-y-5">
             <div className="grid gap-4 rounded-card border border-gray-100 bg-surface p-5 shadow-card sm:grid-cols-2">
@@ -137,7 +133,7 @@ export default function Editor({ template, defaultLayout, fields }) {
                             <Switch label="إظهار ترويسة الشركة" checked={layout.header.enabled} onChange={(value) => sectionValue('header', 'enabled', value)} />
                             <Switch label="إظهار شعار الشركة" checked={layout.header.logo} onChange={(value) => sectionValue('header', 'logo', value)} />
                             <ChoiceChips label="شكل الترويسة" options={[{ value: 'simple', label: 'بسيطة' }, { value: 'letterhead', label: 'رسمية: نص على جانبي الشعار' }]} value={head.style} onChange={headValue('style')} />
-                            <SecondaryButton onClick={() => setLayout({ ...layout, header: { ...layout.header, ...FORMAL_LETTERHEAD, ruleColor2: brand.printColor, enabled: true } })}><Icon name="sparkles" className="h-4 w-4" />تطبيق ترويسة رسمية جاهزة</SecondaryButton>
+                            <SecondaryKey onClick={() => setLayout({ ...layout, header: { ...layout.header, ...FORMAL_LETTERHEAD, ruleColor2: brand.printColor, enabled: true } })}><Icon name="sparkles" className="h-4 w-4" />تطبيق ترويسة رسمية جاهزة</SecondaryKey>
                             {head.style === 'letterhead' && <ChoiceChips label="موضع الشعار" options={SIDES} value={head.logoPosition} onChange={headValue('logoPosition')} />}
                             <div className="grid grid-cols-2 gap-3">
                                 <FormField id="company-logo-width" label="عرض الشعار (مم)">{numberInput('company-logo-width', 'logoWidth', 10, 60)}</FormField>
@@ -178,18 +174,18 @@ export default function Editor({ template, defaultLayout, fields }) {
                     </>}
                     {tab === 'content' && <>
                         <FormSection columns={1} icon="document-plus" title="محتوى الصفحة" info="أضف عنصرًا ثم عدّل نصه أو بياناته. الأسهم تغيّر ترتيب العناصر.">
-                            <div className="flex flex-wrap gap-2">{TYPES.map((item) => <SecondaryButton key={item.value} onClick={() => addBlock(item.value)} disabled={page.blocks.length >= 35}><Icon name={item.icon} className="h-4 w-4" />{item.label}</SecondaryButton>)}</div>
+                            <div className="flex flex-wrap gap-2">{TYPES.map((item) => <SecondaryKey key={item.value} onClick={() => addBlock(item.value)} disabled={page.blocks.length >= 35}><Icon name={item.icon} className="h-4 w-4" />{item.label}</SecondaryKey>)}</div>
                             <div className="space-y-2">{page.blocks.map((item, index) => <div key={item.id} className={`flex items-center gap-1 rounded-control border p-2 ${item.id === blockId ? 'border-brand-500/40 bg-brand-500/5' : 'border-gray-200'}`}><Button data-raw="" variant="ghost" className="min-w-0 flex-1 truncate px-1 text-start text-sm font-semibold text-gray-800" onClick={() => setBlockId(item.id)}>{index + 1}. {TYPES.find((type) => type.value === item.type)?.label} {item.text?.slice(0, 24)}</Button><Button data-raw="" variant="ghost" isDisabled={index === 0} aria-label="نقل العنصر للأعلى" className="rounded p-1 text-gray-500 disabled:opacity-30" onClick={() => setLayout({ ...layout, pages: layout.pages.map((p, i) => i === pageIndex ? { ...p, blocks: moveFormItem(p.blocks, index, -1) } : p) })}><Icon name="arrow-up" className="h-4 w-4" /></Button><Button data-raw="" variant="ghost" isDisabled={index === page.blocks.length - 1} aria-label="نقل العنصر للأسفل" className="rounded p-1 text-gray-500 disabled:opacity-30" onClick={() => setLayout({ ...layout, pages: layout.pages.map((p, i) => i === pageIndex ? { ...p, blocks: moveFormItem(p.blocks, index, 1) } : p) })}><Icon name="arrow-down" className="h-4 w-4" /></Button><Button data-raw="" variant="ghost" aria-label="حذف العنصر" className="rounded p-1 text-brand-600" onClick={() => { setLayout({ ...layout, pages: layout.pages.map((p, i) => i === pageIndex ? { ...p, blocks: p.blocks.filter((b) => b.id !== item.id) } : p) }); setBlockId(null); }}><Icon name="trash" className="h-4 w-4" /></Button></div>)}</div>
                         </FormSection>
                         {block && <FormSection columns={1} icon="pencil" title="تعديل العنصر المختار">
                             {['heading', 'paragraph', 'signatures'].includes(block.type) && <FormField id="company-block-text" label={block.type === 'signatures' ? 'التوقيعات — كل توقيع في سطر' : 'النص'}><TextArea rows={5} value={block.type === 'signatures' ? block.text.split('|').join('\n') : block.text} onChange={(event) => updateBlock({ text: block.type === 'signatures' ? event.target.value.replaceAll('\n', '|') : event.target.value })} className="w-full" maxLength={6000} /></FormField>}
                             {['paragraph', 'heading', 'fields'].includes(block.type) && <>
                                 <FormField id="company-field-key" label="البيانات الجاهزة"><SearchableSelect options={fieldOptions} value={fieldKey === 'custom' ? '' : fieldKey} onChange={setFieldKey} clearable={false} /></FormField>
-                                <SecondaryButton onClick={() => block.type === 'fields' ? addField() : updateBlock({ text: `${block.text} {${fieldKey}}` })} disabled={!fields[fieldKey]}><Icon name="plus" className="h-4 w-4" />إدراج الحقل</SecondaryButton>
+                                <SecondaryKey onClick={() => block.type === 'fields' ? addField() : updateBlock({ text: `${block.text} {${fieldKey}}` })} disabled={!fields[fieldKey]}><Icon name="plus" className="h-4 w-4" />إدراج الحقل</SecondaryKey>
                             </>}
                             {block.type === 'fields' && <>
                                 <div className="space-y-2">{block.fields.map((field, index) => <div key={`${field.key}-${index}`} className="flex items-center gap-2"><Input aria-label="اسم الحقل على الورقة" value={field.label} onChange={(event) => updateBlock({ fields: block.fields.map((old, i) => i === index ? { ...old, label: event.target.value } : old) })} className="min-w-0 flex-1" maxLength={100} /><Button data-raw="" variant="ghost" aria-label={`إزالة ${field.label}`} onClick={() => updateBlock({ fields: block.fields.filter((_, i) => i !== index) })} className="rounded-control p-2 text-brand-600"><Icon name="close" className="h-4 w-4" /></Button></div>)}</div>
-                                <FormField id="company-custom-field" label="حقل يدوي إضافي"><Input value={customLabel} onChange={(event) => setCustomLabel(event.target.value)} placeholder="مثل: رقم الطلب الخارجي" className="w-full" maxLength={100} /></FormField><SecondaryButton disabled={!customLabel.trim() || block.fields.length >= 30} onClick={() => addField(true)}>إضافة الحقل اليدوي</SecondaryButton>
+                                <FormField id="company-custom-field" label="حقل يدوي إضافي"><Input value={customLabel} onChange={(event) => setCustomLabel(event.target.value)} placeholder="مثل: رقم الطلب الخارجي" className="w-full" maxLength={100} /></FormField><SecondaryKey disabled={!customLabel.trim() || block.fields.length >= 30} onClick={() => addField(true)}>إضافة الحقل اليدوي</SecondaryKey>
                             </>}
                             {block.type === 'spacer' ? <FormField id="company-space" label="ارتفاع المسافة (مم)"><Input type="number" min="1" max="60" value={block.height} onChange={(event) => updateBlock({ height: Number(event.target.value) })} className="w-full" /></FormField> : <>
                                 <ChoiceChips label="المحاذاة" options={[{ value: 'right', label: 'يمين' }, { value: 'center', label: 'وسط' }, { value: 'left', label: 'يسار' }]} value={block.align} onChange={(align) => updateBlock({ align })} />
@@ -201,20 +197,20 @@ export default function Editor({ template, defaultLayout, fields }) {
                     {tab === 'import' && <>
                         <FormSection columns={1} icon="document-plus" title="استيراد نموذج قديم" info="PDF أو صورة، حتى 10 ميجابايت و10 صفحات. يبقى التصميم الأصلي خلف الحقول التي تضيفها.">
                             <input ref={fileInput} type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" className="sr-only" onChange={(event) => { chooseFile(event.target.files?.[0]); event.target.value = ''; }} />
-                            <SecondaryButton onClick={() => fileInput.current.click()}><Icon name="document-plus" className="h-4 w-4" />{source ? 'اختيار ملف بديل' : 'اختيار الملف'}</SecondaryButton>
+                            <SecondaryKey onClick={() => fileInput.current.click()}><Icon name="document-plus" className="h-4 w-4" />{source ? 'اختيار ملف بديل' : 'اختيار الملف'}</SecondaryKey>
                             {source && <p className="wrap-break-word rounded-control bg-gray-50 px-3 py-2 text-sm text-gray-700">{source.name}</p>}<InputError message={fileError || sourceState.error} />
                         </FormSection>
                         {source?.url && <FormSection columns={1} icon="pin" title="الحقول فوق الملف" info="اختر الحقل، ثم اضغط تحديد مكانه وانقر على الورقة. تستطيع تعديل الموضع بالأرقام.">
                             <SearchableSelect options={[...fieldOptions, { value: 'custom', label: 'حقل يدوي مخصص' }]} value={fieldKey} onChange={setFieldKey} clearable={false} />
                             {fieldKey === 'custom' && <Input aria-label="اسم الحقل اليدوي" value={customLabel} onChange={(event) => setCustomLabel(event.target.value)} className="w-full" placeholder="اسم الحقل" maxLength={100} />}
-                            <SecondaryButton onClick={() => setPlacing(!placing)} disabled={sourceState.loading || Boolean(sourceState.error) || layout.overlays.length >= 100 || (fieldKey === 'custom' && !customLabel.trim())}><Icon name="pin" className="h-4 w-4" />{placing ? 'إلغاء التحديد على الورقة' : 'تحديد مكان الحقل'}</SecondaryButton>
+                            <SecondaryKey onClick={() => setPlacing(!placing)} disabled={sourceState.loading || Boolean(sourceState.error) || layout.overlays.length >= 100 || (fieldKey === 'custom' && !customLabel.trim())}><Icon name="pin" className="h-4 w-4" />{placing ? 'إلغاء التحديد على الورقة' : 'تحديد مكان الحقل'}</SecondaryKey>
                             {placing && <p role="status" className="text-sm font-semibold text-brand-600">اضغط على مكان الحقل في معاينة الورقة.</p>}
                             <SearchableSelect value={overlayId ?? ''} onChange={setOverlayId} options={layout.overlays.map((item) => ({ value: item.id, label: `${item.label}، صفحة ${item.page}` }))} placeholder="اختر حقلًا لتعديل مكانه" />
                             {overlay && <>
                                 <FormField id="company-overlay-label" label="اسم الحقل"><Input value={overlay.label} onChange={(event) => updateOverlay({ label: event.target.value })} className="w-full" maxLength={100} /></FormField>
                                 <div className="grid grid-cols-2 gap-3">{[['x', 'من اليسار %', 0, 98], ['y', 'من الأعلى %', 0, 95], ['width', 'العرض %', 2, 100], ['fontSize', 'حجم الخط', 9, 32]].map(([key, label, min, max]) => <FormField key={key} id={`company-overlay-${key}`} label={label}><Input type="number" min={min} max={max} step={key === 'fontSize' ? '1' : '0.1'} value={overlay[key]} onChange={(event) => updateOverlay({ [key]: Number(event.target.value) })} className="w-full" /></FormField>)}</div>
                                 <ChoiceChips label="محاذاة الحقل" options={[{ value: 'right', label: 'يمين' }, { value: 'center', label: 'وسط' }, { value: 'left', label: 'يسار' }]} value={overlay.align} onChange={(align) => updateOverlay({ align })} />
-                                <SecondaryButton onClick={() => { setLayout({ ...layout, overlays: layout.overlays.filter((item) => item.id !== overlayId) }); setOverlayId(null); }}>حذف الحقل المختار</SecondaryButton>
+                                <SecondaryKey onClick={() => { setLayout({ ...layout, overlays: layout.overlays.filter((item) => item.id !== overlayId) }); setOverlayId(null); }}>حذف الحقل المختار</SecondaryKey>
                             </>}
                         </FormSection>}
                     </>}
@@ -222,7 +218,7 @@ export default function Editor({ template, defaultLayout, fields }) {
                 </aside>
                 <section className="min-w-0 space-y-4 rounded-card border border-gray-200 bg-gray-100 p-4 sm:p-6 xl:sticky xl:top-4">
                     <div className="flex flex-wrap items-center justify-between gap-3"><div><h3 className="text-lg font-bold text-gray-900">معاينة مباشرة</h3><p className="text-xs text-gray-500">تظهر الحقول فارغة لتعبئتها يدويًا. تُملأ عند إصدار نسخة معبأة.</p></div><div className="flex items-center gap-2"><span className="text-sm text-gray-500">الصفحة</span><div className="w-28"><SearchableSelect options={layout.pages.map((_, index) => ({ value: String(index), label: String(index + 1) }))} value={String(pageIndex)} onChange={(value) => { setPageIndex(Number(value)); setBlockId(null); }} searchable={false} clearable={false} /></div></div></div>
-                    {!source?.url && <div className="flex flex-wrap gap-2"><SecondaryButton disabled={layout.pages.length >= MAX_FORM_PAGES} onClick={() => { setLayout({ ...layout, pages: [...layout.pages, { id: crypto.randomUUID(), blocks: [] }] }); setPageIndex(layout.pages.length); setBlockId(null); }}>إضافة صفحة</SecondaryButton><SecondaryButton disabled={layout.pages.length === 1} onClick={() => { setLayout({ ...layout, pages: layout.pages.filter((_, index) => index !== pageIndex) }); setPageIndex(0); setBlockId(null); }}>حذف الصفحة الحالية</SecondaryButton></div>}
+                    {!source?.url && <div className="flex flex-wrap gap-2"><SecondaryKey disabled={layout.pages.length >= MAX_FORM_PAGES} onClick={() => { setLayout({ ...layout, pages: [...layout.pages, { id: crypto.randomUUID(), blocks: [] }] }); setPageIndex(layout.pages.length); setBlockId(null); }}>إضافة صفحة</SecondaryKey><SecondaryKey disabled={layout.pages.length === 1} onClick={() => { setLayout({ ...layout, pages: layout.pages.filter((_, index) => index !== pageIndex) }); setPageIndex(0); setBlockId(null); }}>حذف الصفحة الحالية</SecondaryKey></div>}
                     {overflow[pageIndex] && <p role="alert" className="rounded-control border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">المحتوى أطول من الورقة. انقل بعض العناصر إلى صفحة أخرى أو قلّل المسافات قبل الطباعة.</p>}
                     {sourceState.loading ? <div role="status" className="animate-pulse rounded-card bg-surface p-12 text-center text-gray-500">جارٍ تجهيز صفحات الملف…</div> : sourceState.error ? <p role="alert" className="rounded-card bg-surface p-6 text-brand-600">{sourceState.error}</p> : previewPages.length > 0 && <CompanyFormPaper key={pageIndex} layout={layout} page={page} pageIndex={pageIndex} sourcePage={sourceState.pages[pageIndex] ?? null} blank={!source?.url} onPlace={placing ? placeField : null} selectedOverlay={overlayId} onSelectOverlay={setOverlayId} onOverflow={onOverflow} />}
                 </section>

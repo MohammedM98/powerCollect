@@ -5,8 +5,8 @@ import DateInput from '@/Components/DateInput';
 import Icon from '@/Components/Icon';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
 import KpiTile from '@/Components/KpiTile';
-import SearchableSelect from '@/Components/SearchableSelect';
 import { cents, reportMoney, shortDate } from '@/lib/reportFormatting';
+import { SearchableSelect } from '@/Components/UI';
 
 export const TH = 'px-3 py-2.5 text-start text-[13.5px] font-semibold text-gray-700';
 

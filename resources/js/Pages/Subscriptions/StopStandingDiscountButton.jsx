@@ -1,7 +1,7 @@
 import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
-import ConfirmDialog from '@/Components/ConfirmDialog';
+import { ConfirmDialog } from '@/Components/UI';
 
 /**
  * Cancels a subscription's standing discount (خصم القراءات الأسبوعية) for good after a

@@ -1,6 +1,5 @@
 import { useId, useRef, useState } from 'react';
 import { router } from '@inertiajs/react';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import InputError from '@/Components/InputError';
 import Modal from '@/Components/Modal';
 import { useResourceForm } from '@/hooks/useResourceForm';
@@ -19,6 +18,7 @@ import DiscountMethodStep from './DiscountMethodStep';
 import DiscountKindStep from './DiscountKindStep';
 import DiscountNotesStep from './DiscountNotesStep';
 import StandingDiscountCard from './StandingDiscountCard';
+import { ConfirmDialog } from '@/Components/UI';
 
 /**
  * Give a subscription a discount (خصم). Once: shekels taken off what they

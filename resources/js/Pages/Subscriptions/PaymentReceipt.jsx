@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Head } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { useBrand } from '@/hooks/useBrand';
 import { formatMoney, formatDate } from '@/lib/format';
 import { balanceOnPaper } from '@/lib/balance';
+import { PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 // The time printed at the foot of the receipt, in the app's Arabic with Western digits.
 const PRINTED_AT_FORMAT = new Intl.DateTimeFormat('ar-EG-u-nu-latn', { dateStyle: 'long', timeStyle: 'short' });
@@ -74,13 +73,13 @@ export default function PaymentReceipt({ subscription, receipt, printedBy }) {
             <div className="pd-screen-only mx-auto mb-4 flex max-w-[148mm] flex-wrap items-center justify-between gap-3">
                 <p className="text-sm text-gray-600">{title} جاهز للطباعة على ورق A5.</p>
                 <div className="flex gap-2">
-                    <SecondaryButton type="button" onClick={() => window.close()}>
+                    <SecondaryKey type="button" onClick={() => window.close()}>
                         إغلاق
-                    </SecondaryButton>
-                    <PrimaryButton type="button" className="tone-print tone-solid" onClick={() => window.print()}>
+                    </SecondaryKey>
+                    <PrimaryKey type="button" className="tone-print tone-solid" onClick={() => window.print()}>
                         <Icon name="printer" className="h-4 w-4" />
                         طباعة
-                    </PrimaryButton>
+                    </PrimaryKey>
                 </div>
             </div>
 

@@ -38,6 +38,7 @@ before(async () => {
                 if (id === '\0confirm') return `
                     import {state} from '@inertiajs/react';
                     export default function Confirm(props) { state.confirmations.push(props); return null; }
+                    export function SaveConfirmDialog(props) { state.confirmations.push(props); return null; }
                 `;
                 if (id === '\0jsx') return `
                     import {jsx as originalJsx, jsxs as originalJsxs, Fragment} from ${JSON.stringify(import.meta.resolve('react/jsx-runtime'))};

@@ -1,7 +1,6 @@
 import { Input } from '@heroui/react';
 import { useEffect, useEffectEvent, useId, useRef, useState } from 'react';
 import { useHttp, usePage } from '@inertiajs/react';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import InputError from '@/Components/InputError';
 import Modal from '@/Components/Modal';
 import { useResourceForm } from '@/hooks/useResourceForm';
@@ -16,6 +15,7 @@ import PaymentMethodStep from './PaymentMethodStep';
 import PaymentAmountStep from './PaymentAmountStep';
 import PaymentFooter from './PaymentFooter';
 import PaymentCheckout from './PaymentCheckout';
+import { ConfirmDialog } from '@/Components/UI';
 
 export { inputClass };
 

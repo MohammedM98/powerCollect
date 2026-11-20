@@ -1,4 +1,3 @@
-import CheckBox from '@/Components/CheckBox';
 import { Input } from '@heroui/react';
 import { BankReceivedDateField } from '@/Components/BankReceivedDate';
 import Icon from '@/Components/Icon';
@@ -6,6 +5,7 @@ import InputError from '@/Components/InputError';
 import { FieldLabel } from '@/Pages/Subscriptions/AccountFormParts';
 import { BankChips, BankDropdown } from '@/Components/Banks';
 import { inputClass } from '@/Pages/Subscriptions/PaymentModal';
+import { CheckBox } from '@/Components/UI';
 
 /** The bank transfer itself: amount, currency, bank, reference, sender and arrival date, with the duplicate-reference warning. */
 export default function SplitTransferDetails({

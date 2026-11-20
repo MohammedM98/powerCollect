@@ -1,6 +1,5 @@
 import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import AddButton from '@/Components/AddButton';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import SortableTh from '@/Components/DataTable/SortableTh';
@@ -14,7 +13,7 @@ import { formatNumber, timeAgo } from '@/lib/format';
 import { openQuickMessage } from '@/lib/quickMessage';
 import { ChannelLabel, DeliveryCounts, KindPill, MessageText } from './MessageParts';
 import { Button } from '@heroui/react';
-import { Figure } from '@/Components/UI';
+import { AddKey, Figure } from '@/Components/UI';
 import PageHeader from '@/Components/PageHeader';
 
 /**
@@ -41,7 +40,7 @@ export default function Index({ batches, canSend, filters, filterOptions, monthS
                                 <Icon name="send" className="h-4 w-4" />
                                 رسالة سريعة
                             </Button>
-                            <AddButton href="/messages/create">رسالة جديدة</AddButton>
+                            <AddKey href="/messages/create">رسالة جديدة</AddKey>
                             </>
                         )
                     }

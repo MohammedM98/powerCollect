@@ -1,16 +1,13 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Button, Input } from '@heroui/react';
 import BankReceivedDate from '@/Components/BankReceivedDate';
 import { useEffect, useRef, useState } from 'react';
 import Icon from '@/Components/Icon';
-import SecondaryButton from '@/Components/SecondaryButton';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import InputError from '@/Components/InputError';
 import LatePaymentDetails from '@/Components/LatePaymentDetails';
-import SearchableSelect from '@/Components/SearchableSelect';
 import { formatMoney } from '@/lib/format';
 import './financial-boxes.css';
 import DateInput from '@/Components/DateInput';
+import { ChoiceSelect, SearchableSelect, SecondaryKey, StatusPill } from '@/Components/UI';
 
 const outcomes = { matched: ['مطابقة', 'green'], missing: ['غير موجودة', 'red'], short: ['نقص في المبلغ', 'amber'], over: ['زيادة في المبلغ', 'amber'] };
 
@@ -82,7 +79,7 @@ export default function AuditTransferSearch({ data, branchName, busy = false, er
             <form onSubmit={(event) => { event.preventDefault(); submitSearch(); }} className="flex flex-wrap items-end gap-3">
                 <div className="min-w-0 flex-1 basis-72"><label htmlFor="audit-transfer-search" className="mb-2 block text-base font-semibold text-gray-900">رقم السند أو الرقم المرجعي</label><Input id="audit-transfer-search" type="search" maxLength="100" autoComplete="off" dir="auto" value={search} onChange={(event) => changeSearch(event.target.value, event.nativeEvent.isComposing)} onCompositionEnd={(event) => changeSearch(event.target.value)} aria-describedby="audit-transfer-search-hint" placeholder="مثال: 000125 أو BANK-2026-125" className="block w-full rounded-control border-gray-200 px-4 py-3 text-base" /><InputError message={errors.transfer_search} /></div>
                 <div className="w-full sm:w-56"><label htmlFor="audit-transfer-state" className="mb-2 block text-base font-semibold text-gray-900">حالة التدقيق</label><ChoiceSelect id="audit-transfer-state" value={state} onChange={(event) => { setState(event.target.value); submitSearch(search, event.target.value); }} className="block w-full rounded-control border-gray-200 py-3 text-base"><option value="">كل الحالات</option><option value="differences">الحوالات غير المطابقة</option><option value="missing">غير موجودة</option><option value="short">نقص في المبلغ</option><option value="over">زيادة في المبلغ</option><option value="draft">مسودات محفوظة</option><option value="unreviewed">لم تُراجع</option><option value="matched">مطابقة</option></ChoiceSelect><InputError message={errors.transfer_state} /></div>
-                {(search || state || attempted) && <SecondaryButton onClick={() => { const cleared = {transfer_date_basis:'recorded',transfer_from:'',transfer_to:'',transfer_sort:'date_desc'}; setSearch(''); setState(''); setDates(cleared); submitSearch('', '', cleared); }}>مسح البحث</SecondaryButton>}
+                {(search || state || attempted) && <SecondaryKey onClick={() => { const cleared = {transfer_date_basis:'recorded',transfer_from:'',transfer_to:'',transfer_sort:'date_desc'}; setSearch(''); setState(''); setDates(cleared); submitSearch('', '', cleared); }}>مسح البحث</SecondaryKey>}
             </form>
             <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 <div><label htmlFor="audit-date-basis" className="mb-1.5 block text-sm font-semibold text-gray-700">تصفية حسب</label><SearchableSelect id="audit-date-basis" clearable={false} searchable={false} value={dates.transfer_date_basis} options={[{value:'recorded',label:'تاريخ التسجيل بالنظام'},{value:'bank',label:'تاريخ وصول الحوالة إلى البنك'},{value:'paid',label:'تاريخ الدفع السابق (أرشيف)'}]} onChange={value => changeDate('transfer_date_basis', value)} /></div>
@@ -97,7 +94,7 @@ export default function AuditTransferSearch({ data, branchName, busy = false, er
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 px-5 py-4"><h3 className="text-lg font-bold text-gray-900">نتائج البحث <span className="font-display text-gray-500">({results.total})</span></h3><p role="status" aria-live="polite" className="text-sm text-gray-500">{updating ? 'جارٍ تحديث النتائج…' : stale ? 'النتائج المعروضة تخص البحث السابق.' : 'الحوالات السارية في الصناديق المغلقة'}</p></div>
             {!results.data.length ? <div className="flex flex-col items-center gap-3 px-5 py-14 text-center"><Icon name="search" className="h-9 w-9 text-gray-400" /><h4 className="text-lg font-semibold text-gray-900">{attempted ? 'لا توجد حوالة مطابقة للبحث' : 'ابدأ برقم الحركة التي تريد مراجعتها'}</h4><p className="max-w-lg text-base leading-7 text-gray-500">{attempted ? 'تحقق من الرقم والفرع والفترة، أو غيّر حالة التدقيق.' : 'يمكنك أيضًا اختيار حالة التدقيق لعرض الحوالات المسجلة بهذه الحالة.'}</p></div> : <>
                 <div className={`overflow-x-auto ${updating || stale ? 'opacity-60' : ''}`}><table className="data-table w-full md:min-w-[1250px]"><thead className="hidden md:table-header-group"><tr>{['المشترك', 'تاريخ الحركة', 'تاريخ وصول البنك', 'رقم السند', 'الرقم المرجعي', 'مبلغ الدفعة', 'وصل البنك', 'الفرق (شيكل)', 'الصندوق والمحصل', 'حالة التدقيق', 'الإجراء'].map((label) => <th key={label} className="px-4! py-4! text-sm!">{label}</th>)}</tr></thead><tbody>{results.data.map((entry) => <Result key={entry.id} entry={entry} branchName={branchName} disabled={updating || stale} onEdit={onEdit} />)}</tbody></table></div>
-                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-5 py-4"><p className="text-sm text-gray-500">المعروض {results.from}–{results.to} من {results.total} حوالة</p><div className="flex gap-2"><SecondaryButton disabled={updating || stale || !results.prev_page_url} onClick={() => onPage(results.prev_page_url)}>السابق</SecondaryButton><SecondaryButton disabled={updating || stale || !results.next_page_url} onClick={() => onPage(results.next_page_url)}>التالي</SecondaryButton></div></div>
+                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-5 py-4"><p className="text-sm text-gray-500">المعروض {results.from}–{results.to} من {results.total} حوالة</p><div className="flex gap-2"><SecondaryKey disabled={updating || stale || !results.prev_page_url} onClick={() => onPage(results.prev_page_url)}>السابق</SecondaryKey><SecondaryKey disabled={updating || stale || !results.next_page_url} onClick={() => onPage(results.next_page_url)}>التالي</SecondaryKey></div></div>
             </>}
         </div>
         <p className="text-sm leading-7 text-gray-500">الفرق بالشيكل وفق سعر صرف الدفعة: الموجب يُحمّل على المشترك، والسالب يُضاف لصالحه عند الاعتماد. الحفظ وحده لا يعتمد الفترة.</p>

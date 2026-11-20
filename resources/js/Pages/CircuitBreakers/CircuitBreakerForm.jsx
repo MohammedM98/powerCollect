@@ -2,7 +2,7 @@ import FormField from '@/Components/Form/FormField';
 import FormPreview, { countFilled } from '@/Components/Form/FormPreview';
 import FormSection from '@/Components/Form/FormSection';
 import Icon from '@/Components/Icon';
-import TextInput from '@/Components/TextInput';
+import { TextInput } from '@/Components/UI';
 
 /**
  * The form's starting values: the circuit breaker's own when editing,

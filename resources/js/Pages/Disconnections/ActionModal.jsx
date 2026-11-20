@@ -1,4 +1,3 @@
-import CheckBox from '@/Components/CheckBox';
 import { Button, Input, TextArea } from '@heroui/react';
 import { useEffect, useEffectEvent, useId, useMemo, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
@@ -6,15 +5,12 @@ import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
 import Balance from '@/Components/Balance';
 import ChoiceChips from '@/Components/ChoiceChips';
-import StatusPill from '@/Components/DataTable/StatusPill';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
-import DangerButton from '@/Components/DangerButton';
 import InputError from '@/Components/InputError';
 import { formatMoney, formatDate } from '@/lib/format';
 import { feeError, fillPlaceholders, itemTone, operationId, smsParts, totalFees } from '@/lib/disconnections';
 import HoldToConfirm from './HoldToConfirm';
 import DateInput from '@/Components/DateInput';
+import { CheckBox, DangerKey, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
 
 const ACTIONS = {
     reschedule: { title: 'تغيير موعد القطع', icon: 'calendar', tone: 'bg-blue-500/10 text-blue-600', url: 'reschedule' },
@@ -309,9 +305,9 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                                             ₪
                                         </span>
                                     </div>
-                                    <SecondaryButton onClick={() => setFees((current) => ({ ...current, ...Object.fromEntries(reached.map((item) => [item.id, feeForAll])) }))} disabled={feeForAll === '' || Number(feeForAll) < 0}>
+                                    <SecondaryKey onClick={() => setFees((current) => ({ ...current, ...Object.fromEntries(reached.map((item) => [item.id, feeForAll])) }))} disabled={feeForAll === '' || Number(feeForAll) < 0}>
                                         تطبيق على الجميع ({reached.length.toLocaleString('en')})
-                                    </SecondaryButton>
+                                    </SecondaryKey>
                                     <p className="basis-full text-xs text-gray-500">الرسوم المعتادة {formatMoney(usualFee)} ₪. يمكنك تغييرها لكل مشترك في الجدول، و0 يعفيه منها.</p>
                                 </div>
                             )}
@@ -339,17 +335,17 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                 </div>
 
                 <div className="flex flex-wrap items-center justify-end gap-3 border-t border-gray-100 bg-gray-50 px-7 py-4">
-                    <SecondaryButton onClick={onClose} disabled={saving}>إلغاء</SecondaryButton>
+                    <SecondaryKey onClick={onClose} disabled={saving}>إلغاء</SecondaryKey>
                     {action === 'remove' && (
-                        <DangerButton type="submit" disabled={saving || !preview || reached.length === 0}>
+                        <DangerKey type="submit" disabled={saving || !preview || reached.length === 0}>
                             {saving ? 'جارٍ التنفيذ…' : `إزالة ${reached.length.toLocaleString('en')} مشترك`}
-                        </DangerButton>
+                        </DangerKey>
                     )}
                     {(action === 'reschedule' || action === 'warn') && (
-                        <PrimaryButton type="submit" disabled={saving || !preview || reached.length === 0 || (action === 'warn' && !body.trim())}>
+                        <PrimaryKey type="submit" disabled={saving || !preview || reached.length === 0 || (action === 'warn' && !body.trim())}>
                             <Icon name={meta.icon} className="h-4 w-4" />
                             {saving ? 'جارٍ التنفيذ…' : action === 'warn' ? `إرسال إلى ${reached.length.toLocaleString('en')} مشترك` : `تطبيق على ${reached.length.toLocaleString('en')} مشترك`}
-                        </PrimaryButton>
+                        </PrimaryKey>
                     )}
                 </div>
             </form>

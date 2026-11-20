@@ -3,9 +3,9 @@ import { Head, Link, useHttp } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Icon from '@/Components/Icon';
 import { formatNumber, formatDate } from '@/lib/format';
-import { secondaryButtonClass } from '@/Components/SecondaryButton';
 import PageHeader from '@/Components/PageHeader';
 import PrintButton from '@/Components/PrintButton';
+import { secondaryButtonClass } from '@/Components/UI';
 
 /**
  * A paper reading sheet as printed: its number and cycle, and for each box

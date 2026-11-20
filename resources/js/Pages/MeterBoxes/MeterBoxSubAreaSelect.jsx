@@ -4,7 +4,7 @@ import { router, useHttp } from '@inertiajs/react';
 import FormSelect from '@/Components/Form/FormSelect';
 import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
-import TextInput from '@/Components/TextInput';
+import { TextInput } from '@/Components/UI';
 
 export default function MeterBoxSubAreaSelect({ id, value, onChange, onCreated, subAreas, areaId, canCreate, blockedMessage, error }) {
     const http = useHttp({ name: '' });

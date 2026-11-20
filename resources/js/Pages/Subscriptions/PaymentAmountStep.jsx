@@ -1,10 +1,9 @@
-import CheckBox from '@/Components/CheckBox';
 import { Button, Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
-import SearchableSelect from '@/Components/SearchableSelect';
 import { formatMoney, normalizeDecimalInput } from '@/lib/format';
 import { FormStep } from './AccountFormParts';
+import { CheckBox, SearchableSelect } from '@/Components/UI';
 
 const QUICK_AMOUNTS = [50, 100, 200];
 

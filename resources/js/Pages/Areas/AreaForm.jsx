@@ -3,7 +3,7 @@ import FormPreview, { countFilled } from '@/Components/Form/FormPreview';
 import FormSelect, { namedOptions } from '@/Components/Form/FormSelect';
 import FormSection from '@/Components/Form/FormSection';
 import Icon from '@/Components/Icon';
-import TextInput from '@/Components/TextInput';
+import { TextInput } from '@/Components/UI';
 
 /**
  * The form's starting values: the area's own when editing, otherwise

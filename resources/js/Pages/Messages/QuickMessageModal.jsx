@@ -3,7 +3,6 @@ import { useEffect, useEffectEvent, useId, useRef, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import { renderMessage } from './MessageParts';
 import QuickMessageBody from './QuickMessageBody';
 import QuickMessageRecipients from './QuickMessageRecipients';
@@ -12,6 +11,7 @@ import QuickMessageKind from './QuickMessageKind';
 import QuickMessageChannel from './QuickMessageChannel';
 import QuickMessageFooter from './QuickMessageFooter';
 import AsyncState from '@/Components/AsyncState';
+import { ConfirmDialog } from '@/Components/UI';
 
 const SEARCH_DELAY = 250;
 

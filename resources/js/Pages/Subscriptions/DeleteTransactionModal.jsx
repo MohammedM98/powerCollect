@@ -1,4 +1,3 @@
-import CheckBox from '@/Components/CheckBox';
 import { useEffect, useEffectEvent, useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import FormModal from '@/Components/FormModal';
@@ -6,6 +5,7 @@ import { describeBalance } from '@/lib/accountStatement';
 import { balanceInText } from '@/lib/balance';
 import { BalanceAfter } from './AccountSummary';
 import { CorrectionReasonFields, EMPTY_CORRECTION, OriginalLine } from './CorrectionFields';
+import { CheckBox } from '@/Components/UI';
 
 /**
  * Cancel a payment, charge or discount (a statement line) and say why, or

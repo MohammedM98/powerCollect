@@ -4,9 +4,8 @@ import { router } from '@inertiajs/react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { formatMoney } from '@/lib/format';
+import { PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 export default function ReadingPricingField({ reading, field }) {
     const price = field === 'unit_price';
@@ -37,7 +36,7 @@ export default function ReadingPricingField({ reading, field }) {
                 {reading.status === 'approved' && <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">تعديل القراءة المعتمدة يلغي مبلغها القديم بقيد عكسي محفوظ في الكشف، ويعيدها للمراجعة حتى اعتمادها مجددًا.</p>}
                 <label className="block"><span className="mb-2 block font-semibold">{label} (₪)</span><Input type="number" inputMode="decimal" dir="ltr" min="0" max="10000" step="0.01" required autoFocus value={value} onChange={(event) => setValue(event.target.value)} disabled={saving} className="w-full rounded-lg border-gray-300" /></label>
                 <InputError message={error} />
-                <div className="flex justify-end gap-3"><SecondaryButton onClick={() => setOpen(false)} disabled={saving}>إلغاء</SecondaryButton><PrimaryButton disabled={saving || Number(value) === Number(saved)}>{saving ? 'جارٍ الحفظ…' : 'تأكيد التعديل'}</PrimaryButton></div>
+                <div className="flex justify-end gap-3"><SecondaryKey onClick={() => setOpen(false)} disabled={saving}>إلغاء</SecondaryKey><PrimaryKey disabled={saving || Number(value) === Number(saved)}>{saving ? 'جارٍ الحفظ…' : 'تأكيد التعديل'}</PrimaryKey></div>
             </form>
         </Modal>
     </>;

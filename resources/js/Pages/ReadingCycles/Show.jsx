@@ -1,8 +1,6 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
 import { useEffect, useMemo, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import StatusPill from '@/Components/DataTable/StatusPill';
 import Icon from '@/Components/Icon';
 import { Button } from '@heroui/react';
 import { formatNumber, formatDate } from '@/lib/format';
@@ -12,12 +10,11 @@ import DistributionTable from './DistributionTable';
 import DistributionAreas from './DistributionAreas';
 import DistributionSummaryModal from './DistributionSummaryModal';
 import DistributionActionModal from './DistributionActionModal';
-import SearchableSelect from '@/Components/SearchableSelect';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import PrintButton from '@/Components/PrintButton';
 import DistributionBoard, { DistributionMission, DistributionTray } from './DistributionBoard';
-import SegmentedChoice from '@/Components/SegmentedChoice';
 import { AllocationReport, ReadingDayModal } from './CycleParts';
+import { ChoiceSelect, SearchableSelect, SegmentedChoice, StatusPill } from '@/Components/UI';
 
 /** Weekly allocations grouped by area, with standing and one-week changes. */
 export default function Show({ cycle, boards, readers, paperSheets, reviewCount, abilities, showBranchSelector = false, today = null }) {

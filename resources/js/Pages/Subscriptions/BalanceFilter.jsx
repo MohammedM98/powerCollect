@@ -1,11 +1,9 @@
 import { Button, Input } from '@heroui/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import Icon from '@/Components/Icon';
-import SearchableSelect from '@/Components/SearchableSelect';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { normalizeDecimalInput } from '@/lib/format';
 import { BALANCE_FILTER_KEYS, BALANCE_OPERATORS, BALANCE_SIDES, balanceFilterLabel } from '@/lib/subscriptionBalance';
+import { PrimaryKey, SearchableSelect, SecondaryKey } from '@/Components/UI';
 
 export default function BalanceFilter({ values, onChange, errors = {} }) {
     const id = useId();
@@ -79,8 +77,8 @@ export default function BalanceFilter({ values, onChange, errors = {} }) {
                     {operator === 'between' && to !== '' && Number(to) < Number(amount) && <p role="alert" className="text-xs text-red-600">المبلغ الأعلى يجب أن يساوي المبلغ الأول أو يزيد عليه.</p>}
                     {BALANCE_FILTER_KEYS.map((key) => errors[`filter.${key}`] && <p key={key} role="alert" className="text-xs text-red-600">{errors[`filter.${key}`]}</p>)}
                     <div className="flex flex-wrap items-center justify-end gap-2 border-t border-gray-100 pt-4">
-                        {label && <SecondaryButton type="button" onClick={() => { onChange(Object.fromEntries(BALANCE_FILTER_KEYS.map((key) => [key, '']))); setOpen(false); }}>مسح</SecondaryButton>}
-                        <PrimaryButton type="submit" disabled={!valid}><Icon name="filter" className="h-4 w-4" />تطبيق الفلتر</PrimaryButton>
+                        {label && <SecondaryKey type="button" onClick={() => { onChange(Object.fromEntries(BALANCE_FILTER_KEYS.map((key) => [key, '']))); setOpen(false); }}>مسح</SecondaryKey>}
+                        <PrimaryKey type="submit" disabled={!valid}><Icon name="filter" className="h-4 w-4" />تطبيق الفلتر</PrimaryKey>
                     </div>
                 </form>
             )}

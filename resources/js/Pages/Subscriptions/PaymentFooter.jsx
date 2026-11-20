@@ -1,16 +1,15 @@
 import Icon from '@/Components/Icon';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import { formatMoney } from '@/lib/format';
+import { PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 /** The payment window's footer: what is still missing, the overpayment confirmation, and cancel and save. */
 export default function PaymentFooter({ correcting, currencyMark, data, form, inShekels, overpayment, referenceStatus, requestClose }) {
     return (
         <div className="gl-dialog-foot flex shrink-0 items-center gap-3 px-5 py-4 sm:px-6">
-            <SecondaryButton onClick={requestClose} className="gl-lg">
+            <SecondaryKey onClick={requestClose} className="gl-lg">
                 إلغاء
-            </SecondaryButton>
-            <PrimaryButton
+            </SecondaryKey>
+            <PrimaryKey
                 type="submit"
                 disabled={
                     !(Number(data.amount) > 0) ||
@@ -29,7 +28,7 @@ export default function PaymentFooter({ correcting, currencyMark, data, form, in
                       : Number(data.amount) > 0
                         ? `تسجيل ${formatMoney(data.amount)} ${currencyMark}`
                         : 'تسجيل الدفعة'}
-            </PrimaryButton>
+            </PrimaryKey>
         </div>
     );
 }

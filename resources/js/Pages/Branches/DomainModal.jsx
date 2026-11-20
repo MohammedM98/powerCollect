@@ -2,8 +2,7 @@ import { useForm } from '@inertiajs/react';
 import FormModal from '@/Components/FormModal';
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
-import TextInput from '@/Components/TextInput';
-import Switch from '@/Components/Switch';
+import { Switch, TextInput } from '@/Components/UI';
 
 export default function DomainModal({ branch, onClose, routingEnabled }) {
     const form = useForm({ domain: branch.domain ?? '', domain_enabled: Boolean(branch.domain_enabled) });

@@ -3,12 +3,12 @@ import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Icon from '@/Components/Icon';
 import { BranchFilterBanner } from '@/Components/BranchBanner';
-import PrimaryButton from '@/Components/PrimaryButton';
 import { useDataTable } from '@/hooks/useDataTable';
 import BoxTabs from './BoxTabs';
 import CloseBoxesByType from './CloseBoxesByType';
 import OpenEntriesTable from './OpenEntriesTable';
 import PageHeader from '@/Components/PageHeader';
+import { PrimaryKey } from '@/Components/UI';
 
 /**
  * The open entries tab of the financial boxes page, for those who close
@@ -26,7 +26,7 @@ export default function Entries({ started, branch, branches, branchScope = null,
     return <AuthenticatedLayout badges={{ '/payments/summary': pendingCount }} scope={branchScope?.name ?? null} header={<PageHeader
         eyebrow={branchScope ? null : branch?.name}
         title="الصناديق المالية"
-        actions={started && closableBoxes && <PrimaryButton type="button" onClick={() => setClosingByType(true)} disabled={!closableBoxes.length}><Icon name="lock" className="h-4 w-4" />إغلاق الصناديق حسب النوع{closableBoxes.length > 0 && <span className="rounded-full bg-white/20 px-2 py-0.5 font-display text-xs">{closableBoxes.length}</span>}</PrimaryButton>}
+        actions={started && closableBoxes && <PrimaryKey type="button" onClick={() => setClosingByType(true)} disabled={!closableBoxes.length}><Icon name="lock" className="h-4 w-4" />إغلاق الصناديق حسب النوع{closableBoxes.length > 0 && <span className="rounded-full bg-white/20 px-2 py-0.5 font-display text-xs">{closableBoxes.length}</span>}</PrimaryKey>}
     />}>
         <Head title="الحركات" />
         <BoxTabs tabs={tabs} current="entries" hint={started ? 'تعرض هذه الصفحة حركات الصناديق المفتوحة فقط؛ حركات الصناديق المغلقة تجدها داخل كل صندوق في تبويب «الصناديق».' : null} />

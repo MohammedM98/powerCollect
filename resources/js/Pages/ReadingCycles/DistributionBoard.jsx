@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Button, Card, Dropdown } from '@heroui/react';
-import SegmentedChoice from '@/Components/SegmentedChoice';
 import Icon from '@/Components/Icon';
 import { formatNumber } from '@/lib/format';
 import { laneAreaGroups, stageMove } from '@/lib/readingBoard';
+import { SegmentedChoice } from '@/Components/UI';
 
 /** Each lane's colour: readers take the tones in turn, paper is amber, the pool grey. */
 const READER_TONES = ['clr', 'disc', 'brand', 'split', 'pay'];

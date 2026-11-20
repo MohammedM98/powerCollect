@@ -1,15 +1,14 @@
-import CheckBox from '@/Components/CheckBox';
 import { Button, Input } from '@heroui/react';
 import { useEffect, useState, useRef } from 'react';
 import { router } from '@inertiajs/react';
 import { notify } from '@/lib/notify';
-import ConfirmDialog from '@/Components/ConfirmDialog';
 import LastReadingConfirmDialog from '@/Components/LastReadingConfirmDialog';
 import Icon from '@/Components/Icon';
 import { useLastReadingEdit } from '@/hooks/useLastReadingEdit';
 import { printRowProps } from '@/lib/print';
 import { formatCurrency, formatShekels } from '@/lib/currency';
 import { calculateCharges, steppedReading } from '@/lib/readings';
+import { CheckBox, ConfirmDialog } from '@/Components/UI';
 
 /** The details printing can show as columns of their own (see printFieldsProps). */
 export const PRINT_FIELDS = [
