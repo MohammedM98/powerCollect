@@ -17,7 +17,7 @@ before(async () => {
         plugins: [{
             name: 'use-installed-react',
             resolveId(id) {
-                if (/^react(?:-dom)?(?:\/|$)/.test(id)) {
+                if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/'))) {
                     return { id: import.meta.resolve(id), external: true };
                 }
             },

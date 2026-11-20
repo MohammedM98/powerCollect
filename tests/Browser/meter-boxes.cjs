@@ -388,7 +388,7 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await profile.getByRole('tab', { name: /^الحساب/ }).click();
         await profile.locator('[data-excel-button]').click();
         const inlineExcel = page.getByRole('dialog', { name: /^تصدير / });
-        await inlineExcel.getByRole('group', { name: 'اتجاه الصفحة', exact: true }).getByRole('button', { name: 'عمودي', exact: true }).click();
+        await inlineExcel.getByRole('radiogroup', { name: 'اتجاه الصفحة', exact: true }).getByRole('radio', { name: 'عمودي', exact: true }).click();
         await Promise.all([
             page.waitForEvent('download'),
             inlineExcel.getByRole('button', { name: 'تنزيل ملف Excel', exact: true }).click(),
@@ -399,7 +399,7 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await firstSubscriberRow.getByRole('button', { name: 'عرض', exact: true }).click();
         await profile.getByRole('tab', { name: /^الحساب/ }).click();
         await profile.locator('[data-excel-button]').click();
-        await expect(inlineExcel.getByRole('group', { name: 'اتجاه الصفحة', exact: true }).getByRole('button', { name: 'عمودي', exact: true })).toHaveAttribute('aria-pressed', 'true');
+        await expect(inlineExcel.getByRole('radiogroup', { name: 'اتجاه الصفحة', exact: true }).getByRole('radio', { name: 'عمودي', exact: true })).toBeChecked();
         await inlineExcel.getByRole('button', { name: 'إغلاق النافذة', exact: true }).click();
         await profile.locator('button[aria-label="إغلاق"]').click();
         await page.goto('/subscriptions?print=1&print_all=1&print_template=new');

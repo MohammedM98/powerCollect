@@ -1,9 +1,10 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { Button, Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 
 /**
- * A drop-down with a search box. Each option is `{ value, label, hint?, icon? }`:
+ * A drop-down with a search box, built from HeroUI's Button and Input. Each option is `{ value, label, hint?, icon? }`:
  * `hint` is a quiet second part (a price, say) shown beside the label,
  * in the list and on the closed field, and searched with it. `required`
  * (with `name`) makes the form's own check report a missing choice.
@@ -186,14 +187,13 @@ export default function SearchableSelect({
 
     return (
         <div ref={containerRef} className={`relative ${className}`}>
-            <button
+            <Button
                 ref={buttonRef}
-                type="button"
                 id={id}
-                disabled={disabled}
+                isDisabled={disabled}
                 aria-expanded={open}
                 data-active={active ? '' : undefined}
-                onClick={() => setOpen((current) => !current)}
+                onPress={() => setOpen((current) => !current)}
                 className={
                     variant === 'pill'
                         ? `gl-filter-trigger ${open ? 'is-open' : ''}`
@@ -213,7 +213,7 @@ export default function SearchableSelect({
                     {selected?.hint && <span className={`shrink-0 text-sm ${onDark ? 'text-white/60' : 'text-gray-500'}`}>{selected.hint}</span>}
                 </span>
                 <Icon name="chevron-down" className={`h-4 w-4 shrink-0 transition ${onDark ? 'text-white/70' : 'text-gray-400'} ${open ? 'rotate-180' : ''}`} />
-            </button>
+            </Button>
 
             {required && (
                 <input
@@ -234,9 +234,10 @@ export default function SearchableSelect({
                 <div ref={popupRef} style={portal ? popupStyle : undefined} className="animate-modal-panel absolute z-20 mt-2 flex w-full min-w-48 flex-col overflow-hidden rounded-2xl gl-pop">
                     {searchable && (
                         <div className="shrink-0 border-b border-gray-100 p-2">
-                            <input
+                            <Input
                                 ref={searchRef}
                                 type="text"
+                                aria-label={searchPlaceholder}
                                 value={query}
                                 onChange={(event) => setQuery(event.target.value)}
                                 placeholder={searchPlaceholder}
@@ -244,24 +245,24 @@ export default function SearchableSelect({
                             />
                         </div>
                     )}
-                    {onCreate && <button
-                        type="button"
-                        onClick={() => { const name = query.trim(); setOpen(false); setQuery(''); onCreate(name); }}
-                        className="mx-1.5 mt-1.5 flex items-center gap-2 rounded-lg bg-brand-500/10 px-3 py-2.5 text-start text-sm font-bold text-brand-600 transition hover:bg-brand-500/15 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand-500"
+                    {onCreate && <Button
+                        variant="ghost"
+                        onPress={() => { const name = query.trim(); setOpen(false); setQuery(''); onCreate(name); }}
+                        className="ss-option mx-1.5 mt-1.5 flex items-center gap-2 rounded-lg bg-brand-500/10 px-3 py-2.5 text-start text-sm font-bold text-brand-600 transition hover:bg-brand-500/15 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand-500"
                     >
                         <Icon name="plus" className="h-4 w-4 shrink-0" />
                         <span className="min-w-0 truncate">{createLabel}{query.trim() && <>: <bdi>{query.trim()}</bdi></>}</span>
-                    </button>}
+                    </Button>}
                     <ul className="min-h-0 max-h-56 overflow-y-auto p-1.5 text-sm">
                         {clearable && (
                             <li>
-                                <button
-                                    type="button"
-                                    onClick={() => select(null)}
-                                    className="block w-full rounded-lg px-3 py-2 text-start text-gray-500 hover:bg-gray-50"
+                                <Button
+                                    variant="ghost"
+                                    onPress={() => select(null)}
+                                    className="ss-option block w-full rounded-lg px-3 py-2 text-start text-gray-500 hover:bg-gray-50"
                                 >
                                     {placeholder}
-                                </button>
+                                </Button>
                             </li>
                         )}
                         {failed ? (
@@ -276,10 +277,10 @@ export default function SearchableSelect({
 
                                 return (
                                     <li key={option.value}>
-                                        <button
-                                            type="button"
-                                            onClick={() => select(option)}
-                                            className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-start hover:bg-gray-50 ${
+                                        <Button
+                                            variant="ghost"
+                                            onPress={() => select(option)}
+                                            className={`ss-option flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-start hover:bg-gray-50 ${
                                                 isSelected ? 'font-semibold text-gray-900' : 'text-gray-700'
                                             }`}
                                         >
@@ -291,7 +292,7 @@ export default function SearchableSelect({
                                                 {option.hint && <span className="text-xs text-gray-500">{option.hint}</span>}
                                                 {isSelected && <Icon name="check" className="h-4 w-4 shrink-0 text-brand-500" strokeWidth={2} />}
                                             </span>
-                                        </button>
+                                        </Button>
                                     </li>
                                 );
                             })

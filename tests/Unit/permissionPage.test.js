@@ -20,7 +20,7 @@ before(async () => {
             name: 'render-permission-components',
             resolveId(id) {
                 if (id === 'exceljs') return { id: import.meta.resolve(id), external: true };
-                if (/^react(?:-dom)?(?:\/|$)/.test(id) || id === '@inertiajs/react' || id.startsWith('@heroui/')) {
+                if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/')) || id === '@inertiajs/react') {
                     return { id: import.meta.resolve(id), external: true };
                 }
                 if (id.endsWith('.css')) { return '\0stylesheet'; }
@@ -98,9 +98,10 @@ test('an employee without configured audit work starts with their own branch and
     const audit = sectionModel({ key: 'financial_audit', label: 'التدقيق المالي', actions: [{ action: 'audit', permission: { id: 999, key: 'closings.audit', label: 'التدقيق المالي', centralOnly: true } }] });
     const actor = { ...employee, id: 1, branchId: 1, username: 'employee', permissionIds: [], auditSettingsConfigured: false, auditSettings: { scope: 'all', branch_ids: [], actions: ['approve_boxes'] } };
     const html = renderToStaticMarkup(createElement(PermissionEditor, { employee: actor, sections: [audit], templates: [], copySources: [], scopedToOwnBranch: false, onDirtyChange() {}, auditOptions: { permissionId: 999, branches: [{ id: 1, name: 'فرع العمل' }], actions: [{ value: 'approve_boxes', label: 'اعتماد الصندوق', hint: 'ترحيل الفروق' }] } }));
-    assert.match(html, /aria-label="تفعيل التدقيق المالي"[^>]*aria-checked="false"|aria-checked="false"[^>]*aria-label="تفعيل التدقيق المالي"/);
+    // HeroUI's switch: an unticked input with role="switch" carries no checked attribute.
+    assert.match(html, /aria-label="تفعيل التدقيق المالي"[^>]*role="switch"\/>/);
     assert.match(html, /aria-label="اعتماد الصندوق"[^>]*disabled=""/);
-    assert.doesNotMatch(html, /aria-checked="true"[^>]*aria-label="اعتماد الصندوق"/);
+    assert.doesNotMatch(html, /aria-label="اعتماد الصندوق"[^>]*checked=""/);
     assert.match(html, /type="radio"[^>]*checked=""/);
 });
 

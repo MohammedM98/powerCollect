@@ -15,7 +15,7 @@ before(async () => {
         plugins: [{
             name: 'external-react',
             resolveId(id) {
-                if (/^react(?:-dom)?(?:\/|$)/.test(id)) return { id: import.meta.resolve(id), external: true };
+                if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/'))) return { id: import.meta.resolve(id), external: true };
             },
         }],
     });

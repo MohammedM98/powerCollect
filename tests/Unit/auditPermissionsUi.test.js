@@ -15,7 +15,7 @@ before(async () => {
         platform: 'node', transform: { jsx: 'react-jsx' },
         resolve: { alias: { '@': path.resolve(import.meta.dirname, '../../resources/js') } },
         plugins: [{ name: 'use-installed-react', resolveId(id) {
-            if (/^react(?:-dom)?(?:\/|$)/.test(id)) return { id: import.meta.resolve(id), external: true };
+            if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/'))) return { id: import.meta.resolve(id), external: true };
         } }],
     });
     try {
@@ -41,7 +41,7 @@ test('the audit card distinguishes the administrative branch from audit branches
     assert.match(html, /الفرع الإداري للموظف/);
     assert.match(html, /الإدارة الرئيسية/);
     assert.match(html, /فرع جنين/);
-    assert.match(html, /aria-label="مراجعة الحوالات"[^>]*aria-checked="true"|aria-checked="true"[^>]*aria-label="مراجعة الحوالات"/);
+    assert.match(html, /aria-label="مراجعة الحوالات"[^>]*role="switch" checked=""/);
     assert.match(html, /aria-label="اعتماد الفترة"[^>]*disabled=""/);
     assert.match(html, /فعّل اعتماد الصناديق أولًا/);
 });

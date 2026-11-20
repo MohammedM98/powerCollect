@@ -113,8 +113,9 @@ async function fillFields(scope, fields) {
         } else if (value && typeof value === 'object' && 'chip' in value) {
             await scope.getByRole('radiogroup', { name: label }).getByRole('radio', { name: value.chip }).click();
         } else if (value && typeof value === 'object' && 'switch' in value) {
+            // HeroUI's switch: a visually hidden input, pressed through its visible label.
             const toggle = scope.getByRole('switch', { name: label });
-            if (((await toggle.getAttribute('aria-checked')) === 'true') !== value.switch) await toggle.click();
+            if ((await toggle.isChecked()) !== value.switch) await toggle.locator('xpath=ancestor::label[1]').click();
         } else if (value && typeof value === 'object' && 'check' in value) {
             if ((await field.isChecked()) !== value.check) await field.click();
         } else {
@@ -209,8 +210,11 @@ async function grant(page, person, labels) {
     await page.getByRole('button', { name: 'فتح الكل' }).click();
     for (const label of labels) {
         const control = page.locator(`[role=checkbox][aria-label="${label}"], [role=switch][aria-label="${label}"]`).first();
-        if ((await control.getAttribute('aria-checked')) !== 'true') await control.click();
-        assert.equal(await control.getAttribute('aria-checked'), 'true', `${person}: ${label}`);
+        // HeroUI's switch is a visually hidden input read by `checked`; the grid's own checks carry aria-checked.
+        const isInput = await control.evaluate((element) => element.tagName === 'INPUT');
+        const isOn = async () => (isInput ? control.isChecked() : (await control.getAttribute('aria-checked')) === 'true');
+        if (!(await isOn())) await (isInput ? control.locator('xpath=ancestor::label[1]').click() : control.click());
+        assert.ok(await isOn(), `${person}: ${label}`);
     }
     await page.getByRole('button', { name: 'مراجعة وحفظ' }).click();
     const review = page.getByRole('dialog').last();

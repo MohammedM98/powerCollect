@@ -23,7 +23,7 @@ before(async () => {
                     if (id === 'exceljs') return { id: import.meta.resolve(id), external: true };
                     if (/Components[/\\]Modal(?:\.jsx)?$/.test(id)) return '\0modal-content';
                     if (id.endsWith('.css')) return '\0empty-css';
-                    if (/^react(?:-dom)?(?:\/|$)/.test(id)) return { id: import.meta.resolve(id), external: true };
+                    if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/'))) return { id: import.meta.resolve(id), external: true };
                 },
                 load(id) {
                     if (id === '\0modal-content') return 'export default function Modal({show, children}) { return show ? children : null; }';

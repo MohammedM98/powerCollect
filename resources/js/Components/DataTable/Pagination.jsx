@@ -1,4 +1,5 @@
 import { router } from '@inertiajs/react';
+import { Button } from '@heroui/react';
 import Icon from '@/Components/Icon';
 
 function pageNumbers(current, last) {
@@ -25,7 +26,7 @@ function pageNumbers(current, last) {
 }
 
 /**
- * "Showing 1–15 of 63" and the page switch. The current page is burgundy.
+ * "Showing 1–15 of 63" and the page switch, its keys HeroUI's Button. The current page is burgundy.
  * `pageParam` names the page in the address, for a second table on the
  * same page. A table whose rows are all in the page already pages itself
  * with `onPageChange` instead of a visit. On a phone the previous/next
@@ -61,10 +62,10 @@ export default function Pagination({ meta, filters, baseUrl, extraParams = {}, p
 
             {last > 1 && (
                 <nav aria-label="صفحات الجدول" className="gl-seg gl-pager">
-                    <button type="button" disabled={current === 1} onClick={() => goTo(current - 1)} className={stepClass}>
+                    <Button variant="ghost" size="sm" isDisabled={current === 1} onPress={() => goTo(current - 1)} className={stepClass}>
                         <Icon name="chevron-right" className="h-3.5 w-3.5" strokeWidth={2} />
                         <span className="max-sm:sr-only">السابق</span>
-                    </button>
+                    </Button>
 
                     {pageNumbers(current, last).map((page, index) =>
                         page === '…' ? (
@@ -72,23 +73,24 @@ export default function Pagination({ meta, filters, baseUrl, extraParams = {}, p
                                 …
                             </span>
                         ) : (
-                            <button
-                                type="button"
+                            <Button
                                 key={page}
+                                variant="ghost"
+                                size="sm"
                                 aria-current={page === current ? 'page' : undefined}
-                                onClick={() => goTo(page)}
+                                onPress={() => goTo(page)}
                                 aria-pressed={page === current}
                                 className="gl-num min-w-8 justify-center"
                             >
                                 {page}
-                            </button>
+                            </Button>
                         ),
                     )}
 
-                    <button type="button" disabled={current === last} onClick={() => goTo(current + 1)} className={stepClass}>
+                    <Button variant="ghost" size="sm" isDisabled={current === last} onPress={() => goTo(current + 1)} className={stepClass}>
                         <span className="max-sm:sr-only">التالي</span>
                         <Icon name="chevron-left" className="h-3.5 w-3.5" strokeWidth={2} />
-                    </button>
+                    </Button>
                 </nav>
             )}
         </div>
