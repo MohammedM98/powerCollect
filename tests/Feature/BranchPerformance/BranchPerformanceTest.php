@@ -88,6 +88,9 @@ class BranchPerformanceTest extends TestCase
                     'branches' => 2,
                     'activeBranches' => 1,
                     'chargesTotal' => '700.00',
+                    'collectedTotal' => '100.00',
+                    'owed' => '640.00',
+                    'older' => '0.00',
                     'subscriptions' => 4,
                     'activeSubscriptions' => 3,
                     'weekEntries' => 3,
@@ -99,6 +102,10 @@ class BranchPerformanceTest extends TestCase
                 ->where('branches.1', fn ($branch): bool => $branch['name'] === 'فرع الكرادة'
                     && $branch['rank'] === 2
                     && $branch['chargesTotal'] == 200
+                    && $branch['collectedTotal'] === '100.00'
+                    && $branch['collectionRate'] === 50
+                    && $branch['owed'] === '140.00'
+                    && $branch['debtors'] === 2
                     && $branch['subscriptions'] === 3
                     && $branch['activeSubscriptions'] === 2
                     && $branch['staff'] === 2
@@ -118,6 +125,8 @@ class BranchPerformanceTest extends TestCase
     #[TestWith(['revenue', ['فرع المنصور', 'فرع الكرادة']])]
     #[TestWith(['subscriptions', ['فرع الكرادة', 'فرع المنصور']])]
     #[TestWith(['activity', ['فرع الكرادة', 'فرع المنصور']])]
+    #[TestWith(['collection', ['فرع الكرادة', 'فرع المنصور']])]
+    #[TestWith(['debts', ['فرع المنصور', 'فرع الكرادة']])]
     #[TestWith(['nonsense', ['فرع المنصور', 'فرع الكرادة']])]
     public function test_the_branches_are_ranked_by_the_chosen_figure(string $sort, array $order): void
     {

@@ -9529,3 +9529,74 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-rp-table :is(th, td).is-start {
     text-align: right;
 }
+
+/* Branch performance as a league table: rank, the branch and its place, then the figures that compare branches. */
+.gl-bp .gl-rp-head {
+    gap: 10px;
+}
+
+.gl-bp-sort-label {
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.gl-bp-rank {
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    font-weight: 900;
+    box-shadow: var(--ma-hl);
+}
+
+.gl-bp-rank[data-top] {
+    background: var(--ma-brand);
+    color: #fff;
+}
+
+.gl-bp-name {
+    color: var(--ma-ink);
+    font-weight: 800;
+}
+
+.gl-bp-name:hover {
+    color: var(--ma-brand);
+    text-decoration: underline;
+}
+
+.gl-bp-place {
+    display: block;
+    color: var(--ma-muted);
+    font-size: 12.5px;
+    font-weight: 500;
+}
+
+.gl-bp-rate {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 140px;
+}
+
+.gl-bp-rate .gl-rp-share > span {
+    background: var(--t);
+}
+
+.gl-bp-rate b {
+    color: var(--t);
+    font-weight: 900;
+}
+
+.gl-bp-none.chip {
+    background: var(--ts, var(--ma-tile));
+    color: var(--t, var(--ma-muted));
+    font-weight: 800;
+}
+
+.gl-bp tr[data-quiet] td {
+    color: var(--ma-muted);
+}

@@ -1,117 +1,52 @@
 import { Head, Link, router } from '@inertiajs/react';
+import { Card, Chip } from '@heroui/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import MeterBar from '@/Components/Charts/MeterBar';
 import Sparkline from '@/Components/Charts/Sparkline';
-import Icon from '@/Components/Icon';
-import KpiTile from '@/Components/KpiTile';
-import SegmentedTabs from '@/Components/SegmentedTabs';
+import SegmentedChoice from '@/Components/SegmentedChoice';
+import { Figure } from '@/Pages/Reports/ReportViews';
 import { formatMoney, formatNumber, percentOf, timeAgo } from '@/lib/format';
-import BranchMark, { branchPlace } from './BranchMark';
+import { branchPlace } from './BranchMark';
 import PageHeader from '@/Components/PageHeader';
 
 const SORTS = [
-    { value: 'revenue', label: 'الإيرادات' },
+    { value: 'collection', label: 'نسبة التحصيل' },
+    { value: 'revenue', label: 'التحميلات' },
+    { value: 'debts', label: 'الديون' },
     { value: 'subscriptions', label: 'المشتركون' },
     { value: 'activity', label: 'النشاط' },
 ];
 
-function MiniStat({ label, value }) {
+const rate = (collected, charged) => (Number(charged) > 0 ? Math.round((Number(collected) / Number(charged)) * 100) : null);
+
+/** A branch's collection rate as a bar with its figure, green from 70%, amber from 40%, red below. */
+function RateBar({ value }) {
+    if (value === null) {
+        return <Chip size="sm" variant="soft" className="gl-bp-none">لا تحميل</Chip>;
+    }
+    const tone = value >= 70 ? 'pay' : value >= 40 ? 'warn' : 'owe';
+
     return (
-        <div className="rounded-xl border border-gray-100 bg-gray-50 px-3.5 py-2.5">
-            <p className="text-xs text-gray-500">{label}</p>
-            <p className="mt-0.5 font-display text-lg font-bold text-gray-900">{formatNumber(value)}</p>
-        </div>
+        <span className="gl-bp-rate" data-tone={tone}>
+            <span className="gl-rp-share"><span style={{ width: `${Math.min(100, value)}%` }} /></span>
+            <b>{value}%</b>
+        </span>
     );
 }
 
 /**
- * One branch: its place in the order, what it charged, how many of its
- * subscriptions are active, its entries over two weeks, and its staff. The
- * whole card opens the branch.
- */
-function BranchCard({ branch, style }) {
-    const activeShare = percentOf(branch.activeSubscriptions, branch.subscriptions);
-
-    return (
-        <article
-            className="rise-in group relative flex min-w-0 flex-col rounded-panel border border-gray-100 bg-surface p-6 shadow-card transition-shadow hover:border-gray-200 hover:shadow-lift focus-within:ring-2 focus-within:ring-gray-900"
-            style={style}
-        >
-            <header className="flex items-start gap-3.5">
-                <BranchMark isActive={branch.isActive} />
-                <div className="min-w-0 flex-1">
-                    <h2 className="font-sans truncate text-xl font-bold text-gray-900">
-                        <Link href={`/branch-performance/${branch.id}`} className="outline-hidden after:absolute after:inset-0 after:rounded-panel">
-                            {branch.name}
-                        </Link>
-                    </h2>
-                    <p className="truncate text-xs text-gray-500">
-                        {branchPlace(branch) || '—'}
-                        {!branch.isActive && '، فرع متوقف'}
-                    </p>
-                </div>
-                <span
-                    className="shrink-0 rounded-full border border-gray-200 bg-surface px-2.5 py-0.5 font-display text-xs font-bold text-gray-700"
-                    title="ترتيبه بين الفروع"
-                >
-                    #{branch.rank}
-                </span>
-            </header>
-
-            <div className="mt-6 flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-                <div className="min-w-0">
-                    <p className="text-xs text-gray-500">إجمالي القيود</p>
-                    <p className="mt-1 flex flex-wrap items-baseline gap-x-1.5">
-                        <span className="font-display text-3xl font-bold text-gray-900 sm:text-4xl">{formatMoney(branch.chargesTotal)}</span>
-                        <span className="text-sm text-gray-500">₪</span>
-                    </p>
-                </div>
-                <div className="shrink-0 text-end">
-                    <Sparkline values={branch.sparkline} label={`إدخالات ${branch.name} في آخر 14 يوم`} />
-                    <p className="mt-1 text-[13px] text-gray-500">إدخالات آخر 14 يوم</p>
-                </div>
-            </div>
-
-            <div className="mt-5">
-                <div className="flex items-baseline justify-between gap-3 text-xs">
-                    <span className="text-gray-500">
-                        <b className="font-display text-sm text-gray-900">{formatNumber(branch.activeSubscriptions)}</b> نشط من{' '}
-                        {formatNumber(branch.subscriptions)}
-                    </span>
-                    <b className="font-display text-gray-700">{activeShare}%</b>
-                </div>
-                <MeterBar value={branch.activeSubscriptions} max={branch.subscriptions} className="mt-2" />
-            </div>
-
-            <div className="mt-5 grid grid-cols-3 gap-2.5">
-                <MiniStat label="اليوم" value={branch.todayEntries} />
-                <MiniStat label="آخر 7 أيام" value={branch.weekEntries} />
-                <MiniStat label="الموظفون" value={branch.staff} />
-            </div>
-
-            <footer className="mt-5 flex items-center justify-between gap-3 border-t border-gray-100 pt-4 text-xs">
-                <span className="inline-flex items-center gap-1.5 text-gray-500">
-                    <Icon name="clock" className="h-4 w-4" />
-                    {branch.lastEntryAt ? `آخر إدخال ${timeAgo(branch.lastEntryAt)}` : 'لا إدخالات بعد'}
-                </span>
-                <span className="inline-flex items-center gap-1 font-semibold text-gray-900 transition group-hover:text-brand-600" aria-hidden="true">
-                    التفاصيل
-                    <Icon name="chevron-left" className="h-4 w-4 transition group-hover:-translate-x-0.5" />
-                </span>
-            </footer>
-        </article>
-    );
-}
-
-/**
- * How every branch is doing, for the Super Admin: the totals across
- * branches, then one card per branch, ranked by what the sort buttons
- * pick. A card opens the branch's own page.
+ * How every branch is doing, for the Super Admin, as one league table: the
+ * totals across branches, then each branch ranked by the chosen figure —
+ * what it charged and collected, its collection rate, what its subscribers
+ * owe and how much of that is over 90 days, its last two weeks' entries,
+ * its subscribers and its latest entry. A branch's name opens its page.
  */
 export default function Index({ sort, summary, branches }) {
     function changeSort(next) {
         router.get('/branch-performance', next === 'revenue' ? {} : { sort: next }, { preserveState: true, preserveScroll: true, replace: true });
     }
+
+    const totalRate = rate(summary.collectedTotal, summary.chargesTotal);
+    const quiet = branches.filter((branch) => branch.weekEntries === 0).length;
 
     return (
         <AuthenticatedLayout
@@ -119,51 +54,82 @@ export default function Index({ sort, summary, branches }) {
                 <PageHeader
                     eyebrow={`${formatNumber(summary.branches)} فروع، ${formatNumber(summary.activeBranches)} نشطة`}
                     title="أداء الفروع"
-                    info="إيرادات ونشاط وفريق كل فرع. اضغط على أي فرع لتفاصيل عمله اليومية."
-                    actions={
-                        <>
-                            <span className="text-sm text-gray-500">ترتيب:</span>
-                            <SegmentedTabs options={SORTS} value={sort} onChange={changeSort} label="ترتيب الفروع" />
-                        </>
-                    }
+                    info="ترتيب الفروع بأرقامها منذ البداية: التحميلات والتحصيل والديون والنشاط. اضغط اسم الفرع لتفاصيل عمله اليومية."
                 />
             }
         >
             <Head title="أداء الفروع" />
 
-            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-                <KpiTile hero icon="folder" label="إجمالي القيود" value={formatMoney(summary.chargesTotal)} unit="₪" hint="كل الفروع، منذ البداية" />
-                <KpiTile
-                    icon="users"
-                    label="المشتركون النشطون"
-                    value={formatNumber(summary.activeSubscriptions)}
-                    hint={`${percentOf(summary.activeSubscriptions, summary.subscriptions)}% من ${formatNumber(summary.subscriptions)} مشترك`}
-                />
-                <KpiTile
-                    icon="chart"
-                    label="إدخالات آخر 7 أيام"
-                    value={formatNumber(summary.weekEntries)}
-                    hint={`${formatNumber(summary.todayEntries)} اليوم، مشتركون جدد وقراءات`}
-                />
-                <KpiTile
-                    icon="user"
-                    label="الموظفون"
-                    value={formatNumber(summary.staff)}
-                    hint={`موزعون على ${formatNumber(summary.branches)} فروع`}
-                />
+            <div className="gl-rp-figs">
+                <Figure dark label="المقبوضات، كل الفروع" hint={`من ${formatMoney(summary.chargesTotal)} ₪ تحميلات، منذ البداية`}><bdi dir="ltr">{formatMoney(summary.collectedTotal)}</bdi> <span className="gl-rp-unit">₪</span></Figure>
+                <Figure tone="pay" label="نسبة التحصيل" hint="المقبوضات ÷ التحميلات">{totalRate === null ? '—' : `${totalRate}%`}</Figure>
+                <Figure tone="owe" label="الديون الآن" hint={`منها ${formatMoney(summary.older)} ₪ أكثر من 90 يومًا`}><bdi dir="ltr">{formatMoney(summary.owed)}</bdi> <span className="gl-rp-unit">₪</span></Figure>
+                <Figure tone={quiet > 0 ? 'warn' : null} label="الفروع النشطة" hint={`${formatNumber(summary.weekEntries)} إدخال في 7 أيام، ${formatNumber(summary.staff)} موظف`}>{formatNumber(branches.length - quiet)} <span className="gl-rp-unit">من {formatNumber(branches.length)}</span></Figure>
             </div>
 
-            {branches.length === 0 ? (
-                <p className="mt-5 rounded-panel border border-gray-100 bg-surface p-12 text-center text-sm text-gray-500 shadow-card">
-                    لا توجد فروع بعد.
-                </p>
-            ) : (
-                <div className="mt-5 grid gap-5 lg:grid-cols-2 2xl:grid-cols-3">
-                    {branches.map((branch, index) => (
-                        <BranchCard key={branch.id} branch={branch} style={{ '--rise-delay': `${Math.min(index, 8) * 60}ms` }} />
-                    ))}
-                </div>
-            )}
+            <Card className="gl-rp-panel gl-bp" data-excel-source="custom">
+                <Card.Header className="gl-rp-head">
+                    <span className="gl-bp-sort-label">ترتيب حسب</span>
+                    <SegmentedChoice label="ترتيب الفروع" value={sort} onChange={changeSort} options={SORTS} />
+                </Card.Header>
+                <Card.Content>
+                    {branches.length === 0 ? (
+                        <p className="gl-rp-empty">لا توجد فروع بعد.</p>
+                    ) : (
+                        <div className="gl-rp-scroll">
+                            <table className="gl-rp-table" aria-label="ترتيب الفروع">
+                                <thead>
+                                    <tr>
+                                        <th><span className="sr-only">الترتيب</span></th>
+                                        <th>الفرع</th>
+                                        <th className="num">التحميلات</th>
+                                        <th className="num">المقبوضات</th>
+                                        <th>نسبة التحصيل</th>
+                                        <th className="num">الديون</th>
+                                        <th className="num">+90 يومًا</th>
+                                        <th>آخر 14 يومًا</th>
+                                        <th>المشتركون</th>
+                                        <th>آخر حركة</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {branches.map((branch) => (
+                                        <tr key={branch.id} data-quiet={branch.weekEntries === 0 || undefined}>
+                                            <td><span className="gl-bp-rank" data-top={branch.rank === 1 || undefined}>{branch.rank}</span></td>
+                                            <td>
+                                                <Link href={`/branch-performance/${branch.id}`} className="gl-bp-name">{branch.name}</Link>
+                                                <small className="gl-bp-place">{[branchPlace(branch), `${formatNumber(branch.staff)} موظف`, !branch.isActive && 'متوقف'].filter(Boolean).join('، ')}</small>
+                                            </td>
+                                            <td className="num"><bdi dir="ltr">{formatMoney(branch.chargesTotal)}</bdi></td>
+                                            <td className="num" data-tone="pay"><b><bdi dir="ltr">{formatMoney(branch.collectedTotal)}</bdi></b></td>
+                                            <td><RateBar value={branch.collectionRate} /></td>
+                                            <td className="num" data-tone={Number(branch.owed) > 0 ? 'owe' : undefined}><bdi dir="ltr">{formatMoney(branch.owed)}</bdi><small className="gl-bp-place">{formatNumber(branch.debtors)} مدين</small></td>
+                                            <td className="num" data-tone={Number(branch.older) > 0 ? 'owe' : undefined}><bdi dir="ltr">{formatMoney(branch.older)}</bdi></td>
+                                            <td><Sparkline values={branch.sparkline} label={`إدخالات ${branch.name} في آخر 14 يومًا`} className="h-7 w-24" /></td>
+                                            <td>{formatNumber(branch.activeSubscriptions)} نشط<small className="gl-bp-place">{percentOf(branch.activeSubscriptions, branch.subscriptions)}% من {formatNumber(branch.subscriptions)}</small></td>
+                                            <td>{branch.lastEntryAt ? timeAgo(branch.lastEntryAt) : <Chip size="sm" variant="soft" className="gl-bp-none" data-tone="warn">لا حركة</Chip>}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td />
+                                        <td>المجموع، {formatNumber(summary.branches)} فروع</td>
+                                        <td className="num"><bdi dir="ltr">{formatMoney(summary.chargesTotal)}</bdi></td>
+                                        <td className="num"><bdi dir="ltr">{formatMoney(summary.collectedTotal)}</bdi></td>
+                                        <td>{totalRate === null ? '—' : `${totalRate}%`}</td>
+                                        <td className="num"><bdi dir="ltr">{formatMoney(summary.owed)}</bdi></td>
+                                        <td className="num"><bdi dir="ltr">{formatMoney(summary.older)}</bdi></td>
+                                        <td>{formatNumber(summary.weekEntries)} في 7 أيام</td>
+                                        <td>{formatNumber(summary.activeSubscriptions)} نشط</td>
+                                        <td />
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    )}
+                </Card.Content>
+            </Card>
         </AuthenticatedLayout>
     );
 }

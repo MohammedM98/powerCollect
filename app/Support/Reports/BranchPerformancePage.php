@@ -37,8 +37,31 @@ class BranchPerformancePage
                 'users as staff_count' => fn (Builder $users) => $users->where('is_active', true),
             ])
             ->withSum(['transactions as charges_total' => fn (Builder $lines) => $lines->charges()], 'amount')
+            ->withSum(['transactions as collected_total' => fn (Builder $lines) => $lines->counted()->where('type', SubscriptionTransaction::TYPE_PAYMENT)], 'amount')
             ->withMax('subscriptions as last_registration_at', 'created_at')
             ->withMax('meterReadings as last_reading_at', 'created_at');
+    }
+
+    /**
+     * What each branch's subscribers owe now, and how much of it is older
+     * than 90 days, by the same aging as the debts report.
+     *
+     * @param  array<int, int>  $branchIds
+     * @return array<int, array{owed: string, older: string, debtors: int}>
+     */
+    public static function debtsByBranch(array $branchIds): array
+    {
+        $debtors = (new DebtAging(DailySeries::today()))->debtors(Subscription::query()->whereIn('subscriptions.branch_id', $branchIds));
+
+        return collect($branchIds)->mapWithKeys(function (int $branchId) use ($debtors): array {
+            $own = $debtors->filter(fn (array $debtor): bool => $debtor['subscription']->branch_id === $branchId);
+
+            return [$branchId => [
+                'owed' => number_format($own->sum('balance') / 100, 2, '.', ''),
+                'older' => number_format($own->sum(fn (array $debtor): int => $debtor['buckets']['older']) / 100, 2, '.', ''),
+                'debtors' => $own->count(),
+            ]];
+        })->all();
     }
 
     /**
@@ -57,6 +80,8 @@ class BranchPerformancePage
             'governorateName' => $branch->governorate?->name,
             'areaName' => $branch->area?->name,
             'chargesTotal' => Money::amount($branch->charges_total),
+            'collectedTotal' => Money::negate($branch->collected_total ?? '0'),
+            'collectionRate' => (float) $branch->charges_total > 0 ? (int) round(-(float) ($branch->collected_total ?? 0) / (float) $branch->charges_total * 100) : null,
             'subscriptions' => $branch->subscriptions_count,
             'activeSubscriptions' => $branch->active_subscriptions_count,
             'staff' => $branch->staff_count,
