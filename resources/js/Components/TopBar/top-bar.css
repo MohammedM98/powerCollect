@@ -1177,11 +1177,13 @@ html.tn-locked {
     height: 18px;
 }
 
-.tn-palette-item.is-active {
+.tn-palette-item.is-active,
+.tn-palette-item[data-focused='true'] {
     background: rgb(var(--gray-100));
 }
 
-.tn-palette-item.is-active .tn-tile {
+.tn-palette-item.is-active .tn-tile,
+.tn-palette-item[data-focused='true'] .tn-tile {
     background: var(--tn-graphite);
     color: var(--tn-graphite-ink);
 }
@@ -1200,7 +1202,8 @@ html.tn-locked {
     color: rgb(var(--gray-400));
 }
 
-.tn-palette-item.is-active .tn-enter {
+.tn-palette-item.is-active .tn-enter,
+.tn-palette-item[data-focused='true'] .tn-enter {
     opacity: 1;
 }
 
@@ -2593,3 +2596,9 @@ html.tn-locked {
         justify-content: center;
     }
 }
+
+/* The palette's search is HeroUI's SearchField, borderless inside the window's head. */
+.tn-palette-field { border: 0; background: transparent; box-shadow: none; font-size: 17px; }
+.tn-palette .list-box-section { align-items: stretch; }
+/* The highlighted result reads by its soft ground and filled tile, as before, not by HeroUI's focus ring. */
+.tn-palette-item[data-focus-visible='true'] { box-shadow: none; outline: none; }

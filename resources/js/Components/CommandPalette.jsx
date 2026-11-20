@@ -1,5 +1,5 @@
-import { Input } from '@heroui/react';
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { Autocomplete, Header, ListBox, SearchField } from '@heroui/react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
 import { balanceInText, balanceTone } from '@/lib/balance';
@@ -36,7 +36,6 @@ function Highlighted({ text, query }) {
  */
 export default function CommandPalette({ open, onOpenChange, sections, commands, onCommand, searchSubscribers }) {
     const [query, setQuery] = useState('');
-    const [activeIndex, setActiveIndex] = useState(0);
     const [subscribers, setSubscribers] = useState([]);
     const inputRef = useRef(null);
     const dialogRef = useRef(null);
@@ -52,7 +51,6 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
 
         returnFocus.current = document.activeElement;
         setQuery('');
-        setActiveIndex(0);
         setSubscribers([]);
         document.documentElement.classList.add('tn-locked');
         inputRef.current?.focus();
@@ -127,11 +125,7 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
     }, [sections, commands, subscribers, query]);
 
     const items = groups.flatMap(([, entries]) => entries);
-    const active = Math.min(activeIndex, Math.max(0, items.length - 1));
-
-    useEffect(() => {
-        dialogRef.current?.querySelector('.tn-palette-item.is-active')?.scrollIntoView({ block: 'nearest' });
-    }, [active, open]);
+    const keyOf = (item) => `${item.kind}-${item.href ?? item.id}`;
 
     if (!open) {
         return null;
@@ -153,17 +147,12 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
         }
     }
 
+    /** Esc closes from anywhere in the window; Tab stays inside it. HeroUI's list moves with the arrows and opens with Enter. */
     function onKeyDown(event) {
         if (event.key === 'Escape') {
             event.preventDefault();
+            event.stopPropagation();
             onOpenChange(false);
-        } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-            event.preventDefault();
-            const count = items.length || 1;
-            setActiveIndex((active + (event.key === 'ArrowDown' ? 1 : -1) + count) % count);
-        } else if (event.key === 'Enter' && event.target === inputRef.current) {
-            event.preventDefault();
-            run(items[active]);
         } else if (event.key === 'Tab') {
             const focusable = [...dialogRef.current.querySelectorAll('button, input')].filter((element) => element.offsetParent);
 
@@ -177,12 +166,10 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
         }
     }
 
-    let position = 0;
 
     return (
         <div className="tn-scrim flex items-start justify-center px-4 pt-[11vh]" dir="rtl" role="presentation" onClick={(event) => event.target === event.currentTarget && onOpenChange(false)}>
-            {/* The dialog takes its own keys: the arrows move through results, Escape closes. */}
-            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+            {/* The dialog takes Esc and Tab; the results take the arrows and Enter. */}
             <div
                 ref={dialogRef}
                 className="tn-palette flex max-h-[min(580px,80dvh)] w-full max-w-[660px] flex-col overflow-hidden rounded-[26px] border border-gray-200/70 bg-surface text-gray-900 tn-lift"
@@ -190,51 +177,40 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
                 aria-modal="true"
                 data-top-bar-layer
                 aria-label="بحث وأوامر"
-                onKeyDown={onKeyDown}
+                onKeyDownCapture={onKeyDown}
             >
-                <div className="flex items-center gap-3 border-b border-gray-200/70 px-5 py-4">
-                    <Icon name="search" className="h-5 w-5 text-gray-400" />
-                    <Input
-                        ref={inputRef}
-                        value={query}
-                        onChange={(event) => {
-                            setQuery(event.target.value);
-                            setActiveIndex(0);
-                        }}
-                        placeholder={searchSubscribers ? 'اكتب اسم صفحة، أو اسم مشترك، أو أمراً…' : 'اكتب اسم صفحة أو أمراً…'}
-                        autoComplete="off"
-                        role="combobox"
-                        aria-expanded="true"
-                        aria-controls="tn-palette-list"
-                        aria-activedescendant={items.length ? `tn-palette-item-${active}` : undefined}
-                        className="min-w-0 flex-1 border-0 bg-transparent p-0 text-[17px] shadow-none outline-hidden placeholder:text-gray-400 focus:border-0 focus:ring-0"
-                    />
-                    <span className="tn-kbd">Esc</span>
-                </div>
+                <Autocomplete.Filter inputValue={query} onInputChange={setQuery}>
+                    <div className="flex items-center gap-3 border-b border-gray-200/70 px-5 py-4">
+                        <SearchField aria-label="بحث وأوامر" className="min-w-0 flex-1">
+                            <SearchField.Group className="tn-palette-field">
+                                <SearchField.SearchIcon />
+                                <SearchField.Input
+                                    ref={inputRef}
+                                    placeholder={searchSubscribers ? 'اكتب اسم صفحة، أو اسم مشترك، أو أمراً…' : 'اكتب اسم صفحة أو أمراً…'}
+                                    autoComplete="off"
+                                />
+                            </SearchField.Group>
+                        </SearchField>
+                        <span className="tn-kbd">Esc</span>
+                    </div>
 
-                <div id="tn-palette-list" className="flex-1 overflow-y-auto p-2" role="listbox">
-                    {items.length === 0 ? (
-                        <div className="grid justify-items-center gap-2 px-6 py-10 text-center text-gray-500">
-                            <Icon name="search" className="h-8 w-8 text-gray-300" />
-                            <b className="text-gray-900">لا نتائج لـ «{query}»</b>
-                            <small>{searchSubscribers ? 'جرّب اسم صفحة مثل «الصناديق» أو اسم مشترك' : 'جرّب اسم صفحة مثل «الصناديق»'}</small>
-                        </div>
-                    ) : groups.map(([title, entries]) => (
-                        <Fragment key={title}>
-                            <div className="px-2.5 pb-1 pt-3 text-[12px] font-bold text-gray-500">{title}</div>
-                            {entries.map((item) => {
-                                const index = position++;
-
-                                return (
-                                    <button
-                                        key={`${item.kind}-${item.href ?? item.id}`}
-                                        type="button"
-                                        id={`tn-palette-item-${index}`}
-                                        role="option"
-                                        aria-selected={index === active}
-                                        className={`tn-palette-item ${index === active ? 'is-active' : ''}`}
-                                        onClick={() => run(item)}
-                                    >
+                    <ListBox
+                        aria-label="النتائج"
+                        className="flex-1 overflow-y-auto p-2 outline-hidden"
+                        onAction={(key) => run(items.find((item) => keyOf(item) === key))}
+                        renderEmptyState={() => (
+                            <div className="grid justify-items-center gap-2 px-6 py-10 text-center text-gray-500">
+                                <Icon name="search" className="h-8 w-8 text-gray-300" />
+                                <b className="text-gray-900">لا نتائج لـ «{query}»</b>
+                                <small>{searchSubscribers ? 'جرّب اسم صفحة مثل «الصناديق» أو اسم مشترك' : 'جرّب اسم صفحة مثل «الصناديق»'}</small>
+                            </div>
+                        )}
+                    >
+                        {groups.map(([title, entries]) => (
+                            <ListBox.Section key={title} id={title} aria-label={title}>
+                                <Header className="px-2.5 pb-1 pt-3 text-[12px] font-bold text-gray-500">{title}</Header>
+                                {entries.map((item) => (
+                                    <ListBox.Item key={keyOf(item)} id={keyOf(item)} textValue={item.label} className="tn-palette-item">
                                         <span className="tn-tile"><Icon name={item.icon} /></span>
                                         <span className="min-w-0 flex-1">
                                             <span className="block truncate"><Highlighted text={item.label} query={query} /></span>
@@ -242,12 +218,12 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
                                         </span>
                                         {item.key && <span className="tn-kbd">{item.key}</span>}
                                         <Icon name="arrow-left" className="tn-enter" />
-                                    </button>
-                                );
-                            })}
-                        </Fragment>
-                    ))}
-                </div>
+                                    </ListBox.Item>
+                                ))}
+                            </ListBox.Section>
+                        ))}
+                    </ListBox>
+                </Autocomplete.Filter>
 
                 <div className="flex flex-wrap items-center gap-4 border-t border-gray-200/70 bg-gray-50 px-4 py-2.5 text-[12.5px] text-gray-500">
                     <span className="inline-flex items-center gap-1.5"><span className="tn-kbd">↑ ↓</span>اختيار</span>
