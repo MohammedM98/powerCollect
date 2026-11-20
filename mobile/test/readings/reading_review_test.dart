@@ -29,7 +29,7 @@ class ReviewApi extends ApiClient {
   }
 
   @override
-  Future<Map<String, dynamic>> rosterPage(int page) async => {
+  Future<Map<String, dynamic>> assignedRoster() async => {
         'data': [],
         'last_page': 1,
         'assignment_roster_version': 1,

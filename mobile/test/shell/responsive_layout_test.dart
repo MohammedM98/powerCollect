@@ -26,7 +26,7 @@ const subscriber = {
 
 class LayoutApi extends CollectorApi {
   @override
-  Future<Map<String, dynamic>> rosterPage(int page) async => {
+  Future<Map<String, dynamic>> assignedRoster() async => {
         'data': [subscriber],
         'last_page': 1,
         'week_start': '2026-10-09',

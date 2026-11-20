@@ -28,7 +28,7 @@ class AssignmentRefreshApi extends ApiClient {
   }
 
   @override
-  Future<Map<String, dynamic>> rosterPage(int page) async {
+  Future<Map<String, dynamic>> assignedRoster() async {
     downloads++;
     final snapshot = jsonDecode(jsonEncode(roster)) as Map<String, dynamic>;
     if (gate != null) await gate!.future;

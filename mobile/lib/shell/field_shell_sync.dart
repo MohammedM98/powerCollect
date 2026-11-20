@@ -55,17 +55,11 @@ extension _ShellSync on _FieldShellState {
   }
 
   Future<void> refreshRoster() async {
-    final all = <Map<String, dynamic>>[];
-    Map<String, dynamic>? first;
-    var page = 1;
-    do {
-      final result = await widget.api.rosterPage(page);
-      first ??= result;
-      all.addAll((result['data'] as List)
-          .map((item) => Map<String, dynamic>.from(item as Map)));
-      if (page >= (result['last_page'] as int)) break;
-      page++;
-    } while (true);
+    // The assignments come whole, in one answer.
+    final first = await widget.api.assignedRoster();
+    final all = (first['data'] as List)
+        .map((item) => Map<String, dynamic>.from(item as Map))
+        .toList();
     widget.store.state['subscribers'] = all;
     widget.store.state['week_start'] = first['week_start'];
     widget.store.state['week_end'] = first['week_end'];
