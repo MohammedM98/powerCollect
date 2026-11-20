@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Label, ListBox, Select } from '@heroui/react';
+import { Alert, Button, Card, Label, ListBox, Select, Switch } from '@heroui/react';
 import Icon from '@/Components/Icon';
 
 /**
@@ -120,6 +120,21 @@ export function SettingsHeading({ id, icon, tone = 'brand', title, description =
                 {description && <p className="gl-set-desc">{description}</p>}
             </div>
             {action}
+        </div>
+    );
+}
+
+/** An on/off setting: HeroUI's Switch, its knob sliding to the end and the track in the pay green when on, `hint` as a line under it. */
+export function SettingSwitch({ label, isSelected, onChange, isDisabled = false, hint = null }) {
+    return (
+        <div className="gl-set-switch-wrap">
+            <Switch isSelected={isSelected} onChange={onChange} isDisabled={isDisabled} className="gl-set-switch">
+                <Switch.Content>
+                    <Switch.Control><Switch.Thumb /></Switch.Control>
+                    <Label>{label}</Label>
+                </Switch.Content>
+            </Switch>
+            {hint && <p className="gl-set-hint">{hint}</p>}
         </div>
     );
 }

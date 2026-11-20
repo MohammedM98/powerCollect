@@ -1,13 +1,11 @@
 import { useEffect, useId, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
-import { Button, Card, Chip } from '@heroui/react';
+import { Button, Card, Chip, FieldError, Input, Label, Radio, RadioGroup, TextField } from '@heroui/react';
+import { SaveButton } from '@/Components/Settings/SettingsKit';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
 import ConfirmDialog from '@/Components/ConfirmDialog';
-import InputError from '@/Components/InputError';
 import { printUrl } from '@/lib/print';
 import { PAPER_SIZES } from '@/lib/printLayout';
 import { timeAgo } from '@/lib/format';
@@ -29,6 +27,19 @@ function TemplateKey({ icon, label, onPress, tone = 'ink' }) {
     );
 }
 
+/** A settings window's head: its icon on the MA tile, its title and a line under it. */
+function WindowHead({ id, icon, title, description = null }) {
+    return (
+        <div className="gl-win-head">
+            <span className="gl-set-ico" aria-hidden="true"><Icon name={icon} /></span>
+            <div className="min-w-0">
+                <h2 id={id} className="gl-set-title">{title}</h2>
+                {description && <p className="gl-set-desc">{description}</p>}
+            </div>
+        </div>
+    );
+}
+
 function RenameModal({ template, onClose }) {
     const id = useId();
     const { errors } = usePage().props;
@@ -43,24 +54,18 @@ function RenameModal({ template, onClose }) {
 
     return (
         <Modal show onClose={onClose} maxWidth="md">
-            <form onSubmit={save} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`}>
-                <div className="px-7 pb-4 pt-7">
-                    <h2 id={`${id}-title`} className="font-sans flex items-center gap-2 text-lg font-bold text-gray-900">
-                        <Icon name="pencil" className="h-5 w-5" />
-                        إعادة تسمية القالب
-                    </h2>
-                    <label htmlFor={`${id}-name`} className="mb-1.5 mt-5 block text-sm font-semibold text-gray-700">
-                        الاسم الجديد
-                    </label>
-                    <input id={`${id}-name`} type="text" value={name} onChange={(e) => setName(e.target.value)} className="block w-full text-sm" autoFocus />
-                    <InputError message={errors.name} className="mt-1" />
+            <form onSubmit={save} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} className="gl-win">
+                <WindowHead id={`${id}-title`} icon="tag" title="إعادة تسمية القالب" description={`الاسم الحالي: ${template.name}`} />
+                <div className="gl-win-body">
+                    <TextField isRequired isInvalid={Boolean(errors.name)} value={name} onChange={setName} className="gl-set-field" autoFocus>
+                        <Label>الاسم الجديد</Label>
+                        <Input id={`${id}-name`} />
+                        <FieldError>{errors.name}</FieldError>
+                    </TextField>
                 </div>
-                <div className="flex justify-end gap-3 border-t border-gray-100 bg-gray-50 px-7 py-4">
-                    <SecondaryButton onClick={onClose}>إلغاء</SecondaryButton>
-                    <PrimaryButton type="submit" disabled={saving || name.trim() === ''}>
-                        <Icon name="check" className="h-4 w-4" />
-                        حفظ الاسم
-                    </PrimaryButton>
+                <div className="gl-win-foot">
+                    <Button type="button" onPress={onClose} className="gl-win-cancel">إلغاء</Button>
+                    <SaveButton processing={saving} isDisabled={name.trim() === ''}>حفظ الاسم</SaveButton>
                 </div>
             </form>
         </Modal>
@@ -72,44 +77,36 @@ function NewTemplateModal({ pages, onClose }) {
     const [path, setPath] = useState(pages[0]?.path ?? '');
 
     return (
-        <Modal show onClose={onClose} maxWidth="lg">
-            <div role="dialog" aria-modal="true" aria-labelledby={`${id}-title`}>
-                <div className="px-7 pb-4 pt-7">
-                    <h2 id={`${id}-title`} className="font-sans flex items-center gap-2 text-lg font-bold text-gray-900">
-                        <Icon name="plus" className="h-5 w-5" />
-                        قالب طباعة جديد
-                    </h2>
-                    <p className="mt-1.5 text-sm text-gray-600">اختر القائمة، فيُفتح مصمم الطباعة على بياناتها. صمّم كما تريد ثم احفظه كقالب.</p>
-                    <fieldset className="mt-5">
-                        <legend className="mb-2 text-sm font-semibold text-gray-700">القائمة</legend>
-                        <div className="grid grid-cols-2 gap-2">
-                            {pages.map((page) => (
-                                <label
-                                    key={page.path}
-                                    className={`flex cursor-pointer items-center gap-2 rounded-control border px-3 py-2.5 text-sm font-semibold transition ${
-                                        path === page.path ? 'border-gray-900 bg-gray-900 text-surface' : 'border-gray-200 text-gray-700 hover:border-gray-300'
-                                    }`}
-                                >
-                                    <input type="radio" name={`${id}-page`} value={page.path} checked={path === page.path} onChange={() => setPath(page.path)} className="sr-only" />
-                                    <Icon name={page.icon} className="h-4 w-4" />
-                                    {page.label}
-                                </label>
-                            ))}
-                        </div>
-                    </fieldset>
+        <Modal show onClose={onClose} maxWidth="2xl">
+            <div role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} className="gl-win">
+                <WindowHead id={`${id}-title`} icon="printer" title="قالب طباعة جديد" description="اختر القائمة، فيُفتح مصمم الطباعة على بياناتها. صمّم كما تريد ثم احفظه كقالب." />
+                <div className="gl-win-body">
+                    <RadioGroup aria-label="القائمة" value={path} onChange={setPath} className="gl-pt-pick">
+                        {pages.map((page) => (
+                            <Radio key={page.path} value={page.path} className="gl-pt-pick-item">
+                                <Radio.Content>
+                                    <span className="gl-pt-pick-ico" aria-hidden="true"><Icon name={page.icon} /></span>
+                                    <span className="gl-pt-pick-name">{page.label}</span>
+                                    <span className="gl-pt-pick-count">{page.templates.length ? `${page.templates.length} قالب` : 'جديد'}</span>
+                                    <Radio.Control className="sr-only"><Radio.Indicator /></Radio.Control>
+                                </Radio.Content>
+                            </Radio>
+                        ))}
+                    </RadioGroup>
                 </div>
-                <div className="flex justify-end gap-3 border-t border-gray-100 bg-gray-50 px-7 py-4">
-                    <SecondaryButton onClick={onClose}>إلغاء</SecondaryButton>
-                    <PrimaryButton
+                <div className="gl-win-foot">
+                    <Button type="button" onPress={onClose} className="gl-win-cancel">إلغاء</Button>
+                    <Button
                         type="button"
-                        onClick={() => {
+                        className="gl-set-save"
+                        onPress={() => {
                             openDesigner(pages.find((page) => page.path === path), 'new');
                             onClose();
                         }}
                     >
                         <Icon name="external" className="h-4 w-4" />
                         فتح المصمم
-                    </PrimaryButton>
+                    </Button>
                 </div>
             </div>
         </Modal>
