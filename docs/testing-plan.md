@@ -81,6 +81,7 @@ npm ci && npm run build
 - خادم MySQL 8 لاختبارات المال والتقارير، و`mysql-client` (أمر النسخ الاحتياطي يستدعي `mysqldump`؛ بدونه تفشل `BackupCommandTest` على MySQL).
 - مجموعات المتصفح: إن لم يجد Playwright متصفحه فاضبط `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` على مسار Chromium المثبت.
 - ما يتعذّر تجهيزه يُذكر صراحة في التقرير مع السبب، ولا يُعدّ ناجحًا.
+- **تحذير**: فحص أوامر النشر (`config:cache`، `route:cache`، `event:cache`) يترك ملفات في `bootstrap/cache`، فتقرأ الاختبارات بعده نسخة مسارات قديمة وتفشل بلا سبب في الكود. شغّل `php artisan optimize:clear` بعده، وتأكد أن `bootstrap/cache` لا يحوي إلا `packages.php` و`services.php` قبل أي تشغيل للاختبارات.
 
 ### 1. خط الأساس (قبل أي تغيير)
 
