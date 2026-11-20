@@ -1,38 +1,66 @@
 import { Head } from '@inertiajs/react';
+import { Alert, Chip } from '@heroui/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import PageHeader from '@/Components/PageHeader';
 import Icon from '@/Components/Icon';
-import { primaryButtonClass } from '@/Components/PrimaryButton';
+import { SettingsSection } from '@/Components/Settings/SettingsKit';
 
+const STEPS = [
+    ['افتح هذه الصفحة من هاتف Android', 'ثم اضغط «تحميل تطبيق Android».'],
+    ['افتح الملف المحمّل', 'إذا طلب الهاتف إذن التثبيت لهذا المتصفح، اسمح به لإتمام التثبيت، ويمكنك إلغاؤه بعد ذلك.'],
+    ['سجّل الدخول', 'افتح سوبر باور وسجّل الدخول باسم المستخدم وكلمة المرور الخاصين بالموقع.'],
+];
+
+/** The field app's page: the release on the charcoal card with its download key, then how to install it. */
 export default function MobileApp({ release }) {
-    return <SettingsLayout header={<PageHeader title="تحميل تطبيق الهاتف" meta="سوبر باور للمحصّلين وقرّاء العدادات" />}>
+    return <SettingsLayout header={<PageHeader title="تحميل تطبيق الهاتف" info="سوبر باور للمحصّلين وقرّاء العدادات: الطبلونات المخصصة، والقراءات، والتحصيل من الهاتف." />}>
         <Head title="تحميل تطبيق الهاتف" />
-        <div className="mx-auto max-w-3xl space-y-6">
-            <section className="rounded-card border border-gray-100 bg-white p-6 shadow-card sm:p-8">
-                <div className="flex items-start gap-4">
-                    <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-brand-700"><Icon name="phone" className="h-7 w-7" /></span>
-                    <div className="min-w-0 space-y-2">
-                        <h2 className="font-sans text-xl font-bold text-gray-900">تطبيق سوبر باور</h2>
-                        <p className="text-sm leading-7 text-gray-600">اطّلع على الطبلونات المخصصة لك، وسجّل القراءات والتحصيل حسب صلاحيات حسابك. يتصل التطبيق بنفس بيانات الموقع عند توفر الإنترنت.</p>
-                        <p className="text-sm text-gray-500">Android 7.0 أو أحدث</p>
-                    </div>
+        <div className="gl-app-page">
+            <section className="gl-app-hero" aria-labelledby="app-title">
+                <span className="gl-app-icon" aria-hidden="true"><Icon name="phone" /></span>
+                <div className="min-w-0">
+                    <small>تطبيق Android</small>
+                    <h2 id="app-title">تطبيق سوبر باور</h2>
+                    <p>اطّلع على الطبلونات المخصصة لك، وسجّل القراءات والتحصيل حسب صلاحيات حسابك. يتصل التطبيق بنفس بيانات الموقع عند توفر الإنترنت.</p>
                 </div>
-                {release ? <div className="mt-6 space-y-4 border-t border-gray-100 pt-6">
-                    <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600"><span>الإصدار <b dir="ltr">{release.version}</b></span><span>حجم الملف <b dir="ltr">{release.sizeMb} MB</b></span></div>
-                    <a href={release.downloadUrl} className={`${primaryButtonClass} w-full sm:w-auto`}><Icon name="arrow-down-tray" className="h-5 w-5" />تحميل تطبيق Android</a>
-                    <p className="text-xs leading-6 text-gray-500">ملف APK موقّع. يُنزَّل مباشرة من GitHub، ولا يحتاج إلى حساب Google Play. يتصل التطبيق ببيانات الموقع كالمعتاد.</p>
-                </div> : <p role="status" className="mt-6 rounded-control bg-amber-50 p-4 text-sm text-amber-900">نسخة التطبيق غير متاحة للتحميل حاليًا. يرجى المحاولة لاحقًا.</p>}
+                {release ? (
+                    <div className="gl-app-release">
+                        <div className="gl-app-facts">
+                            <Chip size="sm" variant="soft" className="gl-app-chip">الإصدار <bdi dir="ltr">{release.version}</bdi></Chip>
+                            <Chip size="sm" variant="soft" className="gl-app-chip">الحجم <bdi dir="ltr">{release.sizeMb} MB</bdi></Chip>
+                            <Chip size="sm" variant="soft" className="gl-app-chip">Android 7.0 أو أحدث</Chip>
+                        </div>
+                        <a href={release.downloadUrl} className="gl-app-download">
+                            <Icon name="arrow-down-tray" className="h-5 w-5" />
+                            تحميل تطبيق Android
+                        </a>
+                        <p className="gl-app-note">ملف APK موقّع. يُنزَّل مباشرة من GitHub، ولا يحتاج إلى حساب Google Play.</p>
+                    </div>
+                ) : (
+                    <p role="status" className="gl-app-missing">نسخة التطبيق غير متاحة للتحميل حاليًا. يرجى المحاولة لاحقًا.</p>
+                )}
             </section>
-            <section className="rounded-card border border-gray-100 bg-white p-6 shadow-card sm:p-8">
-                <h3 className="mb-4 text-lg font-bold text-gray-900">التثبيت والبدء</h3>
-                <ol className="list-inside list-decimal space-y-4 text-sm leading-7 text-gray-600">
-                    <li>افتح هذه الصفحة من هاتف Android، ثم اضغط تحميل التطبيق.</li>
-                    <li>افتح الملف المحمّل. إذا طلب الهاتف إذن التثبيت لهذا المتصفح، اسمح به لإتمام التثبيت، ويمكنك إلغاؤه بعد ذلك.</li>
-                    <li>افتح سوبر باور وسجّل الدخول باسم المستخدم وكلمة المرور الخاصين بالموقع.</li>
+
+            <SettingsSection id="app-install" icon="check" tone="pay" title="التثبيت والبدء" description="ثلاث خطوات، مرة واحدة لكل هاتف.">
+                <ol className="gl-app-steps">
+                    {STEPS.map(([title, text], index) => (
+                        <li key={title}>
+                            <span className="gl-app-step-no">{index + 1}</span>
+                            <div>
+                                <b>{title}</b>
+                                <p>{text}</p>
+                            </div>
+                        </li>
+                    ))}
                 </ol>
-                <p className="mt-4 text-sm leading-7 text-gray-600">إذا بلغ الحساب حد الأجهزة المسموح، يُسجّل خروج الجهاز الأقدم تلقائيًا عند الدخول من جهاز جديد.</p>
-                <p className="mt-5 rounded-control bg-gray-50 p-4 text-sm leading-7 text-gray-600">إدخال القراءات متاح في يوم القراءة المحدد فقط. وتبقى القراءات المحفوظة دون اتصال بانتظار مراجعتك وتأكيد رفعها.</p>
-            </section>
+                <Alert status="default" className="gl-app-alert">
+                    <Alert.Indicator />
+                    <Alert.Content>
+                        <Alert.Title>الأجهزة والقراءات دون اتصال</Alert.Title>
+                        <Alert.Description>إذا بلغ الحساب حد الأجهزة المسموح، يُسجّل خروج الجهاز الأقدم تلقائيًا. إدخال القراءات متاح في يوم القراءة المحدد فقط، وتبقى القراءات المحفوظة دون اتصال بانتظار مراجعتك وتأكيد رفعها.</Alert.Description>
+                    </Alert.Content>
+                </Alert>
+            </SettingsSection>
         </div>
     </SettingsLayout>;
 }

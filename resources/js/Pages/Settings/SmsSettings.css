@@ -87,3 +87,25 @@ textarea.sm-input { resize: vertical; min-height: 84px; line-height: 1.7; }
     .sm-segments button { flex: 1; justify-content: center; padding: 4px 8px; }
 }
 @media (prefers-reduced-motion: reduce) { .sm-advanced > summary svg, .sm-input { transition: none; } }
+
+/* The MA look: soft fields, the chosen segment raised white, the test key the MA dark key. */
+.sm-input {
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    box-shadow: var(--ma-hl);
+}
+.sm-input:hover:not(:disabled):not(:focus) { border: 0; background: var(--ma-solid); box-shadow: var(--ma-depth); }
+.sm-input:focus, .sms-settings .sm-input:focus-visible { border: 0; outline: 2px solid var(--ma-brand); outline-offset: 2px; box-shadow: var(--ma-hl); }
+.sm-input[aria-invalid=true] { box-shadow: inset 0 0 0 1.5px var(--ma-owe); }
+.sm-icon-button { border: 0; border-radius: 13px; background: var(--ma-tile); color: var(--ma-muted); box-shadow: var(--ma-hl); }
+.sm-icon-button:hover { background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-depth); }
+.sm-segments { border: 0; border-radius: 14px; background: var(--ma-tile); box-shadow: var(--ma-hl); }
+.sm-segments button[aria-pressed=true] { background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-depth); }
+.sm-section { border-color: var(--ma-line); }
+.sm-send { border-radius: 13px; background: var(--ma-act); color: #fff; font-weight: 800; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 10px 22px -12px rgb(10 12 16 / 0.7); }
+.sm-stat { border: 0; background: rgb(255 255 255 / 0.08); }
+.sm-segments-wrap { min-width: 0; margin: 0; padding: 0; border: 0; }
+.sm-seg .gl-seg-item small { margin-inline-start: 6px; font: 500 12px var(--font-body, 'Zain'), sans-serif; direction: ltr; opacity: 0.75; }
+.sm-seg .gl-seg-item[data-selected] { background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-depth); }
