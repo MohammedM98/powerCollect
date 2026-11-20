@@ -43,8 +43,10 @@ function QuickFilter({ group, value, placeholder, onChange }) {
  * filters, `sectionRef` is the sheet: the bar shows once the filters pass
  * under the app's bar, and leaves again once the sheet itself has scrolled by.
  */
-export default function ReadingContextBar({ anchorRef, sectionRef, week, weekEnd, groups, values, search, total, onChangeFilters }) {
+export default function ReadingContextBar({ anchorRef, sectionRef, week, weekEnd, groups, values, search, total, onChangeFilters, status = null }) {
     const [shown, setShown] = useState(false);
+    // The sheet's own left edge and width: the bar lines up with the table under it, never wider.
+    const [frameBox, setFrameBox] = useState(null);
     const { topLevel, childOf } = nestFilterGroups(groups);
     const quickGroups = topLevel.filter((group) => group.key in QUICK_FILTERS);
     const quickKeys = quickGroups.flatMap((group) => [group.key, childOf[group.key]?.key].filter(Boolean));
@@ -59,6 +61,10 @@ export default function ReadingContextBar({ anchorRef, sectionRef, week, weekEnd
             const section = sectionRef.current?.getBoundingClientRect();
 
             setShown(Boolean(anchor && section) && anchor.bottom < TOP_OFFSET && section.bottom > TOP_OFFSET + 120);
+
+            if (section) {
+                setFrameBox((current) => (current?.left === section.left && current?.width === section.width ? current : { left: section.left, width: section.width }));
+            }
         }
 
         function onScroll() {
@@ -98,12 +104,13 @@ export default function ReadingContextBar({ anchorRef, sectionRef, week, weekEnd
     }
 
     return (
-        <div className={`re-context ${shown ? 'is-shown' : ''}`} style={{ top: TOP_OFFSET }} aria-hidden={!shown} inert={!shown}>
+        <div className={`re-context ${shown ? 'is-shown' : ''}`} style={{ top: TOP_OFFSET, ...(frameBox ? { left: frameBox.left, width: frameBox.width } : {}) }} aria-hidden={!shown} inert={!shown}>
             <div className="re-context-bar" role="region" aria-label="ما تُدخل له القراءات الآن">
                 <span className="re-context-week">
                     <Icon name="calendar" className="h-4 w-4" />
                     <bdi dir="ltr">{shortDate(week)} – {shortDate(weekEnd)}</bdi>
                 </span>
+                {status && <div className="re-context-status">{status}</div>}
                 {onChangeFilters && quickGroups.length > 0 && (
                     <div className="re-context-filters">
                         {quickGroups.map((group) => {
@@ -133,7 +140,7 @@ export default function ReadingContextBar({ anchorRef, sectionRef, week, weekEnd
                 )}
                 <div className="re-context-chips">
                     {chips.length === 0 ? (
-                        quickKeys.some((key) => values?.[key]) ? null : <span className="re-context-chip is-all">كل المشتركين</span>
+                        status || quickKeys.some((key) => values?.[key]) ? null : <span className="re-context-chip is-all">كل المشتركين</span>
                     ) : (
                         chips.map((chip) => (
                             <span key={chip.key} className="re-context-chip">

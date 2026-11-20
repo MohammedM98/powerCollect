@@ -3,7 +3,6 @@ import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import Icon from '@/Components/Icon';
-import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
@@ -17,7 +16,7 @@ import ReadingContextBar from './ReadingContextBar';
 import ReadingApprovalDialog from './ReadingApprovalDialog';
 import PrintButton from '@/Components/PrintButton';
 import './ReadingEntry.css';
-import KpiTile from '@/Components/KpiTile';
+import ReadingSummary from './ReadingSummary';
 import PageHeader from '@/Components/PageHeader';
 import { EntryWindowNotice } from './EntryWindowNotice';
 import { PRINT_FIELDS, SheetRow } from './ReadingSheetRow';
@@ -54,20 +53,6 @@ const STATUS_TABS = [
 
 const fullDate = (date) => date.split('-').reverse().join('/');
 
-/** The noun alone of a count of readings ("قراءات"), for a figure that shows its number large. */
-const readingsNoun = (count) => countReadings(count).split(' ').slice(1).join(' ');
-
-/** Where the page remembers that its first-visit hint was put away. */
-const HINT_KEY = 'pc-readings-hint-hidden';
-
-function hintWasHidden() {
-    try {
-        return typeof window !== 'undefined' && window.localStorage.getItem(HINT_KEY) === '1';
-    } catch {
-        return false;
-    }
-}
-
 /**
  * @param {import('@/types/pages').MeterReadingsIndexProps} props
  */
@@ -98,14 +83,11 @@ export default function Index({
     const [confirming, setConfirming] = useState(null);
     const [approving, setApproving] = useState(false);
     const [singleApprovalId, setSingleApprovalId] = useState(null);
-    const [showHint, setShowHint] = useState(() => !hintWasHidden());
     // The end of the filters and the sheet: the pinned bar shows what the filters are set to while they are scrolled away.
     const filtersRef = useRef(null);
     const sheetRef = useRef(null);
     const activeStatus = activeReadingStatus(filters.filter ?? {});
     const weekIndex = weekOptions.findIndex((option) => option.value === week);
-    const entered = statusSummary.pending + statusSummary.approved;
-    const percentage = statusSummary.total ? Math.round(entered / statusSummary.total * 100) : 0;
 
     function changeStatus(status) {
         setSelectedIds(new Set());
@@ -128,15 +110,6 @@ export default function Index({
     const approvableAllCount = (pendingApproval?.count ?? 0) - unusualCount;
     const allOnPageSelected = approvableRows.length > 0 && selectedRows.length === approvableRows.length;
     const isFiltered = Boolean(search) || Object.values(filterValues).some(Boolean);
-
-    function hideHint() {
-        setShowHint(false);
-        try {
-            window.localStorage.setItem(HINT_KEY, '1');
-        } catch {
-            /* The hint simply shows again next time. */
-        }
-    }
 
     function toggleSelected(readingId) {
         setSelectedIds((current) => {
@@ -194,6 +167,13 @@ export default function Index({
         );
     }
 
+    // The status pills, at the head of the sheet and again on its pinned bar.
+    const statusTabs = (
+        <div className="gl-seg re-tabs" role="group" aria-label="حالة القراءات">
+            {STATUS_TABS.map((tab) => <button type="button" key={tab.value} aria-pressed={activeStatus === tab.value} onClick={() => changeStatus(tab.value)}>{tab.value !== 'all' && <i className={tab.value} />}{tab.label}<span>{statusSummary[tab.count].toLocaleString('en')}</span></button>)}
+        </div>
+    );
+
     // The page's actions, in their row under the section's tabs as in the redesign.
     const headerActions = (
         <div className="re-heading re-actions items-center">
@@ -219,17 +199,16 @@ export default function Index({
         <AuthenticatedLayout header={<PageHeader title="القراءات الأسبوعية" info="قراءات العدادات لهذه الدورة." actions={headerActions} />}>
             <Head title="القراءات الأسبوعية" />
             <div className="reading-entry" dir="rtl">
-                {showHint && <div className="re-hint"><Icon name="info" /><p>تنتقل القراءة بعد حفظها إلى <b>«بانتظار الاعتماد»</b>، ولا تُضاف إلى حساب المشترك حتى يعتمدها المسؤول.</p><button type="button" aria-label="إخفاء التوضيح" onClick={hideHint}>×</button></div>}
-                <div className="gl-seg re-tabs" role="group" aria-label="حالة القراءات">
-                    {STATUS_TABS.map((tab) => <button type="button" key={tab.value} aria-pressed={activeStatus === tab.value} onClick={() => changeStatus(tab.value)}>{tab.value !== 'all' && <i className={tab.value} />}{tab.label}<span>{statusSummary[tab.count].toLocaleString('en')}</span></button>)}
-                </div>
-                <div className="re-kpis">
-                    <KpiTile label="القراءات المدخلة" value={entered.toLocaleString('en')} unit={`من ${statusSummary.total.toLocaleString('en')}`} hint={`${percentage}% من قراءات الأسبوع`} index={0} hero>
-                        <div className="re-progress-track" role="progressbar" aria-label="القراءات المدخلة" aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}><i className="approved" style={{ width: `${statusSummary.total ? statusSummary.approved / statusSummary.total * 100 : 0}%` }} /><i className="pending" style={{ width: `${statusSummary.total ? statusSummary.pending / statusSummary.total * 100 : 0}%` }} /></div>
-                    </KpiTile>
-                    <KpiTile label="بانتظار الاعتماد" value={statusSummary.pending.toLocaleString('en')} unit={readingsNoun(statusSummary.pending)} hint={pendingApproval ? `مجموعها ${formatMoney(pendingApproval.amountDue)} ₪، تُضاف إلى الحسابات بعد اعتمادها` : 'تُضاف إلى حسابات المشتركين بعد اعتمادها'} index={1} />
-                    <KpiTile label="مجموع المستحق لهذا الأسبوع" value={formatMoney(summary.amountDue)} unit="₪" hint={`عن ${countReadings(entered)} مدخلة حتى الآن`} index={2} />
-                </div>
+                <ReadingSummary
+                    statusSummary={statusSummary}
+                    amountDue={summary.amountDue}
+                    pendingApproval={pendingApproval}
+                    canApprove={canApprove}
+                    approvableAllCount={approvableAllCount}
+                    isFiltered={isFiltered}
+                    approving={approving}
+                    onApproveAll={() => setConfirming('all')}
+                />
             <EntryWindowNotice
                 entryWindow={entryWindow}
                 canRecord={canRecord}
@@ -238,55 +217,17 @@ export default function Index({
                 onShowLatestWeek={() => changeWeek(weekOptions[0].value)}
             />
 
-            {canApprove && pendingApproval.count === 0 && activeStatus === 'pending' && (
-                <div className="mb-4 flex items-center gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-4 text-sm">
-                    <Icon name="check" className="h-5 w-5 shrink-0 text-emerald-600" strokeWidth={2} />
-                    <p className="font-medium text-emerald-800 dark:text-emerald-300">
-                        {isFiltered ? 'لا توجد قراءات بانتظار الاعتماد ضمن البحث والتصفية.' : 'لا توجد قراءات بانتظار الاعتماد لهذا الأسبوع.'}
-                    </p>
-                </div>
-            )}
-
-            {canApprove && pendingApproval.count > 0 && (
-                <div className="re-approval">
-                    <div className="flex items-center gap-3">
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600">
-                            <Icon name="check" strokeWidth={2} />
-                        </span>
-                        <div>
-                            <p className="font-semibold text-gray-900">
-                                {countReadings(approvableAllCount)} جاهزة للاعتماد
-                                {isFiltered && <span className="font-normal text-gray-500"> ضمن البحث والتصفية</span>}
-                            </p>
-                            <p className="text-sm text-gray-500">تُضاف إلى المعاملات المالية للمشتركين عند اعتمادها، ولا تُعدّل بعد ذلك.</p>
-                            {unusualCount > 0 && (
-                                <p className="re-unusual-note">
-                                    وهناك {countReadings(unusualCount)} غير معتادة (استهلاكها أعلى بكثير من المعتاد) لا تدخل في «اعتماد الكل»: راجعها وحدّدها
-                                    لاعتمادها بعد التأكيد.
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-4">
-                        <label className="flex items-center gap-2 text-sm text-gray-600">
-                            <input
-                                type="checkbox"
-                                checked={allOnPageSelected}
-                                onChange={toggleAllOnPage}
-                                disabled={approvableRows.length === 0 || approving}
-                            />
-                            تحديد قراءات هذه الصفحة
-                        </label>
-                        <PrimaryButton type="button" onClick={() => setConfirming('all')} disabled={approving || approvableAllCount === 0}>
-                            <Icon name="check" className="h-4 w-4" strokeWidth={2} />
-                            {isFiltered ? 'اعتماد كل النتائج' : 'اعتماد كل قراءات الأسبوع'} ({approvableAllCount.toLocaleString('en')})
-                        </PrimaryButton>
-                    </div>
-                </div>
-            )}
-
             <section className="re-card" ref={sheetRef}>
-            <ReadingContextBar anchorRef={filtersRef} sectionRef={sheetRef} week={week} weekEnd={weekEnd} groups={filterOptions} values={filterValues} search={search} total={rows.total} onChangeFilters={setFilters} />
+            <ReadingContextBar anchorRef={filtersRef} sectionRef={sheetRef} week={week} weekEnd={weekEnd} groups={filterOptions} values={filterValues} search={search} total={rows.total} onChangeFilters={setFilters} status={statusTabs} />
+            <div className="re-sheet-head">
+                {statusTabs}
+                {canApprove && approvableRows.length > 0 && (
+                    <label className="re-select-page">
+                        <input type="checkbox" checked={allOnPageSelected} onChange={toggleAllOnPage} disabled={approving} />
+                        تحديد قراءات هذه الصفحة
+                    </label>
+                )}
+            </div>
             <DataTableToolbar
                 printable={false}
                 search={search}
@@ -346,9 +287,6 @@ export default function Index({
                             <SortableTh column="last_reading" label="القراءة السابقة" sortState={filters} onSort={sort} className="re-last" />
                             <SortableTh column="current_reading" label="القراءة الحالية" sortState={filters} onSort={sort} className="re-input-cell" />
                             <SortableTh column="consumption" label="الفرق (كيلو)" sortState={filters} onSort={sort} className="re-diff" />
-                            <th className="re-rate">سعر الكيلو</th>
-                            <th className="re-fee">قيمة القراءة</th>
-                            <th className="re-min">الحد الأدنى</th>
                             <SortableTh column="amount_due" label="المطلوب دفعه" sortState={filters} onSort={sort} className="re-due" />
                             <th className="re-status">الحالة</th>
                             {seesWhoRecorded && <th className="re-by">سجّلها</th>}
@@ -357,7 +295,7 @@ export default function Index({
                     <tbody>
                         {rows.data.length === 0 ? (
                             <tr>
-                                <td className="re-empty" colSpan={seesWhoRecorded ? 10 : 9}>
+                                <td className="re-empty" colSpan={seesWhoRecorded ? 7 : 6}>
                                     {isFiltered ? (
                                         <>
                                             <b>لا يوجد مشتركون مطابقون للبحث والتصفية.</b>
@@ -401,10 +339,10 @@ export default function Index({
                         <SecondaryButton onClick={() => setSelectedIds(new Set())} disabled={approving}>
                             إلغاء التحديد
                         </SecondaryButton>
-                        <PrimaryButton type="button" onClick={() => setConfirming('selected')} disabled={approving}>
+                        <button type="button" className="gl-btn re-approve-selected" onClick={() => setConfirming('selected')} disabled={approving}>
                             <Icon name="check" className="h-4 w-4" strokeWidth={2} />
                             اعتماد المحدد
-                        </PrimaryButton>
+                        </button>
                     </div>
                 </div>
             )}
