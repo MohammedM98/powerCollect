@@ -5,7 +5,7 @@ import { formatNumber } from '@/lib/format';
 import InputError from '@/Components/InputError';
 import DistributionDialog from './DistributionDialog';
 import DistributionAreaBreakdown from './DistributionAreaBreakdown';
-import { CheckBox, ChoiceSelect, PrimaryKey, SecondaryKey } from '@/Components/UI';
+import { CheckBox, ChoiceSelect, PrimaryKey, RadioCards, SecondaryKey } from '@/Components/UI';
 
 export default function DistributionActionModal({ boards, selectedBoxes, readers, abilities, busy, errors, target, onTargetChange, recurring, onRecurringChange, hiddenSelected, onRemoveHidden, onClose, onAssign, onCreateSheet, allocationReport }) {
     const [mode, setMode] = useState(target === 'paper' || target === 'available' ? target : 'reader');
@@ -29,7 +29,16 @@ export default function DistributionActionModal({ boards, selectedBoxes, readers
         {abilities.manage && <>
             <fieldset disabled={busy}>
                 <legend className="mb-3 text-sm font-bold text-gray-900">توزيع المحدد إلى</legend>
-                <div className="grid gap-2 sm:grid-cols-3">{[['reader', 'قارئ عدادات'], ['paper', 'كشف ورقي'], ['available', 'إلغاء التخصيص']].map(([value, label]) => <label key={value} className={`flex cursor-pointer items-center gap-2 rounded-control border p-3 text-sm font-semibold ${mode === value ? 'border-brand-500 bg-brand-500/5 text-brand-600' : 'border-gray-200 text-gray-700'}`}><input type="radio" name="distribution-mode" value={value} checked={mode === value} onChange={() => changeMode(value)} className="border-gray-300 text-brand-600" />{label}</label>)}</div>
+                <RadioCards
+                    label="توزيع المحدد إلى"
+                    name="distribution-mode"
+                    className="grid gap-2 sm:grid-cols-3"
+                    value={mode}
+                    onChange={changeMode}
+                    isDisabled={busy}
+                    options={[['reader', 'قارئ عدادات'], ['paper', 'كشف ورقي'], ['available', 'إلغاء التخصيص']].map(([value, label]) => ({ value, label }))}
+                    itemClassName={(option, selected) => `flex cursor-pointer items-center gap-2 rounded-control border p-3 text-sm font-semibold ${selected ? 'border-brand-500 bg-brand-500/5 text-brand-600' : 'border-gray-200 text-gray-700'}`}
+                />
             </fieldset>
             {mode === 'reader' && <div><label htmlFor="distribution-reader" className="mb-2 block text-sm font-semibold text-gray-700">القارئ المكلّف</label><ChoiceSelect id="distribution-reader" className="w-full text-sm" disabled={busy} value={target.startsWith('reader:') ? target : ''} onChange={(event) => onTargetChange(event.target.value)}><option value="">اختر القارئ</option>{readers.map((reader) => <option key={reader.id} value={`reader:${reader.id}`}>{reader.name}</option>)}</ChoiceSelect>{readers.length === 0 && <p className="mt-2 text-xs text-amber-700">لا يوجد قرّاء متاحون في هذا الفرع.</p>}</div>}
             {target && <div className="rounded-control bg-gray-50 p-4 text-sm text-gray-700" role="status"><p className="font-bold text-gray-900">{mode === 'reader' ? readers.find((reader) => `reader:${reader.id}` === target)?.name : mode === 'paper' ? 'الكشوف الورقية' : 'غير موزع'}</p><p className="mt-2">حاليًا: {formatNumber(preview.before.boxes)} طبلون، {formatNumber(preview.before.subscribers)} مشترك</p><p className="mt-1 font-semibold text-brand-600">بعد الحفظ: {formatNumber(preview.after.boxes)} طبلون، {formatNumber(preview.after.subscribers)} مشترك</p></div>}

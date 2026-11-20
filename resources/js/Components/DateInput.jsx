@@ -1,15 +1,11 @@
-import { Button, Input } from '@heroui/react';
+import { Button, Calendar, I18nProvider, Input } from '@heroui/react';
+import { parseDate } from '@internationalized/date';
 import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Icon from '@/Components/Icon';
 import { formatMonthName, localDay } from '@/lib/format';
-import { addDays, addMonths, clampDay, isIsoDay, isOutOfRange, monthGrid, sameMonth } from '@/lib/datePicker';
-import { WEEK_DAYS, formatWeekDay } from '@/lib/weekDays';
-
-/** Each weekday's usual one-letter mark for the calendar's head, Saturday first. */
-const WEEKDAY_INITIALS = WEEK_DAYS.map((day, index) => ({ label: day.label, initial: ['س', 'ح', 'ن', 'ث', 'ر', 'خ', 'ج'][index] }));
-
-const NAVIGATION_KEYS = { ArrowRight: -1, ArrowLeft: 1, ArrowUp: -7, ArrowDown: 7 };
+import { addMonths, clampDay, isIsoDay, isOutOfRange } from '@/lib/datePicker';
+import { formatWeekDay } from '@/lib/weekDays';
 
 /**
  * A date field in the site's own look, in place of the browser's: the
@@ -19,7 +15,8 @@ const NAVIGATION_KEYS = { ArrowRight: -1, ArrowLeft: 1, ArrowUp: -7, ArrowDown: 
  * days outside them. `required` (with `name`) lets the form's own check
  * report a missing date. The calendar is drawn over everything, so a
  * dialog never cuts it off, and works from the keyboard: arrows move a
- * day or a week, Page Up/Down a month, Enter picks, Escape closes.
+ * day or a week, Page Up/Down a month, Enter picks, Escape closes (HeroUI's
+ * Calendar grid, Saturday first).
  * `variant="pill"` draws it as a table's filter pill, `prefix` naming it.
  */
 export default function DateInput({
@@ -47,7 +44,6 @@ export default function DateInput({
     const ownButtonRef = useRef(null);
     const buttonRef = outerButtonRef ?? ownButtonRef;
     const popoverRef = useRef(null);
-    const gridRef = useRef(null);
 
     function openCalendar() {
         setFocusedDay(clampDay(hasValue ? value : today, min, max));
@@ -127,31 +123,6 @@ export default function DateInput({
             window.removeEventListener('resize', onScroll);
         };
     }, [open, buttonRef]);
-
-    // The keyboard's place follows the focused day.
-    useEffect(() => {
-        if (open && view === 'days') {
-            gridRef.current?.querySelector(`[data-day="${focusedDay}"]`)?.focus();
-        }
-    }, [open, view, focusedDay]);
-
-    function onGridKeyDown(event) {
-        let next = null;
-
-        if (event.key in NAVIGATION_KEYS) {
-            next = addDays(focusedDay, NAVIGATION_KEYS[event.key]);
-        } else if (event.key === 'PageUp' || event.key === 'PageDown') {
-            next = addMonths(focusedDay, (event.key === 'PageDown' ? 1 : -1) * (event.shiftKey ? 12 : 1));
-        } else if (event.key === 'Home' || event.key === 'End') {
-            const week = monthGrid(focusedDay).find((days) => days.includes(focusedDay));
-            next = event.key === 'Home' ? week[0] : week[6];
-        }
-
-        if (next) {
-            event.preventDefault();
-            setFocusedDay(clampDay(next, min, max));
-        }
-    }
 
     const shownMonth = focusedDay;
     const year = Number(shownMonth.slice(0, 4));
@@ -258,53 +229,46 @@ export default function DateInput({
                         </div>
 
                         {view === 'days' ? (
-                            <div ref={gridRef} role="grid" tabIndex={-1} aria-label={`${formatMonthName(shownMonth)} ${year}`} onKeyDown={onGridKeyDown}>
-                                <div role="row" className="grid grid-cols-7 pb-1">
-                                    {WEEKDAY_INITIALS.map((day) => (
-                                        <span key={day.label} role="columnheader" className="py-1 text-center text-[13.5px] font-semibold text-gray-700">
-                                            <abbr title={day.label} className="no-underline">{day.initial}</abbr>
-                                        </span>
-                                    ))}
-                                </div>
-                                {monthGrid(shownMonth).map((week) => (
-                                    <div key={week[0]} role="row" className="grid grid-cols-7 gap-0.5">
-                                        {week.map((day) => {
-                                            const selected = hasValue && day === value;
-                                            const blocked = isOutOfRange(day, min, max);
-                                            const inMonth = sameMonth(day, shownMonth);
-
-                                            return (
-                                                <button
-                                                    key={day}
-                                                    type="button"
-                                                    role="gridcell"
-                                                    data-day={day}
-                                                    tabIndex={day === focusedDay ? 0 : -1}
-                                                    aria-selected={selected}
-                                                    aria-current={day === today ? 'date' : undefined}
-                                                    aria-label={formatWeekDay(day)}
-                                                    disabled={blocked}
-                                                    onClick={() => pick(day)}
-                                                    onKeyDown={(event) => {
-                                                        if (event.key === 'Enter' || event.key === ' ') {
-                                                            event.preventDefault();
-                                                            pick(day);
-                                                        }
-                                                    }}
-                                                    className={`relative flex h-10 items-center justify-center rounded-lg font-display text-sm transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:opacity-25 ${
-                                                        selected
+                            <I18nProvider locale="ar-u-nu-latn-ca-gregory">
+                                <Calendar
+                                    aria-label={`${formatMonthName(shownMonth)} ${year}`}
+                                    autoFocus
+                                    firstDayOfWeek="sat"
+                                    value={hasValue ? parseDate(value) : null}
+                                    focusedValue={parseDate(focusedDay)}
+                                    onFocusChange={(date) => setFocusedDay(clampDay(date.toString(), min, max))}
+                                    minValue={min ? parseDate(min) : undefined}
+                                    maxValue={max ? parseDate(max) : undefined}
+                                    onChange={(date) => pick(date.toString())}
+                                    className="gl-calendar"
+                                >
+                                    <Calendar.Grid weekdayStyle="narrow" className="w-full border-collapse">
+                                        <Calendar.GridHeader>
+                                            {(day) => <Calendar.HeaderCell className="py-1 text-center text-[13.5px] font-semibold text-gray-700">{day}</Calendar.HeaderCell>}
+                                        </Calendar.GridHeader>
+                                        <Calendar.GridBody>
+                                            {(date) => (
+                                                <Calendar.Cell
+                                                    date={date}
+                                                    data-day={date.toString()}
+                                                    className={({ isSelected, isOutsideMonth }) => `relative flex h-10 cursor-pointer items-center justify-center rounded-lg font-display text-sm outline-hidden transition data-[focus-visible=true]:outline-solid data-[focus-visible=true]:outline-2 data-[focus-visible=true]:outline-offset-1 data-[focus-visible=true]:outline-gray-900 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-25 ${
+                                                        isSelected
                                                             ? 'bg-gray-900 font-bold text-surface shadow-xs'
-                                                            : `${inMonth ? 'text-gray-800' : 'text-gray-400'} hover:bg-gray-100 ${day === today ? 'font-bold text-brand-600' : ''}`
+                                                            : `${isOutsideMonth ? 'text-gray-400' : 'text-gray-800'} hover:bg-gray-100 ${date.toString() === today ? 'font-bold text-brand-600' : ''}`
                                                     }`}
                                                 >
-                                                    {Number(day.slice(8))}
-                                                    {day === today && !selected && <span aria-hidden="true" className="absolute bottom-1.5 h-1 w-1 rounded-full bg-brand-500" />}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                ))}
-                            </div>
+                                                    {({ isSelected }) => (
+                                                        <>
+                                                            {date.day}
+                                                            {date.toString() === today && !isSelected && <span aria-hidden="true" className="absolute bottom-1.5 h-1 w-1 rounded-full bg-brand-500" />}
+                                                        </>
+                                                    )}
+                                                </Calendar.Cell>
+                                            )}
+                                        </Calendar.GridBody>
+                                    </Calendar.Grid>
+                                </Calendar>
+                            </I18nProvider>
                         ) : (
                             <div className="grid grid-cols-3 gap-1.5 py-1">
                                 {Array.from({ length: 12 }, (_, index) => {

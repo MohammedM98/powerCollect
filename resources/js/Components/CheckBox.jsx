@@ -5,10 +5,10 @@ import { Checkbox } from '@heroui/react';
  * swaps one for the other unchanged. `onChange` gets an event-like object
  * (`event.target.checked`, `value`, `name`), `disabled`, `name`, `value`,
  * `id` and `aria-label` pass through, and `indeterminate` shows a page
- * partly ticked. Its words are `children`; with none, the box sits inside
+ * partly ticked, and `showControl={false}` hides the box for a tile that shows its own mark. Its words are `children`; with none, the box sits inside
  * the page's own label, which still names it.
  */
-export default function CheckBox({ checked = false, onChange, disabled = false, indeterminate = false, name, value, id, className = '', children = null, ...props }) {
+export default function CheckBox({ checked = false, onChange, disabled = false, indeterminate = false, name, value, id, className = '', showControl = true, children = null, ...props }) {
     return (
         <Checkbox
             {...props}
@@ -22,7 +22,7 @@ export default function CheckBox({ checked = false, onChange, disabled = false, 
             className={`gl-check ${className}`}
         >
             <Checkbox.Content>
-                <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
+                <Checkbox.Control className={showControl ? undefined : 'sr-only'}><Checkbox.Indicator /></Checkbox.Control>
                 {children}
             </Checkbox.Content>
         </Checkbox>

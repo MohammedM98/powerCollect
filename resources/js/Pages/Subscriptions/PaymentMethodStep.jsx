@@ -2,6 +2,7 @@ import { Input } from '@heroui/react';
 import InputError from '@/Components/InputError';
 import { FieldLabel, FormStep } from './AccountFormParts';
 import { inputClass, MethodTile, TransferFields } from './PaymentModalParts';
+import { RadioCards } from '@/Components/UI';
 
 /** How the payment came: cash, or a bank transfer with its bank, reference, sender and arrival date, and the reference check. */
 export default function PaymentMethodStep({
@@ -26,31 +27,21 @@ export default function PaymentMethodStep({
         >
             <fieldset>
                 <legend className="sr-only">طريقة الدفع</legend>
-                <div className="grid gap-3 sm:grid-cols-2">
-                    {methods.map((method) =>
-                        method === 'bank_transfer' ? (
-                            <MethodTile
-                                key={method}
-                                value={method}
-                                checked={throughBank}
-                                onChange={(value) => setData('payment_method', value)}
-                                icon="bank"
-                                title="تحويل بنكي أو محفظة"
-                                hint={transferBanks.join('، ')}
-                            />
-                        ) : (
-                            <MethodTile
-                                key={method}
-                                value={method}
-                                checked={data.payment_method === method}
-                                onChange={(value) => setData('payment_method', value)}
-                                icon="banknotes"
-                                title="نقد"
-                                hint="استُلم المبلغ نقدًا"
-                            />
-                        ),
-                    )}
-                </div>
+                <RadioCards
+                    label="طريقة الدفع"
+                    name="payment_method"
+                    className="grid gap-3 sm:grid-cols-2"
+                    value={throughBank ? 'bank_transfer' : data.payment_method}
+                    onChange={(value) => setData('payment_method', value)}
+                    showControl={false}
+                    itemClassName={() => 'gl-method'}
+                    options={methods.map((method) => ({
+                        value: method,
+                        label: method === 'bank_transfer'
+                            ? <MethodTile icon="bank" title="تحويل بنكي أو محفظة" hint={transferBanks.join('، ')} />
+                            : <MethodTile icon="banknotes" title="نقد" hint="استُلم المبلغ نقدًا" />,
+                    }))}
+                />
                 <InputError message={errors.payment_method} className="mt-2" />
 
                 {throughBank && (

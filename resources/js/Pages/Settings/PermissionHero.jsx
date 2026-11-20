@@ -3,7 +3,7 @@ import Icon from '@/Components/Icon';
 import { EmployeeAvatar, RoleChip } from './PermissionPeople';
 import { RiskGauge } from './PermissionInsights';
 import { copyWorkPermissions, individualChanges, permissionsWord } from '@/lib/permissions';
-import { MenuButton, MenuItem } from './PermissionMenu';
+import { MenuButton } from './PermissionMenu';
 import { Delta } from './PermissionReview';
 
 /** The editor's dark header: who the employee is, how much they hold and how risky it is, copying a colleague, the role's template and the view tabs. */
@@ -95,36 +95,24 @@ export default function PermissionHero({
                     <Icon name="document" className="h-4 w-4" />
                     دليل الموظف
                 </Button>
-                <MenuButton icon="users" label="نسخ من موظف" className="pm-hero-button">
-                    {(close) =>
-                        copySources.length === 0 ? (
-                            <p className="px-3 py-4 text-center text-sm text-gray-500">لا يوجد موظفون آخرون في هذه الصفحة.</p>
-                        ) : (
-                            copySources.map((user) => {
-                                const diff = individualChanges(sections, selected, copyWorkPermissions(sections, selected, user.permissionIds));
+                <MenuButton
+                    icon="users"
+                    label="نسخ من موظف"
+                    className="pm-hero-button"
+                    empty="لا يوجد موظفون آخرون في هذه الصفحة."
+                    items={copySources.map((user) => {
+                        const diff = individualChanges(sections, selected, copyWorkPermissions(sections, selected, user.permissionIds));
 
-                                return (
-                                    <MenuItem
-                                        key={user.id}
-                                        leading={<EmployeeAvatar name={user.name} color={colorOf(user.roleLabel)} size="sm" />}
-                                        title={user.name}
-                                        subtitle={`${user.roleLabel}، ${user.branchName ?? 'بلا فرع'}`}
-                                        trailing={
-                                            <Delta
-                                                added={diff.filter((item) => item.added).length}
-                                                removed={diff.filter((item) => !item.added).length}
-                                            />
-                                        }
-                                        onSelect={() => {
-                                            copyFrom(user);
-                                            close();
-                                        }}
-                                    />
-                                );
-                            })
-                        )
-                    }
-                </MenuButton>
+                        return {
+                            id: user.id,
+                            leading: <EmployeeAvatar name={user.name} color={colorOf(user.roleLabel)} size="sm" />,
+                            title: user.name,
+                            subtitle: `${user.roleLabel}، ${user.branchName ?? 'بلا فرع'}`,
+                            trailing: <Delta added={diff.filter((item) => item.added).length} removed={diff.filter((item) => !item.added).length} />,
+                            onSelect: () => copyFrom(user),
+                        };
+                    })}
+                />
             </div>
 
             {template && (

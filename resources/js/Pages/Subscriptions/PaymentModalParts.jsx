@@ -10,11 +10,10 @@ import { CheckBox, PrimaryKey, SecondaryKey, Switch } from '@/Components/UI';
 
 export const inputClass = 'block h-[46px] w-full px-4 text-base';
 
-/** A payment method presented as a radio option. */
-export function MethodTile({ value, checked, onChange, icon, title, hint }) {
+/** A payment method's face inside its choice (RadioCards in PaymentMethodStep): its icon, name and line, and the dot that marks the chosen one. */
+export function MethodTile({ icon, title, hint }) {
     return (
-        <label className="gl-method" data-checked={checked || undefined}>
-            <input type="radio" name="payment_method" value={value} checked={checked} onChange={() => onChange(value)} className="sr-only" />
+        <>
             <span className="gl-method-icon">
                 <Icon name={icon} className="h-[18px] w-[18px]" strokeWidth={1.8} />
             </span>
@@ -23,7 +22,7 @@ export function MethodTile({ value, checked, onChange, icon, title, hint }) {
                 <small className="gl-sub block m-0! text-[12.5px]!">{hint}</small>
             </span>
             <span className="gl-method-dot" aria-hidden="true" />
-        </label>
+        </>
     );
 }
 

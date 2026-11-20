@@ -81,7 +81,7 @@ const path = require('node:path');
         const container = surface === 'history' ? history() : page.locator('.re-table');
         await container.getByRole('button', { name: surface === 'history' ? 'تعديل القراءة السابقة' : `تعديل القراءة السابقة لـ ${subject.name}`, exact: true }).click();
         const dialog = page.getByRole('dialog', { name: 'تعديل القراءة السابقة', exact: true });
-        await dialog.locator(`input[value="${reset ? 'meter_change' : 'correction'}"]`).check();
+        await dialog.locator(`input[value="${reset ? 'meter_change' : 'correction'}"]`).check({ force: true });
         if (reset) await dialog.getByRole('textbox', { name: /سبب تغيير العداد/ }).fill('استبدال عداد تالف أثناء اختبار دورة القراءات');
         await dialog.getByRole('button', { name: 'متابعة', exact: true }).click();
         await dialog.getByRole('spinbutton', { name: 'القراءة السابقة الجديدة', exact: true }).fill(String(after));

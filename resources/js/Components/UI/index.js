@@ -23,6 +23,7 @@ export { default as SearchableSelect } from '@/Components/SearchableSelect';
 export { default as SegmentedChoice } from '@/Components/SegmentedChoice';
 export { default as Switch } from '@/Components/Switch';
 export { default as TabStrip } from './TabStrip';
+export { default as RadioCards } from './RadioCards';
 
 // Display
 export { default as Figure } from './Figure';

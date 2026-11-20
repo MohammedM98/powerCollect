@@ -1,6 +1,5 @@
-import { useEffect, useId, useRef, useState } from 'react';
 import { usePage } from '@inertiajs/react';
-import { Button, Radio, RadioGroup } from '@heroui/react';
+import { Label, ListBox, Radio, RadioGroup, Select } from '@heroui/react';
 import Icon from '@/Components/Icon';
 
 /**
@@ -15,6 +14,9 @@ const BANKS = {
     'البنك الإسلامي العربي': { logo: '/images/banks/arab-islamic-bank.webp', color: '#7b2d8e', kind: 'تحويل بنكي' },
     'بنك القدس': { logo: '/images/banks/quds-bank.webp', color: '#74bd44', kind: 'تحويل بنكي' },
 };
+
+/** The «غير محدد» choice's key: HeroUI's keys are never empty. */
+const EMPTY_BANK = '__none__';
 
 function useBankLook(bank) {
     const managed = usePage().props.paymentOptions?.banks?.find((option) => option.name === bank);
@@ -60,56 +62,25 @@ export function BankChips({ banks, name, label, value, onChange, isRequired = fa
     );
 }
 
+/**
+ * The sending bank or e-wallet as a drop-down: HeroUI's Select on the
+ * frosted pop surface, each choice with its mark and kind, and «غير محدد»
+ * first. `id` goes on its key, so a page's <label htmlFor> names it;
+ * `name` keeps the choice in the form.
+ */
 export function BankDropdown({ banks, id, name, onChange, value }) {
-    const [open, setOpen] = useState(false);
-    const containerRef = useRef(null);
-    const listboxId = useId();
     const selectedLook = useBankLook(value);
 
-    useEffect(() => {
-        if (!open) {
-            return;
-        }
-
-        function closeOutside(event) {
-            if (containerRef.current && !containerRef.current.contains(event.target)) {
-                setOpen(false);
-            }
-        }
-
-        function closeOnEscape(event) {
-            if (event.key === 'Escape') {
-                setOpen(false);
-            }
-        }
-
-        document.addEventListener('mousedown', closeOutside);
-        document.addEventListener('keydown', closeOnEscape);
-
-        return () => {
-            document.removeEventListener('mousedown', closeOutside);
-            document.removeEventListener('keydown', closeOnEscape);
-        };
-    }, [open]);
-
-    function select(bank) {
-        onChange(bank);
-        setOpen(false);
-    }
-
     return (
-        <div ref={containerRef} className="relative">
-            <input type="hidden" name={name} value={value} />
-            <Button data-raw="" variant="ghost"
-                id={id}
-                aria-controls={listboxId}
-                aria-expanded={open}
-                aria-haspopup="listbox"
-                onClick={() => setOpen((current) => !current)}
-                className={`flex min-h-[58px] w-full items-center gap-3 rounded-[14px] border-[1.5px] bg-surface px-3 py-2 text-start transition focus:outline-hidden focus-visible:ring-4 focus-visible:ring-brand-500/15 ${
-                    open ? 'border-brand-500 ring-4 ring-brand-500/15' : 'border-gray-200 hover:border-brand-500/45'
-                }`}
-            >
+        <Select
+            name={name}
+            aria-label="البنك المرسل"
+            className="gl-bank-select w-full"
+            selectedKey={value ? value : EMPTY_BANK}
+            onSelectionChange={(key) => onChange(key === EMPTY_BANK ? '' : String(key))}
+        >
+            <Label className="sr-only">البنك المرسل</Label>
+            <Select.Trigger id={id} className="flex min-h-[58px] w-full items-center gap-3 rounded-[14px] border-[1.5px] border-gray-200 bg-surface px-3 py-2 text-start transition hover:border-brand-500/45 data-[open=true]:border-brand-500 data-[open=true]:ring-4 data-[open=true]:ring-brand-500/15">
                 {value ? (
                     <>
                         <BankMark bank={value} />
@@ -121,61 +92,29 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
                 ) : (
                     <span className="text-sm text-gray-400">اختر البنك أو المحفظة المحوّل منها</span>
                 )}
-                <Icon name="chevron-down" className={`ms-auto h-4 w-4 shrink-0 text-gray-400 transition ${open ? 'rotate-180' : ''}`} />
-            </Button>
-
-            {open && (
-                <ul
-                    id={listboxId}
-                    role="listbox"
-                    aria-label="البنك المرسل"
-                    className="animate-modal-panel absolute inset-x-0 z-30 mt-2 max-h-80 overflow-y-auto rounded-2xl p-1.5 gl-pop"
-                >
-                    <li role="none">
-                        <button
-                            type="button"
-                            role="option"
-                            aria-selected={!value}
-                            onClick={() => select('')}
-                            className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition hover:bg-gray-50 ${
-                                !value ? 'bg-gray-50 font-semibold text-gray-900' : 'text-gray-600'
-                            }`}
-                        >
-                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 text-gray-400">
-                                <Icon name="close" className="h-4 w-4" />
+                <Select.Indicator className="ms-auto shrink-0 text-gray-400" />
+            </Select.Trigger>
+            <Select.Popover className="gl-choice-pop">
+                <ListBox className="max-h-80 overflow-y-auto">
+                    <ListBox.Item id={EMPTY_BANK} textValue="غير محدد" className="flex items-center gap-3 rounded-xl px-3 py-2.5">
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 text-gray-400">
+                            <Icon name="close" className="h-4 w-4" />
+                        </span>
+                        <span className="text-sm">غير محدد</span>
+                        <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                    {banks.map((bank) => (
+                        <ListBox.Item key={bank} id={bank} textValue={bank} className="flex items-center gap-3 rounded-xl px-3 py-2.5">
+                            <BankMark bank={bank} />
+                            <span className="min-w-0">
+                                <b className="block text-[14.5px] text-gray-900">{bank}</b>
+                                <small className="block text-xs font-medium text-gray-500">{BANKS[bank]?.kind ?? 'تحويل'}</small>
                             </span>
-                            <span className="text-sm">غير محدد</span>
-                            {!value && <Icon name="check" className="ms-auto h-4 w-4 text-brand-600" strokeWidth={2} />}
-                        </button>
-                    </li>
-                    {banks.map((bank) => {
-                        const isSelected = value === bank;
-                        const look = BANKS[bank];
-
-                        return (
-                            <li key={bank} role="none">
-                                <button
-                                    type="button"
-                                    role="option"
-                                    aria-selected={isSelected}
-                                    onClick={() => select(bank)}
-                                    className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition hover:bg-gray-50 ${
-                                        isSelected ? 'bg-gray-50' : ''
-                                    }`}
-                                    style={isSelected && look?.color ? { backgroundColor: `${look.color}0d` } : undefined}
-                                >
-                                    <BankMark bank={bank} />
-                                    <span className="min-w-0">
-                                        <b className="block text-[14.5px] text-gray-900">{bank}</b>
-                                        <small className="block text-xs font-medium text-gray-500">{look?.kind ?? 'تحويل'}</small>
-                                    </span>
-                                    {isSelected && <Icon name="check" className="ms-auto h-4 w-4 shrink-0 text-brand-600" strokeWidth={2} />}
-                                </button>
-                            </li>
-                        );
-                    })}
-                </ul>
-            )}
-        </div>
+                            <ListBox.ItemIndicator />
+                        </ListBox.Item>
+                    ))}
+                </ListBox>
+            </Select.Popover>
+        </Select>
     );
 }

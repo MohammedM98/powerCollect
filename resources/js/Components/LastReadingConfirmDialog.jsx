@@ -1,3 +1,4 @@
+import RadioCards from '@/Components/UI/RadioCards';
 import CheckBox from '@/Components/CheckBox';
 import { TextArea } from '@heroui/react';
 import { useEffect, useId, useState } from 'react';
@@ -47,10 +48,16 @@ export default function LastReadingConfirmDialog({ editor, subscriptionName }) {
             {phase === 'reason' && <>
                 <fieldset className="space-y-3">
                     <legend className="mb-3 text-lg font-bold text-gray-900">لماذا تريد تعديل القراءة؟</legend>
-                    {PURPOSES.map((option) => <label key={option.value} className={`flex cursor-pointer items-start gap-3 rounded-control border p-4 transition ${editor.adjustmentType === option.value ? 'border-brand-500 bg-brand-500/5' : 'border-gray-200 hover:border-gray-400'}`}>
-                        <input type="radio" name={`${id}-purpose`} value={option.value} checked={editor.adjustmentType === option.value} onChange={() => editor.chooseType(option.value)} className="mt-2 h-5 w-5 shrink-0 border-gray-300 text-brand-600 focus:ring-brand-500" />
-                        <span><b className="block text-lg text-gray-900">{option.label}</b><span className="mt-1 block text-base text-gray-600">{editor.isInitial ? 'تعديل قراءة بداية الاشتراك التي تبدأ منها القراءة الحالية.' : option.hint}</span></span>
-                    </label>)}
+                    <RadioCards
+                        label="لماذا تريد تعديل القراءة؟"
+                        name={`${id}-purpose`}
+                        className="space-y-3"
+                        value={editor.adjustmentType}
+                        onChange={editor.chooseType}
+                        controlClassName="mt-2 shrink-0"
+                        options={PURPOSES.map((option) => ({ value: option.value, label: <span><b className="block text-lg text-gray-900">{option.label}</b><span className="mt-1 block text-base text-gray-600">{editor.isInitial ? 'تعديل قراءة بداية الاشتراك التي تبدأ منها القراءة الحالية.' : option.hint}</span></span> }))}
+                        itemClassName={(option, selected) => `flex cursor-pointer items-start gap-3 rounded-control border p-4 transition ${selected ? 'border-brand-500 bg-brand-500/5' : 'border-gray-200 hover:border-gray-400'}`}
+                    />
                 </fieldset>
                 {meterChange && <div>
                     <label htmlFor={`${id}-reason`} className="mb-2 block text-base font-semibold text-gray-900">سبب تغيير العداد <span className="text-red-600">*</span></label>
