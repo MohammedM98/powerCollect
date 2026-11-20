@@ -44,7 +44,8 @@ export default function TableExcelActions() {
             }
             document.querySelectorAll('main table, [role="dialog"] table').forEach((table, index) => {
                 if (hosts.current.has(table) || !table.getClientRects().length || !table.querySelector('thead th')) return;
-                if (table.closest('.sr-only, [aria-hidden="true"], .pd-root, .pd-source, [data-excel-source="custom"]')) return;
+                // A calendar's day grid is a table too, but not one to export.
+                if (table.closest('.sr-only, [aria-hidden="true"], .pd-root, .pd-source, [data-excel-source="custom"], [data-slot="calendar"]')) return;
                 const container = tableContainer(table);
                 const toolbar = tableToolbar(table, container);
                 if (hasOwnExport(toolbar)) return;
