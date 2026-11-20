@@ -13,11 +13,12 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import GroupActionButton from '@/Components/GroupActionButton';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import { secondaryButtonClass } from '@/Components/SecondaryButton';
-import { reportMoney, shortDate } from '@/lib/reportFormatting';
+import { reportMoney } from '@/lib/reportFormatting';
 import { printUrl } from '@/lib/print';
 
 import { boxColumns, debtColumns, detailExcelPart, statementColumns } from '@/lib/reportDetailParts';
 import { formatDate } from '@/lib/format';
+import { BoxesFigures, DebtFigures, debtCell } from './ReportViews';
 
 const isAmount = (column) => ['money', 'decimal'].includes(column.type);
 const reportHelp = {
@@ -47,13 +48,15 @@ function Actions({ title, section, columns, exportRows, identity = '' }) {
     </div>;
 }
 
-function ReportTable({ columns, title, section, nameCell, empty, exportRows }) {
+function ReportTable({ columns, title, section, nameCell, cell, empty, exportRows }) {
     const { detailTable: model, filters, reportStatement } = usePage().props;
     const controls = useDataTable('/reports', model.state, { ...filters, section, subscription: reportStatement?.subscription.id });
     const size = model.state.per_page;
     const rows = model.rows;
     function renderValue(row, column) {
         if (nameCell && column.key === 'name') return nameCell(row);
+        const custom = cell?.(row, column);
+        if (custom !== undefined) return custom;
         if (column.balance) return <Balance value={row[column.key]} colored={false} unit="" />;
         if (isAmount(column)) return Number(row[column.key]) === 0 ? <span className="text-gray-400">—</span> : <bdi dir="ltr">{reportMoney(Math.abs(Number(row[column.key])))}</bdi>;
         if (column.type === 'int') return <bdi dir="ltr">{row[column.key]}</bdi>;
@@ -89,30 +92,16 @@ function TableReport({ section, ...props }) {
 export function DebtReport({ data, visit }) {
     const { canViewStatements } = usePage().props;
     if (!data) return null;
-    const footer = Object.fromEntries(data.buckets.map((bucket) => [bucket.key, bucket.total]));
-    footer.balance = data.total;
     return <div className="space-y-5">
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <KpiTile hero label="إجمالي ديون المشتركين" value={reportMoney(data.total)} unit="₪" hint={`كما في ${shortDate(data.asOf, true)}`} />
-            <KpiTile label="المشتركون المدينون" value={data.count} />
-            <KpiTile label="أكثر من 90 يومًا" value={reportMoney(footer.older)} unit="₪" />
-            <KpiTile label="أرصدة لصالح المشتركين" value={<bdi dir="ltr">{reportMoney(data.credit)}</bdi>} unit="₪" hint={`${data.creditCount} حساب`} />
-        </div>
-        <TableReport section="debts" title="ديون المشتركين" columns={debtColumns} nameCell={(row) => canViewStatements ? <button type="button" className="font-semibold text-brand-600 underline-offset-4 hover:underline" onClick={() => visit({ section: 'statement', subscription: row.id, page: undefined })}>{row.name}</button> : row.name} />
+        <DebtFigures data={data} />
+        <TableReport section="debts" title="ديون المشتركين" columns={debtColumns} cell={debtCell} nameCell={(row) => canViewStatements ? <button type="button" className="font-semibold text-brand-600 underline-offset-4 hover:underline" onClick={() => visit({ section: 'statement', subscription: row.id, page: undefined })}>{row.name}</button> : row.name} />
     </div>;
 }
-
-const boxStatusLabels = { 'مفتوح': 'في صناديق مفتوحة', 'مغلق': 'في صناديق مغلقة لم يؤكد الفرع استلامها', 'مستلم': 'أكّد الفرع استلامها' };
 
 export function BoxesReport({ data }) {
     if (!data) return null;
     return <div className="space-y-5">
-        <section aria-label="الأموال حسب حالة الصندوق" className="grid gap-4 sm:grid-cols-3">
-            {data.byStatus.map((group) => {
-                const [main, ...others] = group.currencies;
-                return <KpiTile key={group.status} label={boxStatusLabels[group.status]} value={<bdi dir="ltr">{reportMoney(main?.amount ?? 0)}</bdi>} unit={main && main.currency !== 'ILS' ? main.currency : 'شيكل'} hint={[`${group.boxes} صندوق`, ...others.map((total) => `${reportMoney(total.amount)} ${total.currency}`)].join('، ')} />;
-            })}
-        </section>
+        <BoxesFigures data={data} />
         <TableReport section="boxes" title="الصناديق والأموال" columns={boxColumns} />
     </div>;
 }

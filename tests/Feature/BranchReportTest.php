@@ -371,6 +371,7 @@ class BranchReportTest extends TestCase
             ->where('debts.total', '130.00')
             ->where('debts.credit', '-30.00')
             ->where('debts.count', 1)
+            ->where('debts.topTenShare', 100)
             ->where('detailTable.rows.0.id', $this->subscription->id)
             ->where('detailTable.rows.0.buckets.current', '50.00')
             ->where('detailTable.rows.0.buckets.older', '80.00')
@@ -442,7 +443,14 @@ class BranchReportTest extends TestCase
                 ['status' => 'مفتوح', 'boxes' => 1, 'currencies' => [['currency' => 'ILS', 'amount' => '20.00']]],
                 ['status' => 'مغلق', 'boxes' => 0, 'currencies' => []],
                 ['status' => 'مستلم', 'boxes' => 1, 'currencies' => [['currency' => 'ILS', 'amount' => '30.00']]],
-            ]));
+            ])
+            ->where('boxData.byType.0.type', 'cash')
+            ->where('boxData.byType.0.stages', [
+                ['status' => 'مفتوح', 'boxes' => 1, 'amount' => '20.00'],
+                ['status' => 'مغلق', 'boxes' => 0, 'amount' => '0.00'],
+                ['status' => 'مستلم', 'boxes' => 1, 'amount' => '30.00'],
+            ])
+            ->where('boxData.byType.1.label', 'حوالات بنكية'));
     }
 
     public function test_detail_sections_skip_the_period_summary_that_only_summary_sections_show(): void

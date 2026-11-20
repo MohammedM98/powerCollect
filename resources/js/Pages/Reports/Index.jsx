@@ -13,8 +13,9 @@ import { cents, periodLabel, reportMoney, shortDate } from '@/lib/reportFormatti
 import { weekDayName } from '@/lib/weekDays';
 import ReportPrintSheet from './ReportPrintSheet';
 import { BoxesReport, DebtReport, StatementReport } from './ReportDetails';
-import { Comparison, PeriodCard, Figures } from './ReportParts';
-import { FlowStatement, CollectionsBreakdown, Readings, DailyCollections, DaysTable, BranchComparison, Transactions } from './ReportSections';
+import { PeriodCard } from './ReportParts';
+import { CollectionsView, OverviewView } from './ReportViews';
+import { Transactions } from './ReportSections';
 
 const ExcelStudio = lazy(() => import('@/Components/ExcelStudio'));
 
@@ -160,22 +161,8 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                 )}
 
                 <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold text-gray-900">{current.heading}</h2><InfoTip label={`معلومة عن ${current.heading}`}>{current.hint}</InfoTip></div>
-                {hasFigures && section === 'overview' && <Figures flow={flow} collections={collections} />}
-                {hasFigures && ['overview', 'collections'].includes(section) && collections.receipts && <section className="rounded-card border border-gray-200 bg-surface p-5" aria-label="نتيجة تدقيق المقبوضات">
-                    <h3 className="text-lg font-bold text-gray-900">نتيجة تدقيق مقبوضات الفترة حتى الآن</h3>
-                    <p className="mt-2 text-sm leading-7 text-gray-600">{collections.receipts.basis}</p>
-                    <dl className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{collections.receipts.rows.map((row) => <div key={row.key} className={`rounded-control border p-4 ${row.key === 'confirmed' ? 'border-gray-900 bg-gray-50' : 'border-gray-100'}`}><dt className="text-sm text-gray-600">{row.label}</dt><dd className="mt-2 font-display text-xl font-bold text-gray-900"><bdi dir="ltr">{reportMoney(row.amount)}</bdi> ₪</dd></div>)}</dl>
-                </section>}
-                {hasFigures && section === 'overview' && <>
-                    {comparison && <Comparison comparison={comparison} />}
-                    <div className="grid gap-5 xl:grid-cols-2"><FlowStatement flow={flow} /><div className="space-y-5"><CollectionsBreakdown collections={collections} compact />{readings && <Readings readings={readings} />}</div></div>
-                    {days.length > 1 && <DailyCollections days={days} onOpenDay={openDay} />}
-                    {branchSummary?.length > 0 && <BranchComparison rows={branchSummary} filters={filters} />}
-                </>}
-                {hasFigures && section === 'collections' && <>
-                    <CollectionsBreakdown collections={collections} />
-                    {days.length > 1 && <><DailyCollections days={days} onOpenDay={openDay} /><DaysTable days={days} onOpenDay={openDay} /></>}
-                </>}
+                {hasFigures && section === 'overview' && <OverviewView flow={flow} collections={collections} branchSummary={branchSummary ?? []} readings={readings} />}
+                {hasFigures && section === 'collections' && <CollectionsView collections={collections} comparison={comparison} days={days} onOpenDay={openDay} />}
                 {section === 'boxes' && <BoxesReport data={boxData} />}
                 {section === 'debts' && <DebtReport key={filters.branch} data={debts} visit={visit} />}
                 {section === 'statement' && <StatementReport key={filters.branch} data={reportStatement} visit={visit} />}
