@@ -22,11 +22,17 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         // The MA design's glass: the rail and the top bar are both frosted over the page, in both themes.
         await expect(sidebar).toHaveCSS('backdrop-filter', /blur\(/);
         await expect(toolbar).toHaveCSS('backdrop-filter', /blur\(/);
-        await toolbar.getByRole('button', { name: 'التبديل إلى الوضع الداكن' }).click();
+        // The look is chosen from the appearance key's popover (HeroUI).
+        const chooseTheme = async (label) => {
+            await toolbar.getByRole('button', { name: 'المظهر', exact: true }).click();
+            await page.getByRole('radio', { name: label, exact: true }).click();
+            await page.keyboard.press('Escape');
+        };
+        await chooseTheme('داكن');
         await expect(sidebar).toHaveCSS('backdrop-filter', /blur\(/);
         await expect(toolbar).toHaveCSS('backdrop-filter', /blur\(/);
         await page.screenshot({ path: `${process.env.OUT_DIR}/glass-dark.png` });
-        await toolbar.getByRole('button', { name: 'التبديل إلى الوضع الفاتح' }).click();
+        await chooseTheme('فاتح');
         const dock = sidebar.getByRole('navigation', { name: 'أقسام النظام', exact: true });
         const subscribersSection = dock.getByRole('button', { name: /المشتركون/ });
         await expect(subscribersSection).toHaveAttribute('aria-current', 'true');

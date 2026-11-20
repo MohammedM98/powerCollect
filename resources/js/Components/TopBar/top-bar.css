@@ -2573,3 +2573,23 @@ html.tn-locked {
 .tn-branch-trigger .select__value svg {
     display: none;
 }
+
+/* Phones: the branch key shrinks to its building (the branch's name shows in the list and on the page). */
+@media (max-width: 760px) {
+    .tn-branch-select .tn-branch-trigger {
+        min-width: 0;
+        width: 42px;
+        padding: 0;
+        justify-content: center;
+    }
+
+    .tn-branch-select .tn-branch-trigger :is(.select__value, .select__indicator) {
+        display: none;
+    }
+
+    .tn-tools .tn-quick.button {
+        width: 42px;
+        padding: 0;
+        justify-content: center;
+    }
+}
