@@ -174,7 +174,7 @@ const pickChoice = (field, choice) => field.locator('xpath=ancestor-or-self::*[c
         await page.setViewportSize({ width: 1600, height: 1100 });
         await page.getByRole('link', { name: 'إرسال رسائل القراءات المعتمدة', exact: true }).click();
         await page.getByRole('region', { name: 'معاينة الرسالة', exact: true }).getByText(`كما تصل إلى ${fixture.messageSubscriptionName}`, { exact: true }).waitFor();
-        assert.equal(await page.locator('#week_start').inputValue(), fixture.messageWeek, 'the message keeps the selected historical reading week');
+        assert.equal(await page.locator('#week_start').locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " gl-choice ")][1]').locator('select').inputValue(), fixture.messageWeek, 'the message keeps the selected historical reading week');
         await page.getByRole('button', { name: 'أضف «سعر الكيلو» إلى نص الرسالة', exact: true }).waitFor();
         await page.getByRole('button', { name: 'أضف «يوم القراءة» إلى نص الرسالة', exact: true }).waitFor();
         await page.screenshot({ path: `${process.env.OUT_DIR}/reading-message-preview.png`, fullPage: true });

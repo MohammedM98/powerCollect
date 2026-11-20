@@ -47,7 +47,7 @@ const pickChoice = (field, choice) => field.locator('xpath=ancestor-or-self::*[c
         assert.match(await paper.locator('h1').evaluate((element) => getComputedStyle(element).fontFamily), /El Messiri/);
         await page.getByLabel('حفظ التصميم كقالب جديد').fill('ورقة مقاصة');
         await page.getByRole('button', { name: 'حفظ', exact: true }).click();
-        await page.getByLabel('القالب المختار').getByRole('option', { name: 'ورقة مقاصة', exact: true }).waitFor({ state: 'attached' });
+        await page.getByLabel('القالب المختار').locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " gl-choice ")][1]').locator('select option', { hasText: 'ورقة مقاصة' }).waitFor({ state: 'attached' });
         await page.reload();
         await paper.waitFor();
         await pickChoice(page.getByLabel('القالب المختار'), { label: 'ورقة مقاصة' });

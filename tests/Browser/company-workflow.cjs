@@ -101,7 +101,7 @@ async function fillFields(scope, fields) {
         if (value === null) continue;
         const field = scope.getByLabel(labelled(label)).first();
         if (value && typeof value === 'object' && 'select' in value) {
-            if ((await field.evaluate((element) => element.tagName)) === 'SELECT') {
+            if (await field.evaluate((element) => element.tagName === 'SELECT' || Boolean(element.closest('.gl-choice')))) {
                 await pickChoice(field, value.select);
             } else {
                 await field.click();
