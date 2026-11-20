@@ -194,11 +194,12 @@ class ReportController extends Controller
 
             foreach ($lines->lazy(500) as $line) {
                 $row = FinancialReportPage::row($line);
-                fputcsv($file, [
+                // Text a spreadsheet would run as a formula is written as plain text, as the ledger's export does.
+                fputcsv($file, array_map(fn ($cell) => is_string($cell) && ! is_numeric($cell) && preg_match('/^[=+@\-\t\r]/u', $cell) ? "'".$cell : $cell, [
                     $row['day'], $row['time'], $row['branchName'], $row['voucherNumber'], $row['subscriptionName'], $row['accountNumber'], $row['meterBoxNumber'],
                     $row['typeLabel'], $row['description'], $row['methodLabel'], $row['account'], $row['currency'], $row['currencyAmount'],
                     $row['isCredit'] ? '' : $row['amount'], $row['isCredit'] ? $row['amount'] : '', $row['recordedBy'], $row['isCancelled'] ? 'نعم' : '',
-                ]);
+                ]));
             }
 
             fclose($file);
