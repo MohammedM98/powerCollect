@@ -162,3 +162,70 @@ export function boardCounters(boards) {
         subscribers: boards.reduce((total, box) => total + box.subscribers, 0),
     };
 }
+
+/**
+ * The board's groups for one lane: the boxes whose column (after the moves
+ * still waiting to be saved) is `laneKey`, gathered by area, each area with
+ * how many of its boxes are in this lane out of all of it and, when some of
+ * it lies elsewhere, the other lanes it is shared with.
+ */
+export function laneAreaGroups(boards, staged, laneKey) {
+    const columnOf = (box) => staged[box.id] ?? box.column;
+    const byArea = new Map();
+
+    boards.forEach((box) => {
+        const key = String(box.subAreaId ?? 'none');
+        const area = byArea.get(key) ?? { key, name: box.subAreaName ?? 'بدون منطقة 2', all: [], here: [] };
+        area.all.push(box);
+        if (columnOf(box) === laneKey) {
+            area.here.push(box);
+        }
+        byArea.set(key, area);
+    });
+
+    return [...byArea.values()]
+        .filter((area) => area.here.length > 0)
+        .map((area) => ({
+            key: area.key,
+            name: area.name,
+            boxes: area.here,
+            total: area.all.length,
+            subscribers: area.here.reduce((sum, box) => sum + box.subscribers, 0),
+            owners: area.all.map((box) => columnOf(box)),
+            sharedWith: [...new Set(area.all.map((box) => columnOf(box)).filter((column) => column !== laneKey))],
+        }))
+        .sort((first, second) => first.name.localeCompare(second.name, 'ar', { numeric: true }));
+}
+
+/**
+ * The moves waiting to be saved, one request per destination: the boxes
+ * whose staged column differs from where they are now, grouped by it.
+ */
+export function stagedMoveGroups(boards, staged) {
+    const groups = new Map();
+
+    boards.forEach((box) => {
+        const column = staged[box.id];
+        if (column && column !== box.column) {
+            groups.set(column, [...(groups.get(column) ?? []), box.id]);
+        }
+    });
+
+    return [...groups.entries()].map(([column, boxIds]) => ({ column, boxIds }));
+}
+
+/** Stage `boxIds` to `column`; a box staged back to where it is drops out. */
+export function stageMove(boards, staged, boxIds, column) {
+    const next = { ...staged };
+
+    boxIds.forEach((id) => {
+        const box = boards.find((candidate) => candidate.id === id);
+        if (box && box.column === column) {
+            delete next[id];
+        } else if (box) {
+            next[id] = column;
+        }
+    });
+
+    return next;
+}

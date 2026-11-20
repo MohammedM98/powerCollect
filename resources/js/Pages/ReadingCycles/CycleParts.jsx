@@ -1,58 +1,12 @@
 import { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
-import KpiTile from '@/Components/KpiTile';
 import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import InputError from '@/Components/InputError';
 import { formatNumber } from '@/lib/format';
-import { boardCounters, columnTotals } from '@/lib/readingBoard';
 import DateInput from '@/Components/DateInput';
-
-export function DistributionSummary({ boxes }) {
-    const counters = boardCounters(boxes);
-    const read = columnTotals(boxes).read;
-    return (
-        <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]">
-            <KpiTile hero icon="table" label="الطبلونات ضمن نتائج البحث والتصفية" value={formatNumber(boxes.length)} unit="طبلون">
-                <div className="gl-kv mt-3 border-t pt-3 border-(--gl-line)!">
-                    <span className="inline-flex items-center gap-1.5">
-                        <Icon name="users" className="h-4 w-4" />
-                        المشتركون
-                    </span>
-                    <b className="gl-num">{formatNumber(counters.subscribers)}</b>
-                </div>
-            </KpiTile>
-            {[
-                {
-                    icon: 'users',
-                    label: 'موزعة على القرّاء',
-                    value: counters.mobile,
-                    hint: `قُرئ ${formatNumber(read)} من ${formatNumber(counters.subscribers)} مشترك`,
-                    tone: 'text-gray-900',
-                },
-                {
-                    icon: 'table',
-                    label: 'بانتظار التوزيع',
-                    value: counters.available,
-                    hint: 'اختر قارئًا أو خصصها للكشوف الورقية',
-                    tone: 'text-amber-700 dark:text-amber-400',
-                },
-                { icon: 'printer', label: 'للكشوف الورقية', value: counters.paper, hint: 'مخصصة للقراءة دون هاتف', tone: 'text-gray-900' },
-            ].map((stat) => (
-                <div key={stat.label} className="rounded-card border border-gray-100 bg-surface p-5 shadow-card">
-                    <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-control bg-gray-50 text-gray-600">
-                        <Icon name={stat.icon} className="h-5 w-5" />
-                    </span>
-                    <p className="text-[13.5px] font-semibold text-gray-700">{stat.label}</p>
-                    <p className={`mt-1 font-display text-2xl font-bold ${stat.tone}`}>{formatNumber(stat.value)}</p>
-                    <p className="mt-2 text-xs leading-5 text-gray-500">{stat.hint}</p>
-                </div>
-            ))}
-        </div>
-    );
-}
 
 /** What a move or approval did, with each box it could not move and why. */
 export function AllocationReport({ result, onConfirmDownloaded, onClose }) {
@@ -148,49 +102,5 @@ export function ReadingDayModal({ cycle, onClose }) {
                 </div>
             </form>
         </Modal>
-    );
-}
-
-/** Each kind of lane's dot and note on the distribution board. */
-export const LANE_LOOKS = {
-    available: { color: 'var(--gl-warn)', note: 'بانتظار توزيعها' },
-    paper: { color: 'var(--gl-info)', note: 'تُطبع وتُسلَّم للقارئ' },
-    reader: { color: 'var(--gl-ok)', note: 'قارئ ميداني' },
-};
-
-/** A box's card on the distribution board: its number, subscribers, area, state and how much of it is read. */
-export function BoxCard({ box }) {
-    const share = box.subscribers ? Math.round((box.read / box.subscribers) * 100) : 0;
-
-    return (
-        <>
-            <div className="gl-oh">
-                <span className="gl-id" dir="ltr">
-                    {box.number}
-                </span>
-                <span>{formatNumber(box.subscribers)} مشترك</span>
-            </div>
-            <div className="gl-who">
-                <span className="gl-av" aria-hidden="true">
-                    {box.name.slice(0, 1)}
-                </span>
-                <span className="min-w-0 truncate" dir="auto">
-                    {box.name}
-                </span>
-            </div>
-            <div className="gl-items">{box.subAreaName ?? 'بدون منطقة 2'}</div>
-            <div className="gl-of">
-                <span className="gl-num text-sm" dir="ltr">
-                    {formatNumber(box.read)} / {formatNumber(box.subscribers)}
-                </span>
-                <span className="gl-tag">
-                    {box.status === 'approved' ? 'معتمد' : box.status ? 'بانتظار الاعتماد' : 'غير موزع'}
-                    {box.downloaded ? '، نُزّلت' : ''}
-                </span>
-            </div>
-            <div className="gl-progress" role="img" aria-label={`قُرئ ${box.read} من ${box.subscribers}`}>
-                <span style={{ width: `${share}%` }} />
-            </div>
-        </>
     );
 }

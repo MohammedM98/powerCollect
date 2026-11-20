@@ -151,3 +151,36 @@ test('target workload preview counts selected boxes already at the destination o
     assert.deepEqual(distributionTargetPreview(boards, [], 'paper').after, { boxes: 1, subscribers: 3 });
     assert.deepEqual(boards, original);
 });
+
+test('a lane gathers its boxes by area and names the lanes a split area is shared with', async () => {
+    const { laneAreaGroups } = await import('../../resources/js/lib/readingBoard.js');
+    const boxes = [
+        { id: 1, subAreaId: 7, subAreaName: 'المدارس', subscribers: 4, column: 'reader:5' },
+        { id: 2, subAreaId: 7, subAreaName: 'المدارس', subscribers: 2, column: 'available' },
+        { id: 3, subAreaId: 8, subAreaName: 'السوق', subscribers: 3, column: 'available' },
+    ];
+    const reader = laneAreaGroups(boxes, {}, 'reader:5');
+    assert.equal(reader.length, 1);
+    assert.deepEqual(reader[0].boxes.map((box) => box.id), [1]);
+    assert.equal(reader[0].total, 2);
+    assert.deepEqual(reader[0].sharedWith, ['available']);
+
+    const pool = laneAreaGroups(boxes, { 2: 'reader:5' }, 'available');
+    assert.deepEqual(pool.map((area) => area.name), ['السوق']);
+    assert.deepEqual(laneAreaGroups(boxes, { 2: 'reader:5' }, 'reader:5')[0].sharedWith, []);
+});
+
+test('staged moves group by destination, and a box staged back home drops out', async () => {
+    const { stageMove, stagedMoveGroups } = await import('../../resources/js/lib/readingBoard.js');
+    const boxes = [
+        { id: 1, column: 'available' },
+        { id: 2, column: 'available' },
+        { id: 3, column: 'paper' },
+    ];
+    let staged = stageMove(boxes, {}, [1, 2], 'reader:5');
+    staged = stageMove(boxes, staged, [3], 'reader:6');
+    assert.deepEqual(stagedMoveGroups(boxes, staged), [{ column: 'reader:5', boxIds: [1, 2] }, { column: 'reader:6', boxIds: [3] }]);
+    staged = stageMove(boxes, staged, [2], 'available');
+    assert.deepEqual(staged, { 1: 'reader:5', 3: 'reader:6' });
+    assert.deepEqual(stagedMoveGroups(boxes, stageMove(boxes, staged, [3], 'paper')), [{ column: 'reader:5', boxIds: [1] }]);
+});
