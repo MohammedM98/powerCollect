@@ -1,42 +1,87 @@
 import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { Chip } from '@heroui/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
-import FormSection from '@/Components/Form/FormSection';
-import FormField from '@/Components/Form/FormField';
-import SearchableSelect from '@/Components/SearchableSelect';
-import PrimaryButton from '@/Components/PrimaryButton';
+import PageHeader from '@/Components/PageHeader';
+import InputError from '@/Components/InputError';
+import { SaveButton, SettingRow, SettingsSection, SettingsSelect, SettingsStatus } from '@/Components/Settings/SettingsKit';
 import CurrencyRatesSection from './CurrencyRatesSection';
 import BanksSection from './BanksSection';
-import PageHeader from '@/Components/PageHeader';
 
 const weekdays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+
+/** The week a box period covers, from its first day: each day a pill, the first and the closing day marked. */
+function WeekStrip({ startsOn }) {
+    const days = Array.from({ length: 7 }, (_, offset) => (Number(startsOn) + offset) % 7);
+
+    return (
+        <ol className="gl-set-week" aria-label={`الفترة من ${weekdays[days[0]]} إلى ${weekdays[days[6]]}`}>
+            {days.map((day, index) => (
+                <li key={day} data-edge={index === 0 ? 'start' : index === 6 ? 'end' : undefined}>
+                    <b>{weekdays[day]}</b>
+                    {index === 0 && <small>البداية</small>}
+                    {index === 6 && <small>الإغلاق</small>}
+                </li>
+            ))}
+        </ol>
+    );
+}
 
 export default function Payments({ currencies, banks, storeUrl, boxPeriod, canManagePaymentCatalog }) {
     const { status } = usePage().props;
     const form = useForm({ week_starts_on: boxPeriod.week_starts_on, branch_id: boxPeriod.branch?.id ?? null });
+    const scopeLabel = boxPeriod.branch ? `لفرع ${boxPeriod.branch.name} فقط` : 'الإعداد الافتراضي للفروع التي ليس لها إعداد خاص';
 
     function savePeriod(event) {
         event.preventDefault();
         form.put(boxPeriod.updateUrl, { preserveScroll: true, onSuccess: () => form.setDefaults() });
     }
 
-    return <SettingsLayout header={<PageHeader title="إعدادات الدفعات" />}>
+    return <SettingsLayout header={<PageHeader title="إعدادات الدفعات" info="فترات الصناديق المالية، وأسعار صرف العملات، والبنوك والمحافظ التي تُستلم بها الدفعات." />}>
         <Head title="إعدادات الدفعات" />
-        <div className="space-y-6">
-            {status && <p role="status" className="rounded-control bg-emerald-500/10 p-4 text-sm text-emerald-700 dark:text-emerald-300">{status}</p>}
-            <FormSection icon="calendar" title="فترات الصناديق المالية" info="تُعرض الصناديق المغلقة في فترات أسبوعية حسب تاريخ إغلاقها، دون تغيير حركاتها أو مبالغها. عند بداية الفترة الجديدة تُغلق صناديق الفترة المنتهية تلقائيًا بحركاتها وتظهر لقسم التدقيق، دون اعتماد التدقيق تلقائيًا." columns={1}>
-                {boxPeriod.canSelectBranch ? <FormField id="box-period-branch" label="نطاق الإعداد" span="w-full sm:max-w-sm">
-                    <SearchableSelect value={boxPeriod.branch?.id ?? ''} clearable={false} options={[{ value: '', label: 'الإعداد الافتراضي للشركة' }, ...boxPeriod.branches]} onChange={(value) => router.get(boxPeriod.indexUrl, value === '' ? {} : { branch: value }, { preserveScroll: true })} />
-                </FormField> : <p className="text-sm font-semibold text-gray-900">إعدادات فرع {boxPeriod.branch.name}</p>}
-                {boxPeriod.followsCompany && <p className="text-xs text-gray-500">يتبع هذا الفرع الإعداد الافتراضي للشركة حاليًا. عند الحفظ يُصبح له يوم بداية خاص به.</p>}
-                <form onSubmit={savePeriod} className="flex flex-wrap items-end gap-4">
-                    <FormField id="box-week-start" label="يوم بداية الفترة الأسبوعية" error={form.errors.week_starts_on} span="w-full sm:w-72" required>
-                        <SearchableSelect name="week_starts_on" required clearable={false} searchable={false} value={form.data.week_starts_on} onChange={(value) => form.setData('week_starts_on', Number(value))} options={weekdays.map((label, value) => ({ value, label }))} />
-                    </FormField>
-                    <PrimaryButton type="submit" disabled={form.processing || (!form.isDirty && !boxPeriod.followsCompany)}>{form.processing ? 'جارٍ الحفظ…' : 'حفظ بداية الفترة'}</PrimaryButton>
-                    <p className="w-full text-sm text-gray-500">من {weekdays[form.data.week_starts_on]} إلى {weekdays[(Number(form.data.week_starts_on) + 6) % 7]}، {boxPeriod.branch ? `لفرع ${boxPeriod.branch.name} فقط` : 'الإعداد الافتراضي للفروع التي ليس لها إعداد خاص'}</p>
+        <div className="gl-set-page">
+            <SettingsStatus message={status} />
+
+            <SettingsSection
+                id="box-period"
+                icon="calendar"
+                tone="clr"
+                title="فترات الصناديق المالية"
+                description="تُعرض الصناديق المغلقة في فترات أسبوعية حسب تاريخ إغلاقها، دون تغيير حركاتها أو مبالغها. عند بداية الفترة الجديدة تُغلق صناديق الفترة المنتهية تلقائيًا وتظهر لقسم التدقيق، دون اعتماد التدقيق تلقائيًا."
+                aside={<Chip size="sm" variant="soft" className="gl-set-chip">{boxPeriod.branch ? `فرع ${boxPeriod.branch.name}` : 'الإعداد الافتراضي للشركة'}</Chip>}
+            >
+                <form onSubmit={savePeriod} className="gl-set-form">
+                    {boxPeriod.canSelectBranch ? (
+                        <SettingRow label="نطاق الإعداد" hint="اختر فرعًا ليكون له يوم بداية خاص، أو اترك الإعداد الافتراضي للشركة.">
+                            <SettingsSelect
+                                label="نطاق الإعداد"
+                                value={boxPeriod.branch?.id ?? ''}
+                                options={[{ value: '', label: 'الإعداد الافتراضي للشركة' }, ...boxPeriod.branches]}
+                                onChange={(value) => router.get(boxPeriod.indexUrl, value === '' ? {} : { branch: value }, { preserveScroll: true })}
+                            />
+                        </SettingRow>
+                    ) : (
+                        <SettingRow label="نطاق الإعداد" hint="تُطبّق هذه الإعدادات على فرعك فقط.">
+                            <b className="gl-set-value">إعدادات فرع {boxPeriod.branch.name}</b>
+                        </SettingRow>
+                    )}
+                    <SettingRow
+                        label="يوم بداية الفترة الأسبوعية"
+                        hint={boxPeriod.followsCompany ? 'يتبع هذا الفرع الإعداد الافتراضي للشركة حاليًا. عند الحفظ يُصبح له يوم بداية خاص به.' : `من ${weekdays[form.data.week_starts_on]} إلى ${weekdays[(Number(form.data.week_starts_on) + 6) % 7]}، ${scopeLabel}.`}
+                    >
+                        <SettingsSelect label="يوم بداية الفترة الأسبوعية" name="week_starts_on" value={form.data.week_starts_on} options={weekdays.map((label, value) => ({ value, label }))} onChange={(value) => form.setData('week_starts_on', Number(value))} />
+                        <InputError message={form.errors.week_starts_on} className="mt-2" />
+                    </SettingRow>
+                    <WeekStrip startsOn={form.data.week_starts_on} />
+                    <div className="gl-set-actions">
+                        <SaveButton processing={form.processing} isDisabled={!form.isDirty && !boxPeriod.followsCompany}>حفظ بداية الفترة</SaveButton>
+                    </div>
                 </form>
-            </FormSection>
-            {canManagePaymentCatalog && <><CurrencyRatesSection currencies={currencies} /><BanksSection banks={banks} storeUrl={storeUrl} /></>}
+            </SettingsSection>
+
+            {canManagePaymentCatalog && <>
+                <CurrencyRatesSection currencies={currencies} />
+                <BanksSection banks={banks} storeUrl={storeUrl} />
+            </>}
         </div>
     </SettingsLayout>;
 }

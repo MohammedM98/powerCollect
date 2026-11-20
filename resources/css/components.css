@@ -7324,3 +7324,430 @@ html:root[data-ui-background='graphite'] .pm-hero {
     color: #fff;
 }
 
+
+/*
+ * ═════ Settings (SettingsKit.jsx): HeroUI cards in the MA look ═════
+ * A section is a glass card: its icon on a tile tinted by the section's
+ * tone, its title and line, then its settings as rows (name and line on one
+ * side, the control on the other) divided by the MA line. Tiles inside a
+ * section (a currency, a template) are the soft MA tile, raised white
+ * where they hold a form.
+ */
+.gl-set-page {
+    display: grid;
+    gap: 20px;
+    min-width: 0;
+}
+
+.gl-set-card,
+.gl-set-card.card {
+    --t: var(--ma-brand);
+    --ts: var(--ma-brand-soft);
+    gap: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 22px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+}
+
+:is(.gl-set-card, .gl-set-heading)[data-tone='pay'] { --t: var(--ma-pay); --ts: var(--ma-pay-s); }
+:is(.gl-set-card, .gl-set-heading)[data-tone='owe'] { --t: var(--ma-owe); --ts: var(--ma-owe-s); }
+:is(.gl-set-card, .gl-set-heading)[data-tone='disc'] { --t: var(--ma-disc); --ts: var(--ma-disc-s); }
+:is(.gl-set-card, .gl-set-heading)[data-tone='clr'] { --t: var(--ma-clr); --ts: var(--ma-clr-s); }
+:is(.gl-set-card, .gl-set-heading)[data-tone='split'] { --t: var(--ma-split); --ts: var(--ma-split-s); }
+:is(.gl-set-card, .gl-set-heading)[data-tone='warn'] { --t: var(--ma-warn); --ts: var(--ma-warn-s); }
+.gl-set-heading { --t: var(--ma-brand); --ts: var(--ma-brand-soft); }
+
+.gl-set-head,
+.gl-set-heading {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.gl-set-head {
+    padding: 20px 22px 6px;
+}
+
+.gl-set-heading {
+    align-items: center;
+    padding: 2px 2px 0;
+}
+
+.gl-set-ico {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: var(--ts);
+    color: var(--t);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-set-ico svg {
+    width: 21px;
+    height: 21px;
+}
+
+.gl-set-title,
+.gl-set-card .gl-set-title {
+    margin: 0;
+    color: var(--ma-ink);
+    font: 800 18px/1.35 var(--font-heading, 'Zain'), sans-serif;
+}
+
+.gl-set-desc,
+.gl-set-card .gl-set-desc {
+    max-width: 72ch;
+    margin: 3px 0 0;
+    color: var(--ma-muted);
+    font-size: 13.5px;
+    line-height: 1.65;
+}
+
+.gl-set-aside {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+}
+
+.gl-set-chip.chip {
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    font-weight: 700;
+    box-shadow: var(--ma-hl);
+}
+
+.gl-set-chip.chip[data-color='success'],
+.gl-set-chip.chip.chip--success {
+    background: var(--ma-pay-s);
+    color: var(--ma-pay);
+}
+
+.gl-set-chip.chip[data-color='warning'],
+.gl-set-chip.chip.chip--warning {
+    background: var(--ma-warn-s);
+    color: var(--ma-warn);
+}
+
+.gl-set-body {
+    display: grid;
+    gap: 14px;
+    padding: 12px 22px 22px;
+}
+
+.gl-set-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 14px 22px 18px;
+    border-top: 1px solid var(--ma-line);
+}
+
+.gl-set-form {
+    display: grid;
+    gap: 0;
+}
+
+/* A setting: its name and line, then its control, one row each across the card. */
+.gl-set-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 340px);
+    align-items: center;
+    gap: 10px 28px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--ma-line);
+}
+
+.gl-set-row:first-child {
+    padding-top: 6px;
+}
+
+.gl-set-row-text {
+    min-width: 0;
+}
+
+.gl-set-label {
+    display: block;
+    color: var(--ma-ink);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.gl-set-hint {
+    margin: 3px 0 0;
+    color: var(--ma-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.gl-set-row-control {
+    min-width: 0;
+}
+
+.gl-set-value {
+    color: var(--ma-ink);
+    font-weight: 800;
+}
+
+@media (max-width: 720px) {
+    .gl-set-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* HeroUI's Select as a soft MA field. */
+.gl-set-select {
+    width: 100%;
+}
+
+.gl-set-select-trigger,
+.gl-set-select .select__trigger {
+    width: 100%;
+    min-height: 44px;
+    padding-inline: 14px 12px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    box-shadow: var(--ma-hl);
+    font-weight: 700;
+}
+
+.gl-set-select-trigger:hover,
+.gl-set-select .select__trigger:hover {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-set-select-trigger[data-focus-visible],
+.gl-set-select .select__trigger[data-focus-visible] {
+    outline: 2px solid var(--ma-brand);
+    outline-offset: 2px;
+}
+
+/* The week a box period covers: seven day pills, the first and the closing day in the section's colour. */
+.gl-set-week {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.gl-set-week li {
+    display: grid;
+    place-items: center;
+    gap: 1px;
+    min-height: 54px;
+    padding: 8px 4px;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    color: var(--ma-muted);
+    text-align: center;
+    box-shadow: var(--ma-hl);
+}
+
+.gl-set-week b {
+    font-size: 13.5px;
+    font-weight: 800;
+}
+
+.gl-set-week small {
+    font-size: 11.5px;
+    font-weight: 700;
+}
+
+.gl-set-week li[data-edge] {
+    background: var(--ts, var(--ma-clr-s));
+    color: var(--t, var(--ma-clr));
+}
+
+@media (max-width: 560px) {
+    .gl-set-week {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.gl-set-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 18px;
+}
+
+/* The save key: raised dark, as the MA primary key. */
+.gl-set-save.button,
+.gl-set-save {
+    min-height: 42px;
+    gap: 8px;
+    padding-inline: 18px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-act);
+    color: #fff;
+    font-weight: 800;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 10px 22px -12px rgb(10 12 16 / 0.7);
+}
+
+.gl-set-save:hover:not([data-disabled]) {
+    filter: brightness(1.12);
+}
+
+.gl-set-save[data-disabled] {
+    opacity: 0.45;
+    box-shadow: none;
+}
+
+.gl-set-status.alert {
+    border: 0;
+    border-radius: 18px;
+    background: var(--ma-pay-s);
+    color: var(--ma-pay);
+    box-shadow: var(--ma-hl);
+}
+
+/* A tile inside a section: a currency, a template, a schedule. */
+.gl-set-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-set-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+.gl-set-code {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    min-width: 52px;
+    height: 36px;
+    padding-inline: 10px;
+    border-radius: 11px;
+    background: var(--ts, var(--ma-tile));
+    color: var(--t, var(--ma-ink));
+    font: 800 13.5px ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.04em;
+}
+
+.gl-set-currency-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gl-set-currency-name {
+    margin: 0;
+    color: var(--ma-ink);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.gl-set-currency-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--ma-line);
+}
+
+.gl-set-currency-foot .gl-set-hint {
+    margin: 0;
+}
+
+/* HeroUI's text field in a settings tile: its label above, the field soft. */
+.gl-set-field {
+    display: grid;
+    gap: 6px;
+}
+
+.gl-set-field .label,
+.gl-set-field > label {
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.gl-set-field .input-group,
+.gl-set-field [data-slot='input-group'] {
+    min-height: 44px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-set-field .input-group:focus-within {
+    outline: 2px solid var(--ma-brand);
+    outline-offset: 2px;
+}
+
+.gl-set-field .input-group input,
+.gl-set-field input {
+    background: transparent;
+    color: var(--ma-ink);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.gl-set-field .input-group__suffix,
+.gl-set-field .input-group__prefix {
+    color: var(--ma-muted);
+    font-weight: 800;
+}
+
+/* The base currency: one quiet line, its rate locked. */
+.gl-set-base {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-set-base b {
+    display: block;
+    color: var(--ma-ink);
+    font-weight: 800;
+}
+
+.gl-set-base small {
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.gl-set-lock {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 700;
+}
