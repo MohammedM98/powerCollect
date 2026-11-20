@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Input } from '@heroui/react';
 import { useState } from 'react';
 import Icon from '@/Components/Icon';
@@ -26,7 +27,7 @@ export function TemplatesSection({ templates, onReset, onPreset }) {
         <Section id="print-template-settings" icon="folder" title="قوالب الطباعة" open>
             <Field label="البدء من تصميم جاهز" hint="اختر المظهر ثم عدّله واحفظه بالاسم الذي تريده. بيانات التقرير تبقى من القائمة الحالية.">
                 {(id) => (
-                    <select
+                    <ChoiceSelect
                         id={id}
                         value=""
                         onChange={(event) => {
@@ -44,7 +45,7 @@ export function TemplatesSection({ templates, onReset, onPreset }) {
                                 {preset.name} — {preset.description}
                             </option>
                         ))}
-                    </select>
+                    </ChoiceSelect>
                 )}
             </Field>
             {!supported ? (
@@ -83,7 +84,7 @@ export function TemplatesSection({ templates, onReset, onPreset }) {
                         <Field label="فتح قالب">
                             {(id) => (
                                 <div className="flex gap-2">
-                                    <select
+                                    <ChoiceSelect
                                         id={id}
                                         value={selected}
                                         onChange={(e) => setSelected(e.target.value)}
@@ -96,7 +97,7 @@ export function TemplatesSection({ templates, onReset, onPreset }) {
                                                 {template.isDefault ? ' (افتراضي)' : ''}
                                             </option>
                                         ))}
-                                    </select>
+                                    </ChoiceSelect>
                                     <SecondaryButton onClick={() => actions.apply(selected)} disabled={selected === ''}>
                                         <Icon name="check" className="h-4 w-4" />
                                         فتح

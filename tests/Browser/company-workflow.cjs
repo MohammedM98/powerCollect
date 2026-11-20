@@ -3,6 +3,9 @@
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
 
+/** Pick in a HeroUI select (ChoiceSelect) through its hidden native list, by value or { label }. */
+const pickChoice = (field, choice) => field.locator('xpath=ancestor-or-self::*[contains(concat(" ", normalize-space(@class), " "), " gl-choice ")][1]').locator('select').selectOption(choice, { force: true });
+
 const BASE_URL = process.env.BASE_URL;
 const OUT_DIR = process.env.OUT_DIR;
 const PASSWORD = 'Strong-Pass-2026';
@@ -99,7 +102,7 @@ async function fillFields(scope, fields) {
         const field = scope.getByLabel(labelled(label)).first();
         if (value && typeof value === 'object' && 'select' in value) {
             if ((await field.evaluate((element) => element.tagName)) === 'SELECT') {
-                await field.selectOption(value.select);
+                await pickChoice(field, value.select);
             } else {
                 await field.click();
                 if (value.search) {
@@ -523,7 +526,7 @@ step('financial reports export Excel, retain rejected template names, and print 
     assert.ok(workbook.worksheets.some((sheet) => sheet.name === 'معايير التقرير'));
     await studio.waitFor({ state: 'hidden' });
     for (const [view, label] of [['summary', 'البند'], ['lines', 'السند']]) {
-        await page.getByLabel('محتوى الطباعة').selectOption(view);
+        await pickChoice(page.getByLabel('محتوى الطباعة'), view);
         const opened = page.context().waitForEvent('page');
         await page.locator('[data-table-exports]').first().getByRole('link', { name: 'طباعة', exact: true }).click();
         const print = await opened;

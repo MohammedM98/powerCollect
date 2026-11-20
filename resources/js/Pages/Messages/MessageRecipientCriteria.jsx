@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Button, Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import Switch from '@/Components/Switch';
@@ -28,7 +29,7 @@ export default function MessageRecipientCriteria({
                 {kind === 'weekly_reading' && (
                     <>
                         <Field label="أسبوع القراءة" htmlFor="week_start">
-                            <select
+                            <ChoiceSelect
                                 id="week_start"
                                 value={criteria.week_start}
                                 onChange={(e) => setCriterion('week_start', e.target.value)}
@@ -42,7 +43,7 @@ export default function MessageRecipientCriteria({
                                         {option.label}
                                     </option>
                                 ))}
-                            </select>
+                            </ChoiceSelect>
                         </Field>
                         <div className="flex items-end pb-2">
                             <Switch
@@ -71,7 +72,7 @@ export default function MessageRecipientCriteria({
                 )}
 
                 <Field label="حالة المشترك" htmlFor="status">
-                    <select
+                    <ChoiceSelect
                         id="status"
                         value={criteria.status}
                         onChange={(e) => setCriterion('status', e.target.value)}
@@ -83,12 +84,12 @@ export default function MessageRecipientCriteria({
                                 {option.label}
                             </option>
                         ))}
-                    </select>
+                    </ChoiceSelect>
                 </Field>
 
                 {branchOptions.length > 0 && (
                     <Field label="الفرع" htmlFor="branch_id">
-                        <select
+                        <ChoiceSelect
                             id="branch_id"
                             value={criteria.branch_id}
                             onChange={(e) =>
@@ -105,12 +106,12 @@ export default function MessageRecipientCriteria({
                                     {option.label}
                                 </option>
                             ))}
-                        </select>
+                        </ChoiceSelect>
                     </Field>
                 )}
 
                 <Field label="الطبلون" htmlFor="meter_box_name">
-                    <select
+                    <ChoiceSelect
                         id="meter_box_name"
                         value={criteria.meter_box_name}
                         onChange={(e) => setCriteria((current) => ({ ...current, meter_box_name: e.target.value, meter_box_id: '' }))}
@@ -122,12 +123,12 @@ export default function MessageRecipientCriteria({
                                 {option.label}
                             </option>
                         ))}
-                    </select>
+                    </ChoiceSelect>
                 </Field>
 
                 {criteria.meter_box_name !== '' && (
                     <Field label="رقم الطبلون" htmlFor="meter_box_id">
-                        <select
+                        <ChoiceSelect
                             id="meter_box_id"
                             value={criteria.meter_box_id}
                             onChange={(e) => setCriterion('meter_box_id', e.target.value)}
@@ -139,12 +140,12 @@ export default function MessageRecipientCriteria({
                                     {option.label}
                                 </option>
                             ))}
-                        </select>
+                        </ChoiceSelect>
                     </Field>
                 )}
 
                 <Field label="القاطع" htmlFor="circuit_breaker_id">
-                    <select
+                    <ChoiceSelect
                         id="circuit_breaker_id"
                         value={criteria.circuit_breaker_id}
                         onChange={(e) => setCriterion('circuit_breaker_id', e.target.value)}
@@ -156,7 +157,7 @@ export default function MessageRecipientCriteria({
                                 {option.label}
                             </option>
                         ))}
-                    </select>
+                    </ChoiceSelect>
                 </Field>
 
                 <Field label="بحث" htmlFor="search">

@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import CheckBox from '@/Components/CheckBox';
 import { TextArea } from '@heroui/react';
 import FormModal from '@/Components/FormModal';
@@ -90,7 +91,7 @@ export default function MeterReadingModal({ show, onClose, reading, subscription
 
                     <div>
                         <InputLabel htmlFor="week_start" value="الأسبوع" />
-                        <select
+                        <ChoiceSelect
                             id="week_start"
                             className="mt-1 block w-full"
                             value={data.week_start}
@@ -101,7 +102,7 @@ export default function MeterReadingModal({ show, onClose, reading, subscription
                                     {week.label}
                                 </option>
                             ))}
-                        </select>
+                        </ChoiceSelect>
                         <InputError message={errors.week_start} className="mt-2" />
                         {selectedSubscription?.lastWeekStart && (
                             <p className="mt-1 text-xs text-gray-500">آخر قراءة مسجلة لأسبوع يبدأ في {selectedSubscription.lastWeekStart}</p>

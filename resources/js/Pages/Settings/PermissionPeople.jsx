@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Button, Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import Pagination from '@/Components/DataTable/Pagination';
@@ -99,7 +100,7 @@ export default function EmployeeList({
                     </div>
                 )}
                 {branchGroup && (
-                    <select
+                    <ChoiceSelect
                         value={filterValues.branch_id ?? ''}
                         onChange={(event) => onFilterChange('branch_id', event.target.value)}
                         aria-label={branchGroup.label}
@@ -111,7 +112,7 @@ export default function EmployeeList({
                                 {option.label}
                             </option>
                         ))}
-                    </select>
+                    </ChoiceSelect>
                 )}
             </div>
 

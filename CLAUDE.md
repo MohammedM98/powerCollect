@@ -206,6 +206,12 @@ These rules record the redesign the owner approved. Follow them on every page, w
 - Build every control from **HeroUI** (`@heroui/react`) and its component kits: `Card`, `Chip`, `Button`, `Switch`, `Tabs`, `SearchField`, `Input`/`TextField`, `Select`, `Dropdown`, `Popover`, `Modal`, etc. Do not hand-roll a control HeroUI provides. Check sibling pages for the existing wrappers (`SearchableSelect`, `FilterField`, `DateInput`, `StatementViewTabs`, `RowMenu`) and reuse them.
 - RTL Arabic throughout; numbers, account numbers and money in `<bdi dir="ltr">`.
 
+## The component kit (`@/Components/UI`)
+- Every page takes its parts from the kit, never a raw `<button>`, `<input>`, `<select>` or a hand-styled copy: `import { EditKey, DeleteKey, PrimaryKey, CheckBox, ChoiceSelect, Figure } from '@/Components/UI'`.
+- Keys by purpose, one size and tone each: `ViewKey` (عرض), `EditKey` (تعديل), `DeleteKey` (حذف), `PrintKey`, `ExcelKey`, `MenuKey`, `RowActionKey` for table rows; `PrimaryKey`, `SecondaryKey`, `DangerKey`, `AddKey`, `PayKey`, `SaveKey` for pages and windows.
+- Fields and choices: `TextInput`, `CheckBox`, `ChoiceSelect`, `SearchableSelect`, `SegmentedChoice`, `Switch`. Display: `Figure`, `StatusPill`. Windows: `ConfirmDialog`.
+- A new shared part goes into the kit (built on HeroUI) and is exported from `resources/js/Components/UI/index.js`; change a part there and every page follows.
+
 ## Colour tokens (resources/css/app.css, the final MA block)
 - Use the `--ma-*` tokens only: `--ma-bg`, `--ma-solid`, `--ma-tile`, `--ma-line`, `--ma-ink`, `--ma-muted`, `--ma-faint`, `--ma-brand`, `--ma-act`, the tone pairs `--ma-pay/-s` (paid, green), `--ma-owe/-s` (owed, red), `--ma-disc/-s` (discount, violet), `--ma-clr/-s` (clearing, blue-teal), `--ma-split/-s`, `--ma-warn/-s`, and the effects `--ma-hl`, `--ma-depth`, `--ma-float`, `--ma-panel`, `--ma-blur`, `--ma-pop`, `--ma-ambient`. The pay button green is `--ma-pay-btn` (#2d855c).
 - Every pair must pass contrast in light and dark; the tokens are already tuned for it, so never substitute raw colours.

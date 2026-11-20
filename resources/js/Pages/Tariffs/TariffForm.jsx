@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import InsetList, { InsetRow } from '@/Components/Form/InsetList';
 import TextInput from '@/Components/TextInput';
 
@@ -24,13 +25,13 @@ export default function TariffForm({ data, setData, errors, categoryOptions }) {
         <div className="space-y-5">
             <InsetList>
                 <InsetRow label="الفئة" htmlFor="category" required error={errors.category}>
-                    <select id="category" className="block w-full" value={data.category} onChange={(e) => setData('category', e.target.value)}>
+                    <ChoiceSelect id="category" className="block w-full" value={data.category} onChange={(e) => setData('category', e.target.value)}>
                         {categoryOptions.map((option) => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>
                         ))}
-                    </select>
+                    </ChoiceSelect>
                 </InsetRow>
             </InsetList>
 

@@ -27,7 +27,9 @@ describe('AmendTransactionModal', () => {
         const user = userEvent.setup();
         open();
 
-        await user.selectOptions(screen.getByLabelText('البنك المستلم'), 'بنك القدس');
+        // HeroUI's select: open its key (named by the page's label), then pick the bank.
+        await user.click(screen.getByRole('button', { name: /البنك المستلم/ }));
+        await user.click(await screen.findByRole('option', { name: 'بنك القدس' }));
         await user.type(screen.getByLabelText('سبب التعديل'), 'اختير البنك الخطأ');
         await user.click(screen.getByRole('button', { name: 'حفظ التعديل' }));
 
@@ -55,7 +57,7 @@ describe('AmendTransactionModal', () => {
     it('offers no bank fields for a cash payment', () => {
         open({ ...transfer, paymentMethod: 'cash', paymentMethodLabel: 'نقدي' });
 
-        expect(screen.queryByLabelText('البنك المستلم')).toBeNull();
+        expect(screen.queryByRole('button', { name: /البنك المستلم/ })).toBeNull();
         expect(screen.getByLabelText('سبب التعديل')).toBeTruthy();
     });
 });

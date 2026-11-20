@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Input } from '@heroui/react';
 import { useState } from 'react';
 import ChoiceChips from '@/Components/ChoiceChips';
@@ -105,13 +106,13 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
                 <div className="grid grid-cols-2 gap-3">
                     <Field label="حجم الورق">
                         {(id) => (
-                            <select id={id} value={layout.paper} onChange={(e) => set('paper', e.target.value)} className="block w-full text-sm">
+                            <ChoiceSelect id={id} value={layout.paper} onChange={(e) => set('paper', e.target.value)} className="block w-full text-sm">
                                 {Object.entries(PAPER_SIZES).map(([value, paper]) => (
                                     <option key={value} value={value}>
                                         {paper.label} ({paper.width}×{paper.height} مم)
                                     </option>
                                 ))}
-                            </select>
+                            </ChoiceSelect>
                         )}
                     </Field>
                     <Field label="الهوامش (مم)">

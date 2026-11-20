@@ -14,7 +14,7 @@ import { formatNumber, timeAgo } from '@/lib/format';
 import { openQuickMessage } from '@/lib/quickMessage';
 import { ChannelLabel, DeliveryCounts, KindPill, MessageText } from './MessageParts';
 import { Button } from '@heroui/react';
-import { Figure } from '@/Pages/Reports/ReportViews';
+import { Figure } from '@/Components/UI';
 import PageHeader from '@/Components/PageHeader';
 
 /**

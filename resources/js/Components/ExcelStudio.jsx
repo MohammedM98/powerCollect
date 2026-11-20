@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import CheckBox from '@/Components/CheckBox';
 import { Button, Input } from '@heroui/react';
 import { useEffect, useEffectEvent, useId, useMemo, useState } from 'react';
@@ -270,12 +271,12 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                         {(part.groupBys ?? []).length > 0 && (
                                             <label className="mt-3 block text-sm font-semibold text-gray-700">
                                                 تجميع الصفوف حسب
-                                                <select className="mt-1.5 block w-full rounded-control border-gray-200 text-sm" value={partSettings.groupBy} onChange={(event) => changePart(part.key, { groupBy: event.target.value })}>
+                                                <ChoiceSelect className="mt-1.5 block w-full rounded-control border-gray-200 text-sm" value={partSettings.groupBy} onChange={(event) => changePart(part.key, { groupBy: event.target.value })}>
                                                     <option value="">بدون تجميع</option>
                                                     {part.groupBys.map((group) => (
                                                         <option key={group.key} value={group.key}>{group.label}</option>
                                                     ))}
-                                                </select>
+                                                </ChoiceSelect>
                                             </label>
                                         )}
                                     </Section>

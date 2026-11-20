@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Button, Input, TextArea } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -33,14 +34,14 @@ export default function MessageBodyCard({
         <Card icon="note" title="نص الرسالة" description="اضغط على أي معلومة لإضافتها، وتُكتب لكل مشترك بقيمته.">
             <div className="mb-4 flex flex-wrap items-end gap-3">
                 <Field label="القالب" htmlFor="template" className="min-w-[200px] flex-1">
-                    <select id="template" value={templateId} onChange={(e) => pickTemplate(e.target.value)} className="block w-full text-sm">
+                    <ChoiceSelect id="template" value={templateId} onChange={(e) => pickTemplate(e.target.value)} className="block w-full text-sm">
                         <option value="">— بدون قالب —</option>
                         {kindTemplates.map((template) => (
                             <option key={template.id} value={template.id}>
                                 {template.name}
                             </option>
                         ))}
-                    </select>
+                    </ChoiceSelect>
                 </Field>
                 {selectedTemplate && selectedTemplate.body !== body && (
                     <SecondaryButton onClick={updateTemplate}>

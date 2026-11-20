@@ -43,7 +43,7 @@ export default [
             // Dialogs and inline editors put the cursor in their first field when they open (the WAI-ARIA dialog pattern).
             'jsx-a11y/no-autofocus': 'off',
             // The app's own inputs are controls too, and option labels carry their text a few elements deep.
-            'jsx-a11y/label-has-associated-control': ['error', { controlComponents: ['TextInput', 'SearchableSelect', 'DateInput', 'MoneyInput', 'NumberInput', 'Input', 'TextArea', 'CheckBox'], assert: 'either', depth: 5 }],
+            'jsx-a11y/label-has-associated-control': ['error', { controlComponents: ['TextInput', 'SearchableSelect', 'DateInput', 'MoneyInput', 'NumberInput', 'Input', 'TextArea', 'CheckBox', 'ChoiceSelect'], assert: 'either', depth: 5 }],
             // A form may take Ctrl+Enter to submit; a dialog handles its own keys.
             'jsx-a11y/no-noninteractive-element-interactions': ['error', {
                 handlers: ['onClick', 'onError', 'onLoad', 'onMouseDown', 'onMouseUp', 'onKeyPress', 'onKeyDown', 'onKeyUp'],

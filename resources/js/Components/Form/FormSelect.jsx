@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import FormField from '@/Components/Form/FormField';
 import SearchableSelect from '@/Components/SearchableSelect';
 
@@ -23,7 +24,7 @@ export default function FormSelect({ id, label, value, onChange, options, placeh
                 portal
                 onCreate={onCreate}
                 createLabel={createLabel}
-            /> : <select
+            /> : <ChoiceSelect
                 className="block w-full disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500"
                 value={value}
                 disabled={message !== null}
@@ -35,7 +36,7 @@ export default function FormSelect({ id, label, value, onChange, options, placeh
                         {option.label}
                     </option>
                 ))}
-            </select>}
+            </ChoiceSelect>}
         </FormField>
     );
 }

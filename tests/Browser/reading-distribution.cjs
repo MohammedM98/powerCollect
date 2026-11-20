@@ -2,6 +2,9 @@ const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 
+/** Pick in a HeroUI select (ChoiceSelect) through its hidden native list, by value or { label }. */
+const pickChoice = (field, choice) => field.locator('xpath=ancestor-or-self::*[contains(concat(" ", normalize-space(@class), " "), " gl-choice ")][1]').locator('select').selectOption(choice, { force: true });
+
 (async () => {
     const fixture = JSON.parse(readFileSync(`${process.env.OUT_DIR}/fixture.json`, 'utf8'));
     const browser = await chromium.launch({ headless: !process.env.HEADED,
@@ -65,7 +68,7 @@ const { readFileSync } = require('node:fs');
         await actions().getByRole('button', { name: 'إلغاء تحديد المخفي', exact: true }).click();
         assert.match(await actions().innerText(), /20 طبلون/);
         assert.doesNotMatch(await actions().innerText(), /خارج النتائج الظاهرة/);
-        await actions().getByLabel('القارئ المكلّف', { exact: true }).selectOption(`reader:${fixture.readerId}`);
+        await pickChoice(actions().getByLabel('القارئ المكلّف', { exact: true }), `reader:${fixture.readerId}`);
         assert.match(await actions().innerText(), /بعد الحفظ: 40 طبلون/);
         await actions().getByRole('checkbox', { name: /حفظ هذا التوزيع للقراءات القادمة/ }).uncheck({ force: true });
         await page.screenshot({ path: `${process.env.OUT_DIR}/distribution-action-desktop.png` });

@@ -12,7 +12,7 @@ import Pagination from '@/Components/DataTable/Pagination';
 import ActionsTh from '@/Components/DataTable/ActionsTh';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import { Button, FieldError, Input, Label, TextArea, TextField } from '@heroui/react';
-import { Figure } from '@/Pages/Reports/ReportViews';
+import { Figure } from '@/Components/UI';
 import Modal from '@/Components/Modal';
 import FormSelect from '@/Components/Form/FormSelect';
 import Icon from '@/Components/Icon';

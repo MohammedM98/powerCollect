@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Input, TextArea } from '@heroui/react';
 import ChoiceChips from '@/Components/ChoiceChips';
 import Switch from '@/Components/Switch';
@@ -106,7 +107,7 @@ export default function PrintHeaderSection({ layout, setIn }) {
                 <>
                     <Field label="موضع الشعار">
                         {(id) => (
-                            <select
+                            <ChoiceSelect
                                 id={id}
                                 value={layout.header.logoPosition}
                                 onChange={(event) => setIn('header', 'logoPosition', event.target.value)}
@@ -115,12 +116,12 @@ export default function PrintHeaderSection({ layout, setIn }) {
                                 <option value="right">يمين</option>
                                 <option value="center">وسط بين النصين</option>
                                 <option value="left">يسار</option>
-                            </select>
+                            </ChoiceSelect>
                         )}
                     </Field>
                     <Field label="المحاذاة العمودية للترويسة">
                         {(id) => (
-                            <select
+                            <ChoiceSelect
                                 id={id}
                                 value={layout.header.verticalAlign}
                                 onChange={(event) => setIn('header', 'verticalAlign', event.target.value)}
@@ -129,7 +130,7 @@ export default function PrintHeaderSection({ layout, setIn }) {
                                 <option value="top">أعلى</option>
                                 <option value="center">وسط</option>
                                 <option value="bottom">أسفل</option>
-                            </select>
+                            </ChoiceSelect>
                         )}
                     </Field>
                     <NumberField
@@ -193,7 +194,7 @@ export default function PrintHeaderSection({ layout, setIn }) {
             />
             <Field label="الفاصل أسفل الترويسة">
                 {(id) => (
-                    <select
+                    <ChoiceSelect
                         id={id}
                         value={layout.header.ruleStyle}
                         onChange={(event) => setIn('header', 'ruleStyle', event.target.value)}
@@ -202,7 +203,7 @@ export default function PrintHeaderSection({ layout, setIn }) {
                         <option value="none">بدون فاصل</option>
                         <option value="single">خط واحد</option>
                         <option value="double">خطان بلونين</option>
-                    </select>
+                    </ChoiceSelect>
                 )}
             </Field>
             {layout.header.ruleStyle !== 'none' && (

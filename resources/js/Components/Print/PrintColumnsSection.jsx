@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import CheckBox from '@/Components/CheckBox';
 import { Input } from '@heroui/react';
 import Icon from '@/Components/Icon';
@@ -126,7 +127,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                     {!column.blank && (
                                         <label className="flex items-center gap-1.5 text-gray-600">
                                             سطر إضافي تحته
-                                            <select
+                                            <ChoiceSelect
                                                 aria-label={`السطر الإضافي لعمود ${column.label}`}
                                                 value={column.secondaryKey ?? ''}
                                                 onChange={(event) => setColumn(index, { secondaryKey: event.target.value })}
@@ -140,12 +141,12 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                                             {item.label}
                                                         </option>
                                                     ))}
-                                            </select>
+                                            </ChoiceSelect>
                                         </label>
                                     )}
                                     <label className="flex items-center gap-1.5 text-gray-600">
                                         المحاذاة
-                                        <select
+                                        <ChoiceSelect
                                             value={column.align}
                                             onChange={(e) => setColumn(index, { align: e.target.value })}
                                             className="py-0.5! text-xs"
@@ -155,7 +156,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                                     {alignment.label}
                                                 </option>
                                             ))}
-                                        </select>
+                                        </ChoiceSelect>
                                     </label>
                                     <label className="flex items-center gap-1.5 text-gray-600">
                                         <CheckBox

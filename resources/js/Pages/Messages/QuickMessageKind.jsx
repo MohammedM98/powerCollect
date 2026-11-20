@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { Input } from '@heroui/react';
 import ChoiceChips from '@/Components/ChoiceChips';
 import Switch from '@/Components/Switch';
@@ -29,13 +30,13 @@ export default function QuickMessageKind({
                         <label htmlFor={`${id}-week`} className="mb-1.5 block text-sm font-semibold text-gray-700">
                             أسبوع القراءة
                         </label>
-                        <select id={`${id}-week`} value={weekStart} onChange={(e) => setWeekStart(e.target.value)} className="block w-full text-sm">
+                        <ChoiceSelect id={`${id}-week`} value={weekStart} onChange={(e) => setWeekStart(e.target.value)} className="block w-full text-sm">
                             {weekOptions.map((option) => (
                                 <option key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
                             ))}
-                        </select>
+                        </ChoiceSelect>
                         <InputError message={errors.week_start} className="mt-1" />
                     </div>
                     <div className="pb-2">

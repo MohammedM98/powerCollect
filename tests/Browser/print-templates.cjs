@@ -1,6 +1,9 @@
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
 
+/** Pick in a HeroUI select (ChoiceSelect) through its hidden native list, by value or { label }. */
+const pickChoice = (field, choice) => field.locator('xpath=ancestor-or-self::*[contains(concat(" ", normalize-space(@class), " "), " gl-choice ")][1]').locator('select').selectOption(choice, { force: true });
+
 (async () => {
     const browser = await chromium.launch({ headless: !process.env.HEADED,
         ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } : {}) });
@@ -18,18 +21,18 @@ const assert = require('node:assert/strict');
         await paper.waitFor();
         const originalRows = await paper.locator('.pd-row').count();
         assert.ok(originalRows > 0);
-        await page.getByLabel('البدء من تصميم جاهز').selectOption('clearing');
+        await pickChoice(page.getByLabel('البدء من تصميم جاهز'), 'clearing');
         await page.locator('summary').filter({ hasText: /^الترويسة$/ }).click();
         await page.getByLabel('اسم الشركة', { exact: true }).fill('شركة أبناء فارس أبوزايد للتجارة العامة');
         await page.getByLabel('تفاصيل الشركة بالعربية').fill('إدارة: أحمد فارس أبو زايد');
         await page.getByLabel('اسم الشركة والتفاصيل بالإنجليزية').fill('Company for General Trade\nFares Abu Zayed Sons');
-        await page.getByLabel('خط عنوان التقرير').selectOption('messiri');
+        await pickChoice(page.getByLabel('خط عنوان التقرير'), 'messiri');
         await page.getByLabel('حجم عنوان التقرير (بكسل)').fill('24');
         await page.getByLabel('عرض الشعار (مم)').fill('38');
         await page.getByLabel('ارتفاع الشعار (مم)').fill('25');
-        await page.getByLabel('الفاصل أسفل الترويسة').selectOption('double');
-        await page.getByLabel('محاذاة النص العربي').selectOption('right');
-        await page.getByLabel('محاذاة النص الإنجليزي').selectOption('left');
+        await pickChoice(page.getByLabel('الفاصل أسفل الترويسة'), 'double');
+        await pickChoice(page.getByLabel('محاذاة النص العربي'), 'right');
+        await pickChoice(page.getByLabel('محاذاة النص الإنجليزي'), 'left');
         const assertCenteredLogo = async () => {
             const geometry = await paper.locator('[data-print-letterhead]').evaluate((header) => {
                 const row = header.getBoundingClientRect();
@@ -47,7 +50,7 @@ const assert = require('node:assert/strict');
         await page.getByLabel('القالب المختار').getByRole('option', { name: 'ورقة مقاصة', exact: true }).waitFor({ state: 'attached' });
         await page.reload();
         await paper.waitFor();
-        await page.getByLabel('القالب المختار').selectOption({ label: 'ورقة مقاصة' });
+        await pickChoice(page.getByLabel('القالب المختار'), { label: 'ورقة مقاصة' });
         await paper.getByRole('heading', { name: 'ورقة مقاصة', exact: true }).waitFor();
         await assertCenteredLogo();
         assert.equal(await paper.getByText('Company for General Trade\nFares Abu Zayed Sons').count(), 1);
@@ -59,11 +62,11 @@ const assert = require('node:assert/strict');
         await paper.screenshot({ path: `${process.env.OUT_DIR}/letterhead-print.png` });
         await page.emulateMedia({ media: 'screen' });
         await page.locator('summary').filter({ hasText: /^الورق$/ }).click();
-        await page.getByLabel('حجم الورق', { exact: true }).selectOption('A5');
+        await pickChoice(page.getByLabel('حجم الورق', { exact: true }), 'A5');
         await assertCenteredLogo();
         await page.locator('summary').filter({ hasText: /^الترويسة$/ }).click();
         for (const position of ['left', 'right']) {
-            await page.getByLabel('موضع الشعار').selectOption(position);
+            await pickChoice(page.getByLabel('موضع الشعار'), position);
             const order = await paper.locator('[data-print-letterhead]').evaluate((header) => {
                 const logo = header.querySelector('img').getBoundingClientRect();
                 const arabic = header.querySelector('[dir="rtl"]').getBoundingClientRect();

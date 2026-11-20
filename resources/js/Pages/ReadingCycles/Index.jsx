@@ -8,7 +8,7 @@ import PageHeader from '@/Components/PageHeader';
 import SegmentedChoice from '@/Components/SegmentedChoice';
 import { formatNumber, formatDate } from '@/lib/format';
 import { readingSearchMatches } from '@/lib/readingBoard';
-import { Figure } from '@/Pages/Reports/ReportViews';
+import { Figure } from '@/Components/UI';
 
 
 function BranchOverview({ branches, canCreate }) {

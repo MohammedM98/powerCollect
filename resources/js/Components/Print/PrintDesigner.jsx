@@ -1,3 +1,4 @@
+import ChoiceSelect from '@/Components/ChoiceSelect';
 import { useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import Icon from '@/Components/Icon';
@@ -255,39 +256,39 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
                     </span>
                 )}
                 <div className="ms-auto flex flex-wrap items-center gap-2">
-                    {supportsTemplates && <select aria-label="القالب المختار" className="max-w-52 py-1.5! text-sm" value={activeTemplateId ?? ''} onChange={(event) => applyTemplate(event.target.value)}>
+                    {supportsTemplates && <ChoiceSelect aria-label="القالب المختار" className="max-w-52 py-1.5! text-sm" value={activeTemplateId ?? ''} onChange={(event) => applyTemplate(event.target.value)}>
                         <option value="">تصميم غير محفوظ</option>
                         {templates.map((template) => <option key={template.id} value={template.id}>{template.name}{template.isDefault ? ' (افتراضي)' : ''}</option>)}
-                    </select>}
+                    </ChoiceSelect>}
                     {canManageTemplates && <SecondaryButton disabled={!layout} onClick={() => {
                         if (activeTemplateId) { templateActions.saveChanges(); return; }
                         const section = document.getElementById('print-template-settings');
                         if (section) { section.open = true; section.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); section.querySelector('input[type=text]')?.focus(); }
                     }}><Icon name="check" className="h-4 w-4" />حفظ القالب{isChanged ? ' *' : ''}</SecondaryButton>}
                     {statementPrint && <label className="flex items-center gap-2 text-sm text-gray-600">عرض الكشف
-                        <select aria-label="عرض الكشف المطبوع" value={props.printOptions.view} onChange={(event) => {
+                        <ChoiceSelect aria-label="عرض الكشف المطبوع" value={props.printOptions.view} onChange={(event) => {
                             router.get(urlWith(pageUrl, { view: event.target.value, subscription: props.subscription?.id }), {}, { preserveState: true, preserveScroll: true });
                         }} className="py-1.5! text-sm">
                             {STATEMENT_VIEWS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                        </select>
+                        </ChoiceSelect>
                     </label>}
                     {report?.counts && <label className="flex items-center gap-2 text-sm text-gray-600">الحركات
-                        <select aria-label="تصفية الحركات المطبوعة" value={report.filter} onChange={(event) => {
+                        <ChoiceSelect aria-label="تصفية الحركات المطبوعة" value={report.filter} onChange={(event) => {
                             router.get(urlWith(pageUrl, { filter: event.target.value, box: report.boxId || null }), {}, { preserveState: true, preserveScroll: true });
                         }} className="py-1.5! text-sm">
                             {Object.entries(reportFilters).map(([key, label]) => <option key={key} value={key}>{label} ({report.counts[key]})</option>)}
-                        </select>
+                        </ChoiceSelect>
                     </label>}
                     <label className="flex items-center gap-2 text-sm text-gray-600">
                         <Icon name="search" className="h-4 w-4" />
                         <span className="sr-only sm:not-sr-only">التكبير</span>
-                        <select value={zoom} onChange={(e) => setZoom(e.target.value)} className="py-1.5! text-sm" aria-label="تكبير المعاينة">
+                        <ChoiceSelect value={zoom} onChange={(e) => setZoom(e.target.value)} className="py-1.5! text-sm" aria-label="تكبير المعاينة">
                             {ZOOMS.map((option) => (
                                 <option key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
                             ))}
-                        </select>
+                        </ChoiceSelect>
                     </label>
                     {loadingRows && <span role="status" className="animate-pulse text-sm text-gray-600">جارٍ تحديث المعاينة...</span>}
                     {printError && <p role="alert" className="text-sm text-red-600">{printError}</p>}
