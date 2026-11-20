@@ -1,4 +1,4 @@
-import { Button } from '@heroui/react';
+import { Button, Checkbox } from '@heroui/react';
 import { useState } from 'react';
 import Icon from '@/Components/Icon';
 import InfoTip from '@/Components/InfoTip';
@@ -133,16 +133,15 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                                         const on = grantable.includes(entry.id);
 
                                         return (
-                                            <button
+                                            <Checkbox
                                                 key={entry.id}
-                                                type="button"
-                                                role="checkbox"
-                                                aria-checked={on}
+                                                isSelected={on}
+                                                isDisabled={disabled}
+                                                onChange={() => toggle(entry.id)}
                                                 aria-label={`يمنح «${entry.label}» لموظفي فرعه`}
-                                                disabled={disabled}
-                                                onClick={() => toggle(entry.id)}
-                                                className={`pm-grant-row ${on ? 'is-on' : ''}`}
+                                                className="pm-grant-field"
                                             >
+                                                <Checkbox.Content className={`pm-grant-row ${on ? 'is-on' : ''}`}>
                                                 <span className="min-w-0 flex-1">
                                                     <b className="block truncate text-[15px] font-semibold text-gray-900">{entry.label}</b>
                                                     <small className="flex flex-wrap items-center gap-1.5 text-[12.5px] text-gray-500">
@@ -162,10 +161,11 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                                                     </small>
                                                 </span>
                                                 <span className="pm-grant-state">{on ? 'يمنحها' : 'لنفسه فقط'}</span>
-                                                <span className={`pm-check ${on ? 'is-on' : ''}`} aria-hidden="true">
+                                                <Checkbox.Control className={`pm-check ${on ? 'is-on' : ''}`}>
                                                     <Icon name="check" className="h-4 w-4" strokeWidth={3} />
-                                                </span>
-                                            </button>
+                                                </Checkbox.Control>
+                                                </Checkbox.Content>
+                                            </Checkbox>
                                         );
                                     })}
                                 </div>

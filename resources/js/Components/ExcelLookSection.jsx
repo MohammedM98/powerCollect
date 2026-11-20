@@ -1,3 +1,4 @@
+import { ToggleButton, ToggleButtonGroup } from '@heroui/react';
 import SegmentedTabs from '@/Components/SegmentedTabs';
 import { EXCEL_FONT_SIZES, EXCEL_ORIENTATIONS, EXCEL_ROW_HEIGHTS, EXCEL_THEMES } from '@/lib/excelSheet';
 import { Section } from './ExcelStudioParts';
@@ -7,14 +8,11 @@ export default function ExcelLookSection({ change, settings }) {
     return (
         <Section title="الألوان والخط">
             <p className="mb-2 text-sm font-semibold text-gray-700">ألوان صف العناوين والعنوان</p>
-            <div className="grid grid-cols-5 gap-2" role="radiogroup" aria-label="الألوان">
+            <ToggleButtonGroup aria-label="الألوان" selectionMode="single" disallowEmptySelection selectedKeys={[settings.theme]} onSelectionChange={(keys) => { const [next] = keys; if (next !== undefined) { change({ theme: String(next) }); } }} className="grid grid-cols-5 gap-2">
                 {Object.entries(EXCEL_THEMES).map(([key, theme]) => (
-                    <button
+                    <ToggleButton
                         key={key}
-                        type="button"
-                        role="radio"
-                        aria-checked={settings.theme === key}
-                        onClick={() => change({ theme: key })}
+                        id={key}
                         className={`flex flex-col items-center gap-1 rounded-control border p-1.5 text-[11px] font-semibold transition ${settings.theme === key ? 'border-excel-500 bg-excel-500/5 text-gray-900' : 'border-gray-100 text-gray-600 hover:border-gray-200'}`}
                     >
                         <span className="flex h-7 w-full flex-col overflow-hidden rounded border border-gray-200" aria-hidden="true">
@@ -23,9 +21,9 @@ export default function ExcelLookSection({ change, settings }) {
                             <span className="h-1.5" style={{ background: `#${theme.group}` }} />
                         </span>
                         {theme.label}
-                    </button>
+                    </ToggleButton>
                 ))}
-            </div>
+            </ToggleButtonGroup>
             <div className="mt-4 space-y-3 text-sm font-semibold text-gray-700">
                 <div className="flex items-center justify-between gap-3">
                     حجم الخط

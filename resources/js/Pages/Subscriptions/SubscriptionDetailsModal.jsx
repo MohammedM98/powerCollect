@@ -2,6 +2,7 @@ import { Button } from '@heroui/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import Modal from '@/Components/Modal';
 import Icon from '@/Components/Icon';
+import TabStrip from '@/Components/UI/TabStrip';
 import { BALANCE_HINTS } from '@/lib/balance';
 import { chainColor, compactStatementEntries, describeBalance, filterStatementEntries, relatedLineChains } from '@/lib/accountStatement';
 import { groupReadingsByMonth } from '@/lib/readingHistory';
@@ -138,7 +139,7 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
             onLoadStatement();
         }
         if (focus) {
-            document.getElementById(`${tabsId}-${tab}`)?.focus();
+            dialogRef.current?.querySelector(`[role="tab"][data-key="${tab}"]`)?.focus();
         }
     }
 
@@ -166,6 +167,8 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
         }
     }
 
+    const TAB_LABELS = Object.fromEntries(TABS);
+
     return <>
         <Modal show={Boolean(subscription)} onClose={onClose} maxWidth="full" panelClassName={`subscription-profile-panel ${expanded ? 'is-expanded' : ''}`}>
             {/* The dialog takes its own keys: the arrows move between tabs, Escape closes. */}
@@ -188,15 +191,13 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
                         </div>
                     </div>
                     <div className="sp-header-bottom">
-                        <div className="sp-tabs" role="tablist" aria-label="أقسام ملف المشترك">
-                            {TABS.map(([tab, label], index) => <button key={tab} type="button" id={`${tabsId}-${tab}`} role="tab" aria-selected={activeTab === tab} aria-controls={`${tabsId}-${tab}-panel`} tabIndex={activeTab === tab ? 0 : -1} onClick={() => selectTab(tab)} onKeyDown={(event) => {
-                                if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
-                                    event.preventDefault();
-                                    const next = event.key === 'Home' ? 0 : event.key === 'End' ? 2 : (index + (event.key === 'ArrowLeft' ? 1 : 2)) % 3;
-                                    selectTab(TABS[next][0], true);
-                                }
-                            }}>{label}{tab === 'transactions' && statement && <span>{statement.entries.length}</span>}</button>)}
-                        </div>
+                        <TabStrip
+                            label="أقسام ملف المشترك"
+                            className="sp-tabs"
+                            selectedKey={activeTab}
+                            onSelectionChange={(tab) => selectTab(tab)}
+                            tabs={TABS.map(([tab, label]) => ({ id: tab, label: <>{label}{tab === 'transactions' && statement && <span>{statement.entries.length}</span>}</> }))}
+                        />
                         <div className="sp-quick-actions">
                             {subscription.canRecordPayment && <Button data-raw="" variant="ghost" className="sp-pay" onClick={() => onOpenStatement('payment')}><Icon name="banknotes" /><span>تسجيل دفعة</span></Button>}
                             {onSendMessage && <Button data-raw="" variant="ghost" onClick={onSendMessage} aria-label="إرسال SMS" title="إرسال SMS"><Icon name="chat" /></Button>}
@@ -208,7 +209,7 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
                     </div>
                 </header>
                 <div className="sp-body" ref={bodyRef}>
-                    <div id={`${tabsId}-details-panel`} className="sp-details" role="tabpanel" aria-labelledby={`${tabsId}-details`} hidden={activeTab !== 'details'}>
+                    <div id={`${tabsId}-details-panel`} className="sp-details" role="tabpanel" aria-label={TAB_LABELS.details} hidden={activeTab !== 'details'}>
                         <div className="sp-columns">
                             <ArchiveNotice subscription={subscription} />
                             {!subscription.archivedAt && subscription.status !== 'active' && <div className="sp-notice"><Icon name="warning" /><div><b>الاشتراك {subscription.statusLabel}</b><span>{`الرصيد \u2066${balance.signed} ₪\u2069.`} راجع بيانات الاشتراك وحالته قبل تسجيل قراءة جديدة.</span></div></div>}
@@ -237,10 +238,10 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
                             </dl></Section>
                         </div>
                     </div>
-                    <div id={`${tabsId}-transactions-panel`} role="tabpanel" aria-labelledby={`${tabsId}-transactions`} hidden={activeTab !== 'transactions'} aria-busy={statementLoading}>
+                    <div id={`${tabsId}-transactions-panel`} role="tabpanel" aria-label={TAB_LABELS.transactions} hidden={activeTab !== 'transactions'} aria-busy={statementLoading}>
                         {activeTab === 'transactions' && <AccountTab statement={statement} loading={statementLoading} onLoadStatement={onLoadStatement} onOpenStatement={onOpenStatement} />}
                     </div>
-                    <div id={`${tabsId}-consumption-panel`} className="sp-consumption" role="tabpanel" aria-labelledby={`${tabsId}-consumption`} hidden={activeTab !== 'consumption'}>
+                    <div id={`${tabsId}-consumption-panel`} className="sp-consumption" role="tabpanel" aria-label={TAB_LABELS.consumption} hidden={activeTab !== 'consumption'}>
                         <div className="sp-columns">
                             <Section title="الاستهلاك الشهري" icon="bolt" trailing={<small className="sp-section-unit">كيلوواط ساعة</small>}>
                                 {months.length ? <div className="sp-chart" role="img" aria-label={`الاستهلاك الشهري: ${months.map((month) => `${month.month}: ${number(month.totals.consumption)} كيلوواط ساعة`).join('، ')}`}>{months.map((month) => <div key={month.month} title={`${month.month}: ${number(month.totals.consumption)} كيلوواط ساعة`}><b>{number(month.totals.consumption)}</b><i style={{ height: `${month.totals.consumption / maximum * 80}px` }} /><small>{monthLabel(month.month)}</small><small>{month.month.slice(0, 4)}</small></div>)}</div> : <p className="sp-empty">لا توجد قراءات مسجلة بعد.</p>}

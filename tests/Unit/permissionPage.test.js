@@ -6,6 +6,14 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { rolldown } from 'rolldown';
 import { individualChanges, sectionModel } from '../../resources/js/lib/permissions.js';
 
+/** A HeroUI check in the rendered grid: its input named `label`, ticked or not. */
+function assertCheck(html, label, ticked) {
+    const input = html.match(new RegExp(`<input[^>]*aria-label="${label}"[^>]*>`))?.[0];
+    assert.ok(input, `no check named ${label}`);
+    assert.match(input, /type="checkbox"/);
+    assert.equal(/checked=""/.test(input), ticked, `${label} should be ${ticked ? 'ticked' : 'clear'}`);
+}
+
 let PermissionSummary;
 let PermissionChangeReview;
 let PermissionEditor;
@@ -77,9 +85,9 @@ test('matrix shows an edit-only employee with independent accessible checkboxes'
     ] });
     const html = renderToStaticMarkup(createElement(SectionRow, { section, selected: [12], saved: [12], onChange() {} }));
 
-    assert.match(html, /role="checkbox" aria-checked="true" aria-label="المشتركون: تعديل المشتركين"/);
-    assert.match(html, /role="checkbox" aria-checked="false" aria-label="المشتركون: عرض المشتركين"/);
-    assert.match(html, /role="checkbox" aria-checked="false" aria-label="المشتركون: إضافة المشتركين"/);
+    assertCheck(html, 'المشتركون: تعديل المشتركين', true);
+    assertCheck(html, 'المشتركون: عرض المشتركين', false);
+    assertCheck(html, 'المشتركون: إضافة المشتركين', false);
     assert.doesNotMatch(html, /role="radiogroup"/);
 });
 
@@ -138,9 +146,9 @@ test('the grid shows each action as its own check, the options behind «خيار
     const user = { ...employee, id: 7, username: 'collector', role: 'collector', permissionIds: [13, 14] };
     const html = renderToStaticMarkup(createElement(PermissionEditor, { employee: user, sections: [subscriptions, payments], templates: [], copySources: [], scopedToOwnBranch: false, onDirtyChange() {} }));
 
-    assert.match(html, /role="checkbox" aria-checked="false" aria-label="المشتركون: عرض المشتركين"/);
-    assert.match(html, /role="checkbox" aria-checked="true" aria-label="المشتركون: تعديل المشتركين"/);
-    assert.match(html, /role="checkbox" aria-checked="true" aria-label="المشتركون: الحذف"/);
+    assertCheck(html, 'المشتركون: عرض المشتركين', false);
+    assertCheck(html, 'المشتركون: تعديل المشتركين', true);
+    assertCheck(html, 'المشتركون: الحذف', true);
     assert.match(html, /aria-expanded="false"[^>]*aria-label="\d+\/\d+ خيارات المشتركون"|aria-label="\d+\/\d+ خيارات المشتركون"[^>]*aria-expanded="false"/);
     assert.match(html, />1<\/b> خطيرة/);
     assert.doesNotMatch(html, /aria-expanded="true"/);

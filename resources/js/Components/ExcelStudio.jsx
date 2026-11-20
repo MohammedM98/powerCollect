@@ -1,3 +1,4 @@
+import TabStrip from '@/Components/UI/TabStrip';
 import ChoiceSelect from '@/Components/ChoiceSelect';
 import CheckBox from '@/Components/CheckBox';
 import { Button, Input } from '@heroui/react';
@@ -209,12 +210,15 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                     <div className="flex flex-1 items-center justify-center p-10 text-sm text-gray-500" role="status">جارٍ تجهيز بيانات الجدول…{loadedRows > 0 && ` تم تحميل ${loadedRows.toLocaleString('en-US')} سجل`}</div>
                 ) : (
                     <>
-                        <div className="flex shrink-0 gap-1 border-b border-gray-100 p-2 lg:hidden" role="tablist">
-                            {[['settings', 'الإعدادات'], ['preview', 'المعاينة']].map(([key, label]) => (
-                                <button key={key} type="button" role="tab" aria-selected={tab === key} onClick={() => setTab(key)} className={`flex-1 rounded-control px-3 py-2 text-sm font-semibold ${tab === key ? 'bg-brand-gradient text-white' : 'text-gray-600'}`}>
-                                    {label}
-                                </button>
-                            ))}
+                        <div className="shrink-0 border-b border-gray-100 p-2 lg:hidden">
+                            <TabStrip
+                                label="أقسام التصدير"
+                                className="flex gap-1"
+                                selectedKey={tab}
+                                onSelectionChange={setTab}
+                                tabs={[{ id: 'settings', label: 'الإعدادات' }, { id: 'preview', label: 'المعاينة' }]}
+                                tabClassName={(item, selected) => `flex-1 cursor-pointer rounded-control px-3 py-2 text-center text-sm font-semibold outline-none ${selected ? 'bg-brand-gradient text-white' : 'text-gray-600'}`}
+                            />
                         </div>
                         <div className="grid min-h-0 flex-1 lg:grid-cols-[380px_minmax(0,1fr)]">
                             <div className={`min-h-0 overflow-y-auto border-gray-100 px-5 pb-6 lg:block lg:border-e ${tab === 'settings' ? 'block' : 'hidden'}`}>

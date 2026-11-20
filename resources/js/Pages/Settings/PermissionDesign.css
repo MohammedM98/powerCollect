@@ -444,3 +444,12 @@
 .permission-panel:hover > .permission-panel-heading small, .permission-panel:focus-within > .permission-panel-heading small, .permission-panel.is-open > .permission-panel-heading small { color: var(--ma-muted); }
 .permission-panel-count { background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-hl); }
 .permission-help-dialog:hover .permission-help-header, .permission-help-dialog:focus-within .permission-help-header { background: transparent; color: inherit; border-bottom: 1px solid var(--ma-line); }
+
+/* The grid's checks are HeroUI's Checkbox: the drawn box is its control, the focus ring follows its hidden input. */
+.pm-check-field{display:inline-flex}
+.pm-check-field .checkbox__content{display:inline-flex}
+.pm-check-field:has(input:focus-visible) :is(.pm-check,.pm-tri){outline:2px solid rgb(var(--gray-900));outline-offset:2px}
+.pm-check-field[data-disabled=true] :is(.pm-check,.pm-tri){cursor:not-allowed;opacity:.5}
+.pm-grant-field{display:block}
+.pm-grant-field:has(input:focus-visible) .pm-grant-row{outline:2px solid rgb(var(--gray-900));outline-offset:2px}
+.pm-grant-field[data-disabled=true] .pm-grant-row{cursor:not-allowed;opacity:.6}
