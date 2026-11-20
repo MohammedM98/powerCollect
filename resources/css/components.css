@@ -7772,3 +7772,129 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-user-chip.chip[data-tone='disc'] { background: var(--ma-disc-s); color: var(--ma-disc); }
 .gl-user-chip.chip[data-tone='clr'] { background: var(--ma-clr-s); color: var(--ma-clr); }
 .gl-user-chip.chip[data-tone='brand'] { background: var(--ma-brand-soft); color: var(--ma-brand); }
+
+/* Print templates: one HeroUI card per list, side by side; its templates as soft rows with icon keys. */
+.gl-pt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+    align-items: start;
+    gap: 16px;
+}
+
+.gl-pt-head {
+    align-items: center;
+    padding-bottom: 18px;
+}
+
+.gl-pt-card[data-empty] .gl-set-ico {
+    background: var(--ma-tile);
+    color: var(--ma-muted);
+}
+
+.gl-pt-add.button {
+    gap: 6px;
+    height: 36px;
+    padding-inline: 12px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    font-weight: 800;
+    box-shadow: var(--ma-hl);
+}
+
+.gl-pt-add.button:hover {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-pt-list {
+    display: grid;
+    gap: 8px;
+    padding: 0 18px 18px;
+}
+
+.gl-pt-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 12px;
+    padding: 12px 14px;
+    border-radius: 15px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-pt-item[data-default] {
+    box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--ma-pay) 45%, transparent);
+}
+
+.gl-pt-name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: var(--ma-ink);
+    font-size: 15px;
+}
+
+.gl-pt-meta {
+    margin: 2px 0 0;
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.gl-pt-keys {
+    display: flex;
+    gap: 6px;
+    margin-inline-start: auto;
+}
+
+.gl-pt-key.button {
+    --k: var(--ma-ink);
+    position: relative;
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: var(--ma-solid);
+    color: var(--k);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-pt-key[data-tone='brand'] { --k: var(--ma-brand); }
+.gl-pt-key[data-tone='pay'] { --k: var(--ma-pay); }
+.gl-pt-key[data-tone='owe'] { --k: var(--ma-owe); }
+.gl-pt-key[data-tone='muted'] { --k: var(--ma-muted); }
+
+.gl-pt-key.button:hover {
+    background: var(--k);
+    color: #fff;
+}
+
+/* The key's name, shown above it on hover or focus. */
+.gl-pt-tip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    z-index: 5;
+    max-width: 240px;
+    padding: 5px 9px;
+    border-radius: 9px;
+    background: var(--ma-act);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 4px);
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+.gl-pt-key:is(:hover, [data-focus-visible]) .gl-pt-tip {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
