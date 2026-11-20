@@ -285,11 +285,13 @@ class Subscription extends Model
     /**
      * The meter reading a new week starts from: the current reading of the
      * last week recorded before it, or the subscription's initial reading if
-     * this is their first week.
+     * this is their first week. A subscription moved to another branch keeps
+     * the readings recorded in its old one, so they count wherever it is read.
      */
     public function previousReadingBefore(Carbon $weekStart): float
     {
         $lastReading = $this->meterReadings()
+            ->acrossBranches()
             ->where('week_start', '<', $weekStart->toDateString())
             ->orderByDesc('week_start')
             ->first();
