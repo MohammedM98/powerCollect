@@ -3,7 +3,8 @@ import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import Icon from '@/Components/Icon';
-import SecondaryButton from '@/Components/SecondaryButton';
+import { Button, Checkbox } from '@heroui/react';
+import SegmentedChoice from '@/Components/SegmentedChoice';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import SortableTh from '@/Components/DataTable/SortableTh';
@@ -169,9 +170,13 @@ export default function Index({
 
     // The status pills, at the head of the sheet and again on its pinned bar.
     const statusTabs = (
-        <div className="gl-seg re-tabs" role="group" aria-label="حالة القراءات">
-            {STATUS_TABS.map((tab) => <button type="button" key={tab.value} aria-pressed={activeStatus === tab.value} onClick={() => changeStatus(tab.value)}>{tab.value !== 'all' && <i className={tab.value} />}{tab.label}<span>{statusSummary[tab.count].toLocaleString('en')}</span></button>)}
-        </div>
+        <SegmentedChoice
+            label="حالة القراءات"
+            className="re-tabs"
+            value={activeStatus}
+            onChange={changeStatus}
+            options={STATUS_TABS.map((tab) => ({ value: tab.value, label: <>{tab.value !== 'all' && <i className={tab.value} />}{tab.label}<span className="re-tab-count">{statusSummary[tab.count].toLocaleString('en')}</span></> }))}
+        />
     );
 
     // The page's actions, in their row under the section's tabs as in the redesign.
@@ -222,10 +227,10 @@ export default function Index({
             <div className="re-sheet-head">
                 {statusTabs}
                 {canApprove && approvableRows.length > 0 && (
-                    <label className="re-select-page">
-                        <input type="checkbox" checked={allOnPageSelected} onChange={toggleAllOnPage} disabled={approving} />
-                        تحديد قراءات هذه الصفحة
-                    </label>
+                    <Checkbox className="re-select-page" isSelected={allOnPageSelected} onChange={toggleAllOnPage} isDisabled={approving}>
+                        <Checkbox.Control><Checkbox.Indicator /></Checkbox.Control>
+                        <Checkbox.Content>تحديد قراءات هذه الصفحة</Checkbox.Content>
+                    </Checkbox>
                 )}
             </div>
             <DataTableToolbar
@@ -336,13 +341,13 @@ export default function Index({
                         <b className="tabular-nums text-gray-900">{formatMoney(selectedTotal)} شيكل</b>
                     </p>
                     <div className="flex items-center gap-3">
-                        <SecondaryButton onClick={() => setSelectedIds(new Set())} disabled={approving}>
+                        <Button variant="secondary" onPress={() => setSelectedIds(new Set())} isDisabled={approving}>
                             إلغاء التحديد
-                        </SecondaryButton>
-                        <button type="button" className="gl-btn re-approve-selected" onClick={() => setConfirming('selected')} disabled={approving}>
+                        </Button>
+                        <Button className="re-approve-selected" onPress={() => setConfirming('selected')} isDisabled={approving}>
                             <Icon name="check" className="h-4 w-4" strokeWidth={2} />
                             اعتماد المحدد
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )}

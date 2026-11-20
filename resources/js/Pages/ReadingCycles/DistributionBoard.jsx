@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Dropdown } from '@heroui/react';
+import { Button, Card, Dropdown } from '@heroui/react';
+import SegmentedChoice from '@/Components/SegmentedChoice';
 import Icon from '@/Components/Icon';
 import { formatNumber } from '@/lib/format';
 import { laneAreaGroups, stageMove } from '@/lib/readingBoard';
@@ -21,7 +22,7 @@ const subscribersOf = (boxes) => boxes.reduce((sum, box) => sum + box.subscriber
 function MoveMenu({ label, lanes, current, onMove, disabled }) {
     return (
         <Dropdown>
-            <Dropdown.Trigger className="db-mini" aria-label={label} isDisabled={disabled}>
+            <Dropdown.Trigger className="button button--ghost button--sm button--icon-only db-mini" aria-label={label} isDisabled={disabled}>
                 <Icon name="dots" className="h-4 w-4" />
             </Dropdown.Trigger>
             <Dropdown.Popover className="gl-pop" placement="bottom end">
@@ -43,7 +44,7 @@ function AreaGroup({ area, laneKey, lanes, tones, canMove, open, onToggle, onDra
     const lane = lanes.find((candidate) => candidate.key === laneKey);
 
     return (
-        <article className="db-area" aria-label={`منطقة ${area.name}`} data-open={open || undefined}>
+        <Card role="article" className="db-area" aria-label={`منطقة ${area.name}`} data-open={open || undefined}>
             <div className="db-owners" aria-hidden="true">
                 {area.owners.map((owner, index) => <span key={index} data-tone={tones[owner] ?? 'faint'} />)}
             </div>
@@ -64,9 +65,9 @@ function AreaGroup({ area, laneKey, lanes, tones, canMove, open, onToggle, onDra
                 </div>
                 <span className="db-area-tools">
                     {canMove && <MoveMenu label={`نقل منطقة ${area.name} من ${lane?.label}`} lanes={lanes} current={laneKey} onMove={(target) => onMove(area.boxes.map((box) => box.id), target, `منطقة ${area.name}`)} />}
-                    <button type="button" className="db-mini db-chev" onClick={onToggle} aria-expanded={open} aria-label={`${open ? 'إغلاق' : 'فتح'} منطقة ${area.name}`}>
+                    <Button isIconOnly size="sm" variant="ghost" className="db-mini db-chev" onPress={onToggle} aria-expanded={open} aria-label={`${open ? 'إغلاق' : 'فتح'} منطقة ${area.name}`}>
                         <Icon name="chevron-down" className="h-4 w-4" />
-                    </button>
+                    </Button>
                 </span>
             </div>
             {open && (
@@ -87,7 +88,7 @@ function AreaGroup({ area, laneKey, lanes, tones, canMove, open, onToggle, onDra
                     ))}
                 </ul>
             )}
-        </article>
+        </Card>
     );
 }
 
@@ -181,13 +182,13 @@ export default function DistributionBoard({ boards, readers, staged, onStage, ca
 
     return (
         <div className="db-board" onDragEnd={() => { setDragging(null); setOverLane(null); }}>
-            <section className="db-pool" aria-label="الطبلونات غير الموزّعة" data-over={overLane === 'available' || undefined} {...laneProps('available')}>
+            <Card role="region" className="db-pool" aria-label="الطبلونات غير الموزّعة" data-over={overLane === 'available' || undefined} {...laneProps('available')}>
                 <header className="db-lane-head">
                     <span className="db-avatar" data-tone="faint"><Icon name="layers" className="h-5 w-5" /></span>
                     <div><b>غير موزّعة</b><small>{formatNumber(pool.length)} طبلون · {formatNumber(subscribersOf(pool))} مشترك</small></div>
                 </header>
                 <div className="db-drop">{renderGroups('available')}</div>
-            </section>
+            </Card>
             <div className="db-lanes">
                 {lanes.filter((lane) => lane.key !== 'available').map((lane) => {
                     const boxes = boards.filter((box) => columnOf(box) === lane.key);
@@ -195,7 +196,7 @@ export default function DistributionBoard({ boards, readers, staged, onStage, ca
                     const over = lane.reader && fairShare > 0 && subscribers > fairShare;
 
                     return (
-                        <section key={lane.key} className="db-lane" aria-label={`عمود ${lane.label}`} data-tone={lane.tone} data-over={overLane === lane.key || undefined} {...laneProps(lane.key)}>
+                        <Card role="region" key={lane.key} className="db-lane" aria-label={`عمود ${lane.label}`} data-tone={lane.tone} data-over={overLane === lane.key || undefined} {...laneProps(lane.key)}>
                             <header className="db-lane-head">
                                 <span className="db-avatar" data-tone={lane.tone}>{lane.reader ? lane.label.trim().slice(0, 1) : <Icon name="printer" className="h-5 w-5" />}</span>
                                 <div className="min-w-0"><b>{lane.label}</b><small>{lane.reader ? 'قارئ ميداني' : 'تُطبع وتُسلَّم لقارئ'}</small></div>
@@ -208,7 +209,7 @@ export default function DistributionBoard({ boards, readers, staged, onStage, ca
                                 </div>
                             )}
                             <div className="db-drop">{renderGroups(lane.key)}</div>
-                        </section>
+                        </Card>
                     );
                 })}
             </div>
@@ -249,7 +250,7 @@ export function DistributionMission({ cycle, boards, readers, staged, actions, t
     ];
 
     return (
-        <section className="db-mission" aria-label="دورة القراءة">
+        <Card role="region" className="db-mission" aria-label="دورة القراءة">
             <div className="db-mission-top">
                 <div>
                     <small>{cycle.branchName} · أسبوع <bdi dir="ltr">{shortDate(cycle.weekStart)}</bdi> إلى <bdi dir="ltr">{shortDate(cycle.weekEnd)}</bdi>{cycle.readingDate !== cycle.weekEnd && '، يوم القراءة مؤجل لهذه الدورة'}</small>
@@ -275,7 +276,7 @@ export function DistributionMission({ cycle, boards, readers, staged, actions, t
                     <li><i data-tone="faint" />غير موزّعة <b>{formatNumber(unassigned)}</b></li>
                 </ul>
             </div>
-        </section>
+        </Card>
     );
 }
 
@@ -286,7 +287,7 @@ export function DistributionTray({ lastMove, changedCount, recurring, onRecurrin
     }
 
     return (
-        <div className="db-tray" role="region" aria-label="تغييرات التوزيع">
+        <Card className="db-tray" role="region" aria-label="تغييرات التوزيع">
             <span className="db-tray-ico"><Icon name="pencil" className="h-4 w-4" /></span>
             <div className="min-w-0">
                 <b role="status">{formatNumber(changedCount)} {changedCount === 1 ? 'طبلون تغيّر' : 'طبلونات تغيّرت'}، لم تُحفظ بعد</b>
@@ -294,14 +295,11 @@ export function DistributionTray({ lastMove, changedCount, recurring, onRecurrin
             </div>
             <span className="grow" />
             {canChooseRecurring && (
-                <div className="gl-seg" role="group" aria-label="مدة التوزيع">
-                    <button type="button" aria-pressed={recurring} onClick={() => onRecurringChange(true)}>ثابت كل أسبوع</button>
-                    <button type="button" aria-pressed={!recurring} onClick={() => onRecurringChange(false)}>هذا الأسبوع فقط</button>
-                </div>
+                <SegmentedChoice label="مدة التوزيع" value={recurring ? 'always' : 'once'} onChange={(next) => onRecurringChange(next === 'always')} options={[{ value: 'always', label: 'ثابت كل أسبوع' }, { value: 'once', label: 'هذا الأسبوع فقط' }]} />
             )}
-            <button type="button" className="gl-btn gl-sec" onClick={onUndo} disabled={busy}><Icon name="undo" className="h-4 w-4" />تراجع</button>
-            <button type="button" className="gl-btn gl-sec" onClick={onDiscard} disabled={busy}>إلغاء الكل</button>
-            <button type="button" className="gl-btn db-save" onClick={onSave} disabled={busy}><Icon name="check" className="h-4 w-4" />{busy ? 'جارٍ الحفظ...' : 'حفظ التوزيع'}</button>
-        </div>
+            <Button variant="secondary" onPress={onUndo} isDisabled={busy}><Icon name="undo" className="h-4 w-4" />تراجع</Button>
+            <Button variant="secondary" onPress={onDiscard} isDisabled={busy}>إلغاء الكل</Button>
+            <Button className="db-save" onPress={onSave} isDisabled={busy}><Icon name="check" className="h-4 w-4" />{busy ? 'جارٍ الحفظ...' : 'حفظ التوزيع'}</Button>
+        </Card>
     );
 }
