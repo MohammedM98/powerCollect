@@ -78,7 +78,8 @@ npm ci && npm run build
 ```
 
 - Flutter بالإصدار المثبَّت في `.github/workflows/tests.yml`، ثم `flutter pub get` داخل `mobile/`.
-- خادم MySQL 8 لاختبارات المال والتقارير.
+- خادم MySQL 8 لاختبارات المال والتقارير، و`mysql-client` (أمر النسخ الاحتياطي يستدعي `mysqldump`؛ بدونه تفشل `BackupCommandTest` على MySQL).
+- مجموعات المتصفح: إن لم يجد Playwright متصفحه فاضبط `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` على مسار Chromium المثبت.
 - ما يتعذّر تجهيزه يُذكر صراحة في التقرير مع السبب، ولا يُعدّ ناجحًا.
 
 ### 1. خط الأساس (قبل أي تغيير)
