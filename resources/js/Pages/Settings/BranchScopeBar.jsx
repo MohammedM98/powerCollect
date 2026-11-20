@@ -1,5 +1,6 @@
 import { router } from '@inertiajs/react';
 import BranchBanner from '@/Components/BranchBanner';
+import { SettingsSelect } from '@/Components/Settings/SettingsKit';
 
 /**
  * Whose schedule a schedule page shows: every branch or one
@@ -17,8 +18,7 @@ export default function BranchScopeBar({ path, scope, branch, branches, followsC
         note = `الحفظ هنا يخص الفرع «${branch.name}» وحده. عند تعميم مواعيد الشركة تُستبدل هذه المواعيد بإعدادات الشركة.`;
     }
 
-    function pick(event) {
-        const value = event.target.value;
+    function pick(value) {
         router.get(path, { branch: value || 'all' });
     }
 
@@ -26,20 +26,11 @@ export default function BranchScopeBar({ path, scope, branch, branches, followsC
         <BranchBanner scope={scope} eyebrow="تضبط الآن مواعيد القراءات لـ" allLabel="إعدادات الشركة" className="mt-5"
             ownControls
             controls={branches.length > 0 ? (
-                <label className="flex w-full flex-col gap-1.5 sm:w-64" htmlFor="schedule-branch">
+                <div className="flex w-full flex-col gap-1.5 sm:w-72" title={locked ? 'احفظ التغييرات أو تراجع عنها قبل تغيير الفرع.' : undefined}>
                     <span className="gl-label">نطاق المواعيد</span>
-                    <select id="schedule-branch" value={branch?.id ?? ''} disabled={locked} onChange={pick}
-                        className="h-11 w-full px-3.5 font-bold disabled:opacity-50"
-                        title={locked ? 'احفظ التغييرات أو تراجع عنها قبل تغيير الفرع.' : undefined}>
-                        <option value="">جميع الفروع — إعدادات الشركة</option>
-                        {branches.map((item) => (
-                            <option key={item.value} value={item.value}>
-                                {item.label}
-                                {item.hasOwn ? '، إعدادات محفوظة' : ''}
-                            </option>
-                        ))}
-                    </select>
-                </label>
+                    <SettingsSelect label="نطاق المواعيد" value={branch?.id ?? ''} isDisabled={locked} onChange={pick}
+                        options={[{ value: '', label: 'جميع الفروع — إعدادات الشركة' }, ...branches.map((item) => ({ value: item.value, label: `${item.label}${item.hasOwn ? '، إعدادات محفوظة' : ''}` }))]} />
+                </div>
             ) : null}>
             <p className="text-sm leading-relaxed gl-text-muted">{note}</p>
         </BranchBanner>

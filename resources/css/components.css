@@ -7751,3 +7751,24 @@ html:root[data-ui-background='graphite'] .pm-hero {
     font-size: 13px;
     font-weight: 700;
 }
+
+/* The users table: the username as a quiet code pill, the type and branch as HeroUI chips in their tones. */
+.gl-user-handle {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 9px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    font: 700 13px ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.gl-user-chip.chip {
+    gap: 5px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    font-weight: 700;
+}
+
+.gl-user-chip.chip[data-tone='disc'] { background: var(--ma-disc-s); color: var(--ma-disc); }
+.gl-user-chip.chip[data-tone='clr'] { background: var(--ma-clr-s); color: var(--ma-clr); }
+.gl-user-chip.chip[data-tone='brand'] { background: var(--ma-brand-soft); color: var(--ma-brand); }

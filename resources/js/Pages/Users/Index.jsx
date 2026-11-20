@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Head } from '@inertiajs/react';
+import { Chip } from '@heroui/react';
+import PageHeader from '@/Components/PageHeader';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import AddButton from '@/Components/AddButton';
 import Icon from '@/Components/Icon';
@@ -40,13 +42,14 @@ export default function Index({
     return (
         <AuthenticatedLayout
             header={
-                <>
-                    <h1 className="text-3xl font-bold text-gray-900">المستخدمون</h1>
-                    <div className="flex shrink-0 flex-wrap items-center gap-2 [&>button]:h-11">
+                <PageHeader
+                    title="المستخدمون"
+                    info="حسابات الدخول إلى الموقع والتطبيق: نوع كل مستخدم وفرعه وحالته. الصلاحيات تُمنح لكل مستخدم من صفحة الصلاحيات."
+                    actions={<>
                         {userTypeItems && <GroupActionButton onClick={() => setManagingTypes(true)} aria-haspopup="dialog" aria-expanded={managingTypes}><Icon name={canCreateUserType ? 'plus' : 'tag'} className="h-4 w-4" />أنواع المستخدمين</GroupActionButton>}
                         {canCreate && <AddButton onClick={() => setCreating(true)}>مستخدم جديد</AddButton>}
-                    </div>
-                </>
+                    </>}
+                />
             }
         >
             <Head title="المستخدمون" />
@@ -87,11 +90,17 @@ export default function Index({
                                     <td>
                                         <RowIdentity name={user.name} subtitle={user.roleLabel} status={user.is_active ? 'green' : 'gray'} />
                                     </td>
-                                    <td className="text-end text-gray-600" dir="ltr">
-                                        {user.username}
+                                    <td className="text-end">
+                                        <bdi dir="ltr" className="gl-user-handle">{user.username}</bdi>
                                     </td>
-                                    <td className="text-gray-600">{user.userTypeName ?? '—'}</td>
-                                    <td className="text-gray-600">{user.isSuperAdmin ? 'كل الفروع' : (user.branchName ?? '—')}</td>
+                                    <td>
+                                        {user.userTypeName ? <Chip size="sm" variant="soft" className="gl-user-chip" data-tone="disc">{user.userTypeName}</Chip> : <span className="text-[var(--ma-faint)]">—</span>}
+                                    </td>
+                                    <td>
+                                        {user.isSuperAdmin
+                                            ? <Chip size="sm" variant="soft" className="gl-user-chip" data-tone="brand"><Icon name="shield" className="h-3.5 w-3.5" />كل الفروع</Chip>
+                                            : user.branchName ? <Chip size="sm" variant="soft" className="gl-user-chip" data-tone="clr"><Icon name="pin" className="h-3.5 w-3.5" />{user.branchName}</Chip> : <span className="text-[var(--ma-faint)]">—</span>}
+                                    </td>
                                     <td>
                                         <StatusPill tone={user.is_active ? 'green' : 'gray'} label={user.is_active ? 'نشط' : 'متوقف'} />
                                     </td>
