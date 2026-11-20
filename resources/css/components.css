@@ -9981,3 +9981,13 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-toast.flash-notification .gl-toast-track > div {
     opacity: 1;
 }
+
+/* SearchableSelect on HeroUI keys: its options keep the list's own height and alignment, not a key's. */
+.ss-option.button {
+    height: auto;
+    min-height: 38px;
+    justify-content: space-between;
+    border-radius: 10px;
+    font-weight: inherit;
+    white-space: normal;
+}
