@@ -8,6 +8,7 @@ use App\Http\Requests\ViewLedgerRequest;
 use App\Models\Branch;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Exports\CsvCells;
 use App\Support\Queries\DataTableFilters;
 use App\Support\Reports\DailySeries;
 use Brick\Math\RoundingMode;
@@ -421,7 +422,7 @@ class LedgerPage
                 $cells[] = $row['paidOn'];
                 $cells[] = $row['lateReason'];
                 $cells[] = $row['bankReceivedOn'];
-                fputcsv($file, array_map(fn ($cell) => is_string($cell) && ! is_numeric($cell) && preg_match('/^[=+@\-\t\r]/u', $cell) ? "'".$cell : $cell, $cells));
+                fputcsv($file, CsvCells::safe($cells));
             }
 
             fclose($file);

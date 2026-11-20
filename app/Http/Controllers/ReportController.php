@@ -10,6 +10,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Support\Branches\BranchScope;
 use App\Support\Closing\ClosingPeriods;
+use App\Support\Exports\CsvCells;
 use App\Support\Queries\DataTableFilters;
 use App\Support\Reports\BranchReport;
 use App\Support\Reports\DebtAging;
@@ -194,8 +195,7 @@ class ReportController extends Controller
 
             foreach ($lines->lazy(500) as $line) {
                 $row = FinancialReportPage::row($line);
-                // Text a spreadsheet would run as a formula is written as plain text, as the ledger's export does.
-                fputcsv($file, array_map(fn ($cell) => is_string($cell) && ! is_numeric($cell) && preg_match('/^[=+@\-\t\r]/u', $cell) ? "'".$cell : $cell, [
+                fputcsv($file, CsvCells::safe([
                     $row['day'], $row['time'], $row['branchName'], $row['voucherNumber'], $row['subscriptionName'], $row['accountNumber'], $row['meterBoxNumber'],
                     $row['typeLabel'], $row['description'], $row['methodLabel'], $row['account'], $row['currency'], $row['currencyAmount'],
                     $row['isCredit'] ? '' : $row['amount'], $row['isCredit'] ? $row['amount'] : '', $row['recordedBy'], $row['isCancelled'] ? 'نعم' : '',
