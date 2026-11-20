@@ -135,8 +135,10 @@ class TransactionAuditPage
             ])->values()->all(),
             'reason' => $amendment->reason,
             'notes' => null,
-            // Details only: an amount changes by a correction, never in place.
-            'impact' => '0',
+            // Most amendments change details only; editing the last invoice changes its amount in place.
+            'impact' => isset($amendment->changes['amount'])
+                ? LedgerAmounts::formatAmount(Money::subtract($amendment->changes['amount'][1], $amendment->changes['amount'][0]))
+                : '0',
             ...self::sensitivity(false, $line),
         ];
     }
