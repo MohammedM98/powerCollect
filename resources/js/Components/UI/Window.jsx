@@ -4,6 +4,9 @@ import { Modal } from '@heroui/react';
 /** Lists, calendars and tips the app draws straight into <body> (marked `data-react-aria-top-layer`) belong to the window that opened them. */
 const FLOATING = '[data-react-aria-top-layer], .gl-pop, [data-date-picker]';
 
+/** The windows open right now, oldest first: Escape anywhere on the page closes only the newest. */
+const openWindows = [];
+
 let titleCount = 0;
 
 /**
@@ -36,11 +39,17 @@ const WIDTHS = {
  * another still covers the screen, the page behind keeps still and is hidden
  * from assistive tech, Tab stays inside, Escape closes only the newest
  * window, a press outside closes it only when it started outside, and focus
- * goes back to whatever opened it. A panel whose content doesn't name its own
- * role is announced as a dialog, titled by its first heading.
+ * goes back to whatever opened it; Escape works wherever focus is on the
+ * page. A panel whose content doesn't name its own role is announced as a
+ * dialog, titled by its first heading.
  */
 export default function Window({ show, onClose, children, maxWidth = 'md', panelClassName = '', presentation = 'details' }) {
     const panelRef = useRef(null);
+    const onCloseRef = useRef(onClose);
+
+    useEffect(() => {
+        onCloseRef.current = onClose;
+    });
 
     useEffect(() => {
         if (!show) {
@@ -62,7 +71,20 @@ export default function Window({ show, onClose, children, maxWidth = 'md', panel
             }
         }
 
+        // React Aria answers Escape only while focus is inside; the window answers it wherever focus is, as before,
+        // unless something inside (an open list, React Aria itself) already handled the key.
+        const entry = {};
+        openWindows.push(entry);
+        function onKeyDown(event) {
+            if (event.key === 'Escape' && !event.defaultPrevented && openWindows.at(-1) === entry) {
+                onCloseRef.current?.();
+            }
+        }
+        document.addEventListener('keydown', onKeyDown);
+
         return () => {
+            document.removeEventListener('keydown', onKeyDown);
+            openWindows.splice(openWindows.indexOf(entry), 1);
             const left = Number(root.dataset.modalOpen || 1) - 1;
             if (left > 0) {
                 root.dataset.modalOpen = String(left);
