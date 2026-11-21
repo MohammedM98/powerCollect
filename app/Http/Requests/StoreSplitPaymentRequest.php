@@ -6,6 +6,7 @@ use App\Models\Bank;
 use App\Models\Closing;
 use App\Models\Subscription;
 use App\Support\Ledger\LedgerAmounts;
+use App\Support\Ledger\WebPaymentOperation;
 use Brick\Math\BigDecimal;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -63,6 +64,7 @@ class StoreSplitPaymentRequest extends FormRequest
             'parts' => ['required', 'array', 'min:2', 'max:'.self::MAX_PARTS],
             'parts.*.subscription_id' => ['required', 'integer', 'distinct'],
             'parts.*.amount' => ['required', 'numeric', 'decimal:0,2', 'gt:0', 'max:1000000'],
+            ...WebPaymentOperation::operationTokenRules(),
         ];
     }
 
@@ -112,7 +114,9 @@ class StoreSplitPaymentRequest extends FormRequest
                     return;
                 }
 
-                if ($this->boolean('confirm_overpayment')) {
+                // A retry of a recorded transfer gets that transfer back; its parts already changed the balances.
+                $validated = $validator->validated();
+                if ($this->boolean('confirm_overpayment') || (isset($validated['operation_token']) && app(WebPaymentOperation::class)->replaySplit($this->user(), $validated, $parts))) {
                     return;
                 }
 
@@ -172,6 +176,7 @@ class StoreSplitPaymentRequest extends FormRequest
         return [
             'parts.required' => 'أضف المشتركين الذين تُوزَّع عليهم الدفعة.',
             ...StoreSubscriptionPaymentRequest::paymentMessages(),
+            ...WebPaymentOperation::operationTokenMessages(),
             'parts.min' => 'اختر مشتركَين على الأقل لتوزيع الدفعة عليهم؛ وإن كانت لمشترك واحد فسجّلها دفعة عادية.',
             'parts.max' => 'لا تُوزَّع الدفعة على أكثر من :max مشتركًا.',
             'parts.*.subscription_id.distinct' => 'هذا المشترك مضاف أكثر من مرة.',

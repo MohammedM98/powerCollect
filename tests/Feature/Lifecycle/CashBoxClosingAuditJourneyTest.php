@@ -49,7 +49,7 @@ class CashBoxClosingAuditJourneyTest extends TestCase
 
         $firstCash = $this->pay($firstCollector, $first, '100');
         $firstTransfer = $this->pay($firstCollector, $first, '200', 'T-ONE');
-        $this->actingAs($firstCollector)->post(route('subscriptions.clearings.store', $second), ['amount' => '30', 'notes' => 'صيانة خط'])->assertSessionHasNoErrors();
+        $this->actingAs($firstCollector)->post(route('subscriptions.clearings.store', $second), ['operation_token' => (string) Str::uuid(), 'amount' => '30', 'notes' => 'صيانة خط'])->assertSessionHasNoErrors();
         $clearing = $second->transactions()->where('type', SubscriptionTransaction::TYPE_CLEARING)->sole();
         $secondTransfer = $this->pay($secondCollector, $second, '150', 'T-TWO');
         $secondCash = $this->pay($secondCollector, $second, '50');

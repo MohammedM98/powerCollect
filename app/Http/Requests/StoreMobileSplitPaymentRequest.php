@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\SubscriptionTransaction;
+use Illuminate\Support\Arr;
 
 class StoreMobileSplitPaymentRequest extends StoreSplitPaymentRequest
 {
@@ -17,7 +18,8 @@ class StoreMobileSplitPaymentRequest extends StoreSplitPaymentRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * The web transfer's rules, keyed by `mobile_operation_id` instead of
+     * the web window's `operation_token`.
      *
      * @return array<string, mixed>
      */
@@ -26,7 +28,7 @@ class StoreMobileSplitPaymentRequest extends StoreSplitPaymentRequest
         return [
             'mobile_operation_id' => ['required', 'uuid'],
             'collector_confirmed' => ['required', 'accepted'],
-            ...($this->existingPayment() ? [] : parent::rules()),
+            ...($this->existingPayment() ? [] : Arr::except(parent::rules(), 'operation_token')),
         ];
     }
 

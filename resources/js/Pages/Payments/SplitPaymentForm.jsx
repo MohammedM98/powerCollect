@@ -70,6 +70,7 @@ function RecordedSplit({ recorded, onAnother }) {
  */
 export default function SplitPaymentForm({ transferBanks, senderBanks, onCancel = null, onDirtyChange, initialSubscription = null }) {
     const form = useForm({
+        operation_token: crypto.randomUUID(),
         total_amount: '',
         bank_name: '',
         sender_bank_name: '',
@@ -213,6 +214,10 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, onCancel 
                 setParts([]);
                 form.reset();
                 form.clearErrors();
+                // A new key for the next transfer; a retry of this one kept the old key and got this transfer back.
+                const operationToken = crypto.randomUUID();
+                form.setDefaults('operation_token', operationToken);
+                form.setData('operation_token', operationToken);
             },
         });
     }
@@ -318,6 +323,7 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, onCancel 
                 </FieldLabel>
                 <Input id="split_notes" maxLength={1000} autoComplete="off" placeholder="أي تفصيل يُحفظ مع الدفعة" value={data.notes} onChange={(event) => setData('notes', event.target.value)} className={inputClass} />
                 <InputError message={errors.notes} className="mt-2" />
+                <InputError message={errors.operation_token} className="mt-2" />
             </div>
 
             <p className="flex items-start gap-2 text-[13px] text-gray-500">

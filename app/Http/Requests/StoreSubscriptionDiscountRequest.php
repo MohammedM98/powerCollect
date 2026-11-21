@@ -6,6 +6,7 @@ use App\Enums\DiscountMethod;
 use App\Models\Subscription;
 use App\Support\Ledger\LedgerAmounts;
 use App\Support\Ledger\Money;
+use App\Support\Ledger\WebPaymentOperation;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -30,7 +31,7 @@ class StoreSubscriptionDiscountRequest extends FormRequest
      */
     public function rules(): array
     {
-        return self::discountRules();
+        return [...self::discountRules(), ...WebPaymentOperation::operationTokenRules()];
     }
 
     /**
@@ -57,12 +58,11 @@ class StoreSubscriptionDiscountRequest extends FormRequest
     {
         return [
             function (Validator $validator): void {
-                if ($validator->errors()->isNotEmpty()) {
-                    return;
-                }
-
                 /** @var Subscription $subscription */
                 $subscription = $this->route('subscription');
+                if ($validator->errors()->isNotEmpty() || app(WebPaymentOperation::class)->replay($subscription, $this->user(), $validator->validated(), WebPaymentOperation::DISCOUNT)) {
+                    return;
+                }
 
                 self::checkAgainstBalance($validator, $subscription, $subscription->balance(), $this->input('method'), $this->input('value'));
             },
@@ -105,7 +105,7 @@ class StoreSubscriptionDiscountRequest extends FormRequest
      */
     public function messages(): array
     {
-        return self::discountMessages();
+        return [...self::discountMessages(), ...WebPaymentOperation::operationTokenMessages()];
     }
 
     /**

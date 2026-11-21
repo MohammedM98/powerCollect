@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Subscription;
 use App\Support\Ledger\LedgerAmounts;
 use App\Support\Ledger\Money;
+use App\Support\Ledger\WebPaymentOperation;
 use Brick\Math\BigDecimal;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -28,7 +29,7 @@ class StoreSubscriptionClearingRequest extends FormRequest
      */
     public function rules(): array
     {
-        return self::clearingRules();
+        return [...self::clearingRules(), ...WebPaymentOperation::operationTokenRules()];
     }
 
     /**
@@ -57,12 +58,11 @@ class StoreSubscriptionClearingRequest extends FormRequest
     {
         return [
             function (Validator $validator): void {
-                if ($validator->errors()->isNotEmpty()) {
-                    return;
-                }
-
                 /** @var Subscription $subscription */
                 $subscription = $this->route('subscription');
+                if ($validator->errors()->isNotEmpty() || app(WebPaymentOperation::class)->replay($subscription, $this->user(), $validator->validated(), WebPaymentOperation::CLEARING)) {
+                    return;
+                }
 
                 self::checkAgainstBalance($validator, $subscription->balance(), $this->input('amount'), $this->boolean('confirm_over_balance'));
             },
@@ -95,7 +95,7 @@ class StoreSubscriptionClearingRequest extends FormRequest
      */
     public function messages(): array
     {
-        return self::clearingMessages();
+        return [...self::clearingMessages(), ...WebPaymentOperation::operationTokenMessages()];
     }
 
     /**
