@@ -1,82 +1,126 @@
-import { Head, useForm, usePage } from '@inertiajs/react';
+import { useState } from 'react';
+import { Alert, Button, Chip, Description, FieldError, InputGroup, Label, Popover, Spinner, TextField } from '@heroui/react';
+import { Form, Head, usePage } from '@inertiajs/react';
+import Icon from '@/Components/Icon';
+import { CheckBox } from '@/Components/UI';
 import GuestLayout from '@/Layouts/GuestLayout';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PasswordInput from '@/Components/PasswordInput';
-import { CheckBox, PrimaryKey, TextInput } from '@/Components/UI';
 
 /**
- * The sign-in fields take their direction from what is typed (dir="auto") but
- * keep to the right edge like the Arabic form around them. A logical side
- * would follow the typed text instead, so this side is physical on purpose.
+ * The sign-in form, all HeroUI: the username and password fields (the
+ * password with a show key and a Caps Lock warning), «remember me» (Laravel's
+ * remember token), a note on a forgotten password, and the sign-in key.
+ * A refused sign-in (wrong details, a stopped account, too many tries) shows
+ * above the fields; the password is cleared for the next try.
  */
-// eslint-disable-next-line local/spacing-scale -- deliberate physical side, see above.
-const SIGN_IN_FIELD = 'mt-2 block h-11 w-full text-right';
-
 export default function Login() {
     const { branchContext } = usePage().props;
-    const { data, setData, post, processing, errors, reset } = useForm({
-        username: '',
-        password: '',
-        remember: false,
-    });
+    const [remember, setRemember] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [capsLock, setCapsLock] = useState(false);
+    // A new key empties the password field after a refused try.
+    const [attempt, setAttempt] = useState(0);
 
-    function submit(e) {
-        e.preventDefault();
-        post('/login', {
-            onFinish: () => reset('password'),
-        });
+    function readCapsLock(event) {
+        setCapsLock(Boolean(event.getModifierState?.('CapsLock')));
     }
 
     return (
         <GuestLayout>
             <Head title="تسجيل الدخول" />
 
-            {branchContext?.current && <p className="gl-pill gl-info self-center">تسجيل الدخول إلى {branchContext.current.name}</p>}
+            {branchContext?.current && (
+                <Chip className="gl-auth-branch">تسجيل الدخول إلى {branchContext.current.name}</Chip>
+            )}
 
-            <form onSubmit={submit} className="flex flex-col gap-4">
-                <div>
-                    <InputLabel htmlFor="username" value="اسم المستخدم" />
-                    <TextInput
-                        id="username"
-                        className={SIGN_IN_FIELD}
-                        dir="auto"
-                        value={data.username}
-                        autoFocus
-                        autoComplete="username"
-                        onChange={(e) => setData('username', e.target.value)}
-                    />
-                    <InputError message={errors.username} className="mt-2" />
-                </div>
+            <Form action="/login" method="post" disableWhileProcessing data-errors-inline className="gl-auth-form" onError={() => setAttempt((count) => count + 1)}>
+                {({ errors, processing, clearErrors }) => (
+                    <>
+                        {errors.username && (
+                            <Alert status="danger" className="gl-auth-alert">
+                                <Alert.Indicator />
+                                <Alert.Content>
+                                    <Alert.Title>لم يتم الدخول</Alert.Title>
+                                    <Alert.Description>{errors.username}</Alert.Description>
+                                </Alert.Content>
+                            </Alert>
+                        )}
 
-                <div>
-                    <InputLabel htmlFor="password" value="كلمة المرور" />
-                    <PasswordInput
-                        id="password"
-                        className={SIGN_IN_FIELD}
-                        value={data.password}
-                        autoComplete="current-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                    />
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
+                        <TextField name="username" autoComplete="username" onChange={() => clearErrors('username')} className="gl-auth-field">
+                            <Label>اسم المستخدم</Label>
+                            <InputGroup className="gl-auth-input">
+                                <InputGroup.Prefix>
+                                    <Icon name="user" className="h-[18px] w-[18px]" />
+                                </InputGroup.Prefix>
+                                {/* eslint-disable-next-line local/spacing-scale -- deliberate physical side: the name takes its own direction but keeps to the form's right edge. */}
+                                <InputGroup.Input id="username" dir="auto" autoFocus={attempt === 0} spellCheck={false} autoCapitalize="none" className="text-right" />
+                            </InputGroup>
+                        </TextField>
 
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                    <label className="flex items-center gap-3 font-semibold">
-                        <CheckBox
-                            checked={data.remember}
-                            onChange={(e) => setData('remember', e.target.checked)}
-                            aria-label="تذكّرني على هذا الجهاز"
-                        />
-                        تذكّرني على هذا الجهاز
-                    </label>
-                    <span className="gl-sub">نسيت كلمة المرور؟ اطلبها من مدير النظام</span>
-                </div>
+                        <TextField
+                            key={attempt}
+                            name="password"
+                            type={showPassword ? 'text' : 'password'}
+                            autoComplete="current-password"
+                            isInvalid={Boolean(errors.password)}
+                            onChange={() => clearErrors('password')}
+                            className="gl-auth-field"
+                        >
+                            <div className="gl-auth-label-row">
+                                <Label>كلمة المرور</Label>
+                                <Popover>
+                                    <Button variant="ghost" size="sm" className="gl-auth-forgot">
+                                        نسيت كلمة المرور؟
+                                    </Button>
+                                    <Popover.Content placement="bottom end" className="gl-auth-pop dark">
+                                        <Popover.Dialog aria-label="نسيت كلمة المرور">
+                                            <Popover.Heading className="gl-auth-pop-title">إعادة تعيين كلمة المرور</Popover.Heading>
+                                            <p>يعيّن مدير النظام كلمة مرور جديدة لك من صفحة المستخدمين. تواصل معه، ثم ادخل بها وغيّرها من ملفك الشخصي.</p>
+                                        </Popover.Dialog>
+                                    </Popover.Content>
+                                </Popover>
+                            </div>
+                            <InputGroup className="gl-auth-input">
+                                <InputGroup.Prefix>
+                                    <Icon name="lock" className="h-[18px] w-[18px]" />
+                                </InputGroup.Prefix>
+                                <InputGroup.Input id="password" autoFocus={attempt > 0} onKeyDown={readCapsLock} onKeyUp={readCapsLock} onBlur={() => setCapsLock(false)} />
+                                <InputGroup.Suffix>
+                                    <Button
+                                        isIconOnly
+                                        variant="ghost"
+                                        size="sm"
+                                        excludeFromTabOrder
+                                        onPress={() => setShowPassword((shown) => !shown)}
+                                        aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                                        className="gl-auth-eye"
+                                    >
+                                        <Icon name={showPassword ? 'eye-off' : 'eye'} className="h-[18px] w-[18px]" />
+                                    </Button>
+                                </InputGroup.Suffix>
+                            </InputGroup>
+                            {capsLock && (
+                                <Description className="gl-auth-caps">
+                                    <Icon name="warning" className="h-4 w-4" />
+                                    زر الأحرف الكبيرة (Caps Lock) مفعّل
+                                </Description>
+                            )}
+                            <FieldError>{errors.password}</FieldError>
+                        </TextField>
 
-                <PrimaryKey disabled={processing} className="gl-lg mt-2 w-full">
-                    {processing ? <><span className="gl-spin" aria-hidden="true" />جارٍ الدخول</> : 'تسجيل الدخول'}
-                </PrimaryKey>
-            </form>
+                        <div className="gl-auth-remember">
+                            <CheckBox name="remember" value="1" checked={remember} onChange={(event) => setRemember(event.target.checked)}>
+                                تذكّرني على هذا الجهاز
+                            </CheckBox>
+                            <p>يبقى دخولك محفوظًا على هذا الجهاز حتى تسجّل الخروج.</p>
+                        </div>
+
+                        {/* HeroUI's Button in the stage's white look; the kit's PrimaryKey would take the app's primary look. */}
+                        <Button type="submit" size="lg" isPending={processing} className="gl-auth-submit">
+                            {processing ? <><Spinner size="sm" color="current" />جارٍ الدخول</> : 'تسجيل الدخول'}
+                        </Button>
+                    </>
+                )}
+            </Form>
         </GuestLayout>
     );
 }
