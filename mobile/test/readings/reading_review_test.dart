@@ -37,6 +37,13 @@ class ReviewApi extends ApiClient {
         'week_end': '2026-10-22',
         'can_record_readings_now': true,
       };
+  // This fake answers one reading at a time, unless a subclass answers batches.
+  bool oneByOne = true;
+  @override
+  Future<Map<String, Object>> sendReadings(
+          List<Map<String, dynamic>> readings) =>
+      oneByOne ? sendReadingsOneByOne(readings) : super.sendReadings(readings);
+
   @override
   Future<Map<String, dynamic>> sendReading(Map<String, dynamic> reading) async {
     requests.add(Map.from(reading));

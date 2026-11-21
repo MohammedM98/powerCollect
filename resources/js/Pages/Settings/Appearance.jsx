@@ -73,9 +73,8 @@ export default function Appearance({ profile, isImported, options, presets, them
         colors: data.colors,
         printColor: isHex(data.colors.print) ? data.colors.print : isHex(data.colors.primary) ? data.colors.primary : shared.printColor,
         design: data.design,
-        animatedLogo: !fileUrls.main && shared.animatedLogo,
         logos: { main: mainLogo, light: lightLogo, icon: iconLogo, print: printLogo },
-    }), [data, shared, fileUrls.main, mainLogo, lightLogo, iconLogo, printLogo]);
+    }), [data, shared, mainLogo, lightLogo, iconLogo, printLogo]);
 
     useEffect(() => setBrandPreview(tried), [tried]);
     useEffect(() => () => setBrandPreview(null), []);

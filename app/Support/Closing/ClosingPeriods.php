@@ -81,7 +81,10 @@ class ClosingPeriods
      */
     public function dayEnd(CarbonInterface|string $day): CarbonImmutable
     {
-        return self::date($day)->addMinutes($this->setting->cutoffMinutes());
+        // On the wall clock, so the two days the clocks change still end at the cut-off.
+        $minutes = $this->setting->cutoffMinutes();
+
+        return $minutes === 24 * 60 ? self::date($day)->addDay() : self::date($day)->setTime(intdiv($minutes, 60), $minutes % 60);
     }
 
     /**

@@ -128,15 +128,19 @@ class TransactionAuditPage
         return [
             ...self::eventBase('amendment', $amendment->id, $amendment->created_at, $amendment->user, $line->subscription),
             'lines' => [self::lineSummary($line->type, $line->amount, LinePresenter::displayVoucherNumber($line))],
-            'changes' => collect($amendment->changes)->map(fn (array $values, string $field): array => [
-                'label' => StatementBuilder::amendmentFieldLabel($field),
-                'from' => $values[0] ?? null,
-                'to' => $values[1] ?? null,
-            ])->values()->all(),
+            'changes' => collect($amendment->changes)
+                ->sortBy(fn (array $values, string $field): int => StatementBuilder::fieldPosition(['amount', ...SubscriptionTransaction::AMENDABLE_FIELDS], $field))
+                ->map(fn (array $values, string $field): array => [
+                    'label' => StatementBuilder::amendmentFieldLabel($field),
+                    'from' => $values[0] ?? null,
+                    'to' => $values[1] ?? null,
+                ])->values()->all(),
             'reason' => $amendment->reason,
             'notes' => null,
-            // Details only: an amount changes by a correction, never in place.
-            'impact' => '0',
+            // Most amendments change details only; editing the last invoice changes its amount in place.
+            'impact' => isset($amendment->changes['amount'])
+                ? LedgerAmounts::formatAmount(Money::subtract($amendment->changes['amount'][1], $amendment->changes['amount'][0]))
+                : '0',
             ...self::sensitivity(false, $line),
         ];
     }

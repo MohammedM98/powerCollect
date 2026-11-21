@@ -7,6 +7,7 @@ use App\Models\CurrencyRate;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Support\Ledger\Money;
+use App\Support\Ledger\PaymentReferences;
 use Brick\Math\BigDecimal;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -85,6 +86,16 @@ class CorrectSubscriptionTransactionRequest extends FormRequest
         return [
             function (Validator $validator): void {
                 if ($validator->errors()->isNotEmpty()) {
+                    return;
+                }
+
+                // A share of a split transfer stays a bank transfer with the transfer's reference: corrected
+                // out of the transfer, it would leave a cancelled share the transfer's audit can never approve.
+                if ($this->line()->isPayment() && $this->line()->split_payment_id !== null
+                    && ($this->input('payment_method') !== 'bank_transfer'
+                        || PaymentReferences::normalizeReference($this->input('reference_number')) !== PaymentReferences::normalizeReference($this->line()->reference_number))) {
+                    $validator->errors()->add('reference_number', 'هذه حصة من حوالة مقسّمة، فتبقى حوالة بنفس رقم المرجع. لتغيير المرجع أو طريقة الدفع عدّل الحوالة المقسّمة كاملة.');
+
                     return;
                 }
 

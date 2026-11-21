@@ -23,6 +23,7 @@ export default function Create({
     channels,
     smsDeliversMessages,
     templates,
+    canManageTemplates = false,
     placeholders,
     weekOptions,
     weekBranchId,
@@ -278,6 +279,7 @@ export default function Create({
                         templateId={templateId}
                         templateName={templateName}
                         updateTemplate={updateTemplate}
+                        canManageTemplates={canManageTemplates}
                     />
 
                     <Card icon="send" title="طريقة الإرسال">

@@ -17,7 +17,7 @@ const sectionButton = () => screen.getByRole('button', { name: new RegExp(admini
 
 describe('the top bar', () => {
     it.each([
-        [undefined, 'سوبر باور'],
+        [undefined, 'مصعب العجل وأحمد الكفارنة'],
         [{ name: 'شركة النور', logos: { main: '/logo.svg', light: '/logo.svg' } }, 'شركة النور'],
     ])('displays the company identity %j as %s', (brand, name) => {
         renderBar({}, brand);

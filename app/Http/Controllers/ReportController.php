@@ -10,6 +10,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Support\Branches\BranchScope;
 use App\Support\Closing\ClosingPeriods;
+use App\Support\Exports\CsvCells;
 use App\Support\Queries\DataTableFilters;
 use App\Support\Reports\BranchReport;
 use App\Support\Reports\DebtAging;
@@ -194,11 +195,11 @@ class ReportController extends Controller
 
             foreach ($lines->lazy(500) as $line) {
                 $row = FinancialReportPage::row($line);
-                fputcsv($file, [
+                fputcsv($file, CsvCells::safe([
                     $row['day'], $row['time'], $row['branchName'], $row['voucherNumber'], $row['subscriptionName'], $row['accountNumber'], $row['meterBoxNumber'],
                     $row['typeLabel'], $row['description'], $row['methodLabel'], $row['account'], $row['currency'], $row['currencyAmount'],
                     $row['isCredit'] ? '' : $row['amount'], $row['isCredit'] ? $row['amount'] : '', $row['recordedBy'], $row['isCancelled'] ? 'نعم' : '',
-                ]);
+                ]));
             }
 
             fclose($file);

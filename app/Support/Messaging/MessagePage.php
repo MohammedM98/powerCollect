@@ -16,6 +16,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionMessage;
 use App\Models\User;
 use App\Notifications\ActionCompleted;
+use App\Support\Branches\BranchDomainContext;
 use App\Support\Queries\DataTableFilters;
 use App\Support\Readings\ReadingWeeks;
 use App\Support\Reports\DailySeries;
@@ -45,6 +46,8 @@ class MessagePage
             'channels' => MessageChannel::options(),
             'smsDeliversMessages' => app(SmsGateway::class)->deliversMessages(),
             'templates' => MessageTemplate::query()->orderBy('name')->get(['id', 'name', 'kind', 'body']),
+            // Shared company data is changed from the central site only (EnsureBranchDomainAccess).
+            'canManageTemplates' => BranchDomainContext::id() === null && $actor->can('create', MessageTemplate::class),
             'placeholders' => collect(MessageKind::composable())
                 ->mapWithKeys(fn (MessageKind $kind) => [$kind->value => MessageComposer::placeholdersFor($kind)]),
             'weekOptions' => ReadingWeeks::recentWeekOptionsFor($actor),

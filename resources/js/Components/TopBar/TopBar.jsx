@@ -89,7 +89,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                 <div className="tn-side-edge" aria-hidden="true" />
                 <aside className="tn-side" aria-label="الشريط الجانبي">
                     <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-side-logo" aria-label={`${companyName}، الصفحة الرئيسية`}>
-                        <BrandLogo alt="" markSize={40} className="h-10 w-auto max-w-[56px] object-contain" />
+                        <BrandLogo alt="" className="h-10 w-auto max-w-[56px] object-contain" />
                     </Link>
                     <Button data-raw="" variant="ghost"
                         className="tn-side-pin"
@@ -215,7 +215,7 @@ export default function TopBar({ groups, badges, where, onOpenPalette, onOpenDra
                             <Icon name="layout-side" />
                         </Button>
                         <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="tn-brand" data-tour="brand" aria-label={`${companyName}، ${branchLabel ?? tagline}، الصفحة الرئيسية`}>
-                            <span className="tn-top-logo"><BrandLogo alt="" markSize={38} /></span>
+                            <span className="tn-top-logo"><BrandLogo alt="" /></span>
                             <span className="tn-brand-divider" aria-hidden="true" />
                             <span className="tn-brand-text">
                                 <span className="tn-brand-name" dir="auto">{companyName}</span>
