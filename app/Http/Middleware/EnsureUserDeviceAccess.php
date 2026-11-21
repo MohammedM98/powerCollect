@@ -18,7 +18,7 @@ class EnsureUserDeviceAccess
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() !== null && $request->hasSession() && $request->session()->has(Auth::guard('web')->getName()) && ! $request->routeIs('logout')) {
+        if ($request->user() !== null && $request->hasSession() && $request->session()->has(Auth::guard('web')->getName()) && ! $request->routeIs('logout', 'field.logout')) {
             try {
                 app(UserDeviceAccess::class)->claimWeb($request, $request->user());
             } catch (ValidationException $error) {
