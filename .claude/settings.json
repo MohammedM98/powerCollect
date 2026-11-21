@@ -1,22 +1,56 @@
 {
-    "hooks": {
-        "SessionStart": [{
-            "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/automation/hook.mjs\"", "timeout": 10 }]
-        }],
-        "PostToolUse": [{
-            "matcher": "Edit|Write",
-            "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/automation/hook.mjs\"", "timeout": 10 }]
-        }],
-        "Stop": [{
-            "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/automation/hook.mjs\"", "timeout": 180 }]
-        }]
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/automation/hook.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/automation/hook.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/automation/hook.mjs\"",
+            "timeout": 180
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "hyperframes@hyperframes": true,
+    "unslop@heydamir": true
+  },
+  "extraKnownMarketplaces": {
+    "hyperframes": {
+      "source": {
+        "source": "github",
+        "repo": "heygen-com/hyperframes"
+      }
     },
-    "extraKnownMarketplaces": {
-        "hyperframes": {
-            "source": { "source": "github", "repo": "heygen-com/hyperframes" }
-        }
-    },
-    "enabledPlugins": {
-        "hyperframes@hyperframes": true
+    "heydamir": {
+      "source": {
+        "source": "github",
+        "repo": "heydamir/unslop"
+      }
     }
+  }
 }

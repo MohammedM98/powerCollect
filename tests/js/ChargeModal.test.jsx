@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import ChargeModal from '@/Pages/Subscriptions/ChargeModal';
-import { submissions } from './inertia.jsx';
+import { rejectNext, submissions } from './inertia.jsx';
 
 const chargeTypes = [
     { value: 'penalty', label: 'غرامة مالية', usualAmount: null, needsReason: true },
@@ -34,6 +34,7 @@ describe('ChargeModal', () => {
         expect(submissions).toHaveLength(1);
         expect(submissions[0]).toMatchObject({ method: 'post', url: '/subscriptions/12/charges' });
         expect(submissions[0].data).toMatchObject({ type: 'disconnection_fee', amount: '20' });
+        expect(submissions[0].data.operation_token).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('will not charge a penalty without its reason', async () => {
@@ -88,5 +89,36 @@ describe('ChargeModal', () => {
 
         await user.type(screen.getByLabelText('مبلغ التحميل'), '25');
         expect(within(ledger).getAllByText(/105/).length).toBeGreaterThan(0);
+    });
+
+    it('shows the server\'s refusal and stays open', async () => {
+        const user = userEvent.setup();
+        open();
+        rejectNext({ amount: 'المبلغ أكبر من الحد المسموح للتحميل.' });
+
+        await user.click(screen.getByRole('radio', { name: /رسوم قطع الخدمة/ }));
+        await user.click(screen.getByRole('button', { name: /إضافة 20/ }));
+        await confirm(user);
+
+        expect(submissions).toHaveLength(1);
+        expect(screen.getByText('المبلغ أكبر من الحد المسموح للتحميل.')).toBeTruthy();
+        expect(screen.getByLabelText('مبلغ التحميل').value).toBe('20');
+        expect(screen.queryByText('أُضيف التحميل')).toBeNull();
+    });
+
+    it('sends a refused charge again with the same key, so the server records it once', async () => {
+        const user = userEvent.setup();
+        open();
+        rejectNext({ amount: 'المبلغ أكبر من الحد المسموح للتحميل.' });
+
+        await user.click(screen.getByRole('radio', { name: /رسوم قطع الخدمة/ }));
+        await user.click(screen.getByRole('button', { name: /إضافة 20/ }));
+        await confirm(user);
+        await screen.findByText('المبلغ أكبر من الحد المسموح للتحميل.');
+        await user.click(screen.getByRole('button', { name: /إضافة 20/ }));
+        await confirm(user);
+
+        expect(submissions).toHaveLength(2);
+        expect(submissions[1].data.operation_token).toBe(submissions[0].data.operation_token);
     });
 });

@@ -26,14 +26,14 @@ class MobileBrandTest extends TestCase
         $required = Yaml::parseFile(__DIR__.'/mobile-api-contract.yaml')['components']['schemas']['BrandColors']['required'];
 
         $response = $this->getJson(route('mobile.v1.brand'))->assertOk()
-            ->assertJsonPath('company.name', 'سوبر باور')
-            ->assertJsonPath('logos.main', url('/images/logo-superpower.svg'))
+            ->assertJsonPath('company.name', 'مصعب العجل وأحمد الكفارنة')
+            ->assertJsonPath('logos.main', url('/images/logo-ma.svg'))
             ->assertJsonPath('fonts.body', 'zain')
-            // theme.css's own values: the identity's teal, the charcoal main button, the graphite page.
-            ->assertJsonPath('colors.light.brand', '#0F766E')
+            // The MA identity's orange, with theme.css's charcoal main button and graphite page.
+            ->assertJsonPath('colors.light.brand', '#CA4E05')
             ->assertJsonPath('colors.light.action', '#24272E')
             ->assertJsonPath('colors.light.page', '#ECEEF1')
-            ->assertJsonPath('colors.dark.brand', '#5ED6C2')
+            ->assertJsonPath('colors.dark.brand', '#DC642E')
             ->assertJsonPath('colors.dark.surface', '#15181D');
 
         foreach (['light', 'dark'] as $theme) {

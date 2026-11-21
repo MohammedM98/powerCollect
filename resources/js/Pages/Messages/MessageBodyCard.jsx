@@ -27,6 +27,7 @@ export default function MessageBodyCard({
     templateId,
     templateName,
     updateTemplate,
+    canManageTemplates,
 }) {
     return (
         <Card icon="note" title="نص الرسالة" description="اضغط على أي معلومة لإضافتها، وتُكتب لكل مشترك بقيمته.">
@@ -41,13 +42,13 @@ export default function MessageBodyCard({
                         ))}
                     </ChoiceSelect>
                 </Field>
-                {selectedTemplate && selectedTemplate.body !== body && (
+                {canManageTemplates && selectedTemplate && selectedTemplate.body !== body && (
                     <SecondaryKey onClick={updateTemplate}>
                         <Icon name="check" className="h-4 w-4" />
                         حفظ التعديل على القالب
                     </SecondaryKey>
                 )}
-                {selectedTemplate && (
+                {canManageTemplates && selectedTemplate && (
                     <SecondaryKey
                         onClick={() => setConfirmingTemplateDelete(true)}
                         aria-label={`حذف القالب «${selectedTemplate.name}»`}
@@ -58,7 +59,7 @@ export default function MessageBodyCard({
                         <span className="hidden sm:inline">حذف</span>
                     </SecondaryKey>
                 )}
-                {templateName === null && (
+                {canManageTemplates && templateName === null && (
                     <SecondaryKey onClick={() => setTemplateName('')} disabled={body.trim() === ''}>
                         <Icon name="plus" className="h-4 w-4" />
                         حفظ كقالب جديد

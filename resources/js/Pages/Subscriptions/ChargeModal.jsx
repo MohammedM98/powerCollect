@@ -53,7 +53,7 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
         correcting,
         correcting
             ? { type: correcting.recorded.type, amount: correcting.recorded.amount, notes: correcting.recorded.notes, override_minimum_amount: false, ...EMPTY_CORRECTION }
-            : { type: chargeTypes[0]?.value ?? '', amount: '', notes: '', override_minimum_amount: false },
+            : { operation_token: crypto.randomUUID(), type: chargeTypes[0]?.value ?? '', amount: '', notes: '', override_minimum_amount: false },
     );
     const { data, setData, errors } = form;
     const [discarding, setDiscarding] = useState(false);
@@ -133,6 +133,12 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
             onSuccess: () => {
                 setReceipt(recorded);
                 form.resetAndClearErrors();
+                // A new key for the next charge; a retry of this one kept the old key and got this charge back.
+                if (!correcting) {
+                    const operationToken = crypto.randomUUID();
+                    form.setDefaults('operation_token', operationToken);
+                    form.setData('operation_token', operationToken);
+                }
             },
         });
     }
@@ -270,6 +276,7 @@ export default function ChargeModal({ show, onClose, subscription, balance, char
                                 </div>
                                 <InputError message={errors.amount} className="mt-2" />
                                 <InputError message={errors.notes} className="mt-2" />
+                                <InputError message={errors.operation_token} className="mt-2" />
                                 {amount > LARGE_CHARGE && (
                                     <FieldWarning>مبلغ كبير. تأكد أنه صحيح قبل الحفظ، فهو يظهر في كشف حساب المشترك.</FieldWarning>
                                 )}

@@ -7,8 +7,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const suite = process.argv[2] === '--reports' ? 'reports.cjs' : process.argv[2] === '--print' ? 'print-templates.cjs' : process.argv[2] === '--distribution' ? 'reading-distribution.cjs' : process.argv[2] === '--readings' ? 'weekly-readings.cjs' : process.argv[2] === '--branches' ? 'branch-defaults.cjs' : process.argv[2] === '--meter-boxes' ? 'meter-boxes.cjs' : process.argv[2] === '--subscriber-navigation' ? 'subscriber-navigation.cjs' : process.argv[2] === '--statement-actions' ? 'statement-actions.cjs' : 'company-workflow.cjs';
-if (process.argv.slice(2).some((argument) => !['--reports', '--print', '--distribution', '--readings', '--branches', '--meter-boxes', '--subscriber-navigation', '--statement-actions'].includes(argument)) || process.argv.length > 3) throw new Error('Usage: node tests/Browser/run.mjs [--reports|--print|--distribution|--readings|--branches|--meter-boxes|--subscriber-navigation|--statement-actions]');
+const suite = process.argv[2] === '--reports' ? 'reports.cjs' : process.argv[2] === '--print' ? 'print-templates.cjs' : process.argv[2] === '--distribution' ? 'reading-distribution.cjs' : process.argv[2] === '--readings' ? 'weekly-readings.cjs' : process.argv[2] === '--branches' ? 'branch-defaults.cjs' : process.argv[2] === '--meter-boxes' ? 'meter-boxes.cjs' : process.argv[2] === '--subscriber-navigation' ? 'subscriber-navigation.cjs' : process.argv[2] === '--statement-actions' ? 'statement-actions.cjs' : process.argv[2] === '--access' ? 'access-control.cjs' : 'company-workflow.cjs';
+if (process.argv.slice(2).some((argument) => !['--reports', '--print', '--distribution', '--readings', '--branches', '--meter-boxes', '--subscriber-navigation', '--statement-actions', '--access'].includes(argument)) || process.argv.length > 3) throw new Error('Usage: node tests/Browser/run.mjs [--reports|--print|--distribution|--readings|--branches|--meter-boxes|--subscriber-navigation|--statement-actions|--access]');
 const work = mkdtempSync(path.join(tmpdir(), 'powercollect-browser-'));
 const output = path.join(root, 'storage/logs/browser-tests', path.basename(work));
 mkdirSync(output, { recursive: true });
@@ -87,6 +87,9 @@ try {
     }
     if (['meter-boxes.cjs', 'subscriber-navigation.cjs'].includes(suite)) {
         await run('php', ['artisan', 'tinker', '--no-interaction', '--execute', 'require base_path("tests/Browser/meter-boxes-fixture.php");']);
+    }
+    if (suite === 'access-control.cjs') {
+        await run('php', ['artisan', 'tinker', '--no-interaction', '--execute', 'require base_path("tests/Browser/access-control-fixture.php");']);
     }
     if (suite === 'weekly-readings.cjs') {
         await run('php', ['artisan', 'tinker', '--no-interaction', '--execute', 'require base_path("tests/Browser/weekly-readings-fixture.php");']);

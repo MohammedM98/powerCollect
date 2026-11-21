@@ -355,7 +355,7 @@ function ReceiptPreview({ subscription, balance, inShekels, methodText, owed }) 
     return (
         <div className="gl-co-paper">
             <header className="gl-co-paper-brand">
-                <BrandLogo alt="" markSize={34} className="h-9 w-auto max-w-[70px] object-contain" />
+                <BrandLogo alt="" className="h-9 w-auto max-w-[70px] object-contain" />
                 <span className="min-w-0">
                     <b>{brand.name}</b>
                     {brand.tagline && <small>{brand.tagline}</small>}

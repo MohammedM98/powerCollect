@@ -94,7 +94,7 @@ class Brand
     /**
      * What every page gets: the names, each logo's address and the colour printouts are drawn in.
      *
-     * @return array{name: string, nameEnglish: ?string, shortName: string, tagline: ?string, logos: array<string, string>, animatedLogo: bool, printColor: string, primaryColor: ?string, colors: array<string, ?string>, design: array<string, string>, stylesheet: ?string}
+     * @return array{name: string, nameEnglish: ?string, shortName: string, tagline: ?string, logos: array<string, string>, printColor: string, primaryColor: ?string, colors: array<string, ?string>, design: array<string, string>, stylesheet: ?string}
      */
     public function forPage(): array
     {
@@ -106,8 +106,6 @@ class Brand
             'shortName' => $profile['company']['shortName'] ?? $profile['company']['name'],
             'tagline' => $profile['company']['tagline'],
             'logos' => array_combine(self::LOGOS, array_map($this->logoUrl(...), self::LOGOS)),
-            // The sign-in screen draws the default logo in with its own animation; another company's logo fades in.
-            'animatedLogo' => $profile['logos']['main'] === self::defaults()['logos']['main'],
             'printColor' => $this->printColor(),
             'primaryColor' => $profile['colors']['primary'],
             'colors' => $profile['colors'],

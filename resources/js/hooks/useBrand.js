@@ -10,14 +10,13 @@ const DEFAULT_BRAND = {
     shortName: defaults.company.shortName,
     tagline: defaults.company.tagline,
     logos: { main: defaults.logos.main, light: defaults.logos.main, icon: defaults.logos.icon, print: defaults.logos.main },
-    animatedLogo: true,
     printColor: defaults.colors.print,
     primaryColor: defaults.colors.primary,
     design: defaults.design,
 };
 
-/** theme.css's own colour (the default identity's), which needs no shades of its own. */
-export const THEME_PRIMARY = defaults.colors.primary;
+/** theme.css's own colour, which needs no shades of its own (Brand::THEME_PRIMARY on the server). */
+export const THEME_PRIMARY = '#20B2A0';
 
 function useSharedBrand() {
     try {
@@ -30,7 +29,7 @@ function useSharedBrand() {
 /**
  * The company this copy of the application is for (app/Support/Brand.php):
  * `name`, `nameEnglish`, `shortName`, `tagline`, `logos` (`main`, `light`,
- * `icon`, `print`, each falling back to the main one), `animatedLogo`,
+ * `icon`, `print`, each falling back to the main one),
  * `printColor` (the lines on a printout), `primaryColor` and `design` (the
  * layout and components, see BrandDesign). While the appearance screen
  * tries an identity on, that one (lib/brandPreview.js). Drawn outside an

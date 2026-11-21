@@ -56,6 +56,7 @@ describe('SplitPaymentForm', () => {
         expect(sent[0]).toMatchObject({ method: 'post', url: '/payments/split' });
         expect(sent[0].data).toMatchObject({ total_amount: '200', bank_name: 'بنك فلسطين', sender_name: 'سامي أحمد', reference_number: 'FT-200' });
         expect(sent[0].data.parts).toEqual([{ subscription_id: 1, amount: '120' }, { subscription_id: 2, amount: '80' }]);
+        expect(sent[0].data.operation_token).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('cannot be saved while the shares do not add up to the transfer', async () => {

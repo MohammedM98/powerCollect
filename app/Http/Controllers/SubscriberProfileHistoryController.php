@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SubscriberProfile;
 use App\Models\SubscriberProfileChange;
 use App\Models\Subscription;
+use App\Support\Ledger\StatementBuilder;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -27,7 +29,8 @@ class SubscriberProfileHistoryController extends Controller
                 'at' => $change->created_at->timezone(config('app.business_timezone'))->format('d/m/Y H:i'),
                 'userName' => $change->user?->name,
                 'branchName' => $change->branch?->name,
-                'changes' => collect($change->changes)->map(fn (array $values, string $field): array => [
+                // In the form's order, not the stored one: MySQL keeps a JSON object's keys in its own order.
+                'changes' => collect($change->changes)->sortBy(fn (array $values, string $field): int => StatementBuilder::fieldPosition(SubscriberProfile::PERSONAL_FIELDS, $field))->map(fn (array $values, string $field): array => [
                     'field' => $field,
                     'label' => isset(SubscriberProfileChange::LABELS[$field]) ? __(SubscriberProfileChange::LABELS[$field]) : $field,
                     'from' => $values['from'],

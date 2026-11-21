@@ -12,8 +12,10 @@ use App\Support\Ledger\LinePresenter;
 use App\Support\Ledger\RecordDiscount;
 use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
 use Illuminate\Validation\ValidationException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
 
@@ -38,7 +40,7 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
 
     public function test_a_charge_raises_the_balance_and_shows_its_type_and_details_on_the_statement(): void
     {
-        $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), ['type' => 'penalty', 'amount' => '50', 'notes' => 'تأخر في السداد'])
+        $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'type' => 'penalty', 'amount' => '50', 'notes' => 'تأخر في السداد'])
             ->assertSessionHasNoErrors()
             ->assertSessionHas('status', 'charge-recorded')
             ->assertRedirect(route('subscriptions.statement', $this->subscription));
@@ -63,9 +65,9 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
 
     public function test_a_penalty_must_say_why_and_the_form_suggests_the_usual_disconnection_fee(): void
     {
-        $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), ['type' => 'penalty', 'amount' => '50', 'notes' => ''])
+        $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'type' => 'penalty', 'amount' => '50', 'notes' => ''])
             ->assertSessionHasErrors(['notes' => 'اكتب سبب الغرامة؛ يظهر في كشف حساب المشترك.']);
-        $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), ['type' => 'disconnection_fee', 'amount' => '50'])
+        $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'type' => 'disconnection_fee', 'amount' => '50'])
             ->assertSessionHasNoErrors();
 
         $this->actingAs($this->branchAdmin)
@@ -82,6 +84,7 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
     {
         $this->subscription->update(['minimum_charge' => '12.50']);
         $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), [
+            'operation_token' => (string) Str::uuid(),
             'type' => 'minimum_charge', 'amount' => '12.5', 'notes' => 'تحميل يدوي بطلب الإدارة',
         ])->assertSessionHasNoErrors()->assertSessionHas('status', 'charge-recorded');
 
@@ -90,12 +93,12 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
             'type' => 'minimum_charge', 'amount' => '12.50', 'notes' => 'تحميل يدوي بطلب الإدارة',
         ]);
         $this->assertDatabaseCount('meter_readings', 0);
-        $this->assertSame(12.5, $this->subscription->fresh()->minimum_charge);
+        $this->assertSame('12.50', $this->subscription->fresh()->minimum_charge);
         $this->assertSame('charge-recorded', $this->branchAdmin->notifications()->sole()->data['action']);
         $this->actingAs($this->branchAdmin)->get(route('subscriptions.statement', $this->subscription))->assertInertia(fn ($page) => $page
             ->where('entries.0.typeLabel', 'تحميل الحد الأدنى على المشترك')
             ->where('entries.0.isCredit', false)->where('summary.balance', '12.50')->where('summary.charged', '12.50')
-            ->where('subscription.minimumPayment', '12.5'));
+            ->where('subscription.minimumPayment', '12.50'));
     }
 
     public function test_a_minimum_charge_uses_the_breakers_minimum_when_no_subscriber_override_exists(): void
@@ -103,6 +106,7 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
         $breaker = CircuitBreaker::factory()->create(['minimum_payment' => '18.75']);
         $this->subscription->update(['minimum_charge' => null, 'circuit_breaker_id' => $breaker->id]);
         $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), [
+            'operation_token' => (string) Str::uuid(),
             'type' => 'minimum_charge', 'amount' => '18.75',
         ])->assertSessionHasNoErrors();
         $this->assertSame('18.75', $this->latestTransaction()->amount);
@@ -112,6 +116,7 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
     {
         $this->subscription->update(['minimum_charge' => '25']);
         $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), [
+            'operation_token' => (string) Str::uuid(),
             'type' => 'minimum_charge', 'amount' => '20',
         ])->assertSessionHasErrors(['amount' => 'يجب أن يساوي المبلغ الحد الأدنى الحالي للمشترك. حدّث الصفحة وحاول مجددًا.']);
         $this->assertDatabaseCount('subscription_transactions', 0);
@@ -122,6 +127,7 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
     {
         $this->subscription->update(['minimum_charge' => '0']);
         $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), [
+            'operation_token' => (string) Str::uuid(),
             'type' => 'minimum_charge', 'amount' => '10',
         ])->assertSessionHasErrors(['amount' => 'لا يوجد حد أدنى موجب محدد لهذا المشترك.']);
         $this->assertDatabaseCount('subscription_transactions', 0);
@@ -131,6 +137,7 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
     {
         $this->subscription->update(['minimum_charge' => '25']);
         $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), [
+            'operation_token' => (string) Str::uuid(),
             'type' => 'minimum_charge', 'amount' => '18.50', 'override_minimum_amount' => true,
         ])->assertSessionHasNoErrors()->assertSessionHas('status', 'charge-recorded');
 
@@ -146,9 +153,11 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
     {
         $this->subscription->update(['minimum_charge' => '25']);
         $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), [
+            'operation_token' => (string) Str::uuid(),
             'type' => 'minimum_charge', 'amount' => '18.50', 'override_minimum_amount' => false,
         ])->assertSessionHasErrors('amount');
         $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), [
+            'operation_token' => (string) Str::uuid(),
             'type' => 'minimum_charge', 'amount' => '18.50', 'override_minimum_amount' => 'invalid',
         ])->assertSessionHasErrors('override_minimum_amount');
         $this->assertDatabaseCount('subscription_transactions', 0);
@@ -158,10 +167,12 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
     {
         $this->subscription->update(['minimum_charge' => '25']);
         $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), [
+            'operation_token' => (string) Str::uuid(),
             'type' => 'minimum_charge', 'amount' => '-10', 'override_minimum_amount' => true,
         ])->assertSessionHasErrors('amount');
         $dataEntry = User::factory()->dataEntry()->for($this->branch)->create();
         $this->postAs($dataEntry, route('subscriptions.charges.store', $this->subscription), [
+            'operation_token' => (string) Str::uuid(),
             'type' => 'minimum_charge', 'amount' => '18.50', 'override_minimum_amount' => true,
         ])->assertForbidden();
         $this->assertDatabaseCount('subscription_transactions', 0);
@@ -182,10 +193,12 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
     {
         $this->subscription->update(['minimum_charge' => '20']);
         $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), [
+            'operation_token' => (string) Str::uuid(),
             'type' => 'minimum_charge', 'amount' => '20',
         ])->assertSessionHasNoErrors();
         $charge = $this->latestTransaction();
         $this->postAs($this->branchAdmin, route('subscriptions.charges.store', $this->subscription), [
+            'operation_token' => (string) Str::uuid(),
             'type' => 'disconnection_fee', 'amount' => '10',
         ])->assertSessionHasNoErrors();
         $this->actingAs($this->branchAdmin)->post(route('subscriptions.transactions.actions.store', [$this->subscription, $charge]), [
@@ -214,7 +227,7 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
     {
         $this->subscriptionOwes('100.00');
 
-        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['amount' => '40', 'notes' => 'صيانة المولد'])
+        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'amount' => '40', 'notes' => 'صيانة المولد'])
             ->assertSessionHasNoErrors()
             ->assertSessionHas('status', 'clearing-recorded');
 
@@ -245,7 +258,7 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
         $this->subscriptionOwes('100.00');
         $payment = RecordPayment::handle($this->subscription, $this->branchAdmin, ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash']);
 
-        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['amount' => '40', 'notes' => 'صيانة المولد', 'manual_voucher_number' => 'M-77'])
+        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'amount' => '40', 'notes' => 'صيانة المولد', 'manual_voucher_number' => 'M-77'])
             ->assertSessionHasNoErrors();
 
         $clearing = $this->latestTransaction();
@@ -263,11 +276,11 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
     {
         $this->subscriptionOwes('30.00');
 
-        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['amount' => '50', 'notes' => 'تأجير السطح'])
+        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'amount' => '50', 'notes' => 'تأجير السطح'])
             ->assertSessionHasErrors(['confirm_over_balance' => 'قيمة المقاصة (50 شيكل) أكبر من الرصيد المستحق (30 شيكل)، فيصبح للمشترك رصيد لصالحه قدره 20 شيكل. أكّد إذا كنت تريد فعلًا إضافة المقاصة لهذا المشترك.']);
         $this->assertDatabaseMissing('subscription_transactions', ['type' => 'clearing']);
 
-        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['amount' => '50', 'notes' => 'تأجير السطح', 'confirm_over_balance' => true])
+        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'amount' => '50', 'notes' => 'تأجير السطح', 'confirm_over_balance' => true])
             ->assertSessionHasNoErrors();
         $this->assertSame('-20.00', $this->subscription->balance());
     }
@@ -276,20 +289,20 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
     {
         $this->subscriptionOwes('30.00');
 
-        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['amount' => '30', 'notes' => 'تأجير السطح'])
+        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'amount' => '30', 'notes' => 'تأجير السطح'])
             ->assertSessionHasNoErrors();
         $this->assertSame('0.00', $this->subscription->balance());
 
-        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['amount' => '2000', 'notes' => 'تأجير السطح لسنة'])
+        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'amount' => '2000', 'notes' => 'تأجير السطح لسنة'])
             ->assertSessionHasErrors('confirm_over_balance');
-        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['amount' => '2000', 'notes' => 'تأجير السطح لسنة', 'confirm_over_balance' => true])
+        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'amount' => '2000', 'notes' => 'تأجير السطح لسنة', 'confirm_over_balance' => true])
             ->assertSessionHasNoErrors();
         $this->assertSame('-2000.00', $this->subscription->balance());
     }
 
     public function test_a_clearing_must_name_the_service_and_its_value(): void
     {
-        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['amount' => '0', 'notes' => ''])
+        $this->postAs($this->branchAdmin, route('subscriptions.clearings.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'amount' => '0', 'notes' => ''])
             ->assertSessionHasErrors(['amount', 'notes' => 'اكتب الخدمة التي قدّمها المشترك؛ تظهر في كشف حسابه.']);
 
         $this->assertDatabaseCount('subscription_transactions', 0);
@@ -365,14 +378,14 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
         $this->subscriptionOwes('100.00');
         $dataEntry = User::factory()->dataEntry()->create(['branch_id' => $this->branch->id]);
         $accountant = User::factory()->accountant()->create(['branch_id' => $this->branch->id]);
-        $clearing = ['amount' => '10', 'notes' => 'صيانة'];
+        $clearing = ['operation_token' => (string) Str::uuid(), 'amount' => '10', 'notes' => 'صيانة'];
 
-        $this->postAs($dataEntry, route('subscriptions.charges.store', $this->subscription), ['type' => 'penalty', 'amount' => '10', 'notes' => 'x'])->assertForbidden();
+        $this->postAs($dataEntry, route('subscriptions.charges.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'type' => 'penalty', 'amount' => '10', 'notes' => 'x'])->assertForbidden();
         $this->postAs($dataEntry, route('subscriptions.clearings.store', $this->subscription), $clearing)->assertForbidden();
-        $this->postAs(User::factory()->branchAdmin()->create(), route('subscriptions.discounts.store', $this->subscription), ['method' => 'shekel', 'value' => '10'])
+        $this->postAs(User::factory()->branchAdmin()->create(), route('subscriptions.discounts.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'method' => 'shekel', 'value' => '10'])
             ->assertForbidden();
         $this->postAs(User::factory()->branchAdmin()->create(), route('subscriptions.clearings.store', $this->subscription), $clearing)->assertForbidden();
-        $this->postAs($accountant, route('subscriptions.charges.store', $this->subscription), ['type' => 'penalty', 'amount' => '10', 'notes' => 'x'])->assertSessionHasNoErrors();
+        $this->postAs($accountant, route('subscriptions.charges.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'type' => 'penalty', 'amount' => '10', 'notes' => 'x'])->assertSessionHasNoErrors();
         $this->postAs($accountant, route('subscriptions.clearings.store', $this->subscription), $clearing)->assertSessionHasNoErrors();
 
         $this->actingAs($dataEntry)
@@ -393,7 +406,7 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
 
     private function discount(string $method, string $value): TestResponse
     {
-        return $this->postAs($this->branchAdmin, route('subscriptions.discounts.store', $this->subscription), ['method' => $method, 'value' => $value]);
+        return $this->postAs($this->branchAdmin, route('subscriptions.discounts.store', $this->subscription), ['operation_token' => (string) Str::uuid(), 'method' => $method, 'value' => $value]);
     }
 
     private function subscriptionOwes(string $amount): void
@@ -404,5 +417,35 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
     private function latestTransaction(): SubscriptionTransaction
     {
         return SubscriptionTransaction::latest('id')->first();
+    }
+
+    /**
+     * @return array<string, array{0: string, 1: string, 2: array<string, string>, 3: string}>
+     */
+    public static function amountsOutOfBounds(): array
+    {
+        $cases = [];
+        foreach (['negative' => '-5', 'zero' => '0', 'three decimals' => '10.555', 'over the limit' => '1000000.01', 'Arabic-Indic digits' => '٥٠'] as $label => $amount) {
+            $cases["charge, {$label}"] = ['subscriptions.charges.store', 'amount', ['type' => 'penalty', 'notes' => 'غرامة'], $amount];
+            $cases["clearing, {$label}"] = ['subscriptions.clearings.store', 'amount', ['notes' => 'صيانة الخط'], $amount];
+            $cases["discount, {$label}"] = ['subscriptions.discounts.store', 'value', ['method' => 'shekel'], $amount];
+        }
+
+        return $cases;
+    }
+
+    /**
+     * @param  array<string, string>  $otherFields
+     */
+    #[DataProvider('amountsOutOfBounds')]
+    public function test_an_amount_outside_the_allowed_range_is_refused_and_nothing_is_recorded(string $routeName, string $field, array $otherFields, string $amount): void
+    {
+        $this->subscriptionOwes('2000000');
+        $before = SubscriptionTransaction::count();
+
+        $response = $this->postAs($this->branchAdmin, route($routeName, $this->subscription), [...$otherFields, $field => $amount]);
+
+        $response->assertSessionHasErrors($field);
+        $this->assertSame($before, SubscriptionTransaction::count());
     }
 }

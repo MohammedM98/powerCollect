@@ -75,7 +75,7 @@ class SubscriptionStatementPrintTest extends TestCase
         $this->actingAs($manager)->post(route('print-templates.store'), [
             'page' => '/subscriptions/statement-print', 'name' => 'كشف حساب مخصص', 'layout' => $layout, 'is_default' => true,
         ])->assertSessionHasNoErrors();
-        $this->assertSame($layout, PrintTemplate::query()->sole()->layout);
+        $this->assertSameJson($layout, PrintTemplate::query()->sole()->layout);
         $reader = User::factory()->branchAdmin()->create();
         $first = Subscription::factory()->for($reader->branch)->create();
         $second = Subscription::factory()->for($reader->branch)->create();

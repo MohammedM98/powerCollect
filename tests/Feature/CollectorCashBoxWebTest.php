@@ -326,4 +326,23 @@ class CollectorCashBoxWebTest extends TestCase
         $this->get(route('payments.summary', ['filter' => ['type' => 'bank_transfer']]))->assertInertia(fn (AssertableInertia $page) => $page
             ->where('entries.total', 0)->where('current.bank_transfer', null));
     }
+
+    public function test_the_app_answers_only_a_note_waiting_for_this_collector_in_their_branch(): void
+    {
+        [$branch, $head, $collector] = $this->start();
+        $box = $this->payment($branch, $collector);
+        $note = AuditNote::factory()->create(['closing_id' => Closing::factory()->submitted()->create(['branch_id' => $branch->id])->id, 'cash_box_id' => $box->id, 'assigned_to' => $collector->id, 'status' => 'with_collector']);
+        $colleague = $this->collector($branch);
+        $elsewhere = $this->collector(Branch::factory()->create());
+        $collectorToken = MobileAccessToken::issue($collector);
+
+        $this->withToken(MobileAccessToken::issue($colleague))->postJson(route('mobile.audit-notes.reply', $note), ['body' => 'ردّ'])->assertNotFound();
+        $this->withToken(MobileAccessToken::issue($elsewhere))->postJson(route('mobile.audit-notes.reply', $note), ['body' => 'ردّ'])->assertNotFound();
+        $this->withToken($collectorToken)->postJson(route('mobile.audit-notes.reply', $note), ['body' => 'سلّمت الفرق نقدًا.'])->assertOk()->assertJsonPath('status', 'saved');
+        $this->withToken($collectorToken)->postJson(route('mobile.audit-notes.reply', $note), ['body' => 'مرة أخرى'])->assertNotFound();
+
+        $this->assertDatabaseHas('audit_notes', ['id' => $note->id, 'status' => 'collector_replied']);
+        $this->assertDatabaseCount('audit_note_replies', 1);
+        $this->assertDatabaseHas('audit_note_replies', ['audit_note_id' => $note->id, 'user_id' => $collector->id, 'kind' => 'collector_response', 'body' => 'سلّمت الفرق نقدًا.']);
+    }
 }

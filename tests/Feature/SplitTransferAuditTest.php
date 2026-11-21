@@ -14,6 +14,7 @@ use App\Support\Branches\BranchDomainScope;
 use App\Support\Ledger\Money;
 use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\TestWith;
 use RuntimeException;
 use Tests\TestCase;
@@ -36,6 +37,7 @@ class SplitTransferAuditTest extends TestCase
             SubscriptionTransaction::factory()->for($subscription)->create(['amount' => '100.00']);
         }
         $this->actingAs($collector)->post(route('payments.split.store'), [
+            'operation_token' => (string) Str::uuid(),
             'total_amount' => '100', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'مرسل الفحص',
             'reference_number' => 'AUDIT-GROUP', 'parts' => [
                 ['subscription_id' => $subscriptions[0]->id, 'amount' => '40'],
@@ -294,5 +296,28 @@ class SplitTransferAuditTest extends TestCase
 
         $this->assertDatabaseCount('bank_transfer_audits', 0);
         $this->assertDatabaseCount('subscription_transactions', 4);
+    }
+
+    public function test_correcting_a_share_to_another_reference_never_leaves_the_box_impossible_to_audit(): void
+    {
+        [$head, $auditor, $split, $box] = $this->transfer(closeBox: false);
+        $original = $split->payments[0];
+
+        $this->actingAs($head)->put(route('subscriptions.transactions.update', [$original->subscription, $original]), [
+            'amount' => '40', 'currency' => 'ILS', 'payment_method' => 'bank_transfer',
+            'bank_name' => $split->bank_name, 'sender_name' => $split->sender_name, 'reference_number' => 'ANOTHER-TRANSFER',
+            'correction_reason' => 'wrong_amount', 'correction_notes' => 'رقم الحوالة الصحيح', 'confirm_overpayment' => true,
+        ])->assertSessionHasErrors(['reference_number' => 'هذه حصة من حوالة مقسّمة، فتبقى حوالة بنفس رقم المرجع. لتغيير المرجع أو طريقة الدفع عدّل الحوالة المقسّمة كاملة.']);
+        $this->put(route('subscriptions.transactions.update', [$original->subscription, $original]), [
+            'amount' => '40', 'currency' => 'ILS', 'payment_method' => 'cash',
+            'correction_reason' => 'wrong_amount', 'correction_notes' => 'دُفعت نقدًا', 'confirm_overpayment' => true,
+        ])->assertSessionHasErrors('reference_number');
+        $this->assertFalse($original->fresh()->isCancelled());
+        $this->post(route('payments.cash-boxes.actions', ['action' => 'receive', 'record' => $box->id]), ['branch_id' => $box->branch_id])->assertSessionHasNoErrors();
+
+        $response = $this->actingAs($auditor)->post(route('payments.box-audits.store', $box), ['confirmed' => true]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseCount('cash_box_audits', 1);
     }
 }

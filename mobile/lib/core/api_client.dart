@@ -56,14 +56,20 @@ class ApiClient {
   Future<Uint8List> downloadLogo(String url) async {
     final uri = Uri.tryParse(url);
     final server = Uri.tryParse(apiBaseUrl);
-    if (uri == null || server == null || uri.host != server.host || uri.scheme != server.scheme) {
+    if (uri == null ||
+        server == null ||
+        uri.host != server.host ||
+        uri.scheme != server.scheme) {
       throw const ApiException('عنوان الشعار ليس على خادم التطبيق.', 0);
     }
     try {
-      final request = await _client.getUrl(uri).timeout(const Duration(seconds: 12));
+      final request =
+          await _client.getUrl(uri).timeout(const Duration(seconds: 12));
       request.followRedirects = false;
-      final response = await request.close().timeout(const Duration(seconds: 18));
-      if (response.statusCode != 200 || response.contentLength > 3 * 1024 * 1024) {
+      final response =
+          await request.close().timeout(const Duration(seconds: 18));
+      if (response.statusCode != 200 ||
+          response.contentLength > 3 * 1024 * 1024) {
         await response.drain<void>();
         throw ApiException('تعذر تنزيل الشعار.', response.statusCode);
       }
@@ -89,6 +95,7 @@ class ApiClient {
       _request('POST', '/api/mobile/diagnostics', body: {'log': log});
   Future<Map<String, dynamic>> readingAssignments() =>
       _request('GET', '/api/mobile/reading-assignments');
+
   /// Every subscriber on the reader's assigned boxes, in one answer.
   Future<Map<String, dynamic>> assignedRoster() async =>
       assignedReadingRoster(await readingAssignments());
@@ -96,24 +103,105 @@ class ApiClient {
     if (reading['assignment_id'] == null) {
       return _request('POST', '/api/mobile/readings', body: reading);
     }
+    final outcome =
+        _assignmentOutcome((await postAssignmentReadings([reading])).single);
+    if (outcome is ApiException) throw outcome;
+    return outcome as Map<String, dynamic>;
+  }
+
+  /// How many assigned readings one request carries; the server takes up to
+  /// 200 and limits the requests, not the readings, so a long day's readings
+  /// go up in a few requests instead of one each.
+  static const readingBatchSize = 50;
+
+  /// Sends readings and answers each by its `mobile_operation_id`: the
+  /// server's answer, or the ApiException that refused it. Assigned readings
+  /// go up together in batches; the others one by one. A failure of the whole
+  /// request (offline, signed out, too many requests) is thrown for the
+  /// batch, and a reading left without an answer was not sent.
+  Future<Map<String, Object>> sendReadings(
+      List<Map<String, dynamic>> readings) async {
+    final outcomes = await sendReadingsOneByOne(
+        readings.where((reading) => reading['assignment_id'] == null).toList());
+    final assigned =
+        readings.where((reading) => reading['assignment_id'] != null).toList();
+    for (var start = 0;
+        start < assigned.length && !outcomes.values.any(stopsSending);
+        start += readingBatchSize) {
+      final batch = assigned.sublist(
+          start, (start + readingBatchSize).clamp(0, assigned.length));
+      try {
+        for (final result in await postAssignmentReadings(batch)) {
+          outcomes['${result['operation_id']}'] = _assignmentOutcome(result);
+        }
+      } on ApiException catch (error) {
+        if (error.statusCode == 422) {
+          // The request refuses one reading by refusing them all: each goes
+          // on its own, so only that one keeps its error.
+          outcomes.addAll(await sendReadingsOneByOne(batch));
+        } else {
+          for (final reading in batch) {
+            outcomes[reading['mobile_operation_id'] as String] = error;
+          }
+        }
+      }
+    }
+    return outcomes;
+  }
+
+  /// Whether a failure refuses the readings after it too, so sending stops:
+  /// offline, the server failing, signed out, not allowed, too old an app,
+  /// or too many requests.
+  static bool stopsSending(Object outcome) =>
+      outcome is ApiException &&
+      (outcome.isNetwork ||
+          outcome.statusCode >= 500 ||
+          const [401, 403, 426, 429].contains(outcome.statusCode));
+
+  /// Sends readings one request each, stopping at the first failure that
+  /// would refuse the rest too; the ones after it are left unanswered.
+  Future<Map<String, Object>> sendReadingsOneByOne(
+      List<Map<String, dynamic>> readings) async {
+    final outcomes = <String, Object>{};
+    for (final reading in readings) {
+      final id = reading['mobile_operation_id'] as String;
+      try {
+        outcomes[id] = await sendReading(reading);
+      } on ApiException catch (error) {
+        outcomes[id] = error;
+        if (stopsSending(error)) break;
+      }
+    }
+    return outcomes;
+  }
+
+  /// The assigned readings in one request; the server's answer for each.
+  Future<List<Map<String, dynamic>>> postAssignmentReadings(
+      List<Map<String, dynamic>> readings) async {
     final response =
         await _request('POST', '/api/mobile/reading-assignments/sync', body: {
       'readings': [
-        {
-          'operation_id': reading['mobile_operation_id'],
-          'assignment_id': reading['assignment_id'],
-          'authorization': reading['authorization'],
-          'subscription_id': reading['subscription_id'],
-          'current_reading': reading['current_reading'],
-          'captured_at': reading['captured_at'],
-          'notes': reading['notes'],
-        }
+        for (final reading in readings)
+          {
+            'operation_id': reading['mobile_operation_id'],
+            'assignment_id': reading['assignment_id'],
+            'authorization': reading['authorization'],
+            'subscription_id': reading['subscription_id'],
+            'current_reading': reading['current_reading'],
+            'captured_at': reading['captured_at'],
+            'notes': reading['notes'],
+          }
       ]
     });
-    final result =
-        Map<String, dynamic>.from((response['results'] as List).single as Map);
+    return [
+      for (final result in response['results'] as List)
+        Map<String, dynamic>.from(result as Map)
+    ];
+  }
+
+  Object _assignmentOutcome(Map<String, dynamic> result) {
     if (result['status'] == 'rejected') {
-      throw ApiException('${result['message'] ?? 'رفض الخادم القراءة.'}', 422);
+      return ApiException('${result['message'] ?? 'رفض الخادم القراءة.'}', 422);
     }
     return {
       ...result,

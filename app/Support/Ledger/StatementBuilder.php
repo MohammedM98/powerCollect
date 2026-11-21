@@ -430,12 +430,15 @@ class StatementBuilder
                 'userName' => $amendment->user?->name,
                 'at' => self::businessTime($amendment->created_at),
                 'reason' => $amendment->reason,
-                'changes' => collect($amendment->changes)->map(fn (array $values, string $field): array => [
-                    'field' => $field,
-                    'label' => self::amendmentFieldLabel($field),
-                    'from' => $values[0] ?? null,
-                    'to' => $values[1] ?? null,
-                ])->values()->all(),
+                // In the form's order, not the stored one: MySQL keeps a JSON object's keys in its own order.
+                'changes' => collect($amendment->changes)
+                    ->sortBy(fn (array $values, string $field): int => self::fieldPosition(['amount', ...SubscriptionTransaction::AMENDABLE_FIELDS], $field))
+                    ->map(fn (array $values, string $field): array => [
+                        'field' => $field,
+                        'label' => self::amendmentFieldLabel($field),
+                        'from' => $values[0] ?? null,
+                        'to' => $values[1] ?? null,
+                    ])->values()->all(),
             ])->values()->all(),
             'canAmend' => $canAmend,
             'canCorrect' => $canCorrect,
@@ -515,6 +518,18 @@ class StatementBuilder
                 default => __('The editing period for this week\'s reading has ended'),
             },
         ];
+    }
+
+    /**
+     * Where a field comes in `$order`; one not listed comes last.
+     *
+     * @param  list<string>  $order
+     */
+    public static function fieldPosition(array $order, string $field): int
+    {
+        $position = array_search($field, $order, true);
+
+        return $position === false ? count($order) : $position;
     }
 
     public static function amendmentFieldLabel(string $field): string

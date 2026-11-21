@@ -107,6 +107,7 @@ export default function PersonalDetailsModal({ subscription, onClose }) {
                 <Field id="personal_full_name" label="الاسم الكامل" required error={form.errors.full_name}>
                     <TextInput
                         id="personal_full_name"
+                        name="full_name"
                         required
                         className="w-full"
                         value={form.data.full_name}
@@ -118,6 +119,7 @@ export default function PersonalDetailsModal({ subscription, onClose }) {
                     <Field id="personal_national_id" label="رقم الهوية" error={form.errors.national_id}>
                         <TextInput
                             id="personal_national_id"
+                            name="national_id"
                             dir="ltr"
                             inputMode="numeric"
                             maxLength={9}
@@ -134,6 +136,7 @@ export default function PersonalDetailsModal({ subscription, onClose }) {
                     <Field id="personal_phone" label="رقم الجوال" error={form.errors.phone}>
                         <TextInput
                             id="personal_phone"
+                            name="phone"
                             type="tel"
                             dir="ltr"
                             inputMode="numeric"
@@ -152,6 +155,7 @@ export default function PersonalDetailsModal({ subscription, onClose }) {
                 <Field id="personal_address" label="العنوان" error={form.errors.address}>
                     <TextInput
                         id="personal_address"
+                        name="address"
                         className="w-full"
                         value={form.data.address}
                         onChange={(event) => form.setData('address', event.target.value)}

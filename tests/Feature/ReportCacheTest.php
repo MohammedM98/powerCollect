@@ -47,7 +47,8 @@ class ReportCacheTest extends TestCase
         DB::flushQueryLog();
         DB::enableQueryLog();
         $run();
-        $count = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains($query['query'], 'sum("amount")'))->count();
+        // MySQL quotes names with backticks, SQLite with double quotes.
+        $count = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains(str_replace('`', '"', $query['query']), 'sum("amount")'))->count();
         DB::disableQueryLog();
 
         return $count;
