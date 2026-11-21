@@ -1,5 +1,5 @@
 import { Button, Input } from '@heroui/react';
-import { Fragment, useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { router } from '@inertiajs/react';
 import LastReadingConfirmDialog from '@/Components/LastReadingConfirmDialog';
 import Icon from '@/Components/Icon';
@@ -14,7 +14,7 @@ import { useLastReadingEdit } from '@/hooks/useLastReadingEdit';
 import ReadingPricingField from './ReadingPricingField';
 import ReadingApprovalDialog from '@/Pages/MeterReadings/ReadingApprovalDialog';
 import './ReadingHistoryModal.css';
-import { ConfirmDialog } from '@/Components/UI';
+import { BandRow, ConfirmDialog, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable } from '@/Components/UI';
 
 const PERIODS = [['12', 'آخر 12 أسبوعًا'], ['26', '6 أشهر'], ['52', 'سنة'], ['all', 'الكل']];
 const STATUSES = [['all', 'الكل'], ['approved', 'معتمدة'], ['pending', 'قيد المراجعة']];
@@ -255,10 +255,10 @@ function LiveRow({ subscription, week, reading, maximum, average, editableLastRe
         }
     }
 
-    return <tr className={`rh-live ${reading ? '' : 'is-new'}`}>
-        <td className="rh-week"><b dir="ltr" title={week.label}>{shortDate(week.value)} ← {shortDate(week.end)}</b><span className="rh-note">{reading ? 'يمكن تعديل القراءة هنا' : 'قراءة جديدة — أدخلها هنا'}</span>{reading && <ReadingAdjustmentHistory reading={reading} />}</td>
-        <td className={`rh-previous rh-number ${editableLastReading ? 'rh-last-cell' : ''}`}>{editableLastReading ? <LastReadingField subscription={subscription} lastReading={editableLastReading} nextReading={reading} /> : formatMoney(previous)}</td>
-        <td className="rh-current rh-live-current">
+    return <ListRow id={reading ? reading.id : 'new'} className={`rh-live ${reading ? '' : 'is-new'}`}>
+        <ListCell className="rh-week"><b dir="ltr" title={week.label}>{shortDate(week.value)} ← {shortDate(week.end)}</b><span className="rh-note">{reading ? 'يمكن تعديل القراءة هنا' : 'قراءة جديدة — أدخلها هنا'}</span>{reading && <ReadingAdjustmentHistory reading={reading} />}</ListCell>
+        <ListCell className={`rh-previous rh-number ${editableLastReading ? 'rh-last-cell' : ''}`}>{editableLastReading ? <LastReadingField subscription={subscription} lastReading={editableLastReading} nextReading={reading} /> : formatMoney(previous)}</ListCell>
+        <ListCell className="rh-current rh-live-current">
             <div className="rh-stepper" dir="ltr">
                 <Button data-raw="" variant="ghost" onMouseDown={(event) => event.preventDefault()} onClick={() => step(-1)} isDisabled={saving || !typed && value !== '' || (typed && Number(value) <= Number(previous))} aria-label="إنقاص القراءة">−</Button>
                 <Input ref={inputRef} type="number" inputMode="decimal" step="0.01" min={previous} dir="ltr" value={value} placeholder="أدخل القراءة" disabled={saving}
@@ -279,18 +279,18 @@ function LiveRow({ subscription, week, reading, maximum, average, editableLastRe
                 <Button data-raw="" variant="ghost" onMouseDown={(event) => event.preventDefault()} onClick={() => step(1)} isDisabled={saving} aria-label="زيادة القراءة">+</Button>
             </div>
             {(error || negative) && <small className="rh-live-error" role="alert">{error ?? `أقل من السابقة (${formatMoney(previous)})`}</small>}
-        </td>
-        <td className="rh-consumption"><div><b>{charges ? formatMoney(charges.consumption) : '—'}</b>{charges && <><span className="rh-meter"><i style={{ width: `${Math.min(100, Math.max(0, charges.consumption) / Math.max(maximum, charges.consumption, 1) * 100)}%` }} /></span><span className={`rh-delta ${Math.abs(difference) < 10 ? '' : difference > 0 ? 'rh-up' : 'rh-down'}`} dir="ltr">{Math.abs(difference) < 10 ? '≈' : `${difference > 0 ? '+' : ''}${difference}٪`}</span></>}</div></td>
-        <td className="rh-price rh-number">{reading ? <ReadingPricingField reading={reading} field="unit_price" /> : <span dir="ltr">{money(unitPrice)}</span>}</td>
-        <td className="rh-minimum rh-number">{reading ? <ReadingPricingField reading={reading} field="minimum_payment" /> : <span dir="ltr">{money(minimumPayment)}</span>}</td>
-        <td className="rh-discount">{charges && charges.discountAmount > 0 ? <span className="rh-discount-value" dir="ltr">−{money(charges.discountAmount)}</span> : <span className="rh-muted">—</span>}</td>
-        <td className="rh-due">{charges ? <b dir="ltr">{money(charges.amountDue)} <em>₪</em></b> : <b>—</b>}{charges?.minimumApplies && <small>الحد الأدنى</small>}</td>
-        <td className="rh-status">
+        </ListCell>
+        <ListCell className="rh-consumption"><div><b>{charges ? formatMoney(charges.consumption) : '—'}</b>{charges && <><span className="rh-meter"><i style={{ width: `${Math.min(100, Math.max(0, charges.consumption) / Math.max(maximum, charges.consumption, 1) * 100)}%` }} /></span><span className={`rh-delta ${Math.abs(difference) < 10 ? '' : difference > 0 ? 'rh-up' : 'rh-down'}`} dir="ltr">{Math.abs(difference) < 10 ? '≈' : `${difference > 0 ? '+' : ''}${difference}٪`}</span></>}</div></ListCell>
+        <ListCell className="rh-price rh-number">{reading ? <ReadingPricingField reading={reading} field="unit_price" /> : <span dir="ltr">{money(unitPrice)}</span>}</ListCell>
+        <ListCell className="rh-minimum rh-number">{reading ? <ReadingPricingField reading={reading} field="minimum_payment" /> : <span dir="ltr">{money(minimumPayment)}</span>}</ListCell>
+        <ListCell className="rh-discount">{charges && charges.discountAmount > 0 ? <span className="rh-discount-value" dir="ltr">−{money(charges.discountAmount)}</span> : <span className="rh-muted">—</span>}</ListCell>
+        <ListCell className="rh-due">{charges ? <b dir="ltr">{money(charges.amountDue)} <em>₪</em></b> : <b>—</b>}{charges?.minimumApplies && <small>الحد الأدنى</small>}</ListCell>
+        <ListCell className="rh-status">
             {saving ? <span className="rh-saving">جارٍ الحفظ...</span> : reading ? <ReadingHistoryStatus subscription={subscription} reading={reading} disabled={isDraft || Boolean(error) || negative} /> : <span className="rh-pill is-missing"><i />لم تُدخل</span>}
             <ConfirmDialog show={confirming} onConfirm={() => { setConfirming(false); save(true); }} onCancel={() => { setConfirming(false); setValue(savedValue); }} title="تعديل قراءة معتمدة؟" message={`قراءة ${subscription.display_name} معتمدة. تعديلها يعيدها إلى قيد المراجعة ويزيل مبلغها من المعاملات المالية للمشترك حتى يُعاد اعتمادها.`} confirmLabel="نعم، عدّل" cancelLabel="تراجع عن التعديل" icon="alert" />
-        </td>
-        <td className="rh-recorder">{reading ? <>{reading.recordedByName ?? '—'}<small><HistoryIcon name={reading.recordedSource === 'app' ? 'app' : 'web'} /><span>{reading.recordedSource === 'app' ? 'التطبيق' : 'الموقع'}</span>، <span dir="ltr">{reading.recordedAt}</span></small></> : '—'}</td>
-    </tr>;
+        </ListCell>
+        <ListCell className="rh-recorder">{reading ? <>{reading.recordedByName ?? '—'}<small><HistoryIcon name={reading.recordedSource === 'app' ? 'app' : 'web'} /><span>{reading.recordedSource === 'app' ? 'التطبيق' : 'الموقع'}</span>، <span dir="ltr">{reading.recordedAt}</span></small></> : '—'}</ListCell>
+    </ListRow>;
 }
 
 /** The selected subscription's recorded history, presented using the supplied design. */
@@ -365,31 +365,45 @@ export default function ReadingHistoryModal({ subscription, onClose, readingWeek
                     </p>
                     {initialReading && !liveRowShown && !entryReading && <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm"><span>القراءة السابقة لآخر أسبوع:</span><span className="px-8"><LastReadingField subscription={subscription} lastReading={initialReading} /></span></div>}
                     <div className="rh-table-wrap">
-                        <table className="rh-table">
-                            <thead><tr><th scope="col">الأسبوع</th><th scope="col" className="rh-previous">السابقة</th><th scope="col" className="rh-current">الحالية</th><th scope="col">الاستهلاك</th><th scope="col" className="rh-price">سعر الكيلو</th><th scope="col" className="rh-minimum">الحد الأدنى</th><th scope="col" className="rh-discount">الخصم</th><th scope="col">المستحق</th><th scope="col">الحالة</th><th scope="col" className="rh-recorder">سجّلها</th></tr></thead>
-                            <tbody>{newLine && <LiveRow subscription={subscription} week={entryWeek} reading={null} maximum={maximum} average={average} editableLastReading={editableLastReading ?? initialReading} />}{groupReadingsByMonth(visibleReadings).map((group) => <Fragment key={group.month}>
-                                <tr className="rh-month"><th scope="rowgroup" colSpan={10}><b>{MONTH.format(new Date(`${group.month}-01T00:00:00Z`))}</b>{formatNumber(group.readings.length)} قراءة، <span>{formatMoney(group.totals.consumption)}</span> كيلو، <span>{money(group.totals.due)}</span> ₪</th></tr>
-                                {group.readings.map((reading) => {
-                                    if (reading.id === editableId) {
-                                        return <LiveRow key={reading.id} subscription={subscription} week={entryWeek} reading={reading} maximum={maximum} average={average} editableLastReading={readingAfterLast?.id === reading.id ? editableLastReading : initialReading} />;
-                                    }
+                        <ListTable aria-label="سجل القراءات" className="rh-table">
+                            <ListHeader>
+                                <ListColumn id="week" isRowHeader>الأسبوع</ListColumn>
+                                <ListColumn id="previous" className="rh-previous">السابقة</ListColumn>
+                                <ListColumn id="current" className="rh-current">الحالية</ListColumn>
+                                <ListColumn id="consumption">الاستهلاك</ListColumn>
+                                <ListColumn id="price" className="rh-price">سعر الكيلو</ListColumn>
+                                <ListColumn id="minimum" className="rh-minimum">الحد الأدنى</ListColumn>
+                                <ListColumn id="discount" className="rh-discount">الخصم</ListColumn>
+                                <ListColumn id="due">المستحق</ListColumn>
+                                <ListColumn id="status">الحالة</ListColumn>
+                                <ListColumn id="recorder" className="rh-recorder">سجّلها</ListColumn>
+                            </ListHeader>
+                            <ListBody>
+                                {newLine && <LiveRow subscription={subscription} week={entryWeek} reading={null} maximum={maximum} average={average} editableLastReading={editableLastReading ?? initialReading} />}
+                                {groupReadingsByMonth(visibleReadings).flatMap((group) => [
+                                    <BandRow key={`month-${group.month}`} id={`month-${group.month}`} columns={10} className="rh-month"><b>{MONTH.format(new Date(`${group.month}-01T00:00:00Z`))}</b>{formatNumber(group.readings.length)} قراءة، <span>{formatMoney(group.totals.consumption)}</span> كيلو، <span>{money(group.totals.due)}</span> ₪</BandRow>,
+                                    ...group.readings.map((reading) => {
+                                        if (reading.id === editableId) {
+                                            return <LiveRow key={reading.id} subscription={subscription} week={entryWeek} reading={reading} maximum={maximum} average={average} editableLastReading={readingAfterLast?.id === reading.id ? editableLastReading : initialReading} />;
+                                        }
 
-                                    const difference = average > 0 ? Math.round((Number(reading.consumption) - average) / average * 100) : 0;
-                                    return <tr key={reading.id}>
-                                        <td className="rh-week"><b dir="ltr" title={`${formatDate(reading.weekStart)} – ${formatDate(reading.weekEnd)}`}>{shortDate(reading.weekStart)} ← {shortDate(reading.weekEnd)}</b>{reading.notes && <span className="rh-note">{reading.notes}</span>}<ReadingAdjustmentHistory reading={reading} /></td>
-                                        <td className={`rh-previous rh-number ${reading.id === entryReading?.id && initialReading ? 'rh-last-cell' : ''}`}>{reading.id === entryReading?.id && initialReading ? <LastReadingField subscription={subscription} lastReading={initialReading} /> : formatMoney(reading.previous_reading)}</td><td className={`rh-current rh-number ${!liveRowShown && reading.id === editableLastReading?.id ? 'rh-last-cell' : ''}`}>{!liveRowShown && reading.id === editableLastReading?.id ? <LastReadingField subscription={subscription} lastReading={reading} nextReading={readingAfterLast} /> : reading.requiresReentry ? '—' : formatMoney(reading.current_reading)}</td>
-                                        <td className="rh-consumption"><div><b>{formatMoney(reading.consumption)}</b><span className="rh-meter"><i style={{ width: `${Number(reading.consumption) / maximum * 100}%` }} /></span><span className={`rh-delta ${Math.abs(difference) < 10 ? '' : difference > 0 ? 'rh-up' : 'rh-down'}`} dir="ltr" title="الفرق عن متوسط الفترة">{Math.abs(difference) < 10 ? '≈' : `${difference > 0 ? '+' : ''}${difference}٪`}</span></div></td>
-                                        <td className="rh-price rh-number"><ReadingPricingField reading={reading} field="unit_price" /></td>
-                                        <td className="rh-minimum rh-number"><ReadingPricingField reading={reading} field="minimum_payment" /></td>
-                                        <td className="rh-discount">{Number(reading.discountAmount) > 0 ? <span className="rh-discount-value" dir="ltr">−{money(reading.discountAmount)}</span> : <span className="rh-muted">—</span>}</td>
-                                        <td className="rh-due"><b dir="ltr">{money(reading.amountDue)} <em>₪</em></b>{reading.minimumApplied && <small>الحد الأدنى</small>}</td>
-                                        <td className="rh-status"><ReadingHistoryStatus subscription={subscription} reading={reading} /></td>
-                                        <td className="rh-recorder">{reading.recordedByName ?? '—'}<small><HistoryIcon name={reading.recordedSource === 'app' ? 'app' : 'web'} /><span>{reading.recordedSource === 'app' ? 'التطبيق' : 'الموقع'}</span>، <span dir="ltr">{reading.recordedAt}</span></small></td>
-                                    </tr>;
-                                })}
-                            </Fragment>)}</tbody>
-                            {visibleReadings.length > 0 && <tfoot><tr><td>مجموع الفترة</td><td className="rh-previous rh-hide-mobile" /><td className="rh-current rh-hide-mobile" /><td><b className="rh-number">{formatMoney(totals.consumption)}</b> كيلو</td><td className="rh-price rh-hide-mobile" /><td className="rh-minimum rh-hide-mobile" /><td className="rh-discount"><span className="rh-discount-value" dir="ltr">{totals.discount > 0 ? `−${money(totals.discount)}` : '—'}</span></td><td className="rh-due"><b dir="ltr">{money(totals.due)} <em>₪</em></b></td><td className="rh-hide-mobile" /><td className="rh-recorder rh-hide-mobile" /></tr></tfoot>}
-                        </table>
+                                        const difference = average > 0 ? Math.round((Number(reading.consumption) - average) / average * 100) : 0;
+                                        return <ListRow key={reading.id} id={reading.id}>
+                                            <ListCell className="rh-week"><b dir="ltr" title={`${formatDate(reading.weekStart)} – ${formatDate(reading.weekEnd)}`}>{shortDate(reading.weekStart)} ← {shortDate(reading.weekEnd)}</b>{reading.notes && <span className="rh-note">{reading.notes}</span>}<ReadingAdjustmentHistory reading={reading} /></ListCell>
+                                            <ListCell className={`rh-previous rh-number ${reading.id === entryReading?.id && initialReading ? 'rh-last-cell' : ''}`}>{reading.id === entryReading?.id && initialReading ? <LastReadingField subscription={subscription} lastReading={initialReading} /> : formatMoney(reading.previous_reading)}</ListCell><ListCell className={`rh-current rh-number ${!liveRowShown && reading.id === editableLastReading?.id ? 'rh-last-cell' : ''}`}>{!liveRowShown && reading.id === editableLastReading?.id ? <LastReadingField subscription={subscription} lastReading={reading} nextReading={readingAfterLast} /> : reading.requiresReentry ? '—' : formatMoney(reading.current_reading)}</ListCell>
+                                            <ListCell className="rh-consumption"><div><b>{formatMoney(reading.consumption)}</b><span className="rh-meter"><i style={{ width: `${Number(reading.consumption) / maximum * 100}%` }} /></span><span className={`rh-delta ${Math.abs(difference) < 10 ? '' : difference > 0 ? 'rh-up' : 'rh-down'}`} dir="ltr" title="الفرق عن متوسط الفترة">{Math.abs(difference) < 10 ? '≈' : `${difference > 0 ? '+' : ''}${difference}٪`}</span></div></ListCell>
+                                            <ListCell className="rh-price rh-number"><ReadingPricingField reading={reading} field="unit_price" /></ListCell>
+                                            <ListCell className="rh-minimum rh-number"><ReadingPricingField reading={reading} field="minimum_payment" /></ListCell>
+                                            <ListCell className="rh-discount">{Number(reading.discountAmount) > 0 ? <span className="rh-discount-value" dir="ltr">−{money(reading.discountAmount)}</span> : <span className="rh-muted">—</span>}</ListCell>
+                                            <ListCell className="rh-due"><b dir="ltr">{money(reading.amountDue)} <em>₪</em></b>{reading.minimumApplied && <small>الحد الأدنى</small>}</ListCell>
+                                            <ListCell className="rh-status"><ReadingHistoryStatus subscription={subscription} reading={reading} /></ListCell>
+                                            <ListCell className="rh-recorder">{reading.recordedByName ?? '—'}<small><HistoryIcon name={reading.recordedSource === 'app' ? 'app' : 'web'} /><span>{reading.recordedSource === 'app' ? 'التطبيق' : 'الموقع'}</span>، <span dir="ltr">{reading.recordedAt}</span></small></ListCell>
+                                        </ListRow>;
+                                    }),
+                                ])}
+                                {visibleReadings.length > 0 && <ListRow id="totals" className="is-total"><ListCell>مجموع الفترة</ListCell><ListCell className="rh-previous rh-hide-mobile" /><ListCell className="rh-current rh-hide-mobile" /><ListCell><b className="rh-number">{formatMoney(totals.consumption)}</b> كيلو</ListCell><ListCell className="rh-price rh-hide-mobile" /><ListCell className="rh-minimum rh-hide-mobile" /><ListCell className="rh-discount"><span className="rh-discount-value" dir="ltr">{totals.discount > 0 ? `−${money(totals.discount)}` : '—'}</span></ListCell><ListCell className="rh-due"><b dir="ltr">{money(totals.due)} <em>₪</em></b></ListCell><ListCell className="rh-hide-mobile" /><ListCell className="rh-recorder rh-hide-mobile" /></ListRow>}
+                            </ListBody>
+                        </ListTable>
                         {!visibleReadings.length && !newLine && <div className="rh-empty"><b>لا توجد قراءات</b>{allReadings.length ? 'لا توجد قراءات بهذه الحالة في الفترة المختارة.' : 'لا توجد قراءات لهذا المشترك بعد.'}</div>}
                     </div>
                 </div>

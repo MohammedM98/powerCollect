@@ -6,6 +6,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { rolldown } from 'rolldown';
 
 let SheetRow;
+let Kit;
 let Dialog;
 let History;
 before(async () => {
@@ -15,23 +16,27 @@ before(async () => {
         plugins: [{ name: 'reading-components', resolveId(id) {
             if (id === 'exceljs') return { id: import.meta.resolve(id), external: true };
             if (id === 'reading-approval-components') return '\0entry';
-            if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/')) || id === '@inertiajs/react') return { id: import.meta.resolve(id), external: true };
+            if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria')) || id === '@inertiajs/react') return { id: import.meta.resolve(id), external: true };
             if (id.endsWith('.css')) return '\0css';
             if (/Components[/\\]Modal(?:\.jsx)?$/.test(id)) return '\0modal';
         }, load(id) {
-            if (id === '\0entry') return "export {SheetRow} from '@/Pages/MeterReadings/ReadingSheetRow'; export {default as Dialog} from '@/Pages/MeterReadings/ReadingApprovalDialog'; export {default as History} from '@/Pages/Subscriptions/ReadingHistoryModal';";
+            if (id === '\0entry') return "export {SheetRow} from '@/Pages/MeterReadings/ReadingSheetRow'; export {default as Dialog} from '@/Pages/MeterReadings/ReadingApprovalDialog'; export {default as History} from '@/Pages/Subscriptions/ReadingHistoryModal'; export * as Kit from '@/Components/UI/ListTable';";
             if (id === '\0css') return '';
             if (id === '\0modal') return 'export default function Modal({show, children}) { return show ? children : null; }';
         } }],
     });
     try {
         const { output } = await bundle.generate({ format: 'esm', codeSplitting: false });
-        ({ SheetRow, Dialog, History } = await import(`data:text/javascript;base64,${Buffer.from(output[0].code).toString('base64')}`));
+        ({ SheetRow, Dialog, History, Kit } = await import(`data:text/javascript;base64,${Buffer.from(output[0].code).toString('base64')}`));
     } finally { await bundle.close(); }
 });
 
 const row = { id: 1, fullName: 'أحمد', previousReading: 0, canApprove: true, canEdit: true, unitPrice: '0.5', minimumPayment: '0', reading: { id: 7, currentReading: 23, consumption: 23, amountDue: '11.50', readingFee: '11.50', status: 'pending' } };
-const renderRow = (overrides = {}, props = {}) => renderToStaticMarkup(createElement(SheetRow, { row: { ...row, ...overrides }, approvable: true, week: '2026-10-16', selected: false, onApprove() {}, onToggleSelected() {}, ...props }));
+// A sheet row is a row of the kit table, so it is rendered inside one, under the sheet's six columns.
+const sheetColumns = ['المشترك', 'السابقة', 'الحالية', 'الفرق', 'المطلوب', 'الحالة'];
+const renderRow = (overrides = {}, props = {}) => renderToStaticMarkup(createElement(Kit.default, { 'aria-label': 'قراءات الأسبوع' },
+    createElement(Kit.ListHeader, null, sheetColumns.map((label, index) => createElement(Kit.ListColumn, { key: label, id: label, isRowHeader: index === 0 }, label))),
+    createElement(Kit.ListBody, null, createElement(SheetRow, { row: { ...row, ...overrides }, approvable: true, week: '2026-10-16', selected: false, onApprove() {}, onToggleSelected() {}, ...props }))));
 
 test('an initial baseline including zero offers the previous-reading pencil only when permitted', () => {
     const initialReading = { isInitial: true, weekStart: '2026-10-16', previousReading: 0, canEdit: true, previewUrl: '/subscriptions/1/reading-baseline/preview', saveUrl: '/subscriptions/1/reading-baseline' };
