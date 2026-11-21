@@ -46,19 +46,6 @@ class ClosingPeriods
     }
 
     /**
-     * Whether the business day (or the period ending on it) has closed in
-     * every one of the branches.
-     *
-     * @param  Collection<int, Branch>  $branches
-     */
-    public static function hasEndedInAll(Collection $branches, CarbonInterface|string $lastDay): bool
-    {
-        return $branches->isEmpty()
-            ? self::for()->hasEnded($lastDay)
-            : $branches->every(fn (Branch $branch): bool => self::for($branch)->hasEnded($lastDay));
-    }
-
-    /**
      * A business date (Y-m-d) at midnight, business time.
      */
     public static function date(CarbonInterface|string $date): CarbonImmutable

@@ -114,23 +114,6 @@ class User extends Authenticatable
             ->delete();
     }
 
-    /**
-     * Replace this user's ticked permissions with their role's starter set
-     * (see UserRole::starterPermissions()).
-     */
-    public function resetToRoleStarterPermissions(): void
-    {
-        // Company-wide starters only come with a Super Admin's (or the system's) say-so.
-        $actor = auth()->user();
-        $starters = array_filter(
-            $this->role->starterPermissions(),
-            fn (PermissionKey $key): bool => ! $key->isCompanyWide() || $actor === null || $actor->isSuperAdmin(),
-        );
-
-        $this->permissions()->sync(Permission::idsFor($starters));
-        $this->unsetRelation('permissions');
-    }
-
     public function registeredSubscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class, 'registered_by');

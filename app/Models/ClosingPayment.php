@@ -32,9 +32,4 @@ class ClosingPayment extends Model
     {
         return $this->belongsTo(SubscriptionTransaction::class, 'subscription_transaction_id');
     }
-
-    public function matchedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'matched_by');
-    }
 }

@@ -20,7 +20,7 @@ export function withIcons(options, icons) {
 
 const KIND_TONES = { weekly_reading: 'blue', balance_reminder: 'amber', custom: 'gray', disconnection_warning: 'red' };
 
-const STATUS_TONES = { pending: 'amber', sent: 'green', failed: 'red' };
+const STATUS_TONES = { pending: 'amber', sent: 'green', failed: 'red', unconfirmed: 'blue' };
 
 /** What a send is about: its icon and name, tinted by kind. */
 export function KindPill({ kind, label }) {
@@ -53,6 +53,7 @@ export function DeliveryCounts({ batch }) {
         { count: batch.sent, label: 'أُرسلت', className: 'text-emerald-700 dark:text-emerald-400' },
         { count: batch.pending, label: 'بانتظار الإرسال', className: 'text-amber-700 dark:text-amber-400' },
         { count: batch.failed, label: 'فشلت', className: 'text-brand-600' },
+        { count: batch.unconfirmed ?? 0, label: 'غير مؤكدة', className: 'text-sky-700 dark:text-sky-400' },
     ].filter((part) => part.count > 0);
 
     return (

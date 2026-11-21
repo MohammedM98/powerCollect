@@ -1,4 +1,3 @@
-import { csvText } from './csv.ts';
 import { roundToCents } from './currency.ts';
 
 /** Periods are measured back from the subscription's latest recorded week. */
@@ -35,18 +34,4 @@ export function groupReadingsByMonth(readings) {
     }
 
     return [...groups.values()].map((group) => ({ ...group, totals: readingTotals(group.readings) }));
-}
-
-/** UTF-8 CSV for Excel; user-authored text stays text, including formula prefixes. */
-export function readingHistoryCsv(readings) {
-    const rows = [
-        ['بداية الأسبوع', 'نهاية الأسبوع', 'السابقة', 'الحالية', 'الاستهلاك', 'سعر الكيلو', 'الحد الأدنى', 'الخصم', 'المستحق', 'الحالة', 'سجّلها', 'وقت التسجيل', 'ملاحظات'],
-        ...readings.map((reading) => [
-            reading.weekStart, reading.weekEnd, Number(reading.previous_reading), reading.requiresReentry ? '' : Number(reading.current_reading),
-            Number(reading.consumption), Number(reading.unitPrice), Number(reading.minimumPayment), Number(reading.discountAmount), Number(reading.amountDue),
-            reading.statusLabel, reading.recordedByName ?? '', reading.recordedAt ?? '', reading.notes ?? '',
-        ]),
-    ];
-
-    return csvText(rows);
 }

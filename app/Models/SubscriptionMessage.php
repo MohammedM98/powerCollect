@@ -58,6 +58,18 @@ class SubscriptionMessage extends Model
     }
 
     /**
+     * Record that the gateway took the message but did not confirm it, so it
+     * waits for a person to check rather than being sent again.
+     */
+    public function markUnconfirmed(string $error): void
+    {
+        $this->update([
+            'status' => MessageStatus::Unconfirmed,
+            'error' => mb_substr($error, 0, 255),
+        ]);
+    }
+
+    /**
      * Record that the SMS gateway turned the message down, and why.
      */
     public function markFailed(string $error): void

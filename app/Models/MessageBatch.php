@@ -60,7 +60,7 @@ class MessageBatch extends Model
 
     /**
      * Count the messages in each status, as `pending_count`, `sent_count`
-     * and `failed_count`, plus `messages_count` for them all.
+     * `failed_count` and `unconfirmed_count`, plus `messages_count` for them all.
      */
     #[Scope]
     protected function withStatusCounts(Builder $query): void
@@ -70,6 +70,7 @@ class MessageBatch extends Model
             'messages as pending_count' => fn (Builder $messages) => $messages->where('status', MessageStatus::Pending),
             'messages as sent_count' => fn (Builder $messages) => $messages->where('status', MessageStatus::Sent),
             'messages as failed_count' => fn (Builder $messages) => $messages->where('status', MessageStatus::Failed),
+            'messages as unconfirmed_count' => fn (Builder $messages) => $messages->where('status', MessageStatus::Unconfirmed),
         ]);
     }
 }

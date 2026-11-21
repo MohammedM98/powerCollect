@@ -5066,31 +5066,6 @@ body {
     transform: translateY(1px);
 }
 
-/* Solid or glass: a grey track, the chosen one white and raised. */
-:root[data-ui-navigation] .tn-header .tn-bar .tn-surface.gl-seg {
-    gap: 4px;
-    padding: 4px;
-    border: 0;
-    border-radius: 12px;
-    background: var(--ma-tile);
-}
-
-:root[data-ui-navigation] .tn-header .tn-bar .tn-surface.gl-seg button {
-    height: 34px;
-    min-height: 34px;
-    padding-inline: 12px;
-    border-radius: 9px;
-    color: var(--ma-muted);
-    font-size: 13px;
-    font-weight: 700;
-}
-
-:root[data-ui-navigation] .tn-header .tn-bar .tn-surface.gl-seg button[aria-pressed='true'] {
-    background: var(--ma-solid);
-    box-shadow: var(--ma-depth);
-    color: var(--ma-ink);
-}
-
 :root[data-ui-navigation] .tn-header .tn-bar .tn-tools .tn-tool {
     width: 40px;
     height: 40px;
@@ -5908,7 +5883,8 @@ body {
  * - the faint grey (hints, search, placeholders) is a step darker in the
  *   light theme and a step lighter in the dark one;
  * - the payment green and the charge red text a shade deeper on their
- *   tints (statuses, «كل ما عليه»);
+ *   tints (statuses, «كل ما عليه»), and in the light theme the split teal
+ *   and the warning amber too (their chips);
  * - a filled tile, badge or button always uses its colour's deep shade
  *   with white text, also in the dark theme, where the light shades of
  *   the tones are for text only.
@@ -5917,12 +5893,16 @@ body {
     --ma-faint: #646b75;
     --ma-pay: #23704c;
     --ma-owe: #a1443d;
+    --ma-split: #277189;
+    --ma-warn: #8d6114;
 }
 
 .dark {
     --ma-faint: #8a919b;
     --ma-pay: #6dbf98;
     --ma-owe: #e1938c;
+    --ma-split: #75bdd2;
+    --ma-warn: #e0b45c;
 }
 
 .gl-sheet[data-ledger-tone] {

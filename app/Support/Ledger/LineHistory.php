@@ -6,10 +6,8 @@ use App\Enums\ClosingStatus;
 use App\Models\CashBox;
 use App\Models\Closing;
 use App\Models\ClosingPayment;
-use App\Models\MeterReading;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
-use App\Support\Readings\ReadingCharges;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -90,21 +88,6 @@ class LineHistory
 
         return $reversals->isNotEmpty()
             && Closing::cents($transaction->amount) + $reversals->sum(fn (SubscriptionTransaction $reversal): int => Closing::cents($reversal->amount)) === 0;
-    }
-
-    /**
-     * Whether this is a weekly reading's bill for another amount than its
-     * reading now costs: the reading was corrected after it was billed, so
-     * the bill may not stand again.
-     */
-    public static function isStaleReadingBill(SubscriptionTransaction $transaction): bool
-    {
-        $reading = $transaction->type === SubscriptionTransaction::TYPE_METER_READING && $transaction->isBilledByReading()
-            ? MeterReading::query()->find($transaction->meter_reading_id)
-            : null;
-
-        // A reading awaiting its current reading again is refused on its own, by reinstate().
-        return $reading !== null && ! $reading->requires_reentry && Closing::cents($transaction->amount) !== Closing::cents(ReadingCharges::amountBeforeDiscount($reading));
     }
 
     /**

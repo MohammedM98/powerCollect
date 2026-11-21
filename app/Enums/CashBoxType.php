@@ -40,14 +40,4 @@ enum CashBoxType: string
     {
         return $this === self::Cash ? 'cash' : 'bank';
     }
-
-    /** @return list<string> */
-    public static function forBook(string $book): array
-    {
-        return match ($book) {
-            'cash' => [self::Cash->value],
-            'bank' => [self::BankTransfer->value, self::Clearing->value],
-            default => array_column(self::cases(), 'value'),
-        };
-    }
 }

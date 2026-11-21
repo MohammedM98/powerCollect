@@ -386,7 +386,7 @@ class MessageTest extends TestCase
         $this->assertSame(MessageStatus::Pending, $message->fresh()->status);
     }
 
-    public function test_a_message_the_provider_did_not_answer_in_time_is_marked_failed_without_another_try(): void
+    public function test_a_message_the_provider_did_not_answer_in_time_waits_unconfirmed_without_another_try(): void
     {
         config(['services.sms.driver' => 'http', 'services.sms.http.url' => 'https://sms.example.test/send']);
         Http::preventStrayRequests();
@@ -398,7 +398,7 @@ class MessageTest extends TestCase
 
         $job->assertNotReleased();
         $message->refresh();
-        $this->assertSame(MessageStatus::Failed, $message->status);
+        $this->assertSame(MessageStatus::Unconfirmed, $message->status);
         $this->assertSame(__('The SMS gateway did not confirm the message in time; check it was not delivered before sending it again.'), $message->error);
     }
 
@@ -452,13 +452,53 @@ class MessageTest extends TestCase
         $subscription = Subscription::factory()->create(['branch_id' => $branchAdmin->branch_id]);
         $failed = SubscriptionMessage::factory()->failed()->for($batch, 'batch')->for($subscription)->create();
         SubscriptionMessage::factory()->for($batch, 'batch')->for($subscription)->create(['status' => MessageStatus::Sent]);
+        $unconfirmed = SubscriptionMessage::factory()->unconfirmed()->for($batch, 'batch')->for($subscription)->create();
         Queue::fake([SendSubscriptionMessage::class]);
 
         $this->actingAs($branchAdmin)->post(route('messages.retry', $batch))->assertSessionHas('status', 'messages-retried');
 
         $this->assertSame(MessageStatus::Pending, $failed->fresh()->status);
+        $this->assertSame(MessageStatus::Unconfirmed, $unconfirmed->fresh()->status, 'a message that may have arrived is not sent again with the failed ones');
         Queue::assertPushed(SendSubscriptionMessage::class, 1);
         Queue::assertPushed(SendSubscriptionMessage::class, fn (SendSubscriptionMessage $job) => $job->message->is($failed));
+    }
+
+    public function test_an_unconfirmed_sms_is_settled_once_someone_has_checked(): void
+    {
+        $branchAdmin = User::factory()->branchAdmin()->create();
+        $batch = MessageBatch::factory()->create(['branch_id' => $branchAdmin->branch_id]);
+        $subscription = Subscription::factory()->create(['branch_id' => $branchAdmin->branch_id]);
+        $arrived = SubscriptionMessage::factory()->unconfirmed()->for($batch, 'batch')->for($subscription)->create();
+        $lost = SubscriptionMessage::factory()->unconfirmed()->for($batch, 'batch')->for($subscription)->create();
+        Queue::fake([SendSubscriptionMessage::class]);
+        $this->actingAs($branchAdmin);
+
+        $this->put(route('messages.unconfirmed', [$batch, $arrived]), ['outcome' => 'delivered'])->assertSessionHas('status', 'message-confirmed');
+        $this->put(route('messages.unconfirmed', [$batch, $lost]), ['outcome' => 'resend'])->assertSessionHas('status', 'message-resent');
+
+        $this->assertSame([MessageStatus::Sent, $branchAdmin->id, null], [$arrived->fresh()->status, $arrived->fresh()->sent_by, $arrived->fresh()->error]);
+        $this->assertSame(MessageStatus::Pending, $lost->fresh()->status);
+        Queue::assertPushed(SendSubscriptionMessage::class, 1);
+        Queue::assertPushed(SendSubscriptionMessage::class, fn (SendSubscriptionMessage $job) => $job->message->is($lost));
+        $this->get(route('messages.show', $batch))->assertInertia(fn ($page) => $page->where('batch.unconfirmed', 0)->where('batch.sent', 1));
+    }
+
+    public function test_only_an_unconfirmed_sms_of_the_viewers_branch_can_be_settled(): void
+    {
+        $branchAdmin = User::factory()->branchAdmin()->create();
+        $batch = MessageBatch::factory()->create(['branch_id' => $branchAdmin->branch_id]);
+        $failed = SubscriptionMessage::factory()->failed()->for($batch, 'batch')->create();
+        $foreignBatch = MessageBatch::factory()->create();
+        $foreign = SubscriptionMessage::factory()->unconfirmed()->for($foreignBatch, 'batch')->create();
+        Queue::fake([SendSubscriptionMessage::class]);
+        $this->actingAs($branchAdmin);
+
+        $this->put(route('messages.unconfirmed', [$batch, $failed]), ['outcome' => 'resend'])->assertSessionHasErrors('message');
+        $this->put(route('messages.unconfirmed', [$foreignBatch, $foreign]), ['outcome' => 'delivered'])->assertForbidden();
+        $this->put(route('messages.unconfirmed', [$batch, $failed]), ['outcome' => 'maybe'])->assertSessionHasErrors('outcome');
+
+        $this->assertSame([MessageStatus::Failed, MessageStatus::Unconfirmed], [$failed->fresh()->status, $foreign->fresh()->status]);
+        Queue::assertNothingPushed();
     }
 
     public function test_opening_a_whatsapp_message_marks_it_sent_by_the_staff_member(): void
