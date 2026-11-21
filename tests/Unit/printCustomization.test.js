@@ -19,7 +19,7 @@ before(async () => {
             if (id === '@inertiajs/react') return '\0inertia';
             if (id === 'react/jsx-runtime') return '\0jsx';
             if (id.startsWith('file:')) return { id, external: true };
-            if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/'))) return { id: import.meta.resolve(id), external: true };
+            if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria'))) return { id: import.meta.resolve(id), external: true };
         }, load(id) {
             if (id === '\0entry') return "export {default as Button,readingPrintUrl} from '@/Components/PrintButton'; export {default as Paper} from '@/Components/Print/PrintPaper'; export {default as Panel} from '@/Components/Print/PrintSettingsPanel'; export {state} from '@inertiajs/react';";
             if (id === '\0inertia') return `export const state={calls:[],fail:false,click:null}; export function usePage(){return {props:{can:{printAuditReports:true}}}}; export function useHttp(){let body;return {processing:false,transform(fn){body=fn},async post(url){state.calls.push([url,body?.()]);if(state.fail)throw Error('offline');return {token:'11111111-1111-4111-a111-111111111111'}}}};`;

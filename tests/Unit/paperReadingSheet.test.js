@@ -15,7 +15,7 @@ before(async () => {
             if (id === 'paper-preview-tests') return '\0entry';
             if (id === '@inertiajs/react') return '\0inertia';
             if (id.startsWith('file:')) return { id, external: true };
-            if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/'))) return { id: import.meta.resolve(id), external: true };
+            if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria'))) return { id: import.meta.resolve(id), external: true };
             if (/Layouts[/\\]AuthenticatedLayout(?:\.jsx)?$/.test(id)) return '\0layout';
             if (/Components[/\\]PrimaryButton(?:\.jsx)?$/.test(id)) return '\0primary';
             if (id.endsWith('.css')) return '\0css';

@@ -15,7 +15,7 @@ before(async () => {
             if (id === 'split-editor-components') return '\0entry';
             if (id === '@inertiajs/react') return '\0inertia';
             if (id.startsWith('file:')) return { id, external: true };
-            if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/')) || id === '@inertiajs/react') return { id: import.meta.resolve(id), external: true };
+            if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria')) || id === '@inertiajs/react') return { id: import.meta.resolve(id), external: true };
             if (/Components[/\\]Modal(?:\.jsx)?$/.test(id)) return '\0modal';
         }, load(id) {
             if (id === '\0entry') return "export {SplitPaymentEditor} from '@/Pages/Payments/EditSplitPaymentModal'; export {default as AmendTransactionModal} from '@/Pages/Subscriptions/AmendTransactionModal';";

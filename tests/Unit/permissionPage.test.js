@@ -28,7 +28,7 @@ before(async () => {
             name: 'render-permission-components',
             resolveId(id) {
                 if (id === 'exceljs') return { id: import.meta.resolve(id), external: true };
-                if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/')) || id === '@inertiajs/react') {
+                if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria')) || id === '@inertiajs/react') {
                     return { id: import.meta.resolve(id), external: true };
                 }
                 if (id.endsWith('.css')) { return '\0stylesheet'; }

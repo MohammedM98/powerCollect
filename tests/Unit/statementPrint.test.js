@@ -16,7 +16,7 @@ before(async () => {
         resolve: { alias: { '@': path.resolve(import.meta.dirname, '../../resources/js') } },
         plugins: [{ name: 'use-installed-react', resolveId(id) {
             if (id === 'exceljs') return { id: import.meta.resolve(id), external: true };
-            if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/'))) return { id: import.meta.resolve(id), external: true };
+            if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria'))) return { id: import.meta.resolve(id), external: true };
             if (id.endsWith('.css')) return '\0css';
         }, load(id) {
             if (id === '\0css') return '';
