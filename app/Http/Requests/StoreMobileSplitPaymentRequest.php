@@ -38,12 +38,13 @@ class StoreMobileSplitPaymentRequest extends StoreSplitPaymentRequest
         return $this->existingPayment() ? [] : parent::after();
     }
 
-    public function existingPayment(): ?SubscriptionTransaction
+    public function existingPayment(bool $latest = false): ?SubscriptionTransaction
     {
         $id = $this->input('mobile_operation_id');
 
+        // `$latest` reads past the transaction's snapshot, for the check made after the branch lock.
         return is_string($id) && $id !== ''
-            ? SubscriptionTransaction::query()->where('mobile_operation_id', $id)->where('type', SubscriptionTransaction::TYPE_PAYMENT)->first()
+            ? SubscriptionTransaction::query()->where('mobile_operation_id', $id)->where('type', SubscriptionTransaction::TYPE_PAYMENT)->when($latest, fn ($query) => $query->sharedLock())->first()
             : null;
     }
 }
