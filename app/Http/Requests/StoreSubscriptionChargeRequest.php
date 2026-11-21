@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\ChargeType;
 use App\Models\Closing;
 use App\Models\Subscription;
+use App\Support\Ledger\WebPaymentOperation;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -30,6 +31,7 @@ class StoreSubscriptionChargeRequest extends FormRequest
         return [
             ...self::chargeRules($this->input('type')),
             'override_minimum_amount' => ['sometimes', 'boolean'],
+            ...WebPaymentOperation::operationTokenRules(),
         ];
     }
 
@@ -37,12 +39,11 @@ class StoreSubscriptionChargeRequest extends FormRequest
     public function after(): array
     {
         return [function (Validator $validator): void {
-            if ($validator->errors()->isNotEmpty() || $this->input('type') !== ChargeType::MinimumCharge->value) {
-                return;
-            }
-
             /** @var Subscription $subscription */
             $subscription = $this->route('subscription');
+            if ($validator->errors()->isNotEmpty() || $this->input('type') !== ChargeType::MinimumCharge->value || app(WebPaymentOperation::class)->replay($subscription, $this->user(), $validator->validated(), WebPaymentOperation::CHARGE)) {
+                return;
+            }
             $minimum = $subscription->weeklyMinimumPayment();
             if (Closing::cents($minimum) <= 0) {
                 $validator->errors()->add('amount', 'لا يوجد حد أدنى موجب محدد لهذا المشترك.');
@@ -74,7 +75,7 @@ class StoreSubscriptionChargeRequest extends FormRequest
      */
     public function messages(): array
     {
-        return self::chargeMessages();
+        return [...self::chargeMessages(), ...WebPaymentOperation::operationTokenMessages()];
     }
 
     /**

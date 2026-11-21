@@ -59,11 +59,11 @@ class FinancialLifecycleTest extends TestCase
         $other = Subscription::factory()->for($branch)->create();
         SubscriptionTransaction::factory()->for($subscription)->create(['amount' => '1000.00']);
         SubscriptionTransaction::factory()->for($other)->create(['amount' => '200.00']);
-        $this->actingAs($head)->post(route('subscriptions.charges.store', $subscription), ['type' => 'penalty', 'amount' => '100', 'notes' => 'غرامة اختبار'])->assertSessionHasNoErrors();
-        $this->post(route('subscriptions.discounts.store', $subscription), ['method' => 'shekel', 'value' => '50', 'notes' => 'خصم اختبار'])->assertSessionHasNoErrors();
+        $this->actingAs($head)->post(route('subscriptions.charges.store', $subscription), ['operation_token' => (string) Str::uuid(), 'type' => 'penalty', 'amount' => '100', 'notes' => 'غرامة اختبار'])->assertSessionHasNoErrors();
+        $this->post(route('subscriptions.discounts.store', $subscription), ['operation_token' => (string) Str::uuid(), 'method' => 'shekel', 'value' => '50', 'notes' => 'خصم اختبار'])->assertSessionHasNoErrors();
         $cash = $this->pay($collector, $subscription, '100');
         $bank = $this->pay($collector, $subscription, '550', 'bank_transfer', 'BANK-MAIN');
-        $this->actingAs($collector)->post(route('subscriptions.clearings.store', $subscription), ['amount' => '50', 'notes' => 'خدمة صيانة'])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.clearings.store', $subscription), ['operation_token' => (string) Str::uuid(), 'amount' => '50', 'notes' => 'خدمة صيانة'])->assertSessionHasNoErrors();
         $clearing = $subscription->transactions()->where('type', SubscriptionTransaction::TYPE_CLEARING)->sole();
         $otherBank = $this->pay($secondCollector, $other, '100', 'bank_transfer', 'BANK-OTHER');
         $this->assertSame('350.00', $subscription->balance());

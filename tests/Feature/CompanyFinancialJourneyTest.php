@@ -63,9 +63,9 @@ class CompanyFinancialJourneyTest extends TestCase
         $this->assertSame('50.00', $reading->fresh()->amount_due);
         $this->assertSame('150.00', $subscription->balance());
 
-        $this->post(route('subscriptions.charges.store', $subscription), ['type' => 'penalty', 'amount' => '40', 'notes' => 'تحميل اختبار'])->assertSessionHasNoErrors();
-        $this->post(route('subscriptions.discounts.store', $subscription), ['method' => 'shekel', 'value' => '10', 'notes' => 'خصم اختبار'])->assertSessionHasNoErrors();
-        $this->actingAs($collector)->post(route('subscriptions.clearings.store', $subscription), ['amount' => '20', 'notes' => 'مقاصة خدمة'])->assertSessionHasNoErrors();
+        $this->post(route('subscriptions.charges.store', $subscription), ['operation_token' => (string) Str::uuid(), 'type' => 'penalty', 'amount' => '40', 'notes' => 'تحميل اختبار'])->assertSessionHasNoErrors();
+        $this->post(route('subscriptions.discounts.store', $subscription), ['operation_token' => (string) Str::uuid(), 'method' => 'shekel', 'value' => '10', 'notes' => 'خصم اختبار'])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.clearings.store', $subscription), ['operation_token' => (string) Str::uuid(), 'amount' => '20', 'notes' => 'مقاصة خدمة'])->assertSessionHasNoErrors();
         $this->post(route('subscriptions.payments.store', $subscription), ['payment_token' => (string) Str::uuid(), 'amount' => '30', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertSessionHasNoErrors();
         $late = ['amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash',
             'late_payment' => true, 'paid_on' => '2026-10-21', 'late_reason' => 'نسيان تسجيل السند',
@@ -76,6 +76,7 @@ class CompanyFinancialJourneyTest extends TestCase
         $other = Subscription::factory()->for($branch)->create();
         SubscriptionTransaction::factory()->for($other)->create(['amount' => '100.00']);
         $this->post(route('payments.split.store'), [
+            'operation_token' => (string) Str::uuid(),
             'total_amount' => '100', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'مرسل الحوالة',
             'reference_number' => 'JOURNEY-SPLIT', 'parts' => [
                 ['subscription_id' => $subscription->id, 'amount' => '40'],

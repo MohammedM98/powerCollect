@@ -76,7 +76,7 @@ class FinancialCycleReportsJourneyTest extends TestCase
         $salemCash = $this->pay($collector, $salem, ['amount' => '90', 'payment_method' => 'cash']);
         $khaledTransfer = $this->pay($collector, $khaled, ['amount' => '50', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'خالد', 'reference_number' => 'TRF-100']);
         $monaDollars = $this->pay($collector, $mona, ['amount' => '10', 'currency' => 'USD', 'exchange_rate' => '3.7', 'payment_method' => 'cash']);
-        $this->actingAs($manager)->post(route('subscriptions.discounts.store', $salem), ['method' => 'shekel', 'value' => '5'])->assertSessionHasNoErrors();
+        $this->actingAs($manager)->post(route('subscriptions.discounts.store', $salem), ['operation_token' => (string) Str::uuid(), 'method' => 'shekel', 'value' => '5'])->assertSessionHasNoErrors();
         $salemDiscount = $salem->transactions()->where('type', SubscriptionTransaction::TYPE_DISCOUNT)->sole();
         $this->assertSame(['000001', null, '000002'], [LinePresenter::printedVoucherNumber($salemCash), LinePresenter::printedVoucherNumber($khaledTransfer), LinePresenter::printedVoucherNumber($monaDollars)]);
         $this->assertSame(['-37.00', '10.00'], [$monaDollars->amount, $monaDollars->currency_amount]);
@@ -88,7 +88,7 @@ class FinancialCycleReportsJourneyTest extends TestCase
         $this->assertSame(['150.00', '151.00', '191.60', '109.40'], [$dayTwo['flow']['opening'], $dayTwo['flow']['chargesTotal'], $dayTwo['flow']['creditsTotal'], $dayTwo['flow']['closing']]);
 
         // Day 3: every action the statement offers, each one where it applies.
-        $this->actingAs($collector)->post(route('subscriptions.clearings.store', $khaled), ['amount' => '6.40', 'notes' => 'صيانة خط'])->assertSessionHasNoErrors();
+        $this->actingAs($collector)->post(route('subscriptions.clearings.store', $khaled), ['operation_token' => (string) Str::uuid(), 'amount' => '6.40', 'notes' => 'صيانة خط'])->assertSessionHasNoErrors();
         $clearing = $khaled->transactions()->where('type', SubscriptionTransaction::TYPE_CLEARING)->sole();
         $this->assertBalances([45.0, 30.0, 28.0], $salem, $khaled, $mona);
         $this->act($manager, $clearing, ['delete'], ['action' => 'delete', 'correction_notes' => 'المقاصة سُجّلت على الحساب الخطأ']);
@@ -96,7 +96,7 @@ class FinancialCycleReportsJourneyTest extends TestCase
         $this->assertSame('خالد يوسف', $khaledTransfer->fresh()->sender_name);
 
         $monaCash = $this->pay($collector, $mona, ['amount' => '30', 'payment_method' => 'cash']);
-        $this->actingAs($manager)->post(route('subscriptions.charges.store', $mona), ['type' => 'penalty', 'amount' => '20', 'notes' => 'تأخر عن السداد'])->assertSessionHasNoErrors();
+        $this->actingAs($manager)->post(route('subscriptions.charges.store', $mona), ['operation_token' => (string) Str::uuid(), 'type' => 'penalty', 'amount' => '20', 'notes' => 'تأخر عن السداد'])->assertSessionHasNoErrors();
         $penalty = $mona->transactions()->where('type', 'penalty')->sole();
         $this->act($manager, $penalty, ['edit', 'delete'], ['action' => 'edit', 'amount' => '25', 'amendment_reason' => 'قيمة الغرامة المعتمدة']);
         $this->act($manager, $monaCash, ['edit_metadata', 'refund'], ['action' => 'refund']);
