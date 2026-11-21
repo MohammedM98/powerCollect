@@ -128,11 +128,13 @@ class TransactionAuditPage
         return [
             ...self::eventBase('amendment', $amendment->id, $amendment->created_at, $amendment->user, $line->subscription),
             'lines' => [self::lineSummary($line->type, $line->amount, LinePresenter::displayVoucherNumber($line))],
-            'changes' => collect($amendment->changes)->map(fn (array $values, string $field): array => [
-                'label' => StatementBuilder::amendmentFieldLabel($field),
-                'from' => $values[0] ?? null,
-                'to' => $values[1] ?? null,
-            ])->values()->all(),
+            'changes' => collect($amendment->changes)
+                ->sortBy(fn (array $values, string $field): int => StatementBuilder::fieldPosition(['amount', ...SubscriptionTransaction::AMENDABLE_FIELDS], $field))
+                ->map(fn (array $values, string $field): array => [
+                    'label' => StatementBuilder::amendmentFieldLabel($field),
+                    'from' => $values[0] ?? null,
+                    'to' => $values[1] ?? null,
+                ])->values()->all(),
             'reason' => $amendment->reason,
             'notes' => null,
             // Most amendments change details only; editing the last invoice changes its amount in place.
