@@ -28,7 +28,7 @@ function BranchOverview({ branches, canCreate }) {
     }
 
     return (
-        <div className="space-y-5">
+        <div className="space-y-6">
             <section aria-label="ملخص تجهيز القراءات" className="gl-rp-figs">
                 <Figure dark label="الفروع" hint={visible[0] ? `القراءة القادمة ${visible[0].readingDayName} ${formatDate(visible[0].readingDate)}` : 'اختر الفرع لمراجعة توزيعه'}>{formatNumber(branches.length)}</Figure>
                 <Figure tone="pay" label="قراءات مجهّزة" hint="تُتاح مهامها للقرّاء قبل يوم القراءة">{formatNumber(prepared)}</Figure>
@@ -95,7 +95,7 @@ function BranchOverview({ branches, canCreate }) {
             )}
 
             {visible.length === 0 && (
-                <Card className="gl-rp-panel items-center gap-3 px-5 py-12 text-center">
+                <Card className="gl-rp-panel items-center gap-3 px-4 py-8 text-center">
                     <Icon name={branches.length ? 'search' : 'office'} className="h-9 w-9 text-gray-400" />
                     <h3 className="font-bold text-gray-900">{branches.length ? 'لا توجد فروع مطابقة' : 'لا توجد فروع متاحة للتوزيع'}</h3>
                     <p className="text-sm text-gray-500">{branches.length ? 'غيّر اسم الفرع أو حالة التجهيز لعرض نتائج أخرى.' : 'تظهر هنا الفروع المفعّلة عند إضافتها.'}</p>

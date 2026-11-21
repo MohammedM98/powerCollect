@@ -61,7 +61,7 @@ export default function QuickMessageRecipients({
                         autoComplete="off"
                         autoFocus={subscriptionIds.length === 0}
                         disabled={pickedIds.length >= maxRecipients}
-                        className="block w-full ps-9 text-sm"
+                        className="block w-full ps-8 text-sm"
                         aria-describedby={`${id}-search-results`}
                     />
                 </div>
@@ -70,10 +70,10 @@ export default function QuickMessageRecipients({
                         id={`${id}-search-results`}
                         aria-label="نتائج البحث"
                         aria-busy={searchHttp.processing}
-                        className="mt-1.5 divide-y divide-gray-100 overflow-hidden rounded-control border border-gray-200 bg-surface shadow-card"
+                        className="mt-2 divide-y divide-gray-100 overflow-hidden rounded-control border border-gray-200 bg-surface shadow-card"
                     >
                         {results.length === 0 ? (
-                            <li className="px-3 py-2.5 text-sm text-gray-500">{searchHttp.processing ? 'جارٍ البحث...' : 'لا يوجد مشترك مطابق.'}</li>
+                            <li className="px-3 py-2 text-sm text-gray-500">{searchHttp.processing ? 'جارٍ البحث...' : 'لا يوجد مشترك مطابق.'}</li>
                         ) : (
                             results.map((row) => {
                                 const alreadyPicked = pickedIds.includes(row.id);
@@ -83,7 +83,7 @@ export default function QuickMessageRecipients({
                                         <Button data-raw="" variant="ghost"
                                             onClick={() => pick(row)}
                                             isDisabled={alreadyPicked}
-                                            className={`flex w-full items-center gap-3 px-3 py-2.5 text-start text-sm transition hover:bg-gray-50 disabled:cursor-default disabled:opacity-60 ${FOCUS_RING}`}
+                                            className={`flex w-full items-center gap-3 px-3 py-2 text-start text-sm transition hover:bg-gray-50 disabled:cursor-default disabled:opacity-60 ${FOCUS_RING}`}
                                         >
                                             <Icon name={alreadyPicked ? 'check' : 'plus'} className="h-4 w-4 shrink-0 text-gray-400" />
                                             <span className="min-w-0 flex-1">

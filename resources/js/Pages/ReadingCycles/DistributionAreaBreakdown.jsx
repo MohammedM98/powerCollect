@@ -12,7 +12,7 @@ export default function DistributionAreaBreakdown({ areas }) {
             <details className="mt-2 text-xs text-gray-500">
                 <summary className="cursor-pointer font-semibold text-brand-600">عرض الطبلونات ({formatNumber(area.boxes)})</summary>
                 <ul className="mt-2 flex max-h-48 flex-wrap gap-2 overflow-y-auto rounded-control bg-gray-50 p-2" aria-label={`طبلونات ${area.name}`}>
-                    {area.items.map((box) => <li key={box.id} className="rounded-md border border-gray-100 bg-surface px-2 py-1.5 text-gray-700">{box.name || 'طبلون'} <bdi dir="ltr" className="whitespace-nowrap font-display font-bold">({box.number})</bdi></li>)}
+                    {area.items.map((box) => <li key={box.id} className="rounded-md border border-gray-100 bg-surface px-2 py-2 text-gray-700">{box.name || 'طبلون'} <bdi dir="ltr" className="whitespace-nowrap font-display font-bold">({box.number})</bdi></li>)}
                 </ul>
             </details>
         </div>

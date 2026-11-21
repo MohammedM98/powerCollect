@@ -9,7 +9,7 @@ function ReadOnlyField({ id, label, value, dir }) {
         <div>
             <InputLabel htmlFor={id} value={label} />
             <div className="relative mt-1" dir={dir}>
-                <TextInput id={id} readOnly value={value} title="للقراءة فقط" className="w-full bg-gray-50 pe-10 text-gray-600" />
+                <TextInput id={id} readOnly value={value} title="للقراءة فقط" className="w-full bg-gray-50 field-room-end text-gray-600" />
                 <FieldLock />
             </div>
         </div>

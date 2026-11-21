@@ -195,7 +195,7 @@ export default function Index({
                                             <MeterBoxCell name={subscription.meterBoxName} number={subscription.meterBoxNumber} />
                                         </td>
                                         <td>
-                                            <span className={`inline-block whitespace-nowrap rounded-[10px] px-2.5 py-0.5 font-display text-[14.5px] font-bold ${BALANCE_CHIPS[described.tone]}`}>
+                                            <span className={`inline-block whitespace-nowrap rounded-[10px] px-3 py-1 font-display text-[14.5px] font-bold ${BALANCE_CHIPS[described.tone]}`}>
                                                 {balanceText(described)}
                                             </span>
                                         </td>

@@ -14,7 +14,7 @@ export default function CashBoxReport({ report }) {
 
     return <AuthenticatedLayout header={<PageHeader title="تقرير تفاصيل الصندوق" />}>
         <Head title="تقرير تفاصيل الصندوق" />
-        <section data-excel-source="custom" className="space-y-5 rounded-panel border border-gray-100 bg-surface p-6 shadow-card">
+        <section data-excel-source="custom" className="space-y-6 rounded-panel border border-gray-100 bg-surface p-6 shadow-card">
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <Link href="/payments/cash-boxes" className="text-sm font-semibold text-brand-600">العودة إلى الصناديق</Link>
                 <TableExportActions title="تقرير تفاصيل الصندوق" />

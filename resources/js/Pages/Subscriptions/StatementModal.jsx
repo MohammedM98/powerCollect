@@ -55,8 +55,8 @@ export default function StatementModal({ subscription, statement, initialForm = 
         <>
             <Modal show onClose={onClose} maxWidth="full">
                 <div role="dialog" aria-modal="true" aria-labelledby={titleId} className="gl-statement flex min-h-0 flex-col">
-                    <header className="gl-dialog-head grid shrink-0 gap-3.5 px-4 py-4 sm:px-6">
-                        <div className="flex items-start gap-3.5">
+                    <header className="gl-dialog-head grid shrink-0 gap-4 px-4 py-4 sm:px-6">
+                        <div className="flex items-start gap-4">
                             <span className="gl-st-av" data-status={header.status} aria-hidden="true">
                                 {initials(header.fullName)}
                                 <i />
@@ -78,7 +78,7 @@ export default function StatementModal({ subscription, statement, initialForm = 
                                         />
                                     )}
                                 </StatementTitle>
-                                <p className="gl-sub mt-1.5 text-[13.5px]!">
+                                <p className="gl-sub mt-2 text-[13.5px]!">
                                     {header.subscriberNumber && (
                                         <>
                                             مشترك <span dir="ltr">{header.subscriberNumber}</span>،{' '}

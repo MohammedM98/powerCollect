@@ -32,7 +32,7 @@ export default function Index({ branches, canCreate, filters, filterOptions, gov
             }
         >
             <Head title="الفروع" />
-            {canManageDomains && !domainRoutingEnabled && <p className="mb-5 rounded-control border border-gray-200 bg-surface p-4 text-sm leading-7 text-gray-600">يمكنك تجهيز روابط الفروع هنا. تشغيلها يحتاج ربط DNS وHTTPS بالاستضافة وتفعيل توجيه الدومينات عند النشر.</p>}
+            {canManageDomains && !domainRoutingEnabled && <p className="mb-6 rounded-control border border-gray-200 bg-surface p-4 text-sm leading-7 text-gray-600">يمكنك تجهيز روابط الفروع هنا. تشغيلها يحتاج ربط DNS وHTTPS بالاستضافة وتفعيل توجيه الدومينات عند النشر.</p>}
 
             <DataTableToolbar
                 search={search}

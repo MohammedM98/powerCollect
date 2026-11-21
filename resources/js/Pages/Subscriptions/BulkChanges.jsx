@@ -25,7 +25,7 @@ function DetailsModal({ change, details, onClose }) {
     return (
         <Modal show onClose={onClose} maxWidth="3xl">
             <div role="dialog" aria-modal="true" aria-labelledby="bulk-details-title">
-                <div className="flex items-start justify-between gap-4 px-7 pb-3 pt-7">
+                <div className="flex items-start justify-between gap-4 px-6 pb-3 pt-6">
                     <div>
                         <h3 id="bulk-details-title" className="flex items-center gap-2 text-lg font-bold text-gray-900">
                             <Icon name={FIELD_ICONS[change.field]} className="h-5 w-5" />
@@ -35,11 +35,11 @@ function DetailsModal({ change, details, onClose }) {
                             {change.changedCount.toLocaleString('en')} مشترك — {DATE_TIME_FORMAT.format(new Date(change.createdAt))}
                         </p>
                     </div>
-                    <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق" className={`rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 ${FOCUS_RING}`}>
+                    <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق" className={`rounded-lg p-2 text-gray-500 hover:bg-gray-100 ${FOCUS_RING}`}>
                         <Icon name="close" className="h-5 w-5" />
                     </Button>
                 </div>
-                <div className="max-h-[60vh] overflow-y-auto px-7 pb-7">
+                <div className="max-h-[60vh] overflow-y-auto px-6 pb-6">
                     {!loaded ? (
                         <p className="py-8 text-center text-sm text-gray-500">جارٍ التحميل...</p>
                     ) : (
@@ -146,15 +146,15 @@ export default function BulkChanges({ changes, filters, details }) {
                                         )}
                                     </td>
                                     <td className="text-end">
-                                        <div className="flex justify-end gap-1.5">
-                                            <SecondaryKey onClick={() => view(change)} className="px-3! py-1.5! text-xs" aria-label={`عرض مشتركي «${change.description}»`}>
+                                        <div className="flex justify-end gap-2">
+                                            <SecondaryKey onClick={() => view(change)} className="px-3! py-2! text-xs" aria-label={`عرض مشتركي «${change.description}»`}>
                                                 <Icon name="eye" className="h-4 w-4" />
                                                 المشتركون
                                             </SecondaryKey>
                                             {change.canUndo && (
                                                 <SecondaryKey
                                                     onClick={() => setUndoing(change)}
-                                                    className="px-3! py-1.5! text-xs text-brand-600"
+                                                    className="px-3! py-2! text-xs text-brand-600"
                                                     aria-label={`التراجع عن «${change.description}»`}
                                                 >
                                                     <Icon name="undo" className="h-4 w-4" />

@@ -10,7 +10,7 @@ const STATUS_TONES = { active: 'green', suspended: 'amber', disconnected: 'red' 
 export function SubscriptionRows({ subscriptions, boxNumber }) {
     return (
         <div role="table" tabIndex={0} aria-label={`مشتركو ${boxNumber}`} className="max-h-[480px] overflow-y-auto rounded-control border border-gray-100 bg-surface text-start focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900">
-            <div role="row" className="meter-box-subscription-columns sticky top-0 z-10 hidden border-b border-brand-500/10 bg-surface px-4 py-2.5 text-xs font-bold text-gray-700">
+            <div role="row" className="meter-box-subscription-columns sticky top-0 z-10 hidden border-b border-brand-500/10 bg-surface px-4 py-2 text-xs font-bold text-gray-700">
                 {['المشترك / رقم الاشتراك', 'القراءة السابقة', 'القاطع', 'الحالة', 'الكشف'].map((label) => <span role="columnheader" key={label}>{label}</span>)}
             </div>
             <div role="rowgroup" className="divide-y divide-gray-100">
@@ -81,16 +81,16 @@ export default function MeterBoxSubscriptions({ meterBox, sort, direction, canRe
                         <h4 className="text-sm font-bold text-gray-900">مشتركو الطبلون <span dir="ltr" className="font-display">{meterBox.box_number}</span></h4>
                         <p className="mt-1 text-xs font-semibold text-gray-600">{meterBox.display_name}</p>
                     </div>
-                    <span className="shrink-0 rounded-control border border-brand-500/15 bg-surface px-2.5 py-1 text-xs font-bold text-brand-600">{formatNumber(meterBox.subscriptionsCount)} مشترك</span>
+                    <span className="shrink-0 rounded-control border border-brand-500/15 bg-surface px-3 py-1 text-xs font-bold text-brand-600">{formatNumber(meterBox.subscriptionsCount)} مشترك</span>
                 </div>
                 <div className="flex w-full flex-wrap items-end gap-3 sm:ms-auto sm:w-auto">
-                    {canSendMessages && meterBox.subscriptionsCount > 0 && <Link href={`/messages/create?kind=custom&channel=sms&status=&meter_box_id=${meterBox.id}`} className="inline-flex items-center gap-2 rounded-control border border-gray-200 bg-surface px-3 py-1.5 text-xs font-semibold text-gray-900 hover:bg-gray-50"><Icon name="messages" className="h-4 w-4" />رسالة للمشتركين</Link>}
-                    {canRecordReadings && meterBox.activeSubscriptionsCount > 0 && <Link href={`/meter-readings?filter[meter_box_id]=${meterBox.id}`} className="inline-flex items-center gap-2 rounded-control border border-gray-200 bg-surface px-3 py-1.5 text-xs font-semibold text-gray-900 hover:bg-gray-50"><Icon name="gauge" className="h-4 w-4" />تسجيل قراءات</Link>}
+                    {canSendMessages && meterBox.subscriptionsCount > 0 && <Link href={`/messages/create?kind=custom&channel=sms&status=&meter_box_id=${meterBox.id}`} className="inline-flex items-center gap-2 rounded-control border border-gray-200 bg-surface px-3 py-2 text-xs font-semibold text-gray-900 hover:bg-gray-50"><Icon name="messages" className="h-4 w-4" />رسالة للمشتركين</Link>}
+                    {canRecordReadings && meterBox.activeSubscriptionsCount > 0 && <Link href={`/meter-readings?filter[meter_box_id]=${meterBox.id}`} className="inline-flex items-center gap-2 rounded-control border border-gray-200 bg-surface px-3 py-2 text-xs font-semibold text-gray-900 hover:bg-gray-50"><Icon name="gauge" className="h-4 w-4" />تسجيل قراءات</Link>}
                 </div>
             </div>
             <div className="p-4">
             {failed ? (
-                <div role="alert" className="rounded-control border border-gray-100 bg-surface p-5 text-center text-sm text-gray-600">
+                <div role="alert" className="rounded-control border border-gray-100 bg-surface p-4 text-center text-sm text-gray-600">
                     <p>تعذّر تحميل المشتركين. حاول مرة أخرى.</p>
                     <SecondaryKey className="mt-3" onClick={() => load(rows?.current_page ?? 1)}>إعادة المحاولة</SecondaryKey>
                 </div>
@@ -103,7 +103,7 @@ export default function MeterBoxSubscriptions({ meterBox, sort, direction, canRe
                 <div className="rounded-control border border-dashed border-brand-500/20 bg-brand-500/2.5 px-4 py-8 text-center">
                     <span className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-control bg-brand-500/10 text-brand-600"><Icon name="users" className="h-5 w-5" /></span>
                     <p className="text-sm font-bold text-gray-900">لا يوجد مشتركون على هذا الطبلون.</p>
-                    <p className="mt-1.5 text-xs text-gray-500">سيظهر المشتركون هنا عند ربطهم بالطبلون.</p>
+                    <p className="mt-2 text-xs text-gray-500">سيظهر المشتركون هنا عند ربطهم بالطبلون.</p>
                 </div>
             ) : (
                 <>
@@ -111,9 +111,9 @@ export default function MeterBoxSubscriptions({ meterBox, sort, direction, canRe
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-gray-500">
                         <span>عرض <b className="font-display">{rows.from}–{rows.to}</b> من <b className="font-display">{rows.total}</b> مشترك</span>
                         {rows.last_page > 1 && <div className="flex items-center gap-2">
-                            <SecondaryKey className="px-3! py-1.5! text-xs!" disabled={http.processing || rows.current_page === 1} onClick={() => load(rows.current_page - 1)}>السابق</SecondaryKey>
+                            <SecondaryKey className="px-3! py-2! text-xs!" disabled={http.processing || rows.current_page === 1} onClick={() => load(rows.current_page - 1)}>السابق</SecondaryKey>
                             <span className="font-display">{rows.current_page} / {rows.last_page}</span>
-                            <SecondaryKey className="px-3! py-1.5! text-xs!" disabled={http.processing || rows.current_page === rows.last_page} onClick={() => load(rows.current_page + 1)}>التالي</SecondaryKey>
+                            <SecondaryKey className="px-3! py-2! text-xs!" disabled={http.processing || rows.current_page === rows.last_page} onClick={() => load(rows.current_page + 1)}>التالي</SecondaryKey>
                         </div>}
                     </div>
                 </>

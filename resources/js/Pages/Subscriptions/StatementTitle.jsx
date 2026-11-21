@@ -8,7 +8,7 @@ export default function StatementTitle({ id, name, as: Heading = 'h2', children 
     return (
         <div className="gl-statement-title">
             <span className="gl-statement-kicker">كشف حساب</span>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                 <Heading id={id} className="gl-statement-name" aria-label={`كشف حساب ${name}`}>
                     {name}
                 </Heading>

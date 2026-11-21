@@ -54,7 +54,7 @@ export function StatementRow({
             onMouseLeave={chain ? () => onHoverChain(null) : undefined}
         >
             <td data-label="#" className="whitespace-nowrap tabular-nums">
-                <span className="inline-flex items-center gap-1.5 font-semibold text-gray-700" title={chain ? 'الحركات المرتبطة بنفس اللون' : undefined}>
+                <span className="inline-flex items-center gap-2 font-semibold text-gray-700" title={chain ? 'الحركات المرتبطة بنفس اللون' : undefined}>
                     {color && <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full" style={{ background: `rgb(${color})` }} />}
                     #{entry.lineNumber}
                     {entry.discountLine && <span className="font-normal text-gray-400">+ #{entry.discountLine.lineNumber}</span>}
@@ -111,7 +111,7 @@ export function StatementRow({
                 {entry.discountLine && <ReadingDiscountNote discountLine={entry.discountLine} />}
                 {entry.cancellation && <CancellationNote cancellation={entry.cancellation} onJump={onJump} />}
                 {entry.reverses && <ReversalNote entry={entry} reverses={entry.reverses} onJump={onJump} />}
-                {entry.auditOriginal && <p className="ledger-description mt-1.5 text-xs text-gray-600"><Button data-raw="" variant="ghost" onClick={() => onJump(entry.auditOriginal.id)} className="font-semibold hover:underline">تصحيح حوالة للدفعة #{entry.auditOriginal.lineNumber} ↑</Button></p>}
+                {entry.auditOriginal && <p className="ledger-description mt-2 text-xs text-gray-600"><Button data-raw="" variant="ghost" onClick={() => onJump(entry.auditOriginal.id)} className="font-semibold hover:underline">تصحيح حوالة للدفعة #{entry.auditOriginal.lineNumber} ↑</Button></p>}
                 {entry.linkedReversal && <LinkedReversalNote reversal={entry.linkedReversal} onJump={onJump} />}
                 {showsHistory ? (
                     <HistoryToggle entry={entry} isOpen={historyOpen} onToggle={onToggleHistory} />
@@ -124,7 +124,7 @@ export function StatementRow({
                 className="font-display font-semibold tabular-nums text-gray-900"
             >
                 {entry.discountLine ? (
-                    <span className="grid gap-0.5">
+                    <span className="grid gap-1">
                         <span>{formatMoney(netOfReadingDiscount(entry))}</span>
                         <span className="font-sans text-xs font-normal text-gray-500" title="القراءة − خصم القراءة الأسبوعية">
                             <bdi dir="ltr">
@@ -148,7 +148,7 @@ export function StatementRow({
                         <StatusPill tone={entry.cancellation.wasCorrected ? 'amber' : 'gray'} label={entry.cancellation.wasCorrected ? 'مُصحّحة' : 'ملغاة'} />
                     )}
                     {entry.isCorrection && (
-                        <span className="inline-flex items-center whitespace-nowrap rounded-full border border-amber-500/25 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
+                        <span className="inline-flex items-center whitespace-nowrap rounded-full border border-amber-500/25 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-700">
                             تصحيح
                         </span>
                     )}

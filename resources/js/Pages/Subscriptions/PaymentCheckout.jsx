@@ -137,7 +137,7 @@ function CheckoutAmount({ amountInput, currencies, currencyLabel, currencyMark, 
             <InputError message={errors.payment_token} className="mt-2" />
             <InputError message={errors.exchange_rate} className="mt-2" />
             {errors.amount && (
-                <p id={`${titleId}-amount-error`} role="alert" className="gl-error mt-2 flex items-center justify-center gap-1.5">
+                <p id={`${titleId}-amount-error`} role="alert" className="gl-error mt-2 flex items-center justify-center gap-2">
                     <Icon name="info" className="h-[18px] w-[18px]" />
                     {errors.amount}
                 </p>
@@ -145,7 +145,7 @@ function CheckoutAmount({ amountInput, currencies, currencyLabel, currencyMark, 
             {overpayment !== 'none' && (
                 <div role={overpayment === 'confirm' ? 'alert' : 'status'} className="gl-notice mt-3 text-start" style={{ '--gl-c': overpayment === 'confirm' ? 'var(--gl-bad)' : 'var(--gl-warn)' }}>
                     <p className="flex items-start gap-2 font-medium">
-                        <Icon name="alert" className="mt-0.5 h-[18px] w-[18px] shrink-0" />
+                        <Icon name="alert" className="mt-1 h-[18px] w-[18px] shrink-0" />
                         <span>
                             {overpayment === 'confirm' ? 'المبلغ أكبر بكثير من المستحق' : 'المبلغ أكبر من المستحق'} على المشترك (
                             <bdi className="gl-num">{formatMoney(owed)}</bdi> ₪)، وسيبقى له رصيد دائن قدره <bdi className="gl-num font-bold">{formatMoney((inShekels ?? 0) - owed)}</bdi> ₪.
@@ -258,7 +258,7 @@ function CheckoutTransfer({ data, errors, referenceCheck, referenceStatus, sende
                                     {referenceStatus.conflict.subscriptionName}
                                 </a>
                             </p>
-                            <label className="mt-1.5 flex items-center gap-2">
+                            <label className="mt-2 flex items-center gap-2">
                                 <CheckBox checked={Boolean(data.confirm_duplicate_reference)} onChange={(e) => setData('confirm_duplicate_reference', e.target.checked)} />
                                 أؤكد تسجيل الدفعة بالرقم نفسه
                             </label>

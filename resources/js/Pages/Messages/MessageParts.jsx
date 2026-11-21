@@ -25,7 +25,7 @@ const STATUS_TONES = { pending: 'amber', sent: 'green', failed: 'red' };
 /** What a send is about: its icon and name, tinted by kind. */
 export function KindPill({ kind, label }) {
     return (
-        <span className="inline-flex items-center gap-1.5">
+        <span className="inline-flex items-center gap-2">
             <Icon name={KIND_ICONS[kind] ?? 'note'} className="h-4 w-4 shrink-0 text-gray-500" />
             <StatusPill tone={KIND_TONES[kind] ?? 'gray'} label={label} />
         </span>
@@ -35,7 +35,7 @@ export function KindPill({ kind, label }) {
 /** How a send went out: SMS or WhatsApp, with its icon. */
 export function ChannelLabel({ channel, label }) {
     return (
-        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-gray-700">
+        <span className="inline-flex items-center gap-2 whitespace-nowrap text-gray-700">
             <Icon name={CHANNEL_ICONS[channel] ?? 'send'} className="h-4 w-4 shrink-0 text-gray-500" />
             {label}
         </span>

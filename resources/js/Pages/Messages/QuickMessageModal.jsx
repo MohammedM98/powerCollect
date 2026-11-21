@@ -280,7 +280,7 @@ export default function QuickMessageModal({ subscriptionIds = [], selection = nu
         <>
             <Modal show onClose={onClose} maxWidth="3xl">
                 <div role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} className="flex max-h-[90vh] flex-col">
-                    <div className="flex items-center justify-between border-b border-gray-100 px-7 py-5">
+                    <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
                         <div className="flex items-center gap-3">
                             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600">
                                 <Icon name="send" />
@@ -299,11 +299,11 @@ export default function QuickMessageModal({ subscriptionIds = [], selection = nu
                     </div>
 
                     {setupFailed || setup === null ? (
-                        <div className="px-7 py-6">
+                        <div className="px-6 py-6">
                             <AsyncState loading={setup === null} error={setupFailed ? 'تعذّر تحميل نافذة الرسائل. أغلقها وحاول مرة أخرى.' : null} />
                         </div>
                     ) : (
-                        <div className="flex-1 space-y-6 overflow-y-auto px-7 py-6">
+                        <div className="flex-1 space-y-6 overflow-y-auto px-6 py-6">
                             <QuickMessageKind
                                 approvedOnly={approvedOnly}
                                 changeKind={changeKind}

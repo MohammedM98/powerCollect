@@ -27,7 +27,7 @@ export default function BranchForm({ data, setData, errors, governorates, areas 
     }
 
     return (
-        <div className="space-y-5">
+        <div className="space-y-6">
             <FormSection icon="building" title="بيانات الفرع" columns={1}>
                 <FormField id="name" label="الاسم" required error={errors.name}>
                     <TextInput className="block w-full" value={data.name} autoFocus onChange={(e) => setData('name', e.target.value)} />

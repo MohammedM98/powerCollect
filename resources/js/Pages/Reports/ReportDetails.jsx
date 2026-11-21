@@ -74,7 +74,7 @@ function ReportTable({ columns, title, section, nameCell, cell, empty, exportRow
         />
         <div className="data-table-container">
             <table aria-label={title} className="data-table reports-detail-table w-full text-start">
-                <thead><tr>{columns.map((column) => <SortableTh key={column.key} column={column.key} label={column.label} sortState={model.state} onSort={controls.sort} className={isAmount(column) || column.type === 'int' ? 'text-right!' : ''} />)}</tr></thead>
+                <thead><tr>{columns.map((column) => <SortableTh key={column.key} column={column.key} label={column.label} sortState={model.state} onSort={controls.sort} className={isAmount(column) || column.type === 'int' ? 'text-start!' : ''} />)}</tr></thead>
                 <tbody>{rows.length ? rows.map((row, index) => <tr key={row.id ?? index}>{columns.map((column) => <td key={column.key} data-label={column.label} dir={isAmount(column) || column.type === 'int' ? 'ltr' : undefined} className={isAmount(column) || column.type === 'int' ? 'font-display tabular-nums' : ''}>{renderValue(row, column)}</td>)}</tr>) : <tr><td colSpan={columns.length}><div role="status" className="mx-auto flex max-w-lg flex-col items-center gap-3 py-4"><Icon name="list" className="h-8 w-8 text-gray-400" /><b className="text-base text-gray-700">{model.active ? 'لا توجد حركات تطابق البحث والفلاتر' : empty?.title ?? 'لا توجد سجلات خلال الفترة المختارة'}</b><p className="text-sm leading-7 text-gray-500">{model.active ? 'جرّب تعديل البحث أو إزالة الفلاتر لعرض السجلات المتاحة.' : empty?.description ?? 'اختر فترة أخرى أو فرعًا آخر من أعلى الصفحة.'}</p>{model.active ? <Button data-raw="" variant="ghost" className={secondaryButtonClass} onClick={() => { controls.setSearch(''); controls.clearFilters(); }}>مسح البحث والفلاتر</Button> : empty?.action}</div></td></tr>}</tbody>
             </table>
         </div>
@@ -92,7 +92,7 @@ function TableReport({ section, ...props }) {
 export function DebtReport({ data, visit }) {
     const { canViewStatements } = usePage().props;
     if (!data) return null;
-    return <div className="space-y-5">
+    return <div className="space-y-6">
         <DebtFigures data={data} />
         <TableReport section="debts" title="ديون المشتركين" columns={debtColumns} cell={debtCell} nameCell={(row) => canViewStatements ? <Button data-raw="" variant="ghost" className="font-semibold text-brand-600 underline-offset-4 hover:underline" onClick={() => visit({ section: 'statement', subscription: row.id, page: undefined })}>{row.name}</Button> : row.name} />
     </div>;
@@ -100,7 +100,7 @@ export function DebtReport({ data, visit }) {
 
 export function BoxesReport({ data }) {
     if (!data) return null;
-    return <div className="space-y-5">
+    return <div className="space-y-6">
         <BoxesFigures data={data} />
         <TableReport section="boxes" title="الصناديق والأموال" columns={boxColumns} />
     </div>;
@@ -113,10 +113,10 @@ export function StatementReport({ data, visit }) {
     const withBalances = (lines) => [{ id: 'opening', day: filters.from, description: 'الرصيد الافتتاحي', balance: data.opening, debit: '0.00', credit: '0.00' }, ...lines, { id: 'closing', day: filters.to, description: 'الرصيد الختامي', balance: data.closing, debit: '0.00', credit: '0.00' }];
     const last90 = (presets ?? []).find((preset) => preset.key === 'last90' || preset.key === 'quarter');
     const closingHint = Number(data.closing) > 0 ? 'مستحق للشركة' : Number(data.closing) < 0 ? 'لصالح المشترك' : 'الحساب مسدّد';
-    return <div className="space-y-5">
-        <section aria-label="المشترك المحدد" className="rounded-panel border border-gray-100 bg-surface p-5 shadow-card sm:p-6">
+    return <div className="space-y-6">
+        <section aria-label="المشترك المحدد" className="rounded-panel border border-gray-100 bg-surface p-4 shadow-card sm:p-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex min-w-0 items-center gap-3"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-graphite-gradient text-white"><Icon name="users" className="h-6 w-6" /></span><div className="min-w-0"><p className="text-[13.5px] font-semibold text-gray-700">كشف حساب المشترك المحدد</p><h3 className="mt-1 wrap-break-word text-lg font-bold text-gray-900">{data.subscription.name}</h3><div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500"><span>رقم الحساب <bdi dir="ltr" className="font-display font-semibold text-gray-700">{data.subscription.accountNumber}</bdi></span><span className="inline-flex items-center gap-1.5"><Icon name="building" className="h-4 w-4" />{data.subscription.branchName}</span></div></div></div>
+                <div className="flex min-w-0 items-center gap-3"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-graphite-gradient text-white"><Icon name="users" className="h-6 w-6" /></span><div className="min-w-0"><p className="text-[13.5px] font-semibold text-gray-700">كشف حساب المشترك المحدد</p><h3 className="mt-1 wrap-break-word text-lg font-bold text-gray-900">{data.subscription.name}</h3><div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500"><span>رقم الحساب <bdi dir="ltr" className="font-display font-semibold text-gray-700">{data.subscription.accountNumber}</bdi></span><span className="inline-flex items-center gap-2"><Icon name="building" className="h-4 w-4" />{data.subscription.branchName}</span></div></div></div>
                 <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto"><SecondaryKey className="h-11 w-full sm:w-auto" onClick={() => visit({ subscription: undefined, page: undefined })}><Icon name="users" className="h-4 w-4" />اختيار مشترك آخر</SecondaryKey><GroupActionButton className="h-11 w-full sm:w-auto" onClick={() => router.visit(data.subscription.url)}><Icon name="ledger" className="h-4 w-4" />كشف الحساب الكامل</GroupActionButton></div>
             </div>
         </section>

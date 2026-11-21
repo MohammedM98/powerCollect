@@ -27,7 +27,7 @@ export default function ExcelCompanyTemplates({
             ) : (
                 <ul className="mb-3 overflow-hidden rounded-control border border-gray-100">
                     {company.templates.map((template) => (
-                        <li key={template.id} className="flex items-center gap-1.5 border-b border-gray-100 px-3 py-2 last:border-b-0">
+                        <li key={template.id} className="flex items-center gap-2 border-b border-gray-100 px-3 py-2 last:border-b-0">
                             <Button data-raw="" variant="ghost"
                                 className="min-w-0 flex-1 text-start text-sm"
                                 onClick={() => applyTemplate(template.settings)}
@@ -39,7 +39,7 @@ export default function ExcelCompanyTemplates({
                                 )}
                             </Button>
                             {template.isDefault && (
-                                <span className="shrink-0 rounded-full bg-excel-500/10 px-2 py-0.5 text-[11px] font-bold text-excel-700">
+                                <span className="shrink-0 rounded-full bg-excel-500/10 px-2 py-1 text-[11px] font-bold text-excel-700">
                                     الافتراضي
                                 </span>
                             )}
@@ -48,7 +48,7 @@ export default function ExcelCompanyTemplates({
                                     <Button data-raw="" variant="ghost"
                                         isDisabled={saveHttp.processing}
                                         onClick={() => sendCompany('put', `/excel-templates/${template.id}`, { settings: layout() })}
-                                        className="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-40"
+                                        className="rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-40"
                                         aria-label={`حفظ الإعداد الحالي في ${template.name}`}
                                         title="حفظ الإعداد الحالي فيه"
                                     >
@@ -57,7 +57,7 @@ export default function ExcelCompanyTemplates({
                                     <Button data-raw="" variant="ghost"
                                         isDisabled={saveHttp.processing}
                                         onClick={() => sendCompany('put', `/excel-templates/${template.id}`, { is_default: !template.isDefault })}
-                                        className="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-40"
+                                        className="rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-40"
                                         aria-label={
                                             template.isDefault ? `إلغاء ${template.name} كقالب افتراضي` : `جعل ${template.name} القالب الافتراضي`
                                         }
@@ -71,7 +71,7 @@ export default function ExcelCompanyTemplates({
                                             window.confirm(`حذف القالب «${template.name}» لجميع المستخدمين؟`) &&
                                             sendCompany('delete', `/excel-templates/${template.id}`, {})
                                         }
-                                        className="rounded p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-40"
+                                        className="rounded p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-40"
                                         aria-label={`حذف القالب ${template.name}`}
                                         title="حذف"
                                     >

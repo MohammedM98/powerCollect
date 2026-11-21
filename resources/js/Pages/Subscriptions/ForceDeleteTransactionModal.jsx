@@ -37,7 +37,7 @@ export default function ForceDeleteTransactionModal({ onClose, subscription, bal
             icon="trash"
             headerTone="danger"
             maxWidth="xl"
-            bodyClassName="space-y-5"
+            bodyClassName="space-y-6"
             action={{ submitLabel, title: `${title}؟`, confirmLabel: `نعم، ${submitLabel}`, icon: 'trash', tone: 'danger' }}
             saveConfirmMessage={`سيُسجّل ${isSplit ? 'قيد عكسي لكل حصة من الحوالة المقسّمة' : 'قيد عكسي مرتبط بالحركة الأصلية'}، وسيصبح ${isSplit ? 'رصيد هذا المشترك' : 'الرصيد'} ${balanceText}. تبقى الحركات الأصلية محفوظة. هل تريد المتابعة؟`}
         >

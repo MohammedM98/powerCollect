@@ -33,7 +33,7 @@ export default function DistributionTable({ boxes, allBoxes = boxes, readers, se
                     <th>الطبلون</th><th>المشتركون</th><th>القارئ المكلّف</th><th>حالة التوزيع</th><th>الإنجاز</th>
                 </tr></thead>
                 <tbody>
-                    {boxes.length === 0 && <tr><td colSpan={canSelect ? 6 : 5} className="py-12 text-center text-gray-500">لا توجد طبلونات مطابقة. غيّر البحث أو المنطقة.</td></tr>}
+                    {boxes.length === 0 && <tr><td colSpan={canSelect ? 6 : 5} className="py-8 text-center text-gray-500">لا توجد طبلونات مطابقة. غيّر البحث أو المنطقة.</td></tr>}
                     {[...groups].map(([id, group]) => {
                         const matchingArea = allBoxes.filter((box) => String(box.subAreaId ?? 'none') === String(id));
                         return (

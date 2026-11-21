@@ -21,7 +21,7 @@ export default function ResultReport({ result, onClose }) {
     const heading = result.succeeded === 0 ? 'لم يُطبَّق الإجراء' : failed.length ? 'طُبّق الإجراء جزئيًا' : 'طُبّق الإجراء بنجاح';
 
     return (
-        <section role="status" aria-live="polite" className={`mb-5 rounded-card border p-4 ${tone}`}>
+        <section role="status" aria-live="polite" className={`mb-6 rounded-card border p-4 ${tone}`}>
             <div className="flex items-start justify-between gap-3">
                 <div>
                     <p className="font-bold text-gray-900">
@@ -41,7 +41,7 @@ export default function ResultReport({ result, onClose }) {
                         )}
                     </p>
                 </div>
-                <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-1.5 text-gray-500 hover:bg-gray-100">
+                <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-2 text-gray-500 hover:bg-gray-100">
                     <Icon name="close" className="h-4 w-4" />
                 </Button>
             </div>

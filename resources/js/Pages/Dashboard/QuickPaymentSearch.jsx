@@ -99,7 +99,7 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
                     icon="banknotes"
                     onClose={onClose}
                 />
-                <div className="shrink-0 px-5 pt-5 sm:px-7">
+                <div className="shrink-0 px-4 pt-4 sm:px-6">
                     <div className="relative">
                         <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-5 w-5 text-gray-400" />
                         <Input
@@ -112,7 +112,7 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
                             aria-label="ابحث عن المشترك"
                             aria-controls={`${titleId}-results`}
                             aria-activedescendant={results?.length ? `${titleId}-result-${active}` : undefined}
-                            className="block w-full py-3 pe-4 ps-11 text-base"
+                            className="block w-full py-3 pe-4 field-room-start-wide text-base"
                         />
                         {loading && (
                             <span className="absolute inset-y-0 inset-e-3.5 my-auto h-5 w-5 animate-spin rounded-full border-2 border-gray-200 border-t-brand-500" aria-hidden="true" />
@@ -120,7 +120,7 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
                     </div>
                 </div>
 
-                <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5" aria-live="polite">
+                <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-6" aria-live="polite">
                     {term.length < 2 ? (
                         <p className="px-4 py-8 text-center text-sm text-gray-500">اكتب حرفين على الأقل من الاسم أو الرقم.</p>
                     ) : failed ? (
@@ -134,7 +134,7 @@ export default function QuickPaymentSearch({ show, onClose, onPick }) {
                     ) : results.length === 0 ? (
                         <p className="px-4 py-8 text-center text-sm text-gray-500">لا يوجد مشترك بهذا الاسم أو الرقم.</p>
                     ) : (
-                        <ul id={`${titleId}-results`} role="listbox" aria-label="المشتركون المطابقون" className="space-y-1.5">
+                        <ul id={`${titleId}-results`} role="listbox" aria-label="المشتركون المطابقون" className="space-y-2">
                             {results.map((subscriber, index) => {
                                 const tone = balanceTone(subscriber.balance);
 

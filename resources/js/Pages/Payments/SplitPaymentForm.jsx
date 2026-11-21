@@ -18,7 +18,7 @@ const SEARCH_DELAY = 300;
 /** The panel shown once the split is recorded: what was saved, and each part's receipt. */
 function RecordedSplit({ recorded, onAnother }) {
     return (
-        <div className="space-y-5 rounded-panel border border-emerald-500/30 bg-emerald-500/6 p-6">
+        <div className="space-y-6 rounded-panel border border-emerald-500/30 bg-emerald-500/6 p-6">
             <div className="flex items-center gap-3">
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white">
                     <Icon name="check" className="h-6 w-6" />
@@ -44,7 +44,7 @@ function RecordedSplit({ recorded, onAnother }) {
                             href={part.receiptUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="tone-print inline-flex items-center gap-1.5 rounded-control border px-2.5 py-1 text-xs font-semibold transition"
+                            className="tone-print inline-flex items-center gap-2 rounded-control border px-3 py-1 text-xs font-semibold transition"
                         >
                             <Icon name="printer" className="h-3.5 w-3.5" />
                             السند
@@ -254,7 +254,7 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, onCancel 
                     }}
                 />
                 {errors.total_amount && (
-                    <p role="alert" className="mt-2 flex items-center gap-1.5 text-[13.5px] text-red-600">
+                    <p role="alert" className="mt-2 flex items-center gap-2 text-[13.5px] text-red-600">
                         <Icon name="info" className="h-[18px] w-[18px]" />
                         {errors.total_amount}
                     </p>
@@ -299,7 +299,7 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, onCancel 
             {errors.confirm_overpayment && (
                 <div role="alert" className="rounded-xl border border-brand-500/40 bg-brand-500/[0.07] px-4 py-3 text-sm text-gray-900">
                     <p className="flex items-start gap-2 font-medium">
-                        <Icon name="alert" className="mt-0.5 h-[18px] w-[18px] shrink-0" />
+                        <Icon name="alert" className="mt-1 h-[18px] w-[18px] shrink-0" />
                         <span>{errors.confirm_overpayment}</span>
                     </p>
                     <label className="mt-2 flex cursor-pointer items-center gap-2 font-semibold">
@@ -321,7 +321,7 @@ export default function SplitPaymentForm({ transferBanks, senderBanks, onCancel 
             </div>
 
             <p className="flex items-start gap-2 text-[13px] text-gray-500">
-                <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0" />
+                <Icon name="info" className="mt-1 h-4 w-4 shrink-0" />
                 <span>تُسجَّل <b className="text-gray-800">دفعة منفصلة لكل مشترك</b> في كشفه، وتُحفظ كلها معًا أو لا تُحفظ أيٌّ منها.</span>
             </p>
         </div>

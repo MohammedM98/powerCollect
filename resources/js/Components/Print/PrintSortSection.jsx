@@ -202,7 +202,7 @@ export default function PrintSortSection({ fieldOptions, layout, onChange, set, 
             <Group label={layout.group.key !== '' ? 'ترتيب الصفوف داخل كل مجموعة' : 'ترتيب الصفوف'}>
                 <ol className="space-y-2">
                     {layout.sort.map((level, index) => (
-                        <li key={index} className="rounded-control border border-gray-200 p-2.5">
+                        <li key={index} className="rounded-control border border-gray-200 p-3">
                             <div className="flex items-center gap-2">
                                 <span className="w-14 shrink-0 text-xs font-semibold text-gray-600">{index === 0 ? 'حسب' : 'ثم حسب'}</span>
                                 <ChoiceSelect
@@ -225,7 +225,9 @@ export default function PrintSortSection({ fieldOptions, layout, onChange, set, 
                                     }
                                 />
                             </div>
-                            <div className="mt-2 ps-16">
+                            <div className="mt-2 flex gap-2">
+                                {/* Lines up under the field, past the «حسب» label's column. */}
+                                <span className="w-14 shrink-0" aria-hidden="true" />
                                 <ChoiceChips
                                     options={DIRECTIONS}
                                     value={level.direction}

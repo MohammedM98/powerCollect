@@ -27,7 +27,7 @@ export function PermissionChangeReview({ employee, changes }) {
     }, {});
 
     return (
-        <div className="px-5 pb-5 sm:px-7">
+        <div className="px-4 pb-4 sm:px-6">
             <p className="mb-4 rounded-control border border-gray-100 bg-gray-50 p-3 text-sm leading-6 text-gray-600">
                 <b className="text-gray-900">{employee.name}</b>، {employee.roleLabel}، {employee.branchName ?? 'بلا فرع'}
                 <br />
@@ -36,21 +36,21 @@ export function PermissionChangeReview({ employee, changes }) {
             <div role="region" className="max-h-[50vh] space-y-3 overflow-y-auto" tabIndex={0} aria-label="جميع تغييرات الصلاحيات">
                 {Object.entries(bySection).map(([section, items]) => (
                     <section key={section} className="overflow-hidden rounded-control border border-gray-100">
-                        <h4 className="bg-gray-50 px-3 py-1.5 text-sm font-bold text-gray-700">{section}</h4>
-                        <ul className="space-y-1 p-1.5">
+                        <h4 className="bg-gray-50 px-3 py-2 text-sm font-bold text-gray-700">{section}</h4>
+                        <ul className="space-y-1 p-2">
                             {items.map((change) => (
                                 <li
                                     key={change.id}
-                                    className={`flex items-start gap-2.5 rounded-[10px] px-2.5 py-2 ${change.added ? 'bg-emerald-500/[0.07]' : 'bg-gray-50'}`}
+                                    className={`flex items-start gap-3 rounded-[10px] px-3 py-2 ${change.added ? 'bg-emerald-500/[0.07]' : 'bg-gray-50'}`}
                                 >
                                     <b
-                                        className={`mt-px w-3 text-center ${change.added ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-400'}`}
+                                        className={`w-3 text-center ${change.added ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-400'}`}
                                     >
                                         {change.added ? '+' : '−'}
                                     </b>
                                     <div className="min-w-0 flex-1">
                                         <p
-                                            className={`flex flex-wrap items-center gap-1.5 text-sm font-semibold ${change.added ? 'text-gray-900' : 'text-gray-500 line-through'}`}
+                                            className={`flex flex-wrap items-center gap-2 text-sm font-semibold ${change.added ? 'text-gray-900' : 'text-gray-500 line-through'}`}
                                         >
                                             {change.label}
                                             {change.added && <RiskBadge risk={change.risk} />}
@@ -88,7 +88,7 @@ export function PermissionSaveBar({ dirty, errors, changes, auditChanges, firstN
                 <span>تغييرات لم تُحفظ لـ {firstName}</span>
                 {changes.length > 0 && <Delta added={added} removed={removed} />}
                 {dangerousGrants.length > 0 && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-red-500/20 px-2 py-0.5 text-xs font-bold text-red-200">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-red-500/20 px-2 py-1 text-xs font-bold text-red-200">
                         <Icon name="alert" className="h-3.5 w-3.5" />
                         {dangerousGrants.length} خطيرة
                     </span>
@@ -97,7 +97,7 @@ export function PermissionSaveBar({ dirty, errors, changes, auditChanges, firstN
             <Button data-raw="" variant="ghost"
                 onClick={onDiscard}
                 isDisabled={processing || !dirty}
-                className="inline-flex items-center gap-1.5 rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-white disabled:opacity-40"
+                className="inline-flex items-center gap-2 rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-white disabled:opacity-40"
             >
                 <Icon name="undo" className="h-4 w-4" />
                 تراجع
@@ -153,7 +153,7 @@ export function PermissionReviewDialog({
                 dir="rtl"
                 className="flex max-h-[90dvh] min-h-0 flex-col"
             >
-                <div className="shrink-0 px-5 pb-4 pt-6 sm:px-7">
+                <div className="shrink-0 px-4 pb-4 pt-6 sm:px-6">
                     <h3 id={`permission-review-${employee.id}`} className="text-lg font-bold text-gray-900">
                         مراجعة تغييرات الصلاحيات
                     </h3>
@@ -181,13 +181,13 @@ export function PermissionReviewDialog({
                 <div className="min-h-0 flex-1 overflow-y-auto">
                     <PermissionChangeReview employee={employee} changes={changes} />
                     {takenFromOthers.length > 0 && (
-                        <p className="mx-5 mb-5 rounded-control bg-amber-500/10 px-3.5 py-3 text-sm leading-7 text-amber-800 dark:text-amber-300 sm:mx-7">
+                        <p className="mx-6 mb-6 rounded-control bg-amber-500/10 px-4 py-3 text-sm leading-7 text-amber-800 dark:text-amber-300 sm:mx-6">
                             تُسحب أيضًا من الموظفين الذين منحهم {firstName} إياها:{' '}
                             <b>{takenFromOthers.map((change) => `${change.text} (${employee.grantsGiven[change.id]})`).join('، ')}</b>
                         </p>
                     )}
                     {auditChanges.length > 0 && (
-                        <div className="mx-5 mb-5 space-y-3 rounded-control border border-gray-100 p-4 sm:mx-7">
+                        <div className="mx-6 mb-6 space-y-3 rounded-control border border-gray-100 p-4 sm:mx-6">
                             <h4 className="font-bold text-gray-900">تغييرات عمل التدقيق</h4>
                             {auditChanges.map((change) => (
                                 <div key={change.key} className="text-sm leading-7">
@@ -199,7 +199,7 @@ export function PermissionReviewDialog({
                         </div>
                     )}
                     {dangerousGrants.length > 0 && (
-                        <label className="mx-5 mb-5 flex cursor-pointer items-start gap-2.5 rounded-control bg-red-500/[0.07] px-3.5 py-3 text-sm text-red-800 dark:text-red-300 sm:mx-7">
+                        <label className="mx-6 mb-6 flex cursor-pointer items-start gap-3 rounded-control bg-red-500/[0.07] px-4 py-3 text-sm text-red-800 dark:text-red-300 sm:mx-6">
                             <CheckBox
                                 checked={acknowledged}
                                 onChange={(event) => onAcknowledgedChange(event.target.checked)}
@@ -211,7 +211,7 @@ export function PermissionReviewDialog({
                         </label>
                     )}
                 </div>
-                <div className="flex shrink-0 flex-wrap justify-end gap-3 border-t border-gray-100 bg-gray-50 px-5 py-4 sm:px-7">
+                <div className="flex shrink-0 flex-wrap justify-end gap-3 border-t border-gray-100 bg-gray-50 px-4 py-4 sm:px-6">
                     <SecondaryKey onClick={onCancel} disabled={processing} autoFocus>
                         العودة للتعديل
                     </SecondaryKey>

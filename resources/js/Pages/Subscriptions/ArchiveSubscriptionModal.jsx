@@ -23,8 +23,8 @@ export default function ArchiveSubscriptionModal({ subscription, today, onClose 
     return <DialogFrame show onClose={onClose} title={title} icon={restoring ? 'history' : 'folder'} busy={processing}
         description="يُطبَّق على هذا الاشتراك فقط. تبقى الاشتراكات الأخرى للشخص كما هي."
         footer={<><SecondaryKey onClick={onClose} disabled={processing}>إلغاء</SecondaryKey><PrimaryKey type="submit" form={id} disabled={processing || !data.confirmed || !data.reason.trim()}>{processing ? 'جارٍ الحفظ…' : title}</PrimaryKey></>}>
-        <form id={id} onSubmit={submit} className="space-y-5">
-            <div className="rounded-card border border-gray-200 bg-gray-50 p-5">
+        <form id={id} onSubmit={submit} className="space-y-6">
+            <div className="rounded-card border border-gray-200 bg-gray-50 p-4">
                 <p className="font-bold text-gray-900">{subscription.display_name}</p>
                 <div className="mt-2 flex flex-wrap items-center justify-between gap-3 text-base"><span>رقم الاشتراك <bdi className="font-display font-semibold">{subscription.account_number}</bdi></span><span>الرصيد الحالي: <Balance value={subscription.outstandingBalance} /> <small>{balanceWord(subscription.outstandingBalance)}</small></span></div>
             </div>

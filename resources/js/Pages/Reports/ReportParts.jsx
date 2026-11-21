@@ -8,13 +8,14 @@ import KpiTile from '@/Components/KpiTile';
 import { cents, reportMoney, shortDate } from '@/lib/reportFormatting';
 import { SearchableSelect } from '@/Components/UI';
 
-export const TH = 'px-3 py-2.5 text-start text-[13.5px] font-semibold text-gray-700';
+export const TH = 'px-3 py-2 text-start text-[13.5px] font-semibold text-gray-700';
 
-export const NUM_TH = TH.replace('text-start', 'text-right');
+/** A figure column's heading sits on the same side as its right-aligned (ltr) figures: the RTL start. */
+export const NUM_TH = TH;
 
-export const TD = 'px-3 py-2.5 text-start';
+export const TD = 'px-3 py-2 text-start';
 
-export const NUM = 'px-3 py-2.5 text-right [direction:ltr] font-display tabular-nums text-gray-900';
+export const NUM = 'px-3 py-2 text-end [direction:ltr] font-display tabular-nums text-gray-900';
 
 export function Comparison({ comparison }) {
     const difference = Number(comparison.difference);
@@ -37,8 +38,8 @@ export function Comparison({ comparison }) {
 export function Panel({ icon, title, hint = null, className = '', excelParts, children }) {
     const { canExport, auth, scopeLabel, filters } = usePage().props;
     return (
-        <section data-excel-source={excelParts ? 'custom' : undefined} className={`rounded-panel border border-gray-100 bg-surface p-5 shadow-card sm:p-6 ${className}`}>
-            <div className="mb-4 flex flex-wrap items-center gap-x-2.5 gap-y-2">
+        <section data-excel-source={excelParts ? 'custom' : undefined} className={`rounded-panel border border-gray-100 bg-surface p-4 shadow-card sm:p-6 ${className}`}>
+            <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-gray-100 bg-gray-50 text-gray-500">
                     <Icon name={icon} className="h-[18px] w-[18px]" />
                 </span>
@@ -55,14 +56,14 @@ export function Panel({ icon, title, hint = null, className = '', excelParts, ch
 export function PeriodCard({ branches, branchScope, scopeLabel, filters, presets, today, period, periodText, visit }) {
     const preset = presets.find((item) => item.from === filters.from && item.to === filters.to)?.key ?? '';
     const [datesOpen, setDatesOpen] = useState(false);
-    const stepClass = 'gl-ib w-auto gap-1 px-2.5 text-sm font-semibold disabled:opacity-40';
+    const stepClass = 'gl-ib w-auto gap-1 px-3 text-sm font-semibold disabled:opacity-40';
 
     return (
         <section aria-label="فلاتر التقرير" className="gl-scope sticky top-(--tn-sticky-top) z-30">
             <div className="flex flex-wrap items-center gap-3">
                 <div className="flex min-w-0 flex-1 items-center gap-3"><span className="gl-scope-ico" aria-hidden="true"><Icon name="calendar" className="h-5 w-5" /></span><div className="min-w-0"><h3 className="gl-scope-eyebrow">الفترة</h3><p className="gl-scope-name text-base!"><bdi dir="ltr">{periodText}</bdi></p></div></div>
                 {!branchScope && branches.length > 1 && (
-                    <label className="order-3 flex w-full flex-col gap-1.5 gl-label text-xs sm:order-0 sm:w-60">
+                    <label className="order-3 flex w-full flex-col gap-2 gl-label text-xs sm:order-0 sm:w-60">
                         الفرع
                         <SearchableSelect
                             value={filters.branch ?? ''}
@@ -74,7 +75,7 @@ export function PeriodCard({ branches, branchScope, scopeLabel, filters, presets
                     </label>
                 )}
                 {!branchScope && branches.length === 1 && (
-                    <div className="order-3 flex w-full flex-col gap-1.5 gl-label text-xs sm:order-0 sm:w-auto">
+                    <div className="order-3 flex w-full flex-col gap-2 gl-label text-xs sm:order-0 sm:w-auto">
                         الفرع
                         <span className="flex h-10 items-center gap-2 rounded-control border px-3 text-sm font-bold" style={{ borderColor: 'var(--gl-line)', background: 'var(--gl-fill)' }}>
                             <Icon name="pin" className="h-4 w-4" />
@@ -106,8 +107,8 @@ export function PeriodCard({ branches, branchScope, scopeLabel, filters, presets
             </div>
             {datesOpen && <div className="mt-3 flex flex-wrap items-end gap-3 border-t pt-3 border-(--gl-line)!">
                 <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row" role="group" aria-label="من تاريخ إلى تاريخ">
-                    <label className="flex min-w-0 flex-1 flex-col gap-1.5 gl-label text-xs sm:flex-none"><span>من تاريخ</span><DateInput aria-label="من تاريخ" className="w-full sm:w-52" required value={filters.from} max={filters.to} onChange={(value) => value && visit({ from: value, page: undefined })} /></label>
-                    <label className="flex min-w-0 flex-1 flex-col gap-1.5 gl-label text-xs sm:flex-none"><span>إلى تاريخ</span><DateInput aria-label="إلى تاريخ" className="w-full sm:w-52" required value={filters.to} min={filters.from} max={today} onChange={(value) => value && visit({ to: value, page: undefined })} /></label>
+                    <label className="flex min-w-0 flex-1 flex-col gap-2 gl-label text-xs sm:flex-none"><span>من تاريخ</span><DateInput aria-label="من تاريخ" className="w-full sm:w-52" required value={filters.from} max={filters.to} onChange={(value) => value && visit({ from: value, page: undefined })} /></label>
+                    <label className="flex min-w-0 flex-1 flex-col gap-2 gl-label text-xs sm:flex-none"><span>إلى تاريخ</span><DateInput aria-label="إلى تاريخ" className="w-full sm:w-52" required value={filters.to} min={filters.from} max={today} onChange={(value) => value && visit({ to: value, page: undefined })} /></label>
                 </div>
                 <Button data-raw="" variant="ghost" className={stepClass} onClick={() => setDatesOpen(false)}>إغلاق<Icon name="close" className="h-4 w-4" /></Button>
             </div>}
@@ -122,7 +123,7 @@ export function Figures({ flow, collections }) {
     const total = Number(collections.total);
 
     return (
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
             <KpiTile hero label="إجمالي المقبوضات المسجّلة" value={reportMoney(collections.total)} unit="₪" hint={`${collections.count} دفعة في الفترة`}>
                 <div className="gl-bar mt-3 flex" role="img" aria-label="النقدي والتحويلات والشيكات">
                     {total > 0 && (
@@ -132,15 +133,15 @@ export function Figures({ flow, collections }) {
                         </>
                     )}
                 </div>
-                <div className="gl-hint mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs">
-                    <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full" style={{ background: 'var(--gl-ink)' }} />نقدي <b className="font-display text-(--gl-ink)!">{reportMoney(collections.cash)} ₪</b></span>
-                    <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-brand-500" />تحويلات وشيكات <b className="font-display text-(--gl-ink)!">{reportMoney(collections.nonCash)} ₪</b></span>
+                <div className="gl-hint mt-3 flex flex-wrap gap-x-6 gap-y-1 text-xs">
+                    <span className="flex items-center gap-2"><i className="h-2 w-2 rounded-full" style={{ background: 'var(--gl-ink)' }} />نقدي <b className="font-display text-(--gl-ink)!">{reportMoney(collections.cash)} ₪</b></span>
+                    <span className="flex items-center gap-2"><i className="h-2 w-2 rounded-full bg-brand-500" />تحويلات وشيكات <b className="font-display text-(--gl-ink)!">{reportMoney(collections.nonCash)} ₪</b></span>
                 </div>
             </KpiTile>
             <KpiTile label="الرصيد الافتتاحي" value={<bdi dir="ltr">{reportMoney(flow.opening)}</bdi>} unit="₪" hint={Number(flow.opening) < 0 ? 'لصالح المشتركين' : 'على المشتركين'} />
             <KpiTile label="التحميلات" value={reportMoney(flow.chargesTotal)} unit="₪" hint="قراءات ورسوم وغرامات" />
             <KpiTile label="الرصيد الختامي" value={<bdi dir="ltr">{reportMoney(flow.closing)}</bdi>} unit="₪">
-                <p className={`mt-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${change > 0 ? 'bg-amber-500/10 text-amber-700' : change < 0 ? 'bg-emerald-500/10 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                <p className={`mt-2 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${change > 0 ? 'bg-amber-500/10 text-amber-700' : change < 0 ? 'bg-emerald-500/10 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
                     {change > 0 ? 'زاد' : change < 0 ? 'نقص' : 'لم يتغير'}
                     {change !== 0 && <b className="font-display">{reportMoney(Math.abs(Number(flow.change)))} ₪</b>}
                     <span className="font-normal">خلال الفترة</span>

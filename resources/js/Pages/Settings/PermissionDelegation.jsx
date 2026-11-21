@@ -39,13 +39,13 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
     }
 
     return (
-        <section className="pm-card p-5 sm:p-6" aria-label="حق المنح">
+        <section className="pm-card p-4 sm:p-6" aria-label="حق المنح">
             <div className="flex flex-wrap items-center gap-3">
                 <span className="pm-card-icon">
                     <Icon name="key" className="h-5 w-5" />
                 </span>
                 <div className="min-w-0">
-                    <h4 className="flex items-center gap-1.5 font-bold text-gray-900">
+                    <h4 className="flex items-center gap-2 font-bold text-gray-900">
                         ماذا يستطيع {firstName} أن يمنح لموظفي فرعه؟
                         <InfoTip label="عن حق المنح">
                             {`المربع الأخضر يعني أن ${firstName} يستطيع منح هذه الصلاحية لموظفي فرعه فقط، ويعمل منحه فورًا ويصلك إشعار به. إذا سحبت منه صلاحية تُسحب ممن منحهم إياها، وإذا أفرغت المربع وحده يبقى ما منحه.`}
@@ -94,7 +94,7 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
             </div>
 
             {bySection.length === 0 ? (
-                <p className="py-10 text-center text-sm text-gray-500">
+                <p className="py-8 text-center text-sm text-gray-500">
                     لا يملك {firstName} صلاحيات يمكن منحها بعد. امنحه صلاحيات من تبويب «الصلاحيات» أولًا.
                 </p>
             ) : (
@@ -108,8 +108,8 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                         }
 
                         return (
-                            <div key={section.key} className="py-5 last:pb-0">
-                                <div className="mb-3 flex items-center gap-2.5">
+                            <div key={section.key} className="py-4 last:pb-0">
+                                <div className="mb-3 flex items-center gap-3">
                                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-gray-100 bg-gray-50 text-gray-500">
                                         <Icon name={sectionIcon(section.key)} className="h-[18px] w-[18px]" />
                                     </span>
@@ -144,7 +144,7 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                                                 <Checkbox.Content className={`pm-grant-row ${on ? 'is-on' : ''}`}>
                                                 <span className="min-w-0 flex-1">
                                                     <b className="block truncate text-[15px] font-semibold text-gray-900">{entry.label}</b>
-                                                    <small className="flex flex-wrap items-center gap-1.5 text-[12.5px] text-gray-500">
+                                                    <small className="flex flex-wrap items-center gap-2 text-[12.5px] text-gray-500">
                                                         {entry.risk && (
                                                             <>
                                                                 <i className={`pm-grant-risk is-${entry.risk}`} aria-hidden="true" />

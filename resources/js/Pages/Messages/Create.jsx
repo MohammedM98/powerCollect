@@ -284,7 +284,7 @@ export default function Create({
                         <ChoiceChips options={withIcons(channels, CHANNEL_ICONS)} value={channel} onChange={setChannel} label="طريقة الإرسال" />
                         {channel === 'sms' && !smsDeliversMessages && (
                             <p role="note" className="mt-3 flex items-start gap-2 rounded-control bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-300">
-                                <Icon name="warning" className="mt-0.5 h-4 w-4 shrink-0" />
+                                <Icon name="warning" className="mt-1 h-4 w-4 shrink-0" />
                                 لم تُضبط بوابة الرسائل النصية بعد، فتُسجَّل الرسائل في سجل النظام فقط ولا تصل للمشتركين. اطلب ضبط مزوّد SMS، أو أرسل عبر واتساب.
                             </p>
                         )}
@@ -298,7 +298,7 @@ export default function Create({
 
                 <div className="space-y-6">
                     <Card icon="eye" title="معاينة الرسالة" description={previewRecipient ? `كما تصل إلى ${previewRecipient.name}` : 'اعرض المستلمين لترى رسالة كل مشترك.'}>
-                        <div className="whitespace-pre-line rounded-2xl rounded-tr-sm bg-emerald-500/10 px-4 py-3 leading-7 text-gray-900">
+                        <div className="whitespace-pre-line rounded-2xl rounded-ss-sm bg-emerald-500/10 px-4 py-3 leading-7 text-gray-900">
                             {previewText ? <MessageText text={previewText} /> : <span className="text-gray-500">نص الرسالة</span>}
                         </div>
                     </Card>
