@@ -17,8 +17,18 @@ test('semantic palette roles preview in light and dark without accepting CSS inp
 const PHP_BLUE = {
     light: { 50: '238 245 252', 100: '211 229 249', 200: '185 213 244', 300: '128 181 238', 400: '71 151 231', 500: '17 121 207', 600: '13 104 180', 700: '0 85 153', 800: '0 66 120', 900: '0 42 80' },
     dark: { 50: '9 26 44', 100: '9 35 61', 200: '4 54 98', 300: '2 82 147', 400: '18 121 208', 500: '22 136 231', 600: '49 144 234', 700: '98 169 243', 800: '144 193 246', 900: '193 220 250' },
-    fixed: { tint: '134 192 254', soft: '80 156 233', bright: '21 129 221', glow: '9 114 197', hi: '22 136 231', solid: '17 121 207', lo: '8 90 158', deep: '0 66 120' },
+    fixed: { tint: '134 192 254', soft: '80 156 233', bright: '21 129 221', glow: '9 114 197', hi: '17 121 207', solid: '17 121 207', lo: '8 90 158', deep: '0 66 120' },
 };
+
+test('both ends of imported-brand button gradients keep white text readable', () => {
+    for (const color of ['#1E88E5', '#FFD600', '#A51D26', '#FFFFFF', '#20B2A0']) {
+        for (const role of ['hi', 'solid', 'lo']) {
+            const channels = brandPalette(color).fixed[role].split(' ').map(Number);
+            const hex = '#' + channels.map(channel => channel.toString(16).padStart(2, '0')).join('');
+            assert.ok(contrastWithWhite(hex) >= MIN_CONTRAST, `${color}: ${role}`);
+        }
+    }
+});
 
 test('the preview draws the same shades the server saves', () => {
     assert.deepEqual(brandPalette('#1E88E5'), PHP_BLUE);

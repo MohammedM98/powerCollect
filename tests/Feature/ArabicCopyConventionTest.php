@@ -30,6 +30,7 @@ class ArabicCopyConventionTest extends TestCase
 
         foreach (Finder::create()->files()->in([app_path('Models'), app_path('Support')])->name('*.php') as $file) {
             $path = str_replace(app_path().DIRECTORY_SEPARATOR, '', $file->getPathname());
+            $path = str_replace('\\', '/', $path);
             if (in_array($path, self::ARABIC_DATA, true)) {
                 continue;
             }

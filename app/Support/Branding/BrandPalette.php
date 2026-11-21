@@ -73,7 +73,7 @@ class BrandPalette
         'soft' => ['lightness' => 0.678, 'chroma' => 0.82],
         'bright' => ['lightness' => 0.597, 'chroma' => 1.1],
         'glow' => ['lightness' => 0.544, 'chroma' => 1.08],
-        'hi' => ['scale' => 1.087, 'chroma' => 1.08],
+        'hi' => ['scale' => 1.0, 'chroma' => 1.0],
         'solid' => ['scale' => 1.0, 'chroma' => 1.0],
         'lo' => ['scale' => 0.815, 'chroma' => 0.82],
         'deep' => ['scale' => 0.66, 'chroma' => 0.65],
