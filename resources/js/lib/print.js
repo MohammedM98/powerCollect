@@ -155,6 +155,11 @@ export function extractTable(root, table = printedTable(root)) {
     }
 
     const headers = [...table.querySelectorAll('thead tr:first-child > th')];
+
+    // A table still being drawn has no column titles yet (the kit's ListTable fills them in a moment later): not ready.
+    if (headers.length === 0) {
+        return null;
+    }
     const seen = new Map();
     const columns = headers
         .map((th, index) => {
