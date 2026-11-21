@@ -62,20 +62,21 @@ class BrandTest extends TestCase
         $response = $this->get(route('login'));
 
         $response->assertInertia(fn ($page) => $page
-            ->where('brand.name', 'سوبر باور')
-            ->where('brand.logos.main', '/images/logo-superpower.svg')
-            ->where('brand.logos.print', '/images/logo-superpower.svg')
-            ->where('brand.animatedLogo', true)
-            ->where('brand.printColor', '#0F766E'));
-        $response->assertSee('<link rel="icon" href="/favicon.svg">', false);
+            ->where('brand.name', 'مصعب العجل وأحمد الكفارنة')
+            ->where('brand.nameEnglish', 'MA Trading')
+            ->where('brand.tagline', 'للتجارة العامة')
+            ->where('brand.logos.main', '/images/logo-ma.svg')
+            ->where('brand.logos.print', '/images/logo-ma.svg')
+            ->where('brand.printColor', '#E2642A'));
+        $response->assertSee('<link rel="icon" href="/images/logo-ma.svg">', false);
     }
 
-    public function test_pages_start_in_the_power_collect_teal_identity_with_the_top_bar_and_solid_cards(): void
+    public function test_pages_start_in_the_ma_orange_identity_with_the_top_bar_and_solid_cards(): void
     {
         $response = $this->get(route('login'));
 
         $response->assertInertia(fn ($page) => $page
-            ->where('brand.primaryColor', '#20B2A0')
+            ->where('brand.primaryColor', '#E2642A')
             ->where('brand.design.preset', 'superpower')
             ->where('brand.design.navigation', 'topbar')
             ->where('brand.design.cards', 'elevated')
@@ -83,9 +84,8 @@ class BrandTest extends TestCase
             ->where('brand.design.details', 'modal'));
         $response->assertSee('data-ui-background="graphite"', false);
         $response->assertSee('data-ui-neutral="graphite"', false);
-        // The teal identity is theme.css's own: no generated shades or ink are drawn over it.
-        $response->assertDontSee('--brand-50:', false);
-        $response->assertDontSee('--brand-ink:', false);
+        // The MA orange is not theme.css's own teal, so its shades are drawn over it.
+        $response->assertSee(':root{--brand-50:', false);
         // The charcoal look keeps theme.css's own neutral greys: no tinted grey scale is drawn over them.
         $response->assertDontSee('--gray-50:', false);
     }
@@ -109,7 +109,6 @@ class BrandTest extends TestCase
             ->where('brand.logos.main', $logoUrl)
             ->where('brand.logos.light', $logoUrl)
             ->where('brand.logos.print', $logoUrl)
-            ->where('brand.animatedLogo', false)
             ->where('brand.printColor', '#0F766E'));
         $response->assertSee('<link rel="icon" href="'.$logoUrl.'">', false);
         $response->assertSee(':root{--brand-50:', false);
@@ -200,7 +199,7 @@ class BrandTest extends TestCase
 
         $this->assertFalse(app(Brand::class)->isImported());
         $this->assertSame([], Storage::disk('public')->files('brand'));
-        $this->get(route('login'))->assertInertia(fn ($page) => $page->where('brand.name', 'سوبر باور'));
+        $this->get(route('login'))->assertInertia(fn ($page) => $page->where('brand.name', 'مصعب العجل وأحمد الكفارنة'));
     }
 
     public function test_every_ready_company_identity_imports_with_its_logos(): void

@@ -72,15 +72,15 @@ abstract final class AppIdentity {
   static Color get ink2 => _pick('ink2', 0xFF373C44, 0xFFD2D6DC);
   static Color get muted => _pick('muted', 0xFF59606A, 0xFFA2A9B3);
   static Color get faint => _pick('faint', 0xFF606670, 0xFF8D949E);
-  static Color get brand => _pick('brand', 0xFF0F766E, 0xFF5ED6C2);
-  static Color get brand2 => _pick('brand_strong', 0xFF0D645D, 0xFF99E9DC);
+  static Color get brand => _pick('brand', 0xFFCA4E05, 0xFFDC642E);
+  static Color get brand2 => _pick('brand_strong', 0xFFAF4204, 0xFFEA875E);
   static Color get brandTint => brand.withAlpha(dark ? 0x1C : 0x12);
-  static Color get brandSoft => _pick('brand_tint', 0xFFF0FDFA, 0xFF112A27);
+  static Color get brandSoft => _pick('brand_tint', 0xFFFBF1EE, 0xFF391708);
 
   /// A fill in the company's colour and the text on it.
-  static Color get brandFill => _pick('brand_fill', 0xFF20B2A0, 0xFF20B2A0);
+  static Color get brandFill => _pick('brand_fill', 0xFFCA4E05, 0xFFCA4E05);
   static Color get onBrandFill =>
-      _pick('brand_fill_ink', 0xFF06201D, 0xFF06201D);
+      _pick('brand_fill_ink', 0xFFFFFFFF, 0xFFFFFFFF);
   static Color get good => _pick('success', 0xFF047857, 0xFF34D399);
   static Color get goodTint => good.withAlpha(dark ? 0x1C : 0x14);
   static Color get warning => _pick('warning', 0xFFB45309, 0xFFFBBF24);

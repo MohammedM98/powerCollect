@@ -1,4 +1,5 @@
 import { Head } from '@inertiajs/react';
+import { useBrand } from '@/hooks/useBrand';
 import { Alert, Chip } from '@heroui/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import PageHeader from '@/Components/PageHeader';
@@ -8,19 +9,21 @@ import { SettingsSection } from '@/Components/Settings/SettingsKit';
 const STEPS = [
     ['افتح هذه الصفحة من هاتف Android', 'ثم اضغط «تحميل تطبيق Android».'],
     ['افتح الملف المحمّل', 'إذا طلب الهاتف إذن التثبيت لهذا المتصفح، اسمح به لإتمام التثبيت، ويمكنك إلغاؤه بعد ذلك.'],
-    ['سجّل الدخول', 'افتح سوبر باور وسجّل الدخول باسم المستخدم وكلمة المرور الخاصين بالموقع.'],
+    ['سجّل الدخول', 'افتح التطبيق وسجّل الدخول باسم المستخدم وكلمة المرور الخاصين بالموقع.'],
 ];
 
 /** The field app's page: the release on the charcoal card with its download key, then how to install it. */
 export default function MobileApp({ release }) {
-    return <SettingsLayout header={<PageHeader title="تحميل تطبيق الهاتف" info="سوبر باور للمحصّلين وقرّاء العدادات: الطبلونات المخصصة، والقراءات، والتحصيل من الهاتف." />}>
+    const brand = useBrand();
+
+    return <SettingsLayout header={<PageHeader title="تحميل تطبيق الهاتف" info={`تطبيق ${brand.name} للمحصّلين وقرّاء العدادات: الطبلونات المخصصة، والقراءات، والتحصيل من الهاتف.`} />}>
         <Head title="تحميل تطبيق الهاتف" />
         <div className="gl-app-page">
             <section className="gl-app-hero" aria-labelledby="app-title">
                 <span className="gl-app-icon" aria-hidden="true"><Icon name="phone" /></span>
                 <div className="min-w-0">
                     <small>تطبيق Android</small>
-                    <h2 id="app-title">تطبيق سوبر باور</h2>
+                    <h2 id="app-title">تطبيق {brand.name}</h2>
                     <p>اطّلع على الطبلونات المخصصة لك، وسجّل القراءات والتحصيل حسب صلاحيات حسابك. يتصل التطبيق بنفس بيانات الموقع عند توفر الإنترنت.</p>
                 </div>
                 {release ? (

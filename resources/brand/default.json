@@ -1,24 +1,24 @@
 {
     "version": 1,
     "company": {
-        "name": "سوبر باور",
-        "nameEnglish": "Super Power",
-        "shortName": "سوبر باور",
-        "tagline": "نظام التحصيل الكهربائي"
+        "name": "مصعب العجل وأحمد الكفارنة",
+        "nameEnglish": "MA Trading",
+        "shortName": "MA",
+        "tagline": "للتجارة العامة"
     },
     "logos": {
-        "main": "/images/logo-superpower.svg",
+        "main": "/images/logo-ma.svg",
         "light": null,
-        "icon": "/favicon.svg",
+        "icon": "/images/logo-ma.svg",
         "print": null
     },
     "colors": {
-        "primary": "#20B2A0",
+        "primary": "#E2642A",
         "secondary": null,
         "accent": null,
         "background": null,
         "surface": null,
-        "print": "#0F766E",
+        "print": "#E2642A",
         "success": null,
         "warning": null,
         "danger": null,

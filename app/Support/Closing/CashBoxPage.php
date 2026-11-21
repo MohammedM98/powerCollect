@@ -12,6 +12,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Branches\BranchScope;
 use App\Support\Branches\BranchViewContext;
+use App\Support\Exports\CsvCells;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -234,9 +235,8 @@ class CashBoxPage
         $statuses = ['missing' => __('Missing'), 'rejected' => __('Rejected')];
         $types = ['cash' => __('In cash'), 'bank_transfer' => __('Bank transfers'), 'clearing' => __('Clearings')];
         $stages = ['open' => __('Open'), 'awaiting_confirmation' => __('Closed box'), 'completed' => __('Closed box')];
-        $safe = fn (array $cells): array => array_map(fn ($cell) => is_string($cell) && preg_match('/^[=+@\-\t\r]/u', $cell) ? "'".$cell : $cell, $cells);
 
-        return response()->streamDownload(function () use ($box, $row, $entries, $local, $statuses, $types, $stages, $safe): void {
+        return response()->streamDownload(function () use ($box, $row, $entries, $local, $statuses, $types, $stages): void {
             $file = fopen('php://output', 'w');
             fwrite($file, "\xEF\xBB\xBF");
             foreach ([
@@ -251,12 +251,12 @@ class CashBoxPage
                 [__('Amount received ₪'), (float) $row['receivedAmounts']['ILS']],
                 [],
             ] as $cells) {
-                fputcsv($file, $safe($cells));
+                fputcsv($file, CsvCells::safe($cells));
             }
             fputcsv($file, ['#', __('Date and time'), __('Subscriber'), __('Account number'), __('Voucher number'), __('Receiving bank'), __('Sending bank'), __('Transfer number'), __('Service'), __('Currency'), __('Amount'), __('Status'), __('Date the transfer reached the bank')]);
             foreach ($entries->values() as $index => $entry) {
                 $cancelled = $entry->transaction->status !== SubscriptionTransaction::STATUS_ACTIVE;
-                fputcsv($file, $safe([
+                fputcsv($file, CsvCells::safe([
                     $index + 1, $local($entry->occurred_at), $entry->transaction->subscription->displayName(), $entry->transaction->subscription->account_number,
                     $entry->transaction->manual_voucher_number ?? $entry->transaction->voucher_number ?? '', $entry->transaction->bank_name ?? '', $entry->transaction->sender_bank_name ?? '',
                     $entry->transaction->reference_number ?? '', $entry->method === 'clearing' ? ($entry->transaction->notes ?? '') : '', $entry->currency, (float) $entry->amount,

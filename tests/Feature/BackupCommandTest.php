@@ -2,8 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\Subscription;
+use App\Models\SubscriptionTransaction;
+use App\Support\Ledger\Money;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Process\PendingProcess;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -101,6 +105,51 @@ class BackupCommandTest extends TestCase
         $this->assertSame('proof-image-bytes', file_get_contents($target.'/cash-transfers/proof.jpg'));
         $this->assertDirectoryDoesNotExist($target.'/backups', 'earlier backups are not backed up again');
         File::deleteDirectory($target);
+    }
+
+    public function test_a_restored_sqlite_backup_keeps_every_account_line_and_balance(): void
+    {
+        $owing = Subscription::factory()->create();
+        $inCredit = Subscription::factory()->create();
+        SubscriptionTransaction::factory()->for($owing)->create(['amount' => '120.50']);
+        SubscriptionTransaction::factory()->for($owing)->create(['type' => SubscriptionTransaction::TYPE_PAYMENT, 'source_key' => 'payment:1', 'amount' => '-70.25']);
+        SubscriptionTransaction::factory()->for($inCredit)->create(['type' => SubscriptionTransaction::TYPE_PAYMENT, 'source_key' => 'payment:2', 'amount' => '-15.00']);
+
+        try {
+            $this->artisan('backup:run')->assertSuccessful();
+            $database = gzdecode(file_get_contents(Storage::disk('local')->path('backups/'.$this->databaseBackup())));
+
+            if (DB::connection()->getDriverName() !== 'sqlite') {
+                // Importing the dump needs a MySQL client; the dump must at least carry every line.
+                foreach (['120.50', '-70.25', '-15.00'] as $amount) {
+                    $this->assertMatchesRegularExpression('/[(,]'.preg_quote($amount, '/').'[,)]/', $database);
+                }
+
+                return;
+            }
+
+            $copy = tempnam(sys_get_temp_dir(), 'restore-');
+            file_put_contents($copy, $database);
+            $restored = new PDO('sqlite:'.$copy);
+
+            foreach (['subscriptions', 'subscription_transactions', 'users', 'branches'] as $table) {
+                $this->assertSame(DB::table($table)->count(), (int) $restored->query("select count(*) from {$table}")->fetchColumn(), $table);
+            }
+            foreach ([$owing, $inCredit] as $subscription) {
+                $lines = $restored->prepare('select amount from subscription_transactions where subscription_id = ?');
+                $lines->execute([$subscription->id]);
+                $this->assertSame($subscription->balance(), Money::sum($lines->fetchAll(PDO::FETCH_COLUMN)));
+            }
+            $this->assertSame('50.25', $owing->balance());
+            $this->assertSame('-15.00', $inCredit->balance());
+        } finally {
+            $restored = null;
+            if (isset($copy)) {
+                File::delete($copy);
+            }
+            // No transaction rolls these rows back; on MySQL the next test must migrate afresh (SQLite in memory always does).
+            RefreshDatabaseState::$migrated = false;
+        }
     }
 
     public function test_a_second_backup_does_not_include_the_first(): void

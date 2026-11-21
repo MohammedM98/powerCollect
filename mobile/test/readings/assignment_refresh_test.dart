@@ -35,6 +35,12 @@ class AssignmentRefreshApi extends ApiClient {
     return snapshot;
   }
 
+  // This fake answers one reading at a time.
+  @override
+  Future<Map<String, Object>> sendReadings(
+          List<Map<String, dynamic>> readings) =>
+      sendReadingsOneByOne(readings);
+
   @override
   Future<Map<String, dynamic>> sendReading(Map<String, dynamic> reading) async {
     uploads++;
