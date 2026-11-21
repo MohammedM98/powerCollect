@@ -14,8 +14,9 @@ use Illuminate\Support\Collection;
  * cut-off time: at midnight by default, or earlier in the evening, when later
  * payments count for the next day. Each branch has its own (see `for()`), so
  * its days, and when they have closed, are its own. A week starts on the
- * company's chosen weekday, the same for every branch since the weekly closing
- * approves them together; a month is the calendar month. A week that spans two
+ * branch's chosen weekday (the company's unless the branch set its own), so a
+ * branch's reports and cash boxes share one week; a view over several branches
+ * uses the company's. A month is the calendar month. A week that spans two
  * months is split between them by date, never added whole.
  */
 class ClosingPeriods
@@ -152,13 +153,14 @@ class ClosingPeriods
     }
 
     /**
-     * The first and last day of the week containing the date.
+     * The first and last day of the week containing the date, by the
+     * branch's week (the company's without a branch).
      *
      * @return array{0: CarbonImmutable, 1: CarbonImmutable}
      */
-    public static function week(CarbonInterface|string $date): array
+    public static function week(CarbonInterface|string $date, Branch|int|null $branch = null): array
     {
-        $start = self::date($date)->startOfWeek(ClosingSetting::company()->week_starts_on);
+        $start = self::date($date)->startOfWeek(ClosingSetting::forBranch($branch)->week_starts_on);
 
         return [$start, $start->addDays(6)];
     }

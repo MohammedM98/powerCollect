@@ -274,13 +274,13 @@ class FinancialReportPage
 
     /**
      * The quick picks above the report: today, yesterday, this week, this
-     * month and last month, by the closing schedule's week and cut-off.
+     * month and last month, by the closing schedule's week (`$branch`'s) and cut-off.
      *
      * @return array<int, array{key: string, label: string, from: string, to: string}>
      */
-    public static function presets(CarbonImmutable $today): array
+    public static function presets(CarbonImmutable $today, ?Branch $branch = null): array
     {
-        [$weekStart] = ClosingPeriods::week($today);
+        [$weekStart] = ClosingPeriods::week($today, $branch);
         [$lastMonthStart, $lastMonthEnd] = ClosingPeriods::month($today->startOfMonth()->subDay());
 
         return array_map(fn (array $preset): array => [...$preset, 'from' => $preset['from']->toDateString(), 'to' => $preset['to']->toDateString()], [
