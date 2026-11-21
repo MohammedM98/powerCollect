@@ -31,13 +31,20 @@ class ConcurrentLedgerWritesTest extends TestCase
     /** @var list<string> */
     protected $exceptTables = ['migrations', 'banks', 'currency_rates', 'message_templates', 'payment_voucher_sequences', 'permissions'];
 
-    protected function setUp(): void
+    /**
+     * Skips before `DatabaseTruncation` runs: on SQLite it would migrate the
+     * in-memory database and mark it migrated, so later `RefreshDatabase`
+     * tests in the same run would find no tables.
+     *
+     * @return array<class-string, class-string>
+     */
+    protected function setUpTraits(): array
     {
-        parent::setUp();
-
         if (DB::connection()->getDriverName() !== 'mysql') {
             $this->markTestSkipped('Concurrency tests need MySQL: SQLite ignores row locks.');
         }
+
+        return parent::setUpTraits();
     }
 
     public function test_two_identical_website_payments_record_one_line_and_show_both_the_same_receipt(): void
