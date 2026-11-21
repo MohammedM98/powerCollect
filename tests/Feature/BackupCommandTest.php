@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use PDO;
 use PharData;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -107,30 +108,33 @@ class BackupCommandTest extends TestCase
         File::deleteDirectory($target);
     }
 
-    public function test_a_restored_sqlite_backup_keeps_every_account_line_and_balance(): void
+    public function test_a_restored_backup_keeps_every_account_line_and_balance(): void
     {
         $owing = Subscription::factory()->create();
         $inCredit = Subscription::factory()->create();
         SubscriptionTransaction::factory()->for($owing)->create(['amount' => '120.50']);
         SubscriptionTransaction::factory()->for($owing)->create(['type' => SubscriptionTransaction::TYPE_PAYMENT, 'source_key' => 'payment:1', 'amount' => '-70.25']);
         SubscriptionTransaction::factory()->for($inCredit)->create(['type' => SubscriptionTransaction::TYPE_PAYMENT, 'source_key' => 'payment:2', 'amount' => '-15.00']);
+        $restoredDatabase = null;
 
         try {
             $this->artisan('backup:run')->assertSuccessful();
             $database = gzdecode(file_get_contents(Storage::disk('local')->path('backups/'.$this->databaseBackup())));
 
-            if (DB::connection()->getDriverName() !== 'sqlite') {
-                // Importing the dump needs a MySQL client; the dump must at least carry every line.
-                foreach (['120.50', '-70.25', '-15.00'] as $amount) {
-                    $this->assertMatchesRegularExpression('/[(,]'.preg_quote($amount, '/').'[,)]/', $database);
-                }
-
-                return;
+            if (DB::connection()->getDriverName() === 'sqlite') {
+                $copy = tempnam(sys_get_temp_dir(), 'restore-');
+                file_put_contents($copy, $database);
+                $restored = new PDO('sqlite:'.$copy);
+            } else {
+                // Restored as a person would: the dump fed to the mysql client, into a database of its own.
+                $settings = DB::connection()->getConfig();
+                $restoredDatabase = 'restore_'.Str::lower(Str::random(8));
+                DB::statement("create database `{$restoredDatabase}`");
+                Process::input($database)->env(['MYSQL_PWD' => (string) $settings['password']])
+                    ->run(['mysql', '-h', $settings['host'], '-P', (string) $settings['port'], '-u', $settings['username'], $restoredDatabase])
+                    ->throw();
+                $restored = new PDO("mysql:host={$settings['host']};port={$settings['port']};dbname={$restoredDatabase}", $settings['username'], $settings['password']);
             }
-
-            $copy = tempnam(sys_get_temp_dir(), 'restore-');
-            file_put_contents($copy, $database);
-            $restored = new PDO('sqlite:'.$copy);
 
             foreach (['subscriptions', 'subscription_transactions', 'users', 'branches'] as $table) {
                 $this->assertSame(DB::table($table)->count(), (int) $restored->query("select count(*) from {$table}")->fetchColumn(), $table);
@@ -146,6 +150,9 @@ class BackupCommandTest extends TestCase
             $restored = null;
             if (isset($copy)) {
                 File::delete($copy);
+            }
+            if ($restoredDatabase !== null) {
+                DB::statement("drop database if exists `{$restoredDatabase}`");
             }
             // No transaction rolls these rows back; on MySQL the next test must migrate afresh (SQLite in memory always does).
             RefreshDatabaseState::$migrated = false;
