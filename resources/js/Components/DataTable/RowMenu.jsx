@@ -216,7 +216,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
             }
             className={
                 phone
-                    ? 'animate-sheet fixed inset-x-0 bottom-0 z-50 max-h-[80dvh] overflow-y-auto rounded-t-[24px] border-t border-gray-200 bg-surface p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-lift'
+                    ? 'animate-sheet fixed inset-x-0 bottom-0 z-50 max-h-[80dvh] overflow-y-auto rounded-t-[24px] border-t border-gray-200 bg-surface p-2 safe-bottom shadow-lift'
                     : 'row-menu animate-menu fixed z-50 overflow-y-auto rounded-[20px] p-2 gl-pop'
             }
         >
@@ -229,7 +229,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
                 onAction={(key) => run(items.find((item) => item.label === key))}
             >
             <Menu.Section id="__record" aria-label={menu.title}>
-                <Header className="mb-1 flex items-center gap-2.5 border-b border-gray-100 px-2 pb-3 pt-2">
+                <Header className="mb-1 flex items-center gap-3 border-b border-gray-100 px-2 pb-3 pt-2">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-graphite-gradient font-display text-[12px] font-bold text-white dark:ring-1 dark:ring-white/10">
                         {initials(menu.title)}
                     </span>
@@ -237,7 +237,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
                         <b className={`block text-sm text-gray-900 ${menu.description ? 'whitespace-normal wrap-break-word' : 'truncate'}`}>{menu.title}</b>
                         {menu.description && <span className="mt-1 block whitespace-pre-wrap wrap-break-word text-sm leading-relaxed text-gray-700">{menu.description}</span>}
                         {menu.subtitle && (
-                            <span className="block truncate text-xs text-gray-500 text-right!" dir="ltr">
+                            <span className="block truncate text-xs text-gray-500 text-end!" dir="ltr">
                                 {menu.subtitle}
                             </span>
                         )}
@@ -246,7 +246,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
             </Menu.Section>
             {menu.groups.map((group) => (
                 <Menu.Section key={group.label} id={group.label} aria-label={group.label}>
-                    <Header className="px-2.5 pb-0.5 pt-2 text-[12px] font-bold text-gray-500" aria-hidden="true">
+                    <Header className="px-3 pb-1 pt-2 text-[12px] font-bold text-gray-500" aria-hidden="true">
                         {group.label}
                     </Header>
                     {group.items.map((item) => {
@@ -260,7 +260,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
                                 id={item.label}
                                 textValue={item.label}
                                 aria-keyshortcuts={item.shortcut}
-                                className={`group/item flex w-full items-center gap-2.5 rounded-xl px-2 py-1.5 text-start text-sm font-medium outline-hidden transition ${
+                                className={`group/item flex w-full items-center gap-3 rounded-xl px-2 py-2 text-start text-sm font-medium outline-hidden transition ${
                                     unavailable
                                         ? 'cursor-not-allowed opacity-55'
                                         : colorful

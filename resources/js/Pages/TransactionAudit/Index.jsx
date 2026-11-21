@@ -137,7 +137,7 @@ export default function Index({ events, period, counts, impactSummary = null, to
                 <Figure tone="owe" label="حسّاسة تحتاج مراجعة" hint="حذف نهائي، أو على حركة من صندوق مستلم">{impactSummary ? formatNumber(impactSummary.sensitive) : formatNumber(counts.deletion)}</Figure>
             </div>
 
-            <div className="mt-5">
+            <div className="mt-6">
                 <DataTableToolbar
                     search={search}
                     onSearchChange={setSearch}
@@ -186,7 +186,7 @@ export default function Index({ events, period, counts, impactSummary = null, to
                                             {event.day !== events.data[index - 1]?.day && <DayHeader day={event.day} isToday={event.day === today} />}
                                             <tr className={event.sensitive ? 'gl-au-flag' : undefined} {...rowClick(can?.viewSubscriptions && event.subscription ? () => openStatement(event.subscription) : null)}>
                                                 <td className="whitespace-nowrap">
-                                                    <span className="inline-flex items-center gap-1.5 font-semibold text-gray-900">
+                                                    <span className="inline-flex items-center gap-2 font-semibold text-gray-900">
                                                         <Icon name="clock" className="h-4 w-4 text-gray-400" />
                                                         {formatClock(event.time)}
                                                     </span>

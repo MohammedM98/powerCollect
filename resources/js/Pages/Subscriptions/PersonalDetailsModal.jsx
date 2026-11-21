@@ -60,7 +60,7 @@ function ChangeHistory({ subscriptionId }) {
                                     {change.userName ?? 'النظام'}
                                     {change.branchName ? ` (${change.branchName})` : ''}
                                 </p>
-                                <ul className="mt-1 space-y-0.5">
+                                <ul className="mt-1 space-y-1">
                                     {change.changes.map((field) => (
                                         <li key={field.field}>
                                             <span className="text-gray-500">{field.label}: </span>

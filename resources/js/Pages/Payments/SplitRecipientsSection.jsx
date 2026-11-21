@@ -125,10 +125,10 @@ export default function SplitRecipientsSection({
                         onChange={(event) => setTerm(event.target.value)}
                         placeholder={parts.length === 0 ? 'ابحث عن مشترك بالاسم أو رقم الحساب أو الجوال…' : 'إضافة مشترك آخر إلى هذه الدفعة…'}
                         disabled={parts.length >= MAX_PARTS}
-                        className={`${inputClass} ps-11`}
+                        className={`${inputClass} field-room-start-wide`}
                     />
                     {found.searched && (
-                        <ul className="animate-modal-panel absolute inset-x-0 z-30 mt-2 max-h-80 overflow-y-auto rounded-2xl p-1.5 gl-pop">
+                        <ul className="animate-modal-panel absolute inset-x-0 z-30 mt-2 max-h-80 overflow-y-auto rounded-2xl p-2 gl-pop">
                             {found.subscriptions.length === 0 && (
                                 <li className="px-3 py-3 text-center text-sm text-gray-500">لا يوجد مشترك يطابق بحثك.</li>
                             )}
@@ -140,7 +140,7 @@ export default function SplitRecipientsSection({
                                         <Button data-raw="" variant="ghost"
                                             isDisabled={added}
                                             onClick={() => addSubscription(subscription)}
-                                            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition hover:bg-gray-50 disabled:opacity-40"
+                                            className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-start transition hover:bg-gray-50 disabled:opacity-40"
                                         >
                                             <span className="min-w-0 flex-1">
                                                 <b className="block truncate text-[14.5px] text-gray-900">{subscription.fullName}</b>
@@ -152,7 +152,7 @@ export default function SplitRecipientsSection({
                                                 </small>
                                             </span>
                                             <span
-                                                className={`whitespace-nowrap rounded-[10px] px-2 py-0.5 font-display text-[13px] font-bold ${added ? 'bg-gray-100 text-gray-700' : BALANCE_CHIPS[describeBalance(subscription.balance).tone]}`}
+                                                className={`whitespace-nowrap rounded-[10px] px-2 py-1 font-display text-[13px] font-bold ${added ? 'bg-gray-100 text-gray-700' : BALANCE_CHIPS[describeBalance(subscription.balance).tone]}`}
                                             >
                                                 {added ? 'مُضاف' : balanceText(describeBalance(subscription.balance))}
                                             </span>

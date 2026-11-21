@@ -42,7 +42,7 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
 
     if (readOnly) {
         return <div>
-            <div role="note" className="m-5 rounded-control border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
+            <div role="note" className="m-6 rounded-control border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
                 <p className="font-semibold text-gray-900">تطبع بقوالب الشركة المحفوظة.</p>
                 <p className="mt-1 text-xs leading-5 text-gray-600">اختر القالب من أعلى الصفحة. تغيير الأعمدة والترتيب والشكل يحتاج صلاحية «تخصيص الطباعة».</p>
             </div>
@@ -185,13 +185,13 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
                             />
                         ))}
                         </ToggleButtonGroup>
-                        <label className="flex items-center gap-1.5 text-xs text-gray-600">
+                        <label className="flex items-center gap-2 text-xs text-gray-600">
                             لون آخر
                             <input
                                 type="color"
                                 value={layout.table.accent}
                                 onChange={(e) => setIn('table', 'accent', e.target.value)}
-                                className="h-8 w-10 cursor-pointer rounded border border-gray-200 p-0.5"
+                                className="h-8 w-10 cursor-pointer rounded border border-gray-200 p-1"
                             />
                         </label>
                     </div>

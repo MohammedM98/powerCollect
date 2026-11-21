@@ -10,7 +10,7 @@ import Icon from '@/Components/Icon';
 export default function AsyncState({ loading = false, error = null, empty = false, onRetry = null, loadingLabel = 'جارٍ التحميل…', emptyText = 'لا توجد بيانات.', rows = 3, children }) {
     if (error) {
         return (
-            <div role="alert" className="flex flex-col items-center gap-3 rounded-control border border-red-200 bg-red-50/60 px-5 py-6 text-center text-base text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
+            <div role="alert" className="flex flex-col items-center gap-3 rounded-control border border-red-200 bg-red-50/60 px-4 py-6 text-center text-base text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
                 <Icon name="alert" className="h-6 w-6" />
                 <p className="leading-7">{error}</p>
                 {onRetry && (

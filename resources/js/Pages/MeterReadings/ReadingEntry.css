@@ -6,7 +6,7 @@
     --re-shadow: var(--ui-shadow);
     color: var(--re-ink); font: 16px/1.6 var(--font-body, 'IBM Plex Sans Arabic'), system-ui, sans-serif;
 }
-.reading-entry { padding-bottom: 40px; }
+.reading-entry { padding-bottom: 32px; }
 .reading-entry :focus-visible { outline: 2px solid var(--ui-focus); outline-offset: 3px; }
 .reading-entry button:disabled { opacity: .4; cursor: default; }
 .re-actions { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -16,19 +16,19 @@
 .re-open.is-open { color: var(--re-success); }
 .re-open i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 20%, transparent); }
 /* The week is one control: its arrows and its year, month and dates share a grey track. */
-.re-week { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border-radius: 999px; background: rgb(var(--group-fill)); }
+.re-week { display: inline-flex; align-items: center; gap: 4px; padding: 4px; border-radius: 999px; background: rgb(var(--group-fill)); }
 .re-week > button { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 999px; border: 0; background: transparent; color: var(--re-ink2); }
 .re-week .gl-filter-item, .re-week button[aria-expanded] { background: transparent; box-shadow: none; }
 .re-week > button:hover:not(:disabled), .re-week button[aria-expanded]:hover { background: rgb(var(--panel-bg)); color: var(--re-ink); }
 .re-week-field { min-width: 0; }
 .re-week-field { width: auto; }
 .re-hint { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; padding: 12px 16px; border-radius: calc(18px * var(--radius-scale, 1)); background: color-mix(in srgb, var(--re-info) 7%, var(--re-surface)); border: 0; font-size: 14px; color: var(--re-ink2); line-height: 1.8; }
-.re-hint svg { width: 19px; height: 19px; color: var(--re-info); flex: none; margin-top: 3px; }
+.re-hint svg { width: 19px; height: 19px; color: var(--re-info); flex: none; margin-top: 4px; }
 .re-hint b { color: var(--re-info); }
 .re-hint button { margin-inline-start: auto; color: var(--re-faint); font-size: 22px; line-height: 1; padding: 4px; }
 /* The readings' status: HeroUI's segmented pill as in the redesign, each with its count. */
 .re-tabs { display: flex; width: fit-content; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
-.re-tabs .re-tab-count { display: inline-grid; place-items: center; min-width: 22px; height: 20px; padding: 0 6px; border-radius: 99px; background: rgb(var(--gray-900) / 0.07); font: 700 11.5px var(--font-body, 'Zain'), sans-serif; color: var(--re-ink2); }
+.re-tabs .re-tab-count { display: inline-grid; place-items: center; min-width: 22px; height: 20px; padding: 0 8px; border-radius: 99px; background: rgb(var(--gray-900) / 0.07); font: 700 11.5px var(--font-body, 'Zain'), sans-serif; color: var(--re-ink2); }
 /* Three figures, as the redesign's cards: entered, waiting for approval, due this week. */
 .re-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 16px 0; }
 .re-kpis .gl-val small { font-size: 14px; font-weight: 600; color: var(--re-faint); }
@@ -37,7 +37,7 @@
 .reading-entry i.pending { background: var(--re-warn); }
 .re-progress-track { display: flex; height: 6px; border-radius: calc(99px * var(--radius-scale, 1)); background: var(--re-sunken); overflow: hidden; margin-top: 8px; }
 .re-card { border: 0; background: var(--re-surface); box-shadow: var(--re-shadow); border-radius: calc(24px * var(--radius-scale, 1)); overflow: clip; }
-.reading-entry .data-table-toolbar { padding: 14px 16px; border: 0; border-bottom: 1px solid var(--re-line2); border-radius: 0; background: transparent; }
+.reading-entry .data-table-toolbar { padding: 12px 16px; border: 0; border-bottom: 1px solid var(--re-line2); border-radius: 0; background: transparent; }
 .reading-entry .data-table-toolbar::before { display: none; }
 .reading-entry .data-table-toolbar input { border: 1px solid var(--re-line); border-radius: calc(12px * var(--radius-scale, 1)); background: var(--re-surface); }
 /* The order of the sheet sits with its filters, as pills (the redesign's «ترتيب حسب» and «الاتجاه»). */
@@ -45,10 +45,10 @@
 /* The sheet as the redesign's table: a rounded grey band of titles, then flat rows split by a fine line. */
 .re-table-wrap { container-type: inline-size; overflow-x: auto; padding: 0 12px 4px; }
 .re-table { border-collapse: separate; border-spacing: 0; font-size: 15px; line-height: 1.5; }
-.re-table th { height: 40px; padding: 0 14px; background: rgb(var(--group-fill)); font-size: 13px; font-weight: 600; color: var(--re-faint); white-space: nowrap; text-align: start; }
+.re-table th { height: 40px; padding: 0 16px; background: rgb(var(--group-fill)); font-size: 13px; font-weight: 600; color: var(--re-faint); white-space: nowrap; text-align: start; }
 .re-table th:first-child { border-start-start-radius: 12px; border-end-start-radius: 12px; }
 .re-table th:last-child { border-start-end-radius: 12px; border-end-end-radius: 12px; }
-.re-table td { padding: 10px 14px; vertical-align: middle; border-bottom: 1px solid var(--re-line2); background: var(--re-surface); transition: background-color 150ms ease; }
+.re-table td { padding: 8px 16px; vertical-align: middle; border-bottom: 1px solid var(--re-line2); background: var(--re-surface); transition: background-color 150ms ease; }
 .re-table tbody tr:last-child td { border-bottom: 0; }
 .re-row:hover td, .re-row:focus-within td { background: color-mix(in srgb, var(--re-ink) 3%, var(--re-surface)); }
 .re-row:hover td:first-child, .re-row:focus-within td:first-child { box-shadow: inset -3px 0 0 var(--re-brand); }
@@ -57,19 +57,19 @@
 .re-row.has-error td { background: color-mix(in srgb, var(--ui-danger) 6%, var(--re-surface)); }
 .re-sub { min-width: 180px; }
 .re-sub b { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 16px; }
-.re-sub-name { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.re-sub-name { display: flex; align-items: center; gap: 8px; min-width: 0; }
 /* Every row is the same height: a cell holds at most two lines, and a longer second line is cut with "…" (its whole text on hover). */
 .re-table td { height: 68px; }
 .re-line { display: block; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* A reading can carry two states (waiting and unusual): they stack rather than run past the table's edge. */
 .re-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; max-width: 200px; }
 .re-table td.re-empty { height: 160px; text-align: center; color: var(--re-faint); }
-.re-empty b { display: block; margin-bottom: 10px; font-weight: 600; color: var(--re-ink2); }
+.re-empty b { display: block; margin-bottom: 8px; font-weight: 600; color: var(--re-ink2); }
 .re-pill-action { cursor: pointer; transition: box-shadow 150ms ease; }
 .re-pill-action:hover:not(:disabled) { box-shadow: 0 0 0 3px color-mix(in srgb, var(--re-warn) 15%, transparent); }
 .re-pill-action:focus-visible { outline: 2px solid var(--re-warn); outline-offset: 3px; }
 .re-pill-action:disabled { cursor: wait; opacity: .55; }
-.re-pill.discount { flex: none; padding: 1px 7px; font-size: 12px; color: var(--re-success); background: color-mix(in srgb, var(--re-success) 10%, transparent); border-color: color-mix(in srgb, var(--re-success) 25%, transparent); }
+.re-pill.discount { flex: none; padding: 4px 8px; font-size: 12px; color: var(--re-success); background: color-mix(in srgb, var(--re-success) 10%, transparent); border-color: color-mix(in srgb, var(--re-success) 25%, transparent); }
 .re-sub input[type=checkbox], .re-approval input[type=checkbox] { border: 1.5px solid var(--re-line); border-radius: calc(8px * var(--radius-scale, 1)); width: 18px; height: 18px; color: var(--re-success); flex: none; }
 .re-number { font-family: var(--font-body, 'Zain'), sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .re-last, .re-rate, .re-min { color: var(--re-faint); }
@@ -97,7 +97,7 @@
 .re-diff { color: var(--re-brand); font-weight: 700; }
 .re-due { font-weight: 800; }
 .re-due p { font-family: var(--font-body, 'IBM Plex Sans Arabic'), sans-serif; }
-.re-pill { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; border-radius: calc(99px * var(--radius-scale, 1)); padding: 4px 9px; font-size: 12.5px; font-weight: 700; border: 1px solid var(--re-line); color: var(--re-faint); background: var(--re-sunken); }
+.re-pill { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; border-radius: calc(99px * var(--radius-scale, 1)); padding: 4px 8px; font-size: 12.5px; font-weight: 700; border: 1px solid var(--re-line); color: var(--re-faint); background: var(--re-sunken); }
 .re-pill.pending, .re-pill.approved { color: var(--re-warn); background: color-mix(in srgb, var(--re-warn) 10%, transparent); border-color: color-mix(in srgb, var(--re-warn) 25%, transparent); }
 .re-pill.approved { color: var(--re-success); background: color-mix(in srgb, var(--re-success) 10%, transparent); border-color: color-mix(in srgb, var(--re-success) 25%, transparent); }
 .re-pill i { background: currentColor; width: 6px; height: 6px; }
@@ -107,23 +107,23 @@
 .re-approval .re-unusual-note { color: var(--ui-danger); font-size: 13px; font-weight: 600; margin-top: 4px; }
 .re-by { min-width: 110px; white-space: nowrap; }
 .re-by b { font-weight: 600; font-size: 13.5px; }
-.re-by small { display: flex; align-items: center; gap: 5px; font: 500 12px var(--font-body, 'Zain'), sans-serif; color: var(--re-faint); margin-top: 3px; }
+.re-by small { display: flex; align-items: center; gap: 4px; font: 500 12px var(--font-body, 'Zain'), sans-serif; color: var(--re-faint); margin-top: 4px; }
 .re-by svg { width: 13px; height: 13px; }
 .re-approved-by { margin-inline-start: 4px; font-size: 12px; color: var(--re-success); font-weight: 600; }
 .re-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--re-line2); color: var(--re-faint); font-size: 12.5px; }
-.re-footer b { font-family: var(--font-body, 'Zain'), sans-serif; color: var(--re-ink); margin-inline-start: 6px; }
-.re-footer > span:last-child { display: inline-flex; gap: 6px; align-items: center; }
+.re-footer b { font-family: var(--font-body, 'Zain'), sans-serif; color: var(--re-ink); margin-inline-start: 8px; }
+.re-footer > span:last-child { display: inline-flex; gap: 8px; align-items: center; }
 .re-footer svg { width: 16px; height: 16px; }
 .re-card > nav, .re-card > div:last-child { padding-inline: 16px; padding-bottom: 12px; }
-.re-approval { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; background: var(--re-surface); border: 1px solid var(--re-line2); border-radius: calc(18px * var(--radius-scale, 1)); padding: 16px; margin-bottom: 14px; }
+.re-approval { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; background: var(--re-surface); border: 1px solid var(--re-line2); border-radius: calc(18px * var(--radius-scale, 1)); padding: 16px; margin-bottom: 12px; }
 .re-approval button, .re-bulk button:last-child { background: var(--re-success); border-color: var(--re-success); color: #fff; }
-.re-bulk { position: sticky; bottom: 16px; z-index: 20; margin: 16px auto 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; background: rgb(var(--graphite-900)); border: 1px solid rgb(var(--graphite-500)); color: #fff; border-radius: calc(18px * var(--radius-scale, 1)); box-shadow: 0 16px 40px -16px rgb(var(--graphite-900) / 0.533); }
+.re-bulk { position: sticky; bottom: 16px; z-index: 20; margin: 16px auto 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: rgb(var(--graphite-900)); border: 1px solid rgb(var(--graphite-500)); color: #fff; border-radius: calc(18px * var(--radius-scale, 1)); box-shadow: 0 16px 40px -16px rgb(var(--graphite-900) / 0.533); }
 .reading-entry .re-bulk p, .reading-entry .re-bulk b { color: #fff; }
 .re-bulk button:first-child { color: #fff; border-color: #ffffff33; background: #ffffff14; }
-:root[data-density=compact] .re-table td { padding-block: 6px; height: 56px; }
+:root[data-density=compact] .re-table td { padding-block: 8px; height: 56px; }
 /* Narrower sheets tighten their cells, so the last column stays in view. */
-@container (max-width: 1520px) { .re-table th, .re-table td { padding-inline: 7px; } }
-@container (max-width: 1400px) { .re-table th, .re-table td { padding-inline: 5px; } }
+@container (max-width: 1520px) { .re-table th, .re-table td { padding-inline: 8px; } }
+@container (max-width: 1400px) { .re-table th, .re-table td { padding-inline: 4px; } }
 @media (max-width: 760px) {
     .re-week { display: grid; width: 100%; border-radius: 22px; grid-template-columns: 34px minmax(0, 1fr) minmax(0, 1fr) 34px; }
     .re-week-field { width: 100%; }
@@ -135,12 +135,12 @@
     .re-actions { width: 100%; }
     .re-actions .re-week { flex: 1 1 auto; }
     .re-tabs { width: 100%; }
-    .re-tabs .gl-seg-item { flex: 1; padding: 0 8px; gap: 5px; }
+    .re-tabs .gl-seg-item { flex: 1; padding: 0 8px; gap: 4px; }
     .re-table-wrap { overflow: visible; padding: 8px; }
     .re-table tbody tr:last-child td { border-bottom: 0; }
     .re-table, .re-table tbody { display: block; }
     .re-table thead { display: none; }
-    .re-table tr { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 10px; background: var(--re-surface); border: 1px solid var(--re-line2); border-radius: calc(18px * var(--radius-scale, 1)); padding: 12px; margin-bottom: 10px; }
+    .re-table tr { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 12px; background: var(--re-surface); border: 1px solid var(--re-line2); border-radius: calc(18px * var(--radius-scale, 1)); padding: 12px; margin-bottom: 8px; }
     .re-table td { display: block; height: auto; padding: 0; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; white-space: normal; min-width: 0; }
     .re-row:hover, .re-row:focus-within { border-color: rgb(var(--gray-200)); }
     .re-row.is-selected { border-color: var(--re-brand); background: color-mix(in srgb, var(--re-brand) 4%, var(--re-surface)); }
@@ -159,7 +159,7 @@
     .re-sub b { font-size: 14px; white-space: normal; overflow: visible; }
     .re-table .re-line { max-width: none; white-space: normal; overflow: visible; }
     .re-sub > div { gap: 8px; }
-    .re-pill { font-size: 12px; padding: 4px 6px; }
+    .re-pill { font-size: 12px; padding: 4px 8px; }
     .re-by small { flex-wrap: wrap; }
     .re-bulk { bottom: 8px; }
 }
@@ -167,21 +167,21 @@
 /* The pinned bar: what the sheet is filtered to, kept in sight while the filters scroll away (ReadingContextBar). */
 .re-context { position: fixed; inset-inline: 0; z-index: 30; padding-inline: var(--tn-gutter, 16px); pointer-events: none; opacity: 0; transform: translateY(-8px); transition: opacity .18s ease, transform .18s ease; }
 .re-context.is-shown { opacity: 1; transform: none; }
-.re-context-bar { pointer-events: auto; max-width: calc(var(--ui-content-width, 1720px) - 2 * var(--tn-gutter, 16px)); margin-inline: auto; display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 14px; background: var(--re-surface); border: 1px solid var(--re-line); border-radius: calc(18px * var(--radius-scale, 1)); box-shadow: 0 14px 34px -16px rgb(var(--shadow-ink) / 0.333); }
-.re-context-week { display: inline-flex; align-items: center; gap: 6px; flex: none; padding: 5px 10px; border-radius: calc(12px * var(--radius-scale, 1)); background: var(--re-sunken); font: 600 13px var(--font-body, 'Zain'), sans-serif; color: var(--re-ink2); }
+.re-context-bar { pointer-events: auto; max-width: calc(var(--ui-content-width, 1720px) - 2 * var(--tn-gutter, 16px)); margin-inline: auto; display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 16px; background: var(--re-surface); border: 1px solid var(--re-line); border-radius: calc(18px * var(--radius-scale, 1)); box-shadow: 0 14px 34px -16px rgb(var(--shadow-ink) / 0.333); }
+.re-context-week { display: inline-flex; align-items: center; gap: 8px; flex: none; padding: 4px 12px; border-radius: calc(12px * var(--radius-scale, 1)); background: var(--re-sunken); font: 600 13px var(--font-body, 'Zain'), sans-serif; color: var(--re-ink2); }
 .re-context-filters { display: flex; align-items: center; gap: 8px; flex: none; }
-.re-context-field { display: flex; align-items: center; gap: 6px; width: 190px; }
+.re-context-field { display: flex; align-items: center; gap: 8px; width: 190px; }
 .re-context-field > small { flex: none; font-size: 12px; font-weight: 700; color: var(--re-faint); white-space: nowrap; }
 .re-context-field > div { flex: 1; min-width: 0; }
 .re-context-field button[aria-expanded] { height: 36px; font-size: 14px; }
-.re-context-chips { flex: 1; min-width: 0; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.re-context-chips { flex: 1; min-width: 0; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
 .re-context-chips::-webkit-scrollbar { display: none; }
-.re-context-chip { flex: none; display: inline-flex; align-items: baseline; gap: 6px; padding: 5px 11px; border-radius: calc(12px * var(--radius-scale, 1)); font-size: 13.5px; font-weight: 700; color: var(--re-brand); background: color-mix(in srgb, var(--re-brand) 8%, transparent); border: 1px solid color-mix(in srgb, var(--re-brand) 20%, transparent); white-space: nowrap; }
+.re-context-chip { flex: none; display: inline-flex; align-items: baseline; gap: 8px; padding: 4px 12px; border-radius: calc(12px * var(--radius-scale, 1)); font-size: 13.5px; font-weight: 700; color: var(--re-brand); background: color-mix(in srgb, var(--re-brand) 8%, transparent); border: 1px solid color-mix(in srgb, var(--re-brand) 20%, transparent); white-space: nowrap; }
 .re-context-chip small { font-size: 12px; font-weight: 600; color: var(--re-faint); }
 .re-context-chip.is-all { color: var(--re-ink2); background: var(--re-sunken); border-color: var(--re-line); }
 .re-context-count { flex: none; font-size: 13px; color: var(--re-faint); white-space: nowrap; }
 .re-context-count b { color: var(--re-ink); font-family: var(--font-body, 'Zain'), sans-serif; }
-.re-context-edit { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: calc(12px * var(--radius-scale, 1)); border: 1px solid var(--re-line); background: var(--re-surface); color: var(--re-ink2); font-size: 13px; font-weight: 700; }
+.re-context-edit { flex: none; display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: calc(12px * var(--radius-scale, 1)); border: 1px solid var(--re-line); background: var(--re-surface); color: var(--re-ink2); font-size: 13px; font-weight: 700; }
 .re-context-edit:hover { color: var(--re-brand); border-color: color-mix(in srgb, var(--re-brand) 35%, transparent); }
 /* Narrow screens: the drop-downs take a second row of the bar. */
 @media (max-width: 1100px) {
@@ -190,7 +190,7 @@
     .re-context-field { flex: 1 1 0; width: auto; min-width: 0; }
 }
 @media (max-width: 640px) { .re-context-field > small { display: none; } }
-@media (max-width: 640px) { .re-context-count { display: none; } .re-context-edit { padding: 0 9px; font-size: 0; gap: 0; } .re-context-edit svg { width: 18px; height: 18px; } }
+@media (max-width: 640px) { .re-context-count { display: none; } .re-context-edit { padding: 0 8px; font-size: 0; gap: 0; } .re-context-edit svg { width: 18px; height: 18px; } }
 @media (prefers-reduced-motion: reduce) { .re-context { transition: none; } }
 @media print { .re-context { display: none; } }
 
@@ -205,7 +205,7 @@
 
 .reading-entry .re-approval {
     gap: 12px 16px;
-    padding: 12px 14px 12px 16px;
+    padding: 12px 16px 12px 16px;
     border: 0;
     border-radius: calc(20px * var(--radius-scale, 1));
     background: rgb(var(--panel-bg) / var(--panel-opacity, 1));
@@ -214,8 +214,8 @@
 
 .reading-entry .re-approval .re-unusual-note {
     display: inline-block;
-    margin-top: 6px;
-    padding: 3px 10px;
+    margin-top: 8px;
+    padding: 4px 12px;
     border-radius: 99px;
     background: color-mix(in srgb, var(--ui-danger) 10%, transparent);
     font-size: 12.5px;
@@ -268,36 +268,36 @@
  * The week in one strip (ReadingSummary): progress, what the week comes to,
  * and the approve key, then the sheet with its status pills at its head.
  */
-.reading-entry .re-summary { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) auto; align-items: center; gap: 12px 28px; margin-bottom: 14px; padding: 16px 20px; border-radius: 20px; background: var(--ma-panel); backdrop-filter: var(--ma-blur); -webkit-backdrop-filter: var(--ma-blur); box-shadow: var(--ma-depth); }
+.reading-entry .re-summary { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) auto; align-items: center; gap: 12px 24px; margin-bottom: 12px; padding: 16px 16px; border-radius: 20px; background: var(--ma-panel); backdrop-filter: var(--ma-blur); -webkit-backdrop-filter: var(--ma-blur); box-shadow: var(--ma-depth); }
 .re-summary-count { display: flex; align-items: baseline; gap: 8px; margin: 0; }
 .re-summary-count b { font: 800 28px/1 var(--font-body, 'Zain'), sans-serif; color: var(--ma-ink); }
 .re-summary-count span { font-size: 14px; font-weight: 700; color: var(--ma-muted); }
 .re-summary-count em { margin-inline-start: auto; font-style: normal; font-weight: 800; color: var(--ma-ink); }
-.re-summary-bar { display: flex; height: 9px; margin: 10px 0 8px; border-radius: 99px; overflow: hidden; background: var(--ma-line); }
+.re-summary-bar { display: flex; height: 9px; margin: 8px 0 8px; border-radius: 99px; overflow: hidden; background: var(--ma-line); }
 .re-summary-bar i, .re-summary-legend i { background: var(--ma-faint); }
 .re-summary-bar i { height: 100%; transition: width .3s ease; }
 .reading-entry .re-summary i.approved { background: var(--ma-pay); }
 .reading-entry .re-summary i.pending { background: var(--ma-warn); }
 .re-summary-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0; font-size: 13px; color: var(--ma-muted); }
-.re-summary-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.re-summary-legend span { display: inline-flex; align-items: center; gap: 8px; }
 .re-summary-legend i { width: 8px; height: 8px; border-radius: 3px; }
 .re-summary-legend b { color: var(--ma-ink); }
-.re-summary-figure { display: grid; gap: 2px; padding-inline-start: 24px; border-inline-start: 1px solid var(--ma-line); }
+.re-summary-figure { display: grid; gap: 4px; padding-inline-start: 24px; border-inline-start: 1px solid var(--ma-line); }
 .re-summary-figure small { font-size: 12.5px; font-weight: 700; color: var(--ma-muted); }
 .re-summary-figure b { font: 800 26px/1.15 var(--font-body, 'Zain'), sans-serif; color: var(--ma-ink); }
 .re-summary-figure b span { font-size: 15px; color: var(--ma-muted); }
-.re-summary-approve { display: grid; justify-items: end; gap: 6px; text-align: end; }
+.re-summary-approve { display: grid; justify-items: end; gap: 8px; text-align: end; }
 .re-summary-approve small { max-width: 240px; font-size: 12.5px; color: var(--ma-muted); }
-.reading-entry .re-approve-all, .reading-entry .re-approve-selected { height: 42px; padding: 0 18px; border: 0; border-radius: 13px; background: var(--ma-pay-btn); color: #fff; font-weight: 800; gap: 8px; box-shadow: var(--ma-depth); }
-.re-approve-all .re-count { min-width: 24px; height: 22px; padding: 0 7px; border-radius: 99px; background: rgb(255 255 255 / 0.2); display: inline-grid; place-items: center; font-size: 13px; }
-.re-summary-done { display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 8px 12px; border-radius: 12px; background: var(--ma-pay-s); color: var(--ma-pay); font-size: 13px; font-weight: 800; }
+.reading-entry .re-approve-all, .reading-entry .re-approve-selected { height: 42px; padding: 0 16px; border: 0; border-radius: 13px; background: var(--ma-pay-btn); color: #fff; font-weight: 800; gap: 8px; box-shadow: var(--ma-depth); }
+.re-approve-all .re-count { min-width: 24px; height: 22px; padding: 0 8px; border-radius: 99px; background: rgb(255 255 255 / 0.2); display: inline-grid; place-items: center; font-size: 13px; }
+.re-summary-done { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 8px 12px; border-radius: 12px; background: var(--ma-pay-s); color: var(--ma-pay); font-size: 13px; font-weight: 800; }
 @media (max-width: 900px) {
     .reading-entry .re-summary { grid-template-columns: minmax(0, 1fr); }
     .re-summary-figure { padding: 12px 0 0; border-inline-start: 0; border-top: 1px solid var(--ma-line); }
     .re-summary-approve { justify-items: stretch; text-align: start; }
 }
 
-.re-sheet-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 14px 16px 0; }
+.re-sheet-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 12px 16px 0; }
 .re-select-page { display: inline-flex; align-items: center; gap: 8px; margin-inline-start: auto; font-size: 13.5px; font-weight: 700; color: var(--ma-muted); }
 .re-select-page .checkbox__content { font-size: 13.5px; font-weight: 700; color: var(--ma-muted); }
 
@@ -309,10 +309,10 @@
 @media (max-width: 1100px) { .re-context-status { order: 2; flex: 1 1 100%; } .re-context-status .re-tabs { width: 100%; } }
 
 /* Every save answers on its row: a quiet "saving", then a green "saved" that fades. */
-.re-saving, .re-saved { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 800; }
+.re-saving, .re-saved { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 800; }
 .re-saving { color: var(--ma-muted); }
 .re-saving i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; animation: re-spin .7s linear infinite; }
-.re-saved { padding: 4px 10px; border-radius: 99px; background: var(--ma-pay-s); color: var(--ma-pay); }
+.re-saved { padding: 4px 12px; border-radius: 99px; background: var(--ma-pay-s); color: var(--ma-pay); }
 .re-saved svg { width: 14px; height: 14px; }
 .reading-entry .re-row.is-just-saved td { animation: re-saved-flash 1.6s ease; }
 .reading-entry .re-row.is-just-saved .re-input { border-color: var(--ma-pay); }

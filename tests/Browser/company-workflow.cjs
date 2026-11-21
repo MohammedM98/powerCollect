@@ -14,6 +14,14 @@ const pageErrors = [];
 let browser;
 let shot = 0;
 
+/** The side an element's text lines up on, start and end read through its own direction (runs in the page). */
+const textSide = (element) => {
+    const { textAlign, direction } = getComputedStyle(element);
+    if (textAlign === 'start') return direction === 'rtl' ? 'right' : 'left';
+    if (textAlign === 'end') return direction === 'rtl' ? 'left' : 'right';
+    return textAlign;
+};
+
 function step(name, run) {
     steps.push({ name, run });
 }
@@ -37,8 +45,8 @@ async function signIn(username, viewport = { width: 1440, height: 900 }) {
         throw error;
     }
     await page.locator('#password').fill(PASSWORD);
-    assert.equal(await page.locator('#username').evaluate((field) => getComputedStyle(field).textAlign), 'right');
-    assert.equal(await page.locator('#password').evaluate((field) => getComputedStyle(field).textAlign), 'right');
+    assert.equal(await page.locator('#username').evaluate(textSide), 'right');
+    assert.equal(await page.locator('#password').evaluate(textSide), 'right');
     await page.getByRole('button', { name: 'تسجيل الدخول' }).click();
     await page.waitForURL((url) => !url.pathname.startsWith('/login'));
     return page;
@@ -431,11 +439,11 @@ step('report sections retain the branch banner, statement alignment and mobile b
     await page.waitForURL(/section=statement/);
     const table = page.locator('.reports-detail-table');
     await table.getByRole('columnheader', { name: 'الرصيد', exact: true }).waitFor();
-    const alignment = await table.evaluate((element) => [3, 4, 5].map((index) => ({
-        header: getComputedStyle(element.tHead.rows[0].cells[index]).textAlign,
-        cell: getComputedStyle(element.tBodies[0].rows[0].cells[index]).textAlign,
+    const alignment = await Promise.all([3, 4, 5].map(async (index) => ({
+        header: await table.locator('thead tr').first().locator('th, td').nth(index).evaluate(textSide),
+        cell: await table.locator('tbody tr').first().locator('th, td').nth(index).evaluate(textSide),
     })));
-    assert.ok(alignment.every(({ header, cell }) => header === 'right' && ['right', 'end'].includes(cell)), JSON.stringify(alignment));
+    assert.ok(alignment.every(({ header, cell }) => header === 'right' && cell === 'right'), JSON.stringify(alignment));
     await snap(page, 'reports-statement-desktop');
     await page.setViewportSize({ width: 390, height: 844 });
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1));

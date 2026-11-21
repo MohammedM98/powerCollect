@@ -58,12 +58,12 @@ export function TemplatesSection({ templates, onReset, onPreset }) {
                                 <Icon name="folder" className="h-4 w-4 text-gray-500" />
                                 القالب: <b>{active.name}</b>
                                 {active.isDefault && (
-                                    <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-800">
+                                    <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-[11px] font-semibold text-emerald-800">
                                         افتراضي
                                     </span>
                                 )}
                                 {isChanged && (
-                                    <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
+                                    <span className="rounded-full bg-amber-500/10 px-2 py-1 text-[11px] font-semibold text-amber-800">
                                         تعديلات غير محفوظة
                                     </span>
                                 )}
@@ -164,7 +164,7 @@ export function TemplatesSection({ templates, onReset, onPreset }) {
                                 href="/settings/print-templates"
                                 target="_blank"
                                 rel="noopener"
-                                className={`flex items-center gap-1.5 rounded text-xs font-semibold text-brand-600 hover:underline ${FOCUS_RING}`}
+                                className={`flex items-center gap-2 rounded text-xs font-semibold text-brand-600 hover:underline ${FOCUS_RING}`}
                             >
                                 <Icon name="external" className="h-4 w-4" />
                                 كل قوالب الطباعة (صفحة القوالب)

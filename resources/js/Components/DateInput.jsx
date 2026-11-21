@@ -212,7 +212,7 @@ export default function DateInput({
                             <Button data-raw="" variant="ghost"
                                 aria-label={view === 'days' ? 'اختيار الشهر والسنة' : 'العودة إلى الأيام'}
                                 onClick={() => setView(view === 'days' ? 'months' : 'days')}
-                                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[15px] font-bold transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"
+                                className="flex items-center gap-2 rounded-lg px-3 py-2 text-[15px] font-bold transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"
                             >
                                 {view === 'days' && formatMonthName(shownMonth)}
                                 <span className="font-display">{year}</span>
@@ -270,7 +270,7 @@ export default function DateInput({
                                 </Calendar>
                             </I18nProvider>
                         ) : (
-                            <div className="grid grid-cols-3 gap-1.5 py-1">
+                            <div className="grid grid-cols-3 gap-2 py-1">
                                 {Array.from({ length: 12 }, (_, index) => {
                                     const month = `${year}-${String(index + 1).padStart(2, '0')}`;
                                     const blocked = Boolean((min && month < min.slice(0, 7)) || (max && month > max.slice(0, 7)));
@@ -300,7 +300,7 @@ export default function DateInput({
                             <Button data-raw="" variant="ghost"
                                 isDisabled={isOutOfRange(today, min, max)}
                                 onClick={() => pick(today)}
-                                className="rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-900 transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 disabled:opacity-30"
+                                className="rounded-lg px-3 py-2 text-sm font-semibold text-gray-900 transition hover:bg-gray-100 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 disabled:opacity-30"
                             >
                                 اليوم
                             </Button>
@@ -310,7 +310,7 @@ export default function DateInput({
                                         onChange('');
                                         close();
                                     }}
-                                    className="rounded-lg px-3 py-1.5 text-sm font-semibold text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"
+                                    className="rounded-lg px-3 py-2 text-sm font-semibold text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900"
                                 >
                                     مسح
                                 </Button>

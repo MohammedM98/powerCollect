@@ -70,7 +70,7 @@ export default function PhoneQuickEdit({ subscription }) {
                 onClick={start}
                 aria-label={subscription.contact_phone ? `${subscription.contact_phone} تعديل رقم جوال ${subscription.display_name}` : `إضافة رقم جوال ${subscription.display_name}`}
                 title="تعديل رقم الجوال"
-                className={`group -mx-1 inline-flex min-h-6 items-center gap-1.5 rounded-md px-1 py-0.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900 ${FOCUS_RING}`}
+                className={`group -mx-1 inline-flex min-h-6 items-center gap-2 rounded-md px-1 py-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900 ${FOCUS_RING}`}
             >
                 {subscription.contact_phone ? (
                     <span dir="ltr">{subscription.contact_phone}</span>

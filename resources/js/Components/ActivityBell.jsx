@@ -106,14 +106,14 @@ export default function ActivityBell({ open, onToggle, onClose }) {
                         <Button data-raw="" variant="ghost" aria-pressed={tab === 'all'} onClick={() => setTab('all')}>الكل</Button>
                         <Button data-raw="" variant="ghost" aria-pressed={tab === 'unread'} onClick={() => setTab('unread')}>غير المقروءة{unreadCount > 0 ? ` (${unreadCount})` : ''}</Button>
                     </div>
-                    <div className="grid max-h-[360px] gap-0.5 overflow-y-auto px-2 pb-2">
+                    <div className="grid max-h-[360px] gap-1 overflow-y-auto px-2 pb-2">
                         {shown.length > 0 ? shown.map((item) => (
                             <div key={item.id} className={`tn-note ${item.read ? '' : 'is-unread'}`}>
                                 <span className="tn-note-icon"><Icon name={iconOf(item.action)} /></span>
                                 <span className="min-w-0 flex-1">
                                     <b className="block text-[14.5px] font-semibold leading-snug">{ACTION_MESSAGES[item.action] ?? item.action}</b>
                                     {item.subject && <small className="block truncate text-[12.5px] text-gray-500">{item.subject}</small>}
-                                    <time dateTime={item.createdAt} className="mt-0.5 block text-[12px] text-gray-400">{timeAgo(item.createdAt)}</time>
+                                    <time dateTime={item.createdAt} className="mt-1 block text-[12px] text-gray-400">{timeAgo(item.createdAt)}</time>
                                 </span>
                                 {!item.read && <span className="tn-unread-dot" aria-label="جديد" />}
                             </div>

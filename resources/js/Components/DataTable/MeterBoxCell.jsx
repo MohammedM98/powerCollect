@@ -5,7 +5,7 @@ export default function MeterBoxCell({ name, number }) {
     }
 
     return (
-        <span className="inline-flex flex-wrap items-center gap-1.5">
+        <span className="inline-flex flex-wrap items-center gap-2">
             {name && <span className="font-semibold text-gray-900">{name}</span>}
             {number && (
                 <span className="data-chip" dir="ltr">

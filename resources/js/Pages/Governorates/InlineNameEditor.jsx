@@ -60,8 +60,8 @@ export default function InlineNameEditor({ initialName = '', placeholder, reques
     }
 
     return (
-        <div className="my-0.5 rounded-control border-[1.5px] border-gray-900 bg-surface p-1.5">
-            <div className="flex items-center gap-1.5">
+        <div className="my-1 rounded-control border-[1.5px] border-gray-900 bg-surface p-2">
+            <div className="flex items-center gap-2">
                 <Input
                     ref={inputRef}
                     value={name}
@@ -73,24 +73,24 @@ export default function InlineNameEditor({ initialName = '', placeholder, reques
                     placeholder={placeholder}
                     aria-label={placeholder}
                     aria-invalid={Boolean(error)}
-                    className="min-w-0 flex-1 border-0 bg-transparent px-1.5 py-1 text-sm font-semibold text-gray-900 focus:ring-0"
+                    className="min-w-0 flex-1 border-0 bg-transparent px-2 py-1 text-sm font-semibold text-gray-900 focus:ring-0"
                 />
                 <Button data-raw="" variant="ghost"
                     onClick={save}
                     isDisabled={processing}
-                    className="h-8 rounded-lg bg-gray-900 px-2.5 text-xs font-bold text-surface transition hover:bg-gray-800 disabled:opacity-60"
+                    className="h-8 rounded-lg bg-gray-900 px-3 text-xs font-bold text-surface transition hover:bg-gray-800 disabled:opacity-60"
                 >
                     حفظ
                 </Button>
                 <Button data-raw="" variant="ghost"
                     onClick={onDone}
-                    className="h-8 rounded-lg bg-gray-100 px-2.5 text-xs font-bold text-gray-700 transition hover:bg-gray-200"
+                    className="h-8 rounded-lg bg-gray-100 px-3 text-xs font-bold text-gray-700 transition hover:bg-gray-200"
                 >
                     إلغاء
                 </Button>
             </div>
             {(error || onMore) && (
-                <div className="flex items-center gap-2 px-1.5 pt-1">
+                <div className="flex items-center gap-2 px-2 pt-1">
                     {error && <p className="text-xs text-brand-600">{error}</p>}
                     {onMore && (
                         <Button data-raw="" variant="ghost" onClick={onMore} className="ms-auto text-[13.5px] font-semibold text-gray-700 hover:text-brand-600">

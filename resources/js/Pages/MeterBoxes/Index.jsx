@@ -272,7 +272,7 @@ export default function Index({
                                     <div className="flex flex-wrap items-center gap-3 text-sm">
                                         <Icon name="pin" className="h-5 w-5 text-brand-600" />
                                         {region.id === 'none' ? <b>{region.name}</b> : <Button data-raw="" variant="ghost" onClick={() => setFilter('sub_area_id', String(region.id))} className="font-bold text-gray-900 underline-offset-4 hover:text-brand-600 hover:underline" aria-label={`عرض طبلونات ${region.name}`}>{region.name}</Button>}
-                                        <span className="rounded-control bg-surface px-2.5 py-1 text-[13.5px] font-semibold text-gray-700">{formatNumber(region.boxes.length)} طبلون في هذه الصفحة</span>
+                                        <span className="rounded-control bg-surface px-3 py-1 text-[13.5px] font-semibold text-gray-700">{formatNumber(region.boxes.length)} طبلون في هذه الصفحة</span>
                                     </div>
                                 </td></tr>}
                                 {region.boxes.map((meterBox) => (
@@ -283,14 +283,14 @@ export default function Index({
                                     </td>
                                     <td data-label={selectedBranch ? 'منطقة الطبلون' : 'الموقع / المنطقة'}>
                                         <p className="text-sm font-semibold text-gray-700">{selectedBranch ? meterBox.subAreaName || '—' : meterBox.location || meterBox.subAreaName || '—'}</p>
-                                        {!selectedBranch && <p className="mt-0.5 text-xs text-gray-500">{[meterBox.governorateName, meterBox.areaName, meterBox.subAreaName].filter(Boolean).join(' / ') || '—'}</p>}
-                                        {selectedBranch && meterBox.location && meterBox.location !== meterBox.subAreaName && <p className="mt-0.5 text-xs text-gray-500">{meterBox.location}</p>}
+                                        {!selectedBranch && <p className="mt-1 text-xs text-gray-500">{[meterBox.governorateName, meterBox.areaName, meterBox.subAreaName].filter(Boolean).join(' / ') || '—'}</p>}
+                                        {selectedBranch && meterBox.location && meterBox.location !== meterBox.subAreaName && <p className="mt-1 text-xs text-gray-500">{meterBox.location}</p>}
                                     </td>
                                     <td data-label="الفرع" className="text-gray-600">{meterBox.branchName}</td>
                                     <td data-label="المشتركون">
                                         <p className="text-sm font-semibold text-gray-900"><b className="font-display">{formatNumber(meterBox.subscriptionsCount)}</b> مشترك</p>
                                         {meterBox.subscriptionsCount > 0 && <>
-                                            <div className="my-1.5 flex h-1.5 w-28 overflow-hidden rounded-full bg-gray-100" aria-hidden="true"><span className="bg-emerald-500" style={{ width: `${meterBox.activeSubscriptionsCount / meterBox.subscriptionsCount * 100}%` }} /></div>
+                                            <div className="my-2 flex h-1.5 w-28 overflow-hidden rounded-full bg-gray-100" aria-hidden="true"><span className="bg-emerald-500" style={{ width: `${meterBox.activeSubscriptionsCount / meterBox.subscriptionsCount * 100}%` }} /></div>
                                             <p className="text-xs text-gray-500">{meterBox.activeSubscriptionsCount} فعّال، {meterBox.subscriptionsCount - meterBox.activeSubscriptionsCount} غير فعّال</p>
                                         </>}
                                     </td>

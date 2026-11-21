@@ -55,7 +55,7 @@ export default function BankTransferAuditForm({ entry, onClose }) {
         <SecondaryKey onClick={onClose} disabled={processing}>إلغاء</SecondaryKey>
         <PrimaryKey type="submit" form={`${id}-form`} disabled={processing || review.loading || Boolean(review.error) || allocationMismatch}>{processing ? 'جارٍ الحفظ…' : 'حفظ مراجعة الحوالة'}</PrimaryKey>
     </>}>
-        {review.loading ? <div role="status" className="animate-pulse space-y-4 py-4"><p className="text-base text-gray-600">جارٍ تحميل بيانات الحوالة…</p><div className="h-24 rounded-control bg-gray-100" /></div> : review.error ? <InputError message={review.error} /> : <form id={`${id}-form`} onSubmit={submit} className="space-y-5">
+        {review.loading ? <div role="status" className="animate-pulse space-y-4 py-4"><p className="text-base text-gray-600">جارٍ تحميل بيانات الحوالة…</p><div className="h-24 rounded-control bg-gray-100" /></div> : review.error ? <InputError message={review.error} /> : <form id={`${id}-form`} onSubmit={submit} className="space-y-6">
             <LatePaymentDetails paidOn={ledger.paidOn} recordedAt={ledger.date} reason={ledger.lateReason} />
             <BankReceivedDate value={ledger.bankReceivedOn} />
             <dl className="flex flex-wrap justify-between gap-4 border-b border-gray-100 pb-4 text-base">

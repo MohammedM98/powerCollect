@@ -15,7 +15,7 @@
         "check:changed": "node .claude/automation/check.mjs --changed",
         "check:watch": "node .claude/automation/watch.mjs",
         "check:status": "node .claude/automation/check.mjs --status",
-        "lint": "eslint resources/js --max-warnings 0",
+        "lint": "eslint resources/js --max-warnings 0 && node --test tests/Unit/spacingScale.test.js",
         "typecheck": "tsc --noEmit",
         "format": "prettier --write resources/js resources/css",
         "test:components": "vitest run"

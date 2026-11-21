@@ -19,7 +19,7 @@ export const store = {
 
 export function Section({ title, hint = null, children }) {
     return (
-        <section className="border-b border-gray-100 py-5 last:border-b-0">
+        <section className="border-b border-gray-100 py-4 last:border-b-0">
             <h3 className="mb-3 flex items-center justify-between gap-2 text-sm font-bold text-gray-900">
                 {title}
                 {hint && <span className="text-xs font-medium text-gray-500">{hint}</span>}

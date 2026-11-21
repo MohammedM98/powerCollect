@@ -230,7 +230,7 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
             confirmLabel="نعم، أغلق الصندوق"
             icon="lock"
         >
-            <dl className="grid grid-cols-2 gap-x-5 gap-y-4 rounded-control bg-gray-50 p-5">
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-4 rounded-control bg-gray-50 p-4">
                 <div><dt className="text-base text-gray-600">الصندوق</dt><dd className="mt-1 font-semibold text-gray-900">{boxTypes[type]}، <bdi dir="ltr">{box.number}</bdi></dd></div>
                 <div><dt className="text-base text-gray-600">المحصّل</dt><dd className="mt-1 font-semibold text-gray-900">{box.user?.name ?? '—'}</dd></div>
                 <div><dt className="text-base text-gray-600">الإجمالي</dt><dd className="mt-1 font-display text-xl font-bold text-gray-900">{amountsLine(totals)}</dd></div>

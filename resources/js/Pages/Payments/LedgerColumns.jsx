@@ -34,7 +34,7 @@ export const ledgerTableClass = 'financial-ledger-table w-full text-start text-s
 export function BoxNumberCell({ number, position }) {
     return <td style={stacked}>
         <bdi dir="ltr" className="block font-display font-semibold text-gray-900">{number ?? '—'}</bdi>
-        <span className="mt-0.5 block font-display text-xs text-gray-400">#{position}</span>
+        <span className="mt-1 block font-display text-xs text-gray-400">#{position}</span>
     </td>;
 }
 
@@ -64,7 +64,7 @@ export function LedgerLeadCells({ ledger }) {
     return <>
         <td style={stacked}>
             <span className="block font-display font-semibold text-gray-900">{ledger.voucherNumber ? <bdi dir="ltr">{ledger.voucherNumber}</bdi> : <Dash />}</span>
-            {ledger.date && <span className="mt-0.5 block font-display text-xs text-gray-500" title="تاريخ الحركة"><bdi dir="ltr">{ledger.date.split(' ').map((part) => <span key={part} className="inline-block whitespace-nowrap pe-1">{part}</span>)}</bdi></span>}
+            {ledger.date && <span className="mt-1 block font-display text-xs text-gray-500" title="تاريخ الحركة"><bdi dir="ltr">{ledger.date.split(' ').map((part) => <span key={part} className="inline-block whitespace-nowrap pe-1">{part}</span>)}</bdi></span>}
             <LatePaymentDetails paidOn={ledger.paidOn} recordedAt={ledger.date} reason={ledger.lateReason} />
             <BankReceivedDate value={ledger.bankReceivedOn} />
         </td>
@@ -80,18 +80,18 @@ export function LedgerLeadCells({ ledger }) {
 export function LedgerTrailCells({ ledger, amount, currency, cancelled }) {
     return <>
         <td style={stacked}>
-            {ledger.typeLabel && <span className="inline-flex items-center gap-1.5"><StatusPill tone={ledger.isCredit ? 'green' : 'red'} label={ledger.isCredit ? 'له' : 'عليه'} /><span className="font-medium text-gray-900">{ledger.typeLabel}</span></span>}
+            {ledger.typeLabel && <span className="inline-flex items-center gap-2"><StatusPill tone={ledger.isCredit ? 'green' : 'red'} label={ledger.isCredit ? 'له' : 'عليه'} /><span className="font-medium text-gray-900">{ledger.typeLabel}</span></span>}
             <span className="mt-1 block text-xs leading-5 text-gray-600">{ledger.description ?? <Dash />}</span>
         </td>
         <td style={stacked}>
             <b className={`block font-display ${cancelled ? 'text-gray-400 line-through' : 'text-emerald-700 dark:text-emerald-400'}`}><bdi dir="ltr">{formatMoney(amount)}</bdi></b>
-            <span className="mt-0.5 block text-xs text-gray-500">{currencyLabels[currency] ?? currency}</span>
+            <span className="mt-1 block text-xs text-gray-500">{currencyLabels[currency] ?? currency}</span>
             {ledger.isShekel === false && currency === 'ILS' && <span className="block text-xs text-gray-500">دُفعت <bdi dir="ltr" className="font-display">{formatMoney(ledger.paidAmount)}</bdi> {ledger.currencyLabel}</span>}
             {ledger.exchangeRate && <span className="block whitespace-nowrap text-xs text-gray-500">سعر الصرف <bdi dir="ltr" className="font-display">{ledger.exchangeRate}</bdi></span>}
         </td>
         <td className="text-gray-700" style={stacked}>
             <span className="block">{ledger.paymentMethodLabel ?? <Dash />}</span>
-            <span className="mt-0.5 block text-xs text-gray-500" title="اسم المستخدم">{ledger.recordedByName ?? <Dash />}</span>
+            <span className="mt-1 block text-xs text-gray-500" title="اسم المستخدم">{ledger.recordedByName ?? <Dash />}</span>
         </td>
     </>;
 }

@@ -49,7 +49,7 @@ export default function MessageRecipientList({
                     role="status"
                     className="mb-3 flex items-start gap-2 rounded-control bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-300"
                 >
-                    <Icon name="warning" className="mt-0.5 h-4 w-4 shrink-0" />
+                    <Icon name="warning" className="mt-1 h-4 w-4 shrink-0" />
                     تغيّرت الشروط — اضغط «تحديث المستلمين» قبل الإرسال.
                 </p>
             )}
@@ -67,7 +67,7 @@ export default function MessageRecipientList({
                     {recipients.map((recipient) => (
                         <li
                             key={recipient.id}
-                            className={`flex items-center gap-3 px-3 py-2.5 text-sm ${previewId === recipient.id ? 'bg-brand-500/5' : ''}`}
+                            className={`flex items-center gap-3 px-3 py-2 text-sm ${previewId === recipient.id ? 'bg-brand-500/5' : ''}`}
                         >
                             <CheckBox
                                 checked={selected.has(recipient.id)}
@@ -104,9 +104,9 @@ export default function MessageRecipientList({
                 </ul>
             )}
 
-            <div className="mt-5 flex flex-wrap items-center justify-end gap-3">
+            <div className="mt-6 flex flex-wrap items-center justify-end gap-3">
                 {sendBlocker && (
-                    <p id="send-blocker" className="flex items-center gap-1.5 text-sm text-gray-500">
+                    <p id="send-blocker" className="flex items-center gap-2 text-sm text-gray-500">
                         <Icon name="info" className="h-4 w-4 shrink-0" />
                         {sendBlocker}
                     </p>

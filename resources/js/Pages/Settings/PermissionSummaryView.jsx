@@ -28,7 +28,7 @@ export default function PermissionSummaryView({
                 scopedToOwnBranch={scopedToOwnBranch}
             />
             <div className="space-y-4">
-                <div className="pm-card flex flex-col items-center gap-2 p-5 text-center">
+                <div className="pm-card flex flex-col items-center gap-2 p-4 text-center">
                     <h4 className="font-bold text-gray-900">مستوى الخطورة</h4>
                     <RiskGauge sections={sections} selected={selected} large />
                     <p className="text-[13.5px] leading-6 text-gray-500">

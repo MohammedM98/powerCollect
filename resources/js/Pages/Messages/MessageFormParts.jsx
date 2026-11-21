@@ -4,7 +4,7 @@ import Icon from '@/Components/Icon';
 export function Field({ label, htmlFor, children, className = '' }) {
     return (
         <div className={className}>
-            <label htmlFor={htmlFor} className="mb-1.5 block text-sm font-semibold text-gray-700">
+            <label htmlFor={htmlFor} className="mb-2 block text-sm font-semibold text-gray-700">
                 {label}
             </label>
             {children}
@@ -20,8 +20,8 @@ export function Card({ icon, title, description, children, actions = null }) {
     const titleId = useId();
 
     return (
-        <section aria-labelledby={titleId} className="rounded-card border border-gray-100 bg-surface p-5 shadow-card sm:p-6">
-            <div className="mb-5 flex items-center gap-3">
+        <section aria-labelledby={titleId} className="rounded-card border border-gray-100 bg-surface p-4 shadow-card sm:p-6">
+            <div className="mb-6 flex items-center gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-graphite-gradient text-white dark:ring-1 dark:ring-white/10">
                     <Icon name={icon} className="h-5 w-5" />
                 </span>
@@ -47,7 +47,7 @@ export function Section({ title, hint, children }) {
                 <h4 id={titleId} className="text-sm font-bold text-gray-900">
                     {title}
                 </h4>
-                {hint && <p className="mt-0.5 text-xs text-gray-500">{hint}</p>}
+                {hint && <p className="mt-1 text-xs text-gray-500">{hint}</p>}
             </div>
             {children}
         </section>

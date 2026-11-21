@@ -51,7 +51,7 @@ export default function HierarchyColumn({
 
     return (
         <section className={`min-w-0 flex-col border-gray-100 lg:flex lg:border-s lg:first:border-s-0 ${active ? 'flex' : 'hidden'}`}>
-            <div className="flex items-center gap-2.5 px-4 pb-2.5 pt-3.5">
+            <div className="flex items-center gap-3 px-4 pb-2 pt-3">
                 {onBack && (
                     <Button data-raw="" variant="ghost"
                         onClick={onBack}
@@ -69,7 +69,7 @@ export default function HierarchyColumn({
                             setAdding(true);
                             setEditingId(null);
                         }}
-                        className="ms-auto inline-flex h-9 items-center gap-1.5 rounded-lg border border-teal-600/30 bg-teal-500/5 px-2.5 text-xs font-bold text-teal-700 transition hover:border-teal-600/50 hover:bg-teal-500/15 dark:text-teal-300"
+                        className="ms-auto inline-flex h-9 items-center gap-2 rounded-lg border border-teal-600/30 bg-teal-500/5 px-3 text-xs font-bold text-teal-700 transition hover:border-teal-600/50 hover:bg-teal-500/15 dark:text-teal-300"
                     >
                         <Icon name="plus" className="h-4 w-4" strokeWidth={2} />
                         إضافة
@@ -94,7 +94,7 @@ export default function HierarchyColumn({
                         </div>
                     )}
 
-                    <div className="flex-1 overflow-y-auto px-2 pb-2.5 pt-1 lg:max-h-136">
+                    <div className="flex-1 overflow-y-auto px-2 pb-2 pt-1 lg:max-h-136">
                         {adding && <InlineNameEditor placeholder={`اسم ${noun}`} request={createRequest} onDone={() => setAdding(false)} />}
 
                         {visible.map((item) =>
@@ -158,7 +158,7 @@ function Row({ item, selected, onPick, subtitle, onEdit, onDelete }) {
 
     return (
         <div
-            className={`group flex w-full items-center gap-2.5 rounded-control border px-2.5 py-2 text-start transition ${
+            className={`group flex w-full items-center gap-3 rounded-control border px-3 py-2 text-start transition ${
                 selected
                     ? 'border-brand-500/40 bg-brand-500/10 shadow-[inset_-3px_0_0_rgb(var(--brand-500))]'
                     : `border-transparent ${pickable ? 'cursor-pointer hover:border-brand-500/20 hover:bg-brand-500/5' : ''}`
@@ -213,7 +213,7 @@ function RowIconButton({ label, icon, visible, onClick }) {
 
 function Empty({ title, text }) {
     return (
-        <div className="px-4 py-9 text-center text-sm text-gray-500">
+        <div className="px-4 py-8 text-center text-sm text-gray-500">
             <b className="mb-1 block text-gray-700">{title}</b>
             {text}
         </div>

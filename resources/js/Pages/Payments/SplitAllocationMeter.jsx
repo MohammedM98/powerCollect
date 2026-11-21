@@ -34,7 +34,7 @@ export default function SplitAllocationMeter({ allocatedCents, distributed, mete
                     </span>
                 </div>
             </div>
-            <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-gray-100">
+            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-gray-100">
                 <div
                     className={`h-full rounded-full transition-all ${distributed ? 'bg-emerald-500' : 'bg-amber-500'}`}
                     style={{ width: `${totalCents > 0 ? Math.min(100, (allocatedCents / totalCents) * 100) : 0}%` }}

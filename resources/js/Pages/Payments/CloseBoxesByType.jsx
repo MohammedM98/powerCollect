@@ -66,7 +66,7 @@ export default function CloseBoxesByType({ boxes, branchId, userId, initialType,
     }
 
     return <Modal show onClose={onClose} maxWidth="3xl" panelClassName="flex max-h-[calc(100dvh-4rem)] flex-col">
-        <header className="shrink-0 space-y-4 border-b border-gray-100 p-5 sm:p-6">
+        <header className="shrink-0 space-y-4 border-b border-gray-100 p-4 sm:p-6">
             <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600"><Icon name="lock" className="h-5 w-5" /></span>
@@ -79,7 +79,7 @@ export default function CloseBoxesByType({ boxes, branchId, userId, initialType,
             </div>
             <CloseSteps steps={steps} current={current} onGo={(key) => sections[key].current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
         </header>
-        <div className="min-h-0 flex-1 space-y-6 overflow-y-auto bg-gray-50/60 p-5 sm:p-6">
+        <div className="min-h-0 flex-1 space-y-6 overflow-y-auto bg-gray-50/60 p-4 sm:p-6">
             <section ref={sections.type} aria-label="نوع الصندوق" className="scroll-mt-4 space-y-3">
             <StepHeading number={1} title="اختر نوع الصندوق" done />
             <div role="group" aria-label="نوع الصندوق" className="grid gap-2 sm:grid-cols-3">
@@ -162,7 +162,7 @@ function CloseSteps({ steps, current, onGo }) {
             const active = step.key === current;
             const state = active ? 'current' : step.done ? 'done' : 'ahead';
             return <li key={step.key} className="min-w-0">
-                <Button data-raw="" variant="ghost" onClick={() => onGo(step.key)} aria-current={active ? 'step' : undefined} className={`flex w-full min-w-0 items-center gap-2.5 rounded-xl border px-2.5 py-2 text-start transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${state === 'current' ? 'border-gray-900 bg-gray-900 text-surface shadow-xs' : state === 'done' ? 'border-emerald-500/25 bg-emerald-500/5 hover:border-emerald-500/40' : 'border-gray-100 bg-gray-50 hover:border-gray-200'}`}>
+                <Button data-raw="" variant="ghost" onClick={() => onGo(step.key)} aria-current={active ? 'step' : undefined} className={`flex w-full min-w-0 items-center gap-3 rounded-xl border px-3 py-2 text-start transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${state === 'current' ? 'border-gray-900 bg-gray-900 text-surface shadow-xs' : state === 'done' ? 'border-emerald-500/25 bg-emerald-500/5 hover:border-emerald-500/40' : 'border-gray-100 bg-gray-50 hover:border-gray-200'}`}>
                     <span aria-hidden="true" className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-display text-sm font-bold ${state === 'current' ? 'bg-surface text-gray-900' : state === 'done' ? 'bg-emerald-600 text-white' : 'bg-gray-200 text-gray-500'}`}>{step.done ? <Icon name="check" className="h-4 w-4" strokeWidth={3} /> : index + 1}</span>
                     <span className="min-w-0">
                         <span className={`block truncate text-xs font-bold sm:text-sm ${state === 'current' ? 'text-surface' : state === 'done' ? 'text-gray-900' : 'text-gray-500'}`}>{step.label}</span>

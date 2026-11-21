@@ -23,13 +23,13 @@ export function OriginalLine({ entry, tone = 'correction' }) {
             </span>
             <div className="min-w-0">
                 <p className={`text-xs font-semibold ${styles[2]}`}>الحركة الأصلية</p>
-                <p className="mt-0.5 font-semibold text-gray-900">
+                <p className="mt-1 font-semibold text-gray-900">
                     {entry.description}،{' '}
                     <span className="font-display tabular-nums">
                         {formatMoney(entry.amount)} {entry.currencyLabel}
                     </span>
                 </p>
-                <p className="mt-0.5 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500">
                     <bdi dir="ltr">{formatDate(entry.date)}</bdi>
                     {entry.voucherNumber && `، سند ${entry.voucherNumber}`}
                     {entry.recordedByName && `، سجّلها ${entry.recordedByName}`}
@@ -50,7 +50,7 @@ export function CorrectionReasonFields({ form, reasons, action = 'التصحيح
         <div className="space-y-4">
             <div>
                 <InputLabel htmlFor="correction_reason" value={`سبب ${action}`} />
-                <div className="mt-1.5">
+                <div className="mt-2">
                     <ChoiceChips
                         id="correction_reason"
                         name="correction_reason"

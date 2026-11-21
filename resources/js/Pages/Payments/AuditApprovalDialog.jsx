@@ -10,12 +10,12 @@ export default function AuditApprovalDialog({ title, scope, summary, url, payloa
     const form = useForm({ ...payload, confirmed: false });
 
     return <DialogFrame show onClose={onClose} busy={form.processing} title={title} description={scope} icon="check" maxWidth="3xl" role="alertdialog" footer={<SecondaryKey disabled={form.processing} onClick={onClose}>العودة للمراجعة</SecondaryKey>}>
-        <dl className="grid grid-cols-2 gap-x-5 gap-y-4 border-b border-gray-100 pb-5">
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-4 border-b border-gray-100 pb-4">
             {[['الصناديق', summary.boxes], ['الحوالات', summary.transfers], ['حوالات فيها فروق', summary.exceptions], ['ستُعتمد مطابقة تلقائيًا', summary.automaticMatches]].map(([label, value]) => <div key={label}><dt className="text-base text-gray-600">{label}</dt><dd className="mt-1 font-display text-2xl font-bold text-gray-900">{value}</dd></div>)}
         </dl>
         <section aria-label="الأثر المالي" className="space-y-3">
             <h3 className="text-lg font-bold text-gray-900">الأثر على حسابات المشتركين</h3>
-            <dl className="divide-y divide-gray-200 rounded-control bg-gray-50 px-5">
+            <dl className="divide-y divide-gray-200 rounded-control bg-gray-50 px-4">
                 <div className="flex flex-wrap items-center justify-between gap-2 py-4"><dt className="text-base text-gray-700">تحميل على المشتركين</dt><dd className="font-display text-2xl font-bold text-red-700 dark:text-red-300"><bdi dir="ltr">{formatMoney(summary.debit)}</bdi> <span className="text-base font-normal">₪</span></dd></div>
                 <div className="flex flex-wrap items-center justify-between gap-2 py-4"><dt className="text-base text-gray-700">إضافة لصالح المشتركين</dt><dd className="font-display text-2xl font-bold text-emerald-700 dark:text-emerald-300"><bdi dir="ltr">{formatMoney(summary.credit)}</bdi> <span className="text-base font-normal">₪</span></dd></div>
             </dl>

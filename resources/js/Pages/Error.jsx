@@ -29,7 +29,7 @@ export default function Error({ status, blank = false }) {
         return (
             <AuthenticatedLayout>
                 <Head title={appName} />
-                <div className="mx-auto flex max-w-md flex-col items-center gap-4 py-16 text-center" role="status">
+                <div className="mx-auto flex max-w-md flex-col items-center gap-4 py-8 text-center" role="status">
                     <span className="gl-ico h-12! w-12! rounded-full!">
                         <Icon name="lock" className="h-6 w-6" />
                     </span>
@@ -47,7 +47,7 @@ export default function Error({ status, blank = false }) {
     const RecoveryLink = branchContext?.recoveryUrl ? 'a' : Link;
 
     const body = (
-        <div className="mx-auto flex max-w-md flex-col items-center py-16 text-center" role="alert">
+        <div className="mx-auto flex max-w-md flex-col items-center py-8 text-center" role="alert">
             <Head title={message.title} />
             <span className="gl-ico h-16! w-16! rounded-full! text-[rgb(var(--gl-brand))]!">
                 <Icon name={message.icon} className="h-8 w-8" />
