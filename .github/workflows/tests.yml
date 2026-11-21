@@ -53,7 +53,7 @@ jobs:
         run: php artisan test
 
   tests-mysql:
-    name: Money and reports on MySQL
+    name: Every PHP test on MySQL
     runs-on: ubuntu-latest
 
     services:
@@ -101,10 +101,9 @@ jobs:
         run: php artisan key:generate
 
       # phpunit.xml points at in-memory SQLite; these variables override it for this job only.
-      - name: Execute money and report tests on MySQL
-        run: >-
-          vendor/bin/phpunit
-          --filter '/(Ledger|Lifecycle|Journey|BranchReport|CashBox|Closing|ClosedDay|ExactMoney|Backup|SplitPayment|WebPaymentIdempotency)/'
+      # Production runs on MySQL, so the whole suite runs here, not only the money tests.
+      - name: Execute every PHP test on MySQL
+        run: vendor/bin/phpunit
         env:
           DB_URL: mysql://root:password@127.0.0.1:3306/powercollect_testing
 
