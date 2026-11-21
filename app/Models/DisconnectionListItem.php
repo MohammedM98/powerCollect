@@ -87,11 +87,6 @@ class DisconnectionListItem extends Model
         return $this->belongsTo(User::class, 'disconnected_by');
     }
 
-    public function feeTransaction(): BelongsTo
-    {
-        return $this->belongsTo(SubscriptionTransaction::class, 'fee_transaction_id');
-    }
-
     public function events(): HasMany
     {
         return $this->hasMany(DisconnectionEvent::class);

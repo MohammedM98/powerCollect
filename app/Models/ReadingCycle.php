@@ -104,14 +104,6 @@ class ReadingCycle extends Model
     }
 
     /**
-     * Whether readings may be entered on the given business date.
-     */
-    public function isReadingDay(CarbonInterface $date): bool
-    {
-        return ! $this->isClosed() && $this->reading_date->toDateString() === $date->toDateString();
-    }
-
-    /**
      * The latest moment an upload counts as on time: the end of the business
      * day SYNC_GRACE_DAYS after the reading day.
      */

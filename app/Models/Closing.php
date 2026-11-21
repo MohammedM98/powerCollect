@@ -45,11 +45,6 @@ class Closing extends Model
         ];
     }
 
-    public function branchApprovedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'branch_approved_by');
-    }
-
     public static function cents(string|float|int|null $amount): int
     {
         return Money::decimal(Money::amount($amount))->multipliedBy('100')->toInt();
@@ -83,11 +78,6 @@ class Closing extends Model
     public function transfers(): HasMany
     {
         return $this->hasMany(CashTransfer::class);
-    }
-
-    public function preparedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'prepared_by');
     }
 
     public function reviewedBy(): BelongsTo
