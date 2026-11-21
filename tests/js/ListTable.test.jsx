@@ -30,6 +30,26 @@ function Sheet({ onOpen, onKey, onSort, rows = [{ id: 1, name: 'سامي' }] }) 
 }
 
 describe('the kit list table', () => {
+    it('keeps keys as on a plain table: Tab walks every row, and keys typed inside reach the page', async () => {
+        const user = userEvent.setup();
+        const onPageKey = vi.fn();
+        document.addEventListener('keydown', onPageKey);
+        render(<Sheet onOpen={vi.fn()} onKey={vi.fn()} onSort={vi.fn()} rows={[{ id: 1, name: 'سامي' }, { id: 2, name: 'ليلى' }]} />);
+
+        const [firstField, secondField] = screen.getAllByRole('textbox', { name: 'القراءة' });
+        const [firstKey] = screen.getAllByRole('button', { name: 'تعديل' });
+        await user.click(firstField);
+        await user.tab();
+        expect(document.activeElement).toBe(firstKey);
+        await user.tab();
+        expect(document.activeElement).toBe(secondField);
+
+        await user.keyboard('{Escape}');
+        expect(onPageKey.mock.calls.some(([event]) => event.key === 'Escape')).toBe(true);
+        document.removeEventListener('keydown', onPageKey);
+    });
+
+
     it('opens a row when pressed, but not from its own keys, and fields inside take every key', async () => {
         const user = userEvent.setup();
         const onOpen = vi.fn();
@@ -61,7 +81,7 @@ describe('the kit list table', () => {
         render(<Sheet onOpen={vi.fn()} onKey={vi.fn()} onSort={onSort} rows={[]} />);
 
         expect(screen.getByRole('columnheader', { name: 'الاسم' }).getAttribute('aria-sort')).toBe('ascending');
-        await user.click(screen.getByRole('columnheader', { name: 'الاسم' }));
+        await user.click(screen.getByRole('button', { name: 'الاسم' }));
         expect(onSort).toHaveBeenCalledWith('name');
         expect(screen.getByText('لا توجد نتائج مطابقة.')).toBeTruthy();
     });

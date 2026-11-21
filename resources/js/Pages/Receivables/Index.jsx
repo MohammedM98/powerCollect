@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import { Button, Card } from '@heroui/react';
 import Icon from '@/Components/Icon';
@@ -9,14 +9,13 @@ import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import Pagination from '@/Components/DataTable/Pagination';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
-import SortableTh from '@/Components/DataTable/SortableTh';
 import { useDataTable } from '@/hooks/useDataTable';
-import { useRowClick } from '@/hooks/useRowClick';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
 import { formatMoney, formatNumber, formatShortDay } from '@/lib/format';
 import StatementModal from '@/Pages/Subscriptions/StatementModal';
 import PageHeader from '@/Components/PageHeader';
 import MoneyFlow from '@/Components/Finance/MoneyFlow';
+import { BandRow, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable } from '@/Components/UI';
 
 const STATUS_DOTS = { active: 'green', suspended: 'amber', disconnected: 'gray' };
 
@@ -114,7 +113,6 @@ function Figure({ label, value, unit = null, hint, tone = null, dark = false }) 
 export default function Index({ debtors, summary, collection = null, buckets, scopeLabel, branchScope, filters, filterOptions, statement }) {
     const { can } = usePage().props;
     const { search, setSearch, sort, setPerPage, filterValues, setFilter, setFilters, clearFilters } = useDataTable('/receivables', filters);
-    const rowClick = useRowClick();
     const statementWindow = useStatementWindow(statement);
     const columnCount = 4 + buckets.length;
     const [openIds, setOpenIds] = useState(() => new Set());
@@ -179,47 +177,39 @@ export default function Index({ debtors, summary, collection = null, buckets, sc
                 />
 
                 <div className="data-table-container">
-                    <table className="data-table w-full text-start text-sm" {...printFieldsProps(PRINT_FIELDS)}>
-                        <thead>
-                            <tr>
-                                <th data-actions="" className="dt-exp"><span className="sr-only">تفاصيل</span></th>
-                                <SortableTh column="name" label="المشترك" sortState={filters} onSort={sort} />
-                                <SortableTh column="balance" label="الرصيد المستحق" sortState={filters} onSort={sort} />
-                                {buckets.map((bucket) => (
-                                    <SortableTh key={bucket.key} column={bucket.key} label={BUCKET_COLUMNS[bucket.key] ?? bucket.label} sortState={filters} onSort={sort} />
-                                ))}
-                                <SortableTh column="oldest_days" label="أقدم دين" sortState={filters} onSort={sort} />
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {debtors.data.length === 0 ? (
-                                <tr>
-                                    <td colSpan={columnCount}>لا يوجد مشتركون مدينون مطابقون.</td>
-                                </tr>
-                            ) : (
-                                debtors.data.map((debtor) => {
-                                    const open = openIds.has(debtor.id);
+                    <ListTable className="data-table w-full text-start text-sm" aria-label="أعمار الديون" sort={filters} onSort={sort} {...printFieldsProps(PRINT_FIELDS)}>
+                        <ListHeader>
+                            <ListColumn id="expand" data-actions="" className="dt-exp"><span className="sr-only">تفاصيل</span></ListColumn>
+                            <ListColumn id="name" sortable isRowHeader>المشترك</ListColumn>
+                            <ListColumn id="balance" sortable>الرصيد المستحق</ListColumn>
+                            {buckets.map((bucket) => (
+                                <ListColumn key={bucket.key} id={bucket.key} sortable>{BUCKET_COLUMNS[bucket.key] ?? bucket.label}</ListColumn>
+                            ))}
+                            <ListColumn id="oldest_days" sortable>أقدم دين</ListColumn>
+                        </ListHeader>
+                        <ListBody empty="لا يوجد مشتركون مدينون مطابقون.">
+                            {debtors.data.flatMap((debtor) => {
+                                const open = openIds.has(debtor.id);
 
-                                    return (
-                                    <Fragment key={debtor.id}>
-                                    <tr {...rowClick(can?.viewSubscriptions ? () => openStatement(debtor) : null)} {...printRowProps({ lastPayment: lastPaymentText(debtor) })} className={open ? 'is-open' : undefined}>
-                                        <td className="dt-exp">
+                                return [
+                                    <ListRow key={debtor.id} id={debtor.id} onOpen={can?.viewSubscriptions ? () => openStatement(debtor) : null} {...printRowProps({ lastPayment: lastPaymentText(debtor) })} className={open ? 'is-open' : undefined}>
+                                        <ListCell className="dt-exp">
                                             <Button data-raw="" variant="ghost" className="dt-exp-btn" aria-expanded={open} aria-controls={`debtor-details-${debtor.id}`} aria-label={`${open ? 'إخفاء' : 'عرض'} تفاصيل ${debtor.name}`} onClick={(event) => { event.stopPropagation(); toggleRow(debtor.id); }}>
                                                 <Icon name="chevron-down" className="h-4 w-4" />
                                             </Button>
-                                        </td>
-                                        <td>
+                                        </ListCell>
+                                        <ListCell>
                                             <RowIdentity
                                                 name={debtor.name}
                                                 subtitle={`${debtor.accountNumber}، ${debtor.branchName}`}
                                                 status={STATUS_DOTS[debtor.status]}
                                             />
-                                        </td>
-                                        <td>
+                                        </ListCell>
+                                        <ListCell>
                                             <Shekels amount={debtor.balance} />
-                                        </td>
+                                        </ListCell>
                                         {buckets.map((bucket) => (
-                                            <td key={bucket.key}>
+                                            <ListCell key={bucket.key}>
                                                 {debtor.buckets[bucket.key] > 0 ? (
                                                     <b className="gl-age-heat" data-bucket={bucket.key}>
                                                         {formatMoney(debtor.buckets[bucket.key])}
@@ -227,9 +217,9 @@ export default function Index({ debtors, summary, collection = null, buckets, sc
                                                 ) : (
                                                     <Dash />
                                                 )}
-                                            </td>
+                                            </ListCell>
                                         ))}
-                                        <td className="whitespace-nowrap">
+                                        <ListCell className="whitespace-nowrap">
                                             {debtor.oldestDate ? (
                                                 <>
                                                     <span className="font-semibold text-gray-900">{daysAgo(debtor.oldestDays)}</span>
@@ -238,40 +228,36 @@ export default function Index({ debtors, summary, collection = null, buckets, sc
                                             ) : (
                                                 <Dash />
                                             )}
-                                        </td>
-                                    </tr>
-                                    {open && (
-                                        <tr id={`debtor-details-${debtor.id}`} className="dt-detail" data-print-skip="">
-                                            <td colSpan={columnCount}>
-                                                <dl>
+                                        </ListCell>
+                                    </ListRow>,
+                                    ...(open ? [
+                                        <BandRow key={`detail-${debtor.id}`} id={`detail-${debtor.id}`} columns={columnCount} className="dt-detail" data-print-skip="">
+                                            <dl id={`debtor-details-${debtor.id}`}>
+                                                <div>
+                                                    <dt>آخر دفعة</dt>
+                                                    <dd>{lastPaymentText(debtor)}</dd>
+                                                </div>
+                                                <div>
+                                                    <dt>الحساب</dt>
+                                                    <dd><bdi dir="ltr">{debtor.accountNumber}</bdi></dd>
+                                                </div>
+                                                <div>
+                                                    <dt>الفرع</dt>
+                                                    <dd>{debtor.branchName}</dd>
+                                                </div>
+                                                {debtor.statusLabel && (
                                                     <div>
-                                                        <dt>آخر دفعة</dt>
-                                                        <dd>{lastPaymentText(debtor)}</dd>
+                                                        <dt>حالة المشترك</dt>
+                                                        <dd>{debtor.statusLabel}</dd>
                                                     </div>
-                                                    <div>
-                                                        <dt>الحساب</dt>
-                                                        <dd><bdi dir="ltr">{debtor.accountNumber}</bdi></dd>
-                                                    </div>
-                                                    <div>
-                                                        <dt>الفرع</dt>
-                                                        <dd>{debtor.branchName}</dd>
-                                                    </div>
-                                                    {debtor.statusLabel && (
-                                                        <div>
-                                                            <dt>حالة المشترك</dt>
-                                                            <dd>{debtor.statusLabel}</dd>
-                                                        </div>
-                                                    )}
-                                                </dl>
-                                            </td>
-                                        </tr>
-                                    )}
-                                    </Fragment>
-                                    );
-                                })
-                            )}
-                        </tbody>
-                    </table>
+                                                )}
+                                            </dl>
+                                        </BandRow>,
+                                    ] : []),
+                                ];
+                            })}
+                        </ListBody>
+                    </ListTable>
                 </div>
 
                 {debtors.data.length > 0 && (

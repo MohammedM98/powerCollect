@@ -1,8 +1,9 @@
-import { createContext, use, useRef } from 'react';
-import { Table } from '@heroui/react';
+import { createContext, use, useEffect, useRef } from 'react';
+import { Button, Table } from '@heroui/react';
+import { TableStateContext } from 'react-aria-components';
 
 /** The table's sort, read by its columns: `{ sort, direction }` as the page's filters hold it. */
-const SortContext = createContext(null);
+const SortContext = createContext({ sort: null, onSort: null });
 
 /**
  * The app's list table, built on HeroUI's Table (React Aria underneath) in
@@ -21,14 +22,13 @@ const SortContext = createContext(null);
  *     </ListTable>
  *
  * `sort` and `onSort(column)` drive the sortable columns (HeroUI's sorting;
- * the server does the ordering). Tab reaches the keys inside rows; the arrow
- * keys move between rows.
+ * the server does the ordering). Keys work as on a plain table (PageKeys).
  */
 export default function ListTable({ sort = null, onSort, className = 'data-table w-full text-sm text-start', children, ...props }) {
     const descriptor = sort?.sort ? { column: sort.sort, direction: sort.direction === 'desc' ? 'descending' : 'ascending' } : undefined;
 
     return (
-        <SortContext value={sort}>
+        <SortContext value={{ sort, onSort }}>
             <Table.Content
                 {...props}
                 className={className}
@@ -50,6 +50,22 @@ export function ListHeader({ className, children, ...props }) {
     );
 }
 
+/**
+ * Keys behave as on a plain page table: Tab walks through the keys and fields
+ * in every row, and every key typed in a field reaches the window and the page
+ * (Escape closes a window, shortcuts and activity keep working). React Aria's
+ * grid would otherwise make the table one Tab stop and keep keys inside cells.
+ */
+function PageKeys() {
+    const state = use(TableStateContext);
+
+    useEffect(() => {
+        state?.setKeyboardNavigationDisabled(true);
+    }, [state]);
+
+    return null;
+}
+
 /** The two sort arrows, the sorted direction in the brand colour. */
 function SortArrows({ direction }) {
     return (
@@ -68,11 +84,12 @@ function SortArrows({ direction }) {
  * titles (`data-actions`).
  */
 export function ListColumn({ id, sortable = false, actions = false, className = '', children, ...props }) {
-    const sort = use(SortContext);
+    const { sort, onSort: onSortColumn } = use(SortContext);
 
     if (actions) {
         return (
             <Table.Column {...props} id={id ?? 'actions'} data-actions="" className={className}>
+                <PageKeys />
                 <span className="sr-only">الإجراءات</span>
             </Table.Column>
         );
@@ -80,20 +97,27 @@ export function ListColumn({ id, sortable = false, actions = false, className = 
 
     return (
         <Table.Column {...props} id={id} allowsSorting={sortable} data-sortable={sortable ? '' : undefined} className={className}>
-            {({ sortDirection }) =>
-                sortable ? (
-                    <Table.SortableColumnHeader
-                        className={`-mx-2 inline-flex items-center gap-1.5 rounded-lg px-2 py-1 font-semibold transition ${sort?.sort === id ? 'text-gray-900' : 'hover:bg-gray-900/5 hover:text-gray-900'}`}
-                        sortDirection={sortDirection}
-                        showIndicator={false}
-                    >
-                        {children}
-                        <SortArrows direction={sortDirection} />
-                    </Table.SortableColumnHeader>
-                ) : (
-                    children
-                )
-            }
+            {({ sortDirection }) => (
+                <>
+                    <PageKeys />
+                    {sortable ? (
+                        // A real key, so the keyboard reaches and sorts the column as before.
+                        <Button
+                            data-raw=""
+                            variant="ghost"
+                            onPress={() => onSortColumn?.(id)}
+                            className={`-mx-2 inline-flex items-center gap-1.5 rounded-lg px-2 py-1 font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${sort?.sort === id ? 'text-gray-900' : 'hover:bg-gray-900/5 hover:text-gray-900'}`}
+                        >
+                            <Table.SortableColumnHeader sortDirection={sortDirection} showIndicator={false} className="inline-flex items-center gap-1.5">
+                                {children}
+                                <SortArrows direction={sortDirection} />
+                            </Table.SortableColumnHeader>
+                        </Button>
+                    ) : (
+                        children
+                    )}
+                </>
+            )}
         </Table.Column>
     );
 }
@@ -107,37 +131,46 @@ export function ListBody({ empty = null, className, children, ...props }) {
     );
 }
 
+/** What already does its own thing when clicked inside a row. */
+const INTERACTIVE = 'a, button, input, select, textarea, label, summary, [role="menu"], [role="button"], [role="checkbox"], [contenteditable="true"]';
+
 /** How far the pointer may move between press and release and still open the row, not select its text. */
 const CLICK_SLOP = 5;
 
 /**
- * One row. `onOpen` opens the record when the row is pressed (or Enter on
- * it); the row's own keys, links and fields keep their own behaviour, and
- * dragging to select text doesn't open it. Without `onOpen` the row is plain.
+ * One row. `onOpen` opens the record when the row is clicked, as the page
+ * tables always have: the row's own keys, links and fields keep their own
+ * behaviour, and dragging to select text doesn't open it. Keys typed in the
+ * row's fields stay with the fields. Without `onOpen` the row is plain.
  */
 export function ListRow({ onOpen = null, className, children, ...props }) {
     const pressedAt = useRef(null);
-    const dragged = useRef(false);
 
     return (
         <Table.Row
             {...props}
             className={className}
             data-clickable={onOpen ? '' : undefined}
-            onPointerDown={(event) => {
-                pressedAt.current = { x: event.clientX, y: event.clientY };
-                dragged.current = false;
-            }}
-            onPointerUp={(event) => {
-                const start = pressedAt.current;
-                dragged.current = Boolean(start) && Math.hypot(event.clientX - start.x, event.clientY - start.y) > CLICK_SLOP;
-            }}
-            onAction={
+            onPointerDown={
                 onOpen
-                    ? () => {
-                          if (dragged.current || window.getSelection()?.toString()) {
+                    ? (event) => {
+                          pressedAt.current = event.button === 0 ? { x: event.clientX, y: event.clientY } : null;
+                      }
+                    : undefined
+            }
+            onPointerUp={
+                onOpen
+                    ? (event) => {
+                          const start = pressedAt.current;
+                          pressedAt.current = null;
+                          const dragged = !start || Math.hypot(event.clientX - start.x, event.clientY - start.y) > CLICK_SLOP;
+                          // React passes events up from portals too (a row's menu, a window): only the row's own cells count.
+                          const outsideRow = !event.currentTarget.contains(event.target);
+
+                          if (dragged || outsideRow || event.target.closest(INTERACTIVE) || window.getSelection()?.toString()) {
                               return;
                           }
+
                           onOpen();
                       }
                     : undefined
