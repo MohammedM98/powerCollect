@@ -7,7 +7,6 @@ import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import Pagination from '@/Components/DataTable/Pagination';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useDeleteRecord } from '@/hooks/useDeleteRecord';
-import { useRowClick } from '@/hooks/useRowClick';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
 import { hasLatestWeekReading, weekOptionsFor } from '@/lib/readings';
 import { openQuickMessage } from '@/lib/quickMessage';
@@ -73,7 +72,6 @@ export default function Index({
     const { search, setSearch, sort, setPage, setPerPage, filterValues, setFilter, setFilters, clearFilters } = useDataTable('/subscriptions', filters, {}, {
         only: ['subscriptions', 'listSummary', 'filters', 'filterOptions', 'branchScope', 'can', 'canCreate', 'canViewArchived', 'showArchived', 'archiveToday', 'canRecordReadings', 'bulkActions', 'canEditMinimumCharge', 'canEditKilowattPrice', 'readingWeekOptions'],
     });
-    const rowClick = useRowClick();
     const localFilterKey = subscriptionFilterKey(filterValues);
     const serverFilterKey = subscriptionFilterKey(filters.filter);
     const filtersKey = JSON.stringify([search.trim(), localFilterKey, filters.search, serverFilterKey]);
@@ -328,7 +326,6 @@ export default function Index({
                     pageIds={pageIds}
                     pageSelectedCount={pageSelectedCount}
                     requestDelete={requestDelete}
-                    rowClick={rowClick}
                     rowMenu={rowMenu}
                     selectedIds={selectedIds}
                     setModalSubscription={setModalSubscription}

@@ -7,7 +7,7 @@ import InputError from '@/Components/InputError';
 import PageHeader from '@/Components/PageHeader';
 import { formatNumber, formatDate } from '@/lib/format';
 import { readingSearchMatches } from '@/lib/readingBoard';
-import { Figure, SegmentedChoice } from '@/Components/UI';
+import { Figure, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, SegmentedChoice } from '@/Components/UI';
 
 
 function BranchOverview({ branches, canCreate }) {
@@ -57,22 +57,20 @@ function BranchOverview({ branches, canCreate }) {
                 <Card className="gl-rp-panel" data-excel-source="custom">
                     <Card.Content>
                         <div className="gl-rp-scroll">
-                            <table className="gl-rp-table" aria-label="الفروع وموعد القراءة القادمة">
-                                <thead>
-                                    <tr>
-                                        <th>الفرع</th>
-                                        <th>القراءة القادمة</th>
-                                        <th>التوزيع</th>
-                                        <th><span className="sr-only">الإجراء</span></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                            <ListTable className="gl-rp-table" aria-label="الفروع وموعد القراءة القادمة">
+                                <ListHeader>
+                                    <ListColumn id="branch" isRowHeader>الفرع</ListColumn>
+                                    <ListColumn id="reading_date">القراءة القادمة</ListColumn>
+                                    <ListColumn id="distribution">التوزيع</ListColumn>
+                                    <ListColumn id="action"><span className="sr-only">الإجراء</span></ListColumn>
+                                </ListHeader>
+                                <ListBody>
                                     {visible.map((item) => (
-                                        <tr key={item.id} aria-busy={preparingId === item.id}>
-                                            <td><b id={`distribution-branch-${item.id}`}>{item.name}</b></td>
-                                            <td>{item.readingDayName} <time dateTime={item.readingDate} dir="ltr">{formatDate(item.readingDate)}</time></td>
-                                            <td><Chip size="sm" variant="soft" className="gl-rp-chip" data-tone={item.cycleId ? 'pay' : 'warn'}>{item.cycleId ? 'مجهّزة' : 'بانتظار التجهيز'}</Chip></td>
-                                            <td className="is-end">
+                                        <ListRow key={item.id} id={item.id}>
+                                            <ListCell><b id={`distribution-branch-${item.id}`}>{item.name}</b></ListCell>
+                                            <ListCell>{item.readingDayName} <time dateTime={item.readingDate} dir="ltr">{formatDate(item.readingDate)}</time></ListCell>
+                                            <ListCell><Chip size="sm" variant="soft" className="gl-rp-chip" data-tone={item.cycleId ? 'pay' : 'warn'}>{item.cycleId ? 'مجهّزة' : 'بانتظار التجهيز'}</Chip></ListCell>
+                                            <ListCell className="is-end">
                                                 {item.cycleId ? (
                                                     <Button variant="secondary" onPress={() => router.visit(`/reading-cycles/${item.cycleId}`)} aria-label={`فتح توزيع ${item.name}`}>
                                                         فتح التوزيع
@@ -84,11 +82,11 @@ function BranchOverview({ branches, canCreate }) {
                                                         {preparingId === item.id ? 'جارٍ تجهيز القراءة...' : 'تجهيز وفتح التوزيع'}
                                                     </Button>
                                                 ) : <span className="text-sm text-gray-500">بانتظار تجهيز مسؤول التوزيع.</span>}
-                                            </td>
-                                        </tr>
+                                            </ListCell>
+                                        </ListRow>
                                     ))}
-                                </tbody>
-                            </table>
+                                </ListBody>
+                            </ListTable>
                         </div>
                     </Card.Content>
                 </Card>

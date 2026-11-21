@@ -6,11 +6,10 @@ import Icon from '@/Components/Icon';
 import Modal from '@/Components/Modal';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import Pagination from '@/Components/DataTable/Pagination';
-import ActionsTh from '@/Components/DataTable/ActionsTh';
 import { useDataTable } from '@/hooks/useDataTable';
 import { timeAgo } from '@/lib/format';
 import PageHeader, { BackLink } from '@/Components/PageHeader';
-import { ConfirmDialog, SecondaryKey, StatusPill } from '@/Components/UI';
+import { ConfirmDialog, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, SecondaryKey, StatusPill } from '@/Components/UI';
 
 const FIELD_ICONS = { minimum_charge: 'wallet', status: 'flag', meter_box_id: 'grid' };
 
@@ -43,29 +42,27 @@ function DetailsModal({ change, details, onClose }) {
                     {!loaded ? (
                         <p className="py-8 text-center text-sm text-gray-500">جارٍ التحميل...</p>
                     ) : (
-                        <table className="w-full text-start text-sm">
-                            <thead className="sticky top-0 bg-surface">
-                                <tr className="border-b border-gray-100 text-xs text-gray-600">
-                                    <th className="py-2 text-start font-semibold">المشترك</th>
-                                    <th className="px-3 py-2 text-start font-semibold">قبل</th>
-                                    <th className="px-3 py-2 text-start font-semibold">بعد</th>
-                                    <th className="px-3 py-2 text-start font-semibold">الآن</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <ListTable aria-label="مشتركو التعديل" className="w-full text-start text-sm">
+                            <ListHeader className="sticky top-0 border-b border-gray-100 bg-surface text-xs text-gray-600">
+                                <ListColumn id="name" isRowHeader className="py-2 text-start font-semibold">المشترك</ListColumn>
+                                <ListColumn id="old" className="px-3 py-2 text-start font-semibold">قبل</ListColumn>
+                                <ListColumn id="new" className="px-3 py-2 text-start font-semibold">بعد</ListColumn>
+                                <ListColumn id="now" className="px-3 py-2 text-start font-semibold">الآن</ListColumn>
+                            </ListHeader>
+                            <ListBody>
                                 {details.items.map((item) => (
-                                    <tr key={item.id} className="border-b border-gray-100 last:border-0">
-                                        <td className="py-2">
+                                    <ListRow key={item.id} id={item.id} className="border-b border-gray-100 last:border-0">
+                                        <ListCell className="py-2">
                                             <span className="font-semibold text-gray-900">{item.name}</span>
                                             {item.accountNumber && <span className="block text-xs text-gray-500">{item.accountNumber}</span>}
-                                        </td>
-                                        <td className="px-3 py-2 text-gray-600">{item.old}</td>
-                                        <td className="px-3 py-2 text-gray-900">{item.new}</td>
-                                        <td className={`px-3 py-2 ${item.now === item.new ? 'text-gray-600' : 'font-semibold text-amber-700'}`}>{item.now}</td>
-                                    </tr>
+                                        </ListCell>
+                                        <ListCell className="px-3 py-2 text-gray-600">{item.old}</ListCell>
+                                        <ListCell className="px-3 py-2 text-gray-900">{item.new}</ListCell>
+                                        <ListCell className={`px-3 py-2 ${item.now === item.new ? 'text-gray-600' : 'font-semibold text-amber-700'}`}>{item.now}</ListCell>
+                                    </ListRow>
                                 ))}
-                            </tbody>
-                        </table>
+                            </ListBody>
+                        </ListTable>
                     )}
                 </div>
             </div>
@@ -99,75 +96,65 @@ export default function BulkChanges({ changes, filters, details }) {
             <DataTableToolbar showSearch={false} perPage={filters.per_page} onPerPageChange={setPerPage} total={changes.total} />
 
             <div className="data-table-container">
-                <table className="data-table w-full text-sm text-start">
-                    <thead>
-                        <tr>
-                            <th>الوقت</th>
-                            <th>التعديل</th>
-                            <th>المشتركون</th>
-                            <th>الفرع</th>
-                            <th>بواسطة</th>
-                            <th>الحالة</th>
-                            <ActionsTh />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {changes.data.length === 0 ? (
-                            <tr>
-                                <td className="text-gray-500" colSpan={7}>
-                                    لا توجد تعديلات جماعية بعد. حدّد مشتركين من قائمة المشتركين لتطبيق تعديل عليهم.
-                                </td>
-                            </tr>
-                        ) : (
-                            changes.data.map((change) => (
-                                <tr key={change.id}>
-                                    <td className="text-gray-600" title={DATE_TIME_FORMAT.format(new Date(change.createdAt))}>
-                                        {timeAgo(change.createdAt)}
-                                    </td>
-                                    <td>
-                                        <span className="flex items-center gap-2 font-semibold text-gray-900">
-                                            <Icon name={FIELD_ICONS[change.field]} className="h-4 w-4 shrink-0 text-gray-500" />
-                                            {change.description}
-                                        </span>
-                                    </td>
-                                    <td className="text-gray-700">{change.changedCount.toLocaleString('en')}</td>
-                                    <td className="text-gray-600">{change.branchName}</td>
-                                    <td className="text-gray-600">{change.userName ?? '—'}</td>
-                                    <td>
-                                        {change.undoneAt ? (
-                                            <span>
-                                                <StatusPill tone="gray" label="تم التراجع" />
-                                                <span className="mt-1 block text-xs text-gray-500">
-                                                    أُعيد {change.restoredCount?.toLocaleString('en')} من {change.changedCount.toLocaleString('en')} — {change.undoneBy}
-                                                </span>
+                <ListTable aria-label="سجل التعديلات الجماعية">
+                    <ListHeader>
+                        <ListColumn id="created_at">الوقت</ListColumn>
+                        <ListColumn id="description" isRowHeader>التعديل</ListColumn>
+                        <ListColumn id="changed_count">المشتركون</ListColumn>
+                        <ListColumn id="branch">الفرع</ListColumn>
+                        <ListColumn id="user">بواسطة</ListColumn>
+                        <ListColumn id="status">الحالة</ListColumn>
+                        <ListColumn actions />
+                    </ListHeader>
+                    <ListBody empty={<span className="text-gray-500">لا توجد تعديلات جماعية بعد. حدّد مشتركين من قائمة المشتركين لتطبيق تعديل عليهم.</span>}>
+                        {changes.data.map((change) => (
+                            <ListRow key={change.id} id={change.id}>
+                                <ListCell className="text-gray-600">
+                                    <span title={DATE_TIME_FORMAT.format(new Date(change.createdAt))}>{timeAgo(change.createdAt)}</span>
+                                </ListCell>
+                                <ListCell>
+                                    <span className="flex items-center gap-2 font-semibold text-gray-900">
+                                        <Icon name={FIELD_ICONS[change.field]} className="h-4 w-4 shrink-0 text-gray-500" />
+                                        {change.description}
+                                    </span>
+                                </ListCell>
+                                <ListCell className="text-gray-700">{change.changedCount.toLocaleString('en')}</ListCell>
+                                <ListCell className="text-gray-600">{change.branchName}</ListCell>
+                                <ListCell className="text-gray-600">{change.userName ?? '—'}</ListCell>
+                                <ListCell>
+                                    {change.undoneAt ? (
+                                        <span>
+                                            <StatusPill tone="gray" label="تم التراجع" />
+                                            <span className="mt-1 block text-xs text-gray-500">
+                                                أُعيد {change.restoredCount?.toLocaleString('en')} من {change.changedCount.toLocaleString('en')} — {change.undoneBy}
                                             </span>
-                                        ) : (
-                                            <StatusPill tone="green" label="مطبّق" />
-                                        )}
-                                    </td>
-                                    <td className="text-end">
-                                        <div className="flex justify-end gap-2">
-                                            <SecondaryKey onClick={() => view(change)} className="px-3! py-2! text-xs" aria-label={`عرض مشتركي «${change.description}»`}>
-                                                <Icon name="eye" className="h-4 w-4" />
-                                                المشتركون
+                                        </span>
+                                    ) : (
+                                        <StatusPill tone="green" label="مطبّق" />
+                                    )}
+                                </ListCell>
+                                <ListCell className="text-end">
+                                    <div className="flex justify-end gap-2">
+                                        <SecondaryKey onClick={() => view(change)} className="px-3! py-2! text-xs" aria-label={`عرض مشتركي «${change.description}»`}>
+                                            <Icon name="eye" className="h-4 w-4" />
+                                            المشتركون
+                                        </SecondaryKey>
+                                        {change.canUndo && (
+                                            <SecondaryKey
+                                                onClick={() => setUndoing(change)}
+                                                className="px-3! py-2! text-xs text-brand-600"
+                                                aria-label={`التراجع عن «${change.description}»`}
+                                            >
+                                                <Icon name="undo" className="h-4 w-4" />
+                                                تراجع
                                             </SecondaryKey>
-                                            {change.canUndo && (
-                                                <SecondaryKey
-                                                    onClick={() => setUndoing(change)}
-                                                    className="px-3! py-2! text-xs text-brand-600"
-                                                    aria-label={`التراجع عن «${change.description}»`}
-                                                >
-                                                    <Icon name="undo" className="h-4 w-4" />
-                                                    تراجع
-                                                </SecondaryKey>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                                        )}
+                                    </div>
+                                </ListCell>
+                            </ListRow>
+                        ))}
+                    </ListBody>
+                </ListTable>
             </div>
 
             <Pagination meta={changes} filters={filters} baseUrl="/subscriptions/bulk-changes" />

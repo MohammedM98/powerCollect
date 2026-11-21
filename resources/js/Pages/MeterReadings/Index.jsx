@@ -5,7 +5,6 @@ import Icon from '@/Components/Icon';
 import { Button, Checkbox } from '@heroui/react';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
-import SortableTh from '@/Components/DataTable/SortableTh';
 import Pagination from '@/Components/DataTable/Pagination';
 import { useDataTable } from '@/hooks/useDataTable';
 import { formatMoney, formatMonthName } from '@/lib/format';
@@ -19,7 +18,7 @@ import PageHeader from '@/Components/PageHeader';
 import { EntryWindowNotice } from './EntryWindowNotice';
 import { PRINT_FIELDS, SheetRow } from './ReadingSheetRow';
 import { printFieldsProps } from '@/lib/print';
-import { ConfirmDialog, SearchableSelect, SegmentedChoice } from '@/Components/UI';
+import { BandRow, ConfirmDialog, ListBody, ListColumn, ListHeader, ListTable, SearchableSelect, SegmentedChoice } from '@/Components/UI';
 
 /**
  * What each sort is by, and how its two directions read: names go أ – ي or
@@ -282,32 +281,28 @@ export default function Index({
 
             <div className="re-table-wrap">
                 {/* While a last reading can be edited, its column keeps the editor's width, so opening it moves nothing. */}
-                <table data-excel-source="custom" className={`re-table w-full text-sm text-start ${rows.data.some((row) => row.lastReading?.canEdit || row.initialReading?.canEdit) ? 'has-last-edit' : ''}`} {...printFieldsProps(PRINT_FIELDS)}>
-                    <thead>
-                        <tr>
-                            <SortableTh column="full_name" label="المشترك" sortState={filters} onSort={sort} className="re-sub" />
-                            <SortableTh column="last_reading" label="القراءة السابقة" sortState={filters} onSort={sort} className="re-last" />
-                            <SortableTh column="current_reading" label="القراءة الحالية" sortState={filters} onSort={sort} className="re-input-cell" />
-                            <SortableTh column="consumption" label="الفرق (كيلو)" sortState={filters} onSort={sort} className="re-diff" />
-                            <SortableTh column="amount_due" label="المطلوب دفعه" sortState={filters} onSort={sort} className="re-due" />
-                            <th className="re-status">الحالة</th>
-                            {seesWhoRecorded && <th className="re-by">سجّلها</th>}
-                        </tr>
-                    </thead>
-                    <tbody>
+                <ListTable aria-label="قراءات الأسبوع" data-excel-source="custom" className={`re-table w-full text-sm text-start ${rows.data.some((row) => row.lastReading?.canEdit || row.initialReading?.canEdit) ? 'has-last-edit' : ''}`} sort={filters} onSort={sort} {...printFieldsProps(PRINT_FIELDS)}>
+                    <ListHeader>
+                        <ListColumn id="full_name" sortable isRowHeader className="re-sub">المشترك</ListColumn>
+                        <ListColumn id="last_reading" sortable className="re-last">القراءة السابقة</ListColumn>
+                        <ListColumn id="current_reading" sortable className="re-input-cell">القراءة الحالية</ListColumn>
+                        <ListColumn id="consumption" sortable className="re-diff">الفرق (كيلو)</ListColumn>
+                        <ListColumn id="amount_due" sortable className="re-due">المطلوب دفعه</ListColumn>
+                        <ListColumn id="status" className="re-status">الحالة</ListColumn>
+                        {seesWhoRecorded && <ListColumn id="recorded_by" className="re-by">سجّلها</ListColumn>}
+                    </ListHeader>
+                    <ListBody>
                         {rows.data.length === 0 ? (
-                            <tr>
-                                <td className="re-empty" colSpan={seesWhoRecorded ? 7 : 6}>
-                                    {isFiltered ? (
-                                        <>
-                                            <b>لا يوجد مشتركون مطابقون للبحث والتصفية.</b>
-                                            <Button data-raw="" variant="ghost" className="gl-btn gl-sec gl-sm" onClick={() => { setSearch(''); clearFilters(); }}>مسح البحث والفلاتر</Button>
-                                        </>
-                                    ) : (
-                                        <b>لا يوجد مشتركون بقراءات في هذا الأسبوع.</b>
-                                    )}
-                                </td>
-                            </tr>
+                            <BandRow id="empty" columns={seesWhoRecorded ? 7 : 6} className="" cellClassName="re-empty">
+                                {isFiltered ? (
+                                    <>
+                                        <b>لا يوجد مشتركون مطابقون للبحث والتصفية.</b>
+                                        <Button data-raw="" variant="ghost" className="gl-btn gl-sec gl-sm" onClick={() => { setSearch(''); clearFilters(); }}>مسح البحث والفلاتر</Button>
+                                    </>
+                                ) : (
+                                    <b>لا يوجد مشتركون بقراءات في هذا الأسبوع.</b>
+                                )}
+                            </BandRow>
                         ) : (
                             rows.data.map((row) => (
                                 <SheetRow
@@ -323,8 +318,8 @@ export default function Index({
                                 />
                             ))
                         )}
-                    </tbody>
-                </table>
+                    </ListBody>
+                </ListTable>
             </div>
 
             <div className="re-footer"><span>مجموع المستحق لهذا الأسبوع <b>{formatMoney(summary.amountDue)} شيكل</b></span><span><Icon name="enter" /> Enter أو ↓ للحفظ والانتقال، ↑ للرجوع، Tab للتنقل</span></div>

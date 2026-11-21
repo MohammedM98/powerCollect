@@ -59,7 +59,7 @@
 | 3 | تحديث `symfony/yaml` (ثغرة معلنة) | لم يُحدَّث (تغيير اعتماديات) |
 | 4 | إضافة فحص سهولة وصول آلي (axe) | لم يُضف (اعتمادية جديدة) |
 | 5 | السماح بالدرجات `10`، `12`، `16` في سلّم المسافات لعناصر بعينها | **قرّر المالك**: لا في المسافات، نعم في الأحجام؛ نُفّذ في المهمة 3 |
-| 6 | استبدال النافذة اليدوية والجداول الخام بمكوّنات HeroUI (`Modal`، `Table`) | تقرير فقط؛ تغيير بصري واسع |
+| 6 | استبدال النافذة اليدوية والجداول الخام بمكوّنات HeroUI (`Modal`، `Table`) | **وافق المالك ونُفّذ** (الفرع `claude/festive-carson-ydugkv`): النافذة صارت `Window` في العُدّة على `Modal` من HeroUI، والجداول المعروضة صارت `ListTable` على `Table` من HeroUI، بشكل MA نفسه. انظر «المحدِّد 1 — HeroUI فقط» |
 | 7 | حذف الكود الميت (نحو 315 سطرًا في الخلفية، و`SurfaceToggle` و`MoveBoard` و`csv.ts` وأقسام التقارير غير المستعملة) | تقرير فقط |
 | 8 | العنوان الترحيبي في لوحة البداية («مساء الخير…») | يبقى كما هو |
 | 9 | اسم الشركة | **نُفّذ بطلب المالك**: الهوية الافتراضية صارت MA (انظر «تغيير الهوية إلى MA»). يبقى قرار `maker.json` |
@@ -484,8 +484,8 @@ CI: مهمة `tests-concurrency` مستقلة على `mysql:8.4`.
 |---|---|
 | مكتبات الواجهة المستعملة | **HeroUI وحدها** (210 استيرادًا). لا مكتبة واجهات أخرى ولا مكتبة أيقونات خارجية |
 | عناصر خام خارج العُدّة | قليلة جدًا: 6 حقول ملفات (`type="file"`، لا مقابل لها في HeroUI) و`<input type="range">` مرتان، و`<input type="color">` مرة، و`<input type="checkbox">` مخفي مرة (`Payments/CloseBoxesByType.jsx:111`)، وحقل CSRF مخفي |
-| **النافذة المنبثقة** | **مبنية يدويًا** (`Components/Modal.jsx`، 175 سطرًا، بـ`createPortal`) لا على `Modal` من HeroUI، ويستعملها 60 ملفًا عبر `DialogFrame` و`FormModal` و`ConfirmDialog`. مبنية بعناية: تحبس التركيز، تُغلق بـEscape، وتعيد التركيز عند الإغلاق. **مخالفة للمحدِّد، لا خطأ وظيفي** |
-| **الجداول** | 47 ملفًا تستعمل `<table>` خامًا؛ `Table` من HeroUI غير مستعمل في أي ملف |
+| **النافذة المنبثقة** | **نُفّذ (القرار 6):** `Components/UI/Window.jsx` على `Modal` من HeroUI (`Modal.Backdrop` و`Modal.Container`)، و`Components/Modal.jsx` يعيد تصديرها فتتبعها النوافذ كلها (34 ملفًا مباشرة، وغيرها عبر `DialogFrame` و`FormModal` و`ConfirmDialog`). بقي شكل MA (زوايا 28px، `--ma-float`، زجاجي ومصمت، لوحة سفلية على الهاتف). HeroUI يحبس التركيز ويعيده، ويجمّد الصفحة خلفها ويجعلها `inert`، وEscape يغلق الأحدث فقط من أي مكان في الصفحة. القوائم والتقويم والتلميحات المرسومة في `<body>` معلَّمة `data-react-aria-top-layer` لتبقى صالحة داخل النافذة. اختبار: `tests/js/Window.test.jsx` |
+| **الجداول** | **نُفّذ (القرار 6):** `Components/UI/ListTable.jsx` (`ListTable`، `ListHeader`، `ListColumn`، `ListBody`، `ListRow`، `ListCell`، `BandRow`) على `Table` من HeroUI دون أغلفته ولا ملف تنسيقه، فبقي شكل جدول MA (الترويسة على `--ma-tile`، خطوط `--ma-line`، بطاقات الهاتف، «عرض» ظاهر دائمًا، `row-action-edit`/`row-action-delete`). يستعمله 36 ملفًا. الفرز عبر فرز HeroUI بمفتاح حقيقي في الترويسة؛ الصف يُفتح بالنقر بالحراسات القديمة؛ ملاحة الشبكة بالأسهم معطّلة عمدًا فيبقى Tab والمفاتيح كما في جدول الصفحة (Escape والاختصارات تصل). صفوف المجموع التي كانت في `<tfoot>` صارت آخر صف (`is-total`). الأدوار تغيّرت: `grid` و`gridcell` و`rowheader`، وحُدّثت اختبارات المتصفح لذلك. اختبار: `tests/js/ListTable.test.jsx`. **بقيت خامًا عمدًا (15 ملفًا):** أوراق الطباعة (`PaperSheet`، `ReportPrintSheet`، `StatementPrint`، `Print/PrintPaper`، كشف `SubscriptionDetailsModal`)، معاينة Excel، دفاتر الأعمدة الثابتة (`Ledger/Index`، `OpenEntriesTable`، دفترا `CollectorCashBox` و`BoxDetails`، `AccountStatement`، `StatementLedger`، `LedgerLine`)، جدول `sr-only` في `BarChart`، وأقسام `ReportSections` غير المستعملة (القرار 7). و`lib/print.js` ذكرٌ في تعليق فقط |
 | قائمة الصف | `DataTable/RowMenu.jsx` نافذة يدوية بـ`createPortal`، وفي داخلها `Menu` من HeroUI |
 | مكوّنات HeroUI غير مستعملة ولها بديل يدوي | `Toast` (الإشعارات في `FlashNotifications.jsx`)، `Spinner` و`Skeleton` (10 ملفات تستعمل `animate-spin`/`animate-pulse`)، `Tooltip` (مكوّن `InfoTip`)، `Pagination`، `Slider` (حقلا `range`)، `ColorPicker` (حقل `color`)، `NumberField`، `Drawer`/`Sheet` |
 | `Button` من HeroUI مباشرة في الصفحات | 115 ملفًا تستعمل `Button` مباشرة بدل مفاتيح العُدّة (`PrimaryKey`، `EditKey`…). مسموح بنص `CLAUDE.md` ما دام من HeroUI، لكنه يفتح باب «نسخة مصنوعة يدويًا» من المفاتيح؛ يحتاج فحصًا بالعين لكل ملف |
@@ -566,7 +566,7 @@ CI: مهمة `tests-concurrency` مستقلة على `mysql:8.4`.
 |---|---|
 | الأزرار التي فيها أيقونة فقط | **سليمة**: 86 زرًا، كلها لها اسم (`aria-label`) |
 | اللغة والاتجاه وعناوين الصفحات | **سليمة**: `<html lang="ar" dir="rtl">`، وكل الصفحات الـ69 لها عنوان، ورابط «تخطي إلى المحتوى» موجود (ناقص في صفحة الدخول) |
-| النوافذ | تحبس التركيز وتعيده. ينقصها جعل الصفحة خلفها `inert`. قائمة الصف على الهاتف (`RowMenu.jsx:386-396`) تصبح لوحة سفلية بلا حبس للتركيز ولا دور `dialog` |
+| النوافذ | تحبس التركيز وتعيده، والصفحة خلفها `inert` منذ نقلها إلى `Modal` من HeroUI (القرار 6). قائمة الصف على الهاتف (`RowMenu.jsx:386-396`) تصبح لوحة سفلية بلا حبس للتركيز ولا دور `dialog` |
 | **صفوف تُفتح بالفأرة فقط** | `useRowClick` يضيف نقرة فقط بلا `tabIndex` ولا مفتاح. أغلب الجداول فيها زر بديل (اسم المشترك). **بلا بديل من لوحة المفاتيح**: `Pages/Receivables/Index.jsx:205` و`Pages/TransactionAudit/Index.jsx:187` — مؤكد |
 | حقول بلا تسمية | `SearchableSelect` بلا خاصية `aria-label`؛ استعمالات بلا تسمية في `Dashboard/DashboardHeader.jsx:32`، `CompanyForms/Editor.jsx:204,208`، `DataTable/DataTableFilterMenu.jsx:11`، و`ReadingCycles/Submissions.jsx:92` (نص توضيحي فقط) |
 | قواعد lint | `jsx-a11y/no-autofocus` معطّلة، وثلاث قواعد مخففة، و8 تعطيلات داخل الكود |

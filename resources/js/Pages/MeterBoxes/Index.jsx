@@ -1,22 +1,19 @@
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import DataTableSortControls from '@/Components/DataTable/DataTableSortControls';
 import { BranchFilterBanner, splitBranchFilter } from '@/Components/BranchBanner';
-import SortableTh from '@/Components/DataTable/SortableTh';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Pagination from '@/Components/DataTable/Pagination';
-import ActionsTh from '@/Components/DataTable/ActionsTh';
 import Icon from '@/Components/Icon';
 import { Button, ToggleButton } from '@heroui/react';
-import { AddKey, Figure, SearchableSelect, SegmentedChoice } from '@/Components/UI';
+import { AddKey, BandRow, Figure, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, SearchableSelect, SegmentedChoice } from '@/Components/UI';
 import { formatNumber } from '@/lib/format';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useDeleteRecord } from '@/hooks/useDeleteRecord';
-import { useRowClick } from '@/hooks/useRowClick';
 import MeterBoxModal from './MeterBoxModal';
 import MeterBoxSubscriptions from './MeterBoxSubscriptions';
 import './meter-boxes.css';
@@ -131,7 +128,6 @@ export default function Index({
             router.get(current.pathname, {}, { replace: true, preserveState: false });
         }
     }, []);
-    const rowClick = useRowClick();
     const { requestDelete, deleteDialog } = useDeleteRecord('الطبلون');
     // Grouped by region, the server lists each region's boxes together so a region doesn't split across pages.
     const groupParams = groupByRegion ? { group: 'region' } : {};
@@ -249,52 +245,42 @@ export default function Index({
             </div>
 
             <div className="data-table-container">
-                <table className="data-table meter-box-table w-full text-sm text-start" aria-label="الطبلونات ومشتركوها">
-                    <thead>
-                        <tr>
-                            <SortableTh column="name" label="الطبلون" sortState={filters} onSort={sort} />
-                            <th>{selectedBranch ? 'منطقة الطبلون' : 'الموقع / المنطقة'}</th>
-                            <th>الفرع</th>
-                            <SortableTh column="subscriptions_count" label="المشتركون" sortState={filters} onSort={sort} />
-                            <ActionsTh />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {meterBoxes.data.length === 0 ? (
-                            <tr>
-                                <td className="text-gray-500" colSpan={5}>
-                                    لا توجد نتائج مطابقة.
-                                </td>
-                            </tr>
-                        ) : (
-                            regionGroups.map((region) => <Fragment key={region.id}>
-                                {groupByRegion && <tr className="meter-box-region-header"><td colSpan={5}>
-                                    <div className="flex flex-wrap items-center gap-3 text-sm">
-                                        <Icon name="pin" className="h-5 w-5 text-brand-600" />
-                                        {region.id === 'none' ? <b>{region.name}</b> : <Button data-raw="" variant="ghost" onClick={() => setFilter('sub_area_id', String(region.id))} className="font-bold text-gray-900 underline-offset-4 hover:text-brand-600 hover:underline" aria-label={`عرض طبلونات ${region.name}`}>{region.name}</Button>}
-                                        <span className="rounded-control bg-surface px-3 py-1 text-[13.5px] font-semibold text-gray-700">{formatNumber(region.boxes.length)} طبلون في هذه الصفحة</span>
-                                    </div>
-                                </td></tr>}
-                                {region.boxes.map((meterBox) => (
-                                <Fragment key={meterBox.id}>
-                                <tr className={isExpanded(meterBox.id) ? 'meter-box-expanded' : undefined} {...rowClick(canViewSubscriptions ? () => toggleExpanded(meterBox.id) : meterBox.canUpdate ? () => setModalMeterBox(meterBox) : null)}>
-                                    <td data-label="الطبلون">
+                <ListTable className="data-table meter-box-table w-full text-sm text-start" aria-label="الطبلونات ومشتركوها" sort={filters} onSort={sort}>
+                    <ListHeader>
+                        <ListColumn id="name" sortable isRowHeader>الطبلون</ListColumn>
+                        <ListColumn id="location">{selectedBranch ? 'منطقة الطبلون' : 'الموقع / المنطقة'}</ListColumn>
+                        <ListColumn id="branch">الفرع</ListColumn>
+                        <ListColumn id="subscriptions_count" sortable>المشتركون</ListColumn>
+                        <ListColumn actions />
+                    </ListHeader>
+                    <ListBody empty={<span className="text-gray-500">لا توجد نتائج مطابقة.</span>}>
+                        {regionGroups.flatMap((region) => [
+                            ...(groupByRegion ? [<BandRow key={`region-${region.id}`} id={`region-${region.id}`} columns={5} className="meter-box-region-header">
+                                <div className="flex flex-wrap items-center gap-3 text-sm">
+                                    <Icon name="pin" className="h-5 w-5 text-brand-600" />
+                                    {region.id === 'none' ? <b>{region.name}</b> : <Button data-raw="" variant="ghost" onClick={() => setFilter('sub_area_id', String(region.id))} className="font-bold text-gray-900 underline-offset-4 hover:text-brand-600 hover:underline" aria-label={`عرض طبلونات ${region.name}`}>{region.name}</Button>}
+                                    <span className="rounded-control bg-surface px-3 py-1 text-[13.5px] font-semibold text-gray-700">{formatNumber(region.boxes.length)} طبلون في هذه الصفحة</span>
+                                </div>
+                            </BandRow>] : []),
+                            ...region.boxes.flatMap((meterBox) => [
+                                <ListRow key={meterBox.id} id={meterBox.id} className={isExpanded(meterBox.id) ? 'meter-box-expanded' : undefined} onOpen={canViewSubscriptions ? () => toggleExpanded(meterBox.id) : meterBox.canUpdate ? () => setModalMeterBox(meterBox) : null}>
+                                    <ListCell data-label="الطبلون">
                                         <RowIdentity icon="table" name={meterBox.display_name || meterBox.box_number} subtitle={meterBox.display_name ? meterBox.box_number : undefined} />
-                                    </td>
-                                    <td data-label={selectedBranch ? 'منطقة الطبلون' : 'الموقع / المنطقة'}>
+                                    </ListCell>
+                                    <ListCell data-label={selectedBranch ? 'منطقة الطبلون' : 'الموقع / المنطقة'}>
                                         <p className="text-sm font-semibold text-gray-700">{selectedBranch ? meterBox.subAreaName || '—' : meterBox.location || meterBox.subAreaName || '—'}</p>
                                         {!selectedBranch && <p className="mt-1 text-xs text-gray-500">{[meterBox.governorateName, meterBox.areaName, meterBox.subAreaName].filter(Boolean).join(' / ') || '—'}</p>}
                                         {selectedBranch && meterBox.location && meterBox.location !== meterBox.subAreaName && <p className="mt-1 text-xs text-gray-500">{meterBox.location}</p>}
-                                    </td>
-                                    <td data-label="الفرع" className="text-gray-600">{meterBox.branchName}</td>
-                                    <td data-label="المشتركون">
+                                    </ListCell>
+                                    <ListCell data-label="الفرع" className="text-gray-600">{meterBox.branchName}</ListCell>
+                                    <ListCell data-label="المشتركون">
                                         <p className="text-sm font-semibold text-gray-900"><b className="font-display">{formatNumber(meterBox.subscriptionsCount)}</b> مشترك</p>
                                         {meterBox.subscriptionsCount > 0 && <>
                                             <div className="my-2 flex h-1.5 w-28 overflow-hidden rounded-full bg-gray-100" aria-hidden="true"><span className="bg-emerald-500" style={{ width: `${meterBox.activeSubscriptionsCount / meterBox.subscriptionsCount * 100}%` }} /></div>
                                             <p className="text-xs text-gray-500">{meterBox.activeSubscriptionsCount} فعّال، {meterBox.subscriptionsCount - meterBox.activeSubscriptionsCount} غير فعّال</p>
                                         </>}
-                                    </td>
-                                    <td data-actions="" className="text-end">
+                                    </ListCell>
+                                    <ListCell data-actions="" className="text-end">
                                         <div className="flex items-center justify-end gap-2">
                                         {canViewSubscriptions && <Button data-raw="" variant="ghost" className="row-action row-action-quiet" aria-expanded={isExpanded(meterBox.id)} aria-controls={`meter-box-subscriptions-${meterBox.id}`} aria-label={`${isExpanded(meterBox.id) ? 'إخفاء' : 'عرض'} مشتركي ${meterBox.box_number}`} title="المشتركون" onClick={() => toggleExpanded(meterBox.id)}><Icon name="chevron-down" className={`h-4 w-4 transition-transform ${isExpanded(meterBox.id) ? 'rotate-180' : ''}`} /></Button>}
                                         {(meterBox.canUpdate || meterBox.canDelete) && (
@@ -306,16 +292,15 @@ export default function Index({
                                             </RowActionsMenu>
                                         )}
                                         </div>
-                                    </td>
-                                </tr>
-                                {canViewSubscriptions && isExpanded(meterBox.id) && <tr className="meter-box-detail"><td colSpan={5}>
+                                    </ListCell>
+                                </ListRow>,
+                                ...(canViewSubscriptions && isExpanded(meterBox.id) ? [<BandRow key={`detail-${meterBox.id}`} id={`detail-${meterBox.id}`} columns={5} className="meter-box-detail">
                                     <MeterBoxSubscriptions key={`${meterBox.id}-${meterBox.subscriptionsCount}-${filters.search}-${filters.sort}`} meterBox={meterBox} sort={subscriptionOrder.sort} direction={subscriptionOrder.direction} canRecordReadings={canRecordReadings} canSendMessages={canSendMessages} />
-                                </td></tr>}
-                                </Fragment>
-                            ))}</Fragment>)
-                        )}
-                    </tbody>
-                </table>
+                                </BandRow>] : []),
+                            ]),
+                        ])}
+                    </ListBody>
+                </ListTable>
             </div>
 
             <Pagination meta={meterBoxes} filters={filters} baseUrl="/meter-boxes" extraParams={groupParams} />

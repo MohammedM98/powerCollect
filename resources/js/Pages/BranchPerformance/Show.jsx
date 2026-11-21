@@ -8,7 +8,7 @@ import KpiTile from '@/Components/KpiTile';
 import { formatDayLabel, formatMoney, formatNumber, timeAgo } from '@/lib/format';
 import { branchPlace } from './BranchMark';
 import PageHeader, { BackLink } from '@/Components/PageHeader';
-import { StatusPill } from '@/Components/UI';
+import { ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, StatusPill } from '@/Components/UI';
 
 /** Status colors, fixed because the card behind them is always graphite; each comes with its word and count. */
 const STATUS_BARS = { active: 'bg-emerald-400', suspended: 'bg-amber-400', disconnected: 'bg-white/40' };
@@ -78,70 +78,62 @@ function TeamTable({ team }) {
         <section className="mt-6">
             <TableHeading title="فريق الفرع" caption={`${formatNumber(team.length)} موظف، مرتبون حسب عدد الإدخالات`} />
             <div className="data-table-container">
-                <table className="data-table w-full text-start text-sm">
-                    <thead>
-                        <tr>
-                            <th>الموظف</th>
-                            <th>اسم المستخدم</th>
-                            <th>الإدخالات</th>
-                            <th>آخر 7 أيام</th>
-                            <th>القيود المسجلة</th>
-                            <th>آخر نشاط</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {team.length === 0 ? (
-                            <tr>
-                                <td colSpan={6}>لا يوجد موظفون في هذا الفرع.</td>
-                            </tr>
-                        ) : (
-                            team.map((member) => (
-                                <tr key={member.id}>
-                                    <td>
-                                        <RowIdentity name={member.name} subtitle={member.roleLabel} status={member.isActive ? 'green' : 'gray'} />
-                                    </td>
-                                    <td className="text-gray-600" dir="ltr">
-                                        {member.username}
-                                    </td>
-                                    <td>
-                                        <span className="flex min-w-36 items-center gap-3">
-                                            <b className="w-9 shrink-0 font-display text-gray-900">{formatNumber(member.entries)}</b>
-                                            <MeterBar value={member.entries} max={busiest} className="flex-1" />
+                <ListTable aria-label="فريق الفرع" className="data-table w-full text-start text-sm">
+                    <ListHeader>
+                        <ListColumn id="name" isRowHeader>الموظف</ListColumn>
+                        <ListColumn id="username">اسم المستخدم</ListColumn>
+                        <ListColumn id="entries">الإدخالات</ListColumn>
+                        <ListColumn id="week">آخر 7 أيام</ListColumn>
+                        <ListColumn id="recorded">القيود المسجلة</ListColumn>
+                        <ListColumn id="last">آخر نشاط</ListColumn>
+                    </ListHeader>
+                    <ListBody empty="لا يوجد موظفون في هذا الفرع.">
+                        {team.map((member) => (
+                            <ListRow key={member.id} id={member.id}>
+                                <ListCell>
+                                    <RowIdentity name={member.name} subtitle={member.roleLabel} status={member.isActive ? 'green' : 'gray'} />
+                                </ListCell>
+                                <ListCell className="text-gray-600" dir="ltr">
+                                    {member.username}
+                                </ListCell>
+                                <ListCell>
+                                    <span className="flex min-w-36 items-center gap-3">
+                                        <b className="w-9 shrink-0 font-display text-gray-900">{formatNumber(member.entries)}</b>
+                                        <MeterBar value={member.entries} max={busiest} className="flex-1" />
+                                    </span>
+                                </ListCell>
+                                <ListCell className="font-display font-semibold text-gray-900">{formatNumber(member.weekEntries)}</ListCell>
+                                <ListCell>
+                                    {member.recordedCount === 0 ? (
+                                        <span className="text-gray-400">—</span>
+                                    ) : (
+                                        <span className="flex flex-col gap-1">
+                                            {member.recordedCharged > 0 && (
+                                                <span>
+                                                    <span className="text-xs text-gray-500">عليه</span>{' '}
+                                                    <Shekels amount={member.recordedCharged} />
+                                                </span>
+                                            )}
+                                            {member.recordedCredited > 0 && (
+                                                <span>
+                                                    <span className="text-xs text-gray-500">له</span>{' '}
+                                                    <Shekels
+                                                        amount={member.recordedCredited}
+                                                        className="text-emerald-700 dark:text-emerald-400"
+                                                    />
+                                                </span>
+                                            )}
+                                            <span className="text-xs text-gray-500">{formatNumber(member.recordedCount)} قيد</span>
                                         </span>
-                                    </td>
-                                    <td className="font-display font-semibold text-gray-900">{formatNumber(member.weekEntries)}</td>
-                                    <td>
-                                        {member.recordedCount === 0 ? (
-                                            <span className="text-gray-400">—</span>
-                                        ) : (
-                                            <span className="flex flex-col gap-1">
-                                                {member.recordedCharged > 0 && (
-                                                    <span>
-                                                        <span className="text-xs text-gray-500">عليه</span>{' '}
-                                                        <Shekels amount={member.recordedCharged} />
-                                                    </span>
-                                                )}
-                                                {member.recordedCredited > 0 && (
-                                                    <span>
-                                                        <span className="text-xs text-gray-500">له</span>{' '}
-                                                        <Shekels
-                                                            amount={member.recordedCredited}
-                                                            className="text-emerald-700 dark:text-emerald-400"
-                                                        />
-                                                    </span>
-                                                )}
-                                                <span className="text-xs text-gray-500">{formatNumber(member.recordedCount)} قيد</span>
-                                            </span>
-                                        )}
-                                    </td>
-                                    <td className="whitespace-nowrap text-gray-600">
-                                        {member.lastActivityAt ? timeAgo(member.lastActivityAt) : '—'}
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                                    )}
+                                </ListCell>
+                                <ListCell className="whitespace-nowrap text-gray-600">
+                                    {member.lastActivityAt ? timeAgo(member.lastActivityAt) : '—'}
+                                </ListCell>
+                            </ListRow>
+                        ))}
+                    </ListBody>
+                </ListTable>
             </div>
         </section>
     );
@@ -153,30 +145,28 @@ function WorkLog({ days }) {
         <section className="min-w-0 xl:col-span-2">
             <TableHeading title="سجل العمل اليومي" caption={`آخر ${formatNumber(days.length)} يوم`} />
             <div className="data-table-container">
-                <table className="data-table w-full text-start text-sm">
-                    <thead>
-                        <tr>
-                            <th>اليوم</th>
-                            <th>مشتركون جدد</th>
-                            <th>الإدخالات</th>
-                            <th>القيود</th>
-                            <th>الأكثر إدخالاً</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <ListTable aria-label="سجل العمل اليومي" className="data-table w-full text-start text-sm">
+                    <ListHeader>
+                        <ListColumn id="day" isRowHeader>اليوم</ListColumn>
+                        <ListColumn id="new">مشتركون جدد</ListColumn>
+                        <ListColumn id="entries">الإدخالات</ListColumn>
+                        <ListColumn id="charges">القيود</ListColumn>
+                        <ListColumn id="top">الأكثر إدخالاً</ListColumn>
+                    </ListHeader>
+                    <ListBody>
                         {days.map((day, index) => (
-                            <tr key={day.date}>
-                                <td>
+                            <ListRow key={day.date} id={day.date}>
+                                <ListCell>
                                     <span className="inline-flex items-center gap-2 whitespace-nowrap font-semibold text-gray-900">
                                         {formatDayLabel(day.date)}
                                         {index === 0 && (
                                             <span className="rounded-full bg-brand-500 px-2 py-1 text-[12px] font-bold text-white">اليوم</span>
                                         )}
                                     </span>
-                                </td>
-                                <td className="font-display font-semibold text-gray-900">{formatNumber(day.newSubscriptions)}</td>
-                                <td className="font-display font-semibold text-gray-900">{formatNumber(day.entries)}</td>
-                                <td>
+                                </ListCell>
+                                <ListCell className="font-display font-semibold text-gray-900">{formatNumber(day.newSubscriptions)}</ListCell>
+                                <ListCell className="font-display font-semibold text-gray-900">{formatNumber(day.entries)}</ListCell>
+                                <ListCell>
                                     {day.chargesCount === 0 ? (
                                         <span className="text-gray-400">—</span>
                                     ) : (
@@ -185,12 +175,12 @@ function WorkLog({ days }) {
                                             <span className="block text-xs text-gray-500">{formatNumber(day.chargesCount)} قيد</span>
                                         </>
                                     )}
-                                </td>
-                                <td className="text-gray-600">{day.topEntrant ?? '—'}</td>
-                            </tr>
+                                </ListCell>
+                                <ListCell className="text-gray-600">{day.topEntrant ?? '—'}</ListCell>
+                            </ListRow>
                         ))}
-                    </tbody>
-                </table>
+                    </ListBody>
+                </ListTable>
             </div>
         </section>
     );

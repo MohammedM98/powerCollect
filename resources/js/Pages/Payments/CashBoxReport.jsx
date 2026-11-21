@@ -4,6 +4,7 @@ import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { reportColumns, reportCurrency, reportFilters, reportMoney, reportRowTotals, reportDetails, reportDateTime } from '@/lib/cashBoxReport';
 import PageHeader from '@/Components/PageHeader';
+import { ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable } from '@/Components/UI';
 
 export default function CashBoxReport({ report }) {
     const details = reportDetails(report);
@@ -27,19 +28,19 @@ export default function CashBoxReport({ report }) {
                 {details.map((field) => <div key={field.key}><dt className="text-xs text-gray-500">{field.label}</dt><dd className="mt-1 font-semibold">{field.value}</dd></div>)}
             </dl>
             <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                    <thead><tr>{reportColumns.map((label) => <th key={label} className="whitespace-nowrap bg-gray-50 p-3 text-start">{label}</th>)}</tr></thead>
-                    <tbody>{report.rows.map((row) => <tr key={row.id} data-print-totals={JSON.stringify(reportRowTotals(row))} data-print-currency={reportCurrency[row.currency] ?? row.currency} className="border-b border-gray-100">
-                        <td className="p-3">{row.subscriber ?? '—'}</td>
-                        <td className="p-3">{reportDateTime(row.date)}<BankReceivedDate value={row.bankReceivedOn} />{row.paidOn && <div className="mt-1 whitespace-normal text-xs leading-5">تسجيل متأخر، الدفع الفعلي: <bdi dir="ltr">{row.paidOn}</bdi><span className="block">سبب التأخير: {row.lateReason}</span></div>}</td>
-                        <td className="p-3" dir="ltr">{row.reference ?? '—'}</td>
-                        <td className="p-3">{reportMoney(row.amount, row.currency)}</td>
-                        <td className="p-3">{report.isBank ? row.bankAmount == null ? 'لم تُدقّق' : Number(row.bankAmount) === 0 ? `${reportMoney(0, row.currency)}، لم يصل شيء` : reportMoney(row.bankAmount, row.currency) : 'لا ينطبق'}</td>
-                        <td className="p-3">{reportMoney(row.difference, row.currency)}</td>
-                        <td className={`p-3 ${row.status === 'غير موجودة' ? 'text-red-700' : ''}`}>{row.status}{row.bankAmount != null && !row.auditFinal ? '، مبدئي' : ''}</td>
-                        <td className="p-3">{row.reason || '—'}</td>
-                    </tr>)}</tbody>
-                </table>
+                <ListTable aria-label="تقرير تفاصيل الصندوق" className="w-full text-sm">
+                    <ListHeader>{reportColumns.map((label, index) => <ListColumn key={label} id={label} isRowHeader={index === 0} className="whitespace-nowrap bg-gray-50 p-3 text-start">{label}</ListColumn>)}</ListHeader>
+                    <ListBody>{report.rows.map((row) => <ListRow key={row.id} id={row.id} data-print-totals={JSON.stringify(reportRowTotals(row))} data-print-currency={reportCurrency[row.currency] ?? row.currency} className="border-b border-gray-100">
+                        <ListCell className="p-3">{row.subscriber ?? '—'}</ListCell>
+                        <ListCell className="p-3">{reportDateTime(row.date)}<BankReceivedDate value={row.bankReceivedOn} />{row.paidOn && <div className="mt-1 whitespace-normal text-xs leading-5">تسجيل متأخر، الدفع الفعلي: <bdi dir="ltr">{row.paidOn}</bdi><span className="block">سبب التأخير: {row.lateReason}</span></div>}</ListCell>
+                        <ListCell className="p-3" dir="ltr">{row.reference ?? '—'}</ListCell>
+                        <ListCell className="p-3">{reportMoney(row.amount, row.currency)}</ListCell>
+                        <ListCell className="p-3">{report.isBank ? row.bankAmount == null ? 'لم تُدقّق' : Number(row.bankAmount) === 0 ? `${reportMoney(0, row.currency)}، لم يصل شيء` : reportMoney(row.bankAmount, row.currency) : 'لا ينطبق'}</ListCell>
+                        <ListCell className="p-3">{reportMoney(row.difference, row.currency)}</ListCell>
+                        <ListCell className={`p-3 ${row.status === 'غير موجودة' ? 'text-red-700' : ''}`}>{row.status}{row.bankAmount != null && !row.auditFinal ? '، مبدئي' : ''}</ListCell>
+                        <ListCell className="p-3">{row.reason || '—'}</ListCell>
+                    </ListRow>)}</ListBody>
+                </ListTable>
             </div>
             <p className="data-table-totals whitespace-pre-line text-sm font-semibold">{summary ? `${summary}\n` : ''}الإجماليات للحركات السارية المعروضة فقط، ولا تشمل المستردّة أو الملغاة.{report.isBank ? ' مبالغ البنك والفرق للحركات المدقّقة فقط. قرارات التدقيق غير المعتمدة مبدئية.' : ''}</p>
         </section>

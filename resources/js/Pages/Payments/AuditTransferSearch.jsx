@@ -7,7 +7,9 @@ import LatePaymentDetails from '@/Components/LatePaymentDetails';
 import { formatMoney } from '@/lib/format';
 import './financial-boxes.css';
 import DateInput from '@/Components/DateInput';
-import { ChoiceSelect, SearchableSelect, SecondaryKey, StatusPill } from '@/Components/UI';
+import { BandRow, ChoiceSelect, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, SearchableSelect, SecondaryKey, StatusPill } from '@/Components/UI';
+
+const COLUMNS = ['المشترك', 'تاريخ الحركة', 'تاريخ وصول البنك', 'رقم السند', 'الرقم المرجعي', 'مبلغ الدفعة', 'وصل البنك', 'الفرق (شيكل)', 'الصندوق والمحصل', 'حالة التدقيق', 'الإجراء'];
 
 const outcomes = { matched: ['مطابقة', 'green'], missing: ['غير موجودة', 'red'], short: ['نقص في المبلغ', 'amber'], over: ['زيادة في المبلغ', 'amber'] };
 
@@ -33,8 +35,8 @@ function Result({ entry, branchName, onEdit, disabled }) {
     const action = entry.canReview ? <Button data-raw="" variant="ghost" isDisabled={disabled} onClick={() => onEdit(entry)} className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-control border border-brand-500/25 bg-brand-500/5 px-3 py-2 text-sm font-semibold text-brand-700 transition hover:bg-brand-500/10 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand-500 disabled:cursor-wait disabled:opacity-50 dark:text-brand-300"><Icon name="pencil" className="h-4 w-4" />تعديل الحوالة</Button> : <span className="inline-flex items-center gap-1 text-sm text-gray-500"><Icon name="lock" className="h-4 w-4" />{entry.finalized ? 'مقفلة' : 'عرض فقط'}</span>;
 
     return <>
-        <tr className="hidden align-top md:table-row">{fields.map(({ name, content }) => <td key={name} className="whitespace-normal! px-4! py-6!">{content}</td>)}<td className="px-4! py-6!">{action}</td></tr>
-        <tr className="md:hidden"><td colSpan="10" className="whitespace-normal! p-4!"><dl className="grid grid-cols-2 gap-x-4 gap-y-4">{fields.map(({ name, content }) => <div key={name} className={['المشترك', 'حالة التدقيق'].includes(name) ? 'col-span-2' : 'min-w-0'}><dt className="mb-1 text-sm text-gray-500">{name}</dt><dd className="text-base">{content}</dd></div>)}</dl><div className="mt-6 border-t border-gray-100 pt-4">{action}</div></td></tr>
+        <ListRow id={entry.id} className="hidden align-top md:table-row">{fields.map(({ name, content }) => <ListCell key={name} className="whitespace-normal! px-4! py-4!">{content}</ListCell>)}<ListCell className="px-4! py-4!">{action}</ListCell></ListRow>
+        <BandRow id={`${entry.id}:phone`} columns={COLUMNS.length} className="md:hidden" cellClassName="whitespace-normal! p-4!"><dl className="grid grid-cols-2 gap-x-4 gap-y-4">{fields.map(({ name, content }) => <div key={name} className={['المشترك', 'حالة التدقيق'].includes(name) ? 'col-span-2' : 'min-w-0'}><dt className="mb-1 text-sm text-gray-500">{name}</dt><dd className="text-base">{content}</dd></div>)}</dl><div className="mt-6 border-t border-gray-100 pt-4">{action}</div></BandRow>
     </>;
 }
 
@@ -93,7 +95,7 @@ export default function AuditTransferSearch({ data, branchName, busy = false, er
         <div className="rounded-card border border-gray-100 bg-surface shadow-card" aria-busy={updating}>
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 px-4 py-4"><h3 className="text-lg font-bold text-gray-900">نتائج البحث <span className="font-display text-gray-500">({results.total})</span></h3><p role="status" aria-live="polite" className="text-sm text-gray-500">{updating ? 'جارٍ تحديث النتائج…' : stale ? 'النتائج المعروضة تخص البحث السابق.' : 'الحوالات السارية في الصناديق المغلقة'}</p></div>
             {!results.data.length ? <div className="flex flex-col items-center gap-3 px-4 py-8 text-center"><Icon name="search" className="h-9 w-9 text-gray-400" /><h4 className="text-lg font-semibold text-gray-900">{attempted ? 'لا توجد حوالة مطابقة للبحث' : 'ابدأ برقم الحركة التي تريد مراجعتها'}</h4><p className="max-w-lg text-base leading-7 text-gray-500">{attempted ? 'تحقق من الرقم والفرع والفترة، أو غيّر حالة التدقيق.' : 'يمكنك أيضًا اختيار حالة التدقيق لعرض الحوالات المسجلة بهذه الحالة.'}</p></div> : <>
-                <div className={`overflow-x-auto ${updating || stale ? 'opacity-60' : ''}`}><table className="data-table w-full md:min-w-[1250px]"><thead className="hidden md:table-header-group"><tr>{['المشترك', 'تاريخ الحركة', 'تاريخ وصول البنك', 'رقم السند', 'الرقم المرجعي', 'مبلغ الدفعة', 'وصل البنك', 'الفرق (شيكل)', 'الصندوق والمحصل', 'حالة التدقيق', 'الإجراء'].map((label) => <th key={label} className="px-4! py-4! text-sm!">{label}</th>)}</tr></thead><tbody>{results.data.map((entry) => <Result key={entry.id} entry={entry} branchName={branchName} disabled={updating || stale} onEdit={onEdit} />)}</tbody></table></div>
+                <div className={`overflow-x-auto ${updating || stale ? 'opacity-60' : ''}`}><ListTable aria-label="نتائج البحث" className="data-table w-full md:min-w-[1250px]"><ListHeader className="hidden md:table-header-group">{COLUMNS.map((label, index) => <ListColumn key={label} id={label} isRowHeader={index === 0} className="px-4! py-4! text-sm!">{label}</ListColumn>)}</ListHeader><ListBody>{results.data.map((entry) => <Result key={entry.id} entry={entry} branchName={branchName} disabled={updating || stale} onEdit={onEdit} />)}</ListBody></ListTable></div>
                 <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-4 py-4"><p className="text-sm text-gray-500">المعروض {results.from}–{results.to} من {results.total} حوالة</p><div className="flex gap-2"><SecondaryKey disabled={updating || stale || !results.prev_page_url} onClick={() => onPage(results.prev_page_url)}>السابق</SecondaryKey><SecondaryKey disabled={updating || stale || !results.next_page_url} onClick={() => onPage(results.next_page_url)}>التالي</SecondaryKey></div></div>
             </>}
         </div>

@@ -9258,7 +9258,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     vertical-align: middle;
 }
 
-.gl-rp-table tbody tr:first-child td {
+.gl-rp-table tbody tr:first-child:not(.is-total) td {
     border-top: 0;
 }
 
@@ -9285,7 +9285,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     background: var(--ma-warn-s);
 }
 
-.gl-rp-table tfoot td {
+.gl-rp-table tr.is-total td {
     border-top: 2px solid var(--ma-line);
     background: var(--ma-tile);
     font-weight: 900;

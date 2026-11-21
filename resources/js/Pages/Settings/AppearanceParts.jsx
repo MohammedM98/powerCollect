@@ -4,7 +4,7 @@ import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
 import { brandPalette, contrastWithWhite, isHex, MIN_CONTRAST } from '@/lib/brandPalette';
 import { useFileUrl } from './useAppearanceFiles';
-import { DangerKey, PrimaryKey, SecondaryKey } from '@/Components/UI';
+import { DangerKey, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 export const LOGOS = [
     { key: 'main', label: 'الشعار الرئيسي', hint: 'يظهر في الشريط والقائمة والفوتر وشاشة الدخول.' },
@@ -171,34 +171,32 @@ export function PresetCard({ id, preset, active, onPick }) {
 export function SampleTable() {
     return (
         <div className="data-table-container" data-excel-source="custom">
-            <table className="data-table">
-                <thead>
-                    <tr>
-                        <th>المشترك</th>
-                        <th>رقم الاشتراك</th>
-                        <th>المنطقة</th>
-                        <th>الرصيد</th>
-                        <th>الحالة</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <ListTable aria-label="معاينة الجدول" className="data-table">
+                <ListHeader>
+                    <ListColumn id="name" isRowHeader>المشترك</ListColumn>
+                    <ListColumn id="number">رقم الاشتراك</ListColumn>
+                    <ListColumn id="area">المنطقة</ListColumn>
+                    <ListColumn id="balance">الرصيد</ListColumn>
+                    <ListColumn id="state">الحالة</ListColumn>
+                </ListHeader>
+                <ListBody>
                     {SAMPLE_ROWS.map(([name, number, area, balance, state], index) => (
-                        <tr key={number} className={index === 1 ? 'bg-brand-50' : undefined}>
-                            <td className="font-semibold">{name}</td>
-                            <td dir="ltr">{number}</td>
-                            <td>{area}</td>
-                            <td dir="ltr">{balance}</td>
-                            <td>
+                        <ListRow key={number} id={number} className={index === 1 ? 'bg-brand-50' : undefined}>
+                            <ListCell className="font-semibold">{name}</ListCell>
+                            <ListCell dir="ltr">{number}</ListCell>
+                            <ListCell>{area}</ListCell>
+                            <ListCell dir="ltr">{balance}</ListCell>
+                            <ListCell>
                                 <span
                                     className={`rounded-full px-3 py-1 text-[13px] font-semibold ${state === 'عليه' ? 'bg-brand-50 text-brand-700' : 'bg-success-50 text-success-700'}`}
                                 >
                                     {state}
                                 </span>
-                            </td>
-                        </tr>
+                            </ListCell>
+                        </ListRow>
                     ))}
-                </tbody>
-            </table>
+                </ListBody>
+            </ListTable>
         </div>
     );
 }

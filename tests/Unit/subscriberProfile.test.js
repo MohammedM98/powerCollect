@@ -17,7 +17,7 @@ before(async () => {
         plugins: [{
             name: 'render-profile-without-browser-portal',
             resolveId(id) {
-                if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/')) || id === '@inertiajs/react') {
+                if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria')) || id === '@inertiajs/react') {
                     return { id: import.meta.resolve(id), external: true };
                 }
                 if (id === '@/Components/Modal') {

@@ -2,7 +2,6 @@ import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import ActionsTh from '@/Components/DataTable/ActionsTh';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
@@ -10,10 +9,8 @@ import AreaChip from '@/Components/DataTable/AreaChip';
 import MeterBoxCell from '@/Components/DataTable/MeterBoxCell';
 import Pagination from '@/Components/DataTable/Pagination';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
-import SortableTh from '@/Components/DataTable/SortableTh';
 import Icon from '@/Components/Icon';
 import { useDataTable } from '@/hooks/useDataTable';
-import { useRowClick } from '@/hooks/useRowClick';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
 import { describeBalance } from '@/lib/accountStatement';
 import { isFarBehind } from '@/lib/balance';
@@ -26,7 +23,7 @@ import StatementModal from '@/Pages/Subscriptions/StatementModal';
 import SplitPaymentModal from './SplitPaymentModal';
 import PageHeader from '@/Components/PageHeader';
 import { needsPermission } from '@/lib/permissions';
-import { StatusPill } from '@/Components/UI';
+import { ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, StatusPill } from '@/Components/UI';
 
 const STATUS_TONES = { active: 'green', suspended: 'amber', disconnected: 'gray' };
 
@@ -57,7 +54,6 @@ export default function Index({
     const { search, setSearch, sort, setPage, setPerPage, filterValues, setFilter, setFilters, clearFilters } = useDataTable('/payments', filters, {}, {
         only: ['subscriptions', 'filters', 'filterOptions', 'pendingCount', 'can', 'paymentMethods', 'canSplitPayments'],
     });
-    const rowClick = useRowClick();
     const statementWindow = useStatementWindow(statement);
     const [paying, setPaying] = useState(null);
     // The split transfer form, open: `{ subscription }` starts it with that subscriber, `{}` empty.
@@ -140,82 +136,73 @@ export default function Index({
             />
 
             <div className="data-table-container">
-                <table className="data-table w-full text-sm text-start">
-                    <thead>
-                        <tr>
-                            <SortableTh column="account_number" label="رقم الاشتراك" sortState={filters} onSort={sort} />
-                            <SortableTh column="display_name" label="اسم الاشتراك" sortState={filters} onSort={sort} />
-                            <th>منطقة 2</th>
-                            <th>الطبلون</th>
-                            <SortableTh column="outstanding_balance" label="الرصيد" sortState={filters} onSort={sort} />
-                            <SortableTh column="status" label="الحالة" sortState={filters} onSort={sort} />
-                            <ActionsTh />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {subscriptions.data.length === 0 ? (
-                            <tr>
-                                <td className="text-gray-500" colSpan={7}>
-                                    لا توجد نتائج مطابقة.
-                                </td>
-                            </tr>
-                        ) : (
-                            subscriptions.data.map((subscription) => {
-                                const described = describeBalance(subscription.balance);
+                <ListTable aria-label="الدفعات" sort={filters} onSort={sort}>
+                    <ListHeader>
+                        <ListColumn id="account_number" sortable>رقم الاشتراك</ListColumn>
+                        <ListColumn id="display_name" sortable isRowHeader>اسم الاشتراك</ListColumn>
+                        <ListColumn id="sub_area">منطقة 2</ListColumn>
+                        <ListColumn id="meter_box">الطبلون</ListColumn>
+                        <ListColumn id="outstanding_balance" sortable>الرصيد</ListColumn>
+                        <ListColumn id="status" sortable>الحالة</ListColumn>
+                        <ListColumn actions />
+                    </ListHeader>
+                    <ListBody empty={<span className="text-gray-500">لا توجد نتائج مطابقة.</span>}>
+                        {subscriptions.data.map((subscription) => {
+                            const described = describeBalance(subscription.balance);
 
-                                return (
-                                    // The row opens the subscriber's statement; «تسجيل دفعة» takes a payment.
-                                    <tr
-                                        key={subscription.id}
-                                        {...rowClick(can?.viewSubscriptions ? () => openStatement(subscription) : null)}
-                                        className={isFarBehind(subscription.balance, subscription.weeklyMinimumPayment) ? 'is-far-behind' : undefined}
-                                    >
-                                        <td className="text-gray-600">
-                                            <span dir="ltr">{subscription.accountNumber}</span>
-                                            {subscription.subscriberNumber && (
-                                                <span className="mt-1 block text-xs text-gray-400">
-                                                    رقم المشترك <bdi dir="ltr">{subscription.subscriberNumber}</bdi>
-                                                </span>
-                                            )}
-                                        </td>
-                                        <td>
-                                            <RowIdentity
-                                                name={subscription.fullName}
-                                                subtitle={subscription.phone}
-                                                subtitleDir="ltr"
-                                                status={STATUS_TONES[subscription.status]}
-                                                onNameClick={can?.viewSubscriptions ? () => openStatement(subscription) : undefined}
-                                                nameTitle="كشف الحساب"
-                                            />
-                                        </td>
-                                        <td>
-                                            <AreaChip id={subscription.subAreaId} name={subscription.subAreaName} />
-                                        </td>
-                                        <td className="text-gray-600">
-                                            <MeterBoxCell name={subscription.meterBoxName} number={subscription.meterBoxNumber} />
-                                        </td>
-                                        <td>
-                                            <span className={`inline-block whitespace-nowrap rounded-[10px] px-3 py-1 font-display text-[14.5px] font-bold ${BALANCE_CHIPS[described.tone]}`}>
-                                                {balanceText(described)}
+                            return (
+                                // The row opens the subscriber's statement; «تسجيل دفعة» takes a payment.
+                                <ListRow
+                                    key={subscription.id}
+                                    id={subscription.id}
+                                    onOpen={can?.viewSubscriptions ? () => openStatement(subscription) : null}
+                                    className={isFarBehind(subscription.balance, subscription.weeklyMinimumPayment) ? 'is-far-behind' : undefined}
+                                >
+                                    <ListCell className="text-gray-600">
+                                        <span dir="ltr">{subscription.accountNumber}</span>
+                                        {subscription.subscriberNumber && (
+                                            <span className="mt-1 block text-xs text-gray-400">
+                                                رقم المشترك <bdi dir="ltr">{subscription.subscriberNumber}</bdi>
                                             </span>
-                                        </td>
-                                        <td>
-                                            <StatusPill tone={STATUS_TONES[subscription.status]} label={subscription.statusLabel} />
-                                        </td>
-                                        <td className="text-end">
-                                            <RowActionsMenu
-                                                onView={() => setPaying(subscription)}
-                                                viewLabel="تسجيل دفعة"
-                                                viewIcon="banknotes"
-                                                menu={can?.viewSubscriptions || canSplitPayments || subscription.canAddCharge || subscription.canAddDiscount || subscription.canAddClearing ? rowMenu(subscription) : null}
-                                            />
-                                        </td>
-                                    </tr>
-                                );
-                            })
-                        )}
-                    </tbody>
-                </table>
+                                        )}
+                                    </ListCell>
+                                    <ListCell>
+                                        <RowIdentity
+                                            name={subscription.fullName}
+                                            subtitle={subscription.phone}
+                                            subtitleDir="ltr"
+                                            status={STATUS_TONES[subscription.status]}
+                                            onNameClick={can?.viewSubscriptions ? () => openStatement(subscription) : undefined}
+                                            nameTitle="كشف الحساب"
+                                        />
+                                    </ListCell>
+                                    <ListCell>
+                                        <AreaChip id={subscription.subAreaId} name={subscription.subAreaName} />
+                                    </ListCell>
+                                    <ListCell className="text-gray-600">
+                                        <MeterBoxCell name={subscription.meterBoxName} number={subscription.meterBoxNumber} />
+                                    </ListCell>
+                                    <ListCell>
+                                        <span className={`inline-block whitespace-nowrap rounded-[10px] px-3 py-1 font-display text-[14.5px] font-bold ${BALANCE_CHIPS[described.tone]}`}>
+                                            {balanceText(described)}
+                                        </span>
+                                    </ListCell>
+                                    <ListCell>
+                                        <StatusPill tone={STATUS_TONES[subscription.status]} label={subscription.statusLabel} />
+                                    </ListCell>
+                                    <ListCell className="text-end">
+                                        <RowActionsMenu
+                                            onView={() => setPaying(subscription)}
+                                            viewLabel="تسجيل دفعة"
+                                            viewIcon="banknotes"
+                                            menu={can?.viewSubscriptions || canSplitPayments || subscription.canAddCharge || subscription.canAddDiscount || subscription.canAddClearing ? rowMenu(subscription) : null}
+                                        />
+                                    </ListCell>
+                                </ListRow>
+                            );
+                        })}
+                    </ListBody>
+                </ListTable>
             </div>
 
             <Pagination meta={subscriptions} onPageChange={setPage} />

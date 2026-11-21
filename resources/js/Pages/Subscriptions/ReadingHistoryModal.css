@@ -118,11 +118,11 @@
 .rh-count { margin-inline-start: auto; font-size: 13px; color: var(--rh-faint); }
 .rh-table-wrap { margin-top: 8px; background: var(--rh-surface); border: 1px solid var(--rh-line2); border-radius: calc(20px * var(--radius-scale, 1)); overflow-x: auto; box-shadow: var(--rh-shadow); }
 .rh-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14.5px; text-align: start; }
-.rh-table th { background: var(--rh-raised); border-bottom: 1px solid var(--rh-line2); padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--rh-muted); white-space: nowrap; text-align: start; }
+.rh-table th, .rh-table .rh-month td { background: var(--rh-raised); border-bottom: 1px solid var(--rh-line2); padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--rh-muted); white-space: nowrap; text-align: start; }
 .rh-table td { border-bottom: 1px solid var(--rh-line2); padding: 8px 16px; white-space: nowrap; vertical-align: middle; }
-.rh-table tbody tr:hover td { background: color-mix(in srgb, var(--rh-brand) 3%, var(--rh-surface)); }
-.rh-table tbody tr:hover td:first-child { box-shadow: inset -3px 0 0 var(--rh-brand); }
-.rh-table .rh-month th { padding: 8px 16px; font-size: 13px; color: var(--rh-faint); font-weight: 400; }
+.rh-table tbody tr:not(.rh-month, .is-total):hover td { background: color-mix(in srgb, var(--rh-brand) 3%, var(--rh-surface)); }
+.rh-table tbody tr:not(.rh-month, .is-total):hover td:first-child { box-shadow: inset -3px 0 0 var(--rh-brand); }
+.rh-table .rh-month td { padding: 8px 16px; font-size: 13px; color: var(--rh-faint); font-weight: 400; }
 .rh-month b { color: var(--rh-ink); font: 700 14px var(--font-body, 'IBM Plex Sans Arabic'), sans-serif; margin-inline-end: 12px; padding-inline-end: 12px; border-inline-end: 1px solid var(--rh-line); }
 .rh-month span { color: var(--rh-ink2); font: 600 13px var(--font-body, 'Zain'), sans-serif; }
 .rh-week b { display: block; font: 600 14px var(--font-body, 'Zain'), sans-serif; text-align: start; }
@@ -156,8 +156,8 @@
 .rh-recorder { font-size: 14px; }
 .rh-recorder small { display: flex; align-items: center; gap: 4px; font: 500 12px var(--font-body, 'Zain'), sans-serif; color: var(--rh-faint); }
 .rh-recorder small svg { width: 13px; height: 13px; }
-.rh-table tfoot td { background: var(--rh-raised); font-weight: 700; border-bottom: 0; border-top: 1.5px solid var(--rh-line); }
-.rh-table tfoot td:first-child { font-size: 13.5px; color: var(--rh-faint); font-weight: 600; }
+.rh-table tr.is-total td { background: var(--rh-raised); font-weight: 700; border-bottom: 0; border-top: 1.5px solid var(--rh-line); }
+.rh-table tr.is-total td:first-child { font-size: 13.5px; color: var(--rh-faint); font-weight: 600; }
 .rh-empty { text-align: center; padding: 32px 16px; color: var(--rh-faint); }
 .rh-empty b { display: block; color: var(--rh-ink); font: 700 18px var(--font-heading, 'El Messiri'), serif; }
 .dark .rh-segments button:hover { color: rgb(var(--brand-tint)); }
@@ -187,7 +187,7 @@
     .rh-chart-heading > span:not(.rh-average) { font-size: 12px; }
     .rh-table thead { display: none; }
     .rh-table, .rh-table tbody, .rh-table tr, .rh-table td { display: block; }
-    .rh-table tbody tr:not(.rh-month) { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; padding: 12px 12px; border-bottom: 1px solid var(--rh-line2); }
+    .rh-table tbody tr:not(.rh-month, .is-total) { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 12px; border-bottom: 1px solid var(--rh-line2); }
     .rh-table td { border: 0; padding: 0; }
     .rh-table .rh-current, .rh-table .rh-discount, .rh-table .rh-price, .rh-table .rh-minimum, .rh-table td.rh-previous { display: none; }
     .rh-table td.rh-recorder { grid-column: 1 / -1; display: block; }
@@ -198,11 +198,10 @@
     .rh-consumption > div { min-width: 0; gap: 8px; }
     .rh-meter { min-width: 15px; }
     .rh-table td.rh-due { grid-column: 2; grid-row: 2; }
-    .rh-table .rh-month th { display: block; white-space: normal; }
-    .rh-table tfoot { display: block; }
-    .rh-table tfoot tr { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 8px 12px; background: var(--rh-raised); }
-    .rh-table tfoot td { border: 0; }
-    .rh-table tfoot .rh-hide-mobile { display: none; }
+    .rh-table .rh-month td { display: block; white-space: normal; }
+    .rh-table tbody tr.is-total { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 8px 12px; background: var(--rh-raised); }
+    .rh-table tr.is-total td { border: 0; }
+    .rh-table tr.is-total .rh-hide-mobile { display: none; }
     .rh-segments { width: 100%; }
     .rh-segments button { flex: 1; padding: 0 4px; font-size: 12.5px; }
     .rh-count { margin: 0; }
@@ -245,14 +244,13 @@
     .rh-table { display: table; table-layout: fixed; }
     .rh-table thead { display: table-header-group; }
     .rh-table tbody { display: table-row-group; }
-    .rh-table tfoot { display: table-row-group; }
-    .rh-table tr, .rh-table tbody tr:not(.rh-month), .rh-table tfoot tr { display: table-row; break-inside: avoid; }
-    .rh-table td, .rh-table .rh-previous, .rh-table .rh-current, .rh-table .rh-price, .rh-table .rh-minimum, .rh-table .rh-discount, .rh-table .rh-recorder, .rh-table td.rh-previous, .rh-table tfoot .rh-hide-mobile { display: table-cell; }
-    .rh-table .rh-month th { display: table-cell; }
+    .rh-table tr, .rh-table tbody tr:not(.rh-month), .rh-table tbody tr.is-total { display: table-row; break-inside: avoid; }
+    .rh-table td, .rh-table .rh-previous, .rh-table .rh-current, .rh-table .rh-price, .rh-table .rh-minimum, .rh-table .rh-discount, .rh-table .rh-recorder, .rh-table td.rh-previous, .rh-table tr.is-total .rh-hide-mobile { display: table-cell; }
+    .rh-table .rh-month td { display: table-cell; }
     .rh-table th, .rh-table td { padding: 7px; font-size: 12px; white-space: normal; overflow-wrap: anywhere; }
     .rh-table thead th:first-child { width: 18%; }
     .rh-table thead th:last-child { width: 20%; }
-    .rh-table tfoot td { border-top: 1.5px solid var(--rh-line); }
+    .rh-table tr.is-total td { border-top: 1.5px solid var(--rh-line); }
     .rh-number, .rh-week b, .rh-consumption b, .rh-due b { font-size: 12px; }
     .rh-consumption > div { min-width: 0; }
     .rh-meter, .rh-delta { display: none; }

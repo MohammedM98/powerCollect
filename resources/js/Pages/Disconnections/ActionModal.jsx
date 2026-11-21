@@ -10,7 +10,7 @@ import { formatMoney, formatDate } from '@/lib/format';
 import { feeError, fillPlaceholders, itemTone, operationId, smsParts, totalFees } from '@/lib/disconnections';
 import HoldToConfirm from './HoldToConfirm';
 import DateInput from '@/Components/DateInput';
-import { CheckBox, DangerKey, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
+import { CheckBox, DangerKey, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
 
 const ACTIONS = {
     reschedule: { title: 'تغيير موعد القطع', icon: 'calendar', tone: 'bg-blue-500/10 text-blue-600', url: 'reschedule' },
@@ -171,35 +171,33 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                     {preview && (
                         <div className="overflow-hidden rounded-control border border-gray-100">
                             <div className="max-h-64 overflow-y-auto">
-                                <table className="w-full text-sm">
-                                    <thead className="sticky top-0 bg-gray-50 text-xs text-gray-500">
-                                        <tr>
-                                            <th className="px-3 py-2 text-start">المشترك</th>
-                                            <th className="px-3 py-2 text-start">الحالة</th>
-                                            {action === 'warn' && <th className="px-3 py-2 text-start">الجوال</th>}
-                                            {action === 'confirm' && <th className="px-3 py-2 text-start">الخدمة</th>}
-                                            <th className="px-3 py-2 text-start">الرصيد</th>
-                                            {action === 'confirm' && <th className="px-3 py-2 text-start">رسوم القطع</th>}
-                                            {action !== 'confirm' && <th className="px-3 py-2 text-start">الموعد</th>}
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-100">
+                                <ListTable aria-label="المشتركون المشمولون بالإجراء" className="w-full text-sm">
+                                    <ListHeader className="sticky top-0 bg-gray-50 text-xs text-gray-500">
+                                        <ListColumn id="name" isRowHeader className="px-3 py-2 text-start">المشترك</ListColumn>
+                                        <ListColumn id="status" className="px-3 py-2 text-start">الحالة</ListColumn>
+                                        {action === 'warn' && <ListColumn id="phone" className="px-3 py-2 text-start">الجوال</ListColumn>}
+                                        {action === 'confirm' && <ListColumn id="service" className="px-3 py-2 text-start">الخدمة</ListColumn>}
+                                        <ListColumn id="balance" className="px-3 py-2 text-start">الرصيد</ListColumn>
+                                        {action === 'confirm' && <ListColumn id="fee" className="px-3 py-2 text-start">رسوم القطع</ListColumn>}
+                                        {action !== 'confirm' && <ListColumn id="scheduled_for" className="px-3 py-2 text-start">الموعد</ListColumn>}
+                                    </ListHeader>
+                                    <ListBody className="divide-y divide-gray-100">
                                         {preview.items.map((item) => {
                                             const why = exclusion(action, item);
 
                                             return (
-                                                <tr key={item.id} className={why ? 'bg-gray-50 text-gray-400' : undefined}>
-                                                    <td className="px-3 py-2">
+                                                <ListRow key={item.id} id={item.id} className={why ? 'bg-gray-50 text-gray-400' : undefined}>
+                                                    <ListCell className="px-3 py-2">
                                                         <b className={why ? 'line-through' : 'text-gray-900'}>{item.name}</b>
                                                         <span dir="ltr" className="block text-end font-display text-xs text-gray-500 rtl:text-start">{item.accountNumber}</span>
                                                         {why && <span className="block text-xs text-amber-700">يُستثنى: {why}</span>}
-                                                    </td>
-                                                    <td className="px-3 py-2"><StatusPill tone={itemTone(item)} label={item.isOverdue ? 'متأخر' : item.statusLabel} /></td>
-                                                    {action === 'warn' && <td className="px-3 py-2 font-display text-xs" dir="ltr">{item.phone ?? '—'}</td>}
-                                                    {action === 'confirm' && <td className="px-3 py-2 text-xs">{item.serviceStatusLabel}</td>}
-                                                    <td className="whitespace-nowrap px-3 py-2"><Balance value={item.balance} /></td>
+                                                    </ListCell>
+                                                    <ListCell className="px-3 py-2"><StatusPill tone={itemTone(item)} label={item.isOverdue ? 'متأخر' : item.statusLabel} /></ListCell>
+                                                    {action === 'warn' && <ListCell className="px-3 py-2 font-display text-xs" dir="ltr">{item.phone ?? '—'}</ListCell>}
+                                                    {action === 'confirm' && <ListCell className="px-3 py-2 text-xs">{item.serviceStatusLabel}</ListCell>}
+                                                    <ListCell className="whitespace-nowrap px-3 py-2"><Balance value={item.balance} /></ListCell>
                                                     {action === 'confirm' && (
-                                                        <td className="whitespace-nowrap px-3 py-2 font-semibold">
+                                                        <ListCell className="whitespace-nowrap px-3 py-2 font-semibold">
                                                             {canChangeFee && !why ? (
                                                                 <span className="flex items-center gap-2">
                                                                     <Input
@@ -216,14 +214,14 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                                                             ) : (
                                                                 <>{formatMoney(fees[item.id] ?? item.fee)} ₪</>
                                                             )}
-                                                        </td>
+                                                        </ListCell>
                                                     )}
-                                                    {action !== 'confirm' && <td className="whitespace-nowrap px-3 py-2 text-xs" dir="ltr">{formatDate(item.scheduledFor)}</td>}
-                                                </tr>
+                                                    {action !== 'confirm' && <ListCell className="whitespace-nowrap px-3 py-2 text-xs" dir="ltr">{formatDate(item.scheduledFor)}</ListCell>}
+                                                </ListRow>
                                             );
                                         })}
-                                    </tbody>
-                                </table>
+                                    </ListBody>
+                                </ListTable>
                             </div>
                         </div>
                     )}

@@ -171,7 +171,7 @@ step('tariffs and a circuit breaker', async () => {
     await addThroughWindow(page, '/tariffs', 'تعرفة جديدة', { 'الفئة': { select: 'تجاري' }, 'سعر الكيلوواط': '0.80' });
     await snap(page, 'tariffs');
     await addThroughWindow(page, '/circuit-breakers', 'قاطع جديد', { 'الأمبير': '10', 'الحد الأدنى للدفع (شيكل)': '10' });
-    await page.getByRole('cell', { name: '10' }).first().waitFor();
+    await page.getByRole('rowheader', { name: '10' }).first().waitFor();
     await snap(page, 'circuit-breakers');
 });
 
@@ -180,7 +180,7 @@ step('the branch and its three tablons', async () => {
     await addThroughWindow(page, '/branches', 'فرع جديد', {
         'الاسم': 'فرع النصيرات', 'الهاتف': '0599000000', 'المحافظة': { select: 'المحافظة الوسطى' }, 'المنطقة': { select: 'مخيم النصيرات' },
     });
-    await page.getByRole('cell', { name: 'فرع النصيرات' }).first().waitFor();
+    await page.getByRole('rowheader', { name: 'فرع النصيرات' }).first().waitFor();
     for (const [name, suffix, number, block] of [['المدارس', '1', 'T-101', 'البلوك أ'], ['المدارس', '2', 'T-102', 'البلوك ب'], ['السوق', '', 'T-103', 'البلوك أ']]) {
         await addThroughWindow(page, '/meter-boxes', 'طبلون جديد', {
             'اسم الطبلون': name, 'لاحقة (اختياري)': suffix, 'رقم الطبلون': number,

@@ -17,7 +17,7 @@ before(async () => {
         plugins: [{
             name: 'use-installed-react',
             resolveId(id) {
-                if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/'))) {
+                if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria'))) {
                     return { id: import.meta.resolve(id), external: true };
                 }
             },

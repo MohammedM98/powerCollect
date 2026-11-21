@@ -4,11 +4,10 @@ import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
-import SortableTh from '@/Components/DataTable/SortableTh';
 import Pagination from '@/Components/DataTable/Pagination';
 import { useDataTable } from '@/hooks/useDataTable';
 import PageHeader from '@/Components/PageHeader';
-import { StatusPill } from '@/Components/UI';
+import { ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, StatusPill } from '@/Components/UI';
 
 const TONES = { accepted: 'green', needs_review: 'amber', rejected: 'red' };
 
@@ -50,61 +49,53 @@ export default function Submissions({ cycle, submissions, canReview, filters, fi
             />
 
             <div className="data-table-container">
-                <table className="data-table w-full text-sm text-start" aria-label="القراءات الميدانية">
-                    <thead>
-                        <tr>
-                            <th>المشترك</th>
-                            <th>الطبلون</th>
-                            <th>القارئ</th>
-                            <th>القراءة</th>
-                            <SortableTh column="captured_at" label="وقت التسجيل" sortState={filters} onSort={sort} />
-                            <SortableTh column="received_at" label="وقت الوصول" sortState={filters} onSort={sort} />
-                            <th>الحالة</th>
-                            {canReview && <th>المراجعة</th>}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {submissions.data.length === 0 ? (
-                            <tr>
-                                <td colSpan={canReview ? 8 : 7} className="text-gray-500">لا توجد قراءات مرفوعة.</td>
-                            </tr>
-                        ) : (
-                            submissions.data.map((submission) => (
-                                <tr key={submission.id}>
-                                    <td data-label="المشترك">
-                                        <b className="text-gray-900">{submission.name}</b>
-                                        <span className="block text-xs text-gray-500" dir="ltr">{submission.accountNumber}</span>
-                                    </td>
-                                    <td data-label="الطبلون" className="text-gray-600">{submission.boxLabel}</td>
-                                    <td data-label="القارئ" className="text-gray-600">{submission.readerName}</td>
-                                    <td data-label="القراءة" className="font-display font-semibold">{submission.currentReading}</td>
-                                    <td data-label="وقت التسجيل" className="whitespace-nowrap text-xs text-gray-600" dir="ltr">{submission.capturedAt}</td>
-                                    <td data-label="وقت الوصول" className="whitespace-nowrap text-xs text-gray-600" dir="ltr">{submission.receivedAt}</td>
-                                    <td data-label="الحالة">
-                                        <StatusPill tone={TONES[submission.status]} label={submission.statusLabel} />
-                                        {submission.issue && <span className="mt-1 block max-w-[16rem] text-xs text-gray-600">{submission.issue}</span>}
-                                        {submission.reviewedBy && <span className="mt-1 block text-xs text-gray-500">راجعها {submission.reviewedBy}{submission.reviewNote ? `: ${submission.reviewNote}` : ''}</span>}
-                                    </td>
-                                    {canReview && (
-                                        <td data-label="المراجعة">
-                                            {submission.status === 'needs_review' ? (
-                                                <div className="flex min-w-56 flex-col gap-2">
-                                                    <Input type="text" placeholder="ملاحظة (اختياري)" value={notes[submission.id] ?? ''} onChange={(event) => setNotes((current) => ({ ...current, [submission.id]: event.target.value }))} className="block w-full text-xs" />
-                                                    <div className="flex gap-2">
-                                                        <Button data-raw="" variant="ghost" onClick={() => review(submission, 'accept')} className="rounded-control bg-emerald-600 px-3 py-2 text-xs font-bold text-white hover:bg-emerald-700">قبول كقراءة الأسبوع</Button>
-                                                        <Button data-raw="" variant="ghost" onClick={() => review(submission, 'reject')} className="rounded-control border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50">رفض</Button>
-                                                    </div>
+                <ListTable aria-label="القراءات الميدانية" sort={filters} onSort={sort}>
+                    <ListHeader>
+                        <ListColumn id="name" isRowHeader>المشترك</ListColumn>
+                        <ListColumn id="box">الطبلون</ListColumn>
+                        <ListColumn id="reader">القارئ</ListColumn>
+                        <ListColumn id="reading">القراءة</ListColumn>
+                        <ListColumn id="captured_at" sortable>وقت التسجيل</ListColumn>
+                        <ListColumn id="received_at" sortable>وقت الوصول</ListColumn>
+                        <ListColumn id="status">الحالة</ListColumn>
+                        {canReview && <ListColumn id="review">المراجعة</ListColumn>}
+                    </ListHeader>
+                    <ListBody empty={<span className="text-gray-500">لا توجد قراءات مرفوعة.</span>}>
+                        {submissions.data.map((submission) => (
+                            <ListRow key={submission.id} id={submission.id}>
+                                <ListCell data-label="المشترك">
+                                    <b className="text-gray-900">{submission.name}</b>
+                                    <span className="block text-xs text-gray-500" dir="ltr">{submission.accountNumber}</span>
+                                </ListCell>
+                                <ListCell data-label="الطبلون" className="text-gray-600">{submission.boxLabel}</ListCell>
+                                <ListCell data-label="القارئ" className="text-gray-600">{submission.readerName}</ListCell>
+                                <ListCell data-label="القراءة" className="font-display font-semibold">{submission.currentReading}</ListCell>
+                                <ListCell data-label="وقت التسجيل" className="whitespace-nowrap text-xs text-gray-600" dir="ltr">{submission.capturedAt}</ListCell>
+                                <ListCell data-label="وقت الوصول" className="whitespace-nowrap text-xs text-gray-600" dir="ltr">{submission.receivedAt}</ListCell>
+                                <ListCell data-label="الحالة">
+                                    <StatusPill tone={TONES[submission.status]} label={submission.statusLabel} />
+                                    {submission.issue && <span className="mt-1 block max-w-[16rem] text-xs text-gray-600">{submission.issue}</span>}
+                                    {submission.reviewedBy && <span className="mt-1 block text-xs text-gray-500">راجعها {submission.reviewedBy}{submission.reviewNote ? `: ${submission.reviewNote}` : ''}</span>}
+                                </ListCell>
+                                {canReview && (
+                                    <ListCell data-label="المراجعة">
+                                        {submission.status === 'needs_review' ? (
+                                            <div className="flex min-w-56 flex-col gap-2">
+                                                <Input type="text" placeholder="ملاحظة (اختياري)" value={notes[submission.id] ?? ''} onChange={(event) => setNotes((current) => ({ ...current, [submission.id]: event.target.value }))} className="block w-full text-xs" />
+                                                <div className="flex gap-2">
+                                                    <Button data-raw="" variant="ghost" onClick={() => review(submission, 'accept')} className="rounded-control bg-emerald-600 px-3 py-2 text-xs font-bold text-white hover:bg-emerald-700">قبول كقراءة الأسبوع</Button>
+                                                    <Button data-raw="" variant="ghost" onClick={() => review(submission, 'reject')} className="rounded-control border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50">رفض</Button>
                                                 </div>
-                                            ) : (
-                                                <span className="text-gray-400">—</span>
-                                            )}
-                                        </td>
-                                    )}
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                                            </div>
+                                        ) : (
+                                            <span className="text-gray-400">—</span>
+                                        )}
+                                    </ListCell>
+                                )}
+                            </ListRow>
+                        ))}
+                    </ListBody>
+                </ListTable>
             </div>
 
             <Pagination meta={submissions} filters={filters} baseUrl={`/reading-cycles/${cycle.id}/submissions`} />

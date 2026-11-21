@@ -4,11 +4,9 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
-import SortableTh from '@/Components/DataTable/SortableTh';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import Pagination from '@/Components/DataTable/Pagination';
-import ActionsTh from '@/Components/DataTable/ActionsTh';
 import Icon from '@/Components/Icon';
 import Balance from '@/Components/Balance';
 import { useDataTable } from '@/hooks/useDataTable';
@@ -20,7 +18,7 @@ import HistoryModal from './HistoryModal';
 import ResultReport from './ResultReport';
 import PageHeader from '@/Components/PageHeader';
 import { urlWithout } from '@/lib/pageUrl';
-import { AddKey, CheckBox, StatusPill, secondaryButtonClass } from '@/Components/UI';
+import { AddKey, CheckBox, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, StatusPill, secondaryButtonClass } from '@/Components/UI';
 
 const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white';
 
@@ -226,79 +224,71 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
             )}
 
             <div className="data-table-container">
-                <table className="data-table w-full text-sm text-start" aria-label="مشتركو القائمة" {...printFieldsProps(PRINT_FIELDS)}>
-                    <thead>
-                        <tr>
-                            {canSelect && (
-                                <th data-actions="" className="w-10">
-                                    <CheckBox checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)} indeterminate={!allMatching && pageSelectedCount > 0 && pageSelectedCount < pageIds.length} onChange={togglePage} aria-label="تحديد كل مشتركي هذه الصفحة" />
-                                </th>
-                            )}
-                            <th>المشترك</th>
-                            <th>السبب</th>
-                            <SortableTh column="scheduled_for" label="موعد القطع" sortState={filters} onSort={sort} />
-                            <SortableTh column="balance" label="الرصيد" sortState={filters} onSort={sort} />
-                            <SortableTh column="warnings_count" label="الإنذارات" sortState={filters} onSort={sort} />
-                            <SortableTh column="status" label="الحالة" sortState={filters} onSort={sort} />
-                            <ActionsTh />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {items.data.length === 0 ? (
-                            <tr>
-                                <td colSpan={canSelect ? 8 : 7} className="text-gray-500">لا يوجد مشتركون مطابقون في هذه القائمة.</td>
-                            </tr>
-                        ) : (
-                            items.data.map((item) => (
-                                <tr key={item.id} className={allMatching || selectedIds.has(item.id) ? 'bg-brand-50' : undefined} {...printRowProps(Object.fromEntries(PRINT_FIELDS.map((field) => [field.key, item[field.key]])))}>
-                                    {canSelect && (
-                                        <td>
-                                            <CheckBox checked={allMatching || selectedIds.has(item.id)} onChange={() => toggle(item.id)} aria-label={`تحديد ${item.name}`} />
-                                        </td>
-                                    )}
-                                    <td data-label="المشترك">
-                                        <RowIdentity name={item.name} subtitle={[item.accountNumber, item.meterBoxNumber && `طبلون ${item.meterBoxNumber}`].filter(Boolean).join('، ')} />
-                                    </td>
-                                    <td data-label="السبب" className="text-gray-700">
-                                        {item.reasonLabel}
-                                        {item.note && <span className="block max-w-[16rem] truncate text-xs text-gray-500" title={item.note}>{item.note}</span>}
-                                    </td>
-                                    <td data-label="موعد القطع" className="whitespace-nowrap">
-                                        <span dir="ltr" className={item.isOverdue ? 'font-semibold text-red-700 dark:text-red-400' : 'text-gray-700'}>{formatDate(item.scheduledFor)}</span>
-                                        {item.extensionsCount > 0 && <span className="block text-xs text-gray-500">مُدّد {formatNumber(item.extensionsCount)} مرة</span>}
-                                    </td>
-                                    <td data-label="الرصيد" className="whitespace-nowrap">
-                                        <Balance value={item.balance} className="font-bold" />
-                                        {item.isPaid && item.status === 'scheduled' ? (
-                                            <span className="block"><StatusPill tone="green" label="سدّد — تحديث الرصيد" /></span>
-                                        ) : item.balanceReduced ? (
-                                            <span className="block text-xs text-gray-500">كان <Balance value={item.balanceWhenAdded} colored={false} /></span>
-                                        ) : null}
-                                    </td>
-                                    <td data-label="الإنذارات" className="text-gray-700">
-                                        {item.warningsCount > 0 ? (
-                                            <>
-                                                <b className="font-display">{formatNumber(item.warningsCount)}</b>
-                                                <span className="block text-xs text-gray-500" dir="ltr">{item.lastWarnedAt}</span>
-                                            </>
-                                        ) : (
-                                            <span className="text-gray-400">—</span>
-                                        )}
-                                    </td>
-                                    <td data-label="الحالة">
-                                        <StatusPill tone={itemTone(item)} label={item.isOverdue ? 'متأخر — بانتظار إجراء' : item.statusLabel} />
-                                        {item.status === 'disconnected' && <span className="block text-xs text-gray-500">{item.disconnectedBy}، {formatMoney(item.fee)} ₪</span>}
-                                        {item.status === 'removed' && item.removalReason && <span className="block text-xs text-gray-500">{item.removalReason}</span>}
-                                        {item.status === 'scheduled' && !item.serviceIsActive && <span className="block text-xs text-amber-700">الخدمة: {item.serviceStatusLabel}</span>}
-                                    </td>
-                                    <td data-actions="" className="text-end">
-                                        <RowActionsMenu onView={() => openHistory(item)} menu={rowMenu(item)} />
-                                    </td>
-                                </tr>
-                            ))
+                <ListTable aria-label="مشتركو القائمة" sort={filters} onSort={sort} {...printFieldsProps(PRINT_FIELDS)}>
+                    <ListHeader>
+                        {canSelect && (
+                            <ListColumn id="select" data-actions="" className="w-10">
+                                <CheckBox slot={null} checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)} indeterminate={!allMatching && pageSelectedCount > 0 && pageSelectedCount < pageIds.length} onChange={togglePage} aria-label="تحديد كل مشتركي هذه الصفحة" />
+                            </ListColumn>
                         )}
-                    </tbody>
-                </table>
+                        <ListColumn id="name" isRowHeader>المشترك</ListColumn>
+                        <ListColumn id="reason">السبب</ListColumn>
+                        <ListColumn id="scheduled_for" sortable>موعد القطع</ListColumn>
+                        <ListColumn id="balance" sortable>الرصيد</ListColumn>
+                        <ListColumn id="warnings_count" sortable>الإنذارات</ListColumn>
+                        <ListColumn id="status" sortable>الحالة</ListColumn>
+                        <ListColumn actions />
+                    </ListHeader>
+                    <ListBody empty={<span className="text-gray-500">لا يوجد مشتركون مطابقون في هذه القائمة.</span>}>
+                        {items.data.map((item) => (
+                            <ListRow key={item.id} id={item.id} className={allMatching || selectedIds.has(item.id) ? 'bg-brand-50' : undefined} {...printRowProps(Object.fromEntries(PRINT_FIELDS.map((field) => [field.key, item[field.key]])))}>
+                                {canSelect && (
+                                    <ListCell>
+                                        <CheckBox checked={allMatching || selectedIds.has(item.id)} onChange={() => toggle(item.id)} aria-label={`تحديد ${item.name}`} />
+                                    </ListCell>
+                                )}
+                                <ListCell data-label="المشترك">
+                                    <RowIdentity name={item.name} subtitle={[item.accountNumber, item.meterBoxNumber && `طبلون ${item.meterBoxNumber}`].filter(Boolean).join('، ')} />
+                                </ListCell>
+                                <ListCell data-label="السبب" className="text-gray-700">
+                                    {item.reasonLabel}
+                                    {item.note && <span className="block max-w-[16rem] truncate text-xs text-gray-500" title={item.note}>{item.note}</span>}
+                                </ListCell>
+                                <ListCell data-label="موعد القطع" className="whitespace-nowrap">
+                                    <span dir="ltr" className={item.isOverdue ? 'font-semibold text-red-700 dark:text-red-400' : 'text-gray-700'}>{formatDate(item.scheduledFor)}</span>
+                                    {item.extensionsCount > 0 && <span className="block text-xs text-gray-500">مُدّد {formatNumber(item.extensionsCount)} مرة</span>}
+                                </ListCell>
+                                <ListCell data-label="الرصيد" className="whitespace-nowrap">
+                                    <Balance value={item.balance} className="font-bold" />
+                                    {item.isPaid && item.status === 'scheduled' ? (
+                                        <span className="block"><StatusPill tone="green" label="سدّد — تحديث الرصيد" /></span>
+                                    ) : item.balanceReduced ? (
+                                        <span className="block text-xs text-gray-500">كان <Balance value={item.balanceWhenAdded} colored={false} /></span>
+                                    ) : null}
+                                </ListCell>
+                                <ListCell data-label="الإنذارات" className="text-gray-700">
+                                    {item.warningsCount > 0 ? (
+                                        <>
+                                            <b className="font-display">{formatNumber(item.warningsCount)}</b>
+                                            <span className="block text-xs text-gray-500" dir="ltr">{item.lastWarnedAt}</span>
+                                        </>
+                                    ) : (
+                                        <span className="text-gray-400">—</span>
+                                    )}
+                                </ListCell>
+                                <ListCell data-label="الحالة">
+                                    <StatusPill tone={itemTone(item)} label={item.isOverdue ? 'متأخر — بانتظار إجراء' : item.statusLabel} />
+                                    {item.status === 'disconnected' && <span className="block text-xs text-gray-500">{item.disconnectedBy}، {formatMoney(item.fee)} ₪</span>}
+                                    {item.status === 'removed' && item.removalReason && <span className="block text-xs text-gray-500">{item.removalReason}</span>}
+                                    {item.status === 'scheduled' && !item.serviceIsActive && <span className="block text-xs text-amber-700">الخدمة: {item.serviceStatusLabel}</span>}
+                                </ListCell>
+                                <ListCell data-actions="" className="text-end">
+                                    <RowActionsMenu onView={() => openHistory(item)} menu={rowMenu(item)} />
+                                </ListCell>
+                            </ListRow>
+                        ))}
+                    </ListBody>
+                </ListTable>
             </div>
 
             <Pagination meta={items} filters={filters} baseUrl={`/disconnection-lists/${list.id}`} />
