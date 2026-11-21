@@ -68,19 +68,19 @@ class MeterReadingApprovalTest extends TestCase
         $approved = MeterReading::factory()->for($pending->subscription)->create(['week_start' => '2026-09-11', 'status' => MeterReadingStatus::Approved]);
         $reentry = MeterReading::factory()->for($pending->subscription)->create(['week_start' => '2026-09-04', 'requires_reentry' => true]);
 
-        $this->actingAs($this->accountant)->get(route('subscriptions.index', ['search' => 'History Subscriber']))
+        $this->actingAs($this->accountant)->get(route('subscriptions.index', ['search' => 'History Subscriber', 'readings' => $pending->subscription_id]))
             ->assertInertia(fn ($page) => $page
-                ->where('subscriptions.data.0.meterReadings.0.id', $pending->id)
-                ->where('subscriptions.data.0.meterReadings.0.canApprove', true)
-                ->where('subscriptions.data.0.meterReadings.0.unusual.usual', 2)
-                ->where('subscriptions.data.0.meterReadings.1.id', $approved->id)
-                ->where('subscriptions.data.0.meterReadings.1.canApprove', false)
-                ->where('subscriptions.data.0.meterReadings.2.id', $reentry->id)
-                ->where('subscriptions.data.0.meterReadings.2.canApprove', false));
+                ->where('readingHistory.meterReadings.0.id', $pending->id)
+                ->where('readingHistory.meterReadings.0.canApprove', true)
+                ->where('readingHistory.meterReadings.0.unusual.usual', 2)
+                ->where('readingHistory.meterReadings.1.id', $approved->id)
+                ->where('readingHistory.meterReadings.1.canApprove', false)
+                ->where('readingHistory.meterReadings.2.id', $reentry->id)
+                ->where('readingHistory.meterReadings.2.canApprove', false));
 
         $dataEntry = User::factory()->dataEntry()->create(['branch_id' => $this->branch->id]);
-        $this->actingAs($dataEntry)->get(route('subscriptions.index', ['search' => 'History Subscriber']))
-            ->assertInertia(fn ($page) => $page->where('subscriptions.data.0.meterReadings.0.canApprove', false));
+        $this->actingAs($dataEntry)->get(route('subscriptions.index', ['search' => 'History Subscriber', 'readings' => $pending->subscription_id]))
+            ->assertInertia(fn ($page) => $page->where('readingHistory.meterReadings.0.canApprove', false));
     }
 
     public function test_approve_all_takes_the_weeks_pending_readings_matching_the_sheets_search_in_the_accountants_branch(): void

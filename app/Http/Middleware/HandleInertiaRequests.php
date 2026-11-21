@@ -85,7 +85,7 @@ class HandleInertiaRequests extends Middleware
             'paymentOptions' => fn () => $user ? [
                 'today' => now(config('app.business_timezone'))->toDateString(),
                 'currencies' => CurrencyRate::options(),
-                'banks' => Bank::query()->get()->map(fn (Bank $bank): array => ['name' => $bank->name, 'logo' => $bank->logoUrl()])->all(),
+                'banks' => Bank::query()->get(['name', 'logo_path'])->map(fn (Bank $bank): array => ['name' => $bank->name, 'logo' => $bank->logoUrl()])->all(),
             ] : null,
             'auth' => fn () => $user ? [
                 'user' => [

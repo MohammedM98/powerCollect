@@ -253,7 +253,7 @@ export function BoxEntriesTable({ boxNumber, entries, pagination }) {
                                     <LedgerLeadCells ledger={ledger} />
                                     <td title={entry.subscriber} className="whitespace-normal!">
                                         {entry.statementUrl ? (
-                                            <Link href={entry.statementUrl} prefetch title="فتح كشف الحساب عند هذه الحركة" className="block font-semibold text-gray-900 hover:text-brand-600 hover:underline">{entry.subscriber}</Link>
+                                            <Link href={entry.statementUrl} title="فتح كشف الحساب عند هذه الحركة" className="block font-semibold text-gray-900 hover:text-brand-600 hover:underline">{entry.subscriber}</Link>
                                         ) : (
                                             <span className="block font-semibold text-gray-900">{entry.subscriber}</span>
                                         )}
@@ -292,7 +292,7 @@ export function CollectorDebts({ debts }) {
                 {debts.map((debt) => (
                     <li key={debt.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
                         <div className="space-y-1">
-                            {debt.box ? <Link href={debt.box.url} prefetch dir="ltr" className="font-display text-xs text-brand-600">{debt.box.number}</Link> : <span className="text-gray-500">—</span>}
+                            {debt.box ? <Link href={debt.box.url} dir="ltr" className="font-display text-xs text-brand-600">{debt.box.number}</Link> : <span className="text-gray-500">—</span>}
                             <p className="text-xs text-gray-500">سُجّل {dateTime(debt.createdAt)}، أصل الدين <bdi dir="ltr" className="font-display">{formatMoney(debt.amount)}</bdi> {currencies[debt.currency]}</p>
                         </div>
                         <p className="text-gray-600">المتبقي <b dir="ltr" className="font-display text-base text-red-600">{formatMoney(debt.remaining)}</b> {currencies[debt.currency]}</p>
@@ -342,7 +342,7 @@ export function CollectorAuditNotes({ notes, onSaved }) {
             {notes.map((note) => (
                 <article key={note.id} className="space-y-3 border-t border-amber-500/15 pt-3">
                     <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                        {note.box && <Link href={note.box.url} prefetch dir="ltr" className="font-display text-brand-600">{note.box.number}</Link>}
+                        {note.box && <Link href={note.box.url} dir="ltr" className="font-display text-brand-600">{note.box.number}</Link>}
                         {note.closing?.coverage_from && <span><b className="font-semibold text-gray-700">{periodLabel(note.closing)}</b>، {periodRange(note.closing)}</span>}
                     </div>
                     {note.entry && <p className="text-xs text-gray-600"><b className="text-gray-900">{note.entry.subscriber}</b>، {note.entry.typeLabel}{note.entry.voucherNumber && <>، سند <bdi dir="ltr" className="font-display">{note.entry.voucherNumber}</bdi></>}، <bdi dir="ltr" className="font-display">{formatMoney(note.entry.amount)}</bdi> {currencies[note.entry.currency]}</p>}

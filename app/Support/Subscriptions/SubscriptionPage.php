@@ -31,6 +31,42 @@ use Illuminate\Support\Facades\DB;
 class SubscriptionPage
 {
     /**
+     * How many of its latest weekly readings a row of the subscriptions list
+     * is built from: enough to find this week's reading, the one before it
+     * and any later one, without loading years of history for every row.
+     */
+    public const ROW_READINGS = 3;
+
+    /**
+     * The whole reading history of the subscription named by ?readings=…,
+     * for its reading window on the subscriptions list, or null when none is
+     * asked for or the actor may not see it.
+     *
+     * @return array{subscriptionId: int, meterReadings: array<int, array<string, mixed>>}|null
+     */
+    public static function requestedReadingHistory(Request $request, User $actor): ?array
+    {
+        $subscriptionId = $request->query('readings');
+
+        if (! is_string($subscriptionId) || ! ctype_digit($subscriptionId)) {
+            return null;
+        }
+
+        $subscription = Subscription::query()->readableTo($actor)
+            ->with(['meterReadings' => fn ($readings) => $readings->chaperone()->withLaterReadingsCount()->with(['recordedBy', 'adjustments'])->orderByDesc('week_start')])
+            ->find($subscriptionId);
+
+        if ($subscription === null || ! $actor->can('view', $subscription)) {
+            return null;
+        }
+
+        return [
+            'subscriptionId' => $subscription->id,
+            'meterReadings' => $subscription->meterReadings->map(fn (MeterReading $reading) => self::statementReading($reading, $actor))->all(),
+        ];
+    }
+
+    /**
      * Charge the subscription's subscription fee to their account, as a
      * subscription-fee line, if it has an amount.
      */
@@ -97,11 +133,13 @@ class SubscriptionPage
      */
     public static function indexRow(Subscription $subscription, User $actor, bool $canRecordReadings): array
     {
+        // The latest ROW_READINGS weeks, as SubscriptionController loads them.
         $readings = $subscription->loadMissing('meterReadings.adjustments')->meterReadings->sortByDesc('week_start')->values();
         $latestReading = $readings->first();
         $entryWeek = ReadingWeeks::latestEndedWeekStart($subscription->branch_id);
         $entryReading = $readings->first(fn (MeterReading $reading): bool => $reading->week_start->equalTo($entryWeek));
-        $hasPreviousReading = $readings->contains(fn (MeterReading $reading): bool => $reading->week_start->lessThan($entryWeek));
+        $hasPreviousReading = $readings->contains(fn (MeterReading $reading): bool => $reading->week_start->lessThan($entryWeek))
+            || ($readings->count() >= self::ROW_READINGS && $subscription->meterReadings()->whereWeek('<', $entryWeek)->exists());
         $hasLaterReading = $readings->contains(fn (MeterReading $reading): bool => $reading->week_start->greaterThan($entryWeek));
 
         return [
@@ -134,7 +172,8 @@ class SubscriptionPage
             'outstandingBalance' => $subscription->outstanding_balance ?? '0.00',
             'weeklyMinimumPayment' => $subscription->weeklyMinimumPayment(),
             'subscriptionCount' => $subscription->profile?->subscriptions_count ?? 1,
-            'meterReadings' => $readings->map(fn (MeterReading $reading) => self::statementReading($reading, $actor)),
+            'latestMeterReading' => $latestReading ? self::statementReading($latestReading, $actor) : null,
+            'meterReadingsCount' => $subscription->meter_readings_count ?? $subscription->meterReadings()->count(),
             'lastReading' => $latestReading?->requires_reentry ? $latestReading->previous_reading : ($latestReading?->nextPreviousReading() ?? (float) ($subscription->initial_reading ?? 0)),
             'lastReadingWeekStart' => $latestReading?->week_start->format('Y-m-d'),
             'editableLastReadingId' => self::editableLastReadingId($subscription, $readings, $actor),

@@ -19,7 +19,7 @@ import ChargeModal from '@/Pages/Subscriptions/ChargeModal';
 import ClearingModal from '@/Pages/Subscriptions/ClearingModal';
 import DiscountModal from '@/Pages/Subscriptions/DiscountModal';
 import PaymentModal from '@/Pages/Subscriptions/PaymentModal';
-import StatementModal from '@/Pages/Subscriptions/StatementModal';
+import StatementModal from '@/Pages/Subscriptions/LazyStatementModal';
 import SplitPaymentModal from './SplitPaymentModal';
 import PageHeader from '@/Components/PageHeader';
 import { needsPermission } from '@/lib/permissions';

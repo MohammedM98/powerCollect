@@ -299,6 +299,8 @@ export default function ReadingHistoryModal({ subscription, onClose, readingWeek
     const brand = useBrand();
     const [period, setPeriod] = useState('12');
     const [status, setStatus] = useState('all');
+    // The history loads after the window opens (useReadingHistoryWindow); until then it shows its skeleton.
+    const loaded = Array.isArray(subscription?.meterReadings);
     const allReadings = readingsInPeriod(subscription?.meterReadings ?? [], 'all');
     const periodReadings = readingsInPeriod(allReadings, period);
     const visibleReadings = periodReadings.filter((reading) => status === 'all' || reading.status === status);
@@ -342,11 +344,11 @@ export default function ReadingHistoryModal({ subscription, onClose, readingWeek
                         </div>
                     </div>
                     <div className="rh-actions">
-                        <TableExportActions title={`سجل قراءات ${subscription.display_name}`} onDark disabled={!visibleReadings.length} onPrint={() => window.print()} excelProps={{ storageKey: 'reading-history', templateKind: 'reading-history', loadParts: async () => readingHistoryExcelParts(visibleReadings), meta: { lines: [`رقم الحساب: ${subscription.account_number}`, subscription.branchName].filter(Boolean), criteria: [['الفترة', PERIODS.find(([value]) => value === period)[1]], ['الحالة', STATUSES.find(([value]) => value === status)[1]]] } }} />
+                        <TableExportActions title={`سجل قراءات ${subscription.display_name}`} onDark disabled={!loaded || !visibleReadings.length} onPrint={() => window.print()} excelProps={{ storageKey: 'reading-history', templateKind: 'reading-history', loadParts: async () => readingHistoryExcelParts(visibleReadings), meta: { lines: [`رقم الحساب: ${subscription.account_number}`, subscription.branchName].filter(Boolean), criteria: [['الفترة', PERIODS.find(([value]) => value === period)[1]], ['الحالة', STATUSES.find(([value]) => value === status)[1]]] } }} />
                         <Button data-raw="" variant="ghost" className="rh-close" onClick={onClose} aria-label="إغلاق"><Icon name="close" /></Button>
                     </div>
                 </header>
-                <div className="rh-body">
+                {!loaded ? <div className="rh-body rh-loading" role="status" aria-label="جارٍ تحميل سجل القراءات"><div className="rh-figures">{[1, 2, 3, 4].map((tile) => <div key={tile} />)}</div><div className="rh-loading-chart" /><div className="rh-loading-table" /></div> : <div className="rh-body">
                     <div className="rh-figures">
                         <Figure label="عدد القراءات" value={formatNumber(periodReadings.length)}>{periodReadings.length ? `من أسبوع ${shortDate(periodReadings.at(-1).weekStart)}` : 'لا توجد قراءات بعد'}</Figure>
                         <Figure label="متوسط الاستهلاك الأسبوعي" value={formatMoney(average)} unit="كيلو">{periodReadings.length ? `≈ ${money(average * Number(subscription.kilowattPrice))} ₪ في الأسبوع` : '—'}</Figure>
@@ -406,7 +408,7 @@ export default function ReadingHistoryModal({ subscription, onClose, readingWeek
                         </ListTable>
                         {!visibleReadings.length && !newLine && <div className="rh-empty"><b>لا توجد قراءات</b>{allReadings.length ? 'لا توجد قراءات بهذه الحالة في الفترة المختارة.' : 'لا توجد قراءات لهذا المشترك بعد.'}</div>}
                     </div>
-                </div>
+                </div>}
             </div>}
         </Modal>
     );

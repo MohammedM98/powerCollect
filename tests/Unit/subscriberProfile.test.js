@@ -53,7 +53,7 @@ function renderProfile(subscription = {}, options = {}) {
         subscription: {
             id: 1, display_name: 'اشتراك المتجر', full_name: 'صاحب المتجر', subscriber_number: '000041',
             account_number: '202600041', status: 'active', statusLabel: 'نشط', outstandingBalance: '0.00',
-            initial_reading: 0, lastReading: 0, meterReadings: [], ...subscription,
+            initial_reading: 0, lastReading: 0, latestMeterReading: null, ...subscription,
         },
         onClose() {}, onEdit() {}, onEditPersonal() {}, onOpenStatement() {}, onLoadStatement() {}, onOpenReadings() {},
         ...options,
@@ -88,7 +88,7 @@ test('profile hides unavailable actions and disables navigation at list boundari
 test('profile offers permitted actions but disables a reading already recorded this week', () => {
     const html = renderProfile({
         canRecordPayment: true, canRecordReading: true,
-        meterReadings: [{ weekStart: '2026-09-25', weekEnd: '2026-10-01', consumption: 0, discountAmount: 0, amountDue: 0 }],
+        latestMeterReading: { weekStart: '2026-09-25', weekEnd: '2026-10-01', consumption: 0, discountAmount: 0, amountDue: 0 },
     }, {
         canUpdate: true, onSendMessage() {}, onMessageHistory() {}, onNext() {}, readingWeekOptions: [{ value: '2026-09-25' }],
     });

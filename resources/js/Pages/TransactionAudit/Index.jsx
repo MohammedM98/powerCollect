@@ -11,7 +11,7 @@ import PeriodTabs, { periodCaption } from '@/Components/PeriodTabs';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
 import { formatClock, formatDayLabel, formatMoney, formatNumber } from '@/lib/format';
-import StatementModal from '@/Pages/Subscriptions/StatementModal';
+import StatementModal from '@/Pages/Subscriptions/LazyStatementModal';
 import PageHeader from '@/Components/PageHeader';
 
 const STATUS_DOTS = { active: 'green', suspended: 'amber', disconnected: 'gray' };

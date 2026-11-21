@@ -8,6 +8,7 @@ import Pagination from '@/Components/DataTable/Pagination';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useDeleteRecord } from '@/hooks/useDeleteRecord';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
+import { useReadingHistoryWindow } from '@/hooks/useReadingHistoryWindow';
 import { hasLatestWeekReading, weekOptionsFor } from '@/lib/readings';
 import { openQuickMessage } from '@/lib/quickMessage';
 import BulkActionBar from './BulkActionBar';
@@ -50,6 +51,7 @@ export default function Index({
     branchScope,
     readingWeekOptions,
     statement,
+    readingHistory,
     bulkActions,
     statusOptions,
     listSummary,
@@ -65,10 +67,12 @@ export default function Index({
     const [subscriptionSource, setSubscriptionSource] = useState(null);
     const [personalDetailsSubscription, setPersonalDetailsSubscription] = useState(null);
     const [readingSubscription, setReadingSubscription] = useState(null);
-    const [historySubscriptionId, setHistorySubscriptionId] = useState(null);
     const [messageSubscription, setMessageSubscription] = useState(null);
     const [archiveSubscription, setArchiveSubscription] = useState(null);
-    const historySubscription = subscriptions.data.find((subscription) => subscription.id === historySubscriptionId) ?? null;
+    const historyWindow = useReadingHistoryWindow(readingHistory);
+    const historyRow = subscriptions.data.find((subscription) => subscription.id === historyWindow.windowId) ?? null;
+    // The row, with its whole history once it has loaded (null while it loads: the window shows its skeleton).
+    const historySubscription = historyRow && { ...historyRow, meterReadings: historyRow.latestMeterReading ? historyWindow.readingsFor(historyRow.id) : [] };
     const { search, setSearch, sort, setPage, setPerPage, filterValues, setFilter, setFilters, clearFilters } = useDataTable('/subscriptions', filters, {}, {
         only: ['subscriptions', 'listSummary', 'filters', 'filterOptions', 'branchScope', 'can', 'canCreate', 'canViewArchived', 'showArchived', 'archiveToday', 'canRecordReadings', 'bulkActions', 'canEditMinimumCharge', 'canEditKilowattPrice', 'readingWeekOptions'],
     });
@@ -111,12 +115,14 @@ export default function Index({
         if (statementWindow.subscription) {
             statementWindow.close();
         }
+        historyWindow.release();
     }
 
     function switchProfile(offset) {
         if (statementWindow.subscription) {
             statementWindow.close();
         }
+        historyWindow.release();
         setViewingSubscriptionId(subscriptions.data[viewingIndex + offset].id);
     }
 
@@ -221,8 +227,8 @@ export default function Index({
                             icon: 'chart',
                             tone: 'graphite',
                             shortcut: 'H',
-                            hint: subscription.meterReadings.length ? `${subscription.meterReadings.length} قراءة` : 'لا توجد بعد',
-                            onSelect: () => setHistorySubscriptionId(subscription.id),
+                            hint: subscription.meterReadingsCount ? `${subscription.meterReadingsCount} قراءة` : 'لا توجد بعد',
+                            onSelect: () => historyWindow.open(subscription.id),
                         },
                     ],
                 },
@@ -378,7 +384,7 @@ export default function Index({
                 setArchiveSubscription={setArchiveSubscription}
                 setBulkField={setBulkField}
                 setCreating={setCreating}
-                setHistorySubscriptionId={setHistorySubscriptionId}
+                historyWindow={historyWindow}
                 setMessageSubscription={setMessageSubscription}
                 setModalSubscription={setModalSubscription}
                 setPersonalDetailsSubscription={setPersonalDetailsSubscription}

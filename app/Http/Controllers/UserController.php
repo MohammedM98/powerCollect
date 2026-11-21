@@ -36,7 +36,8 @@ class UserController extends Controller
 
         $actor = auth()->user();
 
-        $query = User::query()->visibleTo($actor)->with(['branch', 'userType']);
+        // Each row's permissions decide whether a branch manager may change it (isProtectedFromBranchManagement).
+        $query = User::query()->visibleTo($actor)->with(['branch', 'userType', 'permissions']);
         DataTableFilters::applyDataTableFilters($query, $request, ['name', 'username'], self::SORTABLE, 'name');
         DataTableFilters::applyDataTableFilterSelects($query, $request, ['user_type_id', 'is_active', 'branch_id']);
 

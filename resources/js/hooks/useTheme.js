@@ -2,18 +2,23 @@ import { useEffect, useState } from 'react';
 
 const preferences = ['light', 'dark', 'auto'];
 
+/** Whether the page is in the dark theme now (false where there is no page, as when rendered outside a browser). */
+function isDarkNow() {
+    return typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+}
+
 function readPreference() {
     try {
         const saved = localStorage.getItem('theme');
         return preferences.includes(saved) ? saved : 'light';
     } catch {
-        return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        return isDarkNow() ? 'dark' : 'light';
     }
 }
 
 export function useTheme() {
     const [preference, setPreference] = useState(readPreference);
-    const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
+    const [dark, setDark] = useState(isDarkNow);
 
     useEffect(() => {
         const media = window.matchMedia('(prefers-color-scheme: dark)');

@@ -114,10 +114,10 @@ class ReadingPricingTest extends TestCase
     public function test_price_controls_are_exposed_separately_and_auditors_cannot_write(): void
     {
         [$actor, $subscription, $reading] = $this->context(PermissionKey::UpdateSubscriptionKilowattPrice);
-        $this->actingAs($actor)->get(route('subscriptions.index'))->assertInertia(fn ($page) => $page
-            ->where('subscriptions.data.0.meterReadings.0.canUpdateUnitPrice', true)
-            ->where('subscriptions.data.0.meterReadings.0.canUpdateMinimumPayment', false)
-            ->where('subscriptions.data.0.meterReadings.0.canUpdate', false));
+        $this->actingAs($actor)->get(route('subscriptions.index', ['readings' => $subscription->id]))->assertInertia(fn ($page) => $page
+            ->where('readingHistory.meterReadings.0.canUpdateUnitPrice', true)
+            ->where('readingHistory.meterReadings.0.canUpdateMinimumPayment', false)
+            ->where('readingHistory.meterReadings.0.canUpdate', false));
 
         $this->actingAs(User::factory()->financialAuditor()->create())->put(route('meter-readings.pricing', $reading), ['unit_price' => 3])->assertForbidden();
         $actor->permissions()->sync([]);

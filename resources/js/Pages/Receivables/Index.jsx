@@ -12,7 +12,7 @@ import RowIdentity from '@/Components/DataTable/RowIdentity';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
 import { formatMoney, formatNumber, formatShortDay } from '@/lib/format';
-import StatementModal from '@/Pages/Subscriptions/StatementModal';
+import StatementModal from '@/Pages/Subscriptions/LazyStatementModal';
 import PageHeader from '@/Components/PageHeader';
 import MoneyFlow from '@/Components/Finance/MoneyFlow';
 import { BandRow, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable } from '@/Components/UI';

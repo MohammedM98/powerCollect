@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 #[Fillable([
     'subscription_id', 'branch_id', 'week_start', 'week_end', 'previous_reading', 'current_reading',
@@ -79,6 +80,30 @@ class MeterReading extends Model
                     ->where('branch_id', $this->branch_id)
                     ->whereHas('permissions', fn (Builder $permission) => $permission->where('key', PermissionKey::ApproveMeterReadings->value))))
             ->get();
+    }
+
+    /**
+     * Compare the reading's week with a date as a range on week_start, not
+     * whereDate's date(week_start), so the (subscription_id, week_start) and
+     * (branch_id, week_start) indexes serve it. The range holds for a date
+     * column (MySQL) and a stored date and time (SQLite) alike.
+     *
+     * @param  '='|'<'|'<='|'>'|'>='  $operator
+     */
+    public function scopeWhereWeek(Builder $query, string $operator, CarbonInterface|string $date): void
+    {
+        $day = Carbon::parse($date)->startOfDay();
+        $column = $query->qualifyColumn('week_start');
+        $from = $day->toDateString();
+        $nextDay = $day->copy()->addDay()->toDateString();
+
+        match ($operator) {
+            '=' => $query->where($column, '>=', $from)->where($column, '<', $nextDay),
+            '<' => $query->where($column, '<', $from),
+            '<=' => $query->where($column, '<', $nextDay),
+            '>' => $query->where($column, '>=', $nextDay),
+            '>=' => $query->where($column, '>=', $from),
+        };
     }
 
     /** Batch the successor count for lists; mutations still query their freshly loaded reading. */

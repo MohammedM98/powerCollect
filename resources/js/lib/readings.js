@@ -96,7 +96,7 @@ export function weekOptionsFor(subscription, weekOptionsByBranch) {
  * `weekOptions`) has been entered already.
  */
 export function hasLatestWeekReading(subscription, weekOptions) {
-    const latestReading = subscription.meterReadings?.[0];
+    const latestReading = subscription.latestMeterReading;
 
     return Boolean(latestReading && latestReading.weekStart === weekOptions[0]?.value);
 }

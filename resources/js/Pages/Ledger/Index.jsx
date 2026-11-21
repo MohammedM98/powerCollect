@@ -15,7 +15,7 @@ import { useStatementWindow } from '@/hooks/useStatementWindow';
 import { BALANCE_HINTS, BALANCE_WORDS, balanceTone, signedBalance } from '@/lib/balance';
 import { formatClock, formatDayLabel, formatMoney, formatNumber, formatShortDay } from '@/lib/format';
 import SplitPaymentBadge from '@/Pages/Payments/SplitPaymentBadge';
-import StatementModal from '@/Pages/Subscriptions/StatementModal';
+import StatementModal from '@/Pages/Subscriptions/LazyStatementModal';
 import './Ledger.css';
 import PageHeader from '@/Components/PageHeader';
 import MoneyFlow from '@/Components/Finance/MoneyFlow';
