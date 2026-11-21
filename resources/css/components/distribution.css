@@ -1,0 +1,57 @@
+/*
+ * Reading distribution (DistributionBoard): the cycle on a dark card with
+ * its stages and how the subscribers spread over the readers, then the
+ * areas not yet given out beside a lane per reader and for paper. Areas and
+ * boxes drag between lanes; the tray at the foot saves what moved.
+ */
+[data-tone="clr"] { --db-c: var(--ma-clr); --db-s: var(--ma-clr-s); }
+[data-tone="disc"] { --db-c: var(--ma-disc); --db-s: var(--ma-disc-s); }
+[data-tone="brand"] { --db-c: var(--ma-brand); --db-s: var(--ma-brand-soft); }
+[data-tone="split"] { --db-c: var(--ma-split); --db-s: var(--ma-split-s); }
+[data-tone="pay"] { --db-c: var(--ma-pay); --db-s: var(--ma-pay-s); }
+[data-tone="warn"] { --db-c: var(--ma-warn); --db-s: var(--ma-warn-s); }
+[data-tone="faint"] { --db-c: var(--ma-faint); --db-s: var(--ma-tile); }
+
+.db-mission { display: grid; gap: 16px; margin-bottom: 16px; padding: 16px 24px; border-radius: 22px; color: #fff; background: linear-gradient(160deg, #262a31, #15171c); box-shadow: var(--ma-float); }
+.db-mission-top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.db-mission-top small { display: block; font-size: 13px; font-weight: 700; color: rgb(255 255 255 / 0.68); }
+.db-mission-top h2 { margin: 0 0 0; font-size: 27px; font-weight: 900; line-height: 1.2; }
+.db-stages { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.db-stages li { display: grid; gap: 4px; font-size: 13px; font-weight: 800; color: rgb(255 255 255 / 0.62); }
+.db-stages li::before { content: ""; height: 5px; border-radius: 3px; background: rgb(255 255 255 / 0.14); }
+.db-stages li[data-state="done"]::before { background: #4fc08d; }
+.db-stages li[data-state="now"] { color: #fff; }
+.db-stages li[data-state="now"]::before { background: linear-gradient(to left, #4fc08d 45%, rgb(255 255 255 / 0.14) 45%); }
+.db-stages small { font-size: 12px; font-weight: 700; color: rgb(255 255 255 / 0.55); }
+.db-balance { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid rgb(255 255 255 / 0.12); }
+.db-balance p { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin: 0; font-size: 13px; color: rgb(255 255 255 / 0.75); }
+.db-balance-bar { display: flex; height: 14px; border-radius: 8px; overflow: hidden; background: rgb(255 255 255 / 0.14); }
+.db-balance-bar i { height: 100%; background: var(--db-c); transition: width .25s ease; }
+.db-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0; padding: 0; list-style: none; font-size: 13px; color: rgb(255 255 255 / 0.8); }
+.db-legend li { display: inline-flex; align-items: center; gap: 8px; }
+.db-legend i { width: 9px; height: 9px; border-radius: 3px; background: var(--db-c); }
+.db-legend i[data-tone="faint"] { background: rgb(255 255 255 / 0.3); }
+.db-legend b { color: #fff; }
+@media (max-width: 760px) { .db-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); } .db-stages li:last-child { display: none; } }
+
+.db-board { display: grid; grid-template-columns: 340px minmax(0, 1fr); align-items: start; gap: 16px; }
+@media (max-width: 1100px) { .db-board { grid-template-columns: minmax(0, 1fr); } }
+.db-lanes { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+.db-pool, .db-lane { display: grid; align-content: start; gap: 12px; min-width: 0; min-height: 200px; padding: 16px; border-radius: 22px; background: var(--ma-panel); backdrop-filter: var(--ma-blur); -webkit-backdrop-filter: var(--ma-blur); box-shadow: var(--ma-depth); transition: box-shadow .15s ease, transform .15s ease; }
+.db-pool { position: sticky; top: 84px; }
+@media (max-width: 1100px) { .db-pool { position: static; } }
+.db-pool[data-over], .db-lane[data-over] { transform: translateY(-2px); box-shadow: 0 0 0 3px var(--db-c, var(--ma-brand)), var(--ma-depth); }
+.db-lane-head { display: flex; align-items: center; gap: 12px; }
+.db-lane-head b { display: block; font-size: 15px; color: var(--ma-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.db-lane-head small { display: block; font-size: 12.5px; font-weight: 700; color: var(--ma-muted); }
+.db-avatar { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 14px; background: var(--db-s); color: var(--db-c); font-size: 17px; font-weight: 900; box-shadow: var(--ma-hl); }
+.db-lane-count { flex: none; margin-inline-start: auto; text-align: end; line-height: 1.15; }
+.db-lane-count small { display: block; font-size: 12px; font-weight: 700; color: var(--ma-muted); white-space: nowrap; }
+.db-lane-count b { font-size: 20px; font-weight: 900; color: var(--ma-ink); }
+.db-load { display: grid; gap: 4px; font-size: 12px; font-weight: 700; color: var(--ma-muted); }
+.db-load-bar { display: block; height: 7px; border-radius: 4px; overflow: hidden; background: var(--ma-line); }
+.db-load-bar i { display: block; height: 100%; background: var(--db-c); transition: width .25s ease; }
+.db-load[data-heavy] { color: var(--ma-owe); }
+.db-load[data-heavy] .db-load-bar i { background: var(--ma-owe); }
+.db-drop { display: grid; align-content: start; gap: 8px; min-height: 70px; }
+.db-empty { display: grid; place-items: center; min-height: 66px; margin: 0; padding: 12px; border: 2px dashed var(--ma-line); border-radius: 14px; text-align: center; font-size: 13px; font-weight: 700; color: var(--ma-faint); }

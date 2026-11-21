@@ -1,0 +1,175 @@
+.gl-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: calc(12px * var(--radius-scale, 1));
+    background: rgb(var(--panel-field));
+    border: 0;
+    box-shadow: var(--field-shadow);
+    color: var(--gl-muted);
+    transition: box-shadow 0.15s;
+}
+
+.gl-field:hover {
+    box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+}
+
+.gl-field:focus-within {
+    box-shadow: 0 0 0 2px rgb(var(--brand-solid));
+}
+
+.gl-field :is(input, select) {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--gl-ink);
+    font: inherit;
+}
+
+.gl-field :is(input, select):focus {
+    box-shadow: none;
+}
+
+/* ── Tables ───────────────────────────────────────────────────────────── */
+.gl-tblw {
+    overflow-x: auto;
+    border-radius: 14px;
+}
+
+/* A table wide enough to scroll takes keyboard focus (tabIndex 0); show where it is. */
+.gl-tblw:focus-visible {
+    outline: 2px solid rgb(var(--gl-brand));
+    outline-offset: 2px;
+}
+
+.gl-table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+}
+
+.gl-table th {
+    padding: 8px 12px;
+    color: var(--gl-faint);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: start;
+    white-space: nowrap;
+    background: none;
+}
+
+.gl-table th button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+    color: inherit;
+}
+
+.gl-table td {
+    padding: 12px 12px;
+    border-top: 1px solid var(--gl-line);
+    white-space: nowrap;
+}
+
+.gl-table tbody tr {
+    transition: background 0.15s;
+}
+
+.gl-table tbody tr[data-clickable] {
+    cursor: pointer;
+}
+
+.gl-table tbody tr:hover {
+    background: var(--gl-fill);
+}
+
+.gl-table tbody tr:nth-child(n + 13) {
+    animation: none;
+}
+
+.gl-mono {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 12.5px;
+    color: var(--gl-muted);
+}
+
+.gl-foot-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    color: var(--gl-muted);
+    font-size: 13px;
+}
+
+/* ── Receipt ──────────────────────────────────────────────────────────── */
+.gl-receipt {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 16px;
+    background: var(--gl-fill);
+    border: 1px dashed var(--gl-line-strong);
+}
+
+.gl-receipt .gl-big {
+    font: 800 34px var(--gl-head);
+}
+
+.gl-tag {
+    padding: 4px 8px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--gl-fill-2);
+    color: var(--gl-muted);
+}
+
+.gl-empty {
+    display: grid;
+    place-items: center;
+    min-height: 100px;
+    border: 1.5px dashed var(--gl-line-strong);
+    border-radius: 14px;
+    color: var(--gl-faint);
+}
+
+.gl-skel {
+    height: 12px;
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--gl-fill), var(--gl-fill-2), var(--gl-fill));
+    background-size: 200% 100%;
+    animation: gl-sh 1.6s linear infinite;
+}
+
+@keyframes gl-sh {
+    to {
+        background-position: -200% 0;
+    }
+}
+
+/* ── Motion off: the viewer's setting or the company's ────────────────── */
+:root:is([data-ui-motion='reduced'], [data-ui-motion-style='none']) :is([class*='gl-'], [class*='gl-'] *),
+:root:is([data-ui-motion='reduced'], [data-ui-motion-style='none']) :is([class*='gl-'], [class*='gl-'] *)::before {
+    animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [class*='gl-'],
+    [class*='gl-'] *,
+    [class*='gl-']::before {
+        animation: none !important;
+        transition: none !important;
+    }
+}

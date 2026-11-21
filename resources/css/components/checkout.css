@@ -1,0 +1,697 @@
+/*
+ * ── Recording a payment (Pages/Subscriptions/PaymentCheckout.jsx) ────────
+ * The redesign's checkout: the form on one side, the receipt it will print
+ * on the other; the amount large in the middle, the ways of paying as two
+ * big cards, the banks as chips, and one green button with the amount.
+ */
+.modal-sheet-panel.gl-co-panel {
+    max-width: min(1080px, 100%);
+}
+
+.gl-co {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+        'head head'
+        'body aside'
+        'foot foot';
+    height: min(820px, calc(100dvh - 48px));
+}
+
+/* The title across the window's whole width, over the form and the receipt. */
+.gl-co-head {
+    grid-area: head;
+    border-bottom: 1px solid var(--gl-line);
+}
+
+.gl-co-body {
+    grid-area: body;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 16px 24px 24px;
+    scrollbar-width: thin;
+}
+
+.gl-co-aside {
+    grid-area: aside;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 16px;
+    border-inline-start: 1px solid var(--gl-line);
+    background: rgb(var(--panel-tile));
+}
+
+.gl-co-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.gl-co-h,
+.gl-co .gl-co-h {
+    margin: 0;
+    color: var(--gl-ink);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.gl-co-h-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.gl-co-opt {
+    color: var(--gl-muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* The amount: large in the middle, its currency beside it, the quick amounts under it. */
+/* On a soft card of its own, ringed in the payment's green while it is being typed. */
+.gl-co-amount {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 16px;
+    border-radius: 22px;
+    background: rgb(var(--panel-tile));
+    box-shadow: 0 0 0 1px var(--gl-line);
+    text-align: center;
+    transition: box-shadow 0.18s;
+}
+
+.gl-co-amount:has(.gl-co-amount-input:focus) {
+    box-shadow: 0 0 0 1.5px rgb(var(--tone-pay-solid) / 0.7), 0 0 0 5px rgb(var(--tone-pay-solid) / 0.1);
+}
+
+.gl-co-amount-label {
+    color: var(--gl-muted);
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.gl-co-amount-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    max-width: 100%;
+}
+
+.gl-co .gl-co-amount-row input.gl-co-amount-input {
+    min-width: 2ch;
+    max-width: 100%;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--gl-ink);
+    font-family: var(--font-body, 'Zain'), sans-serif;
+    font-size: clamp(44px, 6vw, 68px);
+    font-weight: 800;
+    line-height: 1.1;
+    text-align: center;
+    outline: 0;
+}
+
+.gl-co .gl-co-amount-row input.gl-co-amount-input::placeholder {
+    color: rgb(var(--gray-400) / 0.45);
+    font-weight: 800;
+}
+
+.gl-co-amount-row[data-invalid] input.gl-co-amount-input {
+    color: var(--gl-bad);
+}
+
+.gl-co-currency {
+    width: 150px;
+    flex: none;
+}
+
+.gl-co-quick {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.gl-co .gl-co-chip {
+    height: 34px;
+    min-width: 54px;
+    padding: 0 16px;
+    border-radius: 999px;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.gl-co .gl-co-chip:hover {
+    background: rgb(var(--group-hover));
+}
+
+.gl-co .gl-co-chip.is-accent {
+    background: rgb(var(--tone-pay-solid) / 0.12);
+    color: rgb(var(--tone-pay-solid));
+    box-shadow: 0 0 0 1px rgb(var(--tone-pay-solid) / 0.22);
+}
+
+.gl-co .gl-co-chip.is-accent:hover {
+    background: rgb(var(--tone-pay-solid) / 0.2);
+}
+
+.dark .gl-co .gl-co-chip.is-accent {
+    color: rgb(var(--tone-pay));
+}
+
+.gl-co-note {
+    color: var(--gl-muted);
+    font-size: 13px;
+}
+
+/* The ways of paying: two big cards (HeroUI's radio group); the chosen one ringed in the payment's green. */
+.gl-co .gl-co-methods {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.gl-co .gl-co-method {
+    display: block;
+    min-width: 0;
+}
+
+.gl-co .gl-co-method-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    height: 100%;
+    min-height: 98px;
+    padding: 16px 16px;
+    border-radius: 20px;
+    background: rgb(var(--panel-field));
+    box-shadow: var(--field-shadow), 0 0 0 1px rgb(var(--gray-900) / 0.06);
+    cursor: pointer;
+    transition: box-shadow 0.15s, background-color 0.15s;
+}
+
+.gl-co .gl-co-method-content:hover {
+    box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+}
+
+.gl-co .gl-co-method-content[data-selected] {
+    background: rgb(var(--tone-pay-solid) / 0.05);
+    box-shadow: 0 0 0 2px rgb(var(--tone-pay-solid)), 0 0 0 5px rgb(var(--tone-pay-solid) / 0.12);
+}
+
+.gl-co .gl-co-method-content[data-focus-visible] {
+    outline: 2px solid rgb(var(--brand-solid));
+    outline-offset: 4px;
+}
+
+.gl-co-method-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 15px;
+    background: rgb(var(--action));
+    color: #fff;
+}
+
+.gl-co-method[data-tone='cash'] .gl-co-method-icon {
+    background: rgb(var(--tone-pay-solid));
+}
+
+.gl-co-method-content b {
+    display: block;
+    color: var(--gl-ink);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.gl-co-method-content small {
+    display: block;
+    overflow: hidden;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    line-height: 1.55;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gl-co .gl-co-check {
+    position: absolute;
+    top: 12px;
+    inset-inline-end: 12px;
+    display: none;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(var(--tone-pay-solid));
+    color: #fff;
+}
+
+.gl-co .gl-co-method-content[data-selected] .gl-co-check {
+    display: grid;
+}
+
+.gl-co .gl-co-check [data-slot='radio-indicator'] {
+    display: grid;
+    place-items: center;
+    width: auto;
+    height: auto;
+    background: none;
+}
+
+.gl-co-key {
+    position: absolute;
+    bottom: 10px;
+    inset-inline-end: 12px;
+    display: grid;
+    place-items: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 4px;
+    border-radius: 6px;
+    background: rgb(var(--group-fill));
+    color: var(--gl-muted);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* The company's banks: chips, each with its mark; the chosen one ringed. */
+.gl-co .gl-co-banks-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.gl-co-banks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.gl-co .gl-co-bank-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 46px;
+    padding: 0 16px 0 12px;
+    padding-inline: 8px 16px;
+    border-radius: 15px;
+    background: rgb(var(--panel-field));
+    box-shadow: var(--field-shadow), 0 0 0 1px rgb(var(--gray-900) / 0.06);
+    color: var(--gl-ink);
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: box-shadow 0.15s, background-color 0.15s;
+}
+
+.gl-co .gl-co-bank-content:hover {
+    box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+}
+
+.gl-co .gl-co-bank-content[data-selected] {
+    background: rgb(var(--brand-solid) / 0.05);
+    box-shadow: 0 0 0 2px rgb(var(--brand-solid));
+}
+
+.gl-co .gl-co-bank-content[data-focus-visible] {
+    outline: 2px solid rgb(var(--brand-solid));
+    outline-offset: 3px;
+}
+
+/* The transfer's details, two by two. */
+.gl-co-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 16px;
+    margin-top: 8px;
+}
+
+.gl-co .gl-co-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.gl-co .gl-co-field [data-slot='label'],
+.gl-co .gl-co-field > .label {
+    color: var(--gl-ink);
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.gl-co-field-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 22px;
+}
+
+.gl-co .gl-co-field .input {
+    width: 100%;
+    height: var(--control-h);
+    padding: 0 16px;
+    border: 0;
+    border-radius: calc(14px * var(--radius-scale, 1));
+    background: rgb(var(--panel-field));
+    box-shadow: var(--field-shadow);
+    color: var(--gl-ink);
+    font-size: 15px;
+}
+
+.gl-co .gl-co-field .input:hover {
+    box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+}
+
+.gl-co .gl-co-field .input:focus,
+.gl-co .gl-co-field .input[data-focused] {
+    box-shadow: 0 0 0 2px rgb(var(--brand-solid));
+}
+
+.gl-co .gl-co-field .input[readonly] {
+    color: var(--gl-muted);
+}
+
+.gl-co .gl-co-switch [data-slot='label'] {
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.gl-co-hint {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--gl-muted);
+    font-size: 12px;
+}
+
+.gl-co-hint.is-ok {
+    color: var(--gl-ok);
+    font-weight: 600;
+}
+
+/*
+ * The footer across the whole window: the keys at its start; at its end
+ * what will be recorded, the way out, and one green button carrying the amount.
+ */
+.gl-co-foot {
+    grid-area: foot;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    padding: 12px 24px;
+    border-top: 1px solid var(--gl-line);
+}
+
+.gl-co-foot-sum {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-inline-end: 8px;
+    line-height: 1.15;
+    text-align: end;
+}
+
+.gl-co-foot-sum small {
+    color: var(--gl-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.gl-co-foot-sum b {
+    color: var(--gl-ink);
+    font-size: 19px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.gl-co-foot-sep {
+    width: 1px;
+    height: 14px;
+    margin-inline: 4px;
+    background: var(--gl-line);
+}
+
+.gl-co .gl-co-pay {
+    gap: 8px;
+    min-width: 200px;
+    height: 52px;
+    padding-inline: 24px;
+    border-radius: 999px;
+    background: rgb(var(--tone-pay-solid));
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.gl-co .gl-co-pay:hover:not([data-disabled]) {
+    background: color-mix(in srgb, rgb(var(--tone-pay-solid)) 86%, #000);
+}
+
+.gl-co .gl-co-pay[data-disabled] {
+    opacity: 0.45;
+}
+
+.gl-co-foot-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.gl-co .gl-co-cancel {
+    flex: none;
+    height: 52px;
+    padding-inline: 24px;
+    border-radius: 999px;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.gl-co .gl-co-cancel:hover:not([data-disabled]) {
+    background: rgb(var(--group-hover));
+}
+
+.gl-co-foot-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+}
+
+/* The receipt it will print, beside the form. */
+.gl-co-paper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 16px 24px;
+    border-radius: 16px 16px 0 0;
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--panel-shadow), 0 18px 36px -24px rgb(0 0 0 / 0.35);
+    color: var(--gl-ink);
+    /* The torn edge of a printed receipt along its foot. */
+    -webkit-mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 0 / 16px 100% repeat-x;
+    mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 0 / 16px 100% repeat-x;
+}
+
+.gl-co-paper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    inset-inline: 18px;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: rgb(var(--brand-solid));
+}
+
+.gl-co-paper-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.gl-co-paper-brand b {
+    display: block;
+    font: 800 13px/1.35 Alexandria, var(--font-body, 'Zain'), sans-serif;
+}
+
+.gl-co-paper-brand small {
+    display: block;
+    color: rgb(var(--brand-600));
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.gl-co-paper-line {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--gl-line-strong);
+    font-size: 13px;
+}
+
+.gl-co-paper-line span {
+    color: var(--gl-muted);
+    font-size: 12px;
+}
+
+.gl-co-paper-who b {
+    display: block;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.gl-co-paper-who small {
+    color: var(--gl-muted);
+    font-size: 12px;
+}
+
+.gl-co-paper-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--gl-line-strong);
+}
+
+.gl-co-paper-rows > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.gl-co-paper-rows dt {
+    color: var(--gl-muted);
+    font-size: 13px;
+}
+
+.gl-co-paper-rows dt small {
+    display: block;
+    font-size: 11.5px;
+}
+
+.gl-co-paper-rows dd {
+    margin: 0;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.gl-co-paper-rows dd.is-pay {
+    color: rgb(var(--tone-pay-ink));
+}
+
+.gl-co-paper-after {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.gl-co-paper-after b {
+    font-size: 22px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.gl-co-paper-after b[data-tone='owes'] {
+    color: var(--gl-bad);
+}
+
+.gl-co-paper-after b:is([data-tone='settled'], [data-tone='credit']) {
+    color: var(--gl-ok);
+}
+
+.gl-co-paper-cover > div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+}
+
+.gl-co-paper-cover > div b {
+    color: var(--gl-ink);
+}
+
+.gl-co-paper-cover i {
+    display: block;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: rgb(var(--group-fill));
+}
+
+.gl-co-paper-cover i span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: rgb(var(--action));
+    transition: width 0.3s;
+}
+
+/* A barcode, as on the printed receipt. */
+.gl-co-paper-code {
+    display: block;
+    height: 34px;
+    margin: 0 24px 0;
+    background: repeating-linear-gradient(90deg, var(--gl-ink) 0 2px, transparent 2px 4px, var(--gl-ink) 4px 5px, transparent 5px 8px, var(--gl-ink) 8px 11px, transparent 11px 13px);
+    opacity: 0.85;
+}
+
+.gl-co-paper-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px 12px;
+    margin: 0;
+    color: var(--gl-muted);
+    font-size: 12px;
+}
+
+.gl-co-aside-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    padding-inline: 4px;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+}

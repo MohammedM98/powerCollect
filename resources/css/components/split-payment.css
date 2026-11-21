@@ -1,0 +1,252 @@
+/* On a phone each row is a card: its details join the bottom of that card instead of making a card of their own. */
+@container (max-width: 640px) {
+    .data-table tbody tr.is-open {
+        border-bottom: 0;
+        border-end-start-radius: 0;
+        border-end-end-radius: 0;
+    }
+
+    .data-table tbody tr.dt-detail {
+        display: block;
+        margin-top: 0;
+        padding: 0 16px 12px;
+        border-top: 0;
+        border-start-start-radius: 0;
+        border-start-end-radius: 0;
+    }
+
+    .data-table tbody tr.dt-detail > td {
+        display: block;
+        padding: 0;
+        background: none;
+        text-align: start;
+    }
+
+    .dt-detail dl {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* The reports' sections (Pages/Reports/Index.jsx) as the redesign's segmented pill; on a phone the pill scrolls sideways. */
+.gl-seg.reports-sections {
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.gl-seg.reports-sections button {
+    min-height: 34px;
+    font-size: 13.5px;
+    /* On a phone the row scrolls sideways instead of squeezing the labels over each other. */
+    flex: none;
+    white-space: nowrap;
+}
+
+/* The print contents beside the export buttons in the page's actions row. */
+.reports-print-view select:not([multiple], [size]) {
+    height: 40px;
+    min-height: 40px;
+    border: 0;
+    border-radius: 999px;
+    background-color: rgb(var(--group-fill));
+    padding-block: 0;
+    padding-inline: 16px 32px;
+    line-height: 40px;
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+/*
+ * ── The money windows side by side (charge, discount, clearing, split) ──
+ * As in the redesign: from 900px the title and the footer span the window,
+ * the form fills its start and the movement card becomes a column at its
+ * end ("after recording"): who, the balance now and the movement as lines,
+ * and the balance it leaves large in the movement's colour. A split
+ * payment's column shows its distribution instead. Narrower, the card stays
+ * over the form as before (and the split's column is left out: its meter and
+ * footer already say the same).
+ */
+.gl-mv-title,
+.gl-split-aside {
+    display: none;
+}
+
+@media (min-width: 900px) {
+    .modal-sheet-panel:has(.gl-sheet > :is(.gl-mv, .gl-split-aside)) {
+        max-width: min(940px, 100%);
+    }
+
+    .gl-sheet:has(> :is(.gl-mv, .gl-split-aside)) {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 300px;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        grid-template-areas:
+            'head head'
+            'body side'
+            'foot foot';
+        height: min(680px, calc(100dvh - 3rem));
+    }
+
+    .gl-sheet:has(> :is(.gl-mv, .gl-split-aside)) > .gl-dialog-head {
+        grid-area: head;
+        border-bottom: 1px solid var(--gl-line);
+    }
+
+    .gl-sheet:has(> :is(.gl-mv, .gl-split-aside)) > .gl-sheet-body {
+        grid-area: body;
+    }
+
+    .gl-sheet:has(> :is(.gl-mv, .gl-split-aside)) > .gl-dialog-foot {
+        grid-area: foot;
+    }
+
+    .gl-sheet > :is(.gl-mv, .gl-split-aside) {
+        display: grid;
+        grid-area: side;
+        align-content: start;
+        gap: 16px;
+        min-height: 0;
+        margin: 0;
+        padding: 16px;
+        overflow-y: auto;
+        border-radius: 0;
+        border-inline-start: 1px solid var(--gl-line);
+        background: rgb(var(--panel-tile));
+    }
+
+    .gl-sheet > :is(.gl-mv, .gl-split-aside) > .gl-mv-title {
+        display: block;
+        margin: 0;
+        color: var(--gl-ink);
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-who {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 8px 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--gl-line);
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-tag {
+        grid-column: 1 / -1;
+        justify-self: start;
+        margin-inline-start: 0;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cells {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+        text-align: start;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-op {
+        display: none;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 4px 12px;
+        padding: 8px 0;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell small {
+        font-size: 13px;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell b {
+        font-size: 16px;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell em {
+        flex-basis: 100%;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell.is-result {
+        display: grid;
+        gap: 4px;
+        margin-top: 8px;
+        padding: 12px 0 0;
+        border-top: 1px dashed var(--gl-line-strong, var(--gl-line));
+        text-align: end;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell.is-result small {
+        text-align: start;
+    }
+
+    .gl-sheet > .gl-mv .gl-mv-cell.is-result b {
+        font-size: 30px;
+        line-height: 1.2;
+    }
+}
+
+/* The split payment's distribution, in its column. */
+.gl-split-bar {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 99px;
+    background: rgb(var(--group-fill));
+}
+
+.gl-split-bar i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--gl-t, rgb(var(--tone-split)));
+    transition: width 0.3s;
+}
+
+.gl-split-bar[data-done] i {
+    background: rgb(var(--tone-pay-solid));
+}
+
+.gl-split-rows {
+    display: grid;
+    margin: 0;
+}
+
+.gl-split-rows > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 13.5px;
+}
+
+.gl-split-rows dt {
+    color: var(--gl-muted);
+}
+
+.gl-split-rows dd {
+    margin: 0;
+    color: var(--gl-ink);
+    font: 800 16px / 1.3 var(--gl-head);
+    white-space: nowrap;
+}
+
+.gl-split-rows > [data-tone='left'] dd {
+    color: var(--gl-warn);
+}
+
+.gl-split-rows > [data-tone='over'] dd {
+    color: var(--gl-bad);
+}
+
+.gl-split-rows > .is-count {
+    margin-top: 4px;
+    border-top: 1px dashed var(--gl-line);
+}
+
+.gl-split-note {
+    margin: 0;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    line-height: 1.6;
+}

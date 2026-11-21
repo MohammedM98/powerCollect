@@ -1,0 +1,286 @@
+/* ── Park UI language (the dashboard, `gl-park`) ──────────────────────────
+ * Park UI's systematic look (park-ui.com) in this app's own colours: flat
+ * outlined cards with a hairline shadow instead of a deep drop shadow,
+ * nested corners (cards 14px, controls 10px, badges 6px), subtle tinted
+ * badges, a grey segment track with a raised white thumb, and one height
+ * (40px) for every control that sits in a row. The action bar leads the
+ * page: the main action solid, the others as surface buttons.
+ */
+.gl-park {
+    --park-shadow: 0 2px 4px rgb(0 0 0 / 0.05), 0 0 1px rgb(0 0 0 / 0.14);
+    --park-shadow-hover: 0 8px 16px rgb(0 0 0 / 0.07), 0 0 1px rgb(0 0 0 / 0.16);
+    --park-r3: calc(14px * var(--radius-scale, 1));
+    --park-r2: calc(10px * var(--radius-scale, 1));
+    --park-r1: calc(6px * var(--radius-scale, 1));
+}
+
+.dark .gl-park {
+    --park-shadow: 0 2px 4px rgb(0 0 0 / 0.45), inset 0 0 1px rgb(255 255 255 / 0.14);
+    --park-shadow-hover: 0 8px 16px rgb(0 0 0 / 0.5), inset 0 0 1px rgb(255 255 255 / 0.2);
+}
+
+.gl-park .gl-card {
+    border-radius: var(--park-r3);
+    box-shadow: var(--park-shadow);
+}
+
+.gl-park .gl-panel h2 {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.gl-park .gl-ph {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--gl-line);
+}
+
+.gl-park .gl-ico {
+    border-radius: var(--park-r2);
+    color: rgb(var(--gl-brand));
+}
+
+/* The hero tile: a quiet wash of the brand colour, no gradient line along its foot. */
+.gl-park .gl-kpi.gl-hero {
+    background: linear-gradient(160deg, rgb(var(--gl-brand) / 0.12), rgb(var(--panel-bg)) 70%);
+    border-color: rgb(var(--gl-brand) / 0.3);
+}
+
+.gl-park .gl-kpi.gl-hero::after {
+    content: none;
+}
+
+.gl-park a > .gl-kpi {
+    transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.gl-park a:hover > .gl-kpi {
+    box-shadow: var(--park-shadow-hover);
+    border-color: var(--gl-line-strong);
+}
+
+/* Subtle badge: tinted fill, its colour as text, a small corner. */
+.gl-park .gl-pill {
+    min-height: 22px;
+    padding: 0 8px;
+    border-radius: var(--park-r1);
+    font-weight: 600;
+}
+
+/* Segment group: a grey track with a hairline edge, the chosen item a raised white thumb. */
+.gl-park .gl-seg {
+    padding: 4px;
+    border-radius: var(--park-r2);
+    background: var(--gl-fill);
+    border: 0;
+    box-shadow: inset 0 0 0 1px var(--gl-line);
+}
+
+.gl-park .gl-seg button {
+    min-height: 32px;
+    padding: 0 12px;
+    border-radius: calc(var(--park-r2) - 3px);
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.gl-park .gl-seg button:hover:not([aria-pressed='true']) {
+    color: var(--gl-ink);
+}
+
+.gl-park .gl-seg button[aria-pressed='true'] {
+    background: rgb(var(--panel-bg));
+    box-shadow: 0 0 0 1px var(--gl-line-strong), 0 1px 2px rgb(0 0 0 / 0.08);
+}
+
+.dark .gl-park .gl-seg button[aria-pressed='true'] {
+    background: rgb(255 255 255 / 0.1);
+}
+
+.gl-park .gl-btn {
+    min-height: 40px;
+    border-radius: var(--park-r2);
+}
+
+.gl-park .gl-btn.gl-sm {
+    min-height: 32px;
+}
+
+.gl-park .gl-field {
+    border-radius: var(--park-r2);
+}
+
+/* Things waiting: each row a soft hover target, its count a badge at the end. */
+.gl-park .gl-attn {
+    margin-inline: -8px;
+    padding: 8px 8px;
+    border-radius: var(--park-r2);
+    border-top: 0;
+    transition: background-color 0.15s;
+}
+
+.gl-park .gl-attn:hover {
+    background: var(--gl-fill);
+}
+
+.gl-park .gl-attn .gl-ico {
+    width: 32px;
+    height: 32px;
+}
+
+.gl-park .gl-attn .gl-pill {
+    min-width: 32px;
+    justify-content: center;
+    font-size: 13px;
+}
+
+/* The action bar: the main action solid, the others as surface buttons with a line of what they do. */
+/* One row on a wide screen (the main action twice as wide), a grid of three, then two, as it narrows: never a lone button on a row of its own. */
+.gl-actions {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 12px;
+}
+
+@media (max-width: 1100px) {
+    .gl-actions {
+        grid-auto-flow: row;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .gl-actions > .gl-action.gl-main {
+        grid-column: 1 / -1;
+    }
+}
+
+.gl-action {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    min-height: 64px;
+    padding: 8px 16px;
+    border: 1px solid var(--gl-line);
+    border-radius: var(--park-r3, 14px);
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--park-shadow, none);
+    color: var(--gl-ink);
+    text-align: start;
+    transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+}
+
+.gl-action:hover {
+    border-color: var(--gl-line-strong);
+    box-shadow: var(--park-shadow-hover, none);
+}
+
+.gl-action:active {
+    transform: translateY(1px);
+}
+
+.gl-action:focus-visible {
+    outline: 2px solid rgb(var(--gl-brand));
+    outline-offset: 2px;
+}
+
+.gl-action b {
+    display: block;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gl-action small {
+    display: block;
+    overflow: hidden;
+    color: var(--gl-muted);
+    font-size: 12px;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gl-action-ico {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--park-r2, 12px);
+    background: rgb(var(--group-fill));
+    color: rgb(var(--panel-ink));
+}
+
+/* The dashboard's main action is recording a payment: the payment's green, never the company's colour. */
+.gl-action.gl-main {
+    grid-column: span 2;
+    border-color: transparent;
+    background: rgb(var(--tone-pay-solid));
+    color: #fff;
+}
+
+.gl-action.gl-main:hover {
+    background: color-mix(in srgb, rgb(var(--tone-pay-solid)) 86%, #000);
+}
+
+.gl-action.gl-main small {
+    color: rgb(255 255 255 / 0.8);
+}
+
+.gl-action.gl-main .gl-action-ico {
+    background: rgb(255 255 255 / 0.16);
+    color: #fff;
+}
+
+.gl-action.gl-main b {
+    font-size: 16px;
+}
+
+@media (max-width: 560px) {
+    .gl-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .gl-action {
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .gl-action small {
+        display: none;
+    }
+
+    /* An odd one out at the end takes the whole row rather than sitting beside a gap. */
+    .gl-action:last-child:nth-child(even) {
+        grid-column: 1 / -1;
+    }
+
+    .gl-action-ico {
+        width: 34px;
+        height: 34px;
+    }
+}
+
+/* ── Narrower screens ─────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+    .gl-g4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .gl-dash {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .gl-g3 {
+        grid-template-columns: 1fr;
+    }
+
+    .gl-phead h1 {
+        font-size: 23px;
+    }
+}

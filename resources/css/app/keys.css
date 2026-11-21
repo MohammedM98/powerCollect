@@ -1,0 +1,182 @@
+:root[data-ui-body-font='kufi'] {
+    --font-body: 'Noto Kufi Arabic';
+}
+
+:root[data-ui-heading-font='messiri'] {
+    --font-heading: 'El Messiri';
+}
+
+:root[data-ui-heading-font='alexandria'] {
+    --font-heading: 'Alexandria';
+}
+
+:root[data-ui-heading-font='plex'] {
+    --font-heading: 'IBM Plex Sans Arabic';
+}
+
+:root[data-ui-heading-font='cairo'] {
+    --font-heading: 'Cairo';
+}
+
+:root[data-ui-heading-font='tajawal'] {
+    --font-heading: 'Tajawal';
+}
+
+:root[data-ui-heading-font='kufi'] {
+    --font-heading: 'Noto Kufi Arabic';
+}
+
+/* How wide a page's content grows. */
+:root[data-ui-width='contained'] {
+    --ui-content-width: 1280px;
+}
+
+:root[data-ui-width='full'] {
+    --ui-content-width: 100%;
+}
+
+/*
+ * Buttons. The main action (PrimaryButton and anything filled with
+ * bg-brand-gradient) is solid, a soft tint or an outline instead of the
+ * glossy gradient; print and Excel buttons keep their own colours.
+ */
+:root:is([data-ui-buttons='solid'], [data-ui-buttons='soft'], [data-ui-buttons='outline']) {
+    --brand-fill: linear-gradient(rgb(var(--brand-500)), rgb(var(--brand-500)));
+    --shadow-glow: 0 1px 2px rgb(var(--shadow-ink) / 0.14);
+}
+
+:root[data-ui-buttons='solid'] .ui-btn-primary:not(.tone-print, .tone-excel, .gl-add, .gl-group):hover:not(:disabled) {
+    background: rgb(var(--brand-600));
+    filter: none;
+}
+
+:root[data-ui-buttons='soft'] .ui-btn-primary:not(.tone-print, .tone-excel, .gl-add, .gl-group) {
+    background: rgb(var(--brand-500) / 0.12);
+    color: rgb(var(--brand-700));
+    box-shadow: none;
+}
+
+:root[data-ui-buttons='soft'] .ui-btn-primary:not(.tone-print, .tone-excel, .gl-add, .gl-group):hover:not(:disabled) {
+    background: rgb(var(--brand-500) / 0.2);
+    filter: none;
+}
+
+:root[data-ui-buttons='outline'] .ui-btn-primary:not(.tone-print, .tone-excel, .gl-add, .gl-group) {
+    background: transparent;
+    color: rgb(var(--brand-600));
+    box-shadow: inset 0 0 0 1.5px rgb(var(--brand-500));
+}
+
+:root[data-ui-buttons='outline'] .ui-btn-primary:not(.tone-print, .tone-excel, .gl-add, .gl-group):hover:not(:disabled) {
+    background: rgb(var(--brand-500));
+    color: rgb(var(--brand-ink));
+    filter: none;
+}
+
+:root:is([data-ui-buttons='solid'], [data-ui-buttons='soft']) .ui-btn-secondary:not(.tone-print, .tone-excel) {
+    border-color: transparent;
+    background: rgb(var(--gray-100));
+}
+
+:root:is([data-ui-buttons='solid'], [data-ui-buttons='soft']) .ui-btn-secondary:not(.tone-print, .tone-excel):hover:not(:disabled) {
+    background: rgb(var(--gray-200));
+}
+
+:root[data-ui-buttons='solid'] .ui-btn-danger {
+    border-color: transparent;
+    background: rgb(var(--danger-600));
+    color: #fff;
+}
+
+:root[data-ui-buttons='outline'] .ui-btn-danger {
+    background: transparent;
+}
+
+/* Cards and raised panels: their shadow, or a line in its place. */
+:root[data-ui-cards='outlined'] {
+    --shadow-card: 0 0 0 1px rgb(var(--gray-200));
+    --shadow-lift: 0 0 0 1px rgb(var(--gray-300)), 0 16px 32px -20px rgb(var(--shadow-ink) / 0.28);
+    --ui-shadow: var(--shadow-card);
+    --ui-pop: var(--shadow-lift);
+}
+
+:root[data-ui-cards='flat'] {
+    --shadow-card: none;
+    --shadow-lift: 0 0 0 1px rgb(var(--gray-200));
+    --ui-shadow: none;
+    --ui-pop: var(--shadow-lift);
+}
+
+:root[data-ui-cards='floating'] {
+    --shadow-card: 0 2px 6px rgb(var(--shadow-ink) / 0.05), 0 28px 56px -24px rgb(var(--shadow-ink) / 0.32);
+    --shadow-lift: 0 4px 10px rgb(var(--shadow-ink) / 0.08), 0 36px 64px -24px rgb(var(--shadow-ink) / 0.42);
+    --ui-shadow: var(--shadow-card);
+    --ui-pop: var(--shadow-lift);
+}
+
+/*
+ * Tables, wider than a phone (phones keep each row as a card): rows as
+ * cards is the look above; the others draw one flat sheet on the surface,
+ * striped, ruled as a grid, or with lines between rows only.
+ */
+@container (min-width: 641px) {
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table {
+        border-spacing: 0;
+    }
+
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table th {
+        padding-block: 12px;
+        border-bottom: 1px solid rgb(var(--gray-200));
+    }
+
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table td,
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table td:first-child,
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table td:last-child {
+        border-width: 0;
+        border-radius: 0;
+    }
+
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:hover,
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:focus-within {
+        filter: none;
+    }
+
+    :root[data-ui-tables='striped'] .data-table th,
+    :root[data-ui-tables='bordered'] .data-table th {
+        background: rgb(var(--gray-50));
+    }
+
+    :root[data-ui-tables='striped'] .data-table tbody tr:nth-child(even):not(.bg-brand-50) td {
+        background: rgb(var(--gray-50));
+    }
+
+    :root[data-ui-tables='bordered'] .data-table th,
+    :root[data-ui-tables='bordered'] .data-table td,
+    :root[data-ui-tables='bordered'] .data-table td:first-child,
+    :root[data-ui-tables='bordered'] .data-table td:last-child {
+        border: 1px solid rgb(var(--gray-200));
+    }
+
+    :root[data-ui-tables='bordered'] .data-table {
+        border-collapse: collapse;
+    }
+
+    :root[data-ui-tables='minimal'] .data-table th {
+        border-bottom-width: 2px;
+    }
+
+    :root[data-ui-tables='minimal'] .data-table td,
+    :root[data-ui-tables='minimal'] .data-table td:first-child,
+    :root[data-ui-tables='minimal'] .data-table td:last-child {
+        border-bottom: 1px solid rgb(var(--gray-100));
+        background: transparent;
+    }
+
+    :root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:not(.bg-brand-50):hover td {
+        background: rgb(var(--brand-50) / 0.6);
+    }
+}
+
+:root:is([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table-container {
+    background: rgb(var(--surface));
+}

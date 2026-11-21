@@ -3,13 +3,18 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 /**
- * The MA colour tokens' text contrast, worked out from resources/css/app.css
- * in the four looks (light and dark, solid and glass). Glass panels let the
+ * The MA colour tokens' text contrast, worked out from app.css's own rules
+ * (resources/css/app/*.css, read in the order app.css imports them) in the
+ * four looks (light and dark, solid and glass). Glass panels let the
  * ground through: a panel is its solid colour at 66% over the ground, a tile
  * 55% solid over it (the soft lights on the ground are left out).
  */
-const css = readFileSync(new URL('../../resources/css/app.css', import.meta.url), 'utf8');
+const entry = readFileSync(new URL('../../resources/css/app.css', import.meta.url), 'utf8');
+const css = [...entry.matchAll(/^@import '\.\/(app\/[\w-]+\.css)';/gm)]
+    .map(([, file]) => readFileSync(new URL(`../../resources/css/${file}`, import.meta.url), 'utf8'))
+    .join('\n');
 const design = css.slice(css.indexOf('The MA design, final'));
+assert.ok(design.length > 0, 'the MA design block is found');
 
 /**
  * Each `--ma-*` hex token of a theme as the cascade leaves it: `:root` and

@@ -1,0 +1,382 @@
+/*
+ * The default table layout wider than a phone: one
+ * sheet on the surface, no lines between columns, quiet column titles,
+ * a hairline between rows, a soft tint under the row being pointed at,
+ * and the chosen row in the company's colour with a bar at its start.
+ */
+@container (min-width: 641px) {
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table {
+        border-spacing: 0;
+        font-size: 15px;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table th {
+        padding: 12px 16px;
+        border-bottom: 1px solid rgb(var(--gray-100));
+        color: rgb(var(--gray-500));
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table td,
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table td:first-child,
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table td:last-child {
+        border-width: 0 0 1px;
+        border-style: solid;
+        border-color: rgb(var(--gray-100));
+        border-radius: 0;
+        background: transparent;
+        transition: background-color 0.15s;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table :is(th, td):first-child {
+        padding-inline-start: 24px;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table :is(th, td):last-child {
+        padding-inline-end: 24px;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:last-child td {
+        border-bottom-width: 0;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:hover,
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:focus-within {
+        filter: none;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:is(:hover, :focus-within):not(.bg-brand-50) td {
+        border-color: rgb(var(--gray-100));
+        background: rgb(var(--gray-50));
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr:is(:hover, :focus-within):not(.bg-brand-50) td:first-child {
+        box-shadow: none;
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr.bg-brand-50 td {
+        background: rgb(var(--brand-solid) / 0.1);
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table tbody tr.bg-brand-50 td:first-child {
+        box-shadow: inset -3px 0 0 rgb(var(--brand-solid));
+    }
+
+    :root:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table-container {
+        padding: 0;
+        border-color: rgb(var(--gray-200) / 0.7);
+        background: rgb(var(--surface));
+    }
+
+    :root[data-table-density='compact']:not([data-ui-tables='striped'], [data-ui-tables='bordered'], [data-ui-tables='minimal']) .data-table {
+        border-spacing: 0;
+    }
+}
+
+/* A row's actions wait out of sight until the row is pointed at, focused or chosen (where there is a pointer to point with). */
+@media (hover: hover) and (pointer: fine) {
+    .data-table tbody tr .row-actions {
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+
+    .data-table tbody tr:is(:hover, :focus-within, .bg-brand-50) .row-actions,
+    .data-table tbody tr .row-actions:has([aria-expanded='true']) {
+        opacity: 1;
+    }
+}
+
+/*
+ * The navigation's look (`navStyle`): a solid light bar, or a dark one or
+ * one in the company's colour, whose greys theme.css
+ * (section 7) turns to the dark theme's so everything in it reads.
+ */
+:root[data-ui-nav-style='solid'] .tn-bar {
+    border-color: rgb(var(--gray-200));
+    background: rgb(var(--surface));
+}
+
+:root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) .tn-bar {
+    --tn-graphite: linear-gradient(180deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.1));
+    --tn-graphite-dark: var(--tn-graphite);
+    --tn-graphite-ink: #fff;
+    --tn-graphite-icon: #fff;
+    border-color: rgb(255 255 255 / 0.08);
+    color: rgb(var(--gray-900));
+}
+
+:root[data-ui-nav-style='dark'] .tn-bar {
+    background: linear-gradient(135deg, rgb(var(--graphite-700)), rgb(var(--graphite-900)));
+}
+
+:root[data-ui-nav-style='brand'] .tn-bar {
+    background: linear-gradient(135deg, rgb(var(--brand-hi)), rgb(var(--brand-deep)));
+}
+
+/* The open page in a dark or coloured navigation: a light veil, not the light theme's tint. */
+:root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) .tn-bar .tn-drawer-link[aria-current='page'] {
+    background: rgb(255 255 255 / 0.14);
+    color: #fff;
+    box-shadow: inset -3px 0 0 #fff;
+}
+
+:root:is([data-ui-nav-style='dark'], [data-ui-nav-style='brand']) .tn-bar .tn-drawer-link[aria-current='page'] svg {
+    color: #fff;
+}
+
+/* The page's background (`background`) behind the content. */
+:root[data-ui-background='plain'] .tn-backdrop {
+    display: none;
+}
+
+:root[data-ui-background='gradient'] .tn-backdrop {
+    background: linear-gradient(180deg, rgb(var(--brand-500) / 0.12), rgb(var(--brand-500) / 0.03) 360px, transparent 640px);
+}
+
+:root[data-ui-background='dots'] .tn-backdrop {
+    background-image: radial-gradient(rgb(var(--gray-300)) 1px, transparent 1.4px);
+    background-size: 18px 18px;
+    mask-image: linear-gradient(180deg, #000, transparent 85%);
+}
+
+:root[data-ui-background='grid'] .tn-backdrop {
+    background-image:
+        linear-gradient(rgb(var(--gray-200) / 0.7) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(var(--gray-200) / 0.7) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: linear-gradient(180deg, #000, transparent 80%);
+}
+
+/* Raised buttons stand on a darker edge and press down; pill buttons are fully round. */
+:root[data-ui-buttons='raised'] {
+    --brand-fill: linear-gradient(rgb(var(--brand-500)), rgb(var(--brand-500)));
+    --shadow-glow: 0 3px 0 rgb(var(--brand-800)), 0 10px 18px -10px rgb(var(--brand-solid) / 0.8);
+}
+
+:root[data-ui-buttons='raised'] .ui-btn-secondary:not(.tone-print, .tone-excel) {
+    box-shadow: 0 2px 0 rgb(var(--gray-300));
+}
+
+:root[data-ui-buttons='raised'] :is(.ui-btn-primary, .ui-btn-secondary):active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 rgb(var(--brand-800));
+}
+
+:root[data-ui-buttons='pill'] :is(.ui-btn-primary, .ui-btn-secondary, .ui-btn-danger) {
+    border-radius: 999px;
+    padding-inline: 1.5rem;
+}
+
+/*
+ * The charcoal look (`background`: graphite, see theme.css, section 8)
+ * uses a neutral backdrop and frosted panels in each theme.
+ */
+:root[data-ui-background='graphite'] body {
+    background-color: rgb(var(--panel-page));
+    background-image: var(--panel-ambient);
+    background-attachment: fixed;
+}
+
+:root[data-ui-background='graphite'] .tn-backdrop {
+    display: none;
+}
+
+
+/*
+ * Floating navigation uses the same material on the dock and toolbar.
+ * Menus over content use a denser tint so their text stays readable.
+ */
+:root[data-ui-background='graphite'] :is(.tn-bar, .tn-side, .tn-mega, .tn-popover, .tn-drawer-panel) {
+    border: 1px solid rgb(var(--panel-line));
+    background: rgb(var(--panel-bg) / var(--panel-opacity));
+    box-shadow: inset 0 1px 0 rgb(var(--panel-highlight)), var(--panel-shadow);
+    -webkit-backdrop-filter: var(--panel-frost);
+    backdrop-filter: var(--panel-frost);
+}
+
+:root[data-ui-background='graphite'] :is(.tn-mega, .tn-popover, .tn-drawer-panel, .modal-sheet-panel) {
+    background: rgb(var(--panel-bg) / min(1, calc(var(--panel-opacity) + 0.32)));
+}
+
+:root[data-ui-background='graphite'] .tn-header.is-scrolled .tn-bar {
+    background: rgb(var(--panel-bg) / min(1, calc(var(--panel-opacity) + 0.2)));
+}
+
+:root[data-ui-background='graphite'] :is(.tn-bar, .tn-mega)::before {
+    display: none;
+}
+
+:root[data-ui-background='graphite'] .modal-sheet-panel {
+    border-color: rgb(var(--panel-line));
+    box-shadow: inset 0 1px 0 rgb(var(--panel-highlight)), var(--panel-shadow);
+}
+
+/* Cards (HeroUI's): their surface and a barely-there shadow, no line. */
+:root[data-ui-background='graphite'] .tn-shell .gl-card {
+    border-color: transparent;
+    box-shadow: var(--panel-shadow);
+}
+
+/* A window floats well above the dimmed page (HeroUI's modal). */
+:root[data-ui-background='graphite'] .modal-sheet-panel {
+    box-shadow: inset 0 1px 0 rgb(var(--panel-highlight)), 0 2px 8px rgb(0 0 0 / 0.06), 0 40px 90px -20px rgb(0 0 0 / 0.55);
+}
+
+:root[data-ui-background='graphite'] .tn-shell .gl-card {
+    background-color: rgb(var(--panel-bg) / var(--panel-opacity));
+}
+
+:root[data-ui-background='graphite'] .modal-scrim {
+    -webkit-backdrop-filter: var(--panel-frost);
+    backdrop-filter: var(--panel-frost);
+}
+
+:root[data-ui-background='graphite'] {
+    /* The open page's pill: the identity's blue with white text (theme.css `--nav-active`). */
+    --tn-graphite: rgb(var(--nav-active));
+    --tn-graphite-dark: var(--tn-graphite);
+    --tn-graphite-ink: rgb(var(--nav-active-ink));
+    --tn-graphite-icon: rgb(var(--nav-active-icon));
+}
+
+:root[data-ui-background='graphite'] .tn-highlight {
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+}
+
+:root[data-ui-background='graphite'] :is(.tn-tool, .tn-search) {
+    border: 1px solid rgb(var(--panel-line));
+    background: rgb(var(--panel-fill));
+}
+
+:root[data-ui-background='graphite'] :is(.tn-tool, .tn-search):hover,
+:root[data-ui-background='graphite'] .tn-tool[aria-expanded='true'] {
+    background: rgb(var(--panel-fill-strong));
+    color: rgb(var(--gray-900));
+    box-shadow: none;
+}
+
+:root[data-ui-background='graphite'] .tn-segments {
+    border: 1px solid rgb(var(--panel-line));
+    background: rgb(var(--panel-fill));
+}
+
+:root[data-ui-background='graphite'] .tn-segments button[aria-pressed='true'] {
+    background: rgb(var(--panel-bg));
+    color: rgb(var(--gray-900));
+    box-shadow: 0 4px 10px -6px rgb(0 0 0 / 0.6);
+}
+
+.dark[data-ui-background='graphite'] .tn-segments button[aria-pressed='true'] {
+    background: rgb(255 255 255 / 0.14);
+}
+
+:root[data-ui-background='graphite'] :is(.tn-nav-search, .tn-drawer-panel .rounded-2xl:is(.bg-gray-50, .data-chip)) {
+    border-color: rgb(var(--panel-line));
+    background: rgb(var(--panel-fill));
+}
+
+:root[data-ui-background='graphite'] :is(.tn-drawer-group, .tn-drawer-link):hover {
+    background: rgb(var(--panel-fill));
+    color: rgb(var(--gray-900));
+}
+
+/*
+ * A section's menu row is a small heading
+ * (open or not), its pages plain lines under it without an indent, and the
+ * home page a line like them.
+ */
+:root[data-ui-background='graphite'] button.tn-drawer-group {
+    min-height: 36px;
+    padding-inline: 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gl-faint);
+}
+
+:root[data-ui-background='graphite'] button.tn-drawer-group:is([aria-expanded='true'], [data-current='true']) {
+    background: none;
+    color: var(--gl-faint);
+    box-shadow: none;
+}
+
+:root[data-ui-background='graphite'] button.tn-drawer-group:hover {
+    background: none;
+    color: var(--gl-ink);
+}
+
+:root[data-ui-background='graphite'] button.tn-drawer-group svg.tn-section-icon,
+:root[data-ui-background='graphite'] button.tn-drawer-group:is([aria-expanded='true'], [data-current='true']) svg {
+    width: 16px;
+    height: 16px;
+    color: inherit;
+}
+
+:root[data-ui-background='graphite'] :is(a.tn-drawer-group, .tn-drawer-link) {
+    min-height: 40px;
+    padding-inline: 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gl-muted);
+}
+
+:root[data-ui-background='graphite'] :is(a.tn-drawer-group, .tn-drawer-link) svg {
+    width: 18px;
+    height: 18px;
+    color: inherit;
+}
+
+:root[data-ui-background='graphite'] .tn-drawer-pages .ps-3 {
+    padding-inline-start: 0;
+}
+
+/* The open page, the home page among the sections, and a current section's page strip. */
+:root[data-ui-background='graphite'] :is(a.tn-drawer-group[data-current='true'], .tn-drawer-link[aria-current='page']) {
+    background: var(--tn-graphite);
+    color: var(--tn-graphite-ink);
+    box-shadow: none;
+}
+
+:root[data-ui-background='graphite'] :is(a.tn-drawer-group[data-current='true'], .tn-drawer-link[aria-current='page']) svg {
+    color: var(--tn-graphite-icon);
+}
+
+:root[data-ui-background='graphite'] .tn-mega-link .tn-tile {
+    border-color: rgb(var(--panel-line));
+    background: rgb(var(--panel-fill));
+    color: rgb(var(--brand-600));
+}
+
+:root[data-ui-background='graphite'] .tn-mega-link:hover {
+    background: rgb(var(--panel-fill-strong));
+}
+
+:root[data-ui-background='graphite'] .tn-mega-link[aria-current='page'] {
+    background: rgb(var(--brand-500) / 0.14);
+    box-shadow: none;
+}
+
+:root[data-ui-background='graphite'] .tn-bar-tabs {
+    border-top-color: rgb(var(--panel-line));
+}
+
+:root[data-ui-background='graphite'] .tn-branch-chip {
+    border-color: rgb(var(--panel-line));
+    background: rgb(var(--panel-fill));
+}
+
+/* Where the page sits, and its title: quiet small trail, then a bold title over a muted line. */
+:root[data-ui-background='graphite'] .tn-trail {
+    font-size: 12.5px;
+}
+
+:root[data-ui-background='graphite'] .ui-page-title {
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+:root[data-ui-cards='accent'] .shadow-card {
+    border-top: 3px solid rgb(var(--brand-500));
+}

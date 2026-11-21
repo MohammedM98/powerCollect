@@ -1,0 +1,474 @@
+.gl-switch[data-on] {
+    background: rgb(var(--switch-on));
+    box-shadow: none;
+}
+
+.gl-switch:disabled {
+    cursor: not-allowed;
+}
+
+.gl-switch-knob {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.3);
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.gl-switch[data-on] .gl-switch-knob {
+    transform: translateX(calc(-18px * var(--gl-d)));
+}
+
+[dir='ltr'] .gl-switch[data-on] .gl-switch-knob {
+    transform: translateX(18px);
+}
+
+/* ── The page's footer (Components/AppFooter.jsx) ─────────────────────── */
+.gl-footer {
+    padding: 8px 16px 16px;
+    text-align: center;
+    color: var(--gl-faint);
+    font-size: 12px;
+}
+
+/* ── The branch banner leading a data page (Components/BranchBanner.jsx) ── */
+/* ── Scope bar (Components/BranchBanner.jsx): whose figures the page shows, in one quiet row ── */
+.gl-scope {
+    padding: 12px 16px;
+    border: 1px solid var(--gl-line);
+    border-radius: 18px;
+    background: rgb(var(--panel-bg));
+    box-shadow: none;
+}
+
+.gl-scope-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+}
+
+.gl-scope-ico {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: color-mix(in srgb, rgb(var(--gl-brand)) 15%, transparent);
+    color: rgb(var(--gl-brand));
+}
+
+.gl-scope-eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    margin: 0;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.gl-scope-name {
+    margin: 0;
+    font: 700 18px/1.35 var(--gl-head);
+}
+
+.gl-scope-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+}
+
+.gl-scope-facts li {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ── Record strip (Components/Form/FormPreview.jsx): the record a form fills in ── */
+.gl-record {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    padding: 12px 16px;
+    border: 1px solid var(--gl-line);
+    border-radius: 16px;
+    background: rgb(var(--panel-bg));
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 14px 34px -26px rgb(0 0 0 / 0.4);
+}
+
+/* Beside the fields (a large window): "how it will look in the lists", the card standing on its own column. */
+.gl-preview-aside {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 16px;
+    background: rgb(var(--panel-tile));
+    border: 1px solid rgb(var(--panel-ink) / 0.055);
+}
+
+.gl-preview-aside > p {
+    margin: 0;
+    color: var(--gl-muted);
+    font-size: 13px;
+}
+
+.gl-preview-aside .gl-record-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    font-size: 20px;
+}
+
+.gl-preview-note {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+}
+
+.gl-preview-note svg {
+    flex: none;
+    width: 15px;
+    height: 15px;
+    margin-top: 4px;
+    color: rgb(var(--gl-brand));
+}
+
+.gl-record-avatar {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    background: rgb(var(--brand-solid));
+    color: rgb(var(--brand-ink));
+    font: 700 15px var(--gl-head);
+    transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.5, 1);
+}
+
+.gl-record-avatar svg {
+    width: 20px;
+    height: 20px;
+    color: rgb(var(--brand-ink));
+}
+
+.gl-record-avatar i {
+    position: absolute;
+    bottom: -2px;
+    inset-inline-start: -2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid rgb(var(--panel-bg));
+}
+
+.gl-record-title {
+    overflow: hidden;
+    margin: 0;
+    font: 700 16px/1.4 var(--gl-head);
+    text-align: start;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gl-record-sub {
+    margin: 0;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+}
+
+.gl-record-count {
+    margin-inline-start: auto;
+}
+
+.gl-record-count b {
+    color: var(--gl-ink);
+}
+
+/* ── Form groups (Components/Form/FormSection.jsx) and setting rows (Components/Form/SettingRow.jsx) ── */
+/* A form's group: its name above a card holding its fields (on a page), or a plain group between lines (in a window). */
+.gl-section {
+    min-width: 0;
+}
+
+.gl-group-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 4px 12px;
+    color: var(--gl-ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.gl-group-name svg {
+    width: 17px;
+    height: 17px;
+    color: rgb(var(--gl-brand));
+}
+
+/* A long form's index down the side (FormSteps.jsx FormOutline). */
+.gl-outline-layout {
+    display: grid;
+    flex: 1;
+    min-height: 0;
+    grid-template-columns: 220px minmax(0, 1fr);
+    border-top: 1px solid var(--gl-line);
+}
+
+.gl-outline {
+    display: grid;
+    align-content: start;
+    gap: 4px;
+    padding: 16px 12px;
+    border-inline-end: 1px solid var(--gl-line);
+}
+
+.gl-outline a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    color: var(--gl-muted);
+    font-size: 14px;
+    text-decoration: none;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.gl-outline a:hover {
+    background: var(--gl-fill-2);
+    color: var(--gl-ink);
+}
+
+.gl-outline a[aria-current] {
+    background: rgb(var(--brand-solid) / 0.14);
+    color: rgb(var(--gl-brand));
+    font-weight: 600;
+}
+
+@media (max-width: 760px) {
+    .gl-outline-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .gl-outline {
+        display: flex;
+        overflow-x: auto;
+        padding: 8px 16px;
+        border-inline-end: 0;
+        border-bottom: 1px solid var(--gl-line);
+        scrollbar-width: none;
+    }
+
+    .gl-outline a {
+        white-space: nowrap;
+    }
+}
+
+/* An edited record's unsaved changes, beside the save button. */
+.gl-unsaved {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--gl-warn);
+    font-size: 13px;
+}
+
+.gl-unsaved::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* A grouped list (Components/Form/InsetList.jsx): the name on one side and the value on the other, on one row. */
+.gl-inset {
+    overflow: hidden;
+    border: 1px solid rgb(var(--panel-ink) / 0.055);
+    border-radius: 16px;
+    background: rgb(var(--panel-tile));
+}
+
+.gl-inset-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 60px;
+    padding: 8px 16px;
+}
+
+.gl-inset-row + .gl-inset-row {
+    border-top: 1px solid var(--gl-line);
+}
+
+.gl-inset-label {
+    flex: 0 0 40%;
+    min-width: 0;
+}
+
+.gl-inset-label b,
+.gl-inset-label label {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+}
+
+.gl-inset-label small {
+    display: block;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+}
+
+.gl-inset-value {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* A field in a grouped list shows its frame only under the pointer or while typing in it. */
+.gl-inset-value :is(input:not([type='checkbox'], [type='radio']), select) {
+    width: 100%;
+    border-color: transparent;
+    background-color: transparent;
+    box-shadow: none;
+    text-align: end;
+}
+
+.gl-inset-value :is(input, select):hover:not(:focus) {
+    border-color: transparent;
+    background-color: rgb(var(--panel-field) / 0.6);
+}
+
+.gl-inset-value :is(input, select):focus {
+    background-color: rgb(var(--panel-field));
+}
+
+.gl-inset-caption {
+    margin: 8px 16px 0;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+}
+
+.gl-inset-caption b {
+    color: var(--gl-ink);
+}
+
+/* A setting on its own tile: its name and what it means, its switch at the end. */
+.gl-setting {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid rgb(var(--panel-ink) / 0.055);
+    border-radius: 16px;
+    background: rgb(var(--panel-tile));
+}
+
+.gl-setting-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.gl-setting-text b {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+}
+
+.gl-setting-text small {
+    display: block;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+
+.gl-tile {
+    min-width: 0;
+    padding: 16px 24px;
+    border: 0;
+    border-radius: calc(24px * var(--radius-scale, 1));
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--panel-shadow);
+}
+
+/*
+ * Inside a window (HeroUI's modal) a form's groups are not cards of their
+ * own: each is its name and its fields, a fine line between one group and
+ * the next, as in the redesign.
+ */
+.modal-sheet-panel .gl-tile {
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+}
+
+.modal-sheet-panel .gl-section + .gl-section {
+    padding-top: 24px;
+    border-top: 1px solid var(--gl-line);
+}
+
+.gl-section-ico {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: color-mix(in srgb, rgb(var(--gl-brand)) 15%, transparent);
+    color: rgb(var(--gl-brand));
+}
+
+.gl-text-muted {
+    color: var(--gl-muted);
+}
+
+@media print {
+    .gl-scope {
+        background: none;
+        border: 0;
+        box-shadow: none;
+    }
+}
+
+.gl-chip.gl-chip-sm {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--gl-ink);
+}
+
+.gl-chip:hover {
+    background: var(--gl-fill-2);
+    border-color: var(--gl-line-strong);
+}
+
+/* A date field with a control inside its end (DateInput `endContent`): its text and calendar icon stop before it. */
+button.gl-date-has-end {
+    padding-inline-end: var(--room-switch);
+}
+
+/* ── Windows (Components/DialogFrame.jsx, Modal.jsx) ──────────────────── */
+.gl-dialog-head {
+    padding-bottom: 8px;
+}

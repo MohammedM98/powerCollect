@@ -1,0 +1,229 @@
+.db-area { overflow: hidden; border-radius: 16px; background: var(--ma-solid); box-shadow: var(--ma-depth); }
+.db-owners { display: flex; gap: 4px; height: 5px; }
+.db-owners span { flex: 1; background: var(--db-c); }
+.db-owners span[data-tone="faint"] { background: var(--ma-line); }
+.db-area-head { display: flex; align-items: center; gap: 8px; padding: 8px 12px; }
+.db-area-head[draggable="true"] { cursor: grab; user-select: none; }
+.db-area-head[draggable="true"]:active { cursor: grabbing; }
+.db-grip { flex: none; color: var(--ma-faint); font-weight: 900; letter-spacing: -2px; }
+.db-area-head b { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ma-ink); }
+.db-area-head small { display: block; font-size: 12px; font-weight: 700; color: var(--ma-muted); }
+.db-area-tools { display: flex; align-items: center; gap: 4px; margin-inline-start: auto; }
+.db-shared { height: 20px; padding: 0 8px; display: inline-flex; align-items: center; border-radius: 99px; background: var(--ma-split-s); color: var(--ma-split); font-size: 11px; font-weight: 800; white-space: nowrap; }
+.db-mini { width: 28px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 9px; background: var(--ma-tile); box-shadow: var(--ma-hl); color: var(--ma-ink); }
+.db-mini:hover { background: var(--ma-solid); box-shadow: var(--ma-depth); }
+.db-area[data-open] .db-chev svg { transform: rotate(180deg); }
+.db-boxes { display: grid; gap: 8px; margin: 0; padding: 4px 12px 8px; list-style: none; }
+.db-box { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 8px 0 12px; border-radius: 11px; background: var(--ma-tile); box-shadow: var(--ma-hl); font-size: 13px; color: var(--ma-ink); }
+.db-box[draggable="true"] { cursor: grab; user-select: none; }
+.db-box > i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--db-c); }
+.db-box b { font-weight: 800; }
+.db-box bdi, .db-box small { color: var(--ma-muted); font-size: 12px; font-weight: 700; }
+.db-box small { margin-inline-start: auto; white-space: nowrap; }
+.db-dot { display: inline-block; width: 8px; height: 8px; margin-inline-end: 8px; border-radius: 50%; background: var(--db-c); }
+
+.db-tray { position: sticky; bottom: 14px; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; padding: 12px 16px; border-radius: 20px; background: var(--ma-solid); box-shadow: var(--ma-float); }
+.db-tray .grow { flex: 1; }
+.db-tray b { display: block; font-size: 14px; color: var(--ma-ink); }
+.db-tray small { display: block; font-size: 12.5px; color: var(--ma-muted); }
+.db-tray-ico { flex: none; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 12px; background: var(--ma-warn-s); color: var(--ma-warn); }
+.db-tray .db-save { background: var(--ma-act); color: #fff; border-color: transparent; }
+@media (prefers-reduced-motion: reduce) { .db-pool, .db-lane, .db-balance-bar i, .db-load-bar i { transition: none; } }
+
+/*
+ * HeroUI's Button in the MA look everywhere, in the components layer so a
+ * page's own class and Tailwind's utilities still win: primary is the dark raised key, secondary the white
+ * raised key, ghost a quiet text key that tints on hover.
+ */
+@layer components {
+    .button[class] { border-radius: 12px; font-weight: 800; }
+    .button[class].button--primary { background: var(--ma-act); color: #fff; box-shadow: var(--ma-depth); }
+    .button[class].button--secondary { background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-depth); }
+    .button[class].button--secondary:hover { background: var(--ma-solid); color: var(--ma-ink); filter: brightness(0.98); }
+    .button[class].button--ghost { background: transparent; color: inherit; box-shadow: none; }
+    .button[class].button--ghost:hover { background: var(--ma-tile); }
+}
+
+/* The board's cards: HeroUI Card frames, spaced as the board needs. */
+.db-area.card { padding: 0; gap: 0; border-radius: 16px; }
+.db-pool.card, .db-lane.card { padding: 16px; gap: 12px; }
+.db-mission.card { padding: 16px 24px; gap: 16px; }
+.db-tray.card { flex-direction: row; padding: 12px 16px; gap: 12px; }
+
+/* The subscriptions list: its figures, then the quick filters with their counts above the table. */
+.gl-sub-figs { margin-bottom: 12px; }
+.gl-sub-quick { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
+.gl-sub-count { min-width: 20px; height: 20px; padding: 0 8px; display: inline-grid; place-items: center; border-radius: 99px; background: var(--ma-solid); color: var(--ma-ink); font-size: 11.5px; font-weight: 800; }
+.gl-sub-debtors.toggle-button { height: 40px; gap: 8px; padding: 0 16px; border-radius: 13px; background: var(--ma-tile); box-shadow: var(--ma-hl); color: var(--ma-muted); font-weight: 800; }
+.gl-sub-debtors.toggle-button[data-selected='true'] { background: var(--ma-owe-s); color: var(--ma-owe); box-shadow: var(--ma-depth); }
+.gl-sub-quick .gl-seg-group { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+.gl-sub-quick .gl-seg-item { white-space: nowrap; flex: none; }
+
+/* An empty list that explains itself: its icon, what it is for, its steps and the key to begin. */
+.gl-empty-how { display: grid; justify-items: center; gap: 8px; padding: 24px 16px; text-align: center; color: var(--ma-muted); }
+.gl-empty-how > b { font-size: 16px; color: var(--ma-ink); }
+.gl-empty-how > p { margin: 0; font-size: 14px; }
+.gl-empty-how .gl-set-ico[data-tone='owe'] { background: var(--ma-owe-s); color: var(--ma-owe); }
+.gl-empty-how .gl-set-ico[data-tone='clr'] { background: var(--ma-clr-s); color: var(--ma-clr); }
+.gl-empty-how ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; width: min(100%, 680px); margin: 8px 0; padding: 0; list-style: none; }
+.gl-empty-how li { display: grid; gap: 4px; padding: 12px 16px; border-radius: 15px; background: var(--ma-tile); box-shadow: var(--ma-hl); text-align: start; }
+.gl-empty-how li b { font-size: 14px; color: var(--ma-ink); }
+.gl-empty-how li span { font-size: 12.5px; }
+@media (max-width: 760px) { .gl-empty-how ol { grid-template-columns: minmax(0, 1fr); } }
+
+/*
+ * The confirmation window (ConfirmDialog): big and plain. The icon on a
+ * large tile in its tone, the question as a big title, the explanation at
+ * full reading size, then two big keys side by side (stacked on phones).
+ */
+.gl-confirm { --cf-c: var(--ma-ink); --cf-s: var(--ma-tile); display: grid; justify-items: center; gap: 12px; padding: 24px 24px 24px; text-align: center; color: var(--ma-ink); }
+.gl-confirm[data-tone='primary'] { --cf-c: var(--ma-ink); --cf-s: var(--ma-tile); }
+.gl-confirm[data-tone='info'] { --cf-c: var(--ma-clr); --cf-s: var(--ma-clr-s); }
+.gl-confirm[data-tone='warning'] { --cf-c: var(--ma-warn); --cf-s: var(--ma-warn-s); }
+.gl-confirm[data-tone='danger'] { --cf-c: var(--ma-owe); --cf-s: var(--ma-owe-s); }
+.gl-confirm-icon { width: 72px; height: 72px; display: grid; place-items: center; border-radius: 24px; background: var(--cf-s); color: var(--cf-c); box-shadow: var(--ma-hl); }
+.gl-confirm-icon svg { width: 34px; height: 34px; }
+.gl-confirm-title { margin: 8px 0 0; font-size: 24px; font-weight: 900; line-height: 1.35; overflow-wrap: anywhere; }
+.gl-confirm-message { max-width: 460px; color: var(--ma-muted); font-size: 16.5px; line-height: 1.85; white-space: pre-line; overflow-wrap: anywhere; }
+.gl-confirm-extra { width: 100%; text-align: start; font-size: 15px; }
+.gl-confirm-keys { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 8px; }
+.gl-confirm-keys .button { width: 100%; height: 52px; border-radius: 15px; font-size: 16px; font-weight: 800; }
+.gl-confirm[data-tone='warning'] .gl-confirm-yes.button { background: var(--ma-warn); color: #fff; }
+.gl-confirm[data-tone='info'] .gl-confirm-yes.button { background: var(--ma-clr); color: #fff; }
+.gl-confirm[data-tone='danger'] .gl-confirm-yes.button { background: var(--ma-owe); color: #fff; }
+@media (max-width: 560px) {
+    .gl-confirm { padding: 24px 16px 16px; }
+    .gl-confirm-title { font-size: 21px; }
+    .gl-confirm-keys { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* SearchableSelect on HeroUI keys: its options keep the list's own height and alignment, not a key's. */
+.ss-option.button {
+    height: auto;
+    min-height: 38px;
+    justify-content: space-between;
+    border-radius: 10px;
+    font-weight: inherit;
+    white-space: normal;
+}
+
+/* HeroUI tick boxes in the MA look: a clear 20px box with a visible edge, dark when ticked, in light and dark. */
+@layer components {
+.checkbox .checkbox__control {
+    width: 20px;
+    height: 20px;
+    border-radius: 7px;
+    border: 1.5px solid color-mix(in oklab, var(--ma-ink) 32%, transparent);
+    background: var(--ma-solid);
+    box-shadow: var(--ma-hl);
+}
+
+.checkbox[data-selected='true'] .checkbox__control,
+.checkbox[data-indeterminate='true'] .checkbox__control {
+    border-color: var(--ma-act);
+    background: var(--ma-act);
+    color: #fff;
+}
+
+.checkbox[data-disabled='true'] .checkbox__control {
+    opacity: 0.5;
+}
+
+.checkbox .checkbox__content {
+    gap: 12px;
+}
+}
+
+/*
+ * HeroUI's Input and TextArea take the app's field look (app.css base
+ * fields): the field ground with its soft shadow, 14px corners, a fine
+ * ring on hover and the company's ring while typing. In the components
+ * layer above HeroUI's own field styles, so Tailwind's utilities and a
+ * page's own class (gl-set-field, say) still win.
+ */
+@layer components {
+.input[class],
+.textarea[class] {
+    border: 1px solid transparent;
+    border-radius: calc(14px * var(--radius-scale, 1));
+    background-color: rgb(var(--panel-field));
+    box-shadow: var(--field-shadow);
+    color: var(--gl-ink);
+}
+
+.input[class]:hover:not(:focus, :disabled, [data-disabled='true']),
+.textarea[class]:hover:not(:focus, :disabled, [data-disabled='true']) {
+    box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+}
+
+.input[class]:focus,
+.input[class][data-focused='true'],
+.textarea[class]:focus,
+.textarea[class][data-focused='true'] {
+    border-color: transparent;
+    box-shadow: 0 0 0 2px rgb(var(--brand-solid));
+    outline: none;
+}
+}
+
+/*
+ * Keys that were plain buttons before HeroUI (data-raw) keep a plain
+ * button's box: no set height or padding, the surrounding text's size and
+ * weight, and no fill of their own; their own utility classes draw them.
+ */
+@layer components {
+    .button[class][data-raw] {
+        height: auto;
+        min-height: 0;
+        width: auto;
+        min-width: 0;
+        padding: 0;
+        gap: normal;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        color: inherit;
+        font: inherit;
+        justify-content: normal;
+        text-align: inherit;
+        white-space: normal;
+    }
+
+    .button[class][data-raw]:hover {
+        background: transparent;
+    }
+}
+
+/* ChoiceSelect's list on the frosted pop surface, as every floating surface. */
+.gl-choice-pop {
+    padding: 8px;
+    border-radius: 16px;
+    background: var(--ma-pop);
+    -webkit-backdrop-filter: blur(30px) saturate(1.5);
+    backdrop-filter: blur(30px) saturate(1.5);
+    box-shadow: var(--ma-float);
+}
+
+/* HeroUI paints a ticked box through its control's ::before: the MA dark here, and nothing under the permission grid's own drawing. */
+@layer components {
+    .checkbox[class][data-selected='true'] .checkbox__control::before,
+    .checkbox[class][data-indeterminate='true'] .checkbox__control::before {
+        background-color: var(--ma-act);
+    }
+}
+
+.pm-check-field .checkbox__control::before,
+.pm-grant-field .checkbox__control::before {
+    content: none;
+}
+
+/* Payment methods are HeroUI radios: the chosen tile reads data-selected (see .gl-method[data-checked]). */
+.gl-method .radio__content { display: contents; }
+.gl-radio-cards .radio__content { display: flex; align-items: inherit; gap: inherit; width: 100%; }
+
+/* A Dropdown's trigger that wears a page's own key class: the chevron turns while its menu is open. */
+.gl-menu-trigger[aria-expanded='true'] .gl-menu-chevron { transform: rotate(180deg); }
+.pm-menu-pop { width: min(360px, calc(100vw - 16px)); }
+
+/* A row menu's sections fill its width, so the record's header line runs edge to edge. */
+.row-menu-list .menu-section { align-items: stretch; }
