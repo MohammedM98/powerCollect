@@ -75,7 +75,6 @@
     --nav-active-icon: 6 32 29;
 
     /* The logo's bolt (Components/SuperPowerMark.jsx); its S takes the text colour. */
-    --logo-bolt: 20 160 143;
 
     /* The on/off switch when on: a familiar green, in both themes. */
     --switch-on: 22 163 74;
@@ -333,7 +332,6 @@
     --brand-800: 204 246 239;
     --brand-900: 230 251 247;
 
-    --logo-bolt: 45 200 178;
     --switch-on: 34 197 94;
 
     --gray-50: 12 14 17;

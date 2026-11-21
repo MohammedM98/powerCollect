@@ -9,8 +9,10 @@ use App\Models\MeterReading;
 use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Notifications\ReadingNeedsReapproval;
 use App\Support\Readings\ApproveReading;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
 
@@ -53,7 +55,7 @@ class ReadingPricingTest extends TestCase
         $this->assertSame(['12.00', '12.00', 210.0, '0.50'], [
             $reading->fresh()->minimum_payment, $reading->fresh()->amount_due, $reading->fresh()->current_reading, $reading->fresh()->unit_price,
         ]);
-        $this->assertSame(0, $subscription->fresh()->minimum_charge);
+        $this->assertSame('0.00', $subscription->fresh()->minimum_charge);
         $this->put(route('meter-readings.pricing', $reading), ['unit_price' => 3, 'minimum_payment' => 15])->assertForbidden();
         $this->put(route('meter-readings.update', $reading), ['current_reading' => 220])->assertForbidden();
         $this->assertSame('12.00', $reading->fresh()->minimum_payment);
@@ -79,7 +81,7 @@ class ReadingPricingTest extends TestCase
         $this->put(route('meter-readings.pricing', $reading), ['unit_price' => 3])->assertForbidden();
 
         $this->assertSame(['12.00', '0.50', '12.00'], [$reading->fresh()->minimum_payment, $reading->fresh()->unit_price, $reading->fresh()->amount_due]);
-        $this->assertSame(0, $subscription->fresh()->minimum_charge);
+        $this->assertSame('0.00', $subscription->fresh()->minimum_charge);
     }
 
     public function test_old_rows_foreign_branches_and_waiting_current_readings_are_locked_even_for_super_admins(): void
@@ -126,6 +128,25 @@ class ReadingPricingTest extends TestCase
     {
         [$actor, $subscription, $reading] = $this->context(PermissionKey::UpdateSubscriptionKilowattPrice);
         $this->put(route('meter-readings.pricing', $reading), ['unit_price' => 3])->assertRedirect(route('login'));
+    }
+
+    public function test_repricing_an_approved_reading_reopens_it_and_tells_the_branchs_other_approvers(): void
+    {
+        Notification::fake();
+        [$actor, , $reading] = $this->context(PermissionKey::UpdateSubscriptionKilowattPrice);
+        $actor->permissions()->attach(Permission::idsFor([PermissionKey::ApproveMeterReadings]));
+        $approver = User::factory()->withPermissions([PermissionKey::ApproveMeterReadings])->create(['branch_id' => $actor->branch_id]);
+        $otherBranchApprover = User::factory()->withPermissions([PermissionKey::ApproveMeterReadings])->create();
+        ApproveReading::handle($reading, $actor);
+
+        $this->actingAs($actor)->put(route('meter-readings.pricing', $reading), ['unit_price' => 0.5])->assertSessionHas('status', 'meter-reading-updated');
+        Notification::assertNothingSent();
+
+        $this->put(route('meter-readings.pricing', $reading), ['unit_price' => 2])->assertSessionHas('status', 'meter-reading-reopened');
+
+        $this->assertSame(MeterReadingStatus::Pending, $reading->fresh()->status);
+        Notification::assertSentTo($approver, ReadingNeedsReapproval::class);
+        Notification::assertNotSentTo([$actor, $otherBranchApprover], ReadingNeedsReapproval::class);
     }
 
     /** @return array{User, Subscription, MeterReading} */

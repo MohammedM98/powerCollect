@@ -132,9 +132,10 @@ class SubscriptionStatementTest extends TestCase
 
         $this->assertSame(['-26.00', '-20.86'], SubscriptionTransaction::where('type', 'payment')->orderBy('id')->pluck('amount')->all());
         $this->assertSame([1, 2], SubscriptionTransaction::where('type', 'payment')->orderBy('id')->pluck('voucher_number')->all());
-        $this->assertSame(
-            ['action' => 'payment-recorded', 'subject' => 'Ahmad — 26 شيكل'],
-            $this->branchAdmin->notifications()->oldest()->first()->data,
+        // Both payments land in the same second, so their notifications have no order to rely on.
+        $this->assertEqualsCanonicalizing(
+            [['action' => 'payment-recorded', 'subject' => 'Ahmad — 26 شيكل'], ['action' => 'payment-recorded', 'subject' => 'Ahmad — 20.86 شيكل']],
+            $this->branchAdmin->notifications()->get()->pluck('data')->all(),
         );
 
         $this->actingAs($this->branchAdmin)

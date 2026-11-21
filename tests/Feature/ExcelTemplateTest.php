@@ -77,7 +77,7 @@ class ExcelTemplateTest extends TestCase
         ])->assertCreated()->assertJsonPath('template.isDefault', true);
 
         $template = ExcelTemplate::findOrFail($response->json('template.id'));
-        $this->assertSame([
+        $this->assertSameJson([
             'zebra' => false,
             'theme' => 'blue',
             'parts' => ['lines' => ['on' => true, 'groupBy' => 'recordedBy', 'columns' => [['key' => 'day', 'on' => true, 'width' => 20], ['key' => 'time', 'on' => false]]]],

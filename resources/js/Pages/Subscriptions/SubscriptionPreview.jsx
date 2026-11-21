@@ -50,7 +50,7 @@ export function SubscriptionCard({ data, tariff, circuitBreaker }) {
     return (
         <div className="gl-member" aria-live="polite">
             <div className="gl-member-top">
-                <BrandLogo alt="" onDark markSize={30} className="h-8 w-auto max-w-[64px] object-contain" />
+                <BrandLogo alt="" onDark className="h-8 w-auto max-w-[64px] object-contain" />
                 <span className="gl-member-status" data-status={data.status}>{STATUS_LABELS[data.status] ?? ''}</span>
             </div>
             <b className="gl-member-name" dir="auto">{name || 'مشترك جديد'}</b>

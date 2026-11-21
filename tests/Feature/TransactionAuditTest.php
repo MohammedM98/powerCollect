@@ -198,4 +198,20 @@ class TransactionAuditTest extends TestCase
         TransactionActions::applyAction(RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '5', null), $this->branchAdmin, TransactionAction::Delete, ['correction_notes' => 'سُجّلت بالخطأ']);
         $this->travelTo('2026-09-20 12:00:00');
     }
+
+    public function test_an_amount_edited_in_place_shows_by_how_much_it_changed_the_balance(): void
+    {
+        $invoice = RecordCharge::handle($this->subscription, $this->branchAdmin, ChargeType::Penalty, '50', 'غرامة');
+        $this->actingAs($this->branchAdmin)->post(route('subscriptions.transactions.actions.store', [$this->subscription, $invoice]), [
+            'action' => 'edit',
+            'amount' => '75',
+            'amendment_reason' => 'المبلغ الصحيح في المستند',
+        ])->assertSessionHasNoErrors();
+
+        $response = $this->get(route('transaction-audit.index'));
+
+        $response->assertInertia(fn ($page) => $page
+            ->where('events.data.0.kind', 'amendment')
+            ->where('events.data.0.impact', '25'));
+    }
 }

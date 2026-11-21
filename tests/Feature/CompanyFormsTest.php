@@ -84,7 +84,7 @@ class CompanyFormsTest extends TestCase
         ];
 
         $this->actingAs($manager)->post(route('company-forms.store'), ['name' => 'طلب اشتراك جديد', 'category' => 'الاشتراكات', 'layout' => $layout])->assertSessionHasNoErrors();
-        $this->assertSame($layout['header'], CompanyFormTemplate::sole()->layout['header']);
+        $this->assertSameJson($layout['header'], CompanyFormTemplate::sole()->layout['header']);
 
         foreach ([
             'layout.header.logoPosition' => ['logoPosition' => 'top'],
@@ -169,7 +169,7 @@ class CompanyFormsTest extends TestCase
 
         $template->update(['name' => 'تغيير لاحق', 'layout' => [...$originalLayout, 'footer' => 'تذييل جديد'], 'version' => 2]);
         $subscription->update(['full_name' => 'اسم جديد']);
-        $this->assertSame($originalLayout, $document->fresh()->snapshot['layout']);
+        $this->assertSameJson($originalLayout, $document->fresh()->snapshot['layout']);
         $this->assertSame('أحمد', $document->fresh()->snapshot['values']['subscriber_name']);
         $this->assertDatabaseCount('subscription_transactions', 0);
     }

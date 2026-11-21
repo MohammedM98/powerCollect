@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import PaymentModal from '@/Pages/Subscriptions/PaymentModal';
-import { setPage, submissions } from './inertia.jsx';
+import { rejectNext, setPage, submissions } from './inertia.jsx';
 
 const subscription = { id: 5, fullName: 'سامي أحمد' };
 const methods = [
@@ -64,5 +64,21 @@ describe('PaymentModal', () => {
         open();
 
         expect(screen.getByRole('button', { name: 'تسجيل الدفعة' }).disabled).toBe(true);
+    });
+
+    it('shows the server\'s refusal and stays open', async () => {
+        const user = userEvent.setup();
+        open();
+        rejectNext({ amount: 'الصندوق مغلق؛ افتح صندوقًا قبل تسجيل الدفعة.' });
+
+        await user.click(screen.getByRole('radio', { name: /نقد/ }));
+        await user.type(screen.getByLabelText('المبلغ المستلم'), '50');
+        await user.click(screen.getByRole('button', { name: /تسجيل 50/ }));
+        await user.click(await screen.findByRole('button', { name: 'نعم، سجّل الدفعة' }));
+
+        expect(submissions).toHaveLength(1);
+        expect(screen.getByText('الصندوق مغلق؛ افتح صندوقًا قبل تسجيل الدفعة.')).toBeTruthy();
+        expect(screen.getByLabelText('المبلغ المستلم').value).toBe('50');
+        expect(screen.queryByText('سُجّلت الدفعة')).toBeNull();
     });
 });

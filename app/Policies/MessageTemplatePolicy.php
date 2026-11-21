@@ -25,7 +25,7 @@ class MessageTemplatePolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermission(PermissionKey::SendMessages);
+        return $this->managesCompanyTemplates($user);
     }
 
     /**
@@ -33,7 +33,7 @@ class MessageTemplatePolicy
      */
     public function update(User $user, MessageTemplate $template): bool
     {
-        return $user->hasPermission(PermissionKey::SendMessages);
+        return $this->managesCompanyTemplates($user);
     }
 
     /**
@@ -41,6 +41,15 @@ class MessageTemplatePolicy
      */
     public function delete(User $user, MessageTemplate $template): bool
     {
-        return $user->hasPermission(PermissionKey::SendMessages);
+        return $this->managesCompanyTemplates($user);
+    }
+
+    /**
+     * Templates are the company's, shared by every branch: written by someone
+     * who sends messages and belongs to no branch, never from a branch's staff.
+     */
+    private function managesCompanyTemplates(User $user): bool
+    {
+        return $user->hasPermission(PermissionKey::SendMessages) && $user->branch_id === null;
     }
 }
