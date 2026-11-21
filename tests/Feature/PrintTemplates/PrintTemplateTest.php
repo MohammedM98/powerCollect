@@ -78,7 +78,7 @@ class PrintTemplateTest extends TestCase
         $template = PrintTemplate::where('name', 'ورقة مقاصة')->sole();
         $this->assertSameJson($layout, $template->layout);
         $this->post(route('print-templates.duplicate', $template))->assertSessionHas('status', 'print-template-created');
-        $this->assertSame($layout, PrintTemplate::where('name', 'ورقة مقاصة (نسخة)')->sole()->layout);
+        $this->assertSameJson($layout, PrintTemplate::where('name', 'ورقة مقاصة (نسخة)')->sole()->layout);
         $this->assertDatabaseCount('print_templates', 7);
     }
 
