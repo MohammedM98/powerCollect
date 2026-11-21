@@ -44,7 +44,7 @@ export default function SubscriptionWindows({
     setArchiveSubscription,
     setBulkField,
     setCreating,
-    setHistorySubscriptionId,
+    historyWindow,
     setMessageSubscription,
     setModalSubscription,
     setPersonalDetailsSubscription,
@@ -139,8 +139,10 @@ export default function SubscriptionWindows({
                         setPersonalDetailsSubscription(viewingSubscription);
                         closeProfile();
                     }}
+                    readings={historyWindow.readingsFor(viewingSubscriptionId)}
+                    onLoadReadings={() => historyWindow.load(viewingSubscriptionId)}
                     onOpenReadings={() => {
-                        setHistorySubscriptionId(viewingSubscriptionId);
+                        historyWindow.open(viewingSubscriptionId);
                         closeProfile();
                     }}
                     onSendMessage={can?.sendMessages ? () => openQuickMessage([viewingSubscriptionId]) : undefined}
@@ -170,7 +172,7 @@ export default function SubscriptionWindows({
                     key={`history-${historySubscription?.id ?? 'closed'}`}
                     subscription={historySubscription}
                     readingWeekOptions={weekOptionsFor(historySubscription, readingWeekOptions)}
-                    onClose={() => setHistorySubscriptionId(null)}
+                    onClose={historyWindow.close}
                 />
             )}
 

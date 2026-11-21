@@ -81,11 +81,43 @@ class PageLoadingPerformanceTest extends TestCase
             'X-Inertia-Partial-Component' => 'Subscriptions/Index',
             'X-Inertia-Partial-Data' => 'subscriptions,filters',
         ])->assertOk()->assertJsonCount(3, 'props.subscriptions.data')
-            ->assertJsonCount(4, 'props.subscriptions.data.0.meterReadings');
+            ->assertJsonPath('props.subscriptions.data.0.meterReadingsCount', 4)
+            ->assertJsonMissingPath('props.subscriptions.data.0.meterReadings');
 
-        $rowQueries = collect(DB::getQueryLog())->filter(fn (array $query): bool => preg_match('/from "(?:subscriptions|meter_readings)" where "(?:subscriptions|meter_readings)"\.(?:"id"|"subscription_id") = \?/', $query['query']) === 1);
+        $queries = collect(DB::getQueryLog())->pluck('query');
         DB::disableQueryLog();
+        $rowQueries = $queries->filter(fn (string $query): bool => preg_match('/from "(?:subscriptions|meter_readings|subscription_archive_events)" where (?:exists\(select \* from "subscription_archive_events" where )?"(?:subscriptions|meter_readings|subscription_archive_events)"\.(?:"id"|"subscription_id") = \?/', $query) === 1);
         $this->assertCount(0, $rowQueries);
+        $this->assertCount(1, $queries->filter(fn (string $query): bool => str_contains($query, 'from "meter_reading_adjustments"')));
+    }
+
+    public function test_the_subscriptions_list_sends_a_rows_whole_reading_history_only_when_its_window_asks(): void
+    {
+        $this->freezeTime();
+        $actor = User::factory()->superAdmin()->create();
+        $subscription = Subscription::factory()->create();
+        $latest = ReadingWeeks::latestEndedWeekStart($subscription->branch_id);
+        for ($week = 0; $week < 6; $week++) {
+            MeterReading::factory()->for($subscription)->create(['week_start' => $latest->copy()->subWeeks($week), 'recorded_by' => $actor->id]);
+        }
+        $hydrated = 0;
+        Event::listen('eloquent.retrieved: '.MeterReading::class, function () use (&$hydrated): void {
+            $hydrated++;
+        });
+        $version = app(HandleInertiaRequests::class)->version(request());
+        $headers = ['X-Inertia' => 'true', 'X-Inertia-Version' => (string) $version, 'X-Inertia-Partial-Component' => 'Subscriptions/Index'];
+
+        $this->actingAs($actor)->getJson(route('subscriptions.index'), [...$headers, 'X-Inertia-Partial-Data' => 'subscriptions,readingHistory'])
+            ->assertOk()->assertJsonPath('props.subscriptions.data.0.latestMeterReading.weekStart', $latest->toDateString())
+            ->assertJsonPath('props.subscriptions.data.0.meterReadingsCount', 6)->assertJsonPath('props.readingHistory', null)
+            ->assertJsonPath('props.subscriptions.data.0.initialReading', null)
+            ->assertJsonPath('props.subscriptions.data.0.lastReadingWeekStart', $latest->toDateString());
+        $this->assertSame(3, $hydrated);
+
+        $this->getJson(route('subscriptions.index', ['readings' => $subscription->id]), [...$headers, 'X-Inertia-Partial-Data' => 'readingHistory'])
+            ->assertOk()->assertJsonPath('props.readingHistory.subscriptionId', $subscription->id)
+            ->assertJsonCount(6, 'props.readingHistory.meterReadings')
+            ->assertJsonPath('props.readingHistory.meterReadings.0.weekStart', $latest->toDateString());
     }
 
     public function test_the_weekly_sheet_hydrates_only_the_selected_and_previous_reading(): void

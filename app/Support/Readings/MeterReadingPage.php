@@ -83,7 +83,7 @@ class MeterReadingPage
     {
         $counts = MeterReading::query()
             ->whereIn('subscription_id', (clone $query)->reorder()->select('subscriptions.id'))
-            ->whereDate('week_start', $week)
+            ->whereWeek('=', $week)
             ->selectRaw('status, COUNT(*) as reading_count')
             ->groupBy('status')
             ->toBase()->pluck('reading_count', 'status');
@@ -263,15 +263,15 @@ class MeterReadingPage
                 'circuitBreaker',
                 'standingDiscount',
                 'meterBox.subArea',
-                'meterReadings' => fn ($q) => $q->chaperone()->withLaterReadingsCount()->whereDate('week_start', '<=', $week)->orderByDesc('week_start')->limit(2)
+                'meterReadings' => fn ($q) => $q->chaperone()->withLaterReadingsCount()->whereWeek('<=', $week)->orderByDesc('week_start')->limit(2)
                     ->with(['recordedBy:id,name', 'approvedBy:id,name', 'chargeLine:id,meter_reading_id']),
             ])
-            ->withExists(['meterReadings as has_later_week' => fn ($q) => $q->whereDate('week_start', '>', $week)]);
+            ->withExists(['meterReadings as has_later_week' => fn ($q) => $q->whereWeek('>', $week)]);
         if ($request->boolean('print')) {
             $query->with('branch:id,name');
             $selected = PrintSelection::ids($request, '/meter-readings');
             if ($selected !== null) {
-                $query->whereHas('meterReadings', fn (Builder $readings): Builder => $readings->whereKey($selected)->whereDate('week_start', $week));
+                $query->whereHas('meterReadings', fn (Builder $readings): Builder => $readings->whereKey($selected)->whereWeek('=', $week));
             }
         }
 
@@ -285,7 +285,7 @@ class MeterReadingPage
         $summaryQuery = clone $query;
         ReadingSheetQuery::applySheetStatusFilters($query, $request, $week);
 
-        $enteredThisWeek = fn (Builder $q) => $q->whereDate('week_start', $week);
+        $enteredThisWeek = fn (Builder $q) => $q->whereWeek('=', $week);
 
         $rows = fn () => $query->paginate(DataTableFilters::dataTablePerPage($request, 25))
             ->withQueryString()
@@ -322,7 +322,7 @@ class MeterReadingPage
                 'entered' => (clone $scope)->whereHas('meterReadings', $enteredThisWeek)->count(),
                 'amountDue' => number_format((float) MeterReading::query()
                     ->whereIn('subscription_id', (clone $scope)->select('id'))
-                    ->whereDate('week_start', $week)
+                    ->whereWeek('=', $week)
                     ->sum('amount_due'), 2, '.', ''),
             ],
             'canRecord' => $actor->can('create', MeterReading::class),

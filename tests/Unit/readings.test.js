@@ -79,7 +79,7 @@ test('a last reading never steps past the reading of the week after it', () => {
 // Each branch reads on its own weekly reading day, so a subscription's weeks are its branch's.
 test("a subscription's weeks are the ones listed for its branch", () => {
     const byBranch = { 3: [{ value: '2026-09-18' }], 7: [{ value: '2026-09-13' }] };
-    const subscription = { branch_id: 7, meterReadings: [{ weekStart: '2026-09-13' }] };
+    const subscription = { branch_id: 7, latestMeterReading: { weekStart: '2026-09-13' } };
 
     assert.deepEqual(weekOptionsFor(subscription, byBranch), [{ value: '2026-09-13' }]);
     assert.deepEqual(weekOptionsFor({ branch_id: 9 }, byBranch), []);

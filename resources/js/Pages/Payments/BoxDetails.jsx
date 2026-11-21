@@ -191,7 +191,7 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
                                     <BoxNumberCell number={box.number} position={entries.indexOf(entry) + 1} />
                                     <LedgerLeadCells ledger={ledger} />
                                     <td title={subscriberName(entry)} className="whitespace-normal!">
-                                        {entry.statement_url ? <Link href={entry.statement_url} prefetch className="font-semibold text-gray-900 hover:text-brand-600">{subscriberName(entry)}</Link> : <span className="font-semibold text-gray-900">{subscriberName(entry)}</span>}
+                                        {entry.statement_url ? <Link href={entry.statement_url} className="font-semibold text-gray-900 hover:text-brand-600">{subscriberName(entry)}</Link> : <span className="font-semibold text-gray-900">{subscriberName(entry)}</span>}
                                         <span className="block font-display text-xs text-gray-400"><bdi dir="ltr">{entry.transaction?.subscription?.account_number ?? '—'}</bdi></span>
                                     </td>
                                     <LedgerTrailCells ledger={ledger} amount={entry.amount} currency={entry.currency} cancelled={!live} />

@@ -107,7 +107,7 @@ export function AccountTab({ statement, onOpenStatement, onLoadStatement, loadin
     </>;
 }
 
-export default function SubscriptionDetailsModal({ subscription, onClose, onEdit, onEditPersonal, onOpenStatement, onLoadStatement, statement, statementLoading, onSendMessage, onMessageHistory, onPrevious, onNext, onOpenReadings, canUpdate, readingWeekOptions = [] }) {
+export default function SubscriptionDetailsModal({ subscription, onClose, onEdit, onEditPersonal, onOpenStatement, onLoadStatement, statement, statementLoading, onSendMessage, onMessageHistory, onPrevious, onNext, onOpenReadings, readings = null, onLoadReadings, canUpdate, readingWeekOptions = [] }) {
     const [activeTab, setActiveTab] = useState('details');
     const [expanded, setExpanded] = useState(false);
     const [enteringReading, setEnteringReading] = useState(false);
@@ -115,9 +115,10 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
     const dialogRef = useRef(null);
     const bodyRef = useRef(null);
     const balance = describeBalance(statement?.summary.balance ?? subscription?.outstandingBalance ?? 0);
-    const readings = subscription?.meterReadings ?? [];
-    const lastReading = readings[0];
-    const months = groupReadingsByMonth(readings).slice(0, 6).reverse();
+    const lastReading = subscription?.latestMeterReading ?? null;
+    // The history loads with the consumption tab; a subscription without a reading has none to load.
+    const history = lastReading ? readings : [];
+    const months = groupReadingsByMonth(history ?? []).slice(0, 6).reverse();
     const maximum = Math.max(1, ...months.map((month) => month.totals.consumption));
     const currentWeekRecorded = subscription ? hasLatestWeekReading(subscription, readingWeekOptions) : false;
     const lastPayment = statement?.entries.findLast((entry) => entry.type === 'payment' && !entry.cancellation && !entry.isReversal);
@@ -137,6 +138,9 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
         bodyRef.current?.scrollTo({ top: 0 });
         if (tab === 'transactions' && !statement && !statementLoading) {
             onLoadStatement();
+        }
+        if (tab === 'consumption' && !history) {
+            onLoadReadings?.();
         }
         if (focus) {
             dialogRef.current?.querySelector(`[role="tab"][data-key="${tab}"]`)?.focus();
@@ -244,7 +248,7 @@ export default function SubscriptionDetailsModal({ subscription, onClose, onEdit
                     <div id={`${tabsId}-consumption-panel`} className="sp-consumption" role="tabpanel" aria-label={TAB_LABELS.consumption} hidden={activeTab !== 'consumption'}>
                         <div className="sp-columns">
                             <Section title="الاستهلاك الشهري" icon="bolt" trailing={<small className="sp-section-unit">كيلوواط ساعة</small>}>
-                                {months.length ? <div className="sp-chart" role="img" aria-label={`الاستهلاك الشهري: ${months.map((month) => `${month.month}: ${number(month.totals.consumption)} كيلوواط ساعة`).join('، ')}`}>{months.map((month) => <div key={month.month} title={`${month.month}: ${number(month.totals.consumption)} كيلوواط ساعة`}><b>{number(month.totals.consumption)}</b><i style={{ height: `${month.totals.consumption / maximum * 80}px` }} /><small>{monthLabel(month.month)}</small><small>{month.month.slice(0, 4)}</small></div>)}</div> : <p className="sp-empty">لا توجد قراءات مسجلة بعد.</p>}
+                                {history === null ? <div className="sp-loading" role="status" aria-label="جارٍ تحميل الاستهلاك"><div /><div /><div /></div> : months.length ? <div className="sp-chart" role="img" aria-label={`الاستهلاك الشهري: ${months.map((month) => `${month.month}: ${number(month.totals.consumption)} كيلوواط ساعة`).join('، ')}`}>{months.map((month) => <div key={month.month} title={`${month.month}: ${number(month.totals.consumption)} كيلوواط ساعة`}><b>{number(month.totals.consumption)}</b><i style={{ height: `${month.totals.consumption / maximum * 80}px` }} /><small>{monthLabel(month.month)}</small><small>{month.month.slice(0, 4)}</small></div>)}</div> : <p className="sp-empty">لا توجد قراءات مسجلة بعد.</p>}
                             </Section>
                             <Section title="القراءات" icon="table"><dl className="sp-fields">
                                 <Field label="القراءة الحالية" value={number(subscription.lastReading)} numeric /><Field label="القراءة السابقة" value={lastReading ? number(lastReading.previous_reading) : null} numeric />

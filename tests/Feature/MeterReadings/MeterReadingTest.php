@@ -843,26 +843,28 @@ class MeterReadingTest extends TestCase
             ->update(['mobile_operation_id' => '12345678-1234-4123-8123-123456789012', 'reading_fee' => 10, 'minimum_payment' => 20]);
 
         $this->actingAs($this->dataEntry)
-            ->get(route('subscriptions.index'))
+            ->get(route('subscriptions.index', ['readings' => $this->subscription->id]))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->where('subscriptions.data.0.id', $this->subscription->id)
+                ->where('subscriptions.data.0.meterReadingsCount', 2)
+                ->where('subscriptions.data.0.latestMeterReading.weekStart', '2026-09-18')
                 ->where('subscriptions.data.0.lastReading', 1290)
                 ->where('subscriptions.data.0.lastReadingWeekStart', '2026-09-18')
                 ->where('subscriptions.data.0.canRecordReading', true)
-                ->has('subscriptions.data.0.meterReadings', 2)
-                ->where('subscriptions.data.0.meterReadings.0.weekStart', '2026-09-18')
-                ->where('subscriptions.data.0.meterReadings.0.consumption', 40)
-                ->where('subscriptions.data.0.meterReadings.0.discountAmount', '0.00')
-                ->where('subscriptions.data.0.meterReadings.0.minimumPayment', '20.00')
-                ->has('subscriptions.data.0.meterReadings.0.unitPrice')
-                ->where('subscriptions.data.0.meterReadings.0.recordedSource', 'app')
-                ->where('subscriptions.data.0.meterReadings.0.minimumApplied', true)
-                ->where('subscriptions.data.0.meterReadings.1.recordedSource', 'web')
-                ->where('subscriptions.data.0.meterReadings.1.minimumApplied', false)
-                ->where('subscriptions.data.0.meterReadings.1.status', 'approved')
-                ->where('subscriptions.data.0.meterReadings.0.canUpdate', true)
-                ->where('subscriptions.data.0.meterReadings.1.canUpdate', false)
+                ->has('readingHistory.meterReadings', 2)
+                ->where('readingHistory.meterReadings.0.weekStart', '2026-09-18')
+                ->where('readingHistory.meterReadings.0.consumption', 40)
+                ->where('readingHistory.meterReadings.0.discountAmount', '0.00')
+                ->where('readingHistory.meterReadings.0.minimumPayment', '20.00')
+                ->has('readingHistory.meterReadings.0.unitPrice')
+                ->where('readingHistory.meterReadings.0.recordedSource', 'app')
+                ->where('readingHistory.meterReadings.0.minimumApplied', true)
+                ->where('readingHistory.meterReadings.1.recordedSource', 'web')
+                ->where('readingHistory.meterReadings.1.minimumApplied', false)
+                ->where('readingHistory.meterReadings.1.status', 'approved')
+                ->where('readingHistory.meterReadings.0.canUpdate', true)
+                ->where('readingHistory.meterReadings.1.canUpdate', false)
                 ->has('readingWeekOptions', 1)
                 ->where('readingWeekOptions.'.$this->dataEntry->branch_id.'.0.value', '2026-09-18'));
     }
@@ -879,10 +881,10 @@ class MeterReadingTest extends TestCase
         ]);
 
         $this->actingAs($this->dataEntry)
-            ->get(route('subscriptions.index'))
+            ->get(route('subscriptions.index', ['readings' => $this->subscription->id]))
             ->assertInertia(fn ($page) => $page
-                ->where('subscriptions.data.0.meterReadings.0.minimumApplied', false)
-                ->where('subscriptions.data.0.meterReadings.0.amountDue', '2.70'));
+                ->where('readingHistory.meterReadings.0.minimumApplied', false)
+                ->where('readingHistory.meterReadings.0.amountDue', '2.70'));
     }
 
     public function test_a_collector_is_not_offered_reading_entry_on_the_statement(): void

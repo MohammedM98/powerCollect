@@ -251,8 +251,11 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
                 onOpenPalette={() => onPaletteOpenChange(true)}
                 returnFocusTo={menuButtonRef}
             />
-            <Suspense fallback={loadingTool}>
+            {/* Mounted on every page: loads quietly, apart from the windows below, so no notice flashes as a page opens. */}
+            <Suspense fallback={null}>
                 <TableExcelActions />
+            </Suspense>
+            <Suspense fallback={loadingTool}>
                 {paletteOpen && <CommandPalette
                     open={paletteOpen}
                     onOpenChange={onPaletteOpenChange}

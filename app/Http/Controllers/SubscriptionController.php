@@ -49,8 +49,11 @@ class SubscriptionController extends Controller
             ->select('subscriptions.*')
             ->selectRaw("COALESCE(NULLIF(subscription_name, ''), full_name) as display_name")
             ->readableTo($actor)
-            ->with(['branch.area', 'branch.governorate', 'meterBox.subArea', 'tariff', 'tariffSegment', 'circuitBreaker', 'standingDiscount', 'registeredBy'])
-            ->with(['meterReadings' => fn ($readings) => $readings->chaperone()->withLaterReadingsCount()->with('recordedBy')])
+            ->with(['branch.area', 'branch.governorate', 'meterBox.subArea', 'tariff', 'tariffSegment', 'circuitBreaker', 'standingDiscount', 'registeredBy', 'archiveEvents'])
+            // A row needs only its latest weeks; the whole history is sent when its reading window opens (readingHistory).
+            ->with(['meterReadings' => fn ($readings) => $readings->chaperone()->withLaterReadingsCount()->with(['recordedBy', 'adjustments'])
+                ->orderByDesc('week_start')->limit(SubscriptionPage::ROW_READINGS)])
+            ->withCount('meterReadings')
             ->with(['profile' => fn ($query) => $query->withCount(['subscriptions' => fn ($subscriptions) => $subscriptions->readableTo($actor)])])
             ->withSum('transactions as outstanding_balance', 'amount')
             ->withExists(['transactions as has_subscription_fee' => fn (Builder $transactions) => $transactions->where('type', SubscriptionTransaction::TYPE_SUBSCRIPTION_FEE)]);
@@ -85,6 +88,7 @@ class SubscriptionController extends Controller
             // New reading forms offer only the latest week of each branch.
             'readingWeekOptions' => fn () => ReadingWeeks::recentWeekOptionsFor($actor, 1),
             'statement' => fn () => StatementBuilder::requestedStatement($request, $actor),
+            'readingHistory' => fn () => SubscriptionPage::requestedReadingHistory($request, $actor),
             ...SubscriptionForm::subscriptionFormOptions(),
         ]);
     }

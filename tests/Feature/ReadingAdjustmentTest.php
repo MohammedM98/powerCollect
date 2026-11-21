@@ -48,9 +48,9 @@ class ReadingAdjustmentTest extends TestCase
         $this->assertSame(SubscriptionTransaction::STATUS_CANCELLED, $oldCurrentCharge->fresh()->status);
         $this->assertFalse(ApproveReading::handle($current->fresh(), $actor, true));
         $this->assertSame('2.50', $subscription->fresh()->balance());
-        $this->get(route('subscriptions.index'))->assertInertia(fn ($page) => $page
-            ->where('subscriptions.data.0.meterReadings.0.requiresReentry', true)
-            ->where('subscriptions.data.0.meterReadings.0.canUpdateUnitPrice', false));
+        $this->get(route('subscriptions.index', ['readings' => $subscription->id]))->assertInertia(fn ($page) => $page
+            ->where('readingHistory.meterReadings.0.requiresReentry', true)
+            ->where('readingHistory.meterReadings.0.canUpdateUnitPrice', false));
         $this->get(route('meter-readings.index'))->assertInertia(fn ($page) => $page
             ->where('rows.data.0.reading.requiresReentry', true)->where('rows.data.0.canApprove', false));
 
@@ -347,9 +347,9 @@ class ReadingAdjustmentTest extends TestCase
         $subscription = Subscription::factory()->create();
         $old = $this->reading($subscription, '2026-09-04', 200, 210, $actor);
 
-        $this->actingAs($actor)->get(route('subscriptions.index'))->assertInertia(fn ($page) => $page
+        $this->actingAs($actor)->get(route('subscriptions.index', ['readings' => $subscription->id]))->assertInertia(fn ($page) => $page
             ->where('subscriptions.data.0.editableLastReadingId', null)
-            ->where('subscriptions.data.0.meterReadings.0.id', $old->id));
+            ->where('readingHistory.meterReadings.0.id', $old->id));
 
         $this->get(route('meter-readings.index', ['week' => '2026-09-04']))->assertInertia(fn ($page) => $page
             ->where('week', '2026-09-04')

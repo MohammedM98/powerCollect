@@ -71,10 +71,10 @@ class SubscriptionReadingBaselineTest extends TestCase
         $this->assertSame('0.00', $subscription->fresh()->balance());
         $this->assertSame(1, $subscription->meterReadings()->count());
         $this->assertSame('initial_reading_adjustment', $current->adjustments()->first()->kind);
-        $this->get(route('subscriptions.index'))->assertInertia(fn ($page) => $page
+        $this->get(route('subscriptions.index', ['readings' => $subscription->id]))->assertInertia(fn ($page) => $page
             ->where('subscriptions.data.0.initialReading.value', 130)
-            ->where('subscriptions.data.0.meterReadings.0.requiresReentry', true)
-            ->where('subscriptions.data.0.meterReadings.0.canApprove', false));
+            ->where('readingHistory.meterReadings.0.requiresReentry', true)
+            ->where('readingHistory.meterReadings.0.canApprove', false));
     }
 
     #[TestWith(['subscriptions.reading-baseline.preview', 'postJson'])]
@@ -152,9 +152,9 @@ class SubscriptionReadingBaselineTest extends TestCase
             'amount_due' => 8, 'recorded_by' => $actor->id,
         ]);
 
-        $this->actingAs($actor)->get(route('subscriptions.index'))->assertInertia(fn ($page) => $page
-            ->where('subscriptions.data.0.meterReadings.0.discount.method', 'percentage')
-            ->where('subscriptions.data.0.meterReadings.0.discount.value', '20.00')
-            ->where('subscriptions.data.0.meterReadings.0.canUpdate', true));
+        $this->actingAs($actor)->get(route('subscriptions.index', ['readings' => $subscription->id]))->assertInertia(fn ($page) => $page
+            ->where('readingHistory.meterReadings.0.discount.method', 'percentage')
+            ->where('readingHistory.meterReadings.0.discount.value', '20.00')
+            ->where('readingHistory.meterReadings.0.canUpdate', true));
     }
 }

@@ -85,6 +85,8 @@ export interface SubscriptionsIndexProps {
     branchScope?: BranchScope | null;
     readingWeekOptions?: Record<string, Option[]>;
     statement?: StatementProps | null;
+    /** SubscriptionPage::requestedReadingHistory: one subscription's whole history, for its reading window (?readings=…). */
+    readingHistory?: { subscriptionId: number; meterReadings: Record<string, unknown>[] } | null;
     [formOption: string]: unknown;
 }
 

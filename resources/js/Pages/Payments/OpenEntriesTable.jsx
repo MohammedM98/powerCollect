@@ -55,13 +55,13 @@ export default function OpenEntriesTable({ table, entries, filters, counts, url,
 
                         return <tr key={entry.id} className={cancelled ? 'opacity-60' : undefined}>
                             <td className="whitespace-normal!">
-                                <Link href={entry.box.url} prefetch className="font-semibold text-brand-600 hover:underline">صندوق <bdi dir="ltr" className="font-display">{entry.box.number}</bdi></Link>
+                                <Link href={entry.box.url} className="font-semibold text-brand-600 hover:underline">صندوق <bdi dir="ltr" className="font-display">{entry.box.number}</bdi></Link>
                                 <span className="block text-xs text-gray-400">{boxTypeStyles[entry.box.type].label}</span>
                             </td>
                             <LedgerLeadCells ledger={ledger} />
                             <td title={entry.subscriber} className="whitespace-normal!">
                                 {entry.statementUrl ? (
-                                    <Link href={entry.statementUrl} prefetch title="فتح كشف الحساب عند هذه الحركة" className="font-semibold text-gray-900 hover:text-brand-600 hover:underline">{entry.subscriber}</Link>
+                                    <Link href={entry.statementUrl} title="فتح كشف الحساب عند هذه الحركة" className="font-semibold text-gray-900 hover:text-brand-600 hover:underline">{entry.subscriber}</Link>
                                 ) : (
                                     <span className="font-semibold text-gray-900">{entry.subscriber}</span>
                                 )}

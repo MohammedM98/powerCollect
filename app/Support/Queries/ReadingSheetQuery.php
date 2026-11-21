@@ -51,7 +51,7 @@ class ReadingSheetQuery
         self::applySheetFilters($subscriptions, $request, $week);
 
         return self::pendingReadings($actor)
-            ->whereDate('week_start', $week)
+            ->whereWeek('=', $week)
             ->whereIn('subscription_id', $subscriptions->reorder()->select('subscriptions.id'));
     }
 
@@ -80,13 +80,13 @@ class ReadingSheetQuery
         $thisWeek = fn (string $column) => MeterReading::query()
             ->select($column)
             ->whereColumn('meter_readings.subscription_id', 'subscriptions.id')
-            ->whereDate('week_start', $week)
+            ->whereWeek('=', $week)
             ->limit(1);
 
         $lastBefore = MeterReading::query()
             ->selectRaw('COALESCE(next_previous_reading, current_reading)')
             ->whereColumn('meter_readings.subscription_id', 'subscriptions.id')
-            ->whereDate('week_start', '<', $week)
+            ->whereWeek('<', $week)
             ->orderByDesc('week_start')
             ->limit(1);
 
@@ -223,15 +223,15 @@ class ReadingSheetQuery
         $filters = (array) $request->input('filter', []);
 
         match ($filters['entry'] ?? null) {
-            'entered' => $query->whereHas('meterReadings', fn (Builder $q) => $q->whereDate('week_start', $week)),
-            'missing' => $query->whereDoesntHave('meterReadings', fn (Builder $q) => $q->whereDate('week_start', $week)),
+            'entered' => $query->whereHas('meterReadings', fn (Builder $q) => $q->whereWeek('=', $week)),
+            'missing' => $query->whereDoesntHave('meterReadings', fn (Builder $q) => $q->whereWeek('=', $week)),
             default => null,
         };
 
         $approval = MeterReadingStatus::tryFrom((string) ($filters['approval'] ?? ''));
 
         if ($approval !== null) {
-            $query->whereHas('meterReadings', fn (Builder $q) => $q->whereDate('week_start', $week)->where('status', $approval));
+            $query->whereHas('meterReadings', fn (Builder $q) => $q->whereWeek('=', $week)->where('status', $approval));
         }
     }
 }

@@ -287,7 +287,7 @@ class DashboardOverview
             $active = Subscription::query()->where('branch_id', $branch->id)->whereNull('archived_at')->where('status', SubscriptionStatus::Active);
             $statuses = MeterReading::query()
                 ->whereIn('subscription_id', (clone $active)->select('id'))
-                ->whereDate('week_start', $week)
+                ->whereWeek('=', $week)
                 ->toBase()
                 ->selectRaw('status, count(*) as total')
                 ->groupBy('status')
