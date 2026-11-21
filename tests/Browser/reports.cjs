@@ -176,7 +176,7 @@ const { readFileSync } = require('node:fs');
         await page.goto(`/reports?branch=all&section=statement&subscription=${fixture.quiet}`);
         await page.getByText('لا توجد حركات لهذا المشترك خلال الفترة المختارة', { exact: true }).waitFor();
         assert.equal(await page.locator('.reports-detail-table tbody td[colspan]').count(), 1);
-        assert.equal(await page.getByRole('cell', { name: 'الرصيد الافتتاحي', exact: true }).count(), 0);
+        assert.equal(await page.getByRole('gridcell', { name: 'الرصيد الافتتاحي', exact: true }).count() + await page.getByRole('rowheader', { name: 'الرصيد الافتتاحي', exact: true }).count(), 0);
         await page.getByRole('button', { name: 'عرض آخر 90 يومًا', exact: true }).waitFor();
         await snap('statement-empty-explained');
         await page.getByRole('button', { name: 'عرض آخر 90 يومًا', exact: true }).click();
