@@ -30,4 +30,12 @@ class SubscriptionMessageFactory extends Factory
     {
         return $this->state(fn () => ['status' => MessageStatus::Failed, 'error' => 'Gateway error']);
     }
+
+    /**
+     * Taken by the SMS gateway without a confirmation in time.
+     */
+    public function unconfirmed(): static
+    {
+        return $this->state(fn () => ['status' => MessageStatus::Unconfirmed, 'error' => 'Gateway did not confirm']);
+    }
 }

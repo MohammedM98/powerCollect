@@ -45,7 +45,7 @@ class SubscriptionMessageHistoryTest extends TestCase
             ->assertJsonPath('messages.data.0.sentBy', $actor->name)
             ->assertJsonPath('messages.data.0.sentAt', $message->sent_at->toIso8601String())
             ->assertJsonCount(4, 'kinds')
-            ->assertJsonCount(3, 'statuses');
+            ->assertJsonCount(4, 'statuses');
 
         Queue::assertNothingPushed();
         $this->assertDatabaseCount('subscription_messages', 2);

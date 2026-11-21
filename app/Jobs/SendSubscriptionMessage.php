@@ -53,7 +53,7 @@ class SendSubscriptionMessage implements ShouldQueue
                 return;
             }
 
-            $message->markFailed($exception->getMessage());
+            $exception->isUnconfirmed ? $message->markUnconfirmed($exception->getMessage()) : $message->markFailed($exception->getMessage());
 
             return;
         }
@@ -71,7 +71,7 @@ class SendSubscriptionMessage implements ShouldQueue
     {
         $message = $this->message->fresh();
 
-        if ($message === null || $message->status === MessageStatus::Sent) {
+        if ($message === null || in_array($message->status, [MessageStatus::Sent, MessageStatus::Unconfirmed], true)) {
             return;
         }
 
