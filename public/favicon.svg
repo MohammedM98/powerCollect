@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="195 225 875 875">
-  <style>.s{fill:#13171C}@media (prefers-color-scheme:dark){.s{fill:#ECEFF3}}</style>
-  <defs><mask id="gap" maskUnits="userSpaceOnUse" x="0" y="0" width="1254" height="1254"><rect width="1254" height="1254" fill="#fff"/><path d="M745 400L505 815H655L600 1085L860 690H705Z" fill="#000" stroke="#000" stroke-width="56" stroke-linejoin="round"/></mask></defs>
-  <path class="s" d="M260 247H1001L843 469H566L1007 798L787 1031H257L434 824H712L260 508Z" mask="url(#gap)"/>
-  <path d="M745 400L505 815H655L600 1085L860 690H705Z" fill="#14A08F"/>
-</svg>
