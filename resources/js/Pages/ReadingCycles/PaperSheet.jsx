@@ -1,10 +1,10 @@
 import { Fragment } from 'react';
 import { Head, Link, useHttp } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { formatNumber, formatDate } from '@/lib/format';
 import PageHeader from '@/Components/PageHeader';
-import PrintButton from '@/Components/PrintButton';
+import PrintButton from '@/Components/Print/PrintButton';
 import { secondaryButtonClass } from '@/Components/UI';
 
 /**

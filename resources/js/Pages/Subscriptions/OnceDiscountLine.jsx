@@ -1,5 +1,5 @@
 import { Button, Input } from '@heroui/react';
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/UI/InputError';
 import { formatMoney, normalizeDecimalInput } from '@/lib/format';
 import LedgerLine from './LedgerLine';
 

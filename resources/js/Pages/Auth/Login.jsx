@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert, Button, Chip, Description, FieldError, InputGroup, Label, Popover, Spinner, TextField } from '@heroui/react';
 import { Form, Head, usePage } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { CheckBox } from '@/Components/UI';
 import GuestLayout from '@/Layouts/GuestLayout';
 

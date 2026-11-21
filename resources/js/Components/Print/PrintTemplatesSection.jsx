@@ -1,11 +1,11 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
+import ChoiceSelect from '@/Components/UI/ChoiceSelect';
 import { Input } from '@heroui/react';
 import { useState } from 'react';
-import Icon from '@/Components/Icon';
-import Switch from '@/Components/Switch';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
-import ConfirmDialog from '@/Components/ConfirmDialog';
+import Icon from '@/Components/UI/Icon';
+import Switch from '@/Components/UI/Switch';
+import PrimaryButton from '@/Components/UI/PrimaryButton';
+import SecondaryButton from '@/Components/UI/SecondaryButton';
+import ConfirmDialog from '@/Components/UI/ConfirmDialog';
 import { PRINT_PRESETS } from '@/lib/printLayout';
 import { FOCUS_RING } from './printSettingsOptions';
 import { Section, Field, IconButton } from './PrintSettingsFields';

@@ -1,6 +1,6 @@
 import { Button, Input } from '@heroui/react';
 import { useState } from 'react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import InlineNameEditor from './InlineNameEditor';
 
 /** Lists longer than this get their own search box. */

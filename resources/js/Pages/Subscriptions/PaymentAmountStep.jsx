@@ -1,6 +1,6 @@
 import { Button, Input } from '@heroui/react';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
 import { formatMoney, normalizeDecimalInput } from '@/lib/format';
 import { FormStep } from './AccountFormParts';
 import { CheckBox, SearchableSelect } from '@/Components/UI';

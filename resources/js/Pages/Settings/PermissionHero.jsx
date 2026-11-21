@@ -1,5 +1,5 @@
 import { Button } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { EmployeeAvatar, RoleChip } from './PermissionPeople';
 import { RiskGauge } from './PermissionInsights';
 import { copyWorkPermissions, individualChanges, permissionsWord } from '@/lib/permissions';

@@ -1,6 +1,6 @@
 import { Button } from '@heroui/react';
 import { useId, useState } from 'react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 
 /** Opening a panel changes navigation only; permission controls live in its body. */
 export default function PermissionPanel({ title, summary, icon = 'shield', count, changed = false, open: controlledOpen, onToggle, children, className = '' }) {

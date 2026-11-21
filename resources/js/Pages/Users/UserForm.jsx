@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import ChoiceChips from '@/Components/ChoiceChips';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
 import FormField from '@/Components/Form/FormField';
 import FormPreview, { countFilled } from '@/Components/Form/FormPreview';
 import FormSelect, { namedOptions } from '@/Components/Form/FormSelect';
 import FormSection from '@/Components/Form/FormSection';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
-import PasswordInput from '@/Components/PasswordInput';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
+import PasswordInput from '@/Components/UI/PasswordInput';
 import { SettingSwitch } from '@/Components/Settings/SettingsKit';
 import { initials } from '@/lib/format';
 import UserTypeSelect from './UserTypeSelect';

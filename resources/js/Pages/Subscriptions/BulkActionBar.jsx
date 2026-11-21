@@ -1,5 +1,5 @@
 import { Button } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { printUrl } from '@/lib/print';
 import { openQuickMessage } from '@/lib/quickMessage';
 

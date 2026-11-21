@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import BranchBanner from '@/Components/BranchBanner';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import PageHeader from '@/Components/PageHeader';
 import { formatDate } from '@/lib/format';
 import { secondaryButtonClass } from '@/Components/UI';

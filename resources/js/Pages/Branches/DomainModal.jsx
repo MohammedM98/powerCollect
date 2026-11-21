@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import FormModal from '@/Components/FormModal';
+import FormModal from '@/Components/Form/FormModal';
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
 import { Switch, TextInput } from '@/Components/UI';

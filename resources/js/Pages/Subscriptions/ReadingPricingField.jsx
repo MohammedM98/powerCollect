@@ -1,9 +1,9 @@
 import { Button, Input } from '@heroui/react';
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
-import Modal from '@/Components/Modal';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
+import Modal from '@/Components/UI/Modal';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
 import { formatMoney } from '@/lib/format';
 import { PrimaryKey, SecondaryKey } from '@/Components/UI';
 

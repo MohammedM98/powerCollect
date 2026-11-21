@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import CompanyFormPaper from './CompanyFormPaper';
 import useCompanySource from './useCompanySource';
 import { formDimensions, printPageRules } from '@/lib/companyForms';

@@ -1,4 +1,4 @@
-import ChoiceChips from '@/Components/ChoiceChips';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
 import { plainDigits } from '@/lib/formValidation';

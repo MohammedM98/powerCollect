@@ -1,6 +1,6 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
+import ChoiceSelect from '@/Components/UI/ChoiceSelect';
 import FormField from '@/Components/Form/FormField';
-import SearchableSelect from '@/Components/SearchableSelect';
+import SearchableSelect from '@/Components/UI/SearchableSelect';
 
 /**
  * A labelled drop-down of `options` (`{ value, label }`). When it cannot

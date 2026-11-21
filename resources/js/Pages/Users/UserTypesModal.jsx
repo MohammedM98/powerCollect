@@ -1,5 +1,5 @@
 import ClassificationChips from '@/Components/ClassificationChips';
-import DialogFrame from '@/Components/DialogFrame';
+import DialogFrame from '@/Components/UI/DialogFrame';
 import { SecondaryKey } from '@/Components/UI';
 
 export default function UserTypesModal({ show, onClose, items, canCreate, onDelete, onSaved }) {

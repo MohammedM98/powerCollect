@@ -1,8 +1,8 @@
 import { Button, Input } from '@heroui/react';
 import { useState } from 'react';
 import { useForm } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
 
 function NameInput({ value, onChange, onSave, onCancel, processing, error, label, maxLength }) {
     return <div className="max-w-full">

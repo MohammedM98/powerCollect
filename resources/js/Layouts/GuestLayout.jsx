@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import DrawnMark from '@/Components/Auth/DrawnMark';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { useBrandDocument } from '@/hooks/useBrand';
 
 /**

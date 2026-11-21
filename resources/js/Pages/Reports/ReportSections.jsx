@@ -1,6 +1,6 @@
 import { Button } from '@heroui/react';
 import Pagination from '@/Components/DataTable/Pagination';
-import SegmentedTabs from '@/Components/SegmentedTabs';
+import SegmentedTabs from '@/Components/UI/SegmentedTabs';
 import { linesPart } from '@/lib/reportExcelParts';
 import { loadReportLines } from '@/lib/reportLines';
 import { reportMoney, shortDate } from '@/lib/reportFormatting';

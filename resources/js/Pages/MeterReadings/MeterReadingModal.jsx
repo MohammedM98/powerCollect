@@ -1,7 +1,7 @@
 import { TextArea } from '@heroui/react';
-import FormModal from '@/Components/FormModal';
-import InputLabel from '@/Components/InputLabel';
-import InputError from '@/Components/InputError';
+import FormModal from '@/Components/Form/FormModal';
+import InputLabel from '@/Components/UI/InputLabel';
+import InputError from '@/Components/UI/InputError';
 import { useResourceForm } from '@/hooks/useResourceForm';
 import { consumptionBetween } from '@/lib/readings';
 import { formatDate } from '@/lib/format';

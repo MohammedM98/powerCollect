@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Header, Menu } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { initials } from '@/lib/format';
 
 const MENU_WIDTH = 290;

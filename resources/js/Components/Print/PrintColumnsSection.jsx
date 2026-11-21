@@ -1,8 +1,8 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
-import CheckBox from '@/Components/CheckBox';
+import ChoiceSelect from '@/Components/UI/ChoiceSelect';
+import CheckBox from '@/Components/UI/CheckBox';
 import { Input } from '@heroui/react';
-import Icon from '@/Components/Icon';
-import SecondaryButton from '@/Components/SecondaryButton';
+import Icon from '@/Components/UI/Icon';
+import SecondaryButton from '@/Components/UI/SecondaryButton';
 import { moveColumn } from '@/lib/printLayout';
 import { ALIGNMENTS } from './printSettingsOptions';
 import { Section, IconButton } from './PrintSettingsFields';

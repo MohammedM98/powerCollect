@@ -1,8 +1,8 @@
 import { Button } from '@heroui/react';
-import Icon from '@/Components/Icon';
-import AsyncState from '@/Components/AsyncState';
+import Icon from '@/Components/UI/Icon';
+import AsyncState from '@/Components/UI/AsyncState';
 import { useJsonResource } from '@/hooks/useJsonResource';
-import Modal from '@/Components/Modal';
+import Modal from '@/Components/UI/Modal';
 import { formatMoney, formatDate } from '@/lib/format';
 import { SecondaryKey } from '@/Components/UI';
 

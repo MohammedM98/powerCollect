@@ -1,4 +1,4 @@
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/UI/InputError';
 
 /**
  * A grouped list, as in a phone's settings: rows with the name on one

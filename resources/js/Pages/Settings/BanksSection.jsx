@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useForm } from '@inertiajs/react';
-import FormModal from '@/Components/FormModal';
+import FormModal from '@/Components/Form/FormModal';
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
 import FormPreview, { countFilled } from '@/Components/Form/FormPreview';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import Pagination from '@/Components/DataTable/Pagination';
-import { BankMark } from '@/Components/Banks';
+import { BankMark } from '@/Components/Finance/Banks';
 import { SettingSwitch, SettingsHeading } from '@/Components/Settings/SettingsKit';
 import { AddKey, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, StatusPill, TextInput } from '@/Components/UI';
 

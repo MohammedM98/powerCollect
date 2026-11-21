@@ -1,4 +1,4 @@
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { formatMoney } from '@/lib/format';
 import { PrimaryKey, SecondaryKey } from '@/Components/UI';
 

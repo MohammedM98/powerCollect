@@ -1,6 +1,6 @@
 import { Button, Input } from '@heroui/react';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
 import { describeBalance } from '@/lib/accountStatement';
 import { initials, normalizeDecimalInput } from '@/lib/format';
 import { balanceText, BALANCE_CHIPS, FieldLabel } from '@/Pages/Subscriptions/AccountFormParts';

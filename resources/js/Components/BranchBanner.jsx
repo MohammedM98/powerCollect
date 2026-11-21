@@ -1,8 +1,8 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
+import ChoiceSelect from '@/Components/UI/ChoiceSelect';
 import { Link } from '@inertiajs/react';
 import { useState } from 'react';
-import Icon from '@/Components/Icon';
-import SearchableSelect from '@/Components/SearchableSelect';
+import Icon from '@/Components/UI/Icon';
+import SearchableSelect from '@/Components/UI/SearchableSelect';
 import { formatNumber } from '@/lib/format';
 import { useBranchView } from '@/hooks/useBranchView';
 

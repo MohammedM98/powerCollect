@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import { Button, Card } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { printFieldsProps, printRowProps } from '@/lib/print';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { BranchFilterBanner, splitBranchFilter } from '@/Components/BranchBanner';

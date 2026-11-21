@@ -1,9 +1,9 @@
 import { Input } from '@heroui/react';
-import { BankReceivedDateField } from '@/Components/BankReceivedDate';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
+import { BankReceivedDateField } from '@/Components/Finance/BankReceivedDate';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
 import { FieldLabel } from '@/Pages/Subscriptions/AccountFormParts';
-import { BankChips, BankDropdown } from '@/Components/Banks';
+import { BankChips, BankDropdown } from '@/Components/Finance/Banks';
 import { inputClass } from '@/Pages/Subscriptions/PaymentModal';
 import { CheckBox } from '@/Components/UI';
 

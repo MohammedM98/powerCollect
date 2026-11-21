@@ -1,8 +1,8 @@
 import '../css/app.css';
 import { createInertiaApp, router } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
-import FlashNotifications from '@/Components/FlashNotifications';
-import NavigationProgress from '@/Components/TopBar/NavigationProgress';
+import FlashNotifications from '@/Components/Layout/FlashNotifications';
+import NavigationProgress from '@/Components/Layout/NavigationProgress';
 import { notify } from '@/lib/notify';
 
 // Pages load ahead of time when a link is hovered. A save can change any

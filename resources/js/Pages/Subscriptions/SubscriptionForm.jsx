@@ -1,12 +1,12 @@
 import { TextArea } from '@heroui/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
-import Affix from '@/Components/Affix';
+import Affix from '@/Components/UI/Affix';
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
 import SettingRow from '@/Components/Form/SettingRow';
-import InputError from '@/Components/InputError';
-import DateInput from '@/Components/DateInput';
+import InputError from '@/Components/UI/InputError';
+import DateInput from '@/Components/UI/DateInput';
 import SubscriptionTariffSection from './SubscriptionTariffSection';
 import SubscriptionLocationSection from './SubscriptionLocationSection';
 import SubscriberSection from './SubscriberSection';

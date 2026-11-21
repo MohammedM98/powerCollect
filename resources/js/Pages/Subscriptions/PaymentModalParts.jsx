@@ -1,10 +1,10 @@
 import { Input } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { describeBalance } from '@/lib/accountStatement';
 import { formatMoney } from '@/lib/format';
-import InputError from '@/Components/InputError';
-import { BankReceivedDateField } from '@/Components/BankReceivedDate';
-import { BankChips, BankDropdown } from '@/Components/Banks';
+import InputError from '@/Components/UI/InputError';
+import { BankReceivedDateField } from '@/Components/Finance/BankReceivedDate';
+import { BankChips, BankDropdown } from '@/Components/Finance/Banks';
 import { balanceText, FieldLabel } from './AccountFormParts';
 import { CheckBox, PrimaryKey, SecondaryKey, Switch } from '@/Components/UI';
 

@@ -1,8 +1,8 @@
 import { Input } from '@heroui/react';
 import { useEffect, useEffectEvent, useId, useRef, useState } from 'react';
 import { useHttp, usePage } from '@inertiajs/react';
-import InputError from '@/Components/InputError';
-import Modal from '@/Components/Modal';
+import InputError from '@/Components/UI/InputError';
+import Modal from '@/Components/UI/Modal';
 import { useResourceForm } from '@/hooks/useResourceForm';
 import { paymentInShekels } from '@/lib/accountStatement';
 import { overpaymentLevel } from '@/lib/overpayment';

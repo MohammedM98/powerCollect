@@ -1,4 +1,4 @@
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 
 /** "محافظة بغداد، الكرادة", from the parts a branch has. */
 export function branchPlace(branch) {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { BranchFilterBanner } from '@/Components/BranchBanner';
 import { useDataTable } from '@/hooks/useDataTable';
 import BoxTabs from './BoxTabs';

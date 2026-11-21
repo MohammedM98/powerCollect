@@ -1,5 +1,5 @@
 import { Alert, Button, Card, Label, ListBox, Select, Switch } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 
 /**
  * The settings pages' kit, built from HeroUI in the MA look: a section is a

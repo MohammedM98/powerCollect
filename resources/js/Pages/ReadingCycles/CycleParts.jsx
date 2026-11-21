@@ -1,11 +1,11 @@
 import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
-import Modal from '@/Components/Modal';
-import InputError from '@/Components/InputError';
+import Icon from '@/Components/UI/Icon';
+import Modal from '@/Components/UI/Modal';
+import InputError from '@/Components/UI/InputError';
 import { formatNumber } from '@/lib/format';
-import DateInput from '@/Components/DateInput';
+import DateInput from '@/Components/UI/DateInput';
 import { PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 /** What a move or approval did, with each box it could not move and why. */

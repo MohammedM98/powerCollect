@@ -1,6 +1,6 @@
-import BankReceivedDate from '@/Components/BankReceivedDate';
+import BankReceivedDate from '@/Components/Finance/BankReceivedDate';
 import './financial-boxes.css';
-import LatePaymentDetails from '@/Components/LatePaymentDetails';
+import LatePaymentDetails from '@/Components/Finance/LatePaymentDetails';
 import { formatMoney } from '@/lib/format';
 import { StatusPill } from '@/Components/UI';
 

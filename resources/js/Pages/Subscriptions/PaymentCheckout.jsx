@@ -1,10 +1,10 @@
 import { usePage } from '@inertiajs/react';
 import { Button, Input, Label, Radio, RadioGroup, TextField } from '@heroui/react';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
 import BrandLogo from '@/Components/BrandLogo';
-import { BankReceivedDateField } from '@/Components/BankReceivedDate';
-import { BankDropdown, BankMark } from '@/Components/Banks';
+import { BankReceivedDateField } from '@/Components/Finance/BankReceivedDate';
+import { BankDropdown, BankMark } from '@/Components/Finance/Banks';
 import { useBrand } from '@/hooks/useBrand';
 import { describeBalance } from '@/lib/accountStatement';
 import { formatMoney, normalizeDecimalInput } from '@/lib/format';

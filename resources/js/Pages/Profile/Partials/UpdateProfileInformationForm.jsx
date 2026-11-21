@@ -1,7 +1,7 @@
 import { Button, Input } from '@heroui/react';
 import { useForm } from '@inertiajs/react';
-import InputError from '@/Components/InputError';
-import Icon from '@/Components/Icon';
+import InputError from '@/Components/UI/InputError';
+import Icon from '@/Components/UI/Icon';
 
 export default function UpdateProfileInformationForm({ user }) {
     const { data, setData, patch, processing, errors, reset, clearErrors, isDirty, setDefaults, recentlySuccessful } = useForm({

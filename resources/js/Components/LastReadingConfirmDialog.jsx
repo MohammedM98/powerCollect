@@ -1,12 +1,12 @@
 import RadioCards from '@/Components/UI/RadioCards';
-import CheckBox from '@/Components/CheckBox';
+import CheckBox from '@/Components/UI/CheckBox';
 import { TextArea } from '@heroui/react';
 import { useEffect, useId, useState } from 'react';
-import DialogFrame from '@/Components/DialogFrame';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
-import InputError from '@/Components/InputError';
-import TextInput from '@/Components/TextInput';
+import DialogFrame from '@/Components/UI/DialogFrame';
+import PrimaryButton from '@/Components/UI/PrimaryButton';
+import SecondaryButton from '@/Components/UI/SecondaryButton';
+import InputError from '@/Components/UI/InputError';
+import TextInput from '@/Components/UI/TextInput';
 import { formatMoney } from '@/lib/format';
 
 const PURPOSES = [

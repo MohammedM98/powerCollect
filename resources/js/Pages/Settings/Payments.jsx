@@ -2,7 +2,7 @@ import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { Chip } from '@heroui/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import PageHeader from '@/Components/PageHeader';
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/UI/InputError';
 import { SaveButton, SettingRow, SettingsSection, SettingsSelect, SettingsStatus } from '@/Components/Settings/SettingsKit';
 import CurrencyRatesSection from './CurrencyRatesSection';
 import BanksSection from './BanksSection';

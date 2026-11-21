@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Head } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { useBrand } from '@/hooks/useBrand';
 import { formatMoney, formatDate } from '@/lib/format';
 import { balanceOnPaper } from '@/lib/balance';

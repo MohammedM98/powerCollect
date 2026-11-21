@@ -1,6 +1,6 @@
 import { Button } from '@heroui/react';
-import Balance from '@/Components/Balance';
-import Icon from '@/Components/Icon';
+import Balance from '@/Components/Finance/Balance';
+import Icon from '@/Components/UI/Icon';
 import { formatMoney } from '@/lib/format';
 
 /** How many of the account's last lines show above the new one. */

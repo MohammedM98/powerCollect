@@ -1,6 +1,6 @@
 import { Button, Input } from '@heroui/react';
 import { useEffect, useId, useRef, useState } from 'react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { normalizeDecimalInput } from '@/lib/format';
 import { BALANCE_FILTER_KEYS, BALANCE_OPERATORS, BALANCE_SIDES, balanceFilterLabel } from '@/lib/subscriptionBalance';
 import { PrimaryKey, SearchableSelect, SecondaryKey } from '@/Components/UI';

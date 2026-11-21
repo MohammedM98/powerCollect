@@ -2,7 +2,7 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRef, useState } from 'react';
 import { describe, expect, it } from 'vitest';
-import NavigationDrawer from '@/Components/TopBar/NavigationDrawer';
+import NavigationDrawer from '@/Components/Layout/NavigationDrawer';
 import { setPage } from './inertia.jsx';
 
 const PAGE = { props: { appName: 'شركة الكهرباء', auth: { user: { name: 'سامي', role: 'collector' } }, can: {} }, url: '/subscriptions' };

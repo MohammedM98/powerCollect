@@ -18,7 +18,7 @@ import { BALANCE_FILTER_KEYS, balanceFilterLabel, subscriptionFilterKey } from '
 import { Button } from '@heroui/react';
 import { DEBTORS_FILTER, SubscriptionFigures, SubscriptionQuickFilters } from './SubscriptionsOverview';
 import PageHeader from '@/Components/PageHeader';
-import InfoTip from '@/Components/InfoTip';
+import InfoTip from '@/Components/UI/InfoTip';
 import SubscriptionWindows from './SubscriptionWindows';
 import SubscriptionsTable from './SubscriptionsTable';
 import { useSubscriptionSelection } from './useSubscriptionSelection';

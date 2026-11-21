@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useForm, useHttp } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
 import { Button, Input } from '@heroui/react';
 import { describeBalance } from '@/lib/accountStatement';
 import { formatMoney, normalizeDecimalInput } from '@/lib/format';

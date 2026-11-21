@@ -1,13 +1,13 @@
 import { Input, TextArea } from '@heroui/react';
-import { BankReceivedDateField } from '@/Components/BankReceivedDate';
+import { BankReceivedDateField } from '@/Components/Finance/BankReceivedDate';
 import { useForm } from '@inertiajs/react';
-import AsyncState from '@/Components/AsyncState';
-import FormModal from '@/Components/FormModal';
+import AsyncState from '@/Components/UI/AsyncState';
+import FormModal from '@/Components/Form/FormModal';
 import { useJsonResource } from '@/hooks/useJsonResource';
-import Modal from '@/Components/Modal';
-import Icon from '@/Components/Icon';
-import InputLabel from '@/Components/InputLabel';
-import InputError from '@/Components/InputError';
+import Modal from '@/Components/UI/Modal';
+import Icon from '@/Components/UI/Icon';
+import InputLabel from '@/Components/UI/InputLabel';
+import InputError from '@/Components/UI/InputError';
 import { formatMoney } from '@/lib/format';
 import { ChoiceSelect, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, SecondaryKey } from '@/Components/UI';
 

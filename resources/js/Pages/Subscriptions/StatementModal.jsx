@@ -1,8 +1,8 @@
 import StatementTitle from './StatementTitle';
 import { useId, useState } from 'react';
 import { Link } from '@inertiajs/react';
-import Modal from '@/Components/Modal';
-import Icon from '@/Components/Icon';
+import Modal from '@/Components/UI/Modal';
+import Icon from '@/Components/UI/Icon';
 import { initials } from '@/lib/format';
 import { Button, Chip } from '@heroui/react';
 import AccountStatement from './AccountStatement';

@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 
 /**
  * A long form's side panel, as in the redesign (docs/redesign): the record

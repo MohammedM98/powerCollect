@@ -1,5 +1,5 @@
 import { Button, Input } from '@heroui/react';
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/UI/InputError';
 import { FormStep } from './AccountFormParts';
 
 /** The standing discount's customer segment: optional, from the company's list, or a new one typed in. */

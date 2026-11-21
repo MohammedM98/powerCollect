@@ -1,5 +1,5 @@
 import { Button, Input } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { withStaleCleared } from '@/lib/filterGroups';
 import { Card, Field, FOCUS_RING } from './MessageFormParts';
 import { ChoiceSelect, SecondaryKey, Switch } from '@/Components/UI';

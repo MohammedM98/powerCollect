@@ -1,8 +1,8 @@
 import { Button } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 import { useFilterVisibility } from '@/hooks/useFilterVisibility';
-import SearchableSelect from '@/Components/SearchableSelect';
-import Icon from '@/Components/Icon';
+import SearchableSelect from '@/Components/UI/SearchableSelect';
+import Icon from '@/Components/UI/Icon';
 import { childOptions, nestFilterGroups, parentChange, parentValue, scopedOptions, withStaleCleared } from '@/lib/filterGroups';
 
 /** One filter as HeroUI's compact pill: its name (and the choice, once made) on a soft grey pill, in the company's colour while it narrows the table. */

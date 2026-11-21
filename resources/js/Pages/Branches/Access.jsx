@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import PageHeader from '@/Components/PageHeader';
 
 export default function Access({ branches, routingEnabled }) {

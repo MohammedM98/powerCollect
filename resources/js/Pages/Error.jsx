@@ -1,6 +1,6 @@
 import { Button } from '@heroui/react';
 import { Head, Link, usePage } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import GuestLayout from '@/Layouts/GuestLayout';
 

@@ -1,6 +1,6 @@
 import { Button, Input } from '@heroui/react';
 import AuditAccessCard, { auditScopeLabel } from './AuditAccessCard';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { MatrixHead, MatrixLegend, SectionRow, TriToggle } from './PermissionMatrix';
 import { filterSections, sectionIds, withGroupAccess, withSectionsAll, withToggled } from '@/lib/permissions';
 import { Switch } from '@/Components/UI';

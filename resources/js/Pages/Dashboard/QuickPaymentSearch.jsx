@@ -1,9 +1,9 @@
 import { Button, Input } from '@heroui/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
-import Modal from '@/Components/Modal';
-import Icon from '@/Components/Icon';
-import { DialogHeader } from '@/Components/DialogFrame';
+import Modal from '@/Components/UI/Modal';
+import Icon from '@/Components/UI/Icon';
+import { DialogHeader } from '@/Components/UI/DialogFrame';
 import { balanceInText, balanceTone, balanceWord } from '@/lib/balance';
 
 const SEARCH_DELAY = 200;
