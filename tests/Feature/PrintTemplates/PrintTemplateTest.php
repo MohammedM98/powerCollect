@@ -76,7 +76,7 @@ class PrintTemplateTest extends TestCase
         }
 
         $template = PrintTemplate::where('name', 'ورقة مقاصة')->sole();
-        $this->assertSame($layout, $template->layout);
+        $this->assertSameJson($layout, $template->layout);
         $this->post(route('print-templates.duplicate', $template))->assertSessionHas('status', 'print-template-created');
         $this->assertSame($layout, PrintTemplate::where('name', 'ورقة مقاصة (نسخة)')->sole()->layout);
         $this->assertDatabaseCount('print_templates', 7);
@@ -170,7 +170,7 @@ class PrintTemplateTest extends TestCase
 
         $template = PrintTemplate::where('name', 'حسب الطبلون')->sole();
         $this->assertTrue($template->is_default);
-        $this->assertSame($this->layout(), $template->layout);
+        $this->assertSameJson($this->layout(), $template->layout);
         $this->assertSame($manager->id, $template->updated_by);
         $this->assertFalse($previous->fresh()->is_default);
         $this->assertTrue($otherList->fresh()->is_default);
@@ -203,7 +203,7 @@ class PrintTemplateTest extends TestCase
         ]);
         foreach (['/reading-cycles/print', '/paper-sheets'] as $page) {
             $this->actingAs($manager)->post(route('print-templates.store'), ['page' => $page, 'name' => 'كشف منظم', 'layout' => $layout])->assertSessionHasNoErrors();
-            $this->assertSame($layout, PrintTemplate::where('page', $page)->sole()->layout);
+            $this->assertSameJson($layout, PrintTemplate::where('page', $page)->sole()->layout);
         }
         $layout['columns'][0]['width'] = 121;
         $this->post(route('print-templates.store'), ['page' => '/reading-cycles/print', 'name' => 'عرض زائد', 'layout' => $layout])->assertSessionHasErrors('layout.columns.0.width');
@@ -227,7 +227,7 @@ class PrintTemplateTest extends TestCase
         ]);
 
         $this->actingAs($manager)->post(route('print-templates.store'), ['page' => '/meter-readings', 'name' => 'كشف القارئ', 'layout' => $layout])->assertSessionHasNoErrors();
-        $this->assertSame($layout, PrintTemplate::sole()->layout);
+        $this->assertSameJson($layout, PrintTemplate::sole()->layout);
 
         foreach ([
             'layout.group.blankRows' => ['group' => ['blankRows' => 11]],
@@ -280,7 +280,7 @@ class PrintTemplateTest extends TestCase
 
         $copy = PrintTemplate::where('name', 'شهري (نسخة 2)')->sole();
         $this->assertFalse($copy->is_default);
-        $this->assertSame($template->layout, $copy->layout);
+        $this->assertSameJson($template->layout, $copy->layout);
     }
 
     public function test_a_template_is_deleted(): void
