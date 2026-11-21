@@ -78,6 +78,11 @@ npm ci && npm run build
 ```
 
 - Flutter بالإصدار المثبَّت في `.github/workflows/tests.yml`، ثم `flutter pub get` داخل `mobile/`.
+- إن ثُبّت Flutter في مجلد مؤقت، اربطه في المسار الافتراضي حتى يجده الفحص الآلي (`npm run check` والخطاف)، وإلا فشلت خطوتا الموبايل دون أن يُشغَّل أي اختبار (`spawn flutter ENOENT`):
+
+  ```bash
+  ln -sf "$FLUTTER_DIR/bin/flutter" /usr/local/bin/flutter && ln -sf "$FLUTTER_DIR/bin/dart" /usr/local/bin/dart
+  ```
 - خادم MySQL 8 لاختبارات المال والتقارير، و`mysql-client` (أمر النسخ الاحتياطي يستدعي `mysqldump`؛ بدونه تفشل `BackupCommandTest` على MySQL).
 - مجموعات المتصفح: إن لم يجد Playwright متصفحه فاضبط `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` على مسار Chromium المثبت.
 - ما يتعذّر تجهيزه يُذكر صراحة في التقرير مع السبب، ولا يُعدّ ناجحًا.
