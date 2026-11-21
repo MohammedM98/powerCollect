@@ -6146,7 +6146,8 @@ body {
  * - the faint grey (hints, search, placeholders) is a step darker in the
  *   light theme and a step lighter in the dark one;
  * - the payment green and the charge red text a shade deeper on their
- *   tints (statuses, «كل ما عليه»);
+ *   tints (statuses, «كل ما عليه»), and in the light theme the split teal
+ *   and the warning amber too (their chips);
  * - a filled tile, badge or button always uses its colour's deep shade
  *   with white text, also in the dark theme, where the light shades of
  *   the tones are for text only.
@@ -6155,12 +6156,16 @@ body {
     --ma-faint: #646b75;
     --ma-pay: #23704c;
     --ma-owe: #a1443d;
+    --ma-split: #277189;
+    --ma-warn: #8d6114;
 }
 
 .dark {
     --ma-faint: #8a919b;
     --ma-pay: #6dbf98;
     --ma-owe: #e1938c;
+    --ma-split: #75bdd2;
+    --ma-warn: #e0b45c;
 }
 
 .gl-sheet[data-ledger-tone] {
