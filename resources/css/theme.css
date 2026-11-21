@@ -529,7 +529,7 @@
 }
 
 /*
- * The glass look, the person's own choice in the top bar (SurfaceToggle,
+ * The glass look, the person's own choice in the account menu (useSurface,
  * kept in this browser): panels let a faint wash of the company's colour,
  * the transfer blue and the payment green through, frosted. Solid where the
  * browser cannot blur, or less transparency is asked for (below).
@@ -597,7 +597,7 @@
  * everywhere. Fields show theirs on the frame (.gl-field:focus-within); the
  * appearance setting data-ui-focus-ring recolours or softens it (app.css).
  */
-:is(.gl-btn, .gl-ib, .gl-seg button, .gl-tog, .gl-chip, .gl-qbtn, .gl-mb, .gl-switch):focus-visible {
+:is(.gl-btn, .gl-ib, .gl-seg button, .gl-tog, .gl-chip, .gl-qbtn, .gl-switch):focus-visible {
     outline: 2px solid rgb(var(--gl-brand));
     outline-offset: 2px;
 }

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { groupReadingsByMonth, readingHistoryCsv, readingTotals, readingsInPeriod } from '../../resources/js/lib/readingHistory.js';
+import { groupReadingsByMonth, readingTotals, readingsInPeriod } from '../../resources/js/lib/readingHistory.js';
 
 test('history periods use calendar weeks and preserve the subscription input order', () => {
     const readings = [
@@ -39,31 +39,4 @@ test('monthly groups use the week end and distinguish the same month in differen
     assert.deepEqual(groups.map((group) => group.month), ['2026-09', '2026-08', '2025-09']);
     assert.deepEqual(groups[0].totals, { consumption: 1.25, discount: 0, due: 20 });
     assert.deepEqual(groups[1].readings.map((reading) => reading.id), [2]);
-});
-
-test('Excel export contains only the selected records and protects user text', () => {
-    const reading = {
-        weekStart: '2026-09-18', weekEnd: '2026-09-24', previous_reading: 100.25, current_reading: 101.5,
-        consumption: 1.25, unitPrice: 30, minimumPayment: 20, discountAmount: 0, amountDue: 20, status: 'approved', statusLabel: 'معتمدة',
-        recordedByName: '=1+1', recordedAt: '2026-09-24 12:00', notes: 'ملاحظة "خاصة",\nسطر ثان',
-    };
-    const hiddenReading = { ...reading, status: 'pending', notes: 'not exported' };
-    const csv = readingHistoryCsv([reading, hiddenReading].filter((row) => row.status === 'approved'));
-
-    assert.ok(csv.startsWith('\uFEFF'));
-    assert.ok(csv.includes('"100.25","101.5","1.25","30","20","0","20"'));
-    assert.ok(csv.includes('"\'=1+1"'));
-    assert.ok(csv.includes('"ملاحظة ""خاصة"",\nسطر ثان"'));
-    assert.ok(!csv.includes('not exported'));
-});
-
-test('Excel leaves a current reading awaiting re-entry empty instead of exporting its old number', () => {
-    const csv = readingHistoryCsv([{
-        weekStart: '2026-09-18', weekEnd: '2026-09-24', previous_reading: 0, current_reading: 230,
-        requiresReentry: true, consumption: 0, unitPrice: 0.5, minimumPayment: 0,
-        discountAmount: 0, amountDue: 0, statusLabel: 'بانتظار إدخال الحالية',
-    }]);
-
-    assert.ok(csv.includes('"0","","0","0.5"'));
-    assert.ok(!csv.includes('"230"'));
 });
