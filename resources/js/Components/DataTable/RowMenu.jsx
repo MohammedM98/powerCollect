@@ -202,6 +202,8 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
     const list = (
         <div
             ref={menuRef}
+            // Drawn in <body>: a window around the row keeps the menu reachable (React Aria's top layer).
+            data-react-aria-top-layer=""
             onKeyDownCapture={onKeyDown}
             style={
                 phone
@@ -311,7 +313,7 @@ export default function RowMenu({ anchor, point = null, contextual = false, menu
     return createPortal(
         phone ? (
             <>
-                <div className="animate-modal-backdrop fixed inset-0 z-50 bg-graphite-900/50" aria-hidden="true" />
+                <div data-react-aria-top-layer="" className="animate-modal-backdrop fixed inset-0 z-50 bg-graphite-900/50" aria-hidden="true" />
                 {list}
             </>
         ) : (

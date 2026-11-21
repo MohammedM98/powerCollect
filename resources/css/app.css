@@ -1900,6 +1900,12 @@ html[data-modal-open] {
     overflow: hidden;
 }
 
+/* A window closes at once, as it always has: no exit animation holds it on screen. */
+:root .modal-scroll[data-exiting],
+:root .modal-scroll .modal-sheet-panel[data-exiting] {
+    animation: none;
+}
+
 /* Windows: the page behind is dimmed in neutral black, and the panel is a solid card. */
 .modal-scrim {
     background: rgb(10 13 17 / 0.5);

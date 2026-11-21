@@ -232,7 +232,7 @@ export default function SearchableSelect({
             )}
 
             {open && renderPopup(
-                <div ref={popupRef} style={portal ? popupStyle : undefined} className="animate-modal-panel absolute z-20 mt-2 flex w-full min-w-48 flex-col overflow-hidden rounded-2xl gl-pop">
+                <div ref={popupRef} data-react-aria-top-layer={portal ? '' : undefined} style={portal ? popupStyle : undefined} className="animate-modal-panel absolute z-20 mt-2 flex w-full min-w-48 flex-col overflow-hidden rounded-2xl gl-pop">
                     {searchable && (
                         <div className="shrink-0 border-b border-gray-100 p-2">
                             <Input

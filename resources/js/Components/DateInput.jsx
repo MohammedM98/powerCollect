@@ -197,6 +197,8 @@ export default function DateInput({
                         aria-label="اختيار التاريخ"
                         // Lets a popover holding this field (the ledger's custom range) treat the calendar as its own.
                         data-date-picker=""
+                        // Drawn in <body>: a window around the field keeps it reachable (React Aria's top layer).
+                        data-react-aria-top-layer=""
                         dir="rtl"
                         className="animate-menu fixed z-70 w-78 rounded-2xl p-3 text-gray-900 gl-pop"
                     >

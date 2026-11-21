@@ -30,4 +30,5 @@ export { default as Figure } from './Figure';
 export { default as StatusPill } from '@/Components/DataTable/StatusPill';
 
 // Windows
+export { default as Window } from './Window';
 export { default as ConfirmDialog, SaveConfirmDialog } from '@/Components/ConfirmDialog';
