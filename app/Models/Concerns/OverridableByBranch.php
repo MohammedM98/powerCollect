@@ -59,11 +59,6 @@ trait OverridableByBranch
         return app(BranchSettings::class)->ownCount(static::class);
     }
 
-    public function isCompanyDefault(): bool
-    {
-        return $this->branch_id === null;
-    }
-
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);

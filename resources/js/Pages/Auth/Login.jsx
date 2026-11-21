@@ -66,6 +66,7 @@ export default function Login() {
                         <CheckBox
                             checked={data.remember}
                             onChange={(e) => setData('remember', e.target.checked)}
+                            aria-label="تذكّرني على هذا الجهاز"
                         />
                         تذكّرني على هذا الجهاز
                     </label>

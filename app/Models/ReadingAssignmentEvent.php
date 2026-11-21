@@ -36,14 +36,4 @@ class ReadingAssignmentEvent extends Model
     {
         return $this->belongsTo(User::class, 'actor_id');
     }
-
-    public function fromUser(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'from_user_id');
-    }
-
-    public function toUser(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'to_user_id');
-    }
 }

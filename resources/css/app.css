@@ -5329,31 +5329,6 @@ body {
     transform: translateY(1px);
 }
 
-/* Solid or glass: a grey track, the chosen one white and raised. */
-:root[data-ui-navigation] .tn-header .tn-bar .tn-surface.gl-seg {
-    gap: 4px;
-    padding: 4px;
-    border: 0;
-    border-radius: 12px;
-    background: var(--ma-tile);
-}
-
-:root[data-ui-navigation] .tn-header .tn-bar .tn-surface.gl-seg button {
-    height: 34px;
-    min-height: 34px;
-    padding-inline: 12px;
-    border-radius: 9px;
-    color: var(--ma-muted);
-    font-size: 13px;
-    font-weight: 700;
-}
-
-:root[data-ui-navigation] .tn-header .tn-bar .tn-surface.gl-seg button[aria-pressed='true'] {
-    background: var(--ma-solid);
-    box-shadow: var(--ma-depth);
-    color: var(--ma-ink);
-}
-
 :root[data-ui-navigation] .tn-header .tn-bar .tn-tools .tn-tool {
     width: 40px;
     height: 40px;

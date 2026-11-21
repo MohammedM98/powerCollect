@@ -1,7 +1,6 @@
-import { csvText } from './csv.ts';
 import { roundToCents } from './currency.ts';
 import { balanceInText, signedBalance } from './balance.js';
-import { formatDate, formatMoney } from './format.js';
+import { formatMoney } from './format.js';
 
 export const STATEMENT_SORT_OPTIONS = [
     { value: '', label: 'تسلسل كشف الحساب' },
@@ -326,43 +325,6 @@ export function describeBalance(balance) {
  */
 export function describedBalanceText(balance) {
     return balanceInText(balance.value ?? 0);
-}
-
-/** A line's state as the statement marks it: corrected, cancelled, a correction, or nothing. */
-function entryState(entry) {
-    if (entry.cancellation) {
-        return entry.cancellation.wasCorrected ? 'مُصحّحة' : 'ملغاة';
-    }
-
-    return entry.isCorrection ? 'تصحيح' : '';
-}
-
-/**
- * The statement's lines, in their displayed order, as a CSV file for
- * Excel: every column of the statement, with each line's side (عليه or
- * له) and the balance it left, in shekels, with its sign (negative is
- * credit), as the accountant adds it up.
- */
-export function statementCsv(entries) {
-    const rows = [
-        [
-            '#', 'تاريخ الحركة', 'رقم السند', 'البيان', 'التفاصيل', 'نوع الحركة', 'عليه / له', 'المبلغ', 'العملة', 'سعر الصرف',
-            'طريقة الدفع', 'البنك المرسل', 'البنك المستلم', 'الرقم المرجعي', 'رقم الصندوق', 'الرصيد (شيكل)', 'حالة الرصيد',
-            'الحالة', 'اسم المستخدم', 'تاريخ الدفع الفعلي', 'سبب تأخر التسجيل', 'تاريخ وصول الحوالة إلى البنك',
-        ],
-        ...entries.map((entry) => {
-            const balance = describeBalance(entry.balance);
-
-            return [
-                entry.lineNumber, formatDate(entry.date), entry.voucherNumber ?? '', entry.description, entry.details ?? '', entry.typeLabel,
-                entry.isCredit ? 'له' : 'عليه', Number(entry.amount), entry.currencyLabel, entry.exchangeRate ?? '',
-                entry.paymentMethodLabel ?? '', entry.senderBankName ?? '', entry.bankName ?? '', entry.referenceNumber ?? '', entry.cashBox ?? '',
-                Number(entry.balance), balance.label, entryState(entry), entry.recordedByName ?? '', formatDate(entry.paidOn), entry.lateReason ?? '', formatDate(entry.bankReceivedOn),
-            ];
-        }),
-    ];
-
-    return csvText(rows);
 }
 
 /**

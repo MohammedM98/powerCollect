@@ -56,13 +56,23 @@
 |---|---|---|
 | 1 | قوالب الرسائل: هل يحق لكل من يملك «إرسال الرسائل» في أي فرع تعديل كل قوالب الشركة وحذفها؟ | الاختبار الجديد يثبت فقط أن من لا يملك الصلاحية يُرفض، ولا يحكم على السلوك الحالي |
 | 2 | إصلاح أخطاء الكود الثلاثة عشر أعلاه | لا إصلاح؛ خمسة منها لها اختبارات فاشلة |
-| 3 | تحديث `symfony/yaml` (ثغرة معلنة) | لم يُحدَّث (تغيير اعتماديات) |
-| 4 | إضافة فحص سهولة وصول آلي (axe) | لم يُضف (اعتمادية جديدة) |
+| 3 | تحديث `symfony/yaml` (ثغرة معلنة) | **نُفّذ بقرار المالك** (`f81bf4a`): `symfony/yaml` ومعها `http-foundation` و`http-kernel` و`routing` إلى 7.4.23. و`laravel/framework` إلى 13.40.0 (`a112a88`)؛ `composer audit` نظيف |
+| 4 | إضافة فحص سهولة وصول آلي (axe) | **نُفّذ بقرار المالك** (`19ba8ba`، والإصلاح `e33d5cf`): `node tests/Browser/run.mjs --a11y` |
 | 5 | السماح بالدرجات `10`، `12`، `16` في سلّم المسافات لعناصر بعينها | **قرّر المالك**: لا في المسافات، نعم في الأحجام؛ نُفّذ في المهمة 3 |
 | 6 | استبدال النافذة اليدوية والجداول الخام بمكوّنات HeroUI (`Modal`، `Table`) | **وافق المالك ونُفّذ** (الفرع `claude/festive-carson-ydugkv`): النافذة صارت `Window` في العُدّة على `Modal` من HeroUI، والجداول المعروضة صارت `ListTable` على `Table` من HeroUI، بشكل MA نفسه. انظر «المحدِّد 1 — HeroUI فقط» |
-| 7 | حذف الكود الميت (نحو 315 سطرًا في الخلفية، و`SurfaceToggle` و`MoveBoard` و`csv.ts` وأقسام التقارير غير المستعملة) | تقرير فقط |
+| 7 | حذف الكود الميت (نحو 315 سطرًا في الخلفية، و`SurfaceToggle` و`MoveBoard` و`csv.ts` وأقسام التقارير غير المستعملة) | **نُفّذ بقرار المالك** (`ee4fc41`، `542eb91`)، عدا مسارات الموبايل الخمسة: تبقى بقرار المالك |
 | 8 | العنوان الترحيبي في لوحة البداية («مساء الخير…») | يبقى كما هو |
 | 9 | اسم الشركة | **نُفّذ بطلب المالك**: الهوية الافتراضية صارت MA (انظر «تغيير الهوية إلى MA»). يبقى قرار `maker.json` |
+
+#### تنفيذ قرارات المالك 3 و4 و7 (2026-11-21، الفرع `claude/cool-fermi-g0wgl8`)
+
+| البند | ما نُفّذ | التحقق |
+|---|---|---|
+| 3 — الاعتماديات | `symfony/yaml` من 7.4.18، و`symfony/http-foundation` و`http-kernel` من 7.4.19، و`symfony/routing` من 7.4.18، كلها إلى 7.4.23 (قفزات patch؛ `composer.json` لم يتغير). الثلاث الأخيرة ظهرت ثغراتها بعد التقرير الأول | `composer audit`: بقيت ثغرة واحدة منخفضة في `laravel/framework` 13.33 (CVE-2026-128083، تُسد في 13.40). قرر المالك الترقية، **ونُفّذت** (`a112a88`): `laravel/framework` 13.40.0 و`laravel/prompts` 0.3.27، و`composer audit` لا يجد ثغرات |
+| 4 — axe | `@axe-core/playwright` 4.14.0 (اعتمادية تطوير) وملف `tests/Browser/accessibility.cjs`، يُشغَّل بـ `--a11y` أو `npm run test:a11y`. يفحص 12 صفحة (الدخول، البداية، المشتركون، نافذة كشف الحساب، الدفعات، الصناديق، التقارير، الذمم، السجل، المستخدمون، الرسائل، المظهر) في الفاتح والداكن على WCAG 2.1 A/AA، ويكتب `a11y.json` و`a11y-summary.md`. يسجّل ولا يُفشل المجموعة إلا إن تعذّر فتح صفحة أو ظهر خطأ | وجد مخالفة واحدة حرجة: خانة «تذكّرني» في الدخول بلا اسم (HeroUI يضعها في `label` خاص بها فلا يسمّيها `label` الصفحة). أُصلحت بـ `aria-label`؛ الفحص الآن **0 مخالفات**. لم يستطع axe الحكم على تباين 908 عنصرًا فوق الزجاج والتدرّج، و6 حالات `aria-prohibited-attr`، وحالتين `form-field-multiple-labels`: تحتاج فحصًا يدويًا. النمط نفسه (`CheckBox` داخل `label` بلا `aria-label`) موجود في نوافذ أخرى لا يصلها الفحص، منها `SplitPaymentForm` و`SplitTransferDetails` و`PaymentAmountStep` و`UserForm` |
+| 7 — الكود الميت | الواجهة: `SurfaceToggle` (قائمة الحساب تختار السطح بـ `SegmentedChoice` و`useSurface`؛ صُحّح ذكره في `CLAUDE.md`)، `MoveBoard`، `csv.ts` مع `statementCsv` و`readingHistoryCsv` (لا تستدعيهما إلا الاختبارات، فحُذفت اختباراتهما الثلاثة)، ستة أقسام في `ReportSections.jsx` (الخمسة و`Readings`)، وCSS لا يستعمله غيرها (`.tn-surface`، اللوحة و`.gl-mb`). الخلفية: `UserRole::assignableBySuperAdmin`، `CashBoxType::forBook`، `ClosingPeriods::hasEndedInAll`، `LineHistory::isStaleReadingBill`، `BankSeeder`، والعلاقات والدوال بلا مستدعٍ: `Closing::branchApprovedBy` و`preparedBy`، `ClosingPayment::matchedBy`، `DisconnectionListItem::feeTransaction`، `ReadingAssignmentEvent::fromUser` و`toUser`، `OverridableByBranch::isCompanyDefault`، `ReadingCycle::isReadingDay`، `User::resetToRoleStarterPermissions` | كل اسم تُحقّق منه بالبحث في المستودع كله قبل حذفه. **بقي عمدًا**: مسارات الموبايل الخمسة (بقرار المالك، قد تستدعيها إصدارات منشورة)، و`Subscription::latestWeekReading` (يستعمله اختبار) |
+
+نتائج الفحوص بعد التنفيذ ودمج `main`: `php artisan test --compact` 2440 نجحت؛ `npm test` 428؛ `npx vitest run` 72 (22 ملفًا)؛ `npm run lint` و`npm run typecheck` و`npm run build` وPint نجحت؛ مجموعات المتصفح الإحدى عشرة (الافتراضية، `--reports`، `--print`، `--distribution`، `--readings`، `--branches`، `--meter-boxes`، `--subscriber-navigation`، `--statement-actions`، `--access`، `--a11y`) نجحت؛ `composer audit` ثغرة `laravel/framework` وحدها. فحوص الموبايل (Flutter) لم تعمل في بيئة التنفيذ لغياب Flutter، والفرع لا يغيّر `mobile/`.
 
 ## الخطوة 4 — الاختبارات المكتوبة (الدفعة الأولى)
 

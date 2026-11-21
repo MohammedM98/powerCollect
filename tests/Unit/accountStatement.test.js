@@ -9,7 +9,6 @@ import {
     netOfReadingDiscount,
     paymentInShekels,
     relatedLineChains,
-    statementCsv,
     withReadingDiscounts,
 } from '../../resources/js/lib/accountStatement.js';
 
@@ -133,53 +132,6 @@ test('a discount is a percentage of what is owed, kilowatts at the kilo price, o
     assert.equal(discountAmount('percentage', '12.5', '78.18', '0.60'), 9.77);
     assert.equal(discountAmount('shekel', '', '250.00', '0.60'), null);
     assert.equal(discountAmount('shekel', '0', '250.00', '0.60'), null);
-});
-
-test('the statement exports each shown line with its side, its state and the balance it left', () => {
-    const csv = statementCsv([
-        {
-            lineNumber: 1,
-            date: '2026-08-20 09:15',
-            voucherNumber: null,
-            description: 'غرامة',
-            details: '=HYPERLINK("x")',
-            typeLabel: 'غرامة',
-            isCredit: false,
-            amount: '50.00',
-            currencyLabel: 'شيكل',
-            exchangeRate: '1',
-            balance: '50.00',
-            cancellation: { wasCorrected: false },
-            recordedByName: 'سارة',
-        },
-        {
-            lineNumber: 2,
-            date: '2026-08-30 12:40',
-            voucherNumber: '4471',
-            description: 'دفعة نقدية',
-            typeLabel: 'دفعة',
-            isCredit: true,
-            amount: '74.00',
-            currencyLabel: 'شيكل',
-            exchangeRate: '1',
-            paymentMethodLabel: 'نقدي',
-            cashBox: '3',
-            balance: '-24.00',
-            isCorrection: true,
-            recordedByName: 'Mohammed',
-            paidOn: '2026-08-25',
-            lateReason: 'نسيان إدخال الوصل',
-            bankReceivedOn: '2026-08-26',
-        },
-    ]);
-    const lines = csv.split('\r\n');
-
-    assert.ok(csv.startsWith('\uFEFF'));
-    assert.equal(lines.length, 3);
-    assert.ok(lines[1].startsWith('"1","20/08/2026 09:15","","غرامة","\'=HYPERLINK(""x"")","غرامة","عليه","50","شيكل","1"'));
-    assert.ok(lines[1].endsWith('"50","عليه","ملغاة","سارة","","",""'));
-    assert.ok(lines[2].includes('"4471"'));
-    assert.ok(lines[2].endsWith('"-24","له","تصحيح","Mohammed","25/08/2026","نسيان إدخال الوصل","26/08/2026"'));
 });
 
 /** A weekly reading of 60 with a standing discount of 30, corrected to 60 again, then a payment cancelled outright. */

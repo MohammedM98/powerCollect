@@ -46,17 +46,6 @@ enum UserRole: string
     }
 
     /**
-     * The roles a Super Admin may assign: every role except Super Admin
-     * itself, which is never handed out from the app.
-     *
-     * @return array<int, self>
-     */
-    public static function assignableBySuperAdmin(): array
-    {
-        return [self::BranchAdmin, ...self::staffRoles(), self::FinancialAuditor];
-    }
-
-    /**
      * Explicit fixture and sample-seeder presets. Account creation and
      * job-title edits never apply these automatically. Super Admin access
      * remains implicit and independent of permission rows.
