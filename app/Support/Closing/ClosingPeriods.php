@@ -84,7 +84,24 @@ class ClosingPeriods
         // On the wall clock, so the two days the clocks change still end at the cut-off.
         $minutes = $this->setting->cutoffMinutes();
 
-        return $minutes === 24 * 60 ? self::date($day)->addDay() : self::date($day)->setTime(intdiv($minutes, 60), $minutes % 60);
+        if ($minutes === 24 * 60) {
+            return self::date($day)->addDay();
+        }
+
+        $end = self::date($day)->setTime(intdiv($minutes, 60), $minutes % 60);
+
+        return $end->format('H:i') === $this->setting->cutoff() ? $end : self::clocksJumpedBefore($end);
+    }
+
+    /**
+     * The moment the clocks last jumped forward before `$moment`: where a
+     * cut-off the clocks skip falls, since by then its time has passed.
+     */
+    private static function clocksJumpedBefore(CarbonImmutable $moment): CarbonImmutable
+    {
+        $transitions = $moment->getTimezone()->getTransitions($moment->getTimestamp() - 86400, $moment->getTimestamp());
+
+        return $moment->setTimestamp(end($transitions)['ts']);
     }
 
     /**
