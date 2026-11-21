@@ -35,6 +35,7 @@
     --room-key: 3rem;
     --room-unit: 4rem;
     --room-mark: 5.25rem;
+    --room-switch: 7.25rem;
     --room-dock: 7.5rem;
 }
 
@@ -1979,6 +1980,11 @@
     border-color: var(--gl-line-strong);
 }
 
+/* A date field with a control inside its end (DateInput `endContent`): its text and calendar icon stop before it. */
+button.gl-date-has-end {
+    padding-inline-end: var(--room-switch);
+}
+
 /* ── Windows (Components/DialogFrame.jsx, Modal.jsx) ──────────────────── */
 .gl-dialog-head {
     padding-bottom: 8px;
@@ -3019,6 +3025,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     align-items: center;
     gap: 16px;
     width: 100%;
+    height: 100%;
     min-height: 98px;
     padding: 16px 16px;
     border-radius: 20px;
@@ -3065,13 +3072,13 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-co-method-content small {
-    display: -webkit-box;
+    display: block;
     overflow: hidden;
     color: var(--gl-muted);
     font-size: 12.5px;
     line-height: 1.55;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .gl-co .gl-co-check {
@@ -5804,6 +5811,7 @@ button.gl-cb-tile:hover {
     align-items: center;
     gap: 12px;
     width: 100%;
+    height: 100%;
     min-height: 76px;
     padding: 12px 16px;
     border-radius: 18px;
@@ -5815,6 +5823,16 @@ button.gl-cb-tile:hover {
 
 .gl-choice-content:hover {
     box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+}
+
+/* Three across (a discount's methods), a card is too narrow for its icon beside its words: the icon over its name and line, centred, every card the same size. */
+@media (min-width: 640px) {
+    .gl-choices[data-columns='3'] .gl-choice-content {
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+        text-align: center;
+    }
 }
 
 .gl-choice-content[data-selected] {

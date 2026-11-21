@@ -1,5 +1,5 @@
 import { usePage } from '@inertiajs/react';
-import { Button, Input, Label, Radio, RadioGroup, Switch, TextField } from '@heroui/react';
+import { Button, Input, Label, Radio, RadioGroup, TextField } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import InputError from '@/Components/InputError';
 import BrandLogo from '@/Components/BrandLogo';
@@ -8,8 +8,8 @@ import { BankDropdown, BankMark } from '@/Components/Banks';
 import { useBrand } from '@/hooks/useBrand';
 import { describeBalance } from '@/lib/accountStatement';
 import { formatMoney, normalizeDecimalInput } from '@/lib/format';
-import { balanceText, FormHeader } from './AccountFormParts';
-import { CheckBox, SearchableSelect } from '@/Components/UI';
+import { balanceText, FieldLabel, FormHeader } from './AccountFormParts';
+import { CheckBox, SearchableSelect, Switch } from '@/Components/UI';
 
 const QUICK_AMOUNTS = [50, 100, 200];
 
@@ -186,9 +186,9 @@ function CheckoutMethods({ data, errors, methods, setData, transferBanks }) {
                         <Radio key={method} value={method} className="gl-co-method" data-tone={card.tone}>
                             <Radio.Content className="gl-co-method-content">
                                 <span className="gl-co-method-icon"><Icon name={card.icon} className="h-6 w-6" strokeWidth={1.8} /></span>
-                                <span className="min-w-0">
+                                <span className="min-w-0 flex-1">
                                     <b>{card.title}</b>
-                                    <small>{card.hint ?? transferBanks.join('، ')}</small>
+                                    <small title={card.hint ?? transferBanks.join('، ')}>{card.hint ?? transferBanks.join('، ')}</small>
                                 </span>
                                 <Radio.Control className="gl-co-check"><Radio.Indicator><Icon name="check" className="h-3.5 w-3.5" strokeWidth={3} /></Radio.Indicator></Radio.Control>
                                 <span className="gl-co-key gl-num" aria-hidden="true">{index + 1}</span>
@@ -224,7 +224,7 @@ function CheckoutTransfer({ data, errors, referenceCheck, referenceStatus, sende
 
             <div className="gl-co-grid">
                 <div>
-                    <label htmlFor="sender_bank_name" className="gl-label mb-2 block">البنك المرسل</label>
+                    <FieldLabel htmlFor="sender_bank_name">البنك المرسل</FieldLabel>
                     <BankDropdown banks={senderBanks} id="sender_bank_name" name="sender_bank_name" value={data.sender_bank_name} onChange={(value) => setData('sender_bank_name', value)} />
                     <InputError message={errors.sender_bank_name} className="mt-2" />
                 </div>
@@ -233,12 +233,7 @@ function CheckoutTransfer({ data, errors, referenceCheck, referenceStatus, sende
                 <TextField name="sender_name" isRequired isReadOnly={senderIsSubscriber} value={data.sender_name} onChange={(value) => setData('sender_name', value)} className="gl-co-field">
                     <div className="gl-co-field-head">
                         <Label>اسم المحوِّل</Label>
-                        <Switch size="sm" isSelected={senderIsSubscriber} onChange={toggleSender} className="gl-co-switch">
-                            <Switch.Content>
-                                <Switch.Control><Switch.Thumb /></Switch.Control>
-                                <Label>المشترك نفسه</Label>
-                            </Switch.Content>
-                        </Switch>
+                        <Switch checked={senderIsSubscriber} onChange={toggleSender} label="المشترك نفسه" ariaLabel="المحوِّل هو المشترك نفسه" />
                     </div>
                     <Input id="sender_name" placeholder="اسم صاحب الحساب الذي حُوّل منه المبلغ" />
                     <InputError message={errors.sender_name} className="mt-2" />

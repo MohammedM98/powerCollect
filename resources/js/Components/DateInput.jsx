@@ -18,6 +18,9 @@ import { formatWeekDay } from '@/lib/weekDays';
  * day or a week, Page Up/Down a month, Enter picks, Escape closes (HeroUI's
  * Calendar grid, Saturday first).
  * `variant="pill"` draws it as a table's filter pill, `prefix` naming it.
+ * `endContent` sits inside the field at its end, beside the calendar icon
+ * (a quick pick such as BankReceivedDateField's «اليوم» switch); it is not
+ * part of the field's button, so it can be a control of its own.
  */
 export default function DateInput({
     id,
@@ -34,6 +37,7 @@ export default function DateInput({
     buttonRef: outerButtonRef = null,
     variant = 'field',
     prefix = null,
+    endContent = null,
     'aria-label': ariaLabel,
 }) {
     const today = localDay();
@@ -155,7 +159,7 @@ export default function DateInput({
                     }
                 }}
                 data-active={variant === 'pill' && hasValue ? '' : undefined}
-                className={variant === 'pill' ? 'gl-filter-trigger' : `flex h-(--control-h) w-full items-center justify-between gap-2 rounded-control border px-3 text-start text-base leading-6 transition focus:outline-hidden disabled:cursor-not-allowed ${fieldColors}`}
+                className={variant === 'pill' ? 'gl-filter-trigger' : `flex h-(--control-h) w-full items-center justify-between gap-2 rounded-control border px-3 text-start text-base leading-6 transition focus:outline-hidden disabled:cursor-not-allowed ${endContent ? 'gl-date-has-end' : ''} ${fieldColors}`}
             >
                 {variant === 'pill' ? (
                     <>
@@ -173,6 +177,8 @@ export default function DateInput({
                     </>
                 )}
             </Button>
+
+            {endContent && variant !== 'pill' && <div className="absolute inset-y-0 end-3 flex items-center">{endContent}</div>}
 
             {name && (
                 <Input
