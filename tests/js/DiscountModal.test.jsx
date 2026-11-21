@@ -27,6 +27,7 @@ describe('DiscountModal', () => {
         expect(submissions).toHaveLength(1);
         expect(submissions[0]).toMatchObject({ method: 'post', url: '/subscriptions/9/discounts' });
         expect(submissions[0].data).toMatchObject({ kind: 'once', method: 'shekel', value: '30' });
+        expect(submissions[0].data.operation_token).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('refuses a one-off discount larger than the balance owed', async () => {

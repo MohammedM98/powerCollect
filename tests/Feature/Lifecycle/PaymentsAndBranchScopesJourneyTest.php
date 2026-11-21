@@ -62,7 +62,7 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
 
         // One transfer split between Salem and Mona: its parts must add up, and its reference must be free.
         $split = fn (string $reference, array $amounts): array => [
-            'total_amount' => (string) array_sum($amounts), 'bank_name' => 'بنك فلسطين', 'sender_name' => 'أبو سالم', 'reference_number' => $reference,
+            'operation_token' => (string) Str::uuid(), 'total_amount' => (string) array_sum($amounts), 'bank_name' => 'بنك فلسطين', 'sender_name' => 'أبو سالم', 'reference_number' => $reference,
             'parts' => [['subscription_id' => $salem->id, 'amount' => (string) $amounts[0]], ['subscription_id' => $mona->id, 'amount' => (string) $amounts[1]]],
         ];
         $this->actingAs($collector)->post(route('payments.split.store'), [...$split('SPLIT-1', [70, 50]), 'total_amount' => '130'])->assertSessionHasErrors('parts');
@@ -75,7 +75,7 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
         $this->actingAs($manager)->get(route('split-payments.show', $transfer))->assertOk();
 
         // A penalty after Salem's share: the share is no longer his last line, so it is refunded, not deleted.
-        $this->actingAs($manager)->post(route('subscriptions.charges.store', $salem), ['type' => 'penalty', 'amount' => '10', 'notes' => 'تأخير'])->assertSessionHasNoErrors();
+        $this->actingAs($manager)->post(route('subscriptions.charges.store', $salem), ['operation_token' => (string) Str::uuid(), 'type' => 'penalty', 'amount' => '10', 'notes' => 'تأخير'])->assertSessionHasNoErrors();
         $this->act($manager, $salemShare, ['edit_metadata', 'refund'], ['action' => 'edit_metadata', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'سالم عبد الله', 'amendment_reason' => 'اسم المرسل الصحيح']);
         $this->assertSame(['سالم عبد الله', 'سالم عبد الله'], [$salemShare->fresh()->sender_name, $monaShare->fresh()->sender_name]);
         $this->actingAs($collector)->post(route('subscriptions.transactions.actions.store', [$mona, $monaShare]), ['action' => 'refund'])->assertForbidden();
@@ -105,7 +105,7 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
         $this->assertBalances([210.0, 50.0, 100.0], $salem, $khaled, $mona);
 
         // A cash payment refunded, its refund deleted, and then the payment itself deleted.
-        $this->actingAs($manager)->post(route('subscriptions.charges.store', $khaled), ['type' => 'disconnection_fee', 'amount' => '15'])->assertSessionHasNoErrors();
+        $this->actingAs($manager)->post(route('subscriptions.charges.store', $khaled), ['operation_token' => (string) Str::uuid(), 'type' => 'disconnection_fee', 'amount' => '15'])->assertSessionHasNoErrors();
         $this->act($manager, $cash, ['edit_metadata', 'refund'], ['action' => 'refund']);
         $this->assertBalances([210.0, 105.0, 100.0], $salem, $khaled, $mona);
         $this->act($manager, $khaled->transactions()->where('type', SubscriptionTransaction::TYPE_REFUND)->sole(), [], ['action' => 'delete_reversal', 'correction_notes' => 'الإرجاع لم يتم']);
@@ -137,7 +137,7 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
         $yousef = Subscription::query()->where('branch_id', $deir->id)->sole();
         $salemCash = $this->pay($collector, $salem, ['amount' => '30', 'payment_method' => 'cash']);
         $yousefCash = $this->pay($deirCollector, $yousef, ['amount' => '20', 'payment_method' => 'cash']);
-        $this->actingAs($deirManager)->post(route('subscriptions.charges.store', $yousef), ['type' => 'penalty', 'amount' => '5', 'notes' => 'تأخير'])->assertSessionHasNoErrors();
+        $this->actingAs($deirManager)->post(route('subscriptions.charges.store', $yousef), ['operation_token' => (string) Str::uuid(), 'type' => 'penalty', 'amount' => '5', 'notes' => 'تأخير'])->assertSessionHasNoErrors();
 
         // The branch manager: their own branch on every page, and nothing of the other.
         $this->actingAs($manager)->get(route('ledger.index', ['period' => 'all']))->assertInertia(fn ($page) => $page
@@ -152,6 +152,7 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
         $this->actingAs($manager)->post(route('subscriptions.payments.store', $yousef), ['payment_token' => (string) Str::uuid(), 'amount' => '5', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertForbidden();
         $this->actingAs($manager)->post(route('subscriptions.transactions.actions.store', [$yousef, $yousefCash]), ['action' => 'refund'])->assertForbidden();
         $this->actingAs($manager)->post(route('payments.split.store'), [
+            'operation_token' => (string) Str::uuid(),
             'total_amount' => '20', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'مرسل', 'reference_number' => 'X-BRANCH',
             'parts' => [['subscription_id' => $salem->id, 'amount' => '10'], ['subscription_id' => $yousef->id, 'amount' => '10']],
         ])->assertSessionHasErrors('parts.1.subscription_id');
@@ -171,7 +172,7 @@ class PaymentsAndBranchScopesJourneyTest extends TestCase
         $this->actingAs($owner)->get(route('receivables.index'))->assertInertia(fn ($page) => $page->where('summary.total', 135)->where('summary.count', 2));
 
         // What the Super Admin records or corrects, in either branch, carries their name.
-        $this->actingAs($owner)->post(route('subscriptions.charges.store', $salem), ['type' => 'penalty', 'amount' => '12', 'notes' => 'غرامة من الإدارة'])->assertSessionHasNoErrors();
+        $this->actingAs($owner)->post(route('subscriptions.charges.store', $salem), ['operation_token' => (string) Str::uuid(), 'type' => 'penalty', 'amount' => '12', 'notes' => 'غرامة من الإدارة'])->assertSessionHasNoErrors();
         $ownerPenalty = $salem->transactions()->where('type', 'penalty')->sole();
         $this->act($owner, $salemCash, ['edit_metadata', 'refund'], ['action' => 'refund']);
         $this->assertSame([$owner->id, $owner->id], [$ownerPenalty->recorded_by, $salem->transactions()->where('type', SubscriptionTransaction::TYPE_REFUND)->sole()->recorded_by]);

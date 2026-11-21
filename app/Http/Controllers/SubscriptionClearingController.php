@@ -7,7 +7,7 @@ use App\Models\Subscription;
 use App\Notifications\ActionCompleted;
 use App\Support\Ledger\LedgerAmounts;
 use App\Support\Ledger\LinePresenter;
-use App\Support\Ledger\RecordClearing;
+use App\Support\Ledger\WebPaymentOperation;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 
@@ -18,14 +18,17 @@ class SubscriptionClearingController extends Controller
      * and its value comes off what they owe straight away. Its voucher, to
      * print, is flashed back.
      */
-    public function store(StoreSubscriptionClearingRequest $request, Subscription $subscription): RedirectResponse
+    public function store(StoreSubscriptionClearingRequest $request, Subscription $subscription, WebPaymentOperation $operation): RedirectResponse
     {
-        $clearing = RecordClearing::handle($subscription, $request->user(), $request->validated('amount'), $request->validated('notes'), $request->validated('manual_voucher_number'));
+        $clearing = $operation->recordClearing($subscription, $request->user(), $request->validated());
 
-        $request->user()->notify(new ActionCompleted(
-            'clearing-recorded',
-            sprintf('%s — مقاصة %s شيكل', $subscription->displayName(), LedgerAmounts::formatAmount(ltrim($clearing->amount, '-'))),
-        ));
+        // A retried request returns the clearing already recorded, with its voucher; it was announced then.
+        if ($clearing->wasRecentlyCreated) {
+            $request->user()->notify(new ActionCompleted(
+                'clearing-recorded',
+                sprintf('%s — مقاصة %s شيكل', $subscription->displayName(), LedgerAmounts::formatAmount(ltrim($clearing->amount, '-'))),
+            ));
+        }
 
         Inertia::flash('recordedClearing', [
             'voucherNumber' => LinePresenter::displayVoucherNumber($clearing),
