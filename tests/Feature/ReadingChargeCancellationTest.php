@@ -175,7 +175,9 @@ class ReadingChargeCancellationTest extends TestCase
 
         DB::enableQueryLog();
         $this->actingAs($this->admin)->get(route('meter-readings.index', ['week' => '2026-09-18']))->assertOk();
-        $charges = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains($query['query'], 'from "subscription_transactions"') && str_contains($query['query'], '"meter_reading_id" in'));
+        // MySQL quotes names with backticks, SQLite with double quotes.
+        $sql = fn (array $query): string => str_replace('`', '"', $query['query']);
+        $charges = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains($sql($query), 'from "subscription_transactions"') && str_contains($sql($query), '"meter_reading_id" in'));
 
         $this->assertCount(1, $charges);
     }
