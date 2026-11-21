@@ -14,6 +14,7 @@ use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
 use Illuminate\Validation\ValidationException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
 
@@ -90,12 +91,12 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
             'type' => 'minimum_charge', 'amount' => '12.50', 'notes' => 'تحميل يدوي بطلب الإدارة',
         ]);
         $this->assertDatabaseCount('meter_readings', 0);
-        $this->assertSame(12.5, $this->subscription->fresh()->minimum_charge);
+        $this->assertSame('12.50', $this->subscription->fresh()->minimum_charge);
         $this->assertSame('charge-recorded', $this->branchAdmin->notifications()->sole()->data['action']);
         $this->actingAs($this->branchAdmin)->get(route('subscriptions.statement', $this->subscription))->assertInertia(fn ($page) => $page
             ->where('entries.0.typeLabel', 'تحميل الحد الأدنى على المشترك')
             ->where('entries.0.isCredit', false)->where('summary.balance', '12.50')->where('summary.charged', '12.50')
-            ->where('subscription.minimumPayment', '12.5'));
+            ->where('subscription.minimumPayment', '12.50'));
     }
 
     public function test_a_minimum_charge_uses_the_breakers_minimum_when_no_subscriber_override_exists(): void
@@ -404,5 +405,35 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
     private function latestTransaction(): SubscriptionTransaction
     {
         return SubscriptionTransaction::latest('id')->first();
+    }
+
+    /**
+     * @return array<string, array{0: string, 1: string, 2: array<string, string>, 3: string}>
+     */
+    public static function amountsOutOfBounds(): array
+    {
+        $cases = [];
+        foreach (['negative' => '-5', 'zero' => '0', 'three decimals' => '10.555', 'over the limit' => '1000000.01', 'Arabic-Indic digits' => '٥٠'] as $label => $amount) {
+            $cases["charge, {$label}"] = ['subscriptions.charges.store', 'amount', ['type' => 'penalty', 'notes' => 'غرامة'], $amount];
+            $cases["clearing, {$label}"] = ['subscriptions.clearings.store', 'amount', ['notes' => 'صيانة الخط'], $amount];
+            $cases["discount, {$label}"] = ['subscriptions.discounts.store', 'value', ['method' => 'shekel'], $amount];
+        }
+
+        return $cases;
+    }
+
+    /**
+     * @param  array<string, string>  $otherFields
+     */
+    #[DataProvider('amountsOutOfBounds')]
+    public function test_an_amount_outside_the_allowed_range_is_refused_and_nothing_is_recorded(string $routeName, string $field, array $otherFields, string $amount): void
+    {
+        $this->subscriptionOwes('2000000');
+        $before = SubscriptionTransaction::count();
+
+        $response = $this->postAs($this->branchAdmin, route($routeName, $this->subscription), [...$otherFields, $field => $amount]);
+
+        $response->assertSessionHasErrors($field);
+        $this->assertSame($before, SubscriptionTransaction::count());
     }
 }

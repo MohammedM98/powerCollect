@@ -35,6 +35,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prepend(ResolveBranchDomain::class);
         $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: EnsureBranchDomainAccess::class);
         $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: ResolveBranchView::class);
+        // The app's token is checked before a route's record is looked up, so a visitor cannot learn which records exist.
+        $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: AuthenticateMobileToken::class);
         $middleware->web(append: [
             EnsureBranchDomainAccess::class,
             ResolveBranchView::class,

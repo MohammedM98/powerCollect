@@ -39,6 +39,13 @@ return new class extends Migration
             $table->dropIndex('subscription_messages_status_index');
         });
 
+        // MySQL serves the cash_box_id foreign key from this index, so the key gets its own first.
+        if (! Schema::hasIndex('cash_box_payments', ['cash_box_id'])) {
+            Schema::table('cash_box_payments', function (Blueprint $table): void {
+                $table->index('cash_box_id');
+            });
+        }
+
         Schema::table('cash_box_payments', function (Blueprint $table): void {
             $table->dropIndex('cash_box_payments_box_occurred_index');
         });
