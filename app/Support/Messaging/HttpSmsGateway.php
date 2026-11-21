@@ -62,7 +62,7 @@ class HttpSmsGateway implements SmsGateway
         } catch (ConnectionException $exception) {
             // The request went out but no answer came back in time: the provider may have sent it, so a retry could send it twice.
             if (str_contains($exception->getMessage(), 'Operation timed out')) {
-                throw new SmsDeliveryFailed(__('The SMS gateway did not confirm the message in time; check it was not delivered before sending it again.'), previous: $exception);
+                throw new SmsDeliveryFailed(__('The SMS gateway did not confirm the message in time; check it was not delivered before sending it again.'), previous: $exception, isUnconfirmed: true);
             }
 
             throw new SmsDeliveryFailed(__('Could not reach the SMS gateway: ').$exception->getMessage(), isTemporary: true, previous: $exception);

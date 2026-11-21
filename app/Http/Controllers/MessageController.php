@@ -7,7 +7,9 @@ use App\Enums\MessageKind;
 use App\Enums\MessageStatus;
 use App\Enums\SubscriptionStatus;
 use App\Http\Requests\MessageRecipientsRequest;
+use App\Http\Requests\SettleUnconfirmedMessageRequest;
 use App\Http\Requests\StoreMessageBatchRequest;
+use App\Jobs\SendSubscriptionMessage;
 use App\Models\MessageBatch;
 use App\Models\MeterBox;
 use App\Models\Subscription;
@@ -214,5 +216,30 @@ class MessageController extends Controller
         $message->markSent($request->user());
 
         return back();
+    }
+
+    /**
+     * Settle an SMS the gateway did not confirm, once someone has checked
+     * with the subscriber or the provider: it arrived (`delivered`), or it
+     * did not and is sent again (`resend`).
+     */
+    public function settleUnconfirmed(SettleUnconfirmedMessageRequest $request, MessageBatch $batch, SubscriptionMessage $message): RedirectResponse
+    {
+        $outcome = $request->validated('outcome');
+
+        if ($message->status !== MessageStatus::Unconfirmed) {
+            return back()->withErrors(['message' => 'هذه الرسالة ليست بانتظار التأكيد.']);
+        }
+
+        if ($outcome === 'delivered') {
+            $message->markSent($request->user());
+
+            return back()->with('status', 'message-confirmed');
+        }
+
+        $message->update(['status' => MessageStatus::Pending, 'error' => null]);
+        SendSubscriptionMessage::dispatch($message);
+
+        return back()->with('status', 'message-resent');
     }
 }

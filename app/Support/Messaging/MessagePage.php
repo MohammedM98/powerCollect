@@ -113,6 +113,7 @@ class MessagePage
             'pending' => (int) $batch->pending_count,
             'sent' => (int) $batch->sent_count,
             'failed' => (int) $batch->failed_count,
+            'unconfirmed' => (int) $batch->unconfirmed_count,
         ];
     }
 

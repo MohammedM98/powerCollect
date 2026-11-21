@@ -224,6 +224,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/messages/{batch}', [MessageController::class, 'show'])->name('messages.show');
     Route::post('/messages/{batch}/retry', [MessageController::class, 'retry'])->name('messages.retry');
     Route::put('/messages/{batch}/messages/{message}/sent', [MessageController::class, 'markSent'])->scopeBindings()->name('messages.sent');
+    Route::put('/messages/{batch}/messages/{message}/unconfirmed', [MessageController::class, 'settleUnconfirmed'])->scopeBindings()->name('messages.unconfirmed');
     Route::resource('message-templates', MessageTemplateController::class)->only(['store', 'update', 'destroy']);
 
     Route::get('/disconnection-lists', [DisconnectionListController::class, 'index'])->name('disconnection-lists.index');
