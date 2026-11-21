@@ -1,10 +1,10 @@
 import { reportMoney, shortDate } from '@/lib/reportFormatting';
 import { weekDayName } from '@/lib/weekDays';
 
-const CELL = 'border border-gray-300 px-2 py-1.5 text-start';
-const MONEY = 'border border-gray-300 px-2 py-1.5 text-end font-display tabular-nums';
-const HEAD = 'border border-gray-300 bg-gray-100 px-2 py-1.5 text-start text-[11px] font-bold';
-const MONEY_HEAD = 'border border-gray-300 bg-gray-100 px-2 py-1.5 text-end text-[11px] font-bold';
+const CELL = 'border border-gray-300 px-2 py-2 text-start';
+const MONEY = 'border border-gray-300 px-2 py-2 text-end font-display tabular-nums';
+const HEAD = 'border border-gray-300 bg-gray-100 px-2 py-2 text-start text-[11px] font-bold';
+const MONEY_HEAD = 'border border-gray-300 bg-gray-100 px-2 py-2 text-end text-[11px] font-bold';
 
 /**
  * The reports page on paper, and only that: the branch and the period with
@@ -23,7 +23,7 @@ export default function ReportPrintSheet({ scopeName, periodName, from, to, flow
             <header className="mb-4 flex items-end justify-between gap-6 border-b-2 border-gray-900 pb-3">
                 <div>
                     <p className="text-[11px] font-semibold text-gray-600">التقرير المالي، {periodName}</p>
-                    <h1 className="mt-0.5 text-[22px] font-bold">{scopeName}</h1>
+                    <h1 className="mt-1 text-[22px] font-bold">{scopeName}</h1>
                     <p className="mt-1 font-semibold">{dates}</p>
                 </div>
                 <dl className="text-end text-[10px] text-gray-600">
@@ -40,7 +40,7 @@ export default function ReportPrintSheet({ scopeName, periodName, from, to, flow
                     ['الرصيد الختامي', flow.closing, change > 0 ? `زاد ${reportMoney(change)}` : change < 0 ? `نقص ${reportMoney(-change)}` : 'لم يتغير'],
                     ['عدد الدفعات', null, null, collections.count],
                 ].map(([label, amount, note, count]) => (
-                    <div key={label} className="rounded border border-gray-300 px-2 py-1.5">
+                    <div key={label} className="rounded border border-gray-300 px-2 py-2">
                         <p className="text-[10px] text-gray-600">{label}</p>
                         <p className="font-display text-[15px] font-bold">{amount !== null ? `${reportMoney(amount)} ₪` : count}</p>
                         {note && <p className="text-[9.5px] text-gray-600">{note}</p>}
@@ -49,12 +49,12 @@ export default function ReportPrintSheet({ scopeName, periodName, from, to, flow
             </section>
 
             {collections.receipts && <section className="report-print-block mb-4">
-                <h2 className="mb-1.5 text-[13px] font-bold">نتيجة تدقيق مقبوضات الفترة حتى الآن</h2>
+                <h2 className="mb-2 text-[13px] font-bold">نتيجة تدقيق مقبوضات الفترة حتى الآن</h2>
                 <p className="mb-2 text-[10px]">{collections.receipts.basis}</p>
                 <table className="w-full border-collapse"><thead><tr><th className={HEAD}>البند</th><th className={HEAD}>المبلغ ₪</th></tr></thead><tbody>{collections.receipts.rows.map((row) => <tr key={row.key}><td className={CELL}>{row.label}</td><td className={MONEY}>{reportMoney(row.amount)}</td></tr>)}</tbody></table>
             </section>}
             <section className="report-print-block mb-4">
-                <h2 className="mb-1.5 text-[13px] font-bold">حركة الأرصدة</h2>
+                <h2 className="mb-2 text-[13px] font-bold">حركة الأرصدة</h2>
                 <table className="w-full border-collapse">
                     <thead>
                         <tr><th className={HEAD}>البند</th><th className={`${MONEY_HEAD} w-20`}>العدد</th><th className={`${MONEY_HEAD} w-32`}>المبلغ ₪</th></tr>
@@ -78,7 +78,7 @@ export default function ReportPrintSheet({ scopeName, periodName, from, to, flow
             {collections.count > 0 && (
                 <section className="report-print-block mb-4 grid grid-cols-2 gap-4">
                     <div>
-                        <h2 className="mb-1.5 text-[13px] font-bold">التحصيل حسب الحساب</h2>
+                        <h2 className="mb-2 text-[13px] font-bold">التحصيل حسب الحساب</h2>
                         <table className="w-full border-collapse">
                             <thead>
                                 <tr><th className={HEAD}>الحساب</th><th className={MONEY_HEAD}>الدفعات</th><th className={MONEY_HEAD}>المبلغ ₪</th></tr>
@@ -92,7 +92,7 @@ export default function ReportPrintSheet({ scopeName, periodName, from, to, flow
                         </table>
                     </div>
                     <div>
-                        <h2 className="mb-1.5 text-[13px] font-bold">التحصيل حسب المحصّل</h2>
+                        <h2 className="mb-2 text-[13px] font-bold">التحصيل حسب المحصّل</h2>
                         <table className="w-full border-collapse">
                             <thead>
                                 <tr><th className={HEAD}>الموظف</th><th className={MONEY_HEAD}>الدفعات</th><th className={MONEY_HEAD}>نقدي</th><th className={MONEY_HEAD}>المجموع ₪</th></tr>
@@ -109,7 +109,7 @@ export default function ReportPrintSheet({ scopeName, periodName, from, to, flow
 
             {branchSummary.length > 0 && (
                 <section>
-                    <h2 className="mb-1.5 text-[13px] font-bold">مقارنة الفروع</h2>
+                    <h2 className="mb-2 text-[13px] font-bold">مقارنة الفروع</h2>
                     <table className="w-full border-collapse">
                         <thead>
                             <tr><th className={HEAD}>الفرع</th><th className={MONEY_HEAD}>إجمالي المقبوضات المسجّلة</th><th className={MONEY_HEAD}>نقدي</th><th className={MONEY_HEAD}>الدفعات</th><th className={MONEY_HEAD}>الرصيد الختامي</th></tr>

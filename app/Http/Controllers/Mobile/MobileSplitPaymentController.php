@@ -26,11 +26,12 @@ class MobileSplitPaymentController extends Controller
                 $parts = $request->parts();
                 $branchIds = collect($parts)->pluck('subscription.branch_id')->unique()->sort()->values();
                 Branch::query()->whereIn('id', $branchIds)->orderBy('id')->lockForUpdate()->get();
-                $existing = $request->existingPayment();
+                $existing = $request->existingPayment(latest: true);
                 if ($existing !== null) {
                     abort_unless($existing->recorded_by === $request->user()->id && $existing->split_payment_id !== null, 403);
 
-                    return $existing->splitPayment;
+                    // Recorded by the same upload while this one waited: read it past the snapshot too.
+                    return $existing->splitPayment()->sharedLock()->firstOrFail();
                 }
 
                 $split = SplitPayment::record($request->user(), $request->safe()->except(['parts', 'mobile_operation_id', 'collector_confirmed']), $parts);

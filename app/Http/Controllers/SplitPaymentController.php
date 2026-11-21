@@ -15,6 +15,7 @@ use App\Support\Ledger\LineHistory;
 use App\Support\Ledger\LinePresenter;
 use App\Support\Ledger\Money;
 use App\Support\Ledger\PaymentReferences;
+use App\Support\Ledger\WebPaymentOperation;
 use App\Support\Reports\DailySeries;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -66,16 +67,19 @@ class SplitPaymentController extends Controller
      * payment on each, all together or none. The payments page shows what was
      * recorded, with each part's receipt.
      */
-    public function store(StoreSplitPaymentRequest $request): RedirectResponse
+    public function store(StoreSplitPaymentRequest $request, WebPaymentOperation $operation): RedirectResponse
     {
         $actor = $request->user();
-        $split = SplitPayment::record($actor, $request->safe()->except('parts'), $request->parts());
+        $split = $operation->recordSplit($actor, $request->safe()->except('parts'), $request->parts());
         $payments = $split->payments()->with('subscription')->get();
 
-        $actor->notify(new ActionCompleted(
-            'split-payment-recorded',
-            sprintf('%s — %s شيكل على %d مشتركين', $split->sender_name, LedgerAmounts::formatAmount($split->total_amount), $payments->count()),
-        ));
+        // A retried request returns the transfer already recorded, with its receipts; it was announced then.
+        if ($split->wasRecentlyCreated) {
+            $actor->notify(new ActionCompleted(
+                'split-payment-recorded',
+                sprintf('%s — %s شيكل على %d مشتركين', $split->sender_name, LedgerAmounts::formatAmount($split->total_amount), $payments->count()),
+            ));
+        }
 
         Inertia::flash('recordedSplitPayment', [
             'id' => $split->id,

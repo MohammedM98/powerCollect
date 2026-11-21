@@ -64,7 +64,7 @@ export default function PermissionMatrixView({
                             onChange={(event) => search(event.target.value)}
                             placeholder="ابحث بكلمة: دفعة، خصم، اعتماد، حذف..."
                             aria-label="ابحث عن صلاحية"
-                            className="block w-full py-2 pe-3 ps-10 text-sm"
+                            className="block w-full py-2 pe-3 field-room-start text-sm"
                         />
                     </div>
                     <div className="pm-modes" role="group" aria-label="تصفية الأقسام">
@@ -143,7 +143,7 @@ export default function PermissionMatrixView({
                 <div className={`pm-grid ${explaining ? 'is-explaining' : ''}`}>
                     <MatrixHead />
                     {groups.length === 0 ? (
-                        <div className="px-5 py-12 text-center text-sm text-gray-500">
+                        <div className="px-4 py-8 text-center text-sm text-gray-500">
                             <Icon name="search" className="mx-auto h-8 w-8 text-gray-300" />
                             <p className="mt-2">لا توجد صلاحيات تطابق البحث أو التصفية.</p>
                             <Button data-raw="" variant="ghost"

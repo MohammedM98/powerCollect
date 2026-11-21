@@ -74,14 +74,14 @@ export function PermissionSummary({ employee, sections, selected, template, scop
     const firstName = employee.name.split(' ')[0];
 
     return (
-        <aside className="pm-card space-y-4 p-4 sm:p-5" aria-label={`ملخص صلاحيات ${employee.name}`}>
+        <aside className="pm-card space-y-4 p-4 sm:p-6" aria-label={`ملخص صلاحيات ${employee.name}`}>
             <div className="flex items-start gap-3">
                 <span className="pm-card-icon">
                     <Icon name="sparkles" className="h-5 w-5" />
                 </span>
                 <div>
                     <h3 className="text-lg font-bold text-gray-900">ماذا يستطيع {firstName}؟</h3>
-                    <p className="mt-0.5 text-[13.5px] text-gray-500">
+                    <p className="mt-1 text-[13.5px] text-gray-500">
                         {scopedToOwnBranch ? 'المعروض هو ما يمكنك تعديله لموظفي فرعك.' : 'يتحدّث مع كل تغيير، قبل الحفظ.'}
                     </p>
                 </div>
@@ -122,7 +122,7 @@ export function PermissionSummary({ employee, sections, selected, template, scop
                                 <b className="font-semibold text-gray-900">{section.label}:</b>{' '}
                                 <span className="text-gray-700">{sectionSentence(section, selected)}</span>
                                 {special.length > 0 && (
-                                    <div className="mt-1.5 flex flex-wrap gap-1">
+                                    <div className="mt-2 flex flex-wrap gap-1">
                                         {special.map((item) => (
                                             <span key={item.id} className={`pm-pill is-${item.risk}`}>
                                                 {item.label}
@@ -156,7 +156,7 @@ export function PermissionSummary({ employee, sections, selected, template, scop
 
             <div className="border-t border-gray-100 pt-3">
                 <h4 className="text-sm font-bold text-gray-900">الصفحات التي سيراها</h4>
-                <div className="mt-2 flex flex-wrap gap-1.5">
+                <div className="mt-2 flex flex-wrap gap-2">
                     {['الرئيسية', ...held.map((section) => SECTION_DETAILS[section.key]?.page ?? section.label)].map((page) => (
                         <span key={page} className="pm-pill">
                             {page}
@@ -168,7 +168,7 @@ export function PermissionSummary({ employee, sections, selected, template, scop
             {notHeld.length > 0 && (
                 <div className="border-t border-gray-100 pt-3">
                     <h4 className="text-sm font-bold text-gray-900">لا يصل إلى</h4>
-                    <div className="mt-2 flex flex-wrap gap-1.5">
+                    <div className="mt-2 flex flex-wrap gap-2">
                         {notHeld.map((section) => (
                             <span key={section.key} className="pm-pill is-ghost">
                                 {section.label}
@@ -233,14 +233,14 @@ export function PermissionCompare({ employee, sections, selected, colleagues, co
     const firstName = employee.name.split(' ')[0];
 
     return (
-        <div className="pm-card p-4 sm:p-5">
+        <div className="pm-card p-4 sm:p-6">
             <div className="flex items-start gap-3">
                 <span className="pm-card-icon">
                     <Icon name="repeat" className="h-5 w-5" />
                 </span>
                 <div>
                     <h3 className="text-lg font-bold text-gray-900">مقارنة {firstName} بزميل</h3>
-                    <p className="mt-0.5 text-[13.5px] text-gray-500">
+                    <p className="mt-1 text-[13.5px] text-gray-500">
                         اختر موظفًا لترى الفرق بينهما، ثم أضف ما ينقص أو طابِق صلاحياته. لا يُحفظ شيء قبل المراجعة.
                     </p>
                 </div>
@@ -269,7 +269,7 @@ export function PermissionCompare({ employee, sections, selected, colleagues, co
             )}
 
             {result && (
-                <div className="mt-5 space-y-4">
+                <div className="mt-6 space-y-4">
                     <p className="text-sm text-gray-600">
                         يشتركان في <b className="font-display text-gray-900">{result.shared.length}</b> {permissionsWord(result.shared.length)}.
                     </p>

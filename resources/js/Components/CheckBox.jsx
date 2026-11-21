@@ -11,6 +11,8 @@ import { Checkbox } from '@heroui/react';
 export default function CheckBox({ checked = false, onChange, disabled = false, indeterminate = false, name, value, id, className = '', showControl = true, children = null, ...props }) {
     return (
         <Checkbox
+            // Its own box, not a list table's row selection (HeroUI's Table would otherwise claim it).
+            slot={null}
             {...props}
             id={id}
             name={name}

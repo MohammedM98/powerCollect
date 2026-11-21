@@ -41,10 +41,10 @@ export default function LastReadingConfirmDialog({ editor, subscriptionName }) {
         <SecondaryButton onClick={phase === 'reason' ? editor.cancel : editor.back} disabled={editor.saving}>{phase === 'reason' ? 'إلغاء' : 'رجوع'}</SecondaryButton>
         <PrimaryButton type="submit" form={formId} disabled={editor.saving || (phase === 'reason' && !editor.canContinue) || (phase === 'review' && (!preview || (unusual && !confirmedUnusual)))}>{editor.saving ? 'جارٍ المعالجة…' : phase === 'reason' ? 'متابعة' : phase === 'reading' ? 'مراجعة التعديل' : meterChange ? 'حفظ نقطة البداية' : 'حفظ التصحيح'}</PrimaryButton>
     </>}>
-        <ol aria-label="خطوات تعديل القراءة" className="grid grid-cols-3 gap-2 text-sm sm:gap-5">
+        <ol aria-label="خطوات تعديل القراءة" className="grid grid-cols-3 gap-2 text-sm sm:gap-6">
             {['سبب التعديل', 'القراءة', 'المراجعة'].map((label, index) => <li key={label} aria-current={index === stepIndex ? 'step' : undefined} className={`flex flex-col items-center gap-2 text-center sm:flex-row sm:text-start ${index === stepIndex ? 'font-semibold text-brand-600' : 'text-gray-500'}`}><span className={index === stepIndex ? 'flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-500/10' : 'flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-50'}>{index + 1}</span>{label}</li>)}
         </ol>
-        <form id={formId} onSubmit={submit} noValidate className="space-y-5">
+        <form id={formId} onSubmit={submit} noValidate className="space-y-6">
             {phase === 'reason' && <>
                 <fieldset className="space-y-3">
                     <legend className="mb-3 text-lg font-bold text-gray-900">لماذا تريد تعديل القراءة؟</legend>
@@ -78,7 +78,7 @@ export default function LastReadingConfirmDialog({ editor, subscriptionName }) {
                 </div>
             </>}
             {phase === 'review' && preview && <>
-                <div className="grid grid-cols-2 divide-x divide-x-reverse divide-gray-200 rounded-control bg-gray-50 py-5 text-center">
+                <div className="grid grid-cols-2 divide-x divide-x-reverse divide-gray-200 rounded-control bg-gray-50 py-4 text-center">
                     <div className="min-w-0 px-3"><p className="text-base text-gray-600">قبل التعديل</p><bdi dir="ltr" className="mt-2 block wrap-break-word text-center font-display text-2xl font-semibold text-gray-500">{formatMoney(preview.before)}</bdi></div>
                     <div className="min-w-0 px-3"><p className="text-base text-gray-600">بعد التعديل</p><bdi dir="ltr" className="mt-2 block wrap-break-word text-center font-display text-2xl font-bold text-gray-900">{formatMoney(preview.after)}</bdi></div>
                 </div>

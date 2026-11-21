@@ -12,7 +12,7 @@ export function Breadcrumb({ trail }) {
     const { group, link, exact } = trail;
 
     return (
-        <nav className="tn-trail tn-rise mb-3 flex items-center gap-1.5 text-[13.5px] text-gray-500" aria-label="مسار الصفحة">
+        <nav className="tn-trail tn-rise mb-3 flex items-center gap-2 text-[13.5px] text-gray-500" aria-label="مسار الصفحة">
             <Link href={HOME_LINK.href} prefetch={shouldPrefetchPage(HOME_LINK.href)} className="inline-flex min-h-6 items-center hover:text-gray-900">{HOME_LINK.label}</Link>
             {group && (
                 <>

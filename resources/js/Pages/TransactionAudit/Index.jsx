@@ -1,4 +1,3 @@
-import { Fragment } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
@@ -7,10 +6,9 @@ import Pagination from '@/Components/DataTable/Pagination';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Icon from '@/Components/Icon';
 import { Chip } from '@heroui/react';
-import { Figure } from '@/Components/UI';
+import { BandRow, Figure, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable } from '@/Components/UI';
 import PeriodTabs, { periodCaption } from '@/Components/PeriodTabs';
 import { useDataTable } from '@/hooks/useDataTable';
-import { useRowClick } from '@/hooks/useRowClick';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
 import { formatClock, formatDayLabel, formatMoney, formatNumber } from '@/lib/format';
 import StatementModal from '@/Pages/Subscriptions/StatementModal';
@@ -72,14 +70,12 @@ function valueText(value) {
 /** A day's header row: its date, with "اليوم" on today. */
 function DayHeader({ day, isToday }) {
     return (
-        <tr className="data-table-group">
-            <td colSpan={10}>
-                <span className="gl-au-day">
-                    {formatDayLabel(day)}
-                    {isToday && <Chip size="sm" className="gl-au-today">اليوم</Chip>}
-                </span>
-            </td>
-        </tr>
+        <BandRow id={`day-${day}`} columns={9}>
+            <span className="gl-au-day">
+                {formatDayLabel(day)}
+                {isToday && <Chip size="sm" className="gl-au-today">اليوم</Chip>}
+            </span>
+        </BandRow>
     );
 }
 
@@ -92,7 +88,6 @@ function DayHeader({ day, isToday }) {
 export default function Index({ events, period, counts, impactSummary = null, today, scopeLabel, filters, filterOptions, statement }) {
     const { can } = usePage().props;
     const { search, setSearch, setPerPage, filterValues, setFilter, setFilters, clearFilters } = useDataTable('/transaction-audit', filters, { period });
-    const rowClick = useRowClick();
     const statementWindow = useStatementWindow(statement);
     const caption = periodCaption(period);
     const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
@@ -137,7 +132,7 @@ export default function Index({ events, period, counts, impactSummary = null, to
                 <Figure tone="owe" label="حسّاسة تحتاج مراجعة" hint="حذف نهائي، أو على حركة من صندوق مستلم">{impactSummary ? formatNumber(impactSummary.sensitive) : formatNumber(counts.deletion)}</Figure>
             </div>
 
-            <div className="mt-5">
+            <div className="mt-6">
                 <DataTableToolbar
                     search={search}
                     onSearchChange={setSearch}
@@ -158,87 +153,77 @@ export default function Index({ events, period, counts, impactSummary = null, to
                 />
 
                 <div className="data-table-container">
-                    <table className="data-table gl-au-table w-full text-start text-sm">
-                        <thead>
-                            <tr>
-                                <th>الوقت</th>
-                                <th>الإجراء</th>
-                                <th>المشترك</th>
-                                <th>الحركة</th>
-                                <th>قبل</th>
-                                <th>بعد</th>
-                                <th className="num">الأثر ₪</th>
-                                <th>السبب</th>
-                                <th>بواسطة</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {events.data.length === 0 ? (
-                                <tr>
-                                    <td colSpan={9}>لا توجد إجراءات مطابقة في هذه الفترة.</td>
-                                </tr>
-                            ) : (
-                                events.data.map((event, index) => {
-                                    const style = KIND_STYLES[event.kind];
+                    <ListTable className="data-table gl-au-table w-full text-start text-sm" aria-label="سجل التدقيق">
+                        <ListHeader>
+                            <ListColumn id="time">الوقت</ListColumn>
+                            <ListColumn id="kind">الإجراء</ListColumn>
+                            <ListColumn id="subscription" isRowHeader>المشترك</ListColumn>
+                            <ListColumn id="lines">الحركة</ListColumn>
+                            <ListColumn id="before">قبل</ListColumn>
+                            <ListColumn id="after">بعد</ListColumn>
+                            <ListColumn id="impact" className="num">الأثر ₪</ListColumn>
+                            <ListColumn id="reason">السبب</ListColumn>
+                            <ListColumn id="by">بواسطة</ListColumn>
+                        </ListHeader>
+                        <ListBody empty="لا توجد إجراءات مطابقة في هذه الفترة.">
+                            {events.data.flatMap((event, index) => {
+                                const style = KIND_STYLES[event.kind];
 
-                                    return (
-                                        <Fragment key={event.key}>
-                                            {event.day !== events.data[index - 1]?.day && <DayHeader day={event.day} isToday={event.day === today} />}
-                                            <tr className={event.sensitive ? 'gl-au-flag' : undefined} {...rowClick(can?.viewSubscriptions && event.subscription ? () => openStatement(event.subscription) : null)}>
-                                                <td className="whitespace-nowrap">
-                                                    <span className="inline-flex items-center gap-1.5 font-semibold text-gray-900">
-                                                        <Icon name="clock" className="h-4 w-4 text-gray-400" />
-                                                        {formatClock(event.time)}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <Chip size="sm" variant="soft" className="gl-au-kind" data-tone={style.tone}>
-                                                        <Icon name={style.icon} className="h-3.5 w-3.5" />
-                                                        {event.kindLabel}
-                                                    </Chip>
-                                                    {event.sensitive && <small className="gl-au-sensitive" title={event.sensitiveReason}>حسّاس، {event.sensitiveReason}</small>}
-                                                    {event.kindNote && <span className="mt-1 block text-xs text-gray-500">{event.kindNote}</span>}
-                                                </td>
-                                                <td>
-                                                    {event.subscription ? (
-                                                        <RowIdentity
-                                                            name={event.subscription.name}
-                                                            subtitle={`${event.subscription.accountNumber}، ${event.subscription.branchName}`}
-                                                            status={STATUS_DOTS[event.subscription.status]}
-                                                        />
-                                                    ) : (
-                                                        <span className="text-gray-500">مشترك محذوف</span>
-                                                    )}
-                                                </td>
-                                                <td>
-                                                    <div className="grid gap-1">
-                                                        {event.lines.map((line, lineIndex) => (
-                                                            <span key={lineIndex} className="whitespace-nowrap">
-                                                                <span className="font-medium text-gray-900">{line.label}</span>{' '}
-                                                                <b className="font-display font-bold text-gray-900">{line.amount}</b>{' '}
-                                                                <span className="text-xs text-gray-500">₪</span>
-                                                                {line.voucherNumber && (
-                                                                    <span className="text-xs text-gray-500">
-                                                                        {' '}
-                                                                       ، سند <bdi dir="ltr">{line.voucherNumber}</bdi>
-                                                                    </span>
-                                                                )}
+                                return [
+                                    ...(event.day !== events.data[index - 1]?.day ? [<DayHeader key={`day-${event.day}`} day={event.day} isToday={event.day === today} />] : []),
+                                    <ListRow key={event.key} id={event.key} className={event.sensitive ? 'gl-au-flag' : undefined} onOpen={can?.viewSubscriptions && event.subscription ? () => openStatement(event.subscription) : null}>
+                                        <ListCell className="whitespace-nowrap">
+                                            <span className="inline-flex items-center gap-2 font-semibold text-gray-900">
+                                                <Icon name="clock" className="h-4 w-4 text-gray-400" />
+                                                {formatClock(event.time)}
+                                            </span>
+                                        </ListCell>
+                                        <ListCell>
+                                            <Chip size="sm" variant="soft" className="gl-au-kind" data-tone={style.tone}>
+                                                <Icon name={style.icon} className="h-3.5 w-3.5" />
+                                                {event.kindLabel}
+                                            </Chip>
+                                            {event.sensitive && <small className="gl-au-sensitive" title={event.sensitiveReason}>حسّاس، {event.sensitiveReason}</small>}
+                                            {event.kindNote && <span className="mt-1 block text-xs text-gray-500">{event.kindNote}</span>}
+                                        </ListCell>
+                                        <ListCell>
+                                            {event.subscription ? (
+                                                <RowIdentity
+                                                    name={event.subscription.name}
+                                                    subtitle={`${event.subscription.accountNumber}، ${event.subscription.branchName}`}
+                                                    status={STATUS_DOTS[event.subscription.status]}
+                                                />
+                                            ) : (
+                                                <span className="text-gray-500">مشترك محذوف</span>
+                                            )}
+                                        </ListCell>
+                                        <ListCell>
+                                            <div className="grid gap-1">
+                                                {event.lines.map((line, lineIndex) => (
+                                                    <span key={lineIndex} className="whitespace-nowrap">
+                                                        <span className="font-medium text-gray-900">{line.label}</span>{' '}
+                                                        <b className="font-display font-bold text-gray-900">{line.amount}</b>{' '}
+                                                        <span className="text-xs text-gray-500">₪</span>
+                                                        {line.voucherNumber && (
+                                                            <span className="text-xs text-gray-500">
+                                                                {' '}
+                                                               ، سند <bdi dir="ltr">{line.voucherNumber}</bdi>
                                                             </span>
-                                                        ))}
-                                                    </div>
-                                                </td>
-                                                <td><BeforeAfter event={event} side="before" /></td>
-                                                <td><BeforeAfter event={event} side="after" /></td>
-                                                <td className="num"><Impact value={event.impact} /></td>
-                                                <td className="gl-au-reason">{event.reason ?? <Dash />}{event.notes && <small>{event.notes}</small>}</td>
-                                                <td className="gl-au-by">{event.userName ?? 'مستخدم محذوف'}</td>
-                                            </tr>
-                                        </Fragment>
-                                    );
-                                })
-                            )}
-                        </tbody>
-                    </table>
+                                                        )}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </ListCell>
+                                        <ListCell><BeforeAfter event={event} side="before" /></ListCell>
+                                        <ListCell><BeforeAfter event={event} side="after" /></ListCell>
+                                        <ListCell className="num"><Impact value={event.impact} /></ListCell>
+                                        <ListCell className="gl-au-reason">{event.reason ?? <Dash />}{event.notes && <small>{event.notes}</small>}</ListCell>
+                                        <ListCell className="gl-au-by">{event.userName ?? 'مستخدم محذوف'}</ListCell>
+                                    </ListRow>,
+                                ];
+                            })}
+                        </ListBody>
+                    </ListTable>
                 </div>
 
                 <Pagination meta={events} filters={filters} baseUrl="/transaction-audit" extraParams={{ period }} />

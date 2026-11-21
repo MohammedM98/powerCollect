@@ -1,29 +1,29 @@
 /* The SMS settings page, on the settings pages' shared look (ReadingSchedule.css: tokens, rs-panel, rs-status, rs-savebar). */
-.sm-stats { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-.sm-stat { display: inline-flex; align-items: baseline; gap: 6px; padding: 3px 10px; border-radius: calc(12px * var(--radius-scale, 1)); background: #ffffff12; border: 1px solid #ffffff1a; color: rgb(var(--silver-300)); font-size: 13px; }
+.sm-stats { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.sm-stat { display: inline-flex; align-items: baseline; gap: 8px; padding: 4px 12px; border-radius: calc(12px * var(--radius-scale, 1)); background: #ffffff12; border: 1px solid #ffffff1a; color: rgb(var(--silver-300)); font-size: 13px; }
 .sm-stat b { font: 700 14px var(--font-body, 'Zain'), sans-serif; color: #fff; }
 .sm-stat.is-failed b { color: rgb(var(--danger-300)); }
 
-.sm-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; margin-top: 14px; }
-.sm-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.sm-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; margin-top: 12px; }
+.sm-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .sm-field.is-wide { grid-column: 1 / -1; }
 /* Every label is one height, with or without its "!", so the fields of a row line up. */
-.sm-field > label, .sm-field > .sm-label { color: var(--rs-ink2); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-height: 28px; }
+.sm-field > label, .sm-field > .sm-label { color: var(--rs-ink2); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 28px; }
 .sm-field small { color: var(--rs-faint); font-size: 12.5px; font-weight: 500; }
 /* Fields as everywhere in the app (app.css): a white field, a quiet border, burgundy under the pointer and while typing; grey and dashed only when disabled. */
-.sm-input { width: 100%; min-width: 0; border: 1px solid var(--rs-line); border-radius: calc(12px * var(--radius-scale, 1)); padding: 10px 12px; background: var(--rs-surface); color: var(--rs-ink); font-size: 15px; box-shadow: 0 1px 2px rgb(var(--shadow-ink) / 0.039); transition: border-color .15s, box-shadow .15s; }
+.sm-input { width: 100%; min-width: 0; border: 1px solid var(--rs-line); border-radius: calc(12px * var(--radius-scale, 1)); padding: 8px 12px; background: var(--rs-surface); color: var(--rs-ink); font-size: 15px; box-shadow: 0 1px 2px rgb(var(--shadow-ink) / 0.039); transition: border-color .15s, box-shadow .15s; }
 input.sm-input { height: 44px; }
 .sm-input::placeholder { color: rgb(var(--gray-400) / 0.55); font-weight: 400; }
 .sm-input:hover:not(:disabled):not(:focus) { border-color: rgb(var(--brand-500) / 0.45); }
 .sm-input:focus, .sms-settings .sm-input:focus-visible { border-color: rgb(var(--brand-500)); box-shadow: 0 0 0 4px rgb(var(--brand-500) / 0.15); outline: none; }
 .sm-input[aria-invalid=true] { border-color: var(--rs-brand); }
 .sm-input:disabled { border-style: dashed; background: var(--rs-raised); color: var(--rs-faint); }
-.sm-input.is-code { direction: ltr; text-align: right; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 14px; }
+.sm-input.is-code { direction: ltr; text-align: end; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 14px; }
 textarea.sm-input { resize: vertical; min-height: 84px; line-height: 1.7; }
 .sm-pair { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 8px; }
 .sm-secret { position: relative; display: flex; gap: 8px; }
 .sm-secret .sm-input { flex: 1; }
-.sm-secret-state { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--rs-success); }
+.sm-secret-state { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700; color: var(--rs-success); }
 .sm-secret-state svg { width: 14px; height: 14px; }
 .sm-secret-state.is-cleared { color: var(--rs-warn); }
 .sm-link { border: 0; background: transparent; padding: 0; color: var(--rs-brand); font-size: 12.5px; font-weight: 700; cursor: pointer; }
@@ -32,48 +32,48 @@ textarea.sm-input { resize: vertical; min-height: 84px; line-height: 1.7; }
 .sm-icon-button:hover { color: var(--rs-ink); }
 .sm-icon-button svg { width: 18px; height: 18px; }
 
-.sm-segments { display: inline-flex; gap: 2px; padding: 3px; border-radius: calc(12px * var(--radius-scale, 1)); background: var(--rs-surface); border: 1px solid var(--rs-line2); width: fit-content; max-width: 100%; flex-wrap: wrap; }
-.sm-segments button { border: 0; background: transparent; color: var(--rs-faint); min-height: 36px; padding: 4px 14px; border-radius: calc(8px * var(--radius-scale, 1)); font-weight: 600; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.sm-segments { display: inline-flex; gap: 4px; padding: 4px; border-radius: calc(12px * var(--radius-scale, 1)); background: var(--rs-surface); border: 1px solid var(--rs-line2); width: fit-content; max-width: 100%; flex-wrap: wrap; }
+.sm-segments button { border: 0; background: transparent; color: var(--rs-faint); min-height: 36px; padding: 4px 16px; border-radius: calc(8px * var(--radius-scale, 1)); font-weight: 600; font-size: 15px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
 .sm-segments button small { font: 500 12px var(--font-body, 'Zain'), sans-serif; color: inherit; direction: ltr; }
 .sm-segments button:hover { color: var(--rs-ink); }
 .sm-segments button[aria-pressed=true] { background: var(--rs-ink); color: var(--rs-surface); }
 
-.sm-section { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--rs-line2); }
+.sm-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--rs-line2); }
 .sm-section h3 { display: flex; align-items: center; gap: 8px; margin: 0; font: 700 17px var(--font-heading, 'El Messiri'), serif; }
 .sm-section h3 svg { width: 18px; height: 18px; color: var(--rs-faint); }
-.sm-section > p { margin: 3px 0 0; font-size: 13px; color: var(--rs-faint); }
-.sm-advanced > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--rs-line2); font: 700 16px var(--font-heading, 'El Messiri'), serif; color: var(--rs-ink2); }
+.sm-section > p { margin: 4px 0 0; font-size: 13px; color: var(--rs-faint); }
+.sm-advanced > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--rs-line2); font: 700 16px var(--font-heading, 'El Messiri'), serif; color: var(--rs-ink2); }
 .sm-advanced > summary::-webkit-details-marker { display: none; }
 .sm-advanced > summary svg { width: 16px; height: 16px; color: var(--rs-faint); transition: transform .15s; }
 .sm-advanced[open] > summary svg { transform: rotate(180deg); }
 .sm-advanced > summary small { font: 500 12.5px var(--font-body, 'IBM Plex Sans Arabic'), sans-serif; color: var(--rs-faint); }
 
-.sm-request { margin-top: 14px; border-radius: calc(18px * var(--radius-scale, 1)); overflow: hidden; border: 1px solid var(--rs-line2); background: rgb(var(--graphite-900)); color: rgb(var(--silver-100)); direction: ltr; text-align: left; font: 13px/1.7 'IBM Plex Mono', ui-monospace, Menlo, monospace; }
-.sm-request-line { display: flex; gap: 10px; align-items: center; padding: 10px 14px; background: #ffffff0d; border-bottom: 1px solid #ffffff14; overflow-x: auto; white-space: nowrap; }
-.sm-method { flex: none; padding: 1px 8px; border-radius: calc(8px * var(--radius-scale, 1)); font-weight: 700; font-size: 12px; background: rgb(var(--brand-lo)); color: rgb(var(--brand-ink)); }
-.sm-request ul { list-style: none; margin: 0; padding: 10px 14px 12px; display: grid; gap: 2px; }
-.sm-request li { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); gap: 10px; }
+.sm-request { margin-top: 12px; border-radius: calc(18px * var(--radius-scale, 1)); overflow: hidden; border: 1px solid var(--rs-line2); background: rgb(var(--graphite-900)); color: rgb(var(--silver-100)); direction: ltr; text-align: start; font: 13px/1.7 'IBM Plex Mono', ui-monospace, Menlo, monospace; }
+.sm-request-line { display: flex; gap: 12px; align-items: center; padding: 8px 16px; background: #ffffff0d; border-bottom: 1px solid #ffffff14; overflow-x: auto; white-space: nowrap; }
+.sm-method { flex: none; padding: 4px 8px; border-radius: calc(8px * var(--radius-scale, 1)); font-weight: 700; font-size: 12px; background: rgb(var(--brand-lo)); color: rgb(var(--brand-ink)); }
+.sm-request ul { list-style: none; margin: 0; padding: 8px 16px 12px; display: grid; gap: 4px; }
+.sm-request li { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); gap: 12px; }
 .sm-request li span:first-child { color: rgb(var(--silver-500)); }
 .sm-request li span:last-child { color: #fff; overflow-wrap: anywhere; unicode-bidi: plaintext; }
 .sm-request li.is-to span:last-child, .sm-request li.is-message span:last-child { color: rgb(var(--success-300)); }
 .sm-request li.is-secret span:last-child { color: rgb(var(--warning-400)); }
 .sm-request-empty { color: rgb(var(--silver-500)); }
-.sm-request-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; font-size: 12.5px; color: var(--rs-faint); }
-.sm-request-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sm-request-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; font-size: 12.5px; color: var(--rs-faint); }
+.sm-request-legend span { display: inline-flex; align-items: center; gap: 8px; }
 .sm-request-legend i { width: 10px; height: 10px; border-radius: calc(3px * var(--radius-scale, 1)); }
 
-.sm-test-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.sm-test-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
 .sm-send { height: 44px; border: 0; border-radius: calc(12px * var(--radius-scale, 1)); padding: 0 16px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 16px; color: rgb(var(--brand-ink)); background: linear-gradient(180deg, rgb(var(--brand-hi)), rgb(var(--brand-lo))); cursor: pointer; box-shadow: 0 10px 22px -12px rgb(var(--brand-solid)); }
 .sm-send svg { width: 17px; height: 17px; }
 .sm-test-note { font-size: 12.5px; color: var(--rs-faint); }
-.sm-result { display: flex; gap: 10px; align-items: flex-start; margin-top: 12px; padding: 10px 12px; border-radius: calc(18px * var(--radius-scale, 1)); font-size: 14px; line-height: 1.7; }
-.sm-result svg { width: 17px; height: 17px; flex: none; margin-top: 3px; }
+.sm-result { display: flex; gap: 12px; align-items: flex-start; margin-top: 12px; padding: 8px 12px; border-radius: calc(18px * var(--radius-scale, 1)); font-size: 14px; line-height: 1.7; }
+.sm-result svg { width: 17px; height: 17px; flex: none; margin-top: 4px; }
 .sm-result.is-ok { background: var(--rs-success-t); color: var(--rs-success); border: 1px solid color-mix(in srgb, var(--rs-success) 25%, transparent); }
 .sm-result.is-failed { background: var(--ui-danger-t); color: var(--ui-danger); border: 1px solid color-mix(in srgb, var(--ui-danger) 25%, transparent); }
-.sm-result code { display: block; margin-top: 4px; direction: ltr; text-align: left; font: 12.5px/1.6 'IBM Plex Mono', ui-monospace, Menlo, monospace; overflow-wrap: anywhere; color: var(--rs-ink2); }
+.sm-result code { display: block; margin-top: 4px; direction: ltr; text-align: start; font: 12.5px/1.6 'IBM Plex Mono', ui-monospace, Menlo, monospace; overflow-wrap: anywhere; color: var(--rs-ink2); }
 
 .sm-checklist { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; counter-reset: ask; }
-.sm-checklist li { counter-increment: ask; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 14px; }
+.sm-checklist li { counter-increment: ask; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; align-items: start; font-size: 14px; }
 .sm-checklist li::before { content: counter(ask); width: 24px; height: 24px; border-radius: calc(8px * var(--radius-scale, 1)); display: grid; place-items: center; background: var(--rs-sunken); color: var(--rs-ink2); font: 700 12px var(--font-body, 'Zain'), sans-serif; }
 .sm-checklist small { display: block; color: var(--rs-faint); font-size: 12.5px; }
 
@@ -107,5 +107,5 @@ textarea.sm-input { resize: vertical; min-height: 84px; line-height: 1.7; }
 .sm-send { border-radius: 13px; background: var(--ma-act); color: #fff; font-weight: 800; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 10px 22px -12px rgb(10 12 16 / 0.7); }
 .sm-stat { border: 0; background: rgb(255 255 255 / 0.08); }
 .sm-segments-wrap { min-width: 0; margin: 0; padding: 0; border: 0; }
-.sm-seg .gl-seg-item small { margin-inline-start: 6px; font: 500 12px var(--font-body, 'Zain'), sans-serif; direction: ltr; opacity: 0.75; }
+.sm-seg .gl-seg-item small { margin-inline-start: 8px; font: 500 12px var(--font-body, 'Zain'), sans-serif; direction: ltr; opacity: 0.75; }
 .sm-seg .gl-seg-item[data-selected] { background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-depth); }

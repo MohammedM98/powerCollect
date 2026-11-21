@@ -225,7 +225,7 @@ export default function SubscriptionForm({
     );
 
     return (
-        <div className="space-y-5">
+        <div className="space-y-6">
             <FormAsideCard fallback={preview}>
                 <SubscriptionCard data={data} tariff={selectedTariff} circuitBreaker={selectedCircuitBreaker} />
             </FormAsideCard>

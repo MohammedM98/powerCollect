@@ -52,7 +52,7 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await expect(sectionTabs.getByRole('link')).toHaveCount(6);
         await expect(sectionTabs.getByRole('link', { name: 'الطبلونات', exact: true })).toHaveAttribute('aria-current', 'page');
         await dock.screenshot({ path: `${process.env.OUT_DIR}/section-dock.png` });
-        const table = page.getByRole('table', { name: 'الطبلونات ومشتركوها', exact: true });
+        const table = page.getByRole('grid', { name: 'الطبلونات ومشتركوها', exact: true });
         await expect(table).toBeVisible();
         await expect(page.getByRole('columnheader', { name: /ديون|رصيد/ })).toHaveCount(0);
         const sorting = page.getByRole('group', { name: 'ترتيب الطبلونات', exact: true });

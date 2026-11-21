@@ -16,7 +16,7 @@ import { ledgerColumns, ledgerOf, ledgerTableClass, BoxNumberCell, LedgerLeadCel
 import BoxBreakdown, { breakdownEntry } from './BoxBreakdown';
 import { auditApprovalSummary, boxBankOptions, filterBoxEntries, entryStatus, isFlaggedEntry } from '@/lib/financialBoxes';
 import './financial-boxes.css';
-import { ConfirmDialog, SearchableSelect, SegmentedChoice, StatusPill } from '@/Components/UI';
+import { ConfirmDialog, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, SearchableSelect, SegmentedChoice, StatusPill } from '@/Components/UI';
 
 
 /** A small action in an entry's row. */
@@ -230,7 +230,7 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
             confirmLabel="نعم، أغلق الصندوق"
             icon="lock"
         >
-            <dl className="grid grid-cols-2 gap-x-5 gap-y-4 rounded-control bg-gray-50 p-5">
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-4 rounded-control bg-gray-50 p-4">
                 <div><dt className="text-base text-gray-600">الصندوق</dt><dd className="mt-1 font-semibold text-gray-900">{boxTypes[type]}، <bdi dir="ltr">{box.number}</bdi></dd></div>
                 <div><dt className="text-base text-gray-600">المحصّل</dt><dd className="mt-1 font-semibold text-gray-900">{box.user?.name ?? '—'}</dd></div>
                 <div><dt className="text-base text-gray-600">الإجمالي</dt><dd className="mt-1 font-display text-xl font-bold text-gray-900">{amountsLine(totals)}</dd></div>
@@ -247,17 +247,17 @@ function BoxCountSummary({ box }) {
     const money = (amount) => formatMoney(amount ?? 0);
 
     return <div className="overflow-x-auto rounded-panel border border-gray-100 bg-surface">
-        <table className="w-full text-start text-sm">
-            <thead className="bg-gray-50 text-xs text-gray-500"><tr>{['العملة', 'المتوقع', 'عدّ المحصّل', 'عدّ المستلم', 'الفرق', 'القرار'].map((title) => <th key={title} className="whitespace-nowrap p-3 text-start">{title}</th>)}</tr></thead>
-            <tbody>{Object.entries(currencies).map(([currency, label]) => <tr key={currency} className="border-t border-gray-100 text-gray-700">
-                <td className="p-3">{label}</td>
-                <td className="p-3 font-display" dir="ltr">{money(box.expected_counts[currency])}</td>
-                <td className="p-3 font-display" dir="ltr">{box.collector_counts ? money(box.collector_counts[currency]) : '—'}</td>
-                <td className="p-3 font-display" dir="ltr">{box.head_counts ? money(box.head_counts[currency]) : '—'}</td>
-                <td className="p-3 font-display" dir="ltr">{box.head_counts ? money(Number(box.head_counts[currency]) - Number(box.expected_counts[currency])) : '—'}</td>
-                <td className="p-3">{box.decisions?.[currency] === 'debt' ? 'دين على المحصّل' : box.decisions?.[currency] === 'accepted' ? 'مقبول' : '—'}</td>
-            </tr>)}</tbody>
-        </table>
+        <ListTable aria-label="عدّ الصندوق" className="w-full text-start text-sm">
+            <ListHeader className="bg-gray-50 text-xs text-gray-500">{['العملة', 'المتوقع', 'عدّ المحصّل', 'عدّ المستلم', 'الفرق', 'القرار'].map((title, index) => <ListColumn key={title} id={title} isRowHeader={index === 0} className="whitespace-nowrap p-3 text-start">{title}</ListColumn>)}</ListHeader>
+            <ListBody>{Object.entries(currencies).map(([currency, label]) => <ListRow key={currency} id={currency} className="border-t border-gray-100 text-gray-700">
+                <ListCell className="p-3">{label}</ListCell>
+                <ListCell className="p-3 font-display" dir="ltr">{money(box.expected_counts[currency])}</ListCell>
+                <ListCell className="p-3 font-display" dir="ltr">{box.collector_counts ? money(box.collector_counts[currency]) : '—'}</ListCell>
+                <ListCell className="p-3 font-display" dir="ltr">{box.head_counts ? money(box.head_counts[currency]) : '—'}</ListCell>
+                <ListCell className="p-3 font-display" dir="ltr">{box.head_counts ? money(Number(box.head_counts[currency]) - Number(box.expected_counts[currency])) : '—'}</ListCell>
+                <ListCell className="p-3">{box.decisions?.[currency] === 'debt' ? 'دين على المحصّل' : box.decisions?.[currency] === 'accepted' ? 'مقبول' : '—'}</ListCell>
+            </ListRow>)}</ListBody>
+        </ListTable>
         {box.reason && <p className="border-t border-gray-100 p-3 text-xs text-gray-500">السبب: {box.reason}</p>}
     </div>;
 }

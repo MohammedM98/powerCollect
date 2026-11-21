@@ -72,7 +72,7 @@ export default function DeleteTransactionModal({ onClose, subscription, balance,
             title={label}
             icon={isRefund ? 'repeat' : 'close'}
             maxWidth="xl"
-            bodyClassName="space-y-5"
+            bodyClassName="space-y-6"
             action={{ submitLabel: label, title: `${label}؟`, confirmLabel: `نعم، ${label}`, icon: isRefund ? 'repeat' : 'close', tone: 'danger' }}
             saveConfirmMessage={isSplit
                 ? `سيُرجع كامل الحوالة المقسّمة من جميع المشتركين المرتبطين بها بالسبب نفسه، ويصبح رصيد هذا المشترك ${balanceText}. هل تريد المتابعة؟`

@@ -88,17 +88,17 @@ export default function MessageBodyCard({
                 </div>
             )}
 
-            <p id="placeholders-hint" className="mb-1.5 text-xs font-semibold text-gray-600">
+            <p id="placeholders-hint" className="mb-2 text-xs font-semibold text-gray-600">
                 أضف معلومة من بيانات المشترك إلى النص:
             </p>
-            <div role="group" aria-labelledby="placeholders-hint" className="mb-3 flex flex-wrap gap-1.5">
+            <div role="group" aria-labelledby="placeholders-hint" className="mb-3 flex flex-wrap gap-2">
                 {placeholders[kind].map((name) => (
                     <Button data-raw="" variant="ghost"
                         key={name}
                         onClick={() => insertPlaceholder(name)}
                         aria-label={`أضف «${name.replaceAll('_', ' ')}» إلى نص الرسالة`}
                         title={`أضف ${name.replaceAll('_', ' ')} مكان المؤشر`}
-                        className={`inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-semibold text-gray-700 transition hover:border-brand-500/40 hover:text-brand-600 ${FOCUS_RING}`}
+                        className={`inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-700 transition hover:border-brand-500/40 hover:text-brand-600 ${FOCUS_RING}`}
                     >
                         <Icon name="plus" className="h-3.5 w-3.5" strokeWidth={2} />
                         {name.replaceAll('_', ' ')}

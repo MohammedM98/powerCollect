@@ -11,6 +11,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
@@ -132,7 +133,7 @@ class SubscriptionFormLimitsTest extends TestCase
     {
         $admin = User::factory()->branchAdmin()->create(['branch_id' => $this->branch->id]);
         $subscription = Subscription::factory()->create(['branch_id' => $this->branch->id]);
-        $charge = fn (string $type, string $amount) => $this->actingAs($admin)->post(route('subscriptions.charges.store', $subscription), ['type' => $type, 'amount' => $amount, 'notes' => 'غرامة']);
+        $charge = fn (string $type, string $amount) => $this->actingAs($admin)->post(route('subscriptions.charges.store', $subscription), ['operation_token' => (string) Str::uuid(), 'type' => $type, 'amount' => $amount, 'notes' => 'غرامة']);
 
         $charge(ChargeType::SubscriptionFee->value, '5000')->assertSessionHasErrors('amount');
         $charge(ChargeType::SubscriptionFee->value, '1000')->assertSessionHasNoErrors();

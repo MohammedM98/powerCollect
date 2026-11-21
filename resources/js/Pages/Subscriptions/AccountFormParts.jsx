@@ -244,11 +244,11 @@ export function QuickPick({ onClick, tone = null, children }) {
 export function FieldWarning({ bad = false, children }) {
     return (
         <p
-            className={`mt-2.5 flex items-start gap-2.5 rounded-[14px] border px-3 py-2.5 text-[13.5px] leading-relaxed ${
+            className={`mt-2 flex items-start gap-3 rounded-[14px] border px-3 py-2 text-[13.5px] leading-relaxed ${
                 bad ? 'border-brand-500/30 bg-brand-500/5 text-brand-600' : 'border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-300'
             }`}
         >
-            <Icon name="warning" className="mt-0.5 h-[18px] w-[18px] shrink-0" />
+            <Icon name="warning" className="mt-1 h-[18px] w-[18px] shrink-0" />
             <span>{children}</span>
         </p>
     );
@@ -257,9 +257,9 @@ export function FieldWarning({ bad = false, children }) {
 /** After saving: what was recorded, as a receipt, with its voucher to print (`printUrl`), "another" and "done". */
 export function DoneScreen({ tone = 'green', title, text, rows, anotherLabel, onAnother, onDone, printUrl = null }) {
     return (
-        <div role="dialog" aria-modal="true" aria-label={title} className="px-6 pb-8 pt-10 text-center sm:px-8">
+        <div role="dialog" aria-modal="true" aria-label={title} className="px-6 pb-8 pt-8 text-center sm:px-8">
             <span
-                className={`mx-auto mb-3.5 flex h-[76px] w-[76px] items-center justify-center rounded-3xl ${
+                className={`mx-auto mb-3 flex h-[76px] w-[76px] items-center justify-center rounded-3xl ${
                     tone === 'red'
                         ? 'bg-brand-500/10 text-brand-600'
                         : tone === 'amber'
@@ -270,16 +270,16 @@ export function DoneScreen({ tone = 'green', title, text, rows, anotherLabel, on
                 <Icon name="check" className="h-10 w-10" strokeWidth={2.2} />
             </span>
             <h3 className="font-luxe text-[26px] font-bold text-gray-900">{title}</h3>
-            <p className="mt-1.5 text-gray-600">{text}</p>
-            <dl className="mx-auto mt-6 w-full max-w-[420px] rounded-[20px] border border-gray-100 bg-gray-50 px-[18px] py-1.5 text-start">
+            <p className="mt-2 text-gray-600">{text}</p>
+            <dl className="mx-auto mt-6 w-full max-w-[420px] rounded-[20px] border border-gray-100 bg-gray-50 px-4 py-2 text-start">
                 {rows.map(([label, value]) => (
-                    <div key={label} className="flex justify-between gap-4 border-b border-dashed border-gray-200 py-2.5 text-[14.5px] last:border-0">
+                    <div key={label} className="flex justify-between gap-4 border-b border-dashed border-gray-200 py-2 text-[14.5px] last:border-0">
                         <dt className="text-gray-500">{label}</dt>
                         <dd className="font-semibold text-gray-900">{value}</dd>
                     </div>
                 ))}
             </dl>
-            <div className="mt-6 flex flex-wrap justify-center gap-2.5">
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
                 {printUrl && (
                     <Button onPress={() => window.open(printUrl, '_blank')} aria-description="يُفتح السند في نافذة جديدة جاهزًا للطباعة" className="gl-sheet-btn">
                         <Icon name="printer" className="h-[18px] w-[18px]" />
@@ -306,7 +306,7 @@ const HEADER_TONES = { red: 'gl-tone-charge', charge: 'gl-tone-charge', green: '
 /** The window's header: its icon in the form's tone, title and one line under it, and close. */
 export function FormHeader({ titleId, icon, tone = 'graphite', title, subtitle, onClose }) {
     return (
-        <div className="gl-dialog-head flex shrink-0 items-center gap-3.5 px-5 py-4 sm:px-6">
+        <div className="gl-dialog-head flex shrink-0 items-center gap-4 px-4 py-4 sm:px-6">
             <span className={`gl-tone flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] ${HEADER_TONES[tone] ?? HEADER_TONES.graphite}`}>
                 <Icon name={icon} className="h-5 w-5" strokeWidth={1.8} />
             </span>
@@ -314,7 +314,7 @@ export function FormHeader({ titleId, icon, tone = 'graphite', title, subtitle, 
                 <h3 id={titleId} className="text-[20px] font-extrabold leading-tight font-(family-name:--gl-head)!">
                     {title}
                 </h3>
-                <p className="gl-sub mt-0.5 text-[13px]!">{subtitle}</p>
+                <p className="gl-sub mt-1 text-[13px]!">{subtitle}</p>
             </div>
             <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق" className="gl-ib ms-auto">
                 <Icon name="close" className="h-[18px] w-[18px]" strokeWidth={2} />

@@ -23,10 +23,10 @@ export default function BranchScopeBar({ path, scope, branch, branches, followsC
     }
 
     return (
-        <BranchBanner scope={scope} eyebrow="تضبط الآن مواعيد القراءات لـ" allLabel="إعدادات الشركة" className="mt-5"
+        <BranchBanner scope={scope} eyebrow="تضبط الآن مواعيد القراءات لـ" allLabel="إعدادات الشركة" className="mt-6"
             ownControls
             controls={branches.length > 0 ? (
-                <div className="flex w-full flex-col gap-1.5 sm:w-72" title={locked ? 'احفظ التغييرات أو تراجع عنها قبل تغيير الفرع.' : undefined}>
+                <div className="flex w-full flex-col gap-2 sm:w-72" title={locked ? 'احفظ التغييرات أو تراجع عنها قبل تغيير الفرع.' : undefined}>
                     <span className="gl-label">نطاق المواعيد</span>
                     <SettingsSelect label="نطاق المواعيد" value={branch?.id ?? ''} isDisabled={locked} onChange={pick}
                         options={[{ value: '', label: 'جميع الفروع — إعدادات الشركة' }, ...branches.map((item) => ({ value: item.value, label: `${item.label}${item.hasOwn ? '، إعدادات محفوظة' : ''}` }))]} />

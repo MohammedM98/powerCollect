@@ -96,7 +96,7 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
             </Select.Trigger>
             <Select.Popover className="gl-choice-pop">
                 <ListBox className="max-h-80 overflow-y-auto">
-                    <ListBox.Item id={EMPTY_BANK} textValue="غير محدد" className="flex items-center gap-3 rounded-xl px-3 py-2.5">
+                    <ListBox.Item id={EMPTY_BANK} textValue="غير محدد" className="flex items-center gap-3 rounded-xl px-3 py-2">
                         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 text-gray-400">
                             <Icon name="close" className="h-4 w-4" />
                         </span>
@@ -104,7 +104,7 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
                         <ListBox.ItemIndicator />
                     </ListBox.Item>
                     {banks.map((bank) => (
-                        <ListBox.Item key={bank} id={bank} textValue={bank} className="flex items-center gap-3 rounded-xl px-3 py-2.5">
+                        <ListBox.Item key={bank} id={bank} textValue={bank} className="flex items-center gap-3 rounded-xl px-3 py-2">
                             <BankMark bank={bank} />
                             <span className="min-w-0">
                                 <b className="block text-[14.5px] text-gray-900">{bank}</b>

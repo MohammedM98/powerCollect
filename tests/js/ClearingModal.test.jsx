@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import ClearingModal from '@/Pages/Subscriptions/ClearingModal';
-import { submissions } from './inertia.jsx';
+import { submissions, succeedNext } from './inertia.jsx';
 
 const subscription = { id: 7, fullName: 'سامي أحمد' };
 
@@ -24,6 +24,27 @@ describe('ClearingModal', () => {
         expect(submissions).toHaveLength(1);
         expect(submissions[0]).toMatchObject({ method: 'post', url: '/subscriptions/7/clearings' });
         expect(submissions[0].data).toMatchObject({ amount: '120', notes: 'صيانة المولد', confirm_over_balance: false });
+        expect(submissions[0].data.operation_token).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    });
+
+    it('records the next clearing with a new key once one is recorded', async () => {
+        const user = userEvent.setup();
+        open();
+        const record = async (service) => {
+            await user.type(screen.getByLabelText('الخدمة التي قدّمها المشترك للشركة'), service);
+            await user.type(screen.getByLabelText('قيمة المقاصة'), '50');
+            await user.click(screen.getByRole('button', { name: /مقاصة 50 ₪ من الحساب/ }));
+            await user.click(await screen.findByRole('button', { name: 'نعم، سجّل المقاصة' }));
+        };
+
+        succeedNext({ recordedClearing: { voucherNumber: '101', receiptUrl: '/receipt/101' } });
+        await record('صيانة المولد');
+        await user.click(await screen.findByRole('button', { name: 'مقاصة أخرى' }));
+        await record('تركيب عداد');
+
+        expect(submissions).toHaveLength(2);
+        expect(submissions[1].data.operation_token).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+        expect(submissions[1].data.operation_token).not.toBe(submissions[0].data.operation_token);
     });
 
     it('sends nothing without the service it pays for', async () => {

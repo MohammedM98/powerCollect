@@ -279,7 +279,7 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                             filterMenu={<div className="flex w-full flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-3">
                                 <div className="grid w-full min-w-0 flex-1 gap-3 sm:grid-cols-2">
                                     <div className="min-w-0">
-                                        <label htmlFor="assignment-filter" className="mb-1.5 block text-xs font-semibold text-gray-600">عرض التوزيع</label>
+                                        <label htmlFor="assignment-filter" className="mb-2 block text-xs font-semibold text-gray-600">عرض التوزيع</label>
                                         <ChoiceSelect id="assignment-filter" value={assignmentFilter} disabled={busy} onChange={(event) => { setAssignmentFilter(event.target.value); setPage(1); }} className="block w-full text-sm">
                                             <option value="">كل حالات التوزيع</option>
                                             <option value="assigned">كل الطبلونات الموزعة</option>
@@ -287,7 +287,7 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                                         </ChoiceSelect>
                                     </div>
                                     <div className="min-w-0">
-                                        <label htmlFor="distribution-box-filter" className="mb-1.5 block text-xs font-semibold text-gray-600">الطبلون</label>
+                                        <label htmlFor="distribution-box-filter" className="mb-2 block text-xs font-semibold text-gray-600">الطبلون</label>
                                         <SearchableSelect id="distribution-box-filter" value={boxId} options={boxOptions} disabled={busy} placeholder="كل الطبلونات" searchPlaceholder="ابحث باسم الطبلون أو رقمه..." emptyLabel="لا توجد طبلونات ضمن التصفية الحالية" onChange={(value) => { setBoxId(value); setPage(1); }} />
                                     </div>
                                     {(search || subAreaIds.length > 0 || assignmentFilter || boxId) && <Button variant="ghost" size="sm" isDisabled={busy} onPress={() => { setSearch(''); setSubAreaIds([]); setAssignmentFilter(''); setBoxId(''); setPage(1); }} className="justify-self-start sm:col-span-2">مسح التصفية</Button>}
@@ -314,7 +314,7 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
             )}
 
             {(abilities.printSheets || paperSheets.length > 0) && (
-                <section className="mt-6 rounded-card border border-gray-100 bg-surface p-5 shadow-card" aria-labelledby="sheets-title">
+                <section className="mt-6 rounded-card border border-gray-100 bg-surface p-4 shadow-card" aria-labelledby="sheets-title">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
                             <h3 id="sheets-title" className="font-bold text-gray-900">الكشوف الورقية</h3>

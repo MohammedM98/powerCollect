@@ -13,7 +13,7 @@ import { periodLabel, periodRange } from '@/lib/closingPeriods';
 import { boxStatus, entryStatus } from '@/lib/financialBoxes';
 import { printUrl } from '@/lib/print';
 import { ledgerColumns, ledgerOf, ledgerTableClass, BoxNumberCell, LedgerLeadCells, LedgerTrailCells } from './LedgerColumns';
-import { PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
+import { ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
 
 export const currencies = { ILS: 'شيكل', USD: 'دولار', JOD: 'دينار' };
 export const boxTypes = { cash: 'الصندوق النقدي', bank_transfer: 'صندوق الحوالات البنكية', clearing: 'صندوق المقاصات' };
@@ -45,7 +45,7 @@ export function BoxTypeChip({ type }) {
     const style = boxTypeStyles[type];
 
     return (
-        <span className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-semibold ${style.chip}`}>
+        <span className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-semibold ${style.chip}`}>
             <Icon name={style.icon} className="h-3.5 w-3.5" />
             {style.label}
         </span>
@@ -100,29 +100,29 @@ export function CountSummary({ box }) {
 
     return (
         <div className="mt-4 overflow-x-auto rounded-control border border-gray-100">
-            <table className="w-full text-start text-xs">
-                <thead className="bg-gray-50 text-gray-500">
-                    <tr>{['العملة', 'المتوقع', 'عدّ الفرع', 'الفرق', 'القرار'].map((label) => <th key={label} className="whitespace-nowrap p-3 text-start">{label}</th>)}</tr>
-                </thead>
-                <tbody>
+            <ListTable aria-label="عدّ الصندوق" className="w-full text-start text-xs">
+                <ListHeader className="bg-gray-50 text-gray-500">
+                    {['العملة', 'المتوقع', 'عدّ الفرع', 'الفرق', 'القرار'].map((label, index) => <ListColumn key={label} id={label} isRowHeader={index === 0} className="whitespace-nowrap p-3 text-start">{label}</ListColumn>)}
+                </ListHeader>
+                <ListBody>
                     {shownCurrencies(box).map((currency) => {
                         const difference = Number(box.differences?.[currency] ?? 0);
                         const decision = difference !== 0 ? decisionLabels[box.decisions?.[currency]] : null;
 
                         return (
-                            <tr key={currency} className="border-t border-gray-100 text-gray-700">
-                                <td className="p-3">{currencies[currency]}</td>
-                                <td dir="ltr" className="p-3 text-start font-display">{formatMoney(box.expectedCounts?.[currency] ?? 0)}</td>
-                                <td dir="ltr" className="p-3 text-start font-display">{formatMoney(box.receivedCounts[currency] ?? 0)}</td>
-                                <td className={`p-3 font-semibold ${difference < 0 ? 'text-red-600' : difference > 0 ? 'text-emerald-600' : 'text-gray-400'}`}>
+                            <ListRow key={currency} id={currency} className="border-t border-gray-100 text-gray-700">
+                                <ListCell className="p-3">{currencies[currency]}</ListCell>
+                                <ListCell dir="ltr" className="p-3 text-start font-display">{formatMoney(box.expectedCounts?.[currency] ?? 0)}</ListCell>
+                                <ListCell dir="ltr" className="p-3 text-start font-display">{formatMoney(box.receivedCounts[currency] ?? 0)}</ListCell>
+                                <ListCell className={`p-3 font-semibold ${difference < 0 ? 'text-red-600' : difference > 0 ? 'text-emerald-600' : 'text-gray-400'}`}>
                                     {difference === 0 ? 'مطابق' : <>{difference < 0 ? 'عجز' : 'زيادة'} <bdi dir="ltr" className="font-display">{formatMoney(Math.abs(difference))}</bdi></>}
-                                </td>
-                                <td className="p-3">{decision ? <StatusPill tone={decision[1]} label={decision[0]} /> : '—'}</td>
-                            </tr>
+                                </ListCell>
+                                <ListCell className="p-3">{decision ? <StatusPill tone={decision[1]} label={decision[0]} /> : '—'}</ListCell>
+                            </ListRow>
                         );
                     })}
-                </tbody>
-            </table>
+                </ListBody>
+            </ListTable>
         </div>
     );
 }
@@ -143,7 +143,7 @@ export function CashBoxAction({ box, onClose, onSuccess }) {
 
     return (
         <Modal show onClose={close} maxWidth="lg">
-            <form onSubmit={submit} className="space-y-5 p-6">
+            <form onSubmit={submit} className="space-y-6 p-6">
                 <div className="flex items-start justify-between gap-4">
                     <div>
                         <h3 className="text-xl font-bold text-gray-900">تأكيد تسليم صندوقي</h3>
@@ -186,19 +186,19 @@ export function BoxCard({ box, type, selected = false, onSelect }) {
     const others = box ? Object.keys(currencies).filter((currency) => currency !== 'ILS' && Number(box.totals?.[currency] ?? 0) !== 0) : [];
 
     return (
-        <article className={`flex flex-col gap-4 rounded-panel border bg-surface p-5 shadow-card transition ${selected ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-100'}`}>
+        <article className={`flex flex-col gap-4 rounded-panel border bg-surface p-4 shadow-card transition ${selected ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-100'}`}>
             <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                     <BoxTypeIcon type={type} />
                     <div className="min-w-0">
                         <h3 className="font-bold text-gray-900">{boxTypes[type]}</h3>
-                        <p className="mt-0.5 text-xs text-gray-500">{box ? <>صندوق رقم <bdi dir="ltr" className="font-display">{box.number}</bdi></> : 'لا يوجد صندوق مفتوح'}</p>
+                        <p className="mt-1 text-xs text-gray-500">{box ? <>صندوق رقم <bdi dir="ltr" className="font-display">{box.number}</bdi></> : 'لا يوجد صندوق مفتوح'}</p>
                     </div>
                 </div>
                 <StatusPill tone={box ? 'blue' : 'gray'} label={box ? 'مفتوح' : 'لا حركات'} />
             </div>
             <div>
-                <p className="flex items-baseline gap-1.5">
+                <p className="flex items-baseline gap-2">
                     <span dir="ltr" className="font-display text-3xl font-bold text-gray-900">{formatMoney(box?.totals?.ILS ?? 0)}</span>
                     <span className="text-sm text-gray-500">₪</span>
                 </p>
@@ -283,7 +283,7 @@ export function CollectorDebts({ debts }) {
     if (!debts?.length) return null;
 
     return (
-        <section className="space-y-3 rounded-panel border border-red-500/20 bg-red-500/5 p-5" aria-labelledby="collector-debts">
+        <section className="space-y-3 rounded-panel border border-red-500/20 bg-red-500/5 p-4" aria-labelledby="collector-debts">
             <div>
                 <h3 id="collector-debts" className="font-bold text-gray-900">ديون عليك</h3>
                 <p className="mt-1 text-xs leading-6 text-gray-500">عجز في صناديقك قرّر الفرع تسجيله عليك. تسدّده للفرع، وهو يسجّل ما يستلمه منك.</p>
@@ -337,7 +337,7 @@ export function CollectorAuditNotes({ notes, onSaved }) {
     if (!notes?.length) return null;
 
     return (
-        <section className="space-y-3 rounded-panel border border-amber-500/25 bg-amber-500/5 p-5" aria-labelledby="collector-audit-notes">
+        <section className="space-y-3 rounded-panel border border-amber-500/25 bg-amber-500/5 p-4" aria-labelledby="collector-audit-notes">
             <h3 id="collector-audit-notes" className="font-bold text-gray-900">ملاحظات تدقيق تنتظر ردّك</h3>
             {notes.map((note) => (
                 <article key={note.id} className="space-y-3 border-t border-amber-500/15 pt-3">

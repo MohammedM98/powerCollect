@@ -148,7 +148,7 @@ export default function MeterReadingModal({ show, onClose, reading, subscription
             )}
 
             {offersApproval && (
-                <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2.5 text-sm">
+                <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 text-sm">
                     <CheckBox
                         checked={data.approve}
                         onChange={(e) => setData('approve', e.target.checked)}

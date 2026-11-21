@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Support\Branches\BranchDomainContext;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -39,12 +40,27 @@ class PaymentReferences
             return null;
         }
 
+        // Inside a transaction the check is the one that decides: take the reference's lock first, so a
+        // payment for the same reference in another branch waits, then read what has been committed since.
+        $deciding = DB::transactionLevel() > 0;
+        if ($deciding) {
+            PaymentReferences::lockReference($normalized);
+        }
+
         return SubscriptionTransaction::query()->acrossBranches()
+            ->when($deciding, fn (Builder $query): Builder => $query->sharedLock())
             ->where('active_reference', $normalized)
             ->when($ignoreTransactionId, fn (Builder $query): Builder => $query->whereKeyNot($ignoreTransactionId))
             ->when($ignoreSplitPaymentId, fn (Builder $query): Builder => $query->where(fn (Builder $other) => $other->whereNull('split_payment_id')->orWhere('split_payment_id', '!=', $ignoreSplitPaymentId)))
             ->with(['subscription' => fn (BelongsTo $query) => $query->acrossBranches()])
             ->first();
+    }
+
+    /** Hold the reference's row lock until the surrounding transaction ends. */
+    private static function lockReference(string $normalized): void
+    {
+        DB::table('payment_reference_locks')->insertOrIgnore(['reference' => $normalized]);
+        DB::table('payment_reference_locks')->where('reference', $normalized)->lockForUpdate()->first();
     }
 
     public static function ensureReferenceIsAvailable(?string $activeReference, ?int $splitPaymentId = null): void

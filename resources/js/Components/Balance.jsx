@@ -12,7 +12,7 @@ import { BALANCE_CHIP_CLASSES, BALANCE_HINTS, BALANCE_TEXT_CLASSES, BALANCE_WORD
  */
 export default function Balance({ value, colored = true, chip = false, unit = 'â‚ª', paperWord = true, word = false, className = '' }) {
     const tone = balanceTone(value);
-    const colors = colored ? (chip ? `rounded-[10px] px-2.5 py-0.5 ${BALANCE_CHIP_CLASSES[tone]}` : BALANCE_TEXT_CLASSES[tone]) : '';
+    const colors = colored ? (chip ? `rounded-[10px] px-3 py-1 ${BALANCE_CHIP_CLASSES[tone]}` : BALANCE_TEXT_CLASSES[tone]) : '';
 
     const wordUnit = unit && isWordUnit(unit);
 
@@ -28,7 +28,7 @@ export default function Balance({ value, colored = true, chip = false, unit = 'â
                 </bdi>
                 {wordUnit && ` ${unit}`}
             </span>
-            {word ? <span className="ms-1.5 text-base font-bold"> {BALANCE_WORDS[tone]}</span> : paperWord && <span className="balance-paper-word"> {BALANCE_WORDS[tone]}</span>}
+            {word ? <span className="ms-2 text-base font-bold"> {BALANCE_WORDS[tone]}</span> : paperWord && <span className="balance-paper-word"> {BALANCE_WORDS[tone]}</span>}
         </>
     );
 }

@@ -4,18 +4,15 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import { BranchFilterBanner, splitBranchFilter } from '@/Components/BranchBanner';
-import SortableTh from '@/Components/DataTable/SortableTh';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Pagination from '@/Components/DataTable/Pagination';
-import ActionsTh from '@/Components/DataTable/ActionsTh';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import { Button, FieldError, Input, Label, TextArea, TextField } from '@heroui/react';
-import { AddKey, Figure, StatusPill } from '@/Components/UI';
+import { AddKey, Figure, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, StatusPill } from '@/Components/UI';
 import Modal from '@/Components/Modal';
 import FormSelect from '@/Components/Form/FormSelect';
 import Icon from '@/Components/Icon';
 import { useDataTable } from '@/hooks/useDataTable';
-import { useRowClick } from '@/hooks/useRowClick';
 import { formatMoney, formatNumber } from '@/lib/format';
 import PageHeader from '@/Components/PageHeader';
 
@@ -85,7 +82,6 @@ function DisconnectionEmptyState({ canCreate, onCreate }) {
  */
 export default function Index({ lists, summary, canCreate, branchOptions, branchScope, filters, filterOptions }) {
     const [creating, setCreating] = useState(false);
-    const rowClick = useRowClick();
     const { search, setSearch, sort, setPerPage, filterValues, setFilter, setFilters, clearFilters } = useDataTable('/disconnection-lists', filters);
     // The Super Admin picks the branch in the banner above the figures, not among the filters; clearing those keeps it.
     const branchFilter = splitBranchFilter(branchScope, filterOptions, filterValues);
@@ -121,53 +117,45 @@ export default function Index({ lists, summary, canCreate, branchOptions, branch
             />
 
             <div className="data-table-container">
-                <table className="data-table w-full text-sm text-start" aria-label="قوائم القطع">
-                    <thead>
-                        <tr>
-                            <SortableTh column="title" label="القائمة" sortState={filters} onSort={sort} />
-                            <th>الفرع</th>
-                            <th>بانتظار القطع</th>
-                            <th>أقرب موعد</th>
-                            <th>تم قطعهم</th>
-                            <th>رسوم القطع</th>
-                            <SortableTh column="created_at" label="أنشئت" sortState={filters} onSort={sort} />
-                            <ActionsTh />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {lists.data.length === 0 ? (
-                            <tr>
-                                <td colSpan={8}>
-                                    {search || Object.values(filterValues).some(Boolean) ? <p className="gl-rp-empty">لا توجد قوائم مطابقة للبحث والتصفية.</p> : <DisconnectionEmptyState canCreate={canCreate} onCreate={() => setCreating(true)} />}
-                                </td>
-                            </tr>
-                        ) : (
-                            lists.data.map((list) => (
-                                <tr key={list.id} {...rowClick(() => router.visit(`/disconnection-lists/${list.id}`))}>
-                                    <td data-label="القائمة">
-                                        <RowIdentity icon="power" name={<Link href={`/disconnection-lists/${list.id}`} className="hover:underline">{list.title}</Link>} subtitle={list.notes || `${formatNumber(list.itemsCount)} مشترك مدرج`} />
-                                        {list.isClosed && <span className="mt-1 inline-block"><StatusPill tone="gray" label="مغلقة" /></span>}
-                                    </td>
-                                    <td data-label="الفرع" className="text-gray-600">{list.branchName}</td>
-                                    <td data-label="بانتظار القطع">
-                                        <b className="font-display">{formatNumber(list.scheduledCount)}</b>
-                                        {list.overdueCount > 0 && <span className="ms-2"><StatusPill tone="red" label={`${formatNumber(list.overdueCount)} متأخر`} /></span>}
-                                    </td>
-                                    <td data-label="أقرب موعد" className="whitespace-nowrap text-gray-600" dir="ltr">{list.nextDate ?? '—'}</td>
-                                    <td data-label="تم قطعهم" className="text-gray-600">{formatNumber(list.disconnectedCount)}</td>
-                                    <td data-label="رسوم القطع" className="whitespace-nowrap font-semibold text-gray-700">{formatMoney(list.feesTotal)} ₪</td>
-                                    <td data-label="أنشئت" className="whitespace-nowrap text-xs text-gray-500">
-                                        {list.createdBy}
-                                        <span className="block" dir="ltr">{list.createdAt.slice(0, 10)}</span>
-                                    </td>
-                                    <td data-actions="" className="text-end">
-                                        <RowActionsMenu onView={() => router.visit(`/disconnection-lists/${list.id}`)} />
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                <ListTable aria-label="قوائم القطع" sort={filters} onSort={sort}>
+                    <ListHeader>
+                        <ListColumn id="title" sortable isRowHeader>القائمة</ListColumn>
+                        <ListColumn id="branch">الفرع</ListColumn>
+                        <ListColumn id="scheduled">بانتظار القطع</ListColumn>
+                        <ListColumn id="next_date">أقرب موعد</ListColumn>
+                        <ListColumn id="disconnected">تم قطعهم</ListColumn>
+                        <ListColumn id="fees">رسوم القطع</ListColumn>
+                        <ListColumn id="created_at" sortable>أنشئت</ListColumn>
+                        <ListColumn actions />
+                    </ListHeader>
+                    <ListBody
+                        empty={search || Object.values(filterValues).some(Boolean) ? <p className="gl-rp-empty">لا توجد قوائم مطابقة للبحث والتصفية.</p> : <DisconnectionEmptyState canCreate={canCreate} onCreate={() => setCreating(true)} />}
+                    >
+                        {lists.data.map((list) => (
+                            <ListRow key={list.id} id={list.id} onOpen={() => router.visit(`/disconnection-lists/${list.id}`)}>
+                                <ListCell data-label="القائمة">
+                                    <RowIdentity icon="power" name={<Link href={`/disconnection-lists/${list.id}`} className="hover:underline">{list.title}</Link>} subtitle={list.notes || `${formatNumber(list.itemsCount)} مشترك مدرج`} />
+                                    {list.isClosed && <span className="mt-1 inline-block"><StatusPill tone="gray" label="مغلقة" /></span>}
+                                </ListCell>
+                                <ListCell data-label="الفرع" className="text-gray-600">{list.branchName}</ListCell>
+                                <ListCell data-label="بانتظار القطع">
+                                    <b className="font-display">{formatNumber(list.scheduledCount)}</b>
+                                    {list.overdueCount > 0 && <span className="ms-2"><StatusPill tone="red" label={`${formatNumber(list.overdueCount)} متأخر`} /></span>}
+                                </ListCell>
+                                <ListCell data-label="أقرب موعد" className="whitespace-nowrap text-gray-600" dir="ltr">{list.nextDate ?? '—'}</ListCell>
+                                <ListCell data-label="تم قطعهم" className="text-gray-600">{formatNumber(list.disconnectedCount)}</ListCell>
+                                <ListCell data-label="رسوم القطع" className="whitespace-nowrap font-semibold text-gray-700">{formatMoney(list.feesTotal)} ₪</ListCell>
+                                <ListCell data-label="أنشئت" className="whitespace-nowrap text-xs text-gray-500">
+                                    {list.createdBy}
+                                    <span className="block" dir="ltr">{list.createdAt.slice(0, 10)}</span>
+                                </ListCell>
+                                <ListCell data-actions="" className="text-end">
+                                    <RowActionsMenu onView={() => router.visit(`/disconnection-lists/${list.id}`)} />
+                                </ListCell>
+                            </ListRow>
+                        ))}
+                    </ListBody>
+                </ListTable>
             </div>
 
             <Pagination meta={lists} filters={filters} baseUrl="/disconnection-lists" />

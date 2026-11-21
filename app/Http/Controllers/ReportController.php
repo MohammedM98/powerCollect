@@ -59,7 +59,8 @@ class ReportController extends Controller
             'statement' => $statementData ? FinancialReportPage::detailTable($request, collect($statementData['lines']), $section) : null,
             default => null,
         };
-        $period = ReportPeriod::describe($from, $to, $request->query('view'), $today);
+        $weekBranch = $chosen->count() === 1 ? $chosen->first() : null;
+        $period = ReportPeriod::describe($from, $to, $request->query('view'), $today, $weekBranch);
         $summary = $chosen->isNotEmpty() && in_array($section, ['overview', 'collections', 'movements'], true);
         $collections = $summary ? $report->collections() : null;
         $comparison = null;
@@ -162,9 +163,9 @@ class ReportController extends Controller
             'comparison' => $comparison,
             'printData' => $printData,
             'branchSummary' => $branchSummary,
-            'presets' => FinancialReportPage::presets($today),
+            'presets' => FinancialReportPage::presets($today, $weekBranch),
             'today' => $today->toDateString(),
-            'cutoff' => ClosingPeriods::for($chosen->count() === 1 ? $chosen->first() : null)->cutoff(),
+            'cutoff' => ClosingPeriods::for($weekBranch)->cutoff(),
             'kinds' => BranchReport::kinds(),
             'flow' => $flow,
             'collections' => $collections,

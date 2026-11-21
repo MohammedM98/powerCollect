@@ -18,7 +18,7 @@ async function loadComponent(name) {
         resolve: { alias: { '@': path.resolve(import.meta.dirname, '../../resources/js') } },
         plugins: [{ name: 'distribution', resolveId(id) {
             if (id === '@/Components/Modal') return '\0modal';
-            if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/'))) return { id: import.meta.resolve(id), external: true };
+            if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria'))) return { id: import.meta.resolve(id), external: true };
         }, load(id) { if (id === '\0modal') return 'export default function Modal({ children }) { return children; }'; } }],
     });
     try {

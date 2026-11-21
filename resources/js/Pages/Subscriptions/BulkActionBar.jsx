@@ -15,7 +15,7 @@ function BarButton({ icon, label, onClick, disabled = false, hint, className = '
             isDisabled={disabled}
             title={disabled ? hint : label}
             aria-describedby={undefined}
-            className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING} ${className}`}
+            className={`inline-flex items-center gap-2 whitespace-nowrap rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40 ${FOCUS_RING} ${className}`}
         >
             <Icon name={icon} className="h-4 w-4" />
             {label}

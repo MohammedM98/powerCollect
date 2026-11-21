@@ -9,7 +9,7 @@ import Icon from '@/Components/Icon';
 import InputLabel from '@/Components/InputLabel';
 import InputError from '@/Components/InputError';
 import { formatMoney } from '@/lib/format';
-import { ChoiceSelect, SecondaryKey } from '@/Components/UI';
+import { ChoiceSelect, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, SecondaryKey } from '@/Components/UI';
 
 export function SplitPaymentEditor({ split, onClose, transferBanks = [], senderBanks = [] }) {
     const form = useForm({
@@ -34,11 +34,11 @@ export function SplitPaymentEditor({ split, onClose, transferBanks = [], senderB
             icon="pencil"
             headerTone="blue"
             maxWidth="3xl"
-            bodyClassName="space-y-5"
+            bodyClassName="space-y-6"
             action={{ submitLabel: 'حفظ بيانات الحوالة', title: 'تعديل بيانات الحوالة لجميع المشتركين؟', confirmLabel: 'نعم، احفظ التعديل', icon: 'pencil' }}
             saveConfirmMessage="ستُحدّث بيانات الحوالة لجميع حصص المشتركين مع تسجيل القيم السابقة والجديدة واسم المستخدم والسبب. مبلغ الحوالة والحصص والأرصدة لا تتغيّر، ولا تُرجع أي دفعة."
         >
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-gray-50 px-5 py-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4">
                 <div>
                     <p className="flex items-center gap-2 text-sm font-semibold text-gray-600">
                         <Icon name="lock" className="h-4 w-4" />مبلغ الحوالة ثابت
@@ -88,24 +88,22 @@ export function SplitPaymentEditor({ split, onClose, transferBanks = [], senderB
             </div>
             <div className="overflow-hidden rounded-2xl border border-gray-200">
                 <h4 className="flex items-center gap-2 bg-gray-50 px-4 py-3 text-base font-semibold text-gray-900"><Icon name="lock" className="h-4 w-4 text-gray-500" />حصص المشتركين — للعرض فقط</h4>
-                <table className="w-full text-start text-sm">
-                    <thead>
-                        <tr className="border-t border-gray-100 text-gray-500">
-                            <th className="px-4 py-2 text-start font-medium">المشترك</th>
-                            <th className="px-4 py-2 text-end font-medium">حصته من الحوالة</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <ListTable aria-label="حصص المشتركين" className="w-full text-start text-sm">
+                    <ListHeader className="border-t border-gray-100 text-gray-500">
+                        <ListColumn id="subscription" isRowHeader className="px-4 py-2 text-start font-medium">المشترك</ListColumn>
+                        <ListColumn id="amount" className="px-4 py-2 text-end font-medium">حصته من الحوالة</ListColumn>
+                    </ListHeader>
+                    <ListBody>
                         {split.parts.map((part) => (
-                            <tr key={part.id} className="border-t border-gray-100">
-                                <td className="px-4 py-3 font-semibold text-gray-900">{part.subscriptionName}</td>
-                                <td className="px-4 py-3 text-end text-gray-900">
+                            <ListRow key={part.id} id={part.id} className="border-t border-gray-100">
+                                <ListCell className="px-4 py-3 font-semibold text-gray-900">{part.subscriptionName}</ListCell>
+                                <ListCell className="px-4 py-3 text-end text-gray-900">
                                     <bdi className="font-display font-semibold">{formatMoney(part.amount)}</bdi> شيكل
-                                </td>
-                            </tr>
+                                </ListCell>
+                            </ListRow>
                         ))}
-                    </tbody>
-                </table>
+                    </ListBody>
+                </ListTable>
             </div>
             {[['notes', 'ملاحظات', false], ['amendment_reason', 'سبب تعديل بيانات الحوالة', true]].map(([field, label, required]) => (
                 <div key={field}>
@@ -139,7 +137,7 @@ export default function EditSplitPaymentModal({ id, onClose, transferBanks, send
     }
     return (
         <Modal show onClose={onClose} maxWidth="3xl">
-            <div className="space-y-5 p-7">
+            <div className="space-y-6 p-6">
                 <h3 className="text-xl font-bold text-gray-900">تعديل الحوالة المقسّمة</h3>
                 <AsyncState loading={loading} error={error} onRetry={retry} loadingLabel="جارٍ تحميل بيانات الحوالة وحصص المشتركين…" />
                 <SecondaryKey onClick={onClose}>إغلاق</SecondaryKey>

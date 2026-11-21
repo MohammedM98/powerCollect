@@ -10,7 +10,7 @@ import { formatMoney, formatDate } from '@/lib/format';
 import { feeError, fillPlaceholders, itemTone, operationId, smsParts, totalFees } from '@/lib/disconnections';
 import HoldToConfirm from './HoldToConfirm';
 import DateInput from '@/Components/DateInput';
-import { CheckBox, DangerKey, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
+import { CheckBox, DangerKey, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
 
 const ACTIONS = {
     reschedule: { title: 'تغيير موعد القطع', icon: 'calendar', tone: 'bg-blue-500/10 text-blue-600', url: 'reschedule' },
@@ -140,7 +140,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                     }
                 }}
                 role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} className="flex max-h-[92vh] flex-col">
-                <div className="flex items-start gap-4 border-b border-gray-100 px-7 py-5">
+                <div className="flex items-start gap-4 border-b border-gray-100 px-6 py-4">
                     <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${meta.tone}`}>
                         <Icon name={meta.icon} strokeWidth={2} />
                     </span>
@@ -160,7 +160,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                     </div>
                 </div>
 
-                <div className="flex-1 space-y-5 overflow-y-auto px-7 py-5">
+                <div className="flex-1 space-y-6 overflow-y-auto px-6 py-4">
                     {failed && <p className="text-sm text-brand-600">تعذّر تحميل المشتركين؛ أغلق النافذة وحاول مرة أخرى.</p>}
                     {preview?.tooMany && (
                         <p className="rounded-control bg-amber-500/10 px-3 py-2 text-sm text-amber-800">
@@ -171,37 +171,35 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                     {preview && (
                         <div className="overflow-hidden rounded-control border border-gray-100">
                             <div className="max-h-64 overflow-y-auto">
-                                <table className="w-full text-sm">
-                                    <thead className="sticky top-0 bg-gray-50 text-xs text-gray-500">
-                                        <tr>
-                                            <th className="px-3 py-2 text-start">المشترك</th>
-                                            <th className="px-3 py-2 text-start">الحالة</th>
-                                            {action === 'warn' && <th className="px-3 py-2 text-start">الجوال</th>}
-                                            {action === 'confirm' && <th className="px-3 py-2 text-start">الخدمة</th>}
-                                            <th className="px-3 py-2 text-start">الرصيد</th>
-                                            {action === 'confirm' && <th className="px-3 py-2 text-start">رسوم القطع</th>}
-                                            {action !== 'confirm' && <th className="px-3 py-2 text-start">الموعد</th>}
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-100">
+                                <ListTable aria-label="المشتركون المشمولون بالإجراء" className="w-full text-sm">
+                                    <ListHeader className="sticky top-0 bg-gray-50 text-xs text-gray-500">
+                                        <ListColumn id="name" isRowHeader className="px-3 py-2 text-start">المشترك</ListColumn>
+                                        <ListColumn id="status" className="px-3 py-2 text-start">الحالة</ListColumn>
+                                        {action === 'warn' && <ListColumn id="phone" className="px-3 py-2 text-start">الجوال</ListColumn>}
+                                        {action === 'confirm' && <ListColumn id="service" className="px-3 py-2 text-start">الخدمة</ListColumn>}
+                                        <ListColumn id="balance" className="px-3 py-2 text-start">الرصيد</ListColumn>
+                                        {action === 'confirm' && <ListColumn id="fee" className="px-3 py-2 text-start">رسوم القطع</ListColumn>}
+                                        {action !== 'confirm' && <ListColumn id="scheduled_for" className="px-3 py-2 text-start">الموعد</ListColumn>}
+                                    </ListHeader>
+                                    <ListBody className="divide-y divide-gray-100">
                                         {preview.items.map((item) => {
                                             const why = exclusion(action, item);
 
                                             return (
-                                                <tr key={item.id} className={why ? 'bg-gray-50 text-gray-400' : undefined}>
-                                                    <td className="px-3 py-2">
+                                                <ListRow key={item.id} id={item.id} className={why ? 'bg-gray-50 text-gray-400' : undefined}>
+                                                    <ListCell className="px-3 py-2">
                                                         <b className={why ? 'line-through' : 'text-gray-900'}>{item.name}</b>
                                                         <span dir="ltr" className="block text-end font-display text-xs text-gray-500 rtl:text-start">{item.accountNumber}</span>
                                                         {why && <span className="block text-xs text-amber-700">يُستثنى: {why}</span>}
-                                                    </td>
-                                                    <td className="px-3 py-2"><StatusPill tone={itemTone(item)} label={item.isOverdue ? 'متأخر' : item.statusLabel} /></td>
-                                                    {action === 'warn' && <td className="px-3 py-2 font-display text-xs" dir="ltr">{item.phone ?? '—'}</td>}
-                                                    {action === 'confirm' && <td className="px-3 py-2 text-xs">{item.serviceStatusLabel}</td>}
-                                                    <td className="whitespace-nowrap px-3 py-2"><Balance value={item.balance} /></td>
+                                                    </ListCell>
+                                                    <ListCell className="px-3 py-2"><StatusPill tone={itemTone(item)} label={item.isOverdue ? 'متأخر' : item.statusLabel} /></ListCell>
+                                                    {action === 'warn' && <ListCell className="px-3 py-2 font-display text-xs" dir="ltr">{item.phone ?? '—'}</ListCell>}
+                                                    {action === 'confirm' && <ListCell className="px-3 py-2 text-xs">{item.serviceStatusLabel}</ListCell>}
+                                                    <ListCell className="whitespace-nowrap px-3 py-2"><Balance value={item.balance} /></ListCell>
                                                     {action === 'confirm' && (
-                                                        <td className="whitespace-nowrap px-3 py-2 font-semibold">
+                                                        <ListCell className="whitespace-nowrap px-3 py-2 font-semibold">
                                                             {canChangeFee && !why ? (
-                                                                <span className="flex items-center gap-1.5">
+                                                                <span className="flex items-center gap-2">
                                                                     <Input
                                                                         type="number"
                                                                         min={0}
@@ -216,14 +214,14 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                                                             ) : (
                                                                 <>{formatMoney(fees[item.id] ?? item.fee)} ₪</>
                                                             )}
-                                                        </td>
+                                                        </ListCell>
                                                     )}
-                                                    {action !== 'confirm' && <td className="whitespace-nowrap px-3 py-2 text-xs" dir="ltr">{formatDate(item.scheduledFor)}</td>}
-                                                </tr>
+                                                    {action !== 'confirm' && <ListCell className="whitespace-nowrap px-3 py-2 text-xs" dir="ltr">{formatDate(item.scheduledFor)}</ListCell>}
+                                                </ListRow>
                                             );
                                         })}
-                                    </tbody>
-                                </table>
+                                    </ListBody>
+                                </ListTable>
                             </div>
                         </div>
                     )}
@@ -231,16 +229,16 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                     {preview && action === 'reschedule' && (
                         <div className="grid gap-4 sm:grid-cols-2">
                             <div>
-                                <label htmlFor={`${id}-date`} className="mb-1.5 block text-sm font-semibold text-gray-700">موعد القطع الجديد</label>
+                                <label htmlFor={`${id}-date`} className="mb-2 block text-sm font-semibold text-gray-700">موعد القطع الجديد</label>
                                 <DateInput id={`${id}-date`} name="scheduled_for" min={today} value={date} onChange={setDate} required />
                                 <InputError message={errors.scheduled_for} className="mt-1" />
                             </div>
                             <div>
-                                <label htmlFor={`${id}-reason`} className="mb-1.5 block text-sm font-semibold text-gray-700">سبب التمديد (اختياري)</label>
+                                <label htmlFor={`${id}-reason`} className="mb-2 block text-sm font-semibold text-gray-700">سبب التمديد (اختياري)</label>
                                 <Input id={`${id}-reason`} type="text" value={reason} onChange={(event) => setReason(event.target.value)} className="block w-full text-sm" maxLength={1000} />
                             </div>
-                            <p className="flex items-start gap-1.5 text-xs text-gray-500 sm:col-span-2">
-                                <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0" />
+                            <p className="flex items-start gap-2 text-xs text-gray-500 sm:col-span-2">
+                                <Icon name="info" className="mt-1 h-4 w-4 shrink-0" />
                                 يُسجَّل كل تمديد بالموعد القديم والجديد. لا تُرسل أي رسالة للمشتركين.
                             </p>
                         </div>
@@ -248,7 +246,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
 
                     {preview && action === 'remove' && (
                         <div>
-                            <label htmlFor={`${id}-reason`} className="mb-1.5 block text-sm font-semibold text-gray-700">سبب الإزالة (اختياري)</label>
+                            <label htmlFor={`${id}-reason`} className="mb-2 block text-sm font-semibold text-gray-700">سبب الإزالة (اختياري)</label>
                             <Input id={`${id}-reason`} type="text" value={reason} onChange={(event) => setReason(event.target.value)} className="block w-full text-sm" maxLength={1000} />
                             <p className="mt-2 text-xs text-gray-500">يبقى سجلهم في القائمة، ويمكن إدراجهم من جديد لاحقًا.</p>
                         </div>
@@ -270,12 +268,12 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                                 </div>
                             )}
                             <div>
-                                <label htmlFor={`${id}-body`} className="mb-1.5 block text-sm font-semibold text-gray-700">نص الإنذار</label>
+                                <label htmlFor={`${id}-body`} className="mb-2 block text-sm font-semibold text-gray-700">نص الإنذار</label>
                                 <TextArea id={`${id}-body`} value={body} onChange={(event) => setBody(event.target.value)} rows={4} className="block w-full text-sm" maxLength={1000} required />
-                                <p className="mt-1 flex flex-wrap gap-1.5 text-xs text-gray-500">
+                                <p className="mt-1 flex flex-wrap gap-2 text-xs text-gray-500">
                                     الحقول:
                                     {placeholders.map((name) => (
-                                        <Button data-raw="" variant="ghost" key={name} onClick={() => setBody((current) => `${current} {${name}}`)} className="rounded bg-gray-100 px-1.5 font-display">{`{${name}}`}</Button>
+                                        <Button data-raw="" variant="ghost" key={name} onClick={() => setBody((current) => `${current} {${name}}`)} className="rounded bg-gray-100 px-2 font-display">{`{${name}}`}</Button>
                                     ))}
                                 </p>
                                 <InputError message={errors.body} className="mt-1" />
@@ -299,8 +297,8 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                             {canChangeFee && reached.length > 0 && (
                                 <div className="flex flex-wrap items-end gap-3 rounded-control border border-gray-200 p-3">
                                     <div>
-                                        <label htmlFor={`${id}-fee`} className="mb-1.5 block text-sm font-semibold text-gray-700">رسوم قطع الخدمة</label>
-                                        <span className="flex items-center gap-1.5">
+                                        <label htmlFor={`${id}-fee`} className="mb-2 block text-sm font-semibold text-gray-700">رسوم قطع الخدمة</label>
+                                        <span className="flex items-center gap-2">
                                             <Input id={`${id}-fee`} type="number" min={0} step="0.01" value={feeForAll} onChange={(event) => setFeeForAll(event.target.value)} className="w-28 text-sm" />
                                             ₪
                                         </span>
@@ -334,7 +332,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                     <InputError message={errors.ids} />
                 </div>
 
-                <div className="flex flex-wrap items-center justify-end gap-3 border-t border-gray-100 bg-gray-50 px-7 py-4">
+                <div className="flex flex-wrap items-center justify-end gap-3 border-t border-gray-100 bg-gray-50 px-6 py-4">
                     <SecondaryKey onClick={onClose} disabled={saving}>إلغاء</SecondaryKey>
                     {action === 'remove' && (
                         <DangerKey type="submit" disabled={saving || !preview || reached.length === 0}>

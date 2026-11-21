@@ -14,6 +14,14 @@ const pageErrors = [];
 let browser;
 let shot = 0;
 
+/** The side an element's text lines up on, start and end read through its own direction (runs in the page). */
+const textSide = (element) => {
+    const { textAlign, direction } = getComputedStyle(element);
+    if (textAlign === 'start') return direction === 'rtl' ? 'right' : 'left';
+    if (textAlign === 'end') return direction === 'rtl' ? 'left' : 'right';
+    return textAlign;
+};
+
 function step(name, run) {
     steps.push({ name, run });
 }
@@ -37,8 +45,8 @@ async function signIn(username, viewport = { width: 1440, height: 900 }) {
         throw error;
     }
     await page.locator('#password').fill(PASSWORD);
-    assert.equal(await page.locator('#username').evaluate((field) => getComputedStyle(field).textAlign), 'right');
-    assert.equal(await page.locator('#password').evaluate((field) => getComputedStyle(field).textAlign), 'right');
+    assert.equal(await page.locator('#username').evaluate(textSide), 'right');
+    assert.equal(await page.locator('#password').evaluate(textSide), 'right');
     await page.getByRole('button', { name: 'تسجيل الدخول' }).click();
     await page.waitForURL((url) => !url.pathname.startsWith('/login'));
     return page;
@@ -163,7 +171,7 @@ step('tariffs and a circuit breaker', async () => {
     await addThroughWindow(page, '/tariffs', 'تعرفة جديدة', { 'الفئة': { select: 'تجاري' }, 'سعر الكيلوواط': '0.80' });
     await snap(page, 'tariffs');
     await addThroughWindow(page, '/circuit-breakers', 'قاطع جديد', { 'الأمبير': '10', 'الحد الأدنى للدفع (شيكل)': '10' });
-    await page.getByRole('cell', { name: '10' }).first().waitFor();
+    await page.getByRole('rowheader', { name: '10' }).first().waitFor();
     await snap(page, 'circuit-breakers');
 });
 
@@ -172,7 +180,7 @@ step('the branch and its three tablons', async () => {
     await addThroughWindow(page, '/branches', 'فرع جديد', {
         'الاسم': 'فرع النصيرات', 'الهاتف': '0599000000', 'المحافظة': { select: 'المحافظة الوسطى' }, 'المنطقة': { select: 'مخيم النصيرات' },
     });
-    await page.getByRole('cell', { name: 'فرع النصيرات' }).first().waitFor();
+    await page.getByRole('rowheader', { name: 'فرع النصيرات' }).first().waitFor();
     for (const [name, suffix, number, block] of [['المدارس', '1', 'T-101', 'البلوك أ'], ['المدارس', '2', 'T-102', 'البلوك ب'], ['السوق', '', 'T-103', 'البلوك أ']]) {
         await addThroughWindow(page, '/meter-boxes', 'طبلون جديد', {
             'اسم الطبلون': name, 'لاحقة (اختياري)': suffix, 'رقم الطبلون': number,
@@ -431,11 +439,11 @@ step('report sections retain the branch banner, statement alignment and mobile b
     await page.waitForURL(/section=statement/);
     const table = page.locator('.reports-detail-table');
     await table.getByRole('columnheader', { name: 'الرصيد', exact: true }).waitFor();
-    const alignment = await table.evaluate((element) => [3, 4, 5].map((index) => ({
-        header: getComputedStyle(element.tHead.rows[0].cells[index]).textAlign,
-        cell: getComputedStyle(element.tBodies[0].rows[0].cells[index]).textAlign,
+    const alignment = await Promise.all([3, 4, 5].map(async (index) => ({
+        header: await table.locator('thead tr').first().locator('th, td').nth(index).evaluate(textSide),
+        cell: await table.locator('tbody tr').first().locator('th, td').nth(index).evaluate(textSide),
     })));
-    assert.ok(alignment.every(({ header, cell }) => header === 'right' && ['right', 'end'].includes(cell)), JSON.stringify(alignment));
+    assert.ok(alignment.every(({ header, cell }) => header === 'right' && cell === 'right'), JSON.stringify(alignment));
     await snap(page, 'reports-statement-desktop');
     await page.setViewportSize({ width: 390, height: 844 });
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1));

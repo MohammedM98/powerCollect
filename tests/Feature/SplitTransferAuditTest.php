@@ -14,6 +14,7 @@ use App\Support\Branches\BranchDomainScope;
 use App\Support\Ledger\Money;
 use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\TestWith;
 use RuntimeException;
 use Tests\TestCase;
@@ -36,6 +37,7 @@ class SplitTransferAuditTest extends TestCase
             SubscriptionTransaction::factory()->for($subscription)->create(['amount' => '100.00']);
         }
         $this->actingAs($collector)->post(route('payments.split.store'), [
+            'operation_token' => (string) Str::uuid(),
             'total_amount' => '100', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'مرسل الفحص',
             'reference_number' => 'AUDIT-GROUP', 'parts' => [
                 ['subscription_id' => $subscriptions[0]->id, 'amount' => '40'],

@@ -123,7 +123,7 @@ class BankReceivedDateTest extends TestCase
     {
         [$collector, $subscription] = $this->account();
         $other = Subscription::factory()->for($collector->branch)->create();
-        $data = ['total_amount' => '100', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'محمد',
+        $data = ['operation_token' => (string) Str::uuid(), 'total_amount' => '100', 'bank_name' => 'بنك فلسطين', 'sender_name' => 'محمد',
             'reference_number' => 'SPLIT-DATE', 'bank_received_on' => '2026-10-23', 'confirm_overpayment' => true,
             'parts' => [['subscription_id' => $subscription->id, 'amount' => '60'], ['subscription_id' => $other->id, 'amount' => '40']]];
         $this->actingAs($collector)->post(route('payments.split.store'), $data)->assertSessionHasNoErrors();

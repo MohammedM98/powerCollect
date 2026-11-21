@@ -76,7 +76,7 @@ export default function PrintPaper({ layout, table, summary, context, zoom }) {
 
             <PrintHeader header={header} context={context} meta={meta} accent={style.accent} />
 
-            {details.length > 0 && <dl className="mb-4 grid break-inside-avoid grid-cols-3 gap-x-5 gap-y-3 rounded border border-gray-200 p-3">
+            {details.length > 0 && <dl className="mb-4 grid break-inside-avoid grid-cols-3 gap-x-6 gap-y-3 rounded border border-gray-200 p-3">
                 {details.map((field) => <div key={field.key}>
                     <dt className="text-[0.85em] text-gray-500">{field.label}</dt><dd className="mt-1 whitespace-pre-line font-semibold">{field.value}</dd>
                 </div>)}
@@ -188,7 +188,7 @@ export default function PrintPaper({ layout, table, summary, context, zoom }) {
             {footer.notes && <p className="mt-4 whitespace-pre-line text-[0.95em] text-gray-800">{footer.notes}</p>}
 
             {footer.signatures.length > 0 && (
-                <div className="pd-signatures mt-10 grid gap-8" style={{ gridTemplateColumns: `repeat(${Math.min(footer.signatures.length, 4)}, minmax(0, 1fr))` }}>
+                <div className="pd-signatures mt-8 grid gap-8" style={{ gridTemplateColumns: `repeat(${Math.min(footer.signatures.length, 4)}, minmax(0, 1fr))` }}>
                     {footer.signatures.map((label, index) => (
                         <div key={index} className="text-center">
                             <div className="mb-1 h-12 border-b border-gray-500" />

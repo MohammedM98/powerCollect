@@ -7,6 +7,7 @@ use App\Models\SubscriptionTransaction;
 use App\Models\Tariff;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia as Assert;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
@@ -108,7 +109,7 @@ class SubscriptionTransactionTest extends TestCase
         $subscription = Subscription::where('national_id', $payload['national_id'])->sole();
 
         $this->from(route('subscriptions.statement', $subscription))
-            ->post(route('subscriptions.charges.store', $subscription), ['type' => 'subscription_fee', 'amount' => '50.25', 'notes' => 'رسوم الاشتراك'])
+            ->post(route('subscriptions.charges.store', $subscription), ['operation_token' => (string) Str::uuid(), 'type' => 'subscription_fee', 'amount' => '50.25', 'notes' => 'رسوم الاشتراك'])
             ->assertSessionHasNoErrors()->assertSessionHas('status', 'charge-recorded')
             ->assertRedirect(route('subscriptions.statement', $subscription));
 

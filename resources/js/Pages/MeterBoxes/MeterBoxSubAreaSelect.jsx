@@ -86,7 +86,7 @@ export default function MeterBoxSubAreaSelect({ id, value, onChange, onCreated, 
                     <Button data-raw="" variant="ghost" onClick={() => setAdding(false)} isDisabled={http.processing} className="rounded-control px-3 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100">إلغاء</Button>
                 </div>
             </div>}
-            {!adding && subAreas.some((item) => item.isNew && String(item.id) === String(value)) && <p role="status" className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600"><Icon name="check" className="h-3.5 w-3.5" />أُضيفت المنطقة واختيرت للطبلون.</p>}
+            {!adding && subAreas.some((item) => item.isNew && String(item.id) === String(value)) && <p role="status" className="flex items-center gap-2 text-xs font-semibold text-emerald-600"><Icon name="check" className="h-3.5 w-3.5" />أُضيفت المنطقة واختيرت للطبلون.</p>}
         </div>
     );
 }

@@ -269,9 +269,15 @@ class Subscription extends Model
         return $this->hasMany(MeterReading::class);
     }
 
+    /**
+     * Their last reading in any branch, so a subscription moved to another
+     * branch reads on from where it stopped, as previousReadingBefore() does.
+     * The scope is lifted before latestOfMany(), which builds its subquery
+     * then and carries the removed scopes into it.
+     */
     public function latestMeterReading(): HasOne
     {
-        return $this->hasOne(MeterReading::class)->latestOfMany('week_start');
+        return $this->hasOne(MeterReading::class)->acrossBranches()->latestOfMany('week_start');
     }
 
     /**

@@ -20,7 +20,7 @@ before(async () => {
             resolveId(id) {
                 if (id === '\0navigation-components') return id;
                 if (id === '@inertiajs/react') return '\0inertia-link';
-                if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/'))) return { id: import.meta.resolve(id), external: true };
+                if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria'))) return { id: import.meta.resolve(id), external: true };
             },
             load(id) {
                 if (id === '\0navigation-components') return `export { SectionPages, hiddenEnds } from ${JSON.stringify(path.resolve(import.meta.dirname, '../../resources/js/Components/TopBar/PageTrail.jsx'))}; export { default as MegaMenu } from ${JSON.stringify(path.resolve(import.meta.dirname, '../../resources/js/Components/TopBar/MegaMenu.jsx'))};`;

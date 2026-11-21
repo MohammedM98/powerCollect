@@ -68,7 +68,7 @@ class SubscriberLifecycleJourneyTest extends TestCase
         $this->assertSame('50.00', $subscription->balance());
 
         $this->updateSubscription($head, $subscription, ['status' => 'disconnected'])->assertSessionHasNoErrors();
-        $this->actingAs($head)->post(route('subscriptions.charges.store', $subscription), ['type' => 'disconnection_fee', 'amount' => '20'])->assertSessionHasNoErrors();
+        $this->actingAs($head)->post(route('subscriptions.charges.store', $subscription), ['operation_token' => (string) Str::uuid(), 'type' => 'disconnection_fee', 'amount' => '20'])->assertSessionHasNoErrors();
         $this->assertSame('70.00', $subscription->balance());
 
         $this->travelTo('2026-10-29 08:00:00');
@@ -105,7 +105,7 @@ class SubscriberLifecycleJourneyTest extends TestCase
         ])->assertSessionHasNoErrors();
 
         $this->assertNotNull($subscription->fresh()->archived_at);
-        $this->actingAs($head)->post(route('subscriptions.charges.store', $subscription), ['type' => 'penalty', 'amount' => '5', 'notes' => 'بعد الأرشفة'])->assertForbidden();
+        $this->actingAs($head)->post(route('subscriptions.charges.store', $subscription), ['operation_token' => (string) Str::uuid(), 'type' => 'penalty', 'amount' => '5', 'notes' => 'بعد الأرشفة'])->assertForbidden();
         $this->actingAs($collector)->get(route('subscriptions.statement', $subscription))->assertForbidden();
         $this->actingAs($head)->get(route('subscriptions.statement', $subscription))->assertInertia(fn ($page) => $page
             ->where('subscription.statusLabel', 'مؤرشف')

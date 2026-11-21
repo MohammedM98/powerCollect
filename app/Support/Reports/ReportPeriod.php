@@ -2,6 +2,7 @@
 
 namespace App\Support\Reports;
 
+use App\Models\Branch;
 use App\Support\Closing\ClosingPeriods;
 use Carbon\CarbonImmutable;
 
@@ -10,13 +11,13 @@ class ReportPeriod
     /**
      * Navigate complete calendar periods; compare elapsed dates for a partial
      * period, and complete months for a completed month. `$today` is the
-     * business day the report reaches up to.
+     * business day the report reaches up to; weeks are `$branch`'s.
      *
      * @return array<string, mixed>
      */
-    public static function describe(CarbonImmutable $from, CarbonImmutable $to, ?string $requested, CarbonImmutable $today): array
+    public static function describe(CarbonImmutable $from, CarbonImmutable $to, ?string $requested, CarbonImmutable $today, ?Branch $branch = null): array
     {
-        [$weekStart, $weekEnd] = ClosingPeriods::week($from);
+        [$weekStart, $weekEnd] = ClosingPeriods::week($from, $branch);
         $monthEnd = $from->endOfMonth()->startOfDay();
         $isMonth = $from->day === 1 && $to->equalTo($monthEnd->min($today));
         $isWeek = $from->equalTo($weekStart) && $to->equalTo($weekEnd->min($today));

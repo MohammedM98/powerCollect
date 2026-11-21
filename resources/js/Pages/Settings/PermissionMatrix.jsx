@@ -48,7 +48,7 @@ export function RiskBadge({ risk }) {
 
     return (
         <span
-            className={`inline-flex items-center gap-1 rounded-md px-1.5 text-[12px] font-bold leading-[20px] ${
+            className={`inline-flex items-center gap-1 rounded-md px-2 text-[12px] font-bold leading-[20px] ${
                 risk === 'danger' ? 'bg-red-500/10 text-red-700 dark:text-red-400' : 'bg-amber-500/10 text-amber-700 dark:text-amber-400'
             }`}
         >
@@ -118,12 +118,12 @@ function OptionItem({ section, item, selected, saved, onChange, disabled, onExpl
                 disabled={disabled || locked}
             />
             <div className="min-w-0 flex-1">
-                <p className="flex flex-wrap items-center gap-1.5 text-sm font-semibold text-gray-900">
+                <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-gray-900">
                     <Mark text={item.label} query={query} />
                     <RiskBadge risk={item.risk} />
                 </p>
                 {locked && (
-                    <p className="mt-0.5 text-[13px] text-blue-700 dark:text-blue-500">
+                    <p className="mt-1 text-[13px] text-blue-700 dark:text-blue-500">
                         يتطلب «{section.ladder.labels[item.needs - 1]}» أولًا
                     </p>
                 )}
@@ -275,7 +275,7 @@ export function SectionRow({
                                 <div key={cell.id} className="pm-explained">
                                     <i className={`pm-held-dot ${selected.includes(cell.id) ? 'is-held' : ''}`} aria-hidden="true" />
                                     <div className="min-w-0 flex-1">
-                                        <p className="flex flex-wrap items-center gap-1.5 text-sm font-semibold text-gray-900">
+                                        <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-gray-900">
                                             <span className="text-gray-500">{cell.column.label}:</span> {describe(cell.id)?.label ?? cell.label}
                                             <RiskBadge risk={cell.risk} />
                                         </p>
