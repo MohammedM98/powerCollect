@@ -53,7 +53,7 @@ class ReadingPricingTest extends TestCase
         $this->assertSame(['12.00', '12.00', 210.0, '0.50'], [
             $reading->fresh()->minimum_payment, $reading->fresh()->amount_due, $reading->fresh()->current_reading, $reading->fresh()->unit_price,
         ]);
-        $this->assertSame(0, $subscription->fresh()->minimum_charge);
+        $this->assertSame('0.00', $subscription->fresh()->minimum_charge);
         $this->put(route('meter-readings.pricing', $reading), ['unit_price' => 3, 'minimum_payment' => 15])->assertForbidden();
         $this->put(route('meter-readings.update', $reading), ['current_reading' => 220])->assertForbidden();
         $this->assertSame('12.00', $reading->fresh()->minimum_payment);
@@ -79,7 +79,7 @@ class ReadingPricingTest extends TestCase
         $this->put(route('meter-readings.pricing', $reading), ['unit_price' => 3])->assertForbidden();
 
         $this->assertSame(['12.00', '0.50', '12.00'], [$reading->fresh()->minimum_payment, $reading->fresh()->unit_price, $reading->fresh()->amount_due]);
-        $this->assertSame(0, $subscription->fresh()->minimum_charge);
+        $this->assertSame('0.00', $subscription->fresh()->minimum_charge);
     }
 
     public function test_old_rows_foreign_branches_and_waiting_current_readings_are_locked_even_for_super_admins(): void

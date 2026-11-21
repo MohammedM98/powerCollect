@@ -91,12 +91,12 @@ class SubscriptionChargesAndDiscountsTest extends TestCase
             'type' => 'minimum_charge', 'amount' => '12.50', 'notes' => 'تحميل يدوي بطلب الإدارة',
         ]);
         $this->assertDatabaseCount('meter_readings', 0);
-        $this->assertSame(12.5, $this->subscription->fresh()->minimum_charge);
+        $this->assertSame('12.50', $this->subscription->fresh()->minimum_charge);
         $this->assertSame('charge-recorded', $this->branchAdmin->notifications()->sole()->data['action']);
         $this->actingAs($this->branchAdmin)->get(route('subscriptions.statement', $this->subscription))->assertInertia(fn ($page) => $page
             ->where('entries.0.typeLabel', 'تحميل الحد الأدنى على المشترك')
             ->where('entries.0.isCredit', false)->where('summary.balance', '12.50')->where('summary.charged', '12.50')
-            ->where('subscription.minimumPayment', '12.5'));
+            ->where('subscription.minimumPayment', '12.50'));
     }
 
     public function test_a_minimum_charge_uses_the_breakers_minimum_when_no_subscriber_override_exists(): void

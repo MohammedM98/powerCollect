@@ -185,6 +185,7 @@ class Subscription extends Model
             'archived_at' => 'datetime',
             'service_ended_on' => 'date',
             'subscription_fee' => 'decimal:2',
+            'minimum_charge' => 'decimal:2',
             'kilowatt_price' => 'decimal:2',
             'initial_reading' => 'float',
         ];
