@@ -9,8 +9,10 @@ use App\Models\MeterReading;
 use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Notifications\ReadingNeedsReapproval;
 use App\Support\Readings\ApproveReading;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
 
@@ -129,6 +131,25 @@ class ReadingPricingTest extends TestCase
     }
 
     /** @return array{User, Subscription, MeterReading} */
+    public function test_repricing_an_approved_reading_reopens_it_and_tells_the_branchs_other_approvers(): void
+    {
+        Notification::fake();
+        [$actor, , $reading] = $this->context(PermissionKey::UpdateSubscriptionKilowattPrice);
+        $actor->permissions()->attach(Permission::idsFor([PermissionKey::ApproveMeterReadings]));
+        $approver = User::factory()->withPermissions([PermissionKey::ApproveMeterReadings])->create(['branch_id' => $actor->branch_id]);
+        $otherBranchApprover = User::factory()->withPermissions([PermissionKey::ApproveMeterReadings])->create();
+        ApproveReading::handle($reading, $actor);
+
+        $this->actingAs($actor)->put(route('meter-readings.pricing', $reading), ['unit_price' => 0.5])->assertSessionHas('status', 'meter-reading-updated');
+        Notification::assertNothingSent();
+
+        $this->put(route('meter-readings.pricing', $reading), ['unit_price' => 2])->assertSessionHas('status', 'meter-reading-reopened');
+
+        $this->assertSame(MeterReadingStatus::Pending, $reading->fresh()->status);
+        Notification::assertSentTo($approver, ReadingNeedsReapproval::class);
+        Notification::assertNotSentTo([$actor, $otherBranchApprover], ReadingNeedsReapproval::class);
+    }
+
     private function context(PermissionKey $permission): array
     {
         $actor = User::factory()->dataEntry()->create();
