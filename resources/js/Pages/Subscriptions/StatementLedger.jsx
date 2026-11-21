@@ -108,7 +108,7 @@ function LedgerLine({ entry, chain, hoveredChain, onHoverChain, isCompact, isHis
                 {entry.cancellation && <CancellationNote cancellation={entry.cancellation} onJump={onJump} />}
                 {entry.reverses && <ReversalNote entry={entry} reverses={entry.reverses} onJump={onJump} />}
                 {entry.auditOriginal && (
-                    <p className="ledger-description mt-1.5 text-xs text-gray-600">
+                    <p className="ledger-description mt-2 text-xs text-gray-600">
                         <Button data-raw="" variant="ghost" onClick={() => onJump(entry.auditOriginal.id)} className="font-semibold hover:underline">
                             تصحيح حوالة للدفعة #{entry.auditOriginal.lineNumber} ↑
                         </Button>

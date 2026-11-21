@@ -256,7 +256,7 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
                     </span>
                 )}
                 <div className="ms-auto flex flex-wrap items-center gap-2">
-                    {supportsTemplates && <ChoiceSelect aria-label="القالب المختار" className="max-w-52 py-1.5! text-sm" value={activeTemplateId ?? ''} onChange={(event) => applyTemplate(event.target.value)}>
+                    {supportsTemplates && <ChoiceSelect aria-label="القالب المختار" className="max-w-52 py-2! text-sm" value={activeTemplateId ?? ''} onChange={(event) => applyTemplate(event.target.value)}>
                         <option value="">تصميم غير محفوظ</option>
                         {templates.map((template) => <option key={template.id} value={template.id}>{template.name}{template.isDefault ? ' (افتراضي)' : ''}</option>)}
                     </ChoiceSelect>}
@@ -268,21 +268,21 @@ export default function PrintDesigner({ settings, children, beforePrint }) {
                     {statementPrint && <label className="flex items-center gap-2 text-sm text-gray-600">عرض الكشف
                         <ChoiceSelect aria-label="عرض الكشف المطبوع" value={props.printOptions.view} onChange={(event) => {
                             router.get(urlWith(pageUrl, { view: event.target.value, subscription: props.subscription?.id }), {}, { preserveState: true, preserveScroll: true });
-                        }} className="py-1.5! text-sm">
+                        }} className="py-2! text-sm">
                             {STATEMENT_VIEWS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                         </ChoiceSelect>
                     </label>}
                     {report?.counts && <label className="flex items-center gap-2 text-sm text-gray-600">الحركات
                         <ChoiceSelect aria-label="تصفية الحركات المطبوعة" value={report.filter} onChange={(event) => {
                             router.get(urlWith(pageUrl, { filter: event.target.value, box: report.boxId || null }), {}, { preserveState: true, preserveScroll: true });
-                        }} className="py-1.5! text-sm">
+                        }} className="py-2! text-sm">
                             {Object.entries(reportFilters).map(([key, label]) => <option key={key} value={key}>{label} ({report.counts[key]})</option>)}
                         </ChoiceSelect>
                     </label>}
                     <label className="flex items-center gap-2 text-sm text-gray-600">
                         <Icon name="search" className="h-4 w-4" />
                         <span className="sr-only sm:not-sr-only">التكبير</span>
-                        <ChoiceSelect value={zoom} onChange={(e) => setZoom(e.target.value)} className="py-1.5! text-sm" aria-label="تكبير المعاينة">
+                        <ChoiceSelect value={zoom} onChange={(e) => setZoom(e.target.value)} className="py-2! text-sm" aria-label="تكبير المعاينة">
                             {ZOOMS.map((option) => (
                                 <option key={option.value} value={option.value}>
                                     {option.label}

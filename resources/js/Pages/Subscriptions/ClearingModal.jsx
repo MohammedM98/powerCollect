@@ -47,7 +47,7 @@ export default function ClearingModal({ show, onClose, subscription, balance, re
         correcting,
         correcting
             ? { amount: correcting.recorded.amount, notes: correcting.recorded.notes, manual_voucher_number: correcting.recorded.manual_voucher_number ?? '', confirm_over_balance: false, ...EMPTY_CORRECTION }
-            : { amount: '', notes: '', manual_voucher_number: '', confirm_over_balance: false },
+            : { operation_token: crypto.randomUUID(), amount: '', notes: '', manual_voucher_number: '', confirm_over_balance: false },
     );
     const { data, setData, errors } = form;
     const [discarding, setDiscarding] = useState(false);
@@ -107,6 +107,12 @@ export default function ClearingModal({ show, onClose, subscription, balance, re
 
                 setReceipt({ ...recorded, voucherNumber: flashed.voucherNumber ?? null, receiptUrl: flashed.receiptUrl ?? null });
                 form.resetAndClearErrors();
+                // A new key for the next clearing; a retry of this one kept the old key and got this clearing back.
+                if (!correcting) {
+                    const operationToken = crypto.randomUUID();
+                    form.setDefaults('operation_token', operationToken);
+                    form.setData('operation_token', operationToken);
+                }
             },
         });
     }
@@ -219,6 +225,7 @@ export default function ClearingModal({ show, onClose, subscription, balance, re
                                 </div>
                                 <InputError message={errors.notes} className="mt-2" />
                                 <InputError message={errors.amount} className="mt-2" />
+                                <InputError message={errors.operation_token} className="mt-2" />
 
                                 {overBalance && (
                                     <div role="alert" className="gl-cl-note">

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\SubscriptionTransaction;
+use Illuminate\Support\Arr;
 
 class StoreMobileSplitPaymentRequest extends StoreSplitPaymentRequest
 {
@@ -17,7 +18,8 @@ class StoreMobileSplitPaymentRequest extends StoreSplitPaymentRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * The web transfer's rules, keyed by `mobile_operation_id` instead of
+     * the web window's `operation_token`.
      *
      * @return array<string, mixed>
      */
@@ -26,7 +28,7 @@ class StoreMobileSplitPaymentRequest extends StoreSplitPaymentRequest
         return [
             'mobile_operation_id' => ['required', 'uuid'],
             'collector_confirmed' => ['required', 'accepted'],
-            ...($this->existingPayment() ? [] : parent::rules()),
+            ...($this->existingPayment() ? [] : Arr::except(parent::rules(), 'operation_token')),
         ];
     }
 
@@ -36,12 +38,13 @@ class StoreMobileSplitPaymentRequest extends StoreSplitPaymentRequest
         return $this->existingPayment() ? [] : parent::after();
     }
 
-    public function existingPayment(): ?SubscriptionTransaction
+    public function existingPayment(bool $latest = false): ?SubscriptionTransaction
     {
         $id = $this->input('mobile_operation_id');
 
+        // `$latest` reads past the transaction's snapshot, for the check made after the branch lock.
         return is_string($id) && $id !== ''
-            ? SubscriptionTransaction::query()->where('mobile_operation_id', $id)->where('type', SubscriptionTransaction::TYPE_PAYMENT)->first()
+            ? SubscriptionTransaction::query()->where('mobile_operation_id', $id)->where('type', SubscriptionTransaction::TYPE_PAYMENT)->when($latest, fn ($query) => $query->sharedLock())->first()
             : null;
     }
 }

@@ -140,10 +140,10 @@ html.tn-locked {
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: var(--tn-bar-height);
     align-items: center;
-    column-gap: 14px;
+    column-gap: 16px;
     max-width: var(--ui-content-width, 1720px);
     margin-inline: auto;
-    padding-inline: 12px 10px;
+    padding-inline: 12px 12px;
     border-radius: calc(20px * var(--radius-scale, 1));
     background: rgb(var(--surface));
     border: 1px solid rgb(var(--gray-200));
@@ -179,8 +179,8 @@ html.tn-locked {
     display: flex;
     align-items: center;
     min-width: 0;
-    margin-inline: -12px -10px;
-    padding-inline: 12px 10px;
+    margin-inline: -12px;
+    padding-inline: 12px 12px;
     border-top: 1px solid rgb(var(--gray-200));
 }
 
@@ -209,7 +209,7 @@ html.tn-locked {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 5px 8px;
+    padding: 4px 8px;
     border-radius: calc(14px * var(--radius-scale, 1));
     transition: background 0.2s;
 }
@@ -308,7 +308,7 @@ html.tn-locked {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
         width: var(--tn-dock-width);
         padding: 12px 8px;
         border: 1px solid rgb(var(--gray-200));
@@ -334,7 +334,7 @@ html.tn-locked {
 }
 
 .tn-side-logo {
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
 .tn-sections {
@@ -346,7 +346,7 @@ html.tn-locked {
     width: 100%;
     min-height: 0;
     overflow-y: auto;
-    padding: 2px;
+    padding: 4px;
     scrollbar-width: none;
 }
 
@@ -369,9 +369,9 @@ html.tn-locked {
     flex: none;
     justify-items: center;
     align-content: center;
-    gap: 3px;
+    gap: 4px;
     min-height: 55px;
-    padding: 7px 3px;
+    padding: 8px 4px;
     border-radius: calc(16px * var(--radius-scale, 1));
     color: rgb(var(--gray-600));
     font-weight: 600;
@@ -422,7 +422,7 @@ html.tn-locked {
     inset-inline-end: 3px;
     min-width: 19px;
     height: 19px;
-    padding: 0 5px;
+    padding: 0 4px;
     border-radius: calc(99px * var(--radius-scale, 1));
     background: rgb(var(--brand-solid));
     color: rgb(var(--brand-ink));
@@ -504,10 +504,10 @@ html.tn-locked {
 .tn-search {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
     width: 236px;
     height: 42px;
-    padding: 0 10px 0 8px;
+    padding: 0 12px 0 8px;
     border-radius: calc(13px * var(--radius-scale, 1));
     border: 1px solid rgb(var(--gray-200));
     background: rgb(var(--gray-50) / 0.7);
@@ -543,7 +543,7 @@ html.tn-locked {
 .tn-kbd {
     display: inline-flex;
     align-items: center;
-    padding: 1px 6px;
+    padding: 4px 8px;
     border-radius: calc(6px * var(--radius-scale, 1));
     border: 1px solid rgb(var(--gray-200));
     background: rgb(var(--surface));
@@ -555,9 +555,9 @@ html.tn-locked {
 .tn-account {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
     height: 46px;
-    padding: 3px 3px 3px 10px;
+    padding: 4px 4px 4px 12px;
     border-radius: calc(15px * var(--radius-scale, 1));
     transition: background 0.2s;
 }
@@ -641,7 +641,7 @@ html.tn-locked {
     }
 
     .tn-account {
-        padding: 3px;
+        padding: 4px;
     }
 }
 
@@ -659,8 +659,8 @@ html.tn-locked {
     align-items: center;
     gap: 8px;
     height: 40px;
-    padding: 0 10px 0 12px;
-    margin-inline-end: 6px;
+    padding: 0 12px 0 12px;
+    margin-inline-end: 8px;
     border: 1px solid rgb(var(--gray-200));
     border-radius: calc(12px * var(--radius-scale, 1));
     background: rgb(var(--gray-50));
@@ -714,7 +714,7 @@ html.tn-locked {
 /* Solid or glass surfaces (Components/SurfaceToggle.jsx): a slim two-part switch beside the theme. */
 .tn-surface.gl-seg button {
     min-height: 32px;
-    padding-inline: 10px;
+    padding-inline: 12px;
     font-size: 12.5px;
 }
 
@@ -742,7 +742,7 @@ html.tn-locked {
     .tn-bar {
         grid-template-columns: minmax(0, 1fr) auto;
         border-radius: calc(18px * var(--radius-scale, 1));
-        padding-inline: 8px 6px;
+        padding-inline: 8px 8px;
     }
 
     .tn-brand img {
@@ -807,7 +807,7 @@ html.tn-locked {
 .tn-mega-content {
     position: absolute;
     top: 0;
-    right: 0;
+    inset-inline-start: 0;
     max-height: calc(100dvh - 32px);
     overflow-y: auto;
     animation: tn-mega-in 0.32s var(--tn-ease);
@@ -838,7 +838,7 @@ html.tn-locked {
     height: 100%;
     align-items: start;
     gap: 12px;
-    padding: 9px 10px;
+    padding: 8px 12px;
     border-radius: calc(15px * var(--radius-scale, 1));
     transition: background 0.18s;
 }
@@ -949,7 +949,7 @@ html.tn-locked {
 .tn-mega-link .tn-badge {
     min-width: 22px;
     height: 22px;
-    padding: 0 7px;
+    padding: 0 8px;
     border-radius: calc(99px * var(--radius-scale, 1));
     background: rgb(var(--brand-solid));
     color: rgb(var(--brand-ink));
@@ -960,8 +960,8 @@ html.tn-locked {
 .tn-feature {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 14px;
+    gap: 12px;
+    padding: 16px;
     border: 1px solid var(--gl-line);
     border-radius: calc(18px * var(--radius-scale, 1));
     background-color: color-mix(in srgb, rgb(var(--panel-bg)) 95%, rgb(var(--gl-brand)));
@@ -1027,10 +1027,10 @@ html.tn-locked {
 .tn-menu-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
     min-height: 44px;
-    padding: 8px 10px;
+    padding: 8px 12px;
     border-radius: calc(12px * var(--radius-scale, 1));
     text-align: start;
     font-size: 15px;
@@ -1061,7 +1061,7 @@ html.tn-locked {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    gap: 4px;
     height: 34px;
     border-radius: calc(9px * var(--radius-scale, 1));
     font-size: 13px;
@@ -1085,7 +1085,7 @@ html.tn-locked {
     display: flex;
     gap: 12px;
     width: 100%;
-    padding: 11px 12px;
+    padding: 12px 12px;
     border-radius: calc(14px * var(--radius-scale, 1));
     text-align: start;
     transition: background 0.15s;
@@ -1121,7 +1121,7 @@ html.tn-locked {
     height: 8px;
     border-radius: 50%;
     background: rgb(var(--brand-500));
-    margin-top: 7px;
+    margin-top: 8px;
     flex: none;
 }
 
@@ -1154,7 +1154,7 @@ html.tn-locked {
     align-items: center;
     gap: 12px;
     width: 100%;
-    padding: 9px 10px;
+    padding: 8px 12px;
     border-radius: calc(13px * var(--radius-scale, 1));
     text-align: start;
     font-size: 15px;
@@ -1192,7 +1192,7 @@ html.tn-locked {
     background: rgb(var(--brand-500) / 0.15);
     color: inherit;
     border-radius: calc(4px * var(--radius-scale, 1));
-    padding: 0 1px;
+    padding: 0 4px;
 }
 
 .tn-palette-item .tn-enter {
@@ -1222,7 +1222,7 @@ html.tn-locked {
     position: absolute;
     z-index: 1;
     inset-block: 0;
-    right: 0;
+    inset-inline-start: 0;
     width: min(88vw, 380px);
     display: flex;
     flex-direction: column;
@@ -1254,7 +1254,7 @@ html.tn-locked {
 .tn-drawer-group {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
     min-height: 48px;
     padding: 0 12px;
@@ -1317,7 +1317,7 @@ html.tn-locked {
 .tn-drawer-link {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     min-height: 44px;
     padding: 0 12px;
     border-radius: calc(12px * var(--radius-scale, 1));
@@ -1427,7 +1427,7 @@ html.tn-locked {
 .tn-subnav a .tn-badge {
     min-width: 19px;
     height: 19px;
-    padding: 0 5px;
+    padding: 0 4px;
     border-radius: calc(99px * var(--radius-scale, 1));
     background: rgb(var(--brand-solid));
     color: rgb(var(--brand-ink));
@@ -1634,8 +1634,8 @@ html.tn-locked {
         inset-block: 0;
         inset-inline-start: 0;
         align-items: stretch;
-        gap: 2px;
-        padding: 0 0 14px;
+        gap: 4px;
+        padding: 0 0 12px;
         border: 0;
         border-inline-end: 1px solid var(--tn-line);
         border-radius: 0;
@@ -1682,7 +1682,7 @@ html.tn-locked {
     justify-content: center;
     width: auto;
     height: 104px;
-    margin: 0 0 6px;
+    margin: 0 0 8px;
     padding-inline: 12px;
     border-bottom: 1px solid transparent;
     border-radius: 0;
@@ -1698,7 +1698,7 @@ html.tn-locked {
 
 :root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-side-logo {
     justify-content: flex-start;
-    padding-inline: 22px;
+    padding-inline: 24px;
 }
 
 :root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-side-logo :is(img, svg) {
@@ -1762,8 +1762,8 @@ html.tn-locked {
 
 /* The sections: 42px pills; a soft fill under the hovered one, the open one on the page's second surface with the company's line at the screen's edge. */
 :root[data-ui-navigation] .tn-sections {
-    gap: 2px;
-    padding: 2px var(--tn-side-inset);
+    gap: 4px;
+    padding: 4px var(--tn-side-inset);
     overflow-x: hidden;
 }
 
@@ -1840,7 +1840,7 @@ html.tn-locked {
 
 :root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-section {
     justify-content: flex-start;
-    padding: 0 13px;
+    padding: 0 12px;
 }
 
 :root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) :is(.tn-section-full, .tn-section-label) {
@@ -1860,7 +1860,7 @@ html.tn-locked {
 :root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-side-heading {
     display: block;
     flex: none;
-    padding: 12px 13px 4px;
+    padding: 12px 12px 4px;
     color: rgb(var(--panel-muted));
     font-size: 11.5px;
     font-weight: 600;
@@ -1891,7 +1891,7 @@ html.tn-locked {
     min-width: 22px;
     height: 22px;
     margin-inline-start: auto;
-    padding: 0 7px;
+    padding: 0 8px;
     border-radius: 999px;
     background: rgb(var(--panel-tile));
     color: rgb(var(--panel-ink));
@@ -1904,9 +1904,9 @@ html.tn-locked {
     display: flex;
     flex: none;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
     margin-top: auto;
-    padding: 14px var(--tn-side-inset) 0;
+    padding: 12px var(--tn-side-inset) 0;
 }
 
 :root[data-ui-navigation] .tn-side-foot form {
@@ -1923,7 +1923,7 @@ html.tn-locked {
     align-items: center;
     gap: 12px;
     margin-bottom: 4px;
-    padding: 10px 10px 12px;
+    padding: 8px 12px 12px;
     border-bottom: 1px solid var(--tn-line, rgb(var(--gray-200)));
 }
 
@@ -1961,7 +1961,7 @@ html.tn-locked {
 .tn-fly-list {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
 }
 
 :root[data-ui-navigation] .tn-fly .tn-mega-link,
@@ -1970,7 +1970,7 @@ html.tn-locked {
     grid-template-columns: 36px minmax(0, 1fr) auto;
     align-items: center;
     gap: 12px;
-    padding: 9px 10px;
+    padding: 8px 12px;
     border-radius: 14px;
     background: none;
     box-shadow: none;
@@ -2026,7 +2026,7 @@ html.tn-locked {
     place-items: center;
     min-width: 22px;
     height: 22px;
-    padding: 0 7px;
+    padding: 0 8px;
     border-radius: 999px;
     background: rgb(var(--panel-tile));
     color: rgb(var(--panel-ink));
@@ -2037,9 +2037,9 @@ html.tn-locked {
 .tn-fly-foot {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     margin-top: 4px;
-    padding: 10px 8px 4px;
+    padding: 8px 8px 4px;
     border-top: 1px solid var(--tn-line, rgb(var(--gray-200)));
     color: rgb(var(--panel-muted));
     font-size: 12px;
@@ -2107,7 +2107,7 @@ html.tn-locked {
     border: 0;
     border-radius: 999px;
     background: rgb(var(--group-fill));
-    padding-inline: 14px 12px;
+    padding-inline: 16px 12px;
 }
 
 /* A section's pages: frosted glass that floats clearly above the page. */
@@ -2166,7 +2166,7 @@ html.tn-locked {
 }
 
 :root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-section .tn-badge + .tn-section-chev {
-    margin-inline-start: 6px;
+    margin-inline-start: 8px;
 }
 
 :root[data-ui-navigation] .tn-section:is(:hover, [aria-expanded='true']) .tn-section-chev {
@@ -2177,7 +2177,7 @@ html.tn-locked {
 /* The menu's mode button, at the top bar's start (desktop only). */
 :root[data-ui-navigation] .tn-side-mode {
     flex: none;
-    margin-inline-end: 10px;
+    margin-inline-end: 12px;
 }
 
 /* The edge strip that brings the hidden bar back: only while it is hidden. */
@@ -2294,7 +2294,7 @@ html.tn-locked {
 :root[data-ui-navigation]:is([data-side='wide'], :has(.tn-side:hover), :has(.tn-side:focus-within)) .tn-side .tn-section .tn-badge {
     min-width: 22px;
     height: 20px;
-    padding: 0 6px;
+    padding: 0 8px;
     background: var(--ma-brand-soft);
     color: var(--ma-brand);
     font-size: 12px;
@@ -2331,7 +2331,7 @@ html.tn-locked {
     gap: 8px;
     height: 42px;
     margin-inline-end: 0;
-    padding-inline: 14px 12px;
+    padding-inline: 16px 12px;
     border: 0;
     border-radius: 14px;
     background: var(--ma-panel);
@@ -2364,7 +2364,7 @@ html.tn-locked {
 @media (max-width: 1023px) {
     :root[data-ui-navigation] .tn-header .tn-bar .tn-branch-chip {
         height: 38px;
-        padding-inline: 10px 8px;
+        padding-inline: 12px 8px;
         font-size: 13.5px;
     }
 
@@ -2377,8 +2377,8 @@ html.tn-locked {
 .tn-popover .tn-account-surface.gl-seg {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2px;
-    padding: 3px;
+    gap: 4px;
+    padding: 4px;
     border: 0;
     border-radius: 12px;
     background: var(--ma-tile);
@@ -2403,7 +2403,7 @@ html.tn-locked {
     :root[data-ui-navigation] .tn-header .tn-bar .tn-branch-chip {
         gap: 4px;
         height: 36px;
-        padding-inline: 8px 6px;
+        padding-inline: 8px 8px;
         border-radius: 12px;
         font-size: 13px;
     }
@@ -2428,7 +2428,7 @@ html.tn-locked {
     gap: 8px;
     height: 42px;
     min-width: 168px;
-    padding-inline: 14px 10px;
+    padding-inline: 16px 12px;
     border: 0;
     border-radius: 13px;
     background: var(--ma-tile);
@@ -2457,7 +2457,7 @@ html.tn-locked {
 .tn-quick-pop,
 .tn-appearance {
     min-width: 240px;
-    padding: 6px;
+    padding: 8px;
     border-radius: 18px;
     background: var(--ma-pop);
     -webkit-backdrop-filter: blur(30px) saturate(1.5);
@@ -2466,7 +2466,7 @@ html.tn-locked {
 }
 
 .tn-branch-pop .list-box-item {
-    gap: 10px;
+    gap: 12px;
     min-height: 44px;
     padding-inline: 12px;
     border-radius: 12px;
@@ -2486,14 +2486,14 @@ html.tn-locked {
 
 .tn-quick.button {
     height: 42px;
-    gap: 6px;
-    padding-inline: 14px;
+    gap: 8px;
+    padding-inline: 16px;
 }
 
 .tn-quick-pop .menu-item {
     gap: 12px;
     min-height: 54px;
-    padding-inline: 10px;
+    padding-inline: 12px;
     border-radius: 12px;
     color: var(--ma-ink);
 }
@@ -2510,7 +2510,7 @@ html.tn-locked {
 
 .tn-appearance {
     width: 300px;
-    padding: 14px;
+    padding: 16px;
 }
 
 .tn-appearance [role='dialog'] {
@@ -2520,7 +2520,7 @@ html.tn-locked {
 }
 
 .tn-appearance-title {
-    margin: 4px 2px 0;
+    margin: 4px 0 0;
     color: var(--ma-muted);
     font-size: 12.5px;
     font-weight: 800;
@@ -2532,13 +2532,13 @@ html.tn-locked {
 
 .tn-appearance-seg .gl-seg-item {
     flex: 1;
-    gap: 6px;
+    gap: 8px;
 }
 
 .tn-appearance-more {
     display: grid;
-    gap: 2px;
-    margin-top: 6px;
+    gap: 4px;
+    margin-top: 8px;
     padding-top: 8px;
     border-top: 1px solid var(--ma-line);
 }
@@ -2546,7 +2546,7 @@ html.tn-locked {
 .tn-appearance-more .button {
     justify-content: flex-start;
     width: 100%;
-    gap: 10px;
+    gap: 12px;
 }
 
 @media (max-width: 760px) {

@@ -2,6 +2,14 @@ const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 
+/** The side an element's text lines up on, start and end read through its own direction (runs in the page). */
+const textSide = (element) => {
+    const { textAlign, direction } = getComputedStyle(element);
+    if (textAlign === 'start') return direction === 'rtl' ? 'right' : 'left';
+    if (textAlign === 'end') return direction === 'rtl' ? 'left' : 'right';
+    return textAlign;
+};
+
 (async () => {
     const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } : {}) });
     const page = await browser.newPage({ baseURL: process.env.BASE_URL, viewport: { width: 1440, height: 900 }, locale: 'ar' });
@@ -102,8 +110,8 @@ const { readFileSync } = require('node:fs');
         assert.match(await usd.locator('td').nth(2).innerText(), /10\.00 USD/);
         assert.match(await usd.locator('td').nth(3).innerText(), /3\.70/);
         assert.match(await usd.locator('td').nth(4).innerText(), /37\.00/);
-        assert.equal(await usd.locator('td').nth(2).evaluate((cell) => getComputedStyle(cell).textAlign), 'right');
-        assert.equal(await usd.locator('..').locator('..').locator('th').nth(2).evaluate((cell) => getComputedStyle(cell).textAlign), 'right');
+        assert.equal(await usd.locator('td').nth(2).evaluate(textSide), 'right');
+        assert.equal(await usd.locator('..').locator('..').locator('th').nth(2).evaluate(textSide), 'right');
         await snap('collections-original-currencies');
         await page.goto(`/reports?branch=all&section=statement&subscription=${fixture.credited}`);
         const creditSummary = page.getByRole('region', { name: 'ملخص كشف الحساب', exact: true });
@@ -119,8 +127,11 @@ const { readFileSync } = require('node:fs');
         assert.ok(Math.abs(buttons[0].height - buttons[1].height) <= 1 && Math.abs(buttons[0].top - buttons[1].top) <= 1, JSON.stringify(buttons));
         const balances = await table.locator('tbody td:last-child bdi').allTextContents();
         assert.ok(balances.some((value) => value.includes('-50')), JSON.stringify(balances));
-        const alignment = await table.evaluate((element) => [3, 4, 5].map((index) => [getComputedStyle(element.tHead.rows[0].cells[index]).textAlign, getComputedStyle(element.tBodies[0].rows[1].cells[index]).textAlign]));
-        assert.ok(alignment.every(([header, cell]) => header === 'right' && ['right', 'end'].includes(cell)), JSON.stringify(alignment));
+        const alignment = await Promise.all([3, 4, 5].map(async (index) => [
+            await table.locator('thead tr').first().locator('th, td').nth(index).evaluate(textSide),
+            await table.locator('tbody tr').nth(1).locator('th, td').nth(index).evaluate(textSide),
+        ]));
+        assert.ok(alignment.every(([header, cell]) => header === 'right' && cell === 'right'), JSON.stringify(alignment));
         await snap('statement-signed-desktop');
         await page.setViewportSize({ width: 390, height: 844 });
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1));

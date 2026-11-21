@@ -152,11 +152,11 @@ export default function Index({ debtors, summary, collection = null, buckets, sc
                 <Figure tone="owe" label="أكثر من 90 يومًا" value={formatMoney(overdue.amount)} unit="₪" hint={`${overdue.share}% من المستحق، ${formatNumber(overdue.count)} مشترك`} />
             </div>
 
-            <div className="mt-5">
+            <div className="mt-6">
                 <AgeBreakdown buckets={buckets} summary={summary} />
             </div>
 
-            <div className="mt-5">
+            <div className="mt-6">
                 <DataTableToolbar
                     search={search}
                     onSearchChange={setSearch}

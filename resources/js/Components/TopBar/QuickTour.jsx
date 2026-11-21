@@ -143,7 +143,7 @@ export default function QuickTour({ open, onClose, searchesSubscribers }) {
         <div dir="rtl">
             <div key={`spot-${index}`} className="tn-spot" style={{ left: box.left - pad, top: box.top - pad, width: box.width + pad * 2, height: box.height + pad * 2 }} />
             <div className="fixed inset-0 z-89" role="presentation" onClick={onClose} />
-            <div key={`card-${index}`} ref={cardRef} className="tn-tour-card tn-lift rounded-[22px] bg-graphite-gradient p-5 text-white ring-1 ring-white/10" role="dialog" aria-label="جولة سريعة">
+            <div key={`card-${index}`} ref={cardRef} className="tn-tour-card tn-lift rounded-[22px] bg-graphite-gradient p-4 text-white ring-1 ring-white/10" role="dialog" aria-label="جولة سريعة">
                 <div className="mb-1 text-[12px] font-bold text-[rgb(var(--brand-tint))]">{index + 1} من {steps.length}</div>
                 <b className="block text-[17px]">{title}</b>
                 <p className="mt-1 text-[14px] leading-7 text-[rgb(var(--silver-200))]">{text}</p>

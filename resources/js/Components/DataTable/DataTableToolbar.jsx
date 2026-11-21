@@ -65,7 +65,7 @@ export default function DataTableToolbar({
                             }
                         }}
                         placeholder={placeholder}
-                        className="block w-full py-2.5 pe-10 ps-10 text-sm"
+                        className="block w-full py-2 field-room-end field-room-start text-sm"
                     />
                     <span className="kbd pointer-events-none absolute inset-y-0 inset-e-3 my-auto h-fit">/</span>
                 </div>
@@ -73,7 +73,7 @@ export default function DataTableToolbar({
 
             <div className="data-table-tools flex flex-wrap items-center gap-2">
                 {typeof total === 'number' && (
-                    <span className="inline-flex items-center gap-1.5 rounded-control border border-gray-100 bg-gray-50 px-3 py-1.5 text-sm text-gray-500">
+                    <span className="inline-flex items-center gap-2 rounded-control border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-gray-500">
                         <b className="font-display font-bold text-gray-900">{total.toLocaleString('en')}</b>
                         نتيجة
                     </span>
@@ -82,7 +82,7 @@ export default function DataTableToolbar({
                 <div
                     role="group"
                     aria-label="عدد الصفوف في الصفحة"
-                    className="inline-flex gap-0.5 rounded-control border border-gray-100 bg-gray-50 p-[3px]"
+                    className="inline-flex gap-1 rounded-control border border-gray-100 bg-gray-50 p-1"
                 >
                     {PAGE_SIZES.map((size) => (
                         <Button
@@ -91,7 +91,7 @@ export default function DataTableToolbar({
                             size="sm"
                             aria-pressed={perPage === size}
                             onPress={() => onPerPageChange(size)}
-                            className={`rounded-lg px-2.5 py-1 font-display text-xs font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${
+                            className={`rounded-lg px-3 py-1 font-display text-xs font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${
                                 perPage === size ? 'bg-surface text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-900'
                             }`}
                         >

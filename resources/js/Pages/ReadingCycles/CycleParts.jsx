@@ -16,7 +16,7 @@ export function AllocationReport({ result, onConfirmDownloaded, onClose }) {
         <section
             role="status"
             aria-live="polite"
-            className={`mb-5 rounded-card border p-4 ${result.conflicts.length ? 'border-amber-500/30 bg-amber-500/5' : 'border-emerald-500/30 bg-emerald-500/5'}`}
+            className={`mb-6 rounded-card border p-4 ${result.conflicts.length ? 'border-amber-500/30 bg-amber-500/5' : 'border-emerald-500/30 bg-emerald-500/5'}`}
         >
             <div className="flex items-start justify-between gap-3">
                 <p className="font-bold text-gray-900">
@@ -24,7 +24,7 @@ export function AllocationReport({ result, onConfirmDownloaded, onClose }) {
                     {formatNumber(result.moved)} طبلون
                     {result.conflicts.length > 0 && <>، راجع الطبلونات التي تعذّر تحديثها أدناه</>}
                 </p>
-                <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-1.5 text-gray-500 hover:bg-gray-100">
+                <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-2 text-gray-500 hover:bg-gray-100">
                     <Icon name="close" className="h-4 w-4" />
                 </Button>
             </div>
@@ -41,7 +41,7 @@ export function AllocationReport({ result, onConfirmDownloaded, onClose }) {
             {needsConfirmation && onConfirmDownloaded && (
                 <Button data-raw="" variant="ghost"
                     onClick={onConfirmDownloaded}
-                    className="mt-3 inline-flex items-center gap-1.5 rounded-control bg-amber-600 px-3 py-2 text-sm font-bold text-white"
+                    className="mt-3 inline-flex items-center gap-2 rounded-control bg-amber-600 px-3 py-2 text-sm font-bold text-white"
                 >
                     <Icon name="warning" className="h-4 w-4" />
                     أؤكد نقل الطبلونات التي نزّلها القارئ (قراءاته غير المرفوعة تُحفظ للمراجعة)
@@ -63,7 +63,7 @@ export function ReadingDayModal({ cycle, onClose }) {
 
     return (
         <Modal show onClose={onClose} maxWidth="md">
-            <form onSubmit={submit} className="space-y-4 p-7" aria-labelledby="reading-day-title">
+            <form onSubmit={submit} className="space-y-4 p-6" aria-labelledby="reading-day-title">
                 <h3 id="reading-day-title" className="text-lg font-bold text-gray-900">
                     تغيير يوم القراءة لهذه الدورة
                 </h3>

@@ -62,7 +62,7 @@ export default function DiscountModal({
                   notes: correcting.recorded.notes,
                   ...EMPTY_CORRECTION,
               }
-            : { kind: 'once', method: 'shekel', value: '', segment: '', notes: '' },
+            : { operation_token: crypto.randomUUID(), kind: 'once', method: 'shekel', value: '', segment: '', notes: '' },
     );
     const { data, setData, errors } = form;
     const [discarding, setDiscarding] = useState(false);
@@ -175,6 +175,12 @@ export default function DiscountModal({
             onSuccess: () => {
                 setReceipt(recorded);
                 form.resetAndClearErrors();
+                // A new key for the next discount; a retry of this one kept the old key and got this discount back.
+                if (!correcting) {
+                    const operationToken = crypto.randomUUID();
+                    form.setDefaults('operation_token', operationToken);
+                    form.setData('operation_token', operationToken);
+                }
             },
         };
 
@@ -285,6 +291,7 @@ export default function DiscountModal({
                                 />
                             )}
                             {!isStanding && <InputError message={errors.method} />}
+                            {!isStanding && <InputError message={errors.operation_token} />}
 
                             {isStanding ? (
                                 <DiscountValueStep

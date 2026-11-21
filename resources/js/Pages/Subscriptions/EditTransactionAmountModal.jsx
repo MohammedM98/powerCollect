@@ -27,7 +27,7 @@ export default function EditTransactionAmountModal({ onClose, subscription, bala
             icon="pencil"
             headerTone="amber"
             maxWidth="xl"
-            bodyClassName="space-y-5"
+            bodyClassName="space-y-6"
             action={{ submitLabel: 'تعديل', title: 'تعديل مبلغ الحركة؟', confirmLabel: 'نعم، عدّل', icon: 'pencil' }}
             saveConfirmMessage="سيُعدّل مبلغ آخر حركة في مكانه ويُعاد احتساب الرصيد بعدها."
         >

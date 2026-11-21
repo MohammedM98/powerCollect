@@ -5,7 +5,7 @@ import { PrimaryKey, SecondaryKey } from '@/Components/UI';
 /** The payment window's footer: what is still missing, the overpayment confirmation, and cancel and save. */
 export default function PaymentFooter({ correcting, currencyMark, data, form, inShekels, overpayment, referenceStatus, requestClose }) {
     return (
-        <div className="gl-dialog-foot flex shrink-0 items-center gap-3 px-5 py-4 sm:px-6">
+        <div className="gl-dialog-foot flex shrink-0 items-center gap-3 px-4 py-4 sm:px-6">
             <SecondaryKey onClick={requestClose} className="gl-lg">
                 إلغاء
             </SecondaryKey>

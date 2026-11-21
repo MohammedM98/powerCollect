@@ -56,8 +56,8 @@ export default function MeterBoxForm({ data, setData, errors, branches, canChoos
     }
 
     return (
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_260px]">
-            <div className="min-w-0 space-y-5">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px]">
+            <div className="min-w-0 space-y-6">
 
             <FormSection icon="grid" title="بيانات الطبلون" columns={2}>
                 <div className="flex items-start gap-3 sm:col-span-2">

@@ -390,6 +390,7 @@ class BranchOperationsSimulationTest extends TestCase
         $amounts = [mt_rand(5, 80), mt_rand(5, 80)];
 
         $this->submit('split transfer '.implode('+', $amounts).' on '.$parts->pluck('id')->implode(','), fn () => $this->actingAs($this->collector)->post(route('payments.split.store'), [
+            'operation_token' => (string) Str::uuid(),
             'total_amount' => (string) array_sum($amounts), 'bank_name' => self::TRANSFER_BANK, 'sender_name' => 'مرسل الحوالة المقسمة',
             'reference_number' => $this->newReference(), 'confirm_overpayment' => true,
             'parts' => $parts->values()->map(fn (Subscription $subscription, int $index): array => ['subscription_id' => $subscription->id, 'amount' => (string) $amounts[$index]])->all(),
@@ -409,6 +410,7 @@ class BranchOperationsSimulationTest extends TestCase
         ]);
 
         $this->submit("{$type} {$amount} on {$subscription->id}", fn () => $this->actingAs($this->head)->post(route('subscriptions.charges.store', $subscription), [
+            'operation_token' => (string) Str::uuid(),
             'type' => $type, 'amount' => $amount, 'notes' => 'تحميل المحاكاة',
         ]), mustSucceed: true);
     }
@@ -423,6 +425,7 @@ class BranchOperationsSimulationTest extends TestCase
         $value = $owed >= 1 ? (string) mt_rand(1, (int) min($owed, 40)) : '5';
 
         $this->submit("discount {$value} on {$subscription->id} owing {$owed}", fn () => $this->actingAs($this->head)->post(route('subscriptions.discounts.store', $subscription), [
+            'operation_token' => (string) Str::uuid(),
             'method' => 'shekel', 'value' => $value, 'notes' => 'خصم المحاكاة',
         ]), mustSucceed: $owed >= 1);
     }
@@ -437,6 +440,7 @@ class BranchOperationsSimulationTest extends TestCase
         $confirmed = $this->chance(50);
 
         $this->submit("clearing {$amount} on {$subscription->id} owing {$subscription->balance()}", fn () => $this->actingAs($this->head)->post(route('subscriptions.clearings.store', $subscription), [
+            'operation_token' => (string) Str::uuid(),
             'amount' => $amount, 'notes' => 'صيانة للشركة', 'confirm_over_balance' => $confirmed,
         ]), mustSucceed: $confirmed || (float) $amount <= $subscription->balance());
     }

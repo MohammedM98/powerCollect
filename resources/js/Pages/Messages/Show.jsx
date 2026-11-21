@@ -58,7 +58,7 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
         >
             <Head title={`${batch.kindLabel} — الرسائل`} />
 
-            <section className="mb-6 rounded-card border border-gray-100 bg-surface p-5 shadow-card">
+            <section className="mb-6 rounded-card border border-gray-100 bg-surface p-4 shadow-card">
                 <div className="mb-2 text-sm font-semibold text-gray-700">نص الرسالة</div>
                 <p className="whitespace-pre-line leading-7 text-gray-900">
                     <MessageText text={batch.body} />
@@ -68,7 +68,7 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
                 </div>
                 {isWhatsApp && batch.pending > 0 && (
                     <p role="note" className="mt-3 flex items-start gap-2 rounded-control bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-300">
-                        <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0" />
+                        <Icon name="info" className="mt-1 h-4 w-4 shrink-0" />
                         اضغط «إرسال واتساب» بجانب كل مشترك ليفتح المحادثة والرسالة مكتوبة، ثم اضغط إرسال في واتساب. تُسجَّل الرسالة مرسلة عند فتحها.
                     </p>
                 )}
@@ -127,7 +127,7 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
                                             onClick={() => openWhatsApp(message)}
                                             aria-label={`${message.status === 'sent' ? 'فتح المحادثة مجددًا مع' : 'إرسال عبر واتساب إلى'} ${message.subscriptionName ?? message.phone}`}
                                             title={message.status === 'sent' ? 'أُرسلت — افتح المحادثة مجددًا' : 'افتح واتساب والرسالة مكتوبة'}
-                                            className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-control px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
+                                            className={`inline-flex items-center gap-2 whitespace-nowrap rounded-control px-3 py-2 text-xs font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
                                                 message.status === 'sent'
                                                     ? 'border border-gray-200 text-gray-600 hover:text-gray-900'
                                                     : 'bg-emerald-600 text-white hover:bg-emerald-700'

@@ -320,7 +320,7 @@ class CompanySetupToAuditJourneyTest extends TestCase
 
         $this->actingAs($outsider)->get(route('subscriptions.statement', $salem))->assertForbidden();
         $this->actingAs($outsider)->post(route('subscriptions.payments.store', $salem), ['payment_token' => (string) Str::uuid(), 'amount' => '10', 'currency' => 'ILS', 'payment_method' => 'cash'])->assertForbidden();
-        $this->actingAs($outsider)->post(route('subscriptions.charges.store', $salem), ['type' => 'penalty', 'amount' => '5', 'notes' => 'تجربة'])->assertForbidden();
+        $this->actingAs($outsider)->post(route('subscriptions.charges.store', $salem), ['operation_token' => (string) Str::uuid(), 'type' => 'penalty', 'amount' => '5', 'notes' => 'تجربة'])->assertForbidden();
         $this->actingAs($outsider)->post(route('meter-readings.store'), ['subscription_id' => $salem->id, 'week_start' => '2026-10-16', 'current_reading' => 1100])->assertSessionHasErrors('subscription_id');
         $this->actingAs($outsider)->post(route('payments.cash-boxes.actions', ['action' => 'receive', 'record' => $cash->boxEntry->cash_box_id]), ['branch_id' => $company['branch']->id])->assertNotFound();
         $this->actingAs($outsider)->post(route('payments.cash-boxes.actions', ['action' => 'receive', 'record' => $cash->boxEntry->cash_box_id]), ['branch_id' => $otherBranch->id])->assertNotFound();

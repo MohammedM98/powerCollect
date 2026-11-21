@@ -45,7 +45,7 @@ export function BoxTypeChip({ type }) {
     const style = boxTypeStyles[type];
 
     return (
-        <span className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-semibold ${style.chip}`}>
+        <span className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-semibold ${style.chip}`}>
             <Icon name={style.icon} className="h-3.5 w-3.5" />
             {style.label}
         </span>
@@ -143,7 +143,7 @@ export function CashBoxAction({ box, onClose, onSuccess }) {
 
     return (
         <Modal show onClose={close} maxWidth="lg">
-            <form onSubmit={submit} className="space-y-5 p-6">
+            <form onSubmit={submit} className="space-y-6 p-6">
                 <div className="flex items-start justify-between gap-4">
                     <div>
                         <h3 className="text-xl font-bold text-gray-900">تأكيد تسليم صندوقي</h3>
@@ -186,19 +186,19 @@ export function BoxCard({ box, type, selected = false, onSelect }) {
     const others = box ? Object.keys(currencies).filter((currency) => currency !== 'ILS' && Number(box.totals?.[currency] ?? 0) !== 0) : [];
 
     return (
-        <article className={`flex flex-col gap-4 rounded-panel border bg-surface p-5 shadow-card transition ${selected ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-100'}`}>
+        <article className={`flex flex-col gap-4 rounded-panel border bg-surface p-4 shadow-card transition ${selected ? 'border-gray-900 ring-1 ring-gray-900' : 'border-gray-100'}`}>
             <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                     <BoxTypeIcon type={type} />
                     <div className="min-w-0">
                         <h3 className="font-bold text-gray-900">{boxTypes[type]}</h3>
-                        <p className="mt-0.5 text-xs text-gray-500">{box ? <>صندوق رقم <bdi dir="ltr" className="font-display">{box.number}</bdi></> : 'لا يوجد صندوق مفتوح'}</p>
+                        <p className="mt-1 text-xs text-gray-500">{box ? <>صندوق رقم <bdi dir="ltr" className="font-display">{box.number}</bdi></> : 'لا يوجد صندوق مفتوح'}</p>
                     </div>
                 </div>
                 <StatusPill tone={box ? 'blue' : 'gray'} label={box ? 'مفتوح' : 'لا حركات'} />
             </div>
             <div>
-                <p className="flex items-baseline gap-1.5">
+                <p className="flex items-baseline gap-2">
                     <span dir="ltr" className="font-display text-3xl font-bold text-gray-900">{formatMoney(box?.totals?.ILS ?? 0)}</span>
                     <span className="text-sm text-gray-500">₪</span>
                 </p>
@@ -283,7 +283,7 @@ export function CollectorDebts({ debts }) {
     if (!debts?.length) return null;
 
     return (
-        <section className="space-y-3 rounded-panel border border-red-500/20 bg-red-500/5 p-5" aria-labelledby="collector-debts">
+        <section className="space-y-3 rounded-panel border border-red-500/20 bg-red-500/5 p-4" aria-labelledby="collector-debts">
             <div>
                 <h3 id="collector-debts" className="font-bold text-gray-900">ديون عليك</h3>
                 <p className="mt-1 text-xs leading-6 text-gray-500">عجز في صناديقك قرّر الفرع تسجيله عليك. تسدّده للفرع، وهو يسجّل ما يستلمه منك.</p>
@@ -337,7 +337,7 @@ export function CollectorAuditNotes({ notes, onSaved }) {
     if (!notes?.length) return null;
 
     return (
-        <section className="space-y-3 rounded-panel border border-amber-500/25 bg-amber-500/5 p-5" aria-labelledby="collector-audit-notes">
+        <section className="space-y-3 rounded-panel border border-amber-500/25 bg-amber-500/5 p-4" aria-labelledby="collector-audit-notes">
             <h3 id="collector-audit-notes" className="font-bold text-gray-900">ملاحظات تدقيق تنتظر ردّك</h3>
             {notes.map((note) => (
                 <article key={note.id} className="space-y-3 border-t border-amber-500/15 pt-3">

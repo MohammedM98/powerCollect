@@ -38,7 +38,7 @@ export function FlowStatement({ flow }) {
                     </tr>
                     {flow.charges.map((line) => (
                         <tr key={line.type} className={row}>
-                            <td className={`${TD} text-gray-700`}><span className="me-1.5 text-emerald-600">+</span>{line.label}</td>
+                            <td className={`${TD} text-gray-700`}><span className="me-2 text-emerald-600">+</span>{line.label}</td>
                             <td className={`${NUM} text-gray-500`}>{line.count}</td>
                             <td className={NUM}>{reportMoney(line.total)}</td>
                         </tr>
@@ -50,7 +50,7 @@ export function FlowStatement({ flow }) {
                     </tr>
                     {flow.credits.map((line) => (
                         <tr key={line.type} className={row}>
-                            <td className={`${TD} text-gray-700`}><span className="me-1.5 text-brand-600">−</span>{line.label}</td>
+                            <td className={`${TD} text-gray-700`}><span className="me-2 text-brand-600">−</span>{line.label}</td>
                             <td className={`${NUM} text-gray-500`}>{line.count}</td>
                             <td className={NUM}>{reportMoney(line.total)}</td>
                         </tr>
@@ -61,7 +61,7 @@ export function FlowStatement({ flow }) {
                         <td className={NUM}>{reportMoney(flow.creditsTotal)}</td>
                     </tr>
                     <tr className={row}>
-                        <td className={`${TD} text-gray-700`}><span className="me-1.5 text-amber-600">±</span>الإلغاءات والقيود العكسية</td>
+                        <td className={`${TD} text-gray-700`}><span className="me-2 text-amber-600">±</span>الإلغاءات والقيود العكسية</td>
                         <td className={`${NUM} text-gray-500`}>{flow.corrections.count}</td>
                         <td className={`${NUM} ${cents(flow.corrections.total) !== 0 ? 'text-amber-700' : ''}`}>{reportMoney(flow.corrections.total)}</td>
                     </tr>
@@ -97,7 +97,7 @@ export function CollectionsBreakdown({ collections, compact = false }) {
                 <ul className="space-y-3">
                     {collections.accounts.map((account) => (
                         <li key={account.key}>
-                            <div className="mb-1.5 flex items-center justify-between gap-3 text-sm">
+                            <div className="mb-2 flex items-center justify-between gap-3 text-sm">
                                 <span className="flex items-center gap-2 font-semibold text-gray-800">
                                     <Icon name={account.key === 'cash' ? 'wallet' : 'bank'} className="h-4 w-4 text-gray-400" />
                                     {account.label}
@@ -333,7 +333,7 @@ export function Transactions({ transactions, kinds, filters, showDay, showBranch
                         <ListColumn id="credit" className={NUM_TH}>له</ListColumn>
                         <ListColumn id="recorder" className={TH}>سجّله</ListColumn>
                     </ListHeader>
-                    <ListBody empty={<div className="px-3 py-10 text-center text-gray-500">لا حركات في هذه الفترة.</div>}>
+                    <ListBody empty={<div className="px-3 py-8 text-center text-gray-500">لا حركات في هذه الفترة.</div>}>
                         {transactions.data.map((line) => (
                             <ListRow key={line.id} id={line.id} className={`border-t border-gray-100 align-top ${line.isCancelled ? 'text-gray-400 line-through decoration-gray-300' : ''}`}>
                                 <ListCell className={`${TD} whitespace-nowrap font-display text-gray-600`}>

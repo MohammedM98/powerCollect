@@ -11,8 +11,8 @@
 
 .ap-preset {
     display: grid;
-    gap: 6px;
-    padding: 10px 10px 12px;
+    gap: 8px;
+    padding: 8px 12px 12px;
     border: 1px solid rgb(var(--gray-200));
     border-radius: calc(18px * var(--radius-scale, 1));
     background: rgb(var(--surface));
@@ -45,9 +45,9 @@
 .ap-sketch {
     --sketch-radius: 6px;
     display: flex;
-    gap: 5px;
+    gap: 4px;
     height: 84px;
-    padding: 6px;
+    padding: 8px;
     border-radius: calc(12px * var(--radius-scale, 1));
     background: rgb(var(--gray-50));
 }
@@ -90,7 +90,7 @@
     display: grid;
     flex: 1;
     align-content: start;
-    gap: 5px;
+    gap: 4px;
 }
 
 .ap-sketch-button {
@@ -116,7 +116,7 @@
 
 .ap-sketch-rows {
     display: grid;
-    gap: 3px;
+    gap: 4px;
 }
 
 .ap-sketch-rows i {
@@ -144,7 +144,7 @@
 /* A logo slot. */
 .ap-logo {
     display: flex;
-    gap: 14px;
+    gap: 16px;
     align-items: flex-start;
 }
 
@@ -173,7 +173,7 @@
 .ap-logo-empty {
     display: grid;
     justify-items: center;
-    gap: 2px;
+    gap: 4px;
     font-size: 12px;
     line-height: 1.4;
     text-align: center;
@@ -184,7 +184,7 @@
 .ap-color {
     width: 44px;
     height: 40px;
-    padding: 3px;
+    padding: 4px;
     border: 1px solid rgb(var(--gray-200));
     border-radius: calc(12px * var(--radius-scale, 1));
     background: rgb(var(--surface));
@@ -217,7 +217,7 @@
 
 /* A printout's heading, on light paper in both themes (the silver and graphite that keep their shade). */
 .ap-paper {
-    padding: 16px 18px;
+    padding: 16px 16px;
     border-radius: calc(10px * var(--radius-scale, 1));
     background: rgb(var(--silver-50));
     color: rgb(var(--graphite-900));

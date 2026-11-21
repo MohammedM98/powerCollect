@@ -66,25 +66,25 @@ export default function BulkChangeModal({ field, selection, count, statusOptions
     return (
         <Modal show onClose={() => { if (!saving) onClose(); }} maxWidth="lg" panelClassName={field === 'meter_box_id' ? 'overflow-visible!' : ''}>
             <form onSubmit={apply} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-reach`}>
-                <div className="flex items-start gap-4 px-7 pb-2 pt-7">
+                <div className="flex items-start gap-4 px-6 pb-2 pt-6">
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600">
                         <Icon name={icon} strokeWidth={2} />
                     </span>
-                    <div className="min-w-0 pt-0.5">
+                    <div className="min-w-0 pt-1">
                         <h3 id={`${id}-title`} className="text-lg font-bold text-gray-900">
                             {title}
                         </h3>
-                        <p id={`${id}-reach`} className="mt-1.5 text-sm leading-6 text-gray-600">
+                        <p id={`${id}-reach`} className="mt-2 text-sm leading-6 text-gray-600">
                             يُطبَّق على <b className="text-gray-900">{count.toLocaleString('en')}</b> اشتراك
                             {selection.all ? ' (كل النتائج المطابقة للبحث والفلاتر)' : ' محدد'}. من كانت قيمته نفسها لا يتغير.
                         </p>
                     </div>
                 </div>
 
-                <div className="space-y-4 px-7 py-5">
+                <div className="space-y-4 px-6 py-4">
                     {selectionLabel && <p className="rounded-control border border-brand-500/15 bg-brand-500/5 px-4 py-3 text-sm text-gray-700">{selectionLabel}</p>}
                     {reviewing ? (
-                        <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+                        <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
                             <h4 className="text-base font-bold text-gray-900">مراجعة التعديل</h4>
                             <p className="mt-3 text-base leading-8 text-gray-700">{field === 'meter_box_id' ? `الطبلون الجديد: ${selectedBox?.label}` : field === 'minimum_charge' ? mode === 'amount' ? `الحد الأدنى الأسبوعي الجديد: ${value} شيكل` : 'الحد الأدنى الجديد: حد القاطع الخاص بكل اشتراك' : `الحالة الجديدة: ${statusOptions.find((option) => option.value === value)?.label}`}</p>
                             {field === 'meter_box_id' && <p className="mt-1 text-sm text-gray-600">{selectedBox?.hint}</p>}
@@ -110,7 +110,7 @@ export default function BulkChangeModal({ field, selection, count, statusOptions
                             <ChoiceChips options={MINIMUM_MODES} value={mode} onChange={setMode} label="طريقة تحديد الحد الأدنى" />
                             {mode === 'amount' ? (
                                 <div>
-                                    <label htmlFor={`${id}-value`} className="mb-1.5 block text-sm font-semibold text-gray-700">
+                                    <label htmlFor={`${id}-value`} className="mb-2 block text-sm font-semibold text-gray-700">
                                         الحد الأدنى الأسبوعي الجديد (شيكل)
                                     </label>
                                     <Input
@@ -130,8 +130,8 @@ export default function BulkChangeModal({ field, selection, count, statusOptions
                                     يأخذ كل مشترك الحد الأدنى لقاطعه. من ليس له قاطع لا يتغير.
                                 </p>
                             )}
-                            <p className="flex items-start gap-1.5 text-xs text-gray-500">
-                                <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0" />
+                            <p className="flex items-start gap-2 text-xs text-gray-500">
+                                <Icon name="info" className="mt-1 h-4 w-4 shrink-0" />
                                 يسري على القراءات القادمة فقط؛ القراءات المسجلة تبقى كما هي.
                             </p>
                         </>
@@ -147,7 +147,7 @@ export default function BulkChangeModal({ field, selection, count, statusOptions
                     <InputError message={errors.expected_count} />
                 </div>
 
-                <div className="flex flex-wrap items-center justify-end gap-3 rounded-b-panel border-t border-gray-100 bg-gray-50 px-7 py-4">
+                <div className="flex flex-wrap items-center justify-end gap-3 rounded-b-panel border-t border-gray-100 bg-gray-50 px-6 py-4">
                     <SecondaryKey disabled={saving} onClick={onClose}>إلغاء</SecondaryKey>
                     {reviewing && <SecondaryKey disabled={saving} onClick={() => setReviewing(false)}>تعديل القيمة</SecondaryKey>}
                     <PrimaryKey type="submit" disabled={saving || !validValue || (needsValue && value === '')} aria-busy={saving}>

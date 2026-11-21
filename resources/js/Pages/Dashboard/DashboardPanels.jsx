@@ -54,7 +54,7 @@ export function LatestPayments({ payments, latestPayments, period, search, onSea
                                 {scope.company && <ListCell>{payment.branchName ?? '—'}</ListCell>}
                                 <ListCell>{payment.recordedBy ?? '—'}</ListCell>
                                 <ListCell>
-                                    <span className="inline-flex items-center gap-1.5">
+                                    <span className="inline-flex items-center gap-2">
                                         <Icon name={payment.isCash ? 'banknotes' : 'bank'} className="h-4 w-4" />
                                         {payment.isCash ? 'نقدي' : `حوالة${payment.bankName ? `، ${payment.bankName}` : ''}`}
                                     </span>

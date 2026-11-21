@@ -74,7 +74,7 @@ export function FinancialBoxStatus({ box }) {
 export function FinancialBoxAmount({ box, large = false }) {
     const totals = financialBoxTotals(box);
     const others = foreignAmounts(totals);
-    return <><p className="flex flex-wrap items-baseline gap-x-1.5"><b dir="ltr" className={`font-display text-gray-900 ${large ? 'text-[1.75rem] leading-tight' : 'text-[1.0625rem]'}`}>{formatMoney(totals.ILS)}</b><span className={`${large ? 'text-sm' : 'text-[13px]'} text-gray-600`}>شيكل</span></p><p className={`${large ? 'min-h-[1.4rem]' : ''} font-display text-[13px] text-gray-600`}>{others ? `و${others}` : ''}</p></>;
+    return <><p className="flex flex-wrap items-baseline gap-x-2"><b dir="ltr" className={`font-display text-gray-900 ${large ? 'text-[1.75rem] leading-tight' : 'text-[1.0625rem]'}`}>{formatMoney(totals.ILS)}</b><span className={`${large ? 'text-sm' : 'text-[13px]'} text-gray-600`}>شيكل</span></p><p className={`${large ? 'min-h-[1.4rem]' : ''} font-display text-[13px] text-gray-600`}>{others ? `و${others}` : ''}</p></>;
 }
 
 export function FinancialBoxEntries({ box, card = false }) {
@@ -99,7 +99,7 @@ export function FinancialBoxDates({ box }) {
 
 /** One moment in a box's life, with who did it: opened or closed. */
 function TimesLine({ icon, tone, label, at, by }) {
-    return <li className="flex items-start gap-1.5 leading-5"><Icon name={icon} className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${tone}`} /><span className="min-w-0"><span className="text-gray-500">{label}</span> <b className="whitespace-nowrap font-semibold text-gray-800">{dateTimeShort(at)}</b>{by && <span className="block text-xs text-gray-500">{by}</span>}</span></li>;
+    return <li className="flex items-start gap-2 leading-5"><Icon name={icon} className={`mt-1 h-3.5 w-3.5 shrink-0 ${tone}`} /><span className="min-w-0"><span className="text-gray-500">{label}</span> <b className="whitespace-nowrap font-semibold text-gray-800">{dateTimeShort(at)}</b>{by && <span className="block text-xs text-gray-500">{by}</span>}</span></li>;
 }
 
 /** When the box was opened and closed, and who closed it. */
@@ -108,7 +108,7 @@ export function FinancialBoxTimes({ box }) {
 
     return <ul className="space-y-1 text-[13px]">
         <TimesLine icon="clock" tone="text-emerald-600 dark:text-emerald-400" label="فُتح" at={box.opened_at} />
-        {closed ? <TimesLine icon="lock" tone="text-amber-600 dark:text-amber-400" label="أُغلق" at={box.closedAt ?? box.closed_at} by={box.closedBy} /> : <li className="flex items-center gap-1.5 text-gray-500"><Icon name="lock" className="h-3.5 w-3.5" />لم يُغلق بعد</li>}
+        {closed ? <TimesLine icon="lock" tone="text-amber-600 dark:text-amber-400" label="أُغلق" at={box.closedAt ?? box.closed_at} by={box.closedBy} /> : <li className="flex items-center gap-2 text-gray-500"><Icon name="lock" className="h-3.5 w-3.5" />لم يُغلق بعد</li>}
         {box.audit?.audited_at && <TimesLine icon="check" tone="text-emerald-600 dark:text-emerald-400" label="اعتُمد التدقيق" at={box.audit.audited_at} by={box.audit.auditor?.name} />}
     </ul>;
 }

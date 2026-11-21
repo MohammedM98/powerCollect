@@ -35,7 +35,7 @@ export default function DistributionTable({ boxes, allBoxes = boxes, readers, se
                     <ListColumn id="status">حالة التوزيع</ListColumn>
                     <ListColumn id="progress">الإنجاز</ListColumn>
                 </ListHeader>
-                <ListBody empty={<div className="py-12 text-center text-gray-500">لا توجد طبلونات مطابقة. غيّر البحث أو المنطقة.</div>}>
+                <ListBody empty={<div className="py-8 text-center text-gray-500">لا توجد طبلونات مطابقة. غيّر البحث أو المنطقة.</div>}>
                     {[...groups].flatMap(([id, group]) => {
                         const matchingArea = allBoxes.filter((box) => String(box.subAreaId ?? 'none') === String(id));
                         return [

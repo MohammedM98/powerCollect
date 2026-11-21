@@ -140,7 +140,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                     }
                 }}
                 role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} className="flex max-h-[92vh] flex-col">
-                <div className="flex items-start gap-4 border-b border-gray-100 px-7 py-5">
+                <div className="flex items-start gap-4 border-b border-gray-100 px-6 py-4">
                     <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${meta.tone}`}>
                         <Icon name={meta.icon} strokeWidth={2} />
                     </span>
@@ -160,7 +160,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                     </div>
                 </div>
 
-                <div className="flex-1 space-y-5 overflow-y-auto px-7 py-5">
+                <div className="flex-1 space-y-6 overflow-y-auto px-6 py-4">
                     {failed && <p className="text-sm text-brand-600">تعذّر تحميل المشتركين؛ أغلق النافذة وحاول مرة أخرى.</p>}
                     {preview?.tooMany && (
                         <p className="rounded-control bg-amber-500/10 px-3 py-2 text-sm text-amber-800">
@@ -199,7 +199,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                                                     {action === 'confirm' && (
                                                         <ListCell className="whitespace-nowrap px-3 py-2 font-semibold">
                                                             {canChangeFee && !why ? (
-                                                                <span className="flex items-center gap-1.5">
+                                                                <span className="flex items-center gap-2">
                                                                     <Input
                                                                         type="number"
                                                                         min={0}
@@ -229,16 +229,16 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                     {preview && action === 'reschedule' && (
                         <div className="grid gap-4 sm:grid-cols-2">
                             <div>
-                                <label htmlFor={`${id}-date`} className="mb-1.5 block text-sm font-semibold text-gray-700">موعد القطع الجديد</label>
+                                <label htmlFor={`${id}-date`} className="mb-2 block text-sm font-semibold text-gray-700">موعد القطع الجديد</label>
                                 <DateInput id={`${id}-date`} name="scheduled_for" min={today} value={date} onChange={setDate} required />
                                 <InputError message={errors.scheduled_for} className="mt-1" />
                             </div>
                             <div>
-                                <label htmlFor={`${id}-reason`} className="mb-1.5 block text-sm font-semibold text-gray-700">سبب التمديد (اختياري)</label>
+                                <label htmlFor={`${id}-reason`} className="mb-2 block text-sm font-semibold text-gray-700">سبب التمديد (اختياري)</label>
                                 <Input id={`${id}-reason`} type="text" value={reason} onChange={(event) => setReason(event.target.value)} className="block w-full text-sm" maxLength={1000} />
                             </div>
-                            <p className="flex items-start gap-1.5 text-xs text-gray-500 sm:col-span-2">
-                                <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0" />
+                            <p className="flex items-start gap-2 text-xs text-gray-500 sm:col-span-2">
+                                <Icon name="info" className="mt-1 h-4 w-4 shrink-0" />
                                 يُسجَّل كل تمديد بالموعد القديم والجديد. لا تُرسل أي رسالة للمشتركين.
                             </p>
                         </div>
@@ -246,7 +246,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
 
                     {preview && action === 'remove' && (
                         <div>
-                            <label htmlFor={`${id}-reason`} className="mb-1.5 block text-sm font-semibold text-gray-700">سبب الإزالة (اختياري)</label>
+                            <label htmlFor={`${id}-reason`} className="mb-2 block text-sm font-semibold text-gray-700">سبب الإزالة (اختياري)</label>
                             <Input id={`${id}-reason`} type="text" value={reason} onChange={(event) => setReason(event.target.value)} className="block w-full text-sm" maxLength={1000} />
                             <p className="mt-2 text-xs text-gray-500">يبقى سجلهم في القائمة، ويمكن إدراجهم من جديد لاحقًا.</p>
                         </div>
@@ -268,12 +268,12 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                                 </div>
                             )}
                             <div>
-                                <label htmlFor={`${id}-body`} className="mb-1.5 block text-sm font-semibold text-gray-700">نص الإنذار</label>
+                                <label htmlFor={`${id}-body`} className="mb-2 block text-sm font-semibold text-gray-700">نص الإنذار</label>
                                 <TextArea id={`${id}-body`} value={body} onChange={(event) => setBody(event.target.value)} rows={4} className="block w-full text-sm" maxLength={1000} required />
-                                <p className="mt-1 flex flex-wrap gap-1.5 text-xs text-gray-500">
+                                <p className="mt-1 flex flex-wrap gap-2 text-xs text-gray-500">
                                     الحقول:
                                     {placeholders.map((name) => (
-                                        <Button data-raw="" variant="ghost" key={name} onClick={() => setBody((current) => `${current} {${name}}`)} className="rounded bg-gray-100 px-1.5 font-display">{`{${name}}`}</Button>
+                                        <Button data-raw="" variant="ghost" key={name} onClick={() => setBody((current) => `${current} {${name}}`)} className="rounded bg-gray-100 px-2 font-display">{`{${name}}`}</Button>
                                     ))}
                                 </p>
                                 <InputError message={errors.body} className="mt-1" />
@@ -297,8 +297,8 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                             {canChangeFee && reached.length > 0 && (
                                 <div className="flex flex-wrap items-end gap-3 rounded-control border border-gray-200 p-3">
                                     <div>
-                                        <label htmlFor={`${id}-fee`} className="mb-1.5 block text-sm font-semibold text-gray-700">رسوم قطع الخدمة</label>
-                                        <span className="flex items-center gap-1.5">
+                                        <label htmlFor={`${id}-fee`} className="mb-2 block text-sm font-semibold text-gray-700">رسوم قطع الخدمة</label>
+                                        <span className="flex items-center gap-2">
                                             <Input id={`${id}-fee`} type="number" min={0} step="0.01" value={feeForAll} onChange={(event) => setFeeForAll(event.target.value)} className="w-28 text-sm" />
                                             ₪
                                         </span>
@@ -332,7 +332,7 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                     <InputError message={errors.ids} />
                 </div>
 
-                <div className="flex flex-wrap items-center justify-end gap-3 border-t border-gray-100 bg-gray-50 px-7 py-4">
+                <div className="flex flex-wrap items-center justify-end gap-3 border-t border-gray-100 bg-gray-50 px-6 py-4">
                     <SecondaryKey onClick={onClose} disabled={saving}>إلغاء</SecondaryKey>
                     {action === 'remove' && (
                         <DangerKey type="submit" disabled={saving || !preview || reached.length === 0}>

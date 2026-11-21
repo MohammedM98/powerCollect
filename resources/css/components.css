@@ -24,6 +24,18 @@
     --gl-d: 1;
     /* Text on a movement's tone (dark tones in the light theme, bright ones in the dark). */
     --gl-tone-ink: #fff;
+    /*
+     * Room kept inside a box for something laid over its edge: an icon, a
+     * key, a unit, a card's mark, the floating save bar or dock. These are
+     * the overlay's own size, not spacing between elements, so they sit
+     * outside the spacing scale (0 and 4–32px).
+     */
+    --room-icon: 2.5rem;
+    --room-icon-wide: 2.75rem;
+    --room-key: 3rem;
+    --room-unit: 4rem;
+    --room-mark: 5.25rem;
+    --room-dock: 7.5rem;
 }
 
 .dark {
@@ -79,7 +91,7 @@
     animation: gl-page-in 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
     color: var(--gl-ink);
     font-size: 14px;
     line-height: 1.6;
@@ -94,7 +106,7 @@
 
 .gl-grid {
     display: grid;
-    gap: 14px;
+    gap: 16px;
 }
 
 .gl-g4 {
@@ -108,14 +120,14 @@
 .gl-dash {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 280px;
-    gap: 14px;
+    gap: 16px;
     align-items: start;
 }
 
 .gl-col {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
     min-width: 0;
 }
 
@@ -138,7 +150,7 @@
 }
 
 .gl-phead p {
-    margin: 2px 0 0;
+    margin: 0 0 0;
     color: var(--gl-muted);
 }
 
@@ -172,7 +184,7 @@
 
 /* ── Panels ───────────────────────────────────────────────────────────── */
 .gl-panel {
-    padding: 18px;
+    padding: 16px;
     min-width: 0;
 }
 
@@ -182,7 +194,7 @@
 }
 
 .gl-sub {
-    margin: 2px 0 0;
+    margin: 0 0 0;
     color: var(--gl-muted);
     font-size: 12.5px;
 }
@@ -190,8 +202,8 @@
 .gl-ph {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 14px;
+    gap: 12px;
+    margin-bottom: 12px;
     flex-wrap: wrap;
 }
 
@@ -211,13 +223,13 @@
 .gl-kpi {
     position: relative;
     overflow: hidden;
-    padding: 18px;
+    padding: 16px;
 }
 
 .gl-kpi .gl-lbl {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     color: var(--gl-muted);
     font-weight: 600;
     font-size: 13px;
@@ -235,10 +247,10 @@
 }
 
 .gl-kpi .gl-val {
-    margin-top: 14px;
+    margin-top: 12px;
     display: flex;
     align-items: baseline;
-    gap: 6px;
+    gap: 8px;
     flex-wrap: wrap;
     font: 800 32px/1.2 var(--gl-head);
 }
@@ -278,13 +290,13 @@
 
 .gl-stat {
     min-width: 0;
-    padding: 2px 16px;
+    padding: 4px 16px;
     border-inline-start: 1px solid var(--gl-line);
 }
 
 .gl-stat:first-child {
     border: 0;
-    padding-inline-start: 2px;
+    padding-inline-start: 4px;
 }
 
 .gl-stat .gl-lbl {
@@ -296,7 +308,7 @@
 .gl-stat .gl-big {
     display: flex;
     align-items: baseline;
-    gap: 6px;
+    gap: 8px;
     flex-wrap: wrap;
     font: 800 28px/1.25 var(--gl-head);
 }
@@ -310,7 +322,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 2px;
+    margin-top: 0;
     color: var(--gl-muted);
     font-size: 12px;
     flex-wrap: wrap;
@@ -333,9 +345,9 @@
 .gl-pill {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     min-height: 24px;
-    padding: 1px 10px;
+    padding: 4px 12px;
     border-radius: 99px;
     font-size: 12.5px;
     font-weight: 700;
@@ -371,7 +383,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 0;
+    padding: 8px 0;
     border-top: 1px solid var(--gl-line);
 }
 
@@ -398,7 +410,7 @@
 }
 
 .gl-empty-line {
-    padding: 22px 0;
+    padding: 24px 0;
     text-align: center;
     color: var(--gl-faint);
     font-size: 13px;
@@ -425,8 +437,8 @@
 /* ── Segmented, toggles, chips, tabs ──────────────────────────────────── */
 .gl-seg {
     display: inline-flex;
-    gap: 2px;
-    padding: 3px;
+    gap: 4px;
+    padding: 4px;
     border-radius: calc(20px * var(--radius-scale, 1));
     background: rgb(var(--group-fill));
     border: 0;
@@ -435,7 +447,7 @@
 .gl-seg button {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     min-height: 32px;
     padding: 0 12px;
     border-radius: calc(17px * var(--radius-scale, 1));
@@ -478,7 +490,7 @@
 }
 
 .gl-chip {
-    padding: 8px 14px;
+    padding: 8px 16px;
     border-radius: calc(14px * var(--radius-scale, 1));
     background: rgb(var(--panel-field));
     border: 0;
@@ -500,7 +512,7 @@
 }
 
 .gl-cnt {
-    padding: 0 6px;
+    padding: 0 8px;
     border-radius: 99px;
     font-size: 10.5px;
     background: var(--gl-fill-2);
@@ -511,9 +523,9 @@
 .gl-chart-h {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     flex-wrap: wrap;
-    margin: 18px 0 6px;
+    margin: 16px 0 8px;
 }
 
 .gl-chart-h h2 {
@@ -575,7 +587,7 @@
     place-items: center;
     width: 104px;
     height: 104px;
-    margin: 6px auto 12px;
+    margin: 8px auto 12px;
 }
 
 .gl-ringbox b {
@@ -628,7 +640,7 @@
 
 .gl-split {
     display: flex;
-    gap: 2px;
+    gap: 4px;
     height: 8px;
     margin: 12px 0;
     border-radius: 99px;
@@ -686,8 +698,8 @@
 .gl-attn {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 0;
+    gap: 12px;
+    padding: 8px 0;
     border-top: 1px solid var(--gl-line);
     color: var(--gl-ink);
 }
@@ -700,7 +712,7 @@
 .gl-tools {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     flex-wrap: wrap;
     margin-bottom: 12px;
 }
@@ -782,7 +794,7 @@
 }
 
 .gl-table td {
-    padding: 11px 12px;
+    padding: 12px 12px;
     border-top: 1px solid var(--gl-line);
     white-space: nowrap;
 }
@@ -812,7 +824,7 @@
 .gl-foot-line {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     flex-wrap: wrap;
     margin-top: 12px;
     color: var(--gl-muted);
@@ -823,8 +835,8 @@
 .gl-receipt {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 20px;
+    gap: 12px;
+    padding: 16px;
     border-radius: 16px;
     background: var(--gl-fill);
     border: 1px dashed var(--gl-line-strong);
@@ -837,7 +849,7 @@
 /* ── The board ────────────────────────────────────────────────────────── */
 .gl-board-w {
     overflow-x: auto;
-    padding-bottom: 6px;
+    padding-bottom: 8px;
 }
 
 .gl-board {
@@ -893,8 +905,8 @@
 .gl-mb {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 11px 12px;
+    gap: 8px;
+    padding: 12px 12px;
     border-radius: 14px;
     background: rgb(var(--panel-bg));
     border: 1px solid var(--gl-line);
@@ -995,7 +1007,7 @@
 }
 
 .gl-tag {
-    padding: 1px 8px;
+    padding: 4px 8px;
     border-radius: 7px;
     font-size: 12px;
     font-weight: 600;
@@ -1112,7 +1124,7 @@
 
 /* Segment group: a grey track with a hairline edge, the chosen item a raised white thumb. */
 .gl-park .gl-seg {
-    padding: 3px;
+    padding: 4px;
     border-radius: var(--park-r2);
     background: var(--gl-fill);
     border: 0;
@@ -1155,7 +1167,7 @@
 /* Things waiting: each row a soft hover target, its count a badge at the end. */
 .gl-park .gl-attn {
     margin-inline: -8px;
-    padding: 10px 8px;
+    padding: 8px 8px;
     border-radius: var(--park-r2);
     border-top: 0;
     transition: background-color 0.15s;
@@ -1182,7 +1194,7 @@
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: minmax(0, 1fr);
-    gap: 10px;
+    gap: 12px;
 }
 
 @media (max-width: 1100px) {
@@ -1202,7 +1214,7 @@
     gap: 12px;
     min-width: 0;
     min-height: 64px;
-    padding: 10px 14px;
+    padding: 8px 16px;
     border: 1px solid var(--gl-line);
     border-radius: var(--park-r3, 14px);
     background: rgb(var(--panel-bg));
@@ -1288,8 +1300,8 @@
     }
 
     .gl-action {
-        gap: 10px;
-        padding: 10px;
+        gap: 12px;
+        padding: 12px;
     }
 
     .gl-action small {
@@ -1345,14 +1357,14 @@
         grid-column: 1 / -1;
         margin-top: 12px;
         border: 0;
-        padding-inline-start: 2px;
+        padding-inline-start: 4px;
     }
 }
 
 .gl-lockup {
     display: flex;
     align-items: center;
-    gap: 11px;
+    gap: 12px;
     min-width: 0;
 }
 
@@ -1376,7 +1388,7 @@
     font: 700 9.5px/1.3 var(--font-body, 'IBM Plex Sans Arabic');
     letter-spacing: 0.24em;
     color: var(--gl-muted);
-    text-align: right;
+    text-align: start;
     white-space: nowrap;
 }
 
@@ -1411,7 +1423,7 @@
     gap: 32px;
     margin: 12px;
     margin-inline-end: 0;
-    padding: 36px 40px;
+    padding: 32px;
     border-radius: 28px;
     background:
         radial-gradient(120% 80% at 85% 100%, rgb(var(--brand-solid) / 0.16), transparent 60%),
@@ -1431,7 +1443,7 @@
 .gl-auth-brand {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 16px;
     color: rgb(236 240 243);
 }
 
@@ -1458,14 +1470,14 @@
     align-self: center;
     justify-self: start;
     display: grid;
-    gap: 14px;
+    gap: 16px;
     margin: 0;
 }
 
 .gl-meter-face {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     padding: 12px;
     border-radius: 18px;
     background: rgb(0 0 0 / 0.35);
@@ -1481,7 +1493,7 @@
 .gl-meter-dot {
     width: 6px;
     height: 6px;
-    margin-inline: 6px;
+    margin-inline: 8px;
     border-radius: 50%;
     background: rgb(var(--brand-solid));
 }
@@ -1539,7 +1551,7 @@
     display: grid;
     grid-template-rows: 1fr auto;
     justify-items: center;
-    padding: 32px max(24px, env(safe-area-inset-left, 0px)) 20px;
+    padding: 32px max(24px, env(safe-area-inset-left, 0px)) 16px;
 }
 
 .gl-auth-corner {
@@ -1554,12 +1566,12 @@
     width: min(380px, 100%);
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: 24px;
     animation: gl-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s both;
 }
 
 .gl-auth-head h1 {
-    margin: 0 0 6px;
+    margin: 0 0 8px;
     font: 700 28px/1.25 var(--gl-head);
 }
 
@@ -1572,7 +1584,7 @@
     width: min(380px, 100%);
     display: flex;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
     flex-wrap: wrap;
     color: var(--gl-faint);
     font-size: 12px;
@@ -1585,9 +1597,9 @@
     }
 
     .gl-auth-panel {
-        margin: 10px 10px 0;
-        padding: 20px;
-        gap: 18px;
+        margin: 8px 12px 0;
+        padding: 16px;
+        gap: 16px;
         border-radius: 22px;
         grid-template-rows: auto auto;
     }
@@ -1605,7 +1617,7 @@
     }
 
     .gl-auth-main {
-        padding-top: 28px;
+        padding-top: 24px;
     }
 
     .gl-auth-foot {
@@ -1655,7 +1667,7 @@
     flex: none;
     width: 42px;
     height: 24px;
-    padding: 2px;
+    padding: 4px;
     border-radius: 99px;
     background: var(--gl-fill-2);
     box-shadow: inset 0 0 0 1px var(--gl-line);
@@ -1690,7 +1702,7 @@
 
 /* ── The page's footer (Components/AppFooter.jsx) ─────────────────────── */
 .gl-footer {
-    padding: 8px 16px 18px;
+    padding: 8px 16px 16px;
     text-align: center;
     color: var(--gl-faint);
     font-size: 12px;
@@ -1710,7 +1722,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px 16px;
+    gap: 8px 16px;
 }
 
 .gl-scope-ico {
@@ -1743,7 +1755,7 @@
 .gl-scope-facts {
     display: flex;
     flex-wrap: wrap;
-    gap: 2px 14px;
+    gap: 4px 16px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -1754,7 +1766,7 @@
 .gl-scope-facts li {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
 }
 
 /* ── Record strip (Components/Form/FormPreview.jsx): the record a form fills in ── */
@@ -1762,8 +1774,8 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px 14px;
-    padding: 14px 16px;
+    gap: 8px 16px;
+    padding: 12px 16px;
     border: 1px solid var(--gl-line);
     border-radius: 16px;
     background: rgb(var(--panel-bg));
@@ -1775,7 +1787,7 @@
     display: grid;
     align-content: start;
     gap: 12px;
-    padding: 20px;
+    padding: 16px;
     border-radius: 16px;
     background: rgb(var(--panel-tile));
     border: 1px solid rgb(var(--panel-ink) / 0.055);
@@ -1806,7 +1818,7 @@
     flex: none;
     width: 15px;
     height: 15px;
-    margin-top: 3px;
+    margin-top: 4px;
     color: rgb(var(--gl-brand));
 }
 
@@ -1844,7 +1856,7 @@
     overflow: hidden;
     margin: 0;
     font: 700 16px/1.4 var(--gl-head);
-    text-align: right;
+    text-align: start;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -1873,7 +1885,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin: 0 4px 14px;
+    margin: 0 4px 12px;
     color: var(--gl-ink);
     font-size: 15px;
     font-weight: 700;
@@ -1897,8 +1909,8 @@
 .gl-outline {
     display: grid;
     align-content: start;
-    gap: 2px;
-    padding: 20px 12px;
+    gap: 4px;
+    padding: 16px 12px;
     border-inline-end: 1px solid var(--gl-line);
 }
 
@@ -1906,7 +1918,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 12px;
+    padding: 8px 12px;
     border-radius: 10px;
     color: var(--gl-muted);
     font-size: 14px;
@@ -2012,7 +2024,7 @@
     border-color: transparent;
     background-color: transparent;
     box-shadow: none;
-    text-align: left;
+    text-align: end;
 }
 
 .gl-inset-value :is(input, select):hover:not(:focus) {
@@ -2065,7 +2077,7 @@
 
 .gl-tile {
     min-width: 0;
-    padding: 20px 22px;
+    padding: 16px 24px;
     border: 0;
     border-radius: calc(24px * var(--radius-scale, 1));
     background: rgb(var(--panel-bg));
@@ -2116,7 +2128,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 5px 11px;
+    padding: 4px 12px;
     border-radius: 10px;
     font-size: 13px;
     color: var(--gl-ink);
@@ -2134,7 +2146,7 @@
 
 /* The save bar: no band of its own; the window's own surface, its main button large. */
 .gl-dialog-foot {
-    padding-top: 20px;
+    padding-top: 16px;
     padding-bottom: 24px;
 }
 
@@ -2179,7 +2191,7 @@
     grid-template-columns: minmax(0, 1fr);
     align-content: start;
     gap: 24px;
-    padding: 20px 24px 24px;
+    padding: 16px 24px 24px;
     scrollbar-width: thin;
 }
 
@@ -2187,9 +2199,9 @@
 .gl-mv {
     flex: none;
     display: grid;
-    gap: 14px;
-    margin: 14px 24px 0;
-    padding: 14px 16px;
+    gap: 16px;
+    margin: 12px 24px 0;
+    padding: 12px 16px;
     border-radius: 16px;
     background: rgb(var(--panel-tile));
 }
@@ -2238,7 +2250,7 @@
 
 .gl-mv-tag {
     margin-inline-start: auto;
-    padding: 2px 10px;
+    padding: 4px 12px;
     border-radius: 99px;
     white-space: nowrap;
     font-size: 12px;
@@ -2259,7 +2271,7 @@
 
 .gl-mv-cell {
     min-width: 0;
-    padding: 4px 2px;
+    padding: 4px 4px;
 }
 
 .gl-mv-cell small {
@@ -2304,7 +2316,7 @@
 
 .gl-mv-cover {
     display: grid;
-    gap: 6px;
+    gap: 8px;
 }
 
 .gl-mv-cover .gl-bar i {
@@ -2325,9 +2337,9 @@
     --gl-c-solid: rgb(var(--action));
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
     height: 40px;
-    padding: 0 15px;
+    padding: 0 16px;
     border: 0;
     border-radius: calc(20px * var(--radius-scale, 1));
     background: color-mix(in srgb, var(--gl-c) 13%, rgb(var(--panel-bg)));
@@ -2400,7 +2412,7 @@
 }
 
 .gl-step h4 small {
-    margin-inline-start: 6px;
+    margin-inline-start: 8px;
     color: var(--gl-muted);
     font: 500 13px var(--font-body, inherit);
 }
@@ -2411,7 +2423,7 @@
     grid-template-columns: minmax(0, 1fr);
     gap: 12px;
     min-width: 0;
-    padding-top: 6px;
+    padding-top: 8px;
 }
 
 @media (max-width: 639px) {
@@ -2448,7 +2460,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     padding-inline: 16px;
 }
 
@@ -2501,7 +2513,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-toast-close {
-    padding: 6px;
+    padding: 8px;
     border-radius: 8px;
     color: var(--gl-faint);
 }
@@ -2533,7 +2545,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 /* ── Recording a payment (Pages/Subscriptions/PaymentModal.jsx) ───────── */
 /* The payment's amount, drawn like every money form's amount box (AccountFormParts AmountBox): the figure large, its quick picks under a dashed line. */
 .gl-amount {
-    padding: 16px 18px 14px;
+    padding: 16px 16px 12px;
     border-radius: 22px;
     border: 1.5px solid rgb(var(--gray-200));
     background: rgb(var(--surface));
@@ -2582,7 +2594,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 14px;
+    padding: 12px 16px;
     border-radius: 14px;
     border: 1px solid var(--gl-line);
     background: var(--gl-fill);
@@ -2654,15 +2666,15 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-receipt-cut::before {
-    right: -10px;
+    inset-inline-start: -10px;
 }
 
 .gl-receipt-cut::after {
-    left: -10px;
+    inset-inline-end: -10px;
 }
 
 .gl-notice {
-    padding: 12px 14px;
+    padding: 12px 16px;
     border-radius: 12px;
     border: 1px solid color-mix(in srgb, var(--gl-c) 40%, transparent);
     background: color-mix(in srgb, var(--gl-c) 10%, transparent);
@@ -2797,7 +2809,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 
 .gl-btn.gl-lg {
     min-height: 48px;
-    padding: 0 22px;
+    padding: 0 24px;
     border-radius: calc(24px * var(--radius-scale, 1));
     font-size: 15.5px;
 }
@@ -2829,7 +2841,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     align-items: center;
     gap: 8px;
     min-height: 40px;
-    padding: 0 14px;
+    padding: 0 16px;
     font-size: 14px;
     transition: background-color 0.15s;
 }
@@ -2921,7 +2933,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 
 /* The page's guidance under its title (the redesign's subtitle). */
 .gl-page-sub {
-    margin-top: 6px;
+    margin-top: 8px;
     max-width: 72ch;
     color: var(--color-gray-500);
     font-size: 15.5px;
@@ -2948,7 +2960,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 /* An account statement's title (Pages/Subscriptions/StatementTitle.jsx): a small "كشف حساب", the subscriber's name large under it. */
 .gl-statement-title {
     display: grid;
-    gap: 2px;
+    gap: 4px;
     min-width: 0;
 }
 
@@ -2996,10 +3008,10 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     grid-area: body;
     display: flex;
     flex-direction: column;
-    gap: 26px;
+    gap: 24px;
     min-height: 0;
     overflow-y: auto;
-    padding: 20px 24px 24px;
+    padding: 16px 24px 24px;
     scrollbar-width: thin;
 }
 
@@ -3007,10 +3019,10 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     grid-area: aside;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
     min-height: 0;
     overflow-y: auto;
-    padding: 20px;
+    padding: 16px;
     border-inline-start: 1px solid var(--gl-line);
     background: rgb(var(--panel-tile));
 }
@@ -3049,7 +3061,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    padding: 16px 18px;
+    padding: 16px 16px;
     border-radius: 22px;
     background: rgb(var(--panel-tile));
     box-shadow: 0 0 0 1px var(--gl-line);
@@ -3071,7 +3083,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 14px;
+    gap: 16px;
     max-width: 100%;
 }
 
@@ -3118,7 +3130,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-co .gl-co-chip {
     height: 34px;
     min-width: 54px;
-    padding: 0 14px;
+    padding: 0 16px;
     border-radius: 999px;
     background: rgb(var(--group-fill));
     color: var(--gl-ink);
@@ -3165,10 +3177,10 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 16px;
     width: 100%;
     min-height: 98px;
-    padding: 16px 18px;
+    padding: 16px 16px;
     border-radius: 20px;
     background: rgb(var(--panel-field));
     box-shadow: var(--field-shadow), 0 0 0 1px rgb(var(--gray-900) / 0.06);
@@ -3256,7 +3268,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     place-items: center;
     min-width: 20px;
     height: 20px;
-    padding: 0 5px;
+    padding: 0 4px;
     border-radius: 6px;
     background: rgb(var(--group-fill));
     color: var(--gl-muted);
@@ -3268,7 +3280,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-co .gl-co-banks-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .gl-co-banks {
@@ -3280,9 +3292,9 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-co .gl-co-bank-content {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     min-height: 46px;
-    padding: 0 16px 0 10px;
+    padding: 0 16px 0 12px;
     padding-inline: 8px 16px;
     border-radius: 15px;
     background: rgb(var(--panel-field));
@@ -3312,8 +3324,8 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-co-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px 14px;
-    margin-top: 6px;
+    gap: 16px 16px;
+    margin-top: 8px;
 }
 
 .gl-co .gl-co-field {
@@ -3334,14 +3346,14 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
     min-height: 22px;
 }
 
 .gl-co .gl-co-field .input {
     width: 100%;
     height: var(--control-h);
-    padding: 0 14px;
+    padding: 0 16px;
     border: 0;
     border-radius: calc(14px * var(--radius-scale, 1));
     background: rgb(var(--panel-field));
@@ -3392,8 +3404,8 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 10px 16px;
-    padding: 14px 24px;
+    gap: 8px 16px;
+    padding: 12px 24px;
     border-top: 1px solid var(--gl-line);
 }
 
@@ -3401,7 +3413,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-inline-end: 6px;
+    padding-inline-end: 8px;
     line-height: 1.15;
     text-align: end;
 }
@@ -3430,7 +3442,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     gap: 8px;
     min-width: 200px;
     height: 52px;
-    padding-inline: 26px;
+    padding-inline: 24px;
     border-radius: 999px;
     background: rgb(var(--tone-pay-solid));
     color: #fff;
@@ -3449,13 +3461,13 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-co-foot-row {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .gl-co .gl-co-cancel {
     flex: none;
     height: 52px;
-    padding-inline: 22px;
+    padding-inline: 24px;
     border-radius: 999px;
     background: rgb(var(--group-fill));
     color: var(--gl-ink);
@@ -3470,7 +3482,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-co-foot-hint {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     margin: 0;
     color: var(--gl-muted);
     font-size: 12.5px;
@@ -3481,8 +3493,8 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    padding: 20px 18px 26px;
+    gap: 16px;
+    padding: 16px 16px 24px;
     border-radius: 16px 16px 0 0;
     background: rgb(var(--panel-bg));
     box-shadow: var(--panel-shadow), 0 18px 36px -24px rgb(0 0 0 / 0.35);
@@ -3505,7 +3517,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-co-paper-brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .gl-co-paper-brand b {
@@ -3548,7 +3560,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-co-paper-rows {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     margin: 0;
     padding-bottom: 12px;
     border-bottom: 1px dashed var(--gl-line-strong);
@@ -3558,7 +3570,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
 }
 
 .gl-co-paper-rows dt {
@@ -3585,7 +3597,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
     font-size: 13.5px;
     font-weight: 700;
 }
@@ -3607,7 +3619,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-co-paper-cover > div {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     color: var(--gl-muted);
     font-size: 12.5px;
 }
@@ -3636,7 +3648,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-co-paper-code {
     display: block;
     height: 34px;
-    margin: 2px 24px 0;
+    margin: 0 24px 0;
     background: repeating-linear-gradient(90deg, var(--gl-ink) 0 2px, transparent 2px 4px, var(--gl-ink) 4px 5px, transparent 5px 8px, var(--gl-ink) 8px 11px, transparent 11px 13px);
     opacity: 0.85;
 }
@@ -3740,25 +3752,25 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    padding: 4px 24px 28px;
+    padding: 4px 24px 24px;
     scrollbar-width: thin;
 }
 
 /* Each section: its own block, a fine line from the one before it. */
 .gl-fm-body .scroll-mt-4 + .scroll-mt-4 {
-    padding-top: 26px;
+    padding-top: 24px;
     border-top: 1px solid var(--gl-line);
 }
 
 .gl-fm-body > div > .scroll-mt-4 {
-    padding-bottom: 6px;
+    padding-bottom: 8px;
 }
 
 /* A section's heading: its icon on a soft tile, the name, and a line on what it holds. */
 .gl-fm .gl-group-name {
     align-items: center;
     gap: 12px;
-    margin: 0 0 18px;
+    margin: 0 0 16px;
 }
 
 .gl-fm .gl-group-icon {
@@ -3792,7 +3804,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: grid;
     grid-auto-columns: minmax(0, 1fr);
     grid-auto-flow: column;
-    gap: 2px;
+    gap: 4px;
     padding: 4px;
     border-radius: 999px;
     background: rgb(var(--group-fill));
@@ -3829,15 +3841,15 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     flex: none;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
-    padding: 14px 24px;
+    gap: 12px;
+    padding: 12px 24px;
     border-top: 1px solid var(--gl-line);
 }
 
 .gl-fm-progress {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     color: var(--gl-muted);
     font-size: 13px;
     font-weight: 600;
@@ -3871,7 +3883,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     gap: 16px;
     min-height: 0;
     overflow-y: auto;
-    padding: 20px 16px;
+    padding: 16px 16px;
     border-inline-start: 1px solid var(--gl-line);
     background: rgb(var(--panel-tile));
 }
@@ -3891,7 +3903,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     grid-template-columns: 36px minmax(0, 1fr) 20px;
     align-items: center;
     gap: 12px;
-    padding: 10px;
+    padding: 12px;
     border-radius: 16px;
     color: var(--gl-muted);
     text-align: start;
@@ -3967,7 +3979,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-fm-note {
     display: flex;
     align-items: flex-start;
-    gap: 6px;
+    gap: 8px;
     margin: auto 0 0;
     padding-top: 8px;
     color: var(--gl-muted);
@@ -3982,7 +3994,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     flex-direction: column;
     gap: 4px;
     overflow: hidden;
-    padding: 16px 18px 18px;
+    padding: 16px 16px 16px;
     border-radius: 20px;
     background:
         radial-gradient(90% 120% at 0% 100%, rgb(var(--brand-solid) / 0.55), transparent 55%),
@@ -4004,12 +4016,12 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 10px;
+    gap: 12px;
+    margin-bottom: 8px;
 }
 
 .gl-member-status {
-    padding: 2px 10px;
+    padding: 4px 12px;
     border-radius: 99px;
     background: rgb(255 255 255 / 0.16);
     font-size: 12px;
@@ -4036,12 +4048,12 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     position: relative;
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
     margin-top: 8px;
 }
 
 .gl-member-chips span {
-    padding: 2px 10px;
+    padding: 4px 12px;
     border-radius: 99px;
     background: rgb(255 255 255 / 0.14);
     font-size: 12px;
@@ -4109,7 +4121,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-fp .gl-group-name {
     align-items: center;
     gap: 12px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .gl-fp .gl-group-icon {
@@ -4170,11 +4182,11 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-filter-trigger {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     max-width: 22rem;
     height: 38px;
-    padding: 0 12px 0 14px;
-    padding-inline: 14px 12px;
+    padding: 0 12px 0 16px;
+    padding-inline: 16px 12px;
     border: 0;
     border-radius: 999px;
     background: rgb(var(--group-fill));
@@ -4220,7 +4232,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-filter-name {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     color: inherit;
 }
 
@@ -4230,7 +4242,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-filter-count {
-    padding: 1px 7px;
+    padding: 4px 8px;
     border-radius: 99px;
     background: rgb(var(--panel-bg));
     color: var(--gl-muted);
@@ -4241,12 +4253,12 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .gl-filter-clear {
     height: 38px;
-    padding: 0 10px;
+    padding: 0 12px;
     border-radius: 999px;
     color: var(--gl-muted);
     font-size: 13px;
@@ -4274,7 +4286,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
  */
 .gl-st-head {
     display: grid;
-    gap: 14px;
+    gap: 16px;
     width: 100%;
 }
 
@@ -4309,7 +4321,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
 .gl-st-tools {
@@ -4324,14 +4336,14 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 
 .gl-st-page {
     display: grid;
-    gap: 18px;
+    gap: 16px;
 }
 
 /* A status as a soft chip with a dot. */
 .gl-st-status.chip {
-    gap: 6px;
+    gap: 8px;
     height: 26px;
-    padding-inline: 10px;
+    padding-inline: 12px;
     border-radius: 999px;
     font-size: 12.5px;
     font-weight: 700;
@@ -4349,9 +4361,9 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-st-chip.chip {
     --chip-bg: rgb(var(--group-fill));
     --chip-fg: var(--gl-muted);
-    gap: 5px;
+    gap: 4px;
     height: 26px;
-    padding-inline: 10px;
+    padding-inline: 12px;
     border-radius: 999px;
     font-size: 12.5px;
     font-weight: 700;
@@ -4403,7 +4415,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-acts .gl-act.button {
     min-width: 0;
     height: 40px;
-    padding: 0 15px;
+    padding: 0 16px;
 }
 
 /*
@@ -4414,9 +4426,9 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-st-top {
     display: grid;
     grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
-    gap: 14px;
+    gap: 16px;
     align-items: stretch;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
 .gl-st-side {
@@ -4430,12 +4442,12 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: grid;
     flex: 1;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
+    gap: 12px;
 }
 
 .gl-kpi.card {
-    gap: 6px;
-    padding: 16px 18px;
+    gap: 8px;
+    padding: 16px 16px;
     border-radius: calc(20px * var(--radius-scale, 1));
 }
 
@@ -4467,7 +4479,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     position: relative;
     overflow: hidden;
     gap: 4px;
-    padding: 18px 20px 16px;
+    padding: 16px 16px 16px;
     border-radius: calc(22px * var(--radius-scale, 1));
     background:
         radial-gradient(120% 90% at 0% 100%, rgb(var(--brand-solid) / 0.28), transparent 60%),
@@ -4513,16 +4525,16 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-st-acard-facts {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px 18px;
+    gap: 4px 16px;
     margin: auto 0 0;
     padding-top: 12px;
-    padding-inline-end: 64px;
+    padding-inline-end: var(--room-unit);
     font-size: 13px;
 }
 
 .gl-st-acard-facts > div {
     display: flex;
-    gap: 6px;
+    gap: 8px;
 }
 
 .gl-st-acard-facts dt {
@@ -4564,9 +4576,9 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 
 /* The person's subscriptions: one tile each, the one shown ringed in the company's colour. */
 .gl-subs.card {
-    gap: 14px;
-    margin-bottom: 18px;
-    padding: 20px;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 16px;
     border-radius: calc(24px * var(--radius-scale, 1));
 }
 
@@ -4589,7 +4601,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-subs-head p {
-    margin: 2px 0 0;
+    margin: 0 0 0;
     color: var(--gl-muted);
     font-size: 13px;
 }
@@ -4597,7 +4609,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-subs-total {
     display: flex;
     align-items: baseline;
-    gap: 10px;
+    gap: 12px;
 }
 
 .gl-subs-total small {
@@ -4619,7 +4631,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    padding: 14px 16px;
+    padding: 12px 16px;
     border: 0;
     border-radius: calc(18px * var(--radius-scale, 1));
     background: rgb(var(--panel-tile));
@@ -4672,13 +4684,13 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 6px 12px;
+    gap: 8px 12px;
 }
 
 .gl-sub-card-place {
     display: flex;
     flex-wrap: wrap;
-    gap: 2px 0;
+    gap: 4px 0;
     color: var(--gl-muted);
     font-size: 13px;
 }
@@ -4688,13 +4700,13 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-sub-card-place bdi:not(:first-child) {
-    margin-right: 4px;
+    margin-inline-start: 4px;
 }
 
 .gl-sub-card-go {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     color: rgb(var(--brand-600));
     font-size: 13px;
     font-weight: 700;
@@ -4720,7 +4732,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-    padding: 18px 20px 12px;
+    padding: 16px 16px 12px;
 }
 
 .gl-st-bar.gl-st-filters {
@@ -4734,13 +4746,13 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-st-ledger-hint {
-    margin: 2px 0 0;
+    margin: 0 0 0;
     color: var(--gl-muted);
     font-size: 13px;
 }
 
 .gl-st-note {
-    margin: -4px 20px 10px;
+    margin: -4px 24px 8px;
     color: var(--gl-muted);
     font-size: 13px;
 }
@@ -4762,9 +4774,13 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 /* HeroUI's toggle group as the redesign's segmented control: a grey track, the chosen view white on it. */
+/* A track wider than a phone scrolls inside itself, so the page never scrolls sideways. */
 .gl-seg-group.toggle-button-group {
-    gap: 2px;
-    padding: 3px;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 4px;
+    padding: 4px;
     border-radius: 999px;
     background: rgb(var(--group-fill));
 }
@@ -4778,12 +4794,13 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     --toggle-button-bg-selected-hover: rgb(var(--panel-bg));
     --toggle-button-bg-selected-pressed: rgb(var(--panel-bg));
     --toggle-button-fg-selected: var(--gl-ink);
-    gap: 6px;
+    gap: 8px;
     height: 32px;
     padding: 0 12px;
     border-radius: 999px;
     font-size: 12.5px;
     font-weight: 700;
+    flex-shrink: 0;
 }
 
 .gl-seg-group .gl-seg-item[data-selected='true'] {
@@ -4855,7 +4872,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 
 .gl-st-x {
     width: 40px;
-    padding-inline: 6px 0 !important;
+    padding-inline: 8px 0 !important;
 }
 
 .gl-st-exp {
@@ -4895,7 +4912,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: inline-block;
     width: 8px;
     height: 8px;
-    margin-inline-end: 6px;
+    margin-inline-end: 8px;
     border-radius: 50%;
     vertical-align: middle;
 }
@@ -4927,12 +4944,12 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-st-desc .statement-description-details {
-    margin-top: 2px;
+    margin-top: 0;
     font-size: 13px;
 }
 
 .gl-st-desc .gl-st-meta {
-    margin-top: 1px;
+    margin-top: 0;
 }
 
 .gl-st-type {
@@ -4943,7 +4960,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .gl-st-table .gl-st-cash {
@@ -5042,7 +5059,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-st-month-name {
     display: inline-flex;
     align-items: baseline;
-    gap: 10px;
+    gap: 12px;
 }
 
 .gl-st-month-name b {
@@ -5067,15 +5084,15 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-st-table tr.gl-st-detail > td {
     height: auto;
     padding-top: 0;
-    padding-bottom: 14px;
+    padding-bottom: 12px;
 }
 
 .gl-st-detail dl {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    gap: 10px 20px;
+    gap: 8px 24px;
     margin: 0;
-    padding: 12px 14px;
+    padding: 12px 16px;
     border-radius: 14px;
     background: rgb(var(--panel-tile));
 }
@@ -5087,7 +5104,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-st-detail dd {
-    margin: 2px 0 0;
+    margin: 0 0 0;
     color: var(--gl-ink);
     font-size: 13.5px;
     font-weight: 600;
@@ -5099,7 +5116,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .gl-st-empty {
-    padding: 48px 20px !important;
+    padding: 32px 16px !important;
     color: var(--gl-muted);
     text-align: center;
 }
@@ -5110,7 +5127,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 12px 20px 16px;
+    padding: 12px 16px 16px;
     border-top: 1px solid var(--gl-line);
     color: var(--gl-muted);
     font-size: 13px;
@@ -5135,7 +5152,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 /* On a phone each line becomes a card: its kind and amounts under its description, the menu in its corner. */
 @media (max-width: 760px) {
     .gl-st-scroll {
-        padding: 0 10px 10px;
+        padding: 0 12px 8px;
     }
 
     .gl-st-table {
@@ -5157,14 +5174,14 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     .gl-st-table tbody tr:not(.gl-st-month, .gl-st-detail) {
         position: relative;
         margin-bottom: 8px;
-        padding: 10px 14px;
+        padding: 8px 16px;
         border-radius: 16px;
         background: rgb(var(--panel-tile));
     }
 
     .gl-st-table tbody td {
         height: auto;
-        padding: 2px 0;
+        padding: 4px 0;
         border: 0;
         background: none !important;
         text-align: start !important;
@@ -5193,7 +5210,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     }
 
     .gl-st-table tr.gl-st-month {
-        margin: 6px 0;
+        margin: 8px 0;
     }
 
     .gl-st-table tr.gl-st-month > td {
@@ -5235,21 +5252,21 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
  */
 .gl-cb-page {
     display: grid;
-    gap: 18px;
+    gap: 16px;
 }
 
 .gl-cb-top {
     display: grid;
     gap: 8px;
     justify-items: start;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
 .gl-cb-tabs {
     display: inline-flex;
-    gap: 2px;
+    gap: 4px;
     max-width: 100%;
-    padding: 3px;
+    padding: 4px;
     overflow-x: auto;
     border-radius: 999px;
     background: rgb(var(--group-fill));
@@ -5259,9 +5276,9 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 .gl-cb-tab {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
     height: 36px;
-    padding: 0 14px;
+    padding: 0 16px;
     border-radius: 999px;
     color: var(--gl-muted);
     font-size: 13.5px;
@@ -5295,7 +5312,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     place-items: center;
     min-width: 22px;
     height: 20px;
-    padding: 0 6px;
+    padding: 0 8px;
     border-radius: 999px;
     background: rgb(var(--panel-fill-strong));
     font-size: 11.5px;
@@ -5337,8 +5354,8 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
     grid-template-columns: auto 1fr;
     grid-template-rows: auto auto auto;
     align-items: center;
-    column-gap: 14px;
-    padding: 18px 20px;
+    column-gap: 16px;
+    padding: 16px 16px;
     border: 0;
     border-radius: calc(22px * var(--radius-scale, 1));
     background: rgb(var(--panel-bg));
@@ -5413,8 +5430,8 @@ button.gl-cb-tile:hover {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 12px 14px;
-    padding: 16px 20px;
+    gap: 12px 16px;
+    padding: 16px 16px;
     border-radius: calc(22px * var(--radius-scale, 1));
     background: rgb(var(--panel-bg));
     box-shadow: var(--panel-shadow);
@@ -5438,7 +5455,7 @@ button.gl-cb-tile:hover {
 }
 
 .gl-cb-period p {
-    margin: 2px 0 0;
+    margin: 0 0 0;
     color: var(--gl-muted);
     font-size: 13px;
 }
@@ -5468,7 +5485,7 @@ button.gl-cb-tile:hover {
 
 .gl-cb-list .pagination,
 .gl-cb-list > nav {
-    padding: 0 20px 16px;
+    padding: 0 16px 16px;
 }
 
 .gl-cb-scroll {
@@ -5510,8 +5527,8 @@ button.gl-cb-tile:hover {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    margin: 0 -6px;
-    padding: 4px 6px;
+    margin: 0 -8px;
+    padding: 4px 8px;
     border-radius: 8px;
 }
 
@@ -5559,13 +5576,13 @@ button.gl-cb-tile:hover {
 
 .gl-cb-x {
     width: 40px;
-    padding-inline: 6px 0 !important;
+    padding-inline: 8px 0 !important;
 }
 
 .gl-cb-box {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     white-space: nowrap;
 }
 
@@ -5623,7 +5640,7 @@ button.gl-cb-tile:hover {
 .gl-cb-person {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     min-width: 0;
 }
 
@@ -5673,15 +5690,15 @@ button.gl-cb-tile:hover {
 .gl-cb-status {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
 }
 
 .gl-cb-chip.chip {
     --chip-bg: rgb(var(--group-fill));
     --chip-fg: var(--gl-muted);
-    gap: 6px;
+    gap: 8px;
     height: 26px;
-    padding-inline: 10px;
+    padding-inline: 12px;
     border-radius: 999px;
     font-size: 12.5px;
     font-weight: 700;
@@ -5713,9 +5730,9 @@ button.gl-cb-tile:hover {
 
 /* The box's one action: review and close (outlined, it ends the box's week), or look inside. */
 .gl-cb-btn.button {
-    gap: 6px;
+    gap: 8px;
     height: 36px;
-    padding: 0 14px;
+    padding: 0 16px;
     border-radius: 999px;
     font-size: 13px;
     font-weight: 700;
@@ -5755,8 +5772,8 @@ button.gl-cb-tile:hover {
 .gl-cb-cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 14px;
-    padding: 0 20px 16px;
+    gap: 16px;
+    padding: 0 16px 16px;
 }
 
 .gl-cb-card {
@@ -5817,7 +5834,7 @@ button.gl-cb-tile:hover {
     display: grid;
     justify-items: center;
     gap: 8px;
-    padding: 48px 20px;
+    padding: 32px 16px;
     text-align: center;
 }
 
@@ -5864,7 +5881,7 @@ button.gl-cb-tile:hover {
     .gl-cb-table tbody tr:not(.gl-cb-detail) {
         position: relative;
         margin-bottom: 8px;
-        padding: 12px 14px;
+        padding: 12px 16px;
         border-radius: 16px;
         background: rgb(var(--panel-tile));
     }
@@ -5898,7 +5915,7 @@ button.gl-cb-tile:hover {
  */
 .gl-sheet .gl-mv {
     margin: 16px 24px 0;
-    padding: 16px 18px;
+    padding: 16px 16px;
     border-radius: 20px;
 }
 
@@ -5908,7 +5925,7 @@ button.gl-cb-tile:hover {
 }
 
 .gl-sheet .gl-mv-cell.is-result {
-    padding: 4px 2px;
+    padding: 4px 4px;
     background: none;
     box-shadow: none;
 }
@@ -5924,7 +5941,7 @@ button.gl-cb-tile:hover {
 .gl-choices {
     display: grid;
     grid-template-columns: repeat(var(--gl-choice-cols, 2), minmax(0, 1fr));
-    gap: 10px;
+    gap: 12px;
 }
 
 @media (max-width: 639px) {
@@ -5948,7 +5965,7 @@ button.gl-cb-tile:hover {
     gap: 12px;
     width: 100%;
     min-height: 76px;
-    padding: 14px 16px;
+    padding: 12px 16px;
     border-radius: 18px;
     background: rgb(var(--panel-field));
     box-shadow: var(--field-shadow), 0 0 0 1px rgb(var(--gray-900) / 0.06);
@@ -6003,14 +6020,14 @@ button.gl-cb-tile:hover {
 
 .gl-amt {
     display: grid;
-    gap: 10px;
+    gap: 12px;
 }
 
 .gl-amt-field {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 6px 20px;
+    padding: 8px 16px;
     border-radius: 20px;
     background: rgb(var(--panel-field));
     box-shadow: var(--field-shadow), 0 0 0 1px rgb(var(--gray-900) / 0.06);
@@ -6088,15 +6105,15 @@ button.gl-cb-tile:hover {
     display: flex;
     flex: none;
     align-items: center;
-    gap: 10px;
-    padding: 14px 24px;
+    gap: 12px;
+    padding: 12px 24px;
     border-top: 1px solid var(--gl-line);
 }
 
 .gl-sheet-keys {
     display: none;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     margin-inline-end: auto;
     color: var(--gl-muted);
     font-size: 12.5px;
@@ -6116,7 +6133,7 @@ button.gl-cb-tile:hover {
 .gl-sheet-btn.button {
     gap: 8px;
     height: 44px;
-    padding: 0 20px;
+    padding: 0 16px;
     border-radius: 999px;
     background: rgb(var(--group-fill));
     color: var(--gl-ink);
@@ -6161,7 +6178,7 @@ button.gl-cb-tile:hover {
 .gl-split-panel {
     display: grid;
     gap: 16px;
-    padding: 18px;
+    padding: 16px;
     border-radius: 20px;
     background: rgb(var(--panel-tile));
 }
@@ -6187,7 +6204,7 @@ button.gl-cb-tile:hover {
 .gl-bank-chip-content {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     min-height: 44px;
     padding-inline: 8px 16px;
     border-radius: 14px;
@@ -6277,7 +6294,7 @@ button.gl-cb-tile:hover {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     margin: 0;
     color: var(--gl-ink);
     font-size: 16px;
@@ -6286,7 +6303,7 @@ button.gl-cb-tile:hover {
 
 .gl-hero-collect-total {
     display: block;
-    margin-top: 6px;
+    margin-top: 8px;
     color: var(--gl-ink);
     font: 800 clamp(34px, 3.4vw, 46px) / 1.1 var(--gl-head);
 }
@@ -6310,14 +6327,14 @@ button.gl-cb-tile:hover {
 .gl-hero-collect-tiles {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
+    gap: 12px;
 }
 
 .gl-hero-collect-tiles > div {
     display: grid;
     gap: 4px;
     align-content: start;
-    padding: 12px 14px;
+    padding: 12px 16px;
     border-radius: 16px;
     background: rgb(var(--panel-tile));
 }
@@ -6346,7 +6363,7 @@ button.gl-cb-tile:hover {
 .gl-hero-collect-split {
     display: block;
     height: 8px;
-    margin: 8px 0 2px;
+    margin: 8px 0 0;
     overflow: hidden;
     border-radius: 99px;
     background: rgb(var(--gray-400) / 0.5);
@@ -6382,7 +6399,7 @@ button.gl-cb-tile:hover {
 .gl-rank {
     display: grid;
     gap: 12px;
-    margin: 4px 0 10px;
+    margin: 4px 0 8px;
     padding: 0;
     list-style: none;
 }
@@ -6391,7 +6408,7 @@ button.gl-cb-tile:hover {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: 4px 10px;
+    gap: 4px 12px;
     font-size: 13.5px;
 }
 
@@ -6458,8 +6475,8 @@ button.gl-cb-tile:hover {
     flex: none;
     flex-wrap: wrap;
     align-items: center;
-    gap: 12px 14px;
-    padding: 18px 24px;
+    gap: 12px 16px;
+    padding: 16px 24px;
     border-bottom: 1px solid var(--gl-line);
     background: rgb(var(--panel-bg));
 }
@@ -6471,7 +6488,7 @@ button.gl-cb-tile:hover {
 }
 
 .gl-bd-head p {
-    margin: 2px 0 0;
+    margin: 0 0 0;
     color: var(--gl-muted);
     font-size: 13.5px;
 }
@@ -6484,7 +6501,7 @@ button.gl-cb-tile:hover {
     gap: 16px;
     min-height: 0;
     overflow-y: auto;
-    padding: 20px 24px;
+    padding: 16px 24px;
 }
 
 .gl-bd-stats {
@@ -6501,9 +6518,9 @@ button.gl-cb-tile:hover {
 
 .gl-bd-stat {
     display: grid;
-    gap: 6px;
+    gap: 8px;
     align-content: start;
-    padding: 16px 18px;
+    padding: 16px 16px;
     border-radius: 20px;
     background: rgb(var(--panel-bg));
     box-shadow: var(--panel-shadow);
@@ -6512,7 +6529,7 @@ button.gl-cb-tile:hover {
 .gl-bd-stat > small {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .gl-bd-stat .gl-bd-word {
@@ -6528,7 +6545,7 @@ button.gl-cb-tile:hover {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0;
     margin: 0;
-    padding: 16px 18px;
+    padding: 16px 16px;
     border-radius: 20px;
     background: rgb(var(--panel-bg));
     box-shadow: var(--panel-shadow);
@@ -6539,7 +6556,7 @@ button.gl-cb-tile:hover {
     position: relative;
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: 12px;
     padding-inline-end: 16px;
 }
 
@@ -6577,8 +6594,8 @@ button.gl-cb-tile:hover {
 
 .gl-bd-step > span:last-child {
     display: grid;
-    gap: 1px;
-    padding-top: 2px;
+    gap: 4px;
+    padding-top: 4px;
     background: rgb(var(--panel-bg));
     padding-inline-end: 8px;
     position: relative;
@@ -6613,8 +6630,8 @@ button.gl-cb-tile:hover {
 
 .gl-bd-card {
     display: grid;
-    gap: 10px;
-    padding: 16px 18px;
+    gap: 12px;
+    padding: 16px 16px;
     border-radius: 20px;
     background: rgb(var(--panel-bg));
     box-shadow: var(--panel-shadow);
@@ -6629,7 +6646,7 @@ button.gl-cb-tile:hover {
 
 .gl-bd-note {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     margin: 0;
     padding: 12px 16px;
     border-radius: 16px;
@@ -6920,9 +6937,9 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .dt-detail dl {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    gap: 10px 20px;
+    gap: 8px 24px;
     margin: 0;
-    padding: 12px 14px;
+    padding: 12px 16px;
     border-radius: 14px;
     background: rgb(var(--panel-bg));
     box-shadow: inset 0 0 0 1px rgb(var(--gray-100));
@@ -6935,7 +6952,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .dt-detail dd {
-    margin: 2px 0 0;
+    margin: 0 0 0;
     font-size: 13.5px;
     font-weight: 600;
     white-space: normal;
@@ -6958,7 +6975,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     .data-table tbody tr.dt-detail {
         display: block;
         margin-top: 0;
-        padding: 0 14px 14px;
+        padding: 0 16px 12px;
         border-top: 0;
         border-start-start-radius: 0;
         border-start-end-radius: 0;
@@ -6999,7 +7016,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     border-radius: 999px;
     background-color: rgb(var(--group-fill));
     padding-block: 0;
-    padding-inline: 14px 34px;
+    padding-inline: 16px 32px;
     line-height: 40px;
     font-size: 13.5px;
     font-weight: 600;
@@ -7056,7 +7073,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
         gap: 16px;
         min-height: 0;
         margin: 0;
-        padding: 20px;
+        padding: 16px;
         overflow-y: auto;
         border-radius: 0;
         border-inline-start: 1px solid var(--gl-line);
@@ -7074,8 +7091,8 @@ html:root[data-ui-background='graphite'] .pm-hero {
     .gl-sheet > .gl-mv .gl-mv-who {
         display: grid;
         grid-template-columns: auto minmax(0, 1fr);
-        gap: 10px 12px;
-        padding-bottom: 14px;
+        gap: 8px 12px;
+        padding-bottom: 12px;
         border-bottom: 1px solid var(--gl-line);
     }
 
@@ -7100,7 +7117,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
         flex-wrap: wrap;
         align-items: baseline;
         justify-content: space-between;
-        gap: 2px 10px;
+        gap: 4px 12px;
         padding: 8px 0;
     }
 
@@ -7118,9 +7135,9 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
     .gl-sheet > .gl-mv .gl-mv-cell.is-result {
         display: grid;
-        gap: 2px;
+        gap: 4px;
         margin-top: 8px;
-        padding: 14px 0 0;
+        padding: 12px 0 0;
         border-top: 1px dashed var(--gl-line-strong, var(--gl-line));
         text-align: end;
     }
@@ -7164,7 +7181,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
     padding: 8px 0;
     font-size: 13.5px;
 }
@@ -7257,7 +7274,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
  */
 .gl-set-page {
     display: grid;
-    gap: 20px;
+    gap: 24px;
     min-width: 0;
 }
 
@@ -7290,16 +7307,16 @@ html:root[data-ui-background='graphite'] .pm-hero {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    gap: 14px;
+    gap: 16px;
 }
 
 .gl-set-head {
-    padding: 20px 22px 6px;
+    padding: 16px 24px 8px;
 }
 
 .gl-set-heading {
     align-items: center;
-    padding: 2px 2px 0;
+    padding: 4px 4px 0;
 }
 
 .gl-set-ico {
@@ -7329,7 +7346,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-set-desc,
 .gl-set-card .gl-set-desc {
     max-width: 72ch;
-    margin: 3px 0 0;
+    margin: 4px 0 0;
     color: var(--ma-muted);
     font-size: 13.5px;
     line-height: 1.65;
@@ -7363,15 +7380,15 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-set-body {
     display: grid;
-    gap: 14px;
-    padding: 12px 22px 22px;
+    gap: 16px;
+    padding: 12px 24px 24px;
 }
 
 .gl-set-foot {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
-    padding: 14px 22px 18px;
+    padding: 12px 24px 16px;
     border-top: 1px solid var(--ma-line);
 }
 
@@ -7385,13 +7402,13 @@ html:root[data-ui-background='graphite'] .pm-hero {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(220px, 340px);
     align-items: center;
-    gap: 10px 28px;
+    gap: 8px 24px;
     padding: 16px 0;
     border-bottom: 1px solid var(--ma-line);
 }
 
 .gl-set-row:first-child {
-    padding-top: 6px;
+    padding-top: 8px;
 }
 
 .gl-set-row-text {
@@ -7406,7 +7423,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-set-hint {
-    margin: 3px 0 0;
+    margin: 4px 0 0;
     color: var(--ma-muted);
     font-size: 13px;
     line-height: 1.6;
@@ -7436,7 +7453,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-set-select .select__trigger {
     width: 100%;
     min-height: 44px;
-    padding-inline: 14px 12px;
+    padding-inline: 16px 12px;
     border: 0;
     border-radius: 13px;
     background: var(--ma-tile);
@@ -7461,7 +7478,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-set-week {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 6px;
+    gap: 8px;
     margin: 16px 0 0;
     padding: 0;
     list-style: none;
@@ -7470,7 +7487,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-set-week li {
     display: grid;
     place-items: center;
-    gap: 1px;
+    gap: 4px;
     min-height: 54px;
     padding: 8px 4px;
     border-radius: 13px;
@@ -7506,8 +7523,8 @@ html:root[data-ui-background='graphite'] .pm-hero {
     flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
-    gap: 10px;
-    padding-top: 18px;
+    gap: 12px;
+    padding-top: 16px;
 }
 
 /* The save key: raised dark, as the MA primary key. */
@@ -7515,7 +7532,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-set-save {
     min-height: 42px;
     gap: 8px;
-    padding-inline: 18px;
+    padding-inline: 16px;
     border: 0;
     border-radius: 13px;
     background: var(--ma-act);
@@ -7545,9 +7562,9 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-set-tile {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
     min-width: 0;
-    padding: 16px 18px;
+    padding: 16px 16px;
     border-radius: 18px;
     background: var(--ma-solid);
     box-shadow: var(--ma-depth);
@@ -7565,7 +7582,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     place-items: center;
     min-width: 52px;
     height: 36px;
-    padding-inline: 10px;
+    padding-inline: 12px;
     border-radius: 11px;
     background: var(--ts, var(--ma-tile));
     color: var(--t, var(--ma-ink));
@@ -7576,7 +7593,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-set-currency-head {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .gl-set-currency-name {
@@ -7591,7 +7608,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
     margin-top: auto;
     padding-top: 12px;
     border-top: 1px solid var(--ma-line);
@@ -7604,7 +7621,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 /* HeroUI's text field in a settings tile: its label above, the field soft. */
 .gl-set-field {
     display: grid;
-    gap: 6px;
+    gap: 8px;
 }
 
 .gl-set-field .label,
@@ -7648,7 +7665,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     flex-wrap: wrap;
     align-items: center;
     gap: 12px;
-    padding: 12px 14px;
+    padding: 12px 16px;
     border-radius: 16px;
     background: var(--ma-tile);
     box-shadow: var(--ma-hl);
@@ -7668,7 +7685,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-set-lock {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     color: var(--ma-muted);
     font-size: 13px;
     font-weight: 700;
@@ -7677,7 +7694,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 /* The users table: the username as a quiet code pill, the type and branch as HeroUI chips in their tones. */
 .gl-user-handle {
     display: inline-block;
-    padding: 3px 9px;
+    padding: 4px 8px;
     border-radius: 9px;
     background: var(--ma-tile);
     color: var(--ma-ink);
@@ -7685,7 +7702,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-user-chip.chip {
-    gap: 5px;
+    gap: 4px;
     background: var(--ma-tile);
     color: var(--ma-ink);
     font-weight: 700;
@@ -7705,7 +7722,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-pt-head {
     align-items: center;
-    padding-bottom: 18px;
+    padding-bottom: 16px;
 }
 
 .gl-pt-card[data-empty] .gl-set-ico {
@@ -7714,7 +7731,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-pt-add.button {
-    gap: 6px;
+    gap: 8px;
     height: 36px;
     padding-inline: 12px;
     border: 0;
@@ -7733,15 +7750,15 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-pt-list {
     display: grid;
     gap: 8px;
-    padding: 0 18px 18px;
+    padding: 0 16px 16px;
 }
 
 .gl-pt-item {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px 12px;
-    padding: 12px 14px;
+    gap: 8px 12px;
+    padding: 12px 16px;
     border-radius: 15px;
     background: var(--ma-tile);
     box-shadow: var(--ma-hl);
@@ -7761,14 +7778,14 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-pt-meta {
-    margin: 2px 0 0;
+    margin: 0 0 0;
     color: var(--ma-muted);
     font-size: 12.5px;
 }
 
 .gl-pt-keys {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     margin-inline-start: auto;
 }
 
@@ -7803,7 +7820,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     left: 50%;
     z-index: 5;
     max-width: 240px;
-    padding: 5px 9px;
+    padding: 4px 8px;
     border-radius: 9px;
     background: var(--ma-act);
     color: #fff;
@@ -7826,7 +7843,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     display: grid;
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
     align-items: start;
-    gap: 20px;
+    gap: 24px;
 }
 
 @media (max-width: 980px) {
@@ -7886,7 +7903,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-app-hero h2 {
-    margin: 2px 0 6px;
+    margin: 0 0 8px;
     font: 900 26px/1.25 var(--font-heading, 'Zain'), sans-serif;
 }
 
@@ -7899,7 +7916,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-app-release {
     display: grid;
-    gap: 14px;
+    gap: 16px;
     padding-top: 16px;
     border-top: 1px solid rgb(255 255 255 / 0.12);
 }
@@ -7911,7 +7928,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-app-chip.chip {
-    gap: 5px;
+    gap: 4px;
     background: rgb(255 255 255 / 0.1);
     color: #fff;
     font-weight: 700;
@@ -7922,9 +7939,9 @@ html:root[data-ui-background='graphite'] .pm-hero {
     align-items: center;
     justify-content: center;
     justify-self: start;
-    gap: 10px;
+    gap: 12px;
     min-height: 48px;
-    padding-inline: 22px;
+    padding-inline: 24px;
     border-radius: 14px;
     background: var(--ma-pay-btn);
     color: #fff;
@@ -7948,7 +7965,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-app-missing {
-    padding: 12px 14px;
+    padding: 12px 16px;
     border-radius: 14px;
     background: rgb(240 168 60 / 0.16);
     color: #ffd79a !important;
@@ -7956,7 +7973,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-app-steps {
     display: grid;
-    gap: 10px;
+    gap: 12px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -7966,7 +7983,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    padding: 12px 14px;
+    padding: 12px 16px;
     border-radius: 15px;
     background: var(--ma-tile);
     box-shadow: var(--ma-hl);
@@ -7990,7 +8007,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-app-steps p {
-    margin: 2px 0 0;
+    margin: 0 0 0;
     color: var(--ma-muted);
     font-size: 13.5px;
     line-height: 1.65;
@@ -8030,7 +8047,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     }
 
     .gl-set-body {
-        padding: 10px 16px 18px;
+        padding: 8px 16px 16px;
     }
 
     .gl-set-aside,
@@ -8047,7 +8064,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-set-switch .switch__content {
-    gap: 10px;
+    gap: 12px;
     color: var(--ma-ink);
     font-size: 15px;
     font-weight: 700;
@@ -8077,25 +8094,25 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-win-head {
     display: flex;
     align-items: flex-start;
-    gap: 14px;
-    padding: 22px 22px 6px;
+    gap: 16px;
+    padding: 24px 24px 8px;
 }
 
 .gl-win-body {
-    padding: 14px 22px 20px;
+    padding: 12px 24px 16px;
 }
 
 .gl-win-foot {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    padding: 14px 22px 18px;
+    gap: 12px;
+    padding: 12px 24px 16px;
     border-top: 1px solid var(--ma-line);
 }
 
 .gl-win-cancel.button {
     min-height: 42px;
-    padding-inline: 18px;
+    padding-inline: 16px;
     border: 0;
     border-radius: 13px;
     background: var(--ma-tile);
@@ -8131,9 +8148,9 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-pt-pick-item .radio__content {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     width: 100%;
-    padding: 10px 12px;
+    padding: 8px 12px;
     border-radius: 14px;
     background: var(--ma-tile);
     box-shadow: var(--ma-hl);
@@ -8204,7 +8221,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     flex-direction: column;
     gap: 16px;
     overflow: hidden;
-    padding: 22px;
+    padding: 24px;
     border: 0;
     border-radius: 22px;
     background: var(--ma-panel);
@@ -8277,14 +8294,14 @@ html:root[data-ui-background='graphite'] .pm-hero {
     align-items: center;
     gap: 16px;
     margin-top: 16px;
-    padding: 18px 22px;
+    padding: 16px 24px;
 }
 
 .gl-tariff-kilos {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 4px 14px;
+    padding: 4px 16px;
     border-radius: 14px;
     background: var(--ma-tile);
     box-shadow: var(--ma-hl);
@@ -8298,7 +8315,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-tariff-sum {
     flex: 1;
     min-width: 150px;
-    padding: 10px 16px;
+    padding: 8px 16px;
     border-radius: 16px;
     background: var(--ma-solid);
     box-shadow: var(--ma-depth);
@@ -8313,7 +8330,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
  */
 .gl-flow.card {
     gap: 0;
-    padding: 18px 20px 20px;
+    padding: 16px 16px 16px;
     border: 0;
     border-radius: 22px;
     background: var(--ma-panel);
@@ -8321,7 +8338,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     backdrop-filter: var(--ma-blur);
     box-shadow: var(--ma-depth);
     color: var(--ma-ink);
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
 .gl-flow-head {
@@ -8330,7 +8347,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     flex-wrap: wrap;
     align-items: center;
     gap: 12px;
-    padding: 0 0 14px;
+    padding: 0 0 12px;
 }
 
 .gl-flow-week {
@@ -8356,9 +8373,9 @@ html:root[data-ui-background='graphite'] .pm-hero {
     --t: var(--ma-muted);
     display: grid;
     align-content: start;
-    gap: 2px;
+    gap: 4px;
     min-width: 0;
-    padding: 14px 16px;
+    padding: 12px 16px;
 }
 
 .gl-flow-stage + .gl-flow-stage {
@@ -8377,7 +8394,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-flow-label {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
     color: var(--ma-muted);
     font-size: 13px;
     font-weight: 800;
@@ -8408,7 +8425,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-flow-bar {
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
 .gl-flow-bar .progress-bar__track {
@@ -8460,7 +8477,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-rc-track {
     display: inline-flex;
-    gap: 3px;
+    gap: 4px;
 }
 
 .gl-rc-track i {
@@ -8519,7 +8536,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-rc-tile-head {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .gl-rc-tile-head small {
@@ -8542,9 +8559,9 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-rc-terms > span {
     display: grid;
-    gap: 1px;
+    gap: 4px;
     min-width: 0;
-    padding: 9px 11px;
+    padding: 8px 12px;
     border-radius: 13px;
     background: var(--ma-solid);
     box-shadow: var(--ma-depth);
@@ -8599,14 +8616,14 @@ html:root[data-ui-background='graphite'] .pm-hero {
     flex-wrap: wrap;
     align-items: stretch;
     gap: 8px;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
 .gl-eq-term.card {
     --t: var(--ma-muted);
     flex: 1 1 180px;
-    gap: 2px;
-    padding: 14px 16px;
+    gap: 4px;
+    padding: 12px 16px;
     border: 0;
     border-radius: 18px;
     background: var(--ma-panel);
@@ -8622,7 +8639,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-eq-term small {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     color: var(--ma-muted);
     font-size: 13px;
     font-weight: 800;
@@ -8683,7 +8700,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-eq-chg {
     margin-inline-start: auto;
-    padding: 1px 7px;
+    padding: 4px 8px;
     border-radius: 99px;
     background: var(--ma-tile);
     color: var(--ma-ink);
@@ -8704,7 +8721,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-age-figs {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 14px;
+    gap: 16px;
     margin-bottom: 16px;
 }
 
@@ -8716,8 +8733,8 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-age-fig.card {
     --t: var(--ma-ink);
-    gap: 2px;
-    padding: 16px 18px;
+    gap: 4px;
+    padding: 16px 16px;
     border: 0;
     border-radius: 20px;
     background: var(--ma-panel);
@@ -8766,7 +8783,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-age.card {
     gap: 0;
-    padding: 18px 20px 20px;
+    padding: 16px 16px 16px;
     border: 0;
     border-radius: 22px;
     background: var(--ma-panel);
@@ -8792,7 +8809,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-age-empty {
-    padding: 28px 0;
+    padding: 24px 0;
     color: var(--ma-muted);
     text-align: center;
 }
@@ -8808,7 +8825,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-age-legend {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
+    gap: 12px;
     margin: 12px 0 0;
     padding: 0;
     list-style: none;
@@ -8822,8 +8839,8 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-age-legend li {
     display: grid;
-    gap: 1px;
-    padding: 10px 12px;
+    gap: 4px;
+    padding: 8px 12px;
     border-radius: 14px;
     background: var(--ma-tile);
     box-shadow: var(--ma-hl);
@@ -8832,7 +8849,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-age-legend small {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     color: var(--ma-muted);
     font-size: 12.5px;
     font-weight: 800;
@@ -8858,7 +8875,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-age-heat {
     display: inline-block;
     min-width: 58px;
-    padding: 3px 9px;
+    padding: 4px 8px;
     border-radius: 9px;
     font-weight: 800;
     text-align: center;
@@ -8886,9 +8903,9 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-today.card {
     position: relative;
-    gap: 2px;
+    gap: 4px;
     overflow: hidden;
-    padding: 20px 22px;
+    padding: 16px 24px;
     border: 0;
     border-radius: 22px;
     background: radial-gradient(120% 140% at 100% 0%, #3a3f49 0%, #22252c 55%, #191b20 100%);
@@ -8946,8 +8963,8 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-today-parts {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px 22px;
-    margin: 10px 0 0;
+    gap: 8px 24px;
+    margin: 8px 0 0;
 }
 
 .gl-today-parts div {
@@ -8959,7 +8976,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-today-parts dt {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     color: rgb(255 255 255 / 0.72);
     font-size: 13px;
 }
@@ -8977,7 +8994,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-week.card {
     gap: 0;
-    padding: 18px 20px;
+    padding: 16px 16px;
     border: 0;
     border-radius: 22px;
     background: var(--ma-panel);
@@ -9000,7 +9017,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     align-items: end;
-    gap: 10px;
+    gap: 12px;
     height: 170px;
     margin: 0;
     padding: 0;
@@ -9012,7 +9029,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     height: 100%;
     min-width: 0;
 }
@@ -9054,7 +9071,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-rp-figs {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 14px;
+    gap: 16px;
 }
 
 .gl-rp-figs.is-five {
@@ -9076,8 +9093,8 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-rp-fig.card {
-    gap: 2px;
-    padding: 14px 16px;
+    gap: 4px;
+    padding: 12px 16px;
     border: 0;
     border-radius: 18px;
     background: var(--ma-panel);
@@ -9098,7 +9115,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-rp-fig small {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     color: var(--ma-muted);
     font-size: 12.5px;
     font-weight: 800;
@@ -9146,7 +9163,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-rp-panel.card {
     gap: 0;
-    padding: 18px 20px 20px;
+    padding: 16px 16px 16px;
     border: 0;
     border-radius: 22px;
     background: var(--ma-panel);
@@ -9167,7 +9184,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px 12px;
+    gap: 8px 12px;
     padding: 0 0 12px;
 }
 
@@ -9184,6 +9201,11 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-rp-body {
     min-width: 0;
+}
+
+/* A table wider than a phone scrolls inside its panel instead of spilling past the page's edge. */
+.gl-rp-body:has(> .gl-rp-table) {
+    overflow-x: auto;
 }
 
 .gl-rp-split {
@@ -9217,7 +9239,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-rp-table th {
-    padding: 10px 12px;
+    padding: 8px 12px;
     background: var(--ma-tile);
     color: var(--ma-muted);
     font-size: 12.5px;
@@ -9230,7 +9252,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-rp-table th:last-child { border-start-end-radius: 12px; border-end-end-radius: 12px; }
 
 .gl-rp-table td {
-    padding: 11px 12px;
+    padding: 12px 12px;
     border-top: 1px solid var(--ma-line);
     color: var(--ma-ink);
     vertical-align: middle;
@@ -9241,7 +9263,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-rp-table :is(th, td).num {
-    text-align: left;
+    text-align: end;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }
@@ -9256,7 +9278,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-rp-table tr.is-sub td:first-child {
-    padding-inline-start: 28px;
+    padding-inline-start: 24px;
 }
 
 .gl-rp-table tr.is-flag td {
@@ -9317,7 +9339,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-rp-trio {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
+    gap: 12px;
 }
 
 .gl-rp-trio .gl-rp-fig.card {
@@ -9349,7 +9371,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-rp-legend {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 18px;
+    gap: 8px 16px;
     color: var(--ma-muted);
     font-size: 13px;
 }
@@ -9357,7 +9379,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .gl-rp-legend span {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .gl-rp-legend i {
@@ -9383,7 +9405,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     grid-template-columns: 40px minmax(0, 1fr) auto;
     align-items: center;
     gap: 12px;
-    padding: 10px 0;
+    padding: 8px 0;
     border-top: 1px solid var(--ma-line);
 }
 
@@ -9406,7 +9428,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-rp-accounts .gl-rp-share {
     max-width: none;
-    margin-top: 6px;
+    margin-top: 8px;
 }
 
 .gl-rp-amount {
@@ -9449,12 +9471,12 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 /* A currency amount reads from the column's start (right in Arabic), its code after it. */
 .gl-rp-table :is(th, td).is-start {
-    text-align: right;
+    text-align: start;
 }
 
 /* Branch performance as a league table: rank, the branch and its place, then the figures that compare branches. */
 .gl-bp .gl-rp-head {
-    gap: 10px;
+    gap: 12px;
 }
 
 .gl-bp-sort-label {
@@ -9525,13 +9547,13 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 /* The audit log's table: the kind as a chip in its tone, before struck in red and after in green, the impact signed, a sensitive row tinted with a red edge. */
 .gl-au-table .num {
-    text-align: left;
+    text-align: end;
     white-space: nowrap;
 }
 
 .gl-au-kind.chip,
 .gl-rp-chip.chip {
-    gap: 5px;
+    gap: 4px;
     background: var(--ts);
     color: var(--t);
     font-weight: 800;
@@ -9539,7 +9561,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 .gl-au-sensitive {
     display: block;
-    margin-top: 5px;
+    margin-top: 4px;
     color: var(--ma-owe);
     font-size: 12px;
     font-weight: 800;
@@ -9572,7 +9594,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     display: inline-grid;
     color: var(--t);
     font-weight: 900;
-    text-align: left;
+    text-align: end;
 }
 
 .gl-au-impact small {
@@ -9623,7 +9645,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
     flex-wrap: wrap;
     align-items: center;
     gap: 12px;
-    padding: 14px 18px;
+    padding: 12px 16px;
     border-radius: 18px;
     background: var(--ma-panel);
     -webkit-backdrop-filter: var(--ma-blur);
@@ -9672,10 +9694,10 @@ html:root[data-ui-background='graphite'] .pm-hero {
 [data-tone="warn"] { --db-c: var(--ma-warn); --db-s: var(--ma-warn-s); }
 [data-tone="faint"] { --db-c: var(--ma-faint); --db-s: var(--ma-tile); }
 
-.db-mission { display: grid; gap: 16px; margin-bottom: 16px; padding: 18px 22px; border-radius: 22px; color: #fff; background: linear-gradient(160deg, #262a31, #15171c); box-shadow: var(--ma-float); }
+.db-mission { display: grid; gap: 16px; margin-bottom: 16px; padding: 16px 24px; border-radius: 22px; color: #fff; background: linear-gradient(160deg, #262a31, #15171c); box-shadow: var(--ma-float); }
 .db-mission-top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
 .db-mission-top small { display: block; font-size: 13px; font-weight: 700; color: rgb(255 255 255 / 0.68); }
-.db-mission-top h2 { margin: 2px 0 0; font-size: 27px; font-weight: 900; line-height: 1.2; }
+.db-mission-top h2 { margin: 0 0 0; font-size: 27px; font-weight: 900; line-height: 1.2; }
 .db-stages { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
 .db-stages li { display: grid; gap: 4px; font-size: 13px; font-weight: 800; color: rgb(255 255 255 / 0.62); }
 .db-stages li::before { content: ""; height: 5px; border-radius: 3px; background: rgb(255 255 255 / 0.14); }
@@ -9683,25 +9705,25 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .db-stages li[data-state="now"] { color: #fff; }
 .db-stages li[data-state="now"]::before { background: linear-gradient(to left, #4fc08d 45%, rgb(255 255 255 / 0.14) 45%); }
 .db-stages small { font-size: 12px; font-weight: 700; color: rgb(255 255 255 / 0.55); }
-.db-balance { display: grid; gap: 8px; padding-top: 14px; border-top: 1px solid rgb(255 255 255 / 0.12); }
-.db-balance p { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; margin: 0; font-size: 13px; color: rgb(255 255 255 / 0.75); }
+.db-balance { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid rgb(255 255 255 / 0.12); }
+.db-balance p { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin: 0; font-size: 13px; color: rgb(255 255 255 / 0.75); }
 .db-balance-bar { display: flex; height: 14px; border-radius: 8px; overflow: hidden; background: rgb(255 255 255 / 0.14); }
 .db-balance-bar i { height: 100%; background: var(--db-c); transition: width .25s ease; }
-.db-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; list-style: none; font-size: 13px; color: rgb(255 255 255 / 0.8); }
-.db-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.db-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0; padding: 0; list-style: none; font-size: 13px; color: rgb(255 255 255 / 0.8); }
+.db-legend li { display: inline-flex; align-items: center; gap: 8px; }
 .db-legend i { width: 9px; height: 9px; border-radius: 3px; background: var(--db-c); }
 .db-legend i[data-tone="faint"] { background: rgb(255 255 255 / 0.3); }
 .db-legend b { color: #fff; }
 @media (max-width: 760px) { .db-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); } .db-stages li:last-child { display: none; } }
 
-.db-board { display: grid; grid-template-columns: 340px minmax(0, 1fr); align-items: start; gap: 14px; }
+.db-board { display: grid; grid-template-columns: 340px minmax(0, 1fr); align-items: start; gap: 16px; }
 @media (max-width: 1100px) { .db-board { grid-template-columns: minmax(0, 1fr); } }
-.db-lanes { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
-.db-pool, .db-lane { display: grid; align-content: start; gap: 10px; min-width: 0; min-height: 200px; padding: 14px; border-radius: 22px; background: var(--ma-panel); backdrop-filter: var(--ma-blur); -webkit-backdrop-filter: var(--ma-blur); box-shadow: var(--ma-depth); transition: box-shadow .15s ease, transform .15s ease; }
+.db-lanes { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+.db-pool, .db-lane { display: grid; align-content: start; gap: 12px; min-width: 0; min-height: 200px; padding: 16px; border-radius: 22px; background: var(--ma-panel); backdrop-filter: var(--ma-blur); -webkit-backdrop-filter: var(--ma-blur); box-shadow: var(--ma-depth); transition: box-shadow .15s ease, transform .15s ease; }
 .db-pool { position: sticky; top: 84px; }
 @media (max-width: 1100px) { .db-pool { position: static; } }
 .db-pool[data-over], .db-lane[data-over] { transform: translateY(-2px); box-shadow: 0 0 0 3px var(--db-c, var(--ma-brand)), var(--ma-depth); }
-.db-lane-head { display: flex; align-items: center; gap: 10px; }
+.db-lane-head { display: flex; align-items: center; gap: 12px; }
 .db-lane-head b { display: block; font-size: 15px; color: var(--ma-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .db-lane-head small { display: block; font-size: 12.5px; font-weight: 700; color: var(--ma-muted); }
 .db-avatar { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 14px; background: var(--db-s); color: var(--db-c); font-size: 17px; font-weight: 900; box-shadow: var(--ma-hl); }
@@ -9714,25 +9736,25 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .db-load[data-heavy] { color: var(--ma-owe); }
 .db-load[data-heavy] .db-load-bar i { background: var(--ma-owe); }
 .db-drop { display: grid; align-content: start; gap: 8px; min-height: 70px; }
-.db-empty { display: grid; place-items: center; min-height: 66px; margin: 0; padding: 10px; border: 2px dashed var(--ma-line); border-radius: 14px; text-align: center; font-size: 13px; font-weight: 700; color: var(--ma-faint); }
+.db-empty { display: grid; place-items: center; min-height: 66px; margin: 0; padding: 12px; border: 2px dashed var(--ma-line); border-radius: 14px; text-align: center; font-size: 13px; font-weight: 700; color: var(--ma-faint); }
 
 .db-area { overflow: hidden; border-radius: 16px; background: var(--ma-solid); box-shadow: var(--ma-depth); }
-.db-owners { display: flex; gap: 2px; height: 5px; }
+.db-owners { display: flex; gap: 4px; height: 5px; }
 .db-owners span { flex: 1; background: var(--db-c); }
 .db-owners span[data-tone="faint"] { background: var(--ma-line); }
-.db-area-head { display: flex; align-items: center; gap: 8px; padding: 9px 10px; }
+.db-area-head { display: flex; align-items: center; gap: 8px; padding: 8px 12px; }
 .db-area-head[draggable="true"] { cursor: grab; user-select: none; }
 .db-area-head[draggable="true"]:active { cursor: grabbing; }
 .db-grip { flex: none; color: var(--ma-faint); font-weight: 900; letter-spacing: -2px; }
-.db-area-head b { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--ma-ink); }
+.db-area-head b { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ma-ink); }
 .db-area-head small { display: block; font-size: 12px; font-weight: 700; color: var(--ma-muted); }
 .db-area-tools { display: flex; align-items: center; gap: 4px; margin-inline-start: auto; }
-.db-shared { height: 20px; padding: 0 7px; display: inline-flex; align-items: center; border-radius: 99px; background: var(--ma-split-s); color: var(--ma-split); font-size: 11px; font-weight: 800; white-space: nowrap; }
+.db-shared { height: 20px; padding: 0 8px; display: inline-flex; align-items: center; border-radius: 99px; background: var(--ma-split-s); color: var(--ma-split); font-size: 11px; font-weight: 800; white-space: nowrap; }
 .db-mini { width: 28px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 9px; background: var(--ma-tile); box-shadow: var(--ma-hl); color: var(--ma-ink); }
 .db-mini:hover { background: var(--ma-solid); box-shadow: var(--ma-depth); }
 .db-area[data-open] .db-chev svg { transform: rotate(180deg); }
-.db-boxes { display: grid; gap: 6px; margin: 0; padding: 2px 10px 10px; list-style: none; }
-.db-box { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 6px 0 10px; border-radius: 11px; background: var(--ma-tile); box-shadow: var(--ma-hl); font-size: 13px; color: var(--ma-ink); }
+.db-boxes { display: grid; gap: 8px; margin: 0; padding: 4px 12px 8px; list-style: none; }
+.db-box { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 8px 0 12px; border-radius: 11px; background: var(--ma-tile); box-shadow: var(--ma-hl); font-size: 13px; color: var(--ma-ink); }
 .db-box[draggable="true"] { cursor: grab; user-select: none; }
 .db-box > i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--db-c); }
 .db-box b { font-weight: 800; }
@@ -9740,7 +9762,7 @@ html:root[data-ui-background='graphite'] .pm-hero {
 .db-box small { margin-inline-start: auto; white-space: nowrap; }
 .db-dot { display: inline-block; width: 8px; height: 8px; margin-inline-end: 8px; border-radius: 50%; background: var(--db-c); }
 
-.db-tray { position: sticky; bottom: 14px; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 16px; padding: 12px 14px; border-radius: 20px; background: var(--ma-solid); box-shadow: var(--ma-float); }
+.db-tray { position: sticky; bottom: 14px; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; padding: 12px 16px; border-radius: 20px; background: var(--ma-solid); box-shadow: var(--ma-float); }
 .db-tray .grow { flex: 1; }
 .db-tray b { display: block; font-size: 14px; color: var(--ma-ink); }
 .db-tray small { display: block; font-size: 12.5px; color: var(--ma-muted); }
@@ -9764,27 +9786,27 @@ html:root[data-ui-background='graphite'] .pm-hero {
 
 /* The board's cards: HeroUI Card frames, spaced as the board needs. */
 .db-area.card { padding: 0; gap: 0; border-radius: 16px; }
-.db-pool.card, .db-lane.card { padding: 14px; gap: 10px; }
-.db-mission.card { padding: 18px 22px; gap: 16px; }
-.db-tray.card { flex-direction: row; padding: 12px 14px; gap: 10px; }
+.db-pool.card, .db-lane.card { padding: 16px; gap: 12px; }
+.db-mission.card { padding: 16px 24px; gap: 16px; }
+.db-tray.card { flex-direction: row; padding: 12px 16px; gap: 12px; }
 
 /* The subscriptions list: its figures, then the quick filters with their counts above the table. */
-.gl-sub-figs { margin-bottom: 14px; }
+.gl-sub-figs { margin-bottom: 12px; }
 .gl-sub-quick { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
-.gl-sub-count { min-width: 20px; height: 20px; padding: 0 6px; display: inline-grid; place-items: center; border-radius: 99px; background: var(--ma-solid); color: var(--ma-ink); font-size: 11.5px; font-weight: 800; }
-.gl-sub-debtors.toggle-button { height: 40px; gap: 6px; padding: 0 14px; border-radius: 13px; background: var(--ma-tile); box-shadow: var(--ma-hl); color: var(--ma-muted); font-weight: 800; }
+.gl-sub-count { min-width: 20px; height: 20px; padding: 0 8px; display: inline-grid; place-items: center; border-radius: 99px; background: var(--ma-solid); color: var(--ma-ink); font-size: 11.5px; font-weight: 800; }
+.gl-sub-debtors.toggle-button { height: 40px; gap: 8px; padding: 0 16px; border-radius: 13px; background: var(--ma-tile); box-shadow: var(--ma-hl); color: var(--ma-muted); font-weight: 800; }
 .gl-sub-debtors.toggle-button[data-selected='true'] { background: var(--ma-owe-s); color: var(--ma-owe); box-shadow: var(--ma-depth); }
 .gl-sub-quick .gl-seg-group { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
 .gl-sub-quick .gl-seg-item { white-space: nowrap; flex: none; }
 
 /* An empty list that explains itself: its icon, what it is for, its steps and the key to begin. */
-.gl-empty-how { display: grid; justify-items: center; gap: 8px; padding: 30px 16px; text-align: center; color: var(--ma-muted); }
+.gl-empty-how { display: grid; justify-items: center; gap: 8px; padding: 24px 16px; text-align: center; color: var(--ma-muted); }
 .gl-empty-how > b { font-size: 16px; color: var(--ma-ink); }
 .gl-empty-how > p { margin: 0; font-size: 14px; }
 .gl-empty-how .gl-set-ico[data-tone='owe'] { background: var(--ma-owe-s); color: var(--ma-owe); }
 .gl-empty-how .gl-set-ico[data-tone='clr'] { background: var(--ma-clr-s); color: var(--ma-clr); }
-.gl-empty-how ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: min(100%, 680px); margin: 8px 0; padding: 0; list-style: none; }
-.gl-empty-how li { display: grid; gap: 2px; padding: 12px 14px; border-radius: 15px; background: var(--ma-tile); box-shadow: var(--ma-hl); text-align: start; }
+.gl-empty-how ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; width: min(100%, 680px); margin: 8px 0; padding: 0; list-style: none; }
+.gl-empty-how li { display: grid; gap: 4px; padding: 12px 16px; border-radius: 15px; background: var(--ma-tile); box-shadow: var(--ma-hl); text-align: start; }
 .gl-empty-how li b { font-size: 14px; color: var(--ma-ink); }
 .gl-empty-how li span { font-size: 12.5px; }
 @media (max-width: 760px) { .gl-empty-how ol { grid-template-columns: minmax(0, 1fr); } }
@@ -9794,23 +9816,23 @@ html:root[data-ui-background='graphite'] .pm-hero {
  * large tile in its tone, the question as a big title, the explanation at
  * full reading size, then two big keys side by side (stacked on phones).
  */
-.gl-confirm { --cf-c: var(--ma-ink); --cf-s: var(--ma-tile); display: grid; justify-items: center; gap: 12px; padding: 30px 28px 24px; text-align: center; color: var(--ma-ink); }
+.gl-confirm { --cf-c: var(--ma-ink); --cf-s: var(--ma-tile); display: grid; justify-items: center; gap: 12px; padding: 24px 24px 24px; text-align: center; color: var(--ma-ink); }
 .gl-confirm[data-tone='primary'] { --cf-c: var(--ma-ink); --cf-s: var(--ma-tile); }
 .gl-confirm[data-tone='info'] { --cf-c: var(--ma-clr); --cf-s: var(--ma-clr-s); }
 .gl-confirm[data-tone='warning'] { --cf-c: var(--ma-warn); --cf-s: var(--ma-warn-s); }
 .gl-confirm[data-tone='danger'] { --cf-c: var(--ma-owe); --cf-s: var(--ma-owe-s); }
 .gl-confirm-icon { width: 72px; height: 72px; display: grid; place-items: center; border-radius: 24px; background: var(--cf-s); color: var(--cf-c); box-shadow: var(--ma-hl); }
 .gl-confirm-icon svg { width: 34px; height: 34px; }
-.gl-confirm-title { margin: 6px 0 0; font-size: 24px; font-weight: 900; line-height: 1.35; overflow-wrap: anywhere; }
+.gl-confirm-title { margin: 8px 0 0; font-size: 24px; font-weight: 900; line-height: 1.35; overflow-wrap: anywhere; }
 .gl-confirm-message { max-width: 460px; color: var(--ma-muted); font-size: 16.5px; line-height: 1.85; white-space: pre-line; overflow-wrap: anywhere; }
 .gl-confirm-extra { width: 100%; text-align: start; font-size: 15px; }
-.gl-confirm-keys { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 10px; }
+.gl-confirm-keys { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin-top: 8px; }
 .gl-confirm-keys .button { width: 100%; height: 52px; border-radius: 15px; font-size: 16px; font-weight: 800; }
 .gl-confirm[data-tone='warning'] .gl-confirm-yes.button { background: var(--ma-warn); color: #fff; }
 .gl-confirm[data-tone='info'] .gl-confirm-yes.button { background: var(--ma-clr); color: #fff; }
 .gl-confirm[data-tone='danger'] .gl-confirm-yes.button { background: var(--ma-owe); color: #fff; }
 @media (max-width: 560px) {
-    .gl-confirm { padding: 26px 18px 18px; }
+    .gl-confirm { padding: 24px 16px 16px; }
     .gl-confirm-title { font-size: 21px; }
     .gl-confirm-keys { grid-template-columns: minmax(0, 1fr); }
 }
@@ -9838,8 +9860,8 @@ html:root[data-ui-background='graphite'] .pm-hero {
 }
 
 .gl-toast > div:first-child {
-    gap: 14px;
-    padding: 14px 12px 14px 16px;
+    gap: 16px;
+    padding: 12px 12px 12px 16px;
 }
 
 .gl-toast-icon {
@@ -9950,7 +9972,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 }
 
 .checkbox .checkbox__content {
-    gap: 10px;
+    gap: 12px;
 }
 }
 
@@ -10016,7 +10038,7 @@ body:has([role='dialog'], [role='alertdialog']) .gl-toast {
 
 /* ChoiceSelect's list on the frosted pop surface, as every floating surface. */
 .gl-choice-pop {
-    padding: 6px;
+    padding: 8px;
     border-radius: 16px;
     background: var(--ma-pop);
     -webkit-backdrop-filter: blur(30px) saturate(1.5);

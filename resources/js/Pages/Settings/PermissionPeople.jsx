@@ -75,12 +75,12 @@ export default function EmployeeList({
                         onChange={(event) => onSearchChange(event.target.value)}
                         placeholder="ابحث عن موظف..."
                         aria-label="البحث عن موظف بالاسم أو اسم المستخدم"
-                        className="block w-full py-2.5 pe-10 ps-10 text-sm"
+                        className="block w-full py-2 field-room-end field-room-start text-sm"
                     />
                     <span className="kbd pointer-events-none absolute inset-y-0 inset-e-3 my-auto h-fit">/</span>
                 </div>
                 {roleGroup && (
-                    <div className="mt-3 flex flex-wrap gap-1.5" role="group" aria-label={roleGroup.label}>
+                    <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={roleGroup.label}>
                         {[{ value: '', label: 'الكل' }, ...roleGroup.options].map((option) => {
                             const pressed = (filterValues.user_type_id ?? '') === option.value;
 
@@ -118,7 +118,7 @@ export default function EmployeeList({
 
             <div className="pm-people-list">
                 {users.data.length === 0 ? (
-                    <p className="px-4 py-10 text-center text-sm text-gray-500">لا يوجد موظفون مطابقون.</p>
+                    <p className="px-4 py-8 text-center text-sm text-gray-500">لا يوجد موظفون مطابقون.</p>
                 ) : (
                     roles.map((role) => (
                         <section key={role} aria-label={role} style={{ '--role': colorOf(role) }}>
@@ -142,16 +142,16 @@ export default function EmployeeList({
                                             >
                                                 <EmployeeAvatar name={user.name} color={colorOf(role)} />
                                                 <span className="min-w-0 flex-1">
-                                                    <span className="flex items-center gap-1.5">
+                                                    <span className="flex items-center gap-2">
                                                         <span className="truncate text-[15px] font-bold text-gray-900">{user.name}</span>
                                                         {isSelected && selectedDirty && <span title="تغييرات لم تُحفظ" className="pm-unsaved" />}
                                                         {user.isActive === false && (
-                                                            <span className="rounded-md bg-gray-100 px-1.5 text-[12px] font-bold text-gray-500">
+                                                            <span className="rounded-md bg-gray-100 px-2 text-[12px] font-bold text-gray-500">
                                                                 موقوف
                                                             </span>
                                                         )}
                                                     </span>
-                                                    <span className="mt-0.5 flex items-center gap-2.5 text-[13px] text-gray-500">
+                                                    <span className="mt-1 flex items-center gap-3 text-[13px] text-gray-500">
                                                         <span className="inline-flex items-center gap-1" title="عدد الصلاحيات">
                                                             <Icon name="key" className="h-3.5 w-3.5" />
                                                             <b className="font-display font-semibold text-gray-700">{stats.total}</b>

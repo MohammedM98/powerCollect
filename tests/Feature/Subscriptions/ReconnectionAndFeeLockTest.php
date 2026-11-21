@@ -10,6 +10,7 @@ use App\Models\SubscriptionBulkChange;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class ReconnectionAndFeeLockTest extends TestCase
@@ -260,7 +261,7 @@ class ReconnectionAndFeeLockTest extends TestCase
         $subscription = Subscription::factory()->create(['branch_id' => $this->admin->branch_id, 'subscription_fee' => 150]);
 
         $this->actingAs($this->admin)
-            ->post(route('subscriptions.charges.store', $subscription), ['type' => ChargeType::SubscriptionFee->value, 'amount' => 150])
+            ->post(route('subscriptions.charges.store', $subscription), ['operation_token' => (string) Str::uuid(), 'type' => ChargeType::SubscriptionFee->value, 'amount' => 150])
             ->assertSessionHasNoErrors();
 
         $this->put(route('subscriptions.update', $subscription), $this->editPayload($subscription, ['subscription_fee' => 20]))

@@ -17,7 +17,7 @@ const RATE_STEPS = [-0.25, -0.1, 0.1, 0.25];
 /** One figure in a card's row of three. */
 function Stat({ dark, label, value, unit }) {
     return (
-        <div className={`rounded-2xl border px-3.5 py-2.5 ${dark ? 'border-white/10 bg-white/5' : 'border-gray-100 bg-gray-50'}`}>
+        <div className={`rounded-2xl border px-4 py-2 ${dark ? 'border-white/10 bg-white/5' : 'border-gray-100 bg-gray-50'}`}>
             <small className={`block text-[12.5px] ${dark ? 'text-white/60' : 'text-gray-500'}`}>{label}</small>
             <b className="font-display text-xl font-extrabold">{value}</b>
             {unit && <em className={`ms-1 text-xs not-italic ${dark ? 'text-white/60' : 'text-gray-500'}`}>{unit}</em>}
@@ -75,7 +75,7 @@ function RateEditor({ tariff, dark, onDone }) {
         >
             <div className="flex flex-wrap items-center gap-3">
                 <label
-                    className={`flex min-w-[210px] flex-1 items-center gap-2 rounded-2xl border-[1.5px] px-3.5 py-1.5 focus-within:ring-4 ${
+                    className={`flex min-w-[210px] flex-1 items-center gap-2 rounded-2xl border-[1.5px] px-4 py-2 focus-within:ring-4 ${
                         dark
                             ? 'border-white/20 bg-gray-950/60 focus-within:border-white focus-within:ring-white/10'
                             : 'border-gray-200 bg-surface focus-within:border-brand-500 focus-within:ring-brand-500/15'
@@ -94,7 +94,7 @@ function RateEditor({ tariff, dark, onDone }) {
                     />
                     <span className={`text-[15px] font-bold ${muted}`}>₪ للكيلو</span>
                 </label>
-                <div className="flex gap-1.5">
+                <div className="flex gap-2">
                     {RATE_STEPS.map((step) => (
                         <Button data-raw="" variant="ghost"
                             key={step}
@@ -136,13 +136,13 @@ function RateEditor({ tariff, dark, onDone }) {
             </div>
 
             {change.large && (
-                <p className={`flex items-center gap-1.5 text-[13px] ${dark ? 'text-amber-300' : 'text-amber-700'}`}>
+                <p className={`flex items-center gap-2 text-[13px] ${dark ? 'text-amber-300' : 'text-amber-700'}`}>
                     <Icon name="warning" className="h-4 w-4" />
                     تغيير كبير ({Math.abs(change.percent).toFixed(0)}%). تأكد منه قبل الحفظ.
                 </p>
             )}
             <p className={`flex items-start gap-2 text-[13px] leading-relaxed ${muted}`}>
-                <Icon name="info" className="mt-0.5 h-4 w-4 shrink-0" />
+                <Icon name="info" className="mt-1 h-4 w-4 shrink-0" />
                 يُطبَّق السعر الجديد على القراءات التي تُسجَّل من الآن، لـ {formatNumber(tariff.subscriptionsCount)} مشترك. القراءات السابقة تبقى على
                 سعرها.
             </p>
@@ -204,7 +204,7 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
                 </div>
             </div>
 
-            <div className="relative flex flex-wrap items-end gap-2.5">
+            <div className="relative flex flex-wrap items-end gap-3">
                 <span className="font-display text-[44px] font-extrabold leading-none tracking-tight sm:text-[56px]" dir="ltr">
                     {formatMoney(tariff.rate, { cents: true })}
                 </span>
@@ -222,7 +222,7 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
                 )}
             </div>
 
-            <div className="relative grid grid-cols-3 gap-2 sm:gap-2.5">
+            <div className="relative grid grid-cols-3 gap-2 sm:gap-3">
                 <Stat dark={dark} label="المشتركون" value={formatNumber(tariff.subscriptionsCount)} />
                 <Stat
                     dark={dark}
@@ -241,10 +241,10 @@ function TariffCard({ tariff, dark, editing, onEdit, onDoneEditing, onDelete }) 
             {editing && <RateEditor tariff={tariff} dark={dark} onDone={onDoneEditing} />}
 
             {tariff.history.length > 0 && (
-                <p className={`relative flex flex-wrap items-center gap-1.5 text-[12.5px] ${dark ? 'text-white/50' : 'text-gray-500'}`}>
+                <p className={`relative flex flex-wrap items-center gap-2 text-[12.5px] ${dark ? 'text-white/50' : 'text-gray-500'}`}>
                     السجل:
                     {tariff.history.map((change, index) => (
-                        <span key={change.id} className="inline-flex items-center gap-1.5">
+                        <span key={change.id} className="inline-flex items-center gap-2">
                             {index > 0 && <i className="h-1 w-1 rounded-full bg-current opacity-50" aria-hidden="true" />}
                             {change.date} <b className={`font-display font-bold ${dark ? 'text-white/85' : 'text-gray-700'}`}>{formatMoney(change.rate, { cents: true })}</b>
                         </span>
@@ -277,7 +277,7 @@ function QuickCalculator({ tariffs }) {
                 />
                 <span className="font-bold text-gray-500">كيلو</span>
             </label>
-            <div className="flex w-full flex-wrap gap-2.5 sm:ms-auto sm:w-auto">
+            <div className="flex w-full flex-wrap gap-3 sm:ms-auto sm:w-auto">
                 {tariffs.map((tariff) => (
                     <div key={tariff.id} className="gl-tariff-sum">
                         <small className="block text-[12.5px] text-gray-500">
@@ -315,7 +315,7 @@ export default function Index({ tariffs, segments, canCreate, canCreateSegment, 
             <Head title="التعرفات" />
 
             {tariffs.length === 0 ? (
-                <p className="rounded-card border border-dashed border-gray-200 bg-surface px-6 py-12 text-center text-gray-500">
+                <p className="rounded-card border border-dashed border-gray-200 bg-surface px-6 py-8 text-center text-gray-500">
                     لا توجد تعرفات بعد.
                 </p>
             ) : (

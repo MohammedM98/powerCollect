@@ -34,35 +34,35 @@ function AddModal({ list, selection, count, reasonOptions, today, onClose, onDon
     return (
         <Modal show onClose={onClose} maxWidth="lg">
             <form onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="add-title">
-                <div className="flex items-start gap-4 px-7 pb-2 pt-7">
+                <div className="flex items-start gap-4 px-6 pb-2 pt-6">
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600">
                         <Icon name="plus" strokeWidth={2} />
                     </span>
                     <div>
                         <h3 id="add-title" className="text-lg font-bold text-gray-900">إضافة إلى «{list.title}»</h3>
-                        <p className="mt-1.5 text-sm text-gray-600">
+                        <p className="mt-2 text-sm text-gray-600">
                             <b className="text-gray-900">{count.toLocaleString('en')}</b> مشترك{selection.all ? ' (كل النتائج المطابقة للفلاتر في كل الصفحات)' : ' محدد'}. من لا يمكن إدراجه (مدرج في قائمة أخرى أو خدمته غير فعّالة) يُستثنى ويظهر في التقرير.
                         </p>
                     </div>
                 </div>
-                <div className="space-y-4 px-7 py-5">
+                <div className="space-y-4 px-6 py-4">
                     <div>
                         <ChoiceChips options={reasonOptions} value={reason} onChange={setReason} label="سبب القطع" required name="reason" />
                         <InputError message={errors.reason} className="mt-1" />
                     </div>
                     <div>
-                        <label htmlFor="add-note" className="mb-1.5 block text-sm font-semibold text-gray-700">ملاحظة {reason === 'other' ? '(يُفضّل توضيح السبب)' : '(اختياري)'}</label>
+                        <label htmlFor="add-note" className="mb-2 block text-sm font-semibold text-gray-700">ملاحظة {reason === 'other' ? '(يُفضّل توضيح السبب)' : '(اختياري)'}</label>
                         <TextArea id="add-note" value={note} onChange={(event) => setNote(event.target.value)} rows={2} className="block w-full text-sm" maxLength={1000} />
                         <InputError message={errors.note} className="mt-1" />
                     </div>
                     <div>
-                        <label htmlFor="add-date" className="mb-1.5 block text-sm font-semibold text-gray-700">موعد القطع المخطط</label>
+                        <label htmlFor="add-date" className="mb-2 block text-sm font-semibold text-gray-700">موعد القطع المخطط</label>
                         <DateInput id="add-date" name="scheduled_for" min={today} value={date} onChange={setDate} required />
                         <InputError message={errors.scheduled_for} className="mt-1" />
                         <p className="mt-1 text-xs text-gray-500">الموعد للتخطيط فقط: لا يُقطع أحد ولا تُرسل رسائل تلقائيًا.</p>
                     </div>
                 </div>
-                <div className="flex justify-end gap-3 border-t border-gray-100 bg-gray-50 px-7 py-4">
+                <div className="flex justify-end gap-3 border-t border-gray-100 bg-gray-50 px-6 py-4">
                     <SecondaryKey onClick={onClose}>إلغاء</SecondaryKey>
                     <PrimaryKey type="submit" disabled={saving || !reason || !date}>{saving ? 'جارٍ الإضافة…' : `إضافة ${count.toLocaleString('en')} مشترك`}</PrimaryKey>
                 </div>
@@ -153,7 +153,7 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
             />
 
             {!allMatching && pageIds.length > 0 && pageSelectedCount === pageIds.length && subscriptions.total > pageIds.length && (
-                <div role="status" className="flex flex-wrap items-center justify-center gap-2 border-x border-gray-100 bg-brand-500/5 px-4 py-2.5 text-sm text-gray-700">
+                <div role="status" className="flex flex-wrap items-center justify-center gap-2 border-x border-gray-100 bg-brand-500/5 px-4 py-2 text-sm text-gray-700">
                     تم تحديد {pageIds.length.toLocaleString('en')} مشترك في هذه الصفحة.
                     <Button data-raw="" variant="ghost" onClick={() => setAllMatching(true)} className="rounded font-semibold text-brand-600 hover:underline">
                         تحديد كل النتائج المطابقة ({subscriptions.total.toLocaleString('en')})
@@ -202,7 +202,7 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
                             <b className="font-display">{selectionCount.toLocaleString('en')}</b> {allMatching ? 'مشترك (كل النتائج المطابقة)' : 'مشترك محدد'}
                         </span>
                         <div className="flex items-center gap-2">
-                            <Button data-raw="" variant="ghost" onClick={() => setAdding(true)} className="inline-flex items-center gap-1.5 rounded-control bg-white px-4 py-2 text-sm font-bold text-gray-900">
+                            <Button data-raw="" variant="ghost" onClick={() => setAdding(true)} className="inline-flex items-center gap-2 rounded-control bg-white px-4 py-2 text-sm font-bold text-gray-900">
                                 <Icon name="plus" className="h-4 w-4" />
                                 إضافة إلى القائمة
                             </Button>

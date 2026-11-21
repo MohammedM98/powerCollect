@@ -21,7 +21,7 @@ export default function DiscountSegmentStep({ data, discountSegments, errors, se
                     className={inputClass}
                 />
                 {discountSegments.length > 0 && (
-                    <div className="mt-2.5 flex flex-wrap gap-2">
+                    <div className="mt-2 flex flex-wrap gap-2">
                         {discountSegments.map((segment) => (
                             <Button data-raw="" variant="ghost"
                                 key={segment}

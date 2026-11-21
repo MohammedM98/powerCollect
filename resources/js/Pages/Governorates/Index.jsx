@@ -219,7 +219,7 @@ function CrumbButton({ onClick, children }) {
     return (
         <Button data-raw="" variant="ghost"
             onClick={onClick}
-            className="rounded-lg px-1.5 py-1 font-bold text-gray-700 transition hover:bg-brand-500/10 hover:text-brand-600"
+            className="rounded-lg px-2 py-1 font-bold text-gray-700 transition hover:bg-brand-500/10 hover:text-brand-600"
         >
             {children}
         </Button>

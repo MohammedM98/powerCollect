@@ -13,7 +13,7 @@ export default function QuickMessageChannel({ channel, setChannel, setup }) {
                     role="note"
                     className="flex items-start gap-2 rounded-control bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-300"
                 >
-                    <Icon name="warning" className="mt-0.5 h-4 w-4 shrink-0" />
+                    <Icon name="warning" className="mt-1 h-4 w-4 shrink-0" />
                     لم تُضبط بوابة الرسائل النصية بعد، فتُسجَّل الرسائل في سجل النظام فقط ولا تصل للمشتركين. أرسل عبر واتساب أو اطلب ضبط مزوّد SMS.
                 </p>
             )}

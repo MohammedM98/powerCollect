@@ -21,7 +21,7 @@ export default function TariffForm({ data, setData, errors, categoryOptions }) {
     const example = Number.isFinite(rate) ? (rate * EXAMPLE_KILOWATTS).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : null;
 
     return (
-        <div className="space-y-5">
+        <div className="space-y-6">
             <InsetList>
                 <InsetRow label="الفئة" htmlFor="category" required error={errors.category}>
                     <ChoiceSelect id="category" className="block w-full" value={data.category} onChange={(e) => setData('category', e.target.value)}>

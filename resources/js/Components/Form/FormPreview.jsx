@@ -26,7 +26,7 @@ export default function FormPreview({ avatar, dotClass = null, title, subtitle =
                     </p>
                 )}
                 {chips.length > 0 && (
-                    <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    <div className="mt-2 flex flex-wrap gap-2">
                         {chips.map((chip) => (
                             <span key={chip} className="gl-pill">{chip}</span>
                         ))}

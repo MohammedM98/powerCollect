@@ -34,11 +34,11 @@ export function SplitPaymentEditor({ split, onClose, transferBanks = [], senderB
             icon="pencil"
             headerTone="blue"
             maxWidth="3xl"
-            bodyClassName="space-y-5"
+            bodyClassName="space-y-6"
             action={{ submitLabel: 'حفظ بيانات الحوالة', title: 'تعديل بيانات الحوالة لجميع المشتركين؟', confirmLabel: 'نعم، احفظ التعديل', icon: 'pencil' }}
             saveConfirmMessage="ستُحدّث بيانات الحوالة لجميع حصص المشتركين مع تسجيل القيم السابقة والجديدة واسم المستخدم والسبب. مبلغ الحوالة والحصص والأرصدة لا تتغيّر، ولا تُرجع أي دفعة."
         >
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-gray-50 px-5 py-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4">
                 <div>
                     <p className="flex items-center gap-2 text-sm font-semibold text-gray-600">
                         <Icon name="lock" className="h-4 w-4" />مبلغ الحوالة ثابت
@@ -137,7 +137,7 @@ export default function EditSplitPaymentModal({ id, onClose, transferBanks, send
     }
     return (
         <Modal show onClose={onClose} maxWidth="3xl">
-            <div className="space-y-5 p-7">
+            <div className="space-y-6 p-6">
                 <h3 className="text-xl font-bold text-gray-900">تعديل الحوالة المقسّمة</h3>
                 <AsyncState loading={loading} error={error} onRetry={retry} loadingLabel="جارٍ تحميل بيانات الحوالة وحصص المشتركين…" />
                 <SecondaryKey onClick={onClose}>إغلاق</SecondaryKey>

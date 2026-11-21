@@ -33,10 +33,10 @@ export default function Print({ document: issued }) {
         finally { setBusy(false); }
     }
 
-    return <main ref={root} className="company-document-print mx-auto max-w-[1100px] space-y-5 p-4 sm:p-7" dir="rtl">
+    return <main ref={root} className="company-document-print mx-auto max-w-[1100px] space-y-6 p-4 sm:p-6" dir="rtl">
         <Head title={`${issued.title} — مستند ${issued.id}`} />
         <style>{rules}</style>
-        <section className="cf-print-toolbar space-y-4 rounded-card border border-gray-100 bg-surface p-5 shadow-card">
+        <section className="cf-print-toolbar space-y-4 rounded-card border border-gray-100 bg-surface p-4 shadow-card">
             <div className="flex flex-wrap items-start justify-between gap-4"><div><Link href="/company-forms?view=documents" className="text-sm text-gray-500 hover:text-gray-900">رجوع إلى نماذج الشركة والأرشيف</Link><h1 className="mt-2 text-2xl font-bold text-gray-900">{issued.title}</h1><p className="mt-1 text-sm text-gray-500">مستند #{issued.id}، {issued.mode === 'blank' ? 'نموذج فارغ للتعبئة اليدوية' : issued.mode === 'archive' ? 'طلب ورقي مؤرشف' : 'نسخة معبأة محفوظة'}</p></div><div className="flex flex-wrap gap-2"><PrimaryKey type="button" disabled={!ready || busy} onClick={() => prepare('print')}><Icon name="printer" className="h-4 w-4" />طباعة / حفظ PDF</PrimaryKey><SecondaryKey disabled={!ready || busy} onClick={() => prepare('offline')}><Icon name="document" className="h-4 w-4" />تنزيل نسخة دون إنترنت</SecondaryKey></div></div>
             <p className="rounded-control bg-gray-50 p-3 text-sm leading-7 text-gray-600">من نافذة الطباعة اختر الطابعة أو «حفظ PDF»، وحجم الورق المناسب، وأوقف ترويسة المتصفح وتذييله. النسخة التي تنزّلها للعمل دون إنترنت تضم الصفحات والشعار داخل ملف واحد.</p>
             {issued.paperReference && <p className="text-sm text-gray-600">رقم الطلب الورقي: <bdi>{issued.paperReference}</bdi>، التاريخ: {formatDate(issued.paperDate)}</p>}
@@ -45,6 +45,6 @@ export default function Print({ document: issued }) {
             {(error || sourceState.error) && <p role="alert" className="text-sm text-brand-600">{error || sourceState.error}</p>}
             {Object.values(overflow).some(Boolean) && <p role="alert" className="rounded-control bg-amber-50 p-3 text-sm text-amber-800">محتوى هذه النسخة يتجاوز حدود الورقة. عدّل النموذج ثم أصدر نسخة جديدة لتجنب قص البيانات.</p>}
         </section>
-        {sourceState.loading ? <div role="status" className="cf-print-toolbar animate-pulse rounded-card bg-surface p-12 text-center text-gray-500">جارٍ تجهيز صفحات المستند…</div> : pages.map((page, index) => <CompanyFormPaper key={index} layout={layout} page={layout.pages[index]} pageIndex={index} sourcePage={source ? page : null} blank={issued.mode === 'blank'} values={values} onOverflow={onOverflow} />)}
+        {sourceState.loading ? <div role="status" className="cf-print-toolbar animate-pulse rounded-card bg-surface p-8 text-center text-gray-500">جارٍ تجهيز صفحات المستند…</div> : pages.map((page, index) => <CompanyFormPaper key={index} layout={layout} page={layout.pages[index]} pageIndex={index} sourcePage={source ? page : null} blank={issued.mode === 'blank'} values={values} onOverflow={onOverflow} />)}
     </main>;
 }

@@ -119,7 +119,7 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                 </Suspense>
             )}
 
-            <div className="reports-page space-y-5" dir="rtl">
+            <div className="reports-page space-y-6" dir="rtl">
                 {branchScope && (
                     <BranchBanner
                         scope={branchScope}
@@ -156,7 +156,7 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                 )}
 
                 {branches.length === 0 && (
-                    <div className="rounded-card border border-dashed border-gray-200 bg-surface px-6 py-16 text-center">
+                    <div className="rounded-card border border-dashed border-gray-200 bg-surface px-6 py-8 text-center">
                         <b className="text-gray-900">لا توجد فروع</b>
                         <p className="mt-1 text-sm text-gray-500">أضف فرعًا أولًا لعرض تقاريره.</p>
                     </div>

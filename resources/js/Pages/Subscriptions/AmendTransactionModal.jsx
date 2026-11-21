@@ -18,7 +18,7 @@ const inputClass = 'mt-2 block w-full';
 function LockedValue({ label, children }) {
     return (
         <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
-            <span className="flex items-center gap-1.5 text-[13.5px] font-semibold text-gray-700">
+            <span className="flex items-center gap-2 text-[13.5px] font-semibold text-gray-700">
                 <Icon name="lock" className="h-3.5 w-3.5" />
                 {label}
             </span>
@@ -67,7 +67,7 @@ function SinglePaymentEditor({ onClose, subscription, balance, entry, transferBa
             icon="pencil"
             headerTone="blue"
             maxWidth="2xl"
-            bodyClassName="space-y-5"
+            bodyClassName="space-y-6"
             action={{ submitLabel: 'حفظ التعديل', title: 'حفظ تعديل البيانات؟', confirmLabel: 'نعم، احفظ التعديل', icon: 'pencil' }}
             saveConfirmMessage="ستتغير البيانات الوصفية فقط، ويبقى المبلغ وطريقة الدفع والرصيد كما هي."
         >
@@ -80,7 +80,7 @@ function SinglePaymentEditor({ onClose, subscription, balance, entry, transferBa
             </div>
 
             {throughBank && (
-                <div className="grid items-start gap-x-5 gap-y-5 sm:grid-cols-2">
+                <div className="grid items-start gap-x-6 gap-y-6 sm:grid-cols-2">
                     <div>
                         <InputLabel htmlFor="amend_bank_name" value="البنك المستلم" />
                         <ChoiceSelect

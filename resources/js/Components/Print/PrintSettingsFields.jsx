@@ -13,7 +13,7 @@ export function Section({ icon, title, children, open = false, id }) {
     return (
         <details id={id} open={open} className="group border-b border-gray-100">
             <summary
-                className={`flex cursor-pointer list-none items-center gap-3 px-5 py-3.5 text-sm font-bold text-gray-900 hover:bg-gray-50 ${FOCUS_RING} [&::-webkit-details-marker]:hidden`}
+                className={`flex cursor-pointer list-none items-center gap-3 px-4 py-3 text-sm font-bold text-gray-900 hover:bg-gray-50 ${FOCUS_RING} [&::-webkit-details-marker]:hidden`}
             >
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-700">
                     <Icon name={icon} className="h-4 w-4" />
@@ -21,7 +21,7 @@ export function Section({ icon, title, children, open = false, id }) {
                 <span className="flex-1">{title}</span>
                 <Icon name="chevron-down" className="h-4 w-4 text-gray-400 transition-transform group-open:rotate-180" />
             </summary>
-            <div className="space-y-4 px-5 pb-5 pt-1">{children}</div>
+            <div className="space-y-4 px-4 pb-4 pt-1">{children}</div>
         </details>
     );
 }
@@ -31,7 +31,7 @@ export function Field({ label, children, hint }) {
 
     return (
         <div>
-            <label htmlFor={id} className="mb-1.5 block text-xs font-semibold text-gray-700">
+            <label htmlFor={id} className="mb-2 block text-xs font-semibold text-gray-700">
                 {label}
             </label>
             {children(id)}
@@ -43,7 +43,7 @@ export function Field({ label, children, hint }) {
 export function Group({ label, children }) {
     return (
         <div>
-            <span className="mb-1.5 block text-xs font-semibold text-gray-700">{label}</span>
+            <span className="mb-2 block text-xs font-semibold text-gray-700">{label}</span>
             {children}
         </div>
     );
@@ -118,7 +118,7 @@ export function HeadingStyles({ levels, styles, onChange }) {
                 const look = styles[index] ?? {};
 
                 return (
-                    <div key={index} className="space-y-2 rounded-control border border-gray-200 p-2.5">
+                    <div key={index} className="space-y-2 rounded-control border border-gray-200 p-3">
                         <p className="text-xs font-semibold text-gray-700">عنوان «{label}»</p>
                         <Field label={`حجم خط عنوان «${label}»`}>
                             {(id) => (
@@ -184,7 +184,7 @@ export function Highlights({ rules, columns, onChange }) {
             <legend className="px-1 text-xs font-bold text-gray-900">تلوين الصفوف حسب قيمها</legend>
             <p className="text-xs text-gray-500">مثلًا: الحالة «لم تُدخل» بالأحمر، أو المطلوب دفعه أكبر من 500. أول قاعدة تنطبق هي التي تُلوّن.</p>
             {rules.map((rule, index) => (
-                <div key={index} className="space-y-2 rounded-control border border-gray-200 p-2.5">
+                <div key={index} className="space-y-2 rounded-control border border-gray-200 p-3">
                     <div className="flex items-center gap-2">
                         <ChoiceSelect
                             aria-label={`عمود القاعدة ${index + 1}`}
@@ -246,7 +246,7 @@ export function Highlights({ rules, columns, onChange }) {
                             type="color"
                             value={rule.color}
                             onChange={(event) => setRule(index, { color: event.target.value })}
-                            className="h-7 w-9 cursor-pointer rounded border border-gray-200 p-0.5"
+                            className="h-7 w-9 cursor-pointer rounded border border-gray-200 p-1"
                         />
                     </div>
                     <ChoiceChips

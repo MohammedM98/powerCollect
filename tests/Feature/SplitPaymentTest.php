@@ -14,6 +14,7 @@ use App\Support\Ledger\CancelLine;
 use App\Support\Ledger\PaymentReferences;
 use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
@@ -354,6 +355,7 @@ class SplitPaymentTest extends TestCase
     private function payload(): array
     {
         return [
+            'operation_token' => (string) Str::uuid(),
             'total_amount' => 1000,
             'bank_name' => 'بنك فلسطين',
             'sender_name' => 'محمد حمدان',

@@ -106,9 +106,9 @@ export function ListColumn({ id, sortable = false, actions = false, className = 
                             data-raw=""
                             variant="ghost"
                             onPress={() => onSortColumn?.(id)}
-                            className={`-mx-2 inline-flex items-center gap-1.5 rounded-lg px-2 py-1 font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${sort?.sort === id ? 'text-gray-900' : 'hover:bg-gray-900/5 hover:text-gray-900'}`}
+                            className={`-mx-2 inline-flex items-center gap-2 rounded-lg px-2 py-1 font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${sort?.sort === id ? 'text-gray-900' : 'hover:bg-gray-900/5 hover:text-gray-900'}`}
                         >
-                            <Table.SortableColumnHeader sortDirection={sortDirection} showIndicator={false} className="inline-flex items-center gap-1.5">
+                            <Table.SortableColumnHeader sortDirection={sortDirection} showIndicator={false} className="inline-flex items-center gap-2">
                                 {children}
                                 <SortArrows direction={sortDirection} />
                             </Table.SortableColumnHeader>

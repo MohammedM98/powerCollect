@@ -34,7 +34,7 @@ const PRINT_FIELDS = [
 
 function BarButton({ icon, label, onClick, className = '' }) {
     return (
-        <Button data-raw="" variant="ghost" onClick={onClick} className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 ${FOCUS_RING} ${className}`}>
+        <Button data-raw="" variant="ghost" onClick={onClick} className={`inline-flex items-center gap-2 whitespace-nowrap rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 ${FOCUS_RING} ${className}`}>
             <Icon name={icon} className="h-4 w-4" />
             {label}
         </Button>
@@ -46,7 +46,7 @@ function Stat({ label, value, tone = 'text-gray-900', hint }) {
         <div className="rounded-card border border-gray-100 bg-surface px-4 py-3 shadow-card">
             <p className="text-[13.5px] font-semibold text-gray-700">{label}</p>
             <p className={`mt-1 font-display text-2xl font-bold ${tone}`}>{value}</p>
-            {hint && <p className="mt-0.5 text-xs text-gray-500">{hint}</p>}
+            {hint && <p className="mt-1 text-xs text-gray-500">{hint}</p>}
         </div>
     );
 }
@@ -183,7 +183,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
 
             {result && <ResultReport result={result} onClose={() => setResult(null)} />}
 
-            <div className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+            <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
                 <Stat label="بانتظار القطع" value={formatNumber(summary.scheduled)} tone="text-amber-700 dark:text-amber-400" hint={`موعدهم اليوم: ${formatNumber(summary.dueToday)}`} />
                 <Stat label="متأخر — بانتظار إجراء" value={formatNumber(summary.overdue)} tone="text-red-700 dark:text-red-400" hint="لا يُقطع أحد تلقائيًا" />
                 <Stat label="تم قطعهم" value={formatNumber(summary.disconnected)} />
@@ -192,7 +192,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
                 <Stat label="رسوم القطع المحمّلة" value={`${formatMoney(summary.feesTotal)} ₪`} />
             </div>
 
-            <div className="mb-5 flex flex-wrap gap-2 text-xs">
+            <div className="mb-6 flex flex-wrap gap-2 text-xs">
                 {summary.reasons.map((reason) => (
                     <Button data-raw="" variant="ghost" key={reason.value} onClick={() => setFilter('reason', filterValues.reason === reason.value ? '' : reason.value)} aria-pressed={filterValues.reason === reason.value} className={`rounded-full border px-3 py-1 font-semibold ${filterValues.reason === reason.value ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
                         {reason.label} <b className="font-display">{formatNumber(reason.count)}</b>
@@ -215,7 +215,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
             />
 
             {canSelect && !allMatching && pageIds.length > 0 && pageSelectedCount === pageIds.length && items.total > pageIds.length && (
-                <div role="status" className="flex flex-wrap items-center justify-center gap-2 border-x border-gray-100 bg-brand-500/5 px-4 py-2.5 text-sm text-gray-700">
+                <div role="status" className="flex flex-wrap items-center justify-center gap-2 border-x border-gray-100 bg-brand-500/5 px-4 py-2 text-sm text-gray-700">
                     تم تحديد {pageIds.length.toLocaleString('en')} مشترك في هذه الصفحة.
                     <Button data-raw="" variant="ghost" onClick={() => setAllMatching(true)} className="rounded font-semibold text-brand-600 hover:underline">
                         تحديد كل النتائج المطابقة ({items.total.toLocaleString('en')})
