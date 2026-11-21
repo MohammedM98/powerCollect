@@ -1,5 +1,5 @@
-import Icon from '@/Components/Icon';
-import SearchableSelect from '@/Components/SearchableSelect';
+import Icon from '@/Components/UI/Icon';
+import SearchableSelect from '@/Components/UI/SearchableSelect';
 
 /**
  * A table's order as the redesign's pills: what it is sorted by, then which way.

@@ -3,8 +3,8 @@ import { lazy, Suspense, useMemo, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import BranchBanner, { BranchChips } from '@/Components/BranchBanner';
-import Icon from '@/Components/Icon';
-import InfoTip from '@/Components/InfoTip';
+import Icon from '@/Components/UI/Icon';
+import InfoTip from '@/Components/UI/InfoTip';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
 import PageHeader from '@/Components/PageHeader';
 import { reportExcelParts } from '@/lib/reportExcelParts';
@@ -19,7 +19,7 @@ import { CollectionsView, OverviewView } from './ReportViews';
 import { Transactions } from './ReportSections';
 import { ChoiceSelect } from '@/Components/UI';
 
-const ExcelStudio = lazy(() => import('@/Components/ExcelStudio'));
+const ExcelStudio = lazy(() => import('@/Components/Excel/ExcelStudio'));
 
 /**
  * The financial reports page: one branch (or every branch, for whoever

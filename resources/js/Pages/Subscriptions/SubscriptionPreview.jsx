@@ -1,6 +1,6 @@
 import BrandLogo from '@/Components/BrandLogo';
 import FormPreview from '@/Components/Form/FormPreview';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 
 import { initials, formatMoney } from '@/lib/format';
 

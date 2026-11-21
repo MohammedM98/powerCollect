@@ -1,5 +1,5 @@
 import { Button, Checkbox } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { ICONS, permissionGuideEntries } from '@/lib/permissionGuide';
 import {
     MATRIX_COLUMNS,

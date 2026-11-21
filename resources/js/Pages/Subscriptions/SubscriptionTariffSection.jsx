@@ -1,10 +1,10 @@
 import { Button } from '@heroui/react';
-import Affix from '@/Components/Affix';
-import ChoiceChips from '@/Components/ChoiceChips';
+import Affix from '@/Components/UI/Affix';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
+import InputError from '@/Components/UI/InputError';
+import InputLabel from '@/Components/UI/InputLabel';
 import { formatAmount } from '@/lib/currency';
 import { formatMoney } from '@/lib/format';
 import { ConfirmDialog, SearchableSelect, TextInput } from '@/Components/UI';

@@ -1,6 +1,6 @@
 import { Button } from '@heroui/react';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
 import { Card, FOCUS_RING } from './MessageFormParts';
 import { CheckBox, PrimaryKey } from '@/Components/UI';
 

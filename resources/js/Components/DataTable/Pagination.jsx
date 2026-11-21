@@ -1,6 +1,6 @@
 import { router } from '@inertiajs/react';
 import { Button } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 
 function pageNumbers(current, last) {
     const delta = 1;

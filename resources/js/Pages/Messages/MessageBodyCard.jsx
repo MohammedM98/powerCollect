@@ -1,6 +1,6 @@
 import { Button, Input, TextArea } from '@heroui/react';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
 import { Card, Field, FOCUS_RING } from './MessageFormParts';
 import { smsParts } from '@/lib/disconnections';
 import { ChoiceSelect, PrimaryKey, SecondaryKey } from '@/Components/UI';

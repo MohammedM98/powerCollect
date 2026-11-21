@@ -1,10 +1,10 @@
 import { Input } from '@heroui/react';
 import { useCallback, useId, useRef, useState } from 'react';
 import { router, useHttp, usePage } from '@inertiajs/react';
-import Modal from '@/Components/Modal';
-import Icon from '@/Components/Icon';
-import ChoiceChips from '@/Components/ChoiceChips';
-import InputError from '@/Components/InputError';
+import Modal from '@/Components/UI/Modal';
+import Icon from '@/Components/UI/Icon';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
+import InputError from '@/Components/UI/InputError';
 import { normalizeDecimalInput } from '@/lib/format';
 import { PrimaryKey, SearchableSelect, SecondaryKey } from '@/Components/UI';
 

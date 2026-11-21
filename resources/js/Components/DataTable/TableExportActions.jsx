@@ -1,6 +1,6 @@
 import { Button } from '@heroui/react';
-import ExcelButton, { tableExportButtonClass } from '@/Components/ExcelButton';
-import Icon from '@/Components/Icon';
+import ExcelButton, { tableExportButtonClass } from '@/Components/Excel/ExcelButton';
+import Icon from '@/Components/UI/Icon';
 import { printUrl } from '@/lib/print';
 
 /** Every table keeps its export actions together, in the same RTL order and button size. */

@@ -1,4 +1,4 @@
-import SegmentedTabs from '@/Components/SegmentedTabs';
+import SegmentedTabs from '@/Components/UI/SegmentedTabs';
 
 /** The periods a page can cover, shortest first. */
 export const PERIODS = [

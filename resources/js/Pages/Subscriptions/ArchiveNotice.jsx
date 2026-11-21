@@ -1,4 +1,4 @@
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { formatDate, DATE_LOCALE } from '@/lib/format';
 
 export default function ArchiveNotice({ subscription }) {

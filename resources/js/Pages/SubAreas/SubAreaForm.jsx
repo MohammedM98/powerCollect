@@ -2,7 +2,7 @@ import FormField from '@/Components/Form/FormField';
 import FormPreview, { countFilled } from '@/Components/Form/FormPreview';
 import FormSelect, { namedOptions } from '@/Components/Form/FormSelect';
 import FormSection from '@/Components/Form/FormSection';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { TextInput } from '@/Components/UI';
 
 /**

@@ -1,7 +1,7 @@
 import { usePage } from '@inertiajs/react';
 import { Card, ProgressBar } from '@heroui/react';
-import Icon from '@/Components/Icon';
-import AsyncState from '@/Components/AsyncState';
+import Icon from '@/Components/UI/Icon';
+import AsyncState from '@/Components/UI/AsyncState';
 import { useJsonResource } from '@/hooks/useJsonResource';
 import { formatMoney } from '@/lib/format';
 

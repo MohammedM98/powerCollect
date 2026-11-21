@@ -1,4 +1,4 @@
-import BankReceivedDate from '@/Components/BankReceivedDate';
+import BankReceivedDate from '@/Components/Finance/BankReceivedDate';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
 import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';

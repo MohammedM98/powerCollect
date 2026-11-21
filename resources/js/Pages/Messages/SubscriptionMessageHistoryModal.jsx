@@ -1,8 +1,8 @@
 import { Button } from '@heroui/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
-import Modal from '@/Components/Modal';
-import Icon from '@/Components/Icon';
+import Modal from '@/Components/UI/Modal';
+import Icon from '@/Components/UI/Icon';
 import Pagination from '@/Components/DataTable/Pagination';
 import { ChannelLabel, KindPill, MessageStatusPill } from './MessageParts';
 import { SearchableSelect, SecondaryKey } from '@/Components/UI';

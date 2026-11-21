@@ -1,6 +1,6 @@
 import { Button, TextArea } from '@heroui/react';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
 import { smsParts } from '@/lib/disconnections';
 import { MessageText } from './MessageParts';
 import { FOCUS_RING, Section } from './MessageFormParts';

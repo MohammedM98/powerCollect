@@ -2,8 +2,8 @@ import { Button } from '@heroui/react';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import FormSelect from '@/Components/Form/FormSelect';
-import InputError from '@/Components/InputError';
-import Icon from '@/Components/Icon';
+import InputError from '@/Components/UI/InputError';
+import Icon from '@/Components/UI/Icon';
 import { TextInput } from '@/Components/UI';
 
 export default function MeterBoxSubAreaSelect({ id, value, onChange, onCreated, subAreas, areaId, canCreate, blockedMessage, error }) {

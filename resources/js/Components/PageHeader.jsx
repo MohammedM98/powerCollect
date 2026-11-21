@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 
 /**
  * Every page's title, laid out as in the redesign: an optional quiet line

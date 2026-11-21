@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
-import ConfirmDialog from '@/Components/ConfirmDialog';
-import TextInput from '@/Components/TextInput';
+import ConfirmDialog from '@/Components/UI/ConfirmDialog';
+import TextInput from '@/Components/UI/TextInput';
 
 /**
  * Deleting a record from a list, after a confirmation. `requestDelete(url,

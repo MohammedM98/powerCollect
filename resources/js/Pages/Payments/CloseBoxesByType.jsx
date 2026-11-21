@@ -1,8 +1,8 @@
 import { Button } from '@heroui/react';
 import { useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
-import Modal from '@/Components/Modal';
+import Icon from '@/Components/UI/Icon';
+import Modal from '@/Components/UI/Modal';
 import { formatMoney } from '@/lib/format';
 import { boxTypes, boxTypeStyles, BoxTypeIcon } from './CollectorCashBox';
 import { BoxPersonAvatar, financialAmountsLine } from './FinancialBoxComponents';

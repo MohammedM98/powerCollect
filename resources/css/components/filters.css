@@ -1,0 +1,115 @@
+.gl-filter-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 22rem;
+    height: 38px;
+    padding: 0 12px 0 16px;
+    padding-inline: 16px 12px;
+    border: 0;
+    border-radius: 999px;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+    font-size: 13.5px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.15s, box-shadow 0.15s, color 0.15s;
+}
+
+.gl-filter-trigger:hover {
+    background: rgb(var(--group-hover));
+}
+
+.gl-filter-trigger.is-open,
+.gl-filter-trigger[aria-expanded='true'] {
+    box-shadow: 0 0 0 2px rgb(var(--brand-solid));
+}
+
+.gl-filter-trigger:focus-visible {
+    outline: 2px solid rgb(var(--brand-solid));
+    outline-offset: 2px;
+}
+
+.gl-filter-trigger[data-active] {
+    background: rgb(var(--brand-solid) / 0.12);
+    color: rgb(var(--brand-600));
+}
+
+.gl-filter-trigger > span {
+    align-items: center;
+    color: inherit;
+}
+
+.gl-filter-trigger svg {
+    flex: none;
+    color: currentColor;
+    opacity: 0.75;
+}
+
+.gl-filter-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: inherit;
+}
+
+.gl-filter-trigger[data-active] .gl-filter-name {
+    font-weight: 600;
+    opacity: 0.85;
+}
+
+.gl-filter-count {
+    padding: 4px 8px;
+    border-radius: 99px;
+    background: rgb(var(--panel-bg));
+    color: var(--gl-muted);
+    font-size: 12px;
+}
+
+.gl-filter-pair {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.gl-filter-clear {
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 999px;
+    color: var(--gl-muted);
+    font-size: 13px;
+    font-weight: 700;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.gl-filter-clear:hover {
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+}
+
+/* A filter pill's list opens from the pill, wide enough for its options. */
+.gl-filter-item > .gl-pop,
+.gl-filter-item > div[class*='absolute'] {
+    min-width: 14rem;
+}
+
+/*
+ * The account statement as in the redesign (docs/redesign): the name with
+ * its status, the movements on one card, five totals, the person's
+ * subscriptions, and the movements on a HeroUI card as a calm ledger of
+ * eight columns in bands of one month, each line opening its full details.
+ * Pages/Subscriptions/Statement.jsx, AccountStatement.jsx, StatementLedger.jsx.
+ */
+.gl-st-head {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+}
+
+.gl-st-head .gl-back,
+.gl-st-head > a {
+    justify-self: start;
+}

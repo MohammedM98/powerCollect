@@ -1,8 +1,8 @@
 import { Fragment } from 'react';
 import { Button, Input, Radio, RadioGroup } from '@heroui/react';
-import Icon from '@/Components/Icon';
-import InfoTip from '@/Components/InfoTip';
-import InputLabel from '@/Components/InputLabel';
+import Icon from '@/Components/UI/Icon';
+import InfoTip from '@/Components/UI/InfoTip';
+import InputLabel from '@/Components/UI/InputLabel';
 import { describeBalance, describedBalanceText } from '@/lib/accountStatement';
 import { BALANCE_CHIP_CLASSES } from '@/lib/balance';
 import { formatMoney, initials } from '@/lib/format';

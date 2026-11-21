@@ -1,4 +1,4 @@
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { StatusPill } from '@/Components/UI';
 
 /** Each kind of message and each way of sending has its own icon, the same wherever it shows. */

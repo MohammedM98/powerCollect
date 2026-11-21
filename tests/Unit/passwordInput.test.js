@@ -9,7 +9,7 @@ let PasswordInput;
 
 before(async () => {
     const bundle = await rolldown({
-        input: path.resolve(import.meta.dirname, '../../resources/js/Components/PasswordInput.jsx'),
+        input: path.resolve(import.meta.dirname, '../../resources/js/Components/UI/PasswordInput.jsx'),
         platform: 'node', transform: { jsx: 'react-jsx' },
         resolve: { alias: { '@': path.resolve(import.meta.dirname, '../../resources/js') } },
         plugins: [{

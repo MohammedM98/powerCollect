@@ -1,12 +1,12 @@
 import { Input, TextArea } from '@heroui/react';
-import { BankReceivedDateField } from '@/Components/BankReceivedDate';
+import { BankReceivedDateField } from '@/Components/Finance/BankReceivedDate';
 import { useForm } from '@inertiajs/react';
-import FormModal from '@/Components/FormModal';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
+import FormModal from '@/Components/Form/FormModal';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
+import InputLabel from '@/Components/UI/InputLabel';
 import { describeBalance } from '@/lib/accountStatement';
-import Balance from '@/Components/Balance';
+import Balance from '@/Components/Finance/Balance';
 
 import { BalanceAfter } from './AccountSummary';
 import EditSplitPaymentModal from '@/Pages/Payments/EditSplitPaymentModal';

@@ -1,5 +1,5 @@
 import { Button } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 
 /** Recording a payment: the payment's green key, the same on every page. Takes HeroUI Button's props. */
 export default function PayKey({ children = 'تسجيل دفعة', className = '', ...props }) {

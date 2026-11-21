@@ -1,7 +1,7 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import TopBar from '@/Components/TopBar/TopBar';
+import TopBar from '@/Components/Layout/TopBar';
 import { allowedNavigationGroups } from '@/lib/navigation';
 import { setPage, submissions } from './inertia.jsx';
 

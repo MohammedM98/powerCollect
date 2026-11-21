@@ -1,5 +1,5 @@
-import Icon from '@/Components/Icon';
-import InfoTip from '@/Components/InfoTip';
+import Icon from '@/Components/UI/Icon';
+import InfoTip from '@/Components/UI/InfoTip';
 
 const COLUMNS = {
     1: 'grid-cols-1',

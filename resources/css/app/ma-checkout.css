@@ -1,0 +1,421 @@
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    :root[data-surface='glass'] {
+        --ma-panel: color-mix(in oklab, var(--ma-solid) 66%, transparent);
+        --ma-tile: color-mix(in oklab, var(--ma-solid) 55%, var(--ma-bg) 20%);
+        --ma-blur: blur(22px) saturate(1.6);
+        --ma-ambient:
+            radial-gradient(60% 50% at 85% 0%, color-mix(in oklab, var(--ma-brand) 16%, transparent), transparent 70%),
+            radial-gradient(50% 45% at 10% 30%, color-mix(in oklab, var(--ma-clr) 18%, transparent), transparent 70%),
+            radial-gradient(60% 60% at 50% 100%, color-mix(in oklab, var(--ma-pay) 12%, transparent), transparent 70%);
+        /* The site's own panels follow the same glass. */
+        --panel-opacity: 0.66;
+        --panel-frost: blur(22px) saturate(1.6);
+        --panel-ambient: var(--ma-ambient);
+    }
+
+    :root[data-surface='glass'].dark {
+        --panel-opacity: 0.66;
+    }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    :root[data-surface='glass'] {
+        --ma-panel: var(--ma-solid);
+        --ma-blur: none;
+    }
+}
+
+/* The ground: its colour and, on glass, the three soft lights. */
+body {
+    background-color: var(--ma-bg);
+    background-image: var(--ma-ambient);
+    background-attachment: fixed;
+}
+
+/* ── The payment window, exactly as the MA checkout ─────────────────────── */
+.modal-scrim {
+    background: rgb(12 14 18 / 0.34);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+}
+
+.modal-sheet-panel.gl-co-panel,
+:root[data-ui-background='graphite'] .modal-sheet-panel.gl-co-panel {
+    max-width: min(1120px, 100%);
+    border: 0;
+    border-radius: 28px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: blur(28px) saturate(1.6);
+    backdrop-filter: blur(28px) saturate(1.6);
+    box-shadow: var(--ma-float);
+    color: var(--ma-ink);
+}
+
+:root:not([data-surface='glass']) .modal-sheet-panel.gl-co-panel {
+    background: var(--ma-solid);
+}
+
+/* The window fits inside the window layer's 24px above and below (UI/Window), so its footer is never cut; on phones it is a sheet from the bottom edge. */
+.gl-co {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    height: min(860px, calc(100dvh - 48px));
+}
+
+@media (max-width: 639px) {
+    .gl-co {
+        height: calc(100dvh - 12px - env(safe-area-inset-bottom, 0px));
+    }
+}
+
+.gl-co-head {
+    border-bottom: 0;
+}
+
+.gl-co-head .gl-dialog-head {
+    padding: 16px 24px 16px;
+}
+
+.gl-co-head .gl-tone {
+    width: 46px;
+    height: 46px;
+    border-radius: 15px;
+    background: var(--ma-pay-s);
+    color: var(--ma-pay);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-co-head h3 {
+    font-size: 21px !important;
+}
+
+.gl-co-head .gl-sub {
+    color: var(--ma-muted);
+    font-size: 14px !important;
+}
+
+.gl-co-head .gl-ib,
+.gl-co-head button[aria-label='إغلاق'] {
+    border: 0;
+    background: none;
+    box-shadow: none;
+}
+
+.gl-co-body {
+    gap: 24px;
+    padding: 4px 24px 24px;
+}
+
+/* The amount: one soft card, its figure large, ringed in green while typed. */
+.gl-co-amount {
+    gap: 12px;
+    padding: 16px 12px 16px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--ma-solid) 70%, transparent), color-mix(in oklab, var(--ma-tile) 80%, transparent));
+    box-shadow: var(--ma-hl), inset 0 0 0 1px var(--ma-line);
+    transition: box-shadow 0.15s, transform 0.15s;
+}
+
+/* Under the mouse the amount card lifts a little and its ring turns a light green; while typed, the full green ring below. */
+.gl-co-amount:hover:not(:focus-within) {
+    box-shadow: var(--ma-hl), inset 0 0 0 1.5px color-mix(in oklab, var(--ma-pay) 45%, transparent), 0 12px 26px -18px color-mix(in oklab, var(--ma-pay) 60%, transparent);
+    transform: translateY(-1px);
+}
+
+.gl-co-amount:has(.gl-co-amount-input:focus) {
+    box-shadow: var(--ma-hl), inset 0 0 0 1.5px var(--ma-pay), 0 0 0 5px color-mix(in oklab, var(--ma-pay) 12%, transparent);
+}
+
+.gl-co-amount-label {
+    color: var(--ma-muted);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.gl-co .gl-co-amount-row input.gl-co-amount-input {
+    min-width: 3ch;
+    color: var(--ma-ink);
+    font: 900 clamp(46px, 7vw, 64px) / 1.05 var(--font-body, 'Zain'), sans-serif;
+    caret-color: var(--ma-pay);
+}
+
+.gl-co .gl-co-amount-row input.gl-co-amount-input::placeholder {
+    color: color-mix(in oklab, var(--ma-faint) 70%, transparent);
+}
+
+.gl-co-currency button {
+    height: 44px;
+    min-height: 44px;
+    padding-inline: 12px 12px;
+    border: 0 !important;
+    border-radius: 14px;
+    background: var(--ma-solid) !important;
+    box-shadow: var(--ma-depth) !important;
+    font-weight: 800;
+}
+
+.gl-co-quick {
+    gap: 8px;
+}
+
+.gl-co .gl-co-chip {
+    height: 34px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+    font-size: 13.5px;
+    font-weight: 700;
+    transition: transform 0.1s;
+}
+
+.gl-co .gl-co-chip:hover {
+    background: var(--ma-solid);
+    transform: translateY(-1px);
+}
+
+.gl-co .gl-co-chip.is-accent,
+.dark .gl-co .gl-co-chip.is-accent {
+    background: var(--ma-pay-s);
+    color: var(--ma-pay);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ma-pay) 25%, transparent);
+}
+
+.gl-co .gl-co-chip.is-accent:hover {
+    background: var(--ma-pay-s);
+}
+
+.gl-co .gl-co-h,
+.gl-co-h-row .gl-co-h {
+    color: var(--ma-ink);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.gl-co-h-row .gl-co-opt {
+    color: var(--ma-faint);
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+/* The ways of paying: grey cards; the chosen one turns white, ringed in its own colour, its icon filled with it. */
+.gl-co-method[data-tone='cash'] {
+    --ma-tone: var(--ma-pay);
+}
+
+.gl-co-method[data-tone='transfer'] {
+    --ma-tone: var(--ma-clr);
+}
+
+.gl-co .gl-co-method-content,
+.gl-co .gl-co-method-content:hover {
+    min-height: 0;
+    gap: 16px;
+    padding: 16px;
+    padding-inline-end: var(--room-icon);
+    border-radius: 20px;
+    background: var(--ma-tile);
+    box-shadow: inset 0 0 0 1.5px transparent;
+    transition: box-shadow 0.15s, background 0.15s, transform 0.1s;
+}
+
+.gl-co .gl-co-method-content:hover {
+    box-shadow: inset 0 0 0 1.5px var(--ma-line);
+}
+
+.gl-co .gl-co-method-content[data-selected] {
+    background: var(--ma-solid);
+    box-shadow: inset 0 0 0 2px var(--ma-tone), 0 14px 30px -18px color-mix(in oklab, var(--ma-tone) 70%, transparent);
+}
+
+.gl-co .gl-co-method .gl-co-method-icon,
+.gl-co .gl-co-method[data-tone='cash'] .gl-co-method-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    background: var(--ma-solid);
+    color: var(--ma-muted);
+    box-shadow: var(--ma-hl);
+    transition: background 0.15s, color 0.15s;
+}
+
+.gl-co .gl-co-method-content[data-selected] .gl-co-method-icon,
+.gl-co .gl-co-method[data-tone='cash'] .gl-co-method-content[data-selected] .gl-co-method-icon {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--ma-tone) 85%, white), var(--ma-tone));
+    color: #fff;
+}
+
+.gl-co-method-content b {
+    color: var(--ma-ink);
+    font-size: 16px;
+}
+
+.gl-co-method-content small {
+    color: var(--ma-muted);
+    font-size: 13px;
+}
+
+.gl-co .gl-co-check {
+    background: var(--ma-tone);
+}
+
+/* A transfer's details on a soft blue panel; the banks white, the chosen one ringed in ink. */
+.gl-co-section.gl-co-transfer {
+    gap: 16px;
+    padding: 16px;
+    border-radius: 20px;
+    background: color-mix(in oklab, var(--ma-clr-s) 55%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ma-clr) 14%, transparent);
+}
+
+.gl-co-banks {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 8px;
+}
+
+.gl-co .gl-co-bank-content,
+.gl-co .gl-co-bank-content:hover {
+    width: 100%;
+    height: 48px;
+    padding-inline: 8px 12px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--ma-solid);
+    box-shadow: inset 0 0 0 1.5px transparent, var(--ma-hl);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.gl-co .gl-co-bank-content[data-selected] {
+    background: var(--ma-solid);
+    box-shadow: inset 0 0 0 2px var(--ma-ink), var(--ma-depth);
+}
+
+.gl-co-transfer :is(.gl-co-field .input, button[aria-haspopup], .gl-co-grid input) {
+    background: var(--ma-solid);
+}
+
+/* The receipt's column: a green light over the tile. */
+.gl-co-aside {
+    gap: 16px;
+    padding: 24px 24px 24px;
+    border-inline-start: 1px solid var(--ma-line);
+    background:
+        radial-gradient(120% 70% at 50% 0%, color-mix(in oklab, var(--ma-pay) 10%, transparent), transparent 70%),
+        color-mix(in oklab, var(--ma-tile) 70%, transparent);
+}
+
+.gl-co-paper {
+    padding: 16px 16px 24px;
+    border-radius: 18px 18px 6px 6px;
+    background: var(--ma-solid);
+    box-shadow: 0 1px 2px rgb(16 20 26 / 0.06), 0 22px 40px -22px rgb(16 20 26 / 0.45);
+    color: var(--ma-ink);
+    -webkit-mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 50% 100% / 18px 12px repeat-x, linear-gradient(#000, #000) 0 0 / 100% calc(100% - 11px) no-repeat;
+    mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 50% 100% / 18px 12px repeat-x, linear-gradient(#000, #000) 0 0 / 100% calc(100% - 11px) no-repeat;
+}
+
+.gl-co-paper::before {
+    inset-inline: 20px;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: linear-gradient(90deg, var(--ma-brand), color-mix(in oklab, var(--ma-brand) 40%, var(--ma-pay)));
+}
+
+.gl-co-paper-cover i span {
+    background: linear-gradient(90deg, color-mix(in oklab, var(--ma-pay) 70%, white), var(--ma-pay));
+}
+
+.gl-co-aside-note {
+    color: var(--ma-muted);
+    font-size: 13.5px;
+}
+
+/* The footer: the keys, what will be recorded, and the green button with its light and shadow. */
+.gl-co-foot {
+    padding: 12px 24px 16px;
+    border-top: 1px solid var(--ma-line);
+}
+
+.gl-co-foot-hint {
+    color: var(--ma-muted);
+    font-size: 13px;
+}
+
+.gl-co-foot-sum small {
+    color: var(--ma-muted);
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.gl-co-foot-sum b {
+    color: var(--ma-ink);
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.gl-co .gl-co-cancel,
+.gl-co .gl-co-cancel:hover:not([data-disabled]) {
+    height: 42px;
+    padding: 0 16px;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+    color: var(--ma-ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.gl-co .gl-co-cancel:hover:not([data-disabled]) {
+    background: color-mix(in oklab, var(--ma-tile) 82%, var(--ma-ink) 7%);
+}
+
+.gl-co .gl-co-pay,
+.gl-co .gl-co-pay:hover:not([data-disabled]) {
+    height: 50px;
+    padding: 0 24px;
+    border-radius: 15px;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--ma-pay-btn) 88%, white), var(--ma-pay-btn));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 8px 18px -10px color-mix(in oklab, var(--ma-pay-btn) 80%, black);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    transition: transform 0.1s, filter 0.15s;
+}
+
+.gl-co .gl-co-pay:hover:not([data-disabled]) {
+    filter: brightness(1.05);
+}
+
+.gl-co .gl-co-pay:active {
+    transform: translateY(1px);
+}
+
+.gl-co .gl-co-pay[data-disabled] {
+    opacity: 0.45;
+}
+
+.gl-co .gl-co-banks > .gl-co-bank {
+    margin: 0;
+}
+
+.gl-co .gl-co-banks-group {
+    gap: 12px;
+}
+
+.gl-co-transfer .gl-co-h {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* ── The tables, exactly as the MA table component ──────────────────────── */
+:root[data-ui-navigation] :is(.data-table-toolbar, .data-table-container, .data-table-totals, .data-table-pagination),
+:root[data-ui-background='graphite'][data-ui-navigation] :is(.data-table-toolbar, .data-table-container, .data-table-totals, .data-table-pagination) {
+    border-color: transparent;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    color: var(--ma-ink);
+}

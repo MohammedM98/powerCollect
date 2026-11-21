@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { Card } from '@heroui/react';
 import { useDataTable } from '@/hooks/useDataTable';
 import { formatMoney } from '@/lib/format';
@@ -18,7 +18,7 @@ import {
 } from './CollectorCashBox';
 import OpenEntriesTable from './OpenEntriesTable';
 import PageHeader from '@/Components/PageHeader';
-import InfoTip from '@/Components/InfoTip';
+import InfoTip from '@/Components/UI/InfoTip';
 import { PrimaryKey } from '@/Components/UI';
 
 /**

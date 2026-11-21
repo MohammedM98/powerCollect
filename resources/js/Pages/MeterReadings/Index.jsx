@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { Button, Checkbox } from '@heroui/react';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
@@ -11,7 +11,7 @@ import { formatMoney, formatMonthName } from '@/lib/format';
 import { activeReadingStatus, countReadings, readingStatusFilters, readingWeekParams } from '@/lib/readingSheet';
 import ReadingContextBar from './ReadingContextBar';
 import ReadingApprovalDialog from './ReadingApprovalDialog';
-import PrintButton from '@/Components/PrintButton';
+import PrintButton from '@/Components/Print/PrintButton';
 import './ReadingEntry.css';
 import ReadingSummary from './ReadingSummary';
 import PageHeader from '@/Components/PageHeader';

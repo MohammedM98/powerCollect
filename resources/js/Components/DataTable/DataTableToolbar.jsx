@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { usePage } from '@inertiajs/react';
 import { Button, Input } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import DensityToggle from './DensityToggle';
 import TableExportActions from './TableExportActions';
 

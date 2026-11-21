@@ -1,5 +1,5 @@
 import { Button } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 
 /**
  * The row keys, defined once so every table shows them alike: the same

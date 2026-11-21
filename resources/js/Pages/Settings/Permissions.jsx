@@ -2,7 +2,7 @@ import { Button } from '@heroui/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import EmployeeList from './PermissionPeople';
 import { SectionRow } from './PermissionMatrix';
 import { PermissionSummary } from './PermissionInsights';

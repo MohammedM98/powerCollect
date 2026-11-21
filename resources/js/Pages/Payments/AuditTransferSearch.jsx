@@ -1,12 +1,12 @@
 import { Button, Input } from '@heroui/react';
-import BankReceivedDate from '@/Components/BankReceivedDate';
+import BankReceivedDate from '@/Components/Finance/BankReceivedDate';
 import { useEffect, useRef, useState } from 'react';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
-import LatePaymentDetails from '@/Components/LatePaymentDetails';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
+import LatePaymentDetails from '@/Components/Finance/LatePaymentDetails';
 import { formatMoney } from '@/lib/format';
 import './financial-boxes.css';
-import DateInput from '@/Components/DateInput';
+import DateInput from '@/Components/UI/DateInput';
 import { BandRow, ChoiceSelect, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, SearchableSelect, SecondaryKey, StatusPill } from '@/Components/UI';
 
 const COLUMNS = ['المشترك', 'تاريخ الحركة', 'تاريخ وصول البنك', 'رقم السند', 'الرقم المرجعي', 'مبلغ الدفعة', 'وصل البنك', 'الفرق (شيكل)', 'الصندوق والمحصل', 'حالة التدقيق', 'الإجراء'];

@@ -9,7 +9,7 @@ import AreaChip from '@/Components/DataTable/AreaChip';
 import MeterBoxCell from '@/Components/DataTable/MeterBoxCell';
 import Pagination from '@/Components/DataTable/Pagination';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
 import { describeBalance } from '@/lib/accountStatement';

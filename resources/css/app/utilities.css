@@ -1,0 +1,187 @@
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility brand-spectrum {
+  /* A thin signature line. Use sparingly: under the logo, above tables and dialogs. */
+  @apply h-[3px] rounded-full bg-spectrum;
+}
+
+@utility data-chip {
+  /* Small monospace chip for codes like a meter box number. */
+  @apply inline-block whitespace-nowrap rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 font-mono text-xs text-gray-700;
+}
+
+@utility login-brand-panel {
+  /* Login: the brand half — soft metal texture with a burgundy glow; follows the theme. */
+  background:
+    radial-gradient(
+      55% 45% at 15% 100%,
+      rgb(var(--brand-500) / 0.2),
+      transparent 70%
+    ),
+    repeating-linear-gradient(
+      135deg,
+      rgb(var(--gray-900) / 0.025) 0 1px,
+      transparent 1px 7px
+    ),
+    linear-gradient(
+      160deg,
+      rgb(var(--gray-100)),
+      rgb(var(--gray-200) / 0.75) 55%,
+      rgb(var(--gray-100))
+    );
+}
+
+@utility login-form-panel {
+  background:
+    radial-gradient(
+      40% 35% at 0% 0%,
+      rgb(var(--brand-500) / 0.07),
+      transparent 70%
+    ),
+    rgb(var(--gray-50));
+}
+
+/*
+ * A hidden outline is a clear 2px one, as Tailwind 3's `outline-none` was, so
+ * the chosen focus-ring colour (data-ui-focus-ring) still draws it on a
+ * keyboard focus; Tailwind 4's own removes the outline altogether.
+ */
+@utility outline-hidden {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+/*
+ * Room kept inside a field for an icon, key or unit laid over its edge: the
+ * --room-* sizes (components.css), not spacing between elements.
+ */
+@utility field-room-start {
+  padding-inline-start: var(--room-icon);
+}
+
+@utility field-room-start-wide {
+  padding-inline-start: var(--room-icon-wide);
+}
+
+@utility field-room-end {
+  padding-inline-end: var(--room-icon);
+}
+
+@utility field-room-end-unit {
+  padding-inline-end: var(--room-unit);
+}
+
+/* A sheet pinned to the bottom of a phone keeps clear of the home indicator. */
+@utility safe-bottom {
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+/* Search and shortcut windows open a little below the top of the screen. */
+@utility scrim-top {
+  padding-top: 12vh;
+}
+
+@utility kbd {
+  @apply inline-flex items-center rounded-md border border-gray-200 bg-surface px-2 py-1 font-display text-[12px] font-semibold text-gray-500;
+}
+
+/*
+ * Lists (every single-choice <select>): where the browser lets a list be
+ * drawn (Chromium's customisable select), its open list takes the
+ * identity's look, a rounded panel with the chosen option ticked in the
+ * company's colour, instead of the system's grey box. Other browsers keep
+ * their own list; the closed field already matches the other fields.
+ */
+@supports (appearance: base-select) {
+  select:not([multiple], [size]) {
+    appearance: base-select;
+  }
+
+  select:not([multiple], [size])::picker-icon {
+    display: none;
+  }
+
+  select:not([multiple], [size])::picker(select) {
+    appearance: base-select;
+    margin-block: 8px;
+    max-height: min(320px, 50vh);
+    padding: 8px;
+    border: 0;
+    border-radius: 16px;
+    /* Frosted glass, like every floating list (components.css gl-pop). */
+    background: rgb(var(--panel-bg) / 0.74);
+    color: var(--gl-ink);
+    box-shadow:
+      0 0 0 1px rgb(var(--gray-900) / 0.1),
+      0 24px 48px -12px rgb(0 0 0 / 0.35),
+      0 8px 16px -8px rgb(0 0 0 / 0.2);
+    -webkit-backdrop-filter: blur(22px) saturate(1.7);
+    backdrop-filter: blur(22px) saturate(1.7);
+  }
+
+  select:not([multiple], [size]) option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 40px;
+    padding: 0 12px;
+    border-radius: 9px;
+    font-size: 14.5px;
+    cursor: pointer;
+  }
+
+  select:not([multiple], [size]) option:hover,
+  select:not([multiple], [size]) option:focus-visible {
+    background: var(--gl-fill-2);
+    outline: none;
+  }
+
+  select:not([multiple], [size]) option:checked {
+    background: none;
+    color: rgb(var(--gl-brand));
+    font-weight: 600;
+  }
+
+  select:not([multiple], [size]) option::checkmark {
+    order: 1;
+    margin-inline-start: auto;
+    color: rgb(var(--gl-brand));
+  }
+
+  select:not([multiple], [size]) option:disabled {
+    color: var(--gl-faint);
+    cursor: default;
+  }
+}
+
+/*
+ * Two field rules that outrank a utility on the same field, as they did under
+ * Tailwind 3: a list keeps the one field height (over an `h-10`), and a field
+ * written left to right sits on the right (over a `text-end` or a component's
+ * own alignment). They sit outside the layers because a layered rule always
+ * loses to a utility.
+ */
+select:not([multiple], [size]) {
+    height: var(--control-h);
+    min-height: var(--control-h);
+}
+
+:is(input:not([type='checkbox'], [type='radio']), textarea)[dir='ltr'] {
+    text-align: end;
+}

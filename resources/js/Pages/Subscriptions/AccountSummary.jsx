@@ -1,5 +1,5 @@
 import { Chip } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { BALANCE_HINTS, BALANCE_TEXT_CLASSES } from '@/lib/balance';
 
 /** A described balance (describeBalance()) as it reads everywhere: "50 ₪", "-9.10 ₪" or "0 ₪", coloured. */

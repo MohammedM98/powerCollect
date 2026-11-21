@@ -1,6 +1,6 @@
 import { Button } from '@heroui/react';
 import { useEffect, useState } from 'react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { activeFilterChips } from '@/lib/readingSheet';
 import { childOptions, nestFilterGroups, parentChange, parentValue, scopedOptions, withStaleCleared } from '@/lib/filterGroups';
 import { SearchableSelect } from '@/Components/UI';

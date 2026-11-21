@@ -1,5 +1,5 @@
 import { Children, cloneElement, isValidElement } from 'react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { useRowActionsMenu } from '@/hooks/useRowActionsMenu';
 import RowMenu from './RowMenu';
 import { DeleteKey, EditKey, MenuKey, ViewKey } from '@/Components/UI/ActionKeys';

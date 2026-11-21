@@ -1,14 +1,14 @@
 import { FilterField } from '@/Components/DataTable/DataTableFilterMenu';
 import { Button, Card, Input, Label, Switch } from '@heroui/react';
-import BankReceivedDate from '@/Components/BankReceivedDate';
+import BankReceivedDate from '@/Components/Finance/BankReceivedDate';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
 import { BranchFilterBanner, splitBranchFilter } from '@/Components/BranchBanner';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Pagination from '@/Components/DataTable/Pagination';
-import Icon from '@/Components/Icon';
-import LatePaymentDetails from '@/Components/LatePaymentDetails';
+import Icon from '@/Components/UI/Icon';
+import LatePaymentDetails from '@/Components/Finance/LatePaymentDetails';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useRowClick } from '@/hooks/useRowClick';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
@@ -19,8 +19,8 @@ import StatementModal from '@/Pages/Subscriptions/LazyStatementModal';
 import './Ledger.css';
 import PageHeader from '@/Components/PageHeader';
 import MoneyFlow from '@/Components/Finance/MoneyFlow';
-import InfoTip from '@/Components/InfoTip';
-import DateInput from '@/Components/DateInput';
+import InfoTip from '@/Components/UI/InfoTip';
+import DateInput from '@/Components/UI/DateInput';
 import { SearchableSelect } from '@/Components/UI';
 
 const PERIODS = [['today', 'اليوم'], ['yesterday', 'أمس'], ['7', '7 أيام'], ['30', '30 يوم'], ['month', 'هذا الشهر'], ['custom', 'مخصص']];

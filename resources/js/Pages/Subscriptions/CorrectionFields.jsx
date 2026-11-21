@@ -1,8 +1,8 @@
 import { TextArea } from '@heroui/react';
-import ChoiceChips from '@/Components/ChoiceChips';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
+import InputLabel from '@/Components/UI/InputLabel';
 
 import { formatDate, formatMoney } from '@/lib/format';
 

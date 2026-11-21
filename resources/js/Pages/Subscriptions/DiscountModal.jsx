@@ -1,7 +1,7 @@
 import { useId, useRef, useState } from 'react';
 import { router } from '@inertiajs/react';
-import InputError from '@/Components/InputError';
-import Modal from '@/Components/Modal';
+import InputError from '@/Components/UI/InputError';
+import Modal from '@/Components/UI/Modal';
 import { useResourceForm } from '@/hooks/useResourceForm';
 import { describeBalance } from '@/lib/accountStatement';
 import { formatAmount } from '@/lib/currency';

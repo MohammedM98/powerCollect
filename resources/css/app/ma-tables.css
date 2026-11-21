@@ -1,0 +1,241 @@
+:root[data-ui-navigation] .data-table-toolbar,
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-toolbar {
+    padding: 12px 16px 8px;
+    border-radius: 22px 22px 0 0;
+    box-shadow: var(--ma-hl);
+}
+
+:root[data-ui-navigation] .data-table-container,
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-container {
+    padding: 0 12px 4px;
+    border-radius: 22px;
+    box-shadow: var(--ma-depth);
+}
+
+:root[data-ui-navigation] .data-table-toolbar + .data-table-container {
+    border-radius: 0 0 22px 22px;
+}
+
+:root[data-ui-navigation] .data-table-container:has(+ :is(.data-table-pagination, .data-table-totals)) {
+    border-radius: 0;
+}
+
+:root[data-ui-navigation] .data-table-toolbar + .data-table-container:has(+ :is(.data-table-pagination, .data-table-totals)) {
+    border-radius: 0;
+}
+
+:root[data-ui-navigation] .data-table-pagination,
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-pagination {
+    padding: 12px 16px 12px;
+    border-radius: 0 0 22px 22px;
+    color: var(--ma-muted);
+    font-size: 14px;
+}
+
+/* The search: a grey field that turns white with the company's ring when typed in. */
+:root[data-ui-navigation] .data-table-search input,
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-search input {
+    min-height: 42px;
+    border: 0 !important;
+    border-radius: 13px;
+    background: var(--ma-tile) !important;
+    box-shadow: inset 0 0 0 1px transparent, inset 0 1px 2px rgb(16 20 26 / 0.04) !important;
+    color: var(--ma-ink);
+    font-size: 15px;
+}
+
+:root[data-ui-navigation] .data-table-search input::placeholder {
+    color: var(--ma-faint);
+}
+
+:root[data-ui-navigation] .data-table-search input:focus {
+    background: var(--ma-solid) !important;
+    box-shadow: inset 0 0 0 1.5px var(--ma-brand), 0 0 0 4px color-mix(in oklab, var(--ma-brand) 14%, transparent) !important;
+}
+
+/* Filters: grey keys with a light edge; the company's colour while they narrow the table. */
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger,
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger:hover {
+    height: 36px;
+    padding-inline: 12px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+    color: var(--ma-ink);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger:hover {
+    background: color-mix(in oklab, var(--ma-tile) 82%, var(--ma-ink) 7%);
+}
+
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger[data-active] {
+    background: var(--ma-brand-soft);
+    box-shadow: none;
+    color: var(--ma-brand);
+}
+
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger:is(.is-open, [aria-expanded='true']) {
+    box-shadow: inset 0 0 0 1.5px var(--ma-brand);
+}
+
+/* The table's tools (count, density, page size, Excel, print): small grey keys. */
+:root[data-ui-navigation] .data-table-tools :is(.gl-seg, [role='group']),
+:root[data-ui-navigation] .data-table-tools > span {
+    border: 0;
+    border-radius: 12px;
+    background: var(--ma-tile);
+}
+
+:root[data-ui-navigation] .data-table-tools [data-table-export-slot] :is(a, button) {
+    height: 34px;
+    padding-inline: 12px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+    color: var(--ma-ink);
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+/* The head: a soft band, rounded at both ends. */
+:root[data-ui-navigation] .data-table,
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 15px;
+}
+
+:root[data-ui-navigation] .data-table thead th,
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table thead th {
+    height: 40px;
+    padding: 0 12px;
+    border: 0;
+    background: var(--ma-tile);
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+:root[data-ui-navigation] .data-table thead th:first-child {
+    border-start-start-radius: 12px;
+    border-end-start-radius: 12px;
+}
+
+:root[data-ui-navigation] .data-table thead th:last-child {
+    border-start-end-radius: 12px;
+    border-end-end-radius: 12px;
+}
+
+:root[data-ui-navigation] .data-table thead th[aria-sort] :is(button, span) {
+    color: var(--ma-ink);
+}
+
+/* Rows: 64px, divided by a hairline, tinted under the pointer. */
+:root[data-ui-navigation] .data-table tbody td,
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody td {
+    height: 64px;
+    padding: 8px 12px;
+    border: 0;
+    border-bottom: 1px solid var(--ma-line);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    vertical-align: middle;
+}
+
+:root[data-ui-navigation] .data-table tbody tr:hover td,
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:hover td {
+    background: color-mix(in oklab, var(--ma-tile) 60%, transparent);
+}
+
+:root[data-ui-navigation] .data-table tbody tr:has(input[type='checkbox']:checked) td {
+    background: color-mix(in oklab, var(--ma-brand) 7%, transparent);
+}
+
+:root[data-ui-navigation] .data-table input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--ma-act);
+}
+
+/* Who: a rounded-square initial on the tile, the status dot at its corner. */
+:root[data-ui-navigation] .data-table .row-identity-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+    color: var(--ma-muted);
+    font-size: 13.5px;
+}
+
+:root[data-ui-navigation] .data-table .row-identity-text :is(b, strong, .font-semibold) {
+    color: var(--ma-ink);
+    font-weight: 700;
+}
+
+/* Places and numbers: a quiet grey chip, or plain. */
+:root[data-ui-navigation] .data-table .area-chip,
+.dark:root[data-ui-navigation] .data-table .area-chip {
+    height: 26px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 99px;
+    background: var(--ma-tile);
+    color: var(--ma-muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+:root[data-ui-navigation] .data-table .data-chip,
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table .data-chip:not(body) {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ma-muted);
+    font-size: 14px;
+}
+
+/* Statuses: the MA chips, a dot before the word. */
+:root[data-ui-navigation] .data-table .gl-pill {
+    height: 26px;
+    min-height: 26px;
+    padding: 0 12px;
+    background: var(--ma-tile);
+    color: var(--ma-muted);
+    font-size: 13px;
+}
+
+:root[data-ui-navigation] .data-table .gl-pill.gl-ok {
+    background: var(--ma-pay-s);
+    color: var(--ma-pay);
+}
+
+:root[data-ui-navigation] .data-table .gl-pill.gl-warn {
+    background: var(--ma-warn-s);
+    color: var(--ma-warn);
+}
+
+:root[data-ui-navigation] .data-table .gl-pill.gl-bad {
+    background: var(--ma-owe-s);
+    color: var(--ma-owe);
+}
+
+:root[data-ui-navigation] .data-table .gl-pill.gl-info {
+    background: var(--ma-clr-s);
+    color: var(--ma-clr);
+}
+
+/* Money owed in the owed red, credit in the payment green. */
+:root[data-ui-navigation] .data-table td :is(.text-red-600, .text-red-700) {
+    color: var(--ma-owe) !important;
+}
+
+:root[data-ui-navigation] .data-table td :is(.text-emerald-600, .text-emerald-700, .text-green-600, .text-green-700) {
+    color: var(--ma-pay) !important;
+}

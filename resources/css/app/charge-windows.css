@@ -1,0 +1,910 @@
+/*
+ * ── The charge window: the charge written as the statement's next line ───
+ * (Pages/Subscriptions/ChargeModal.jsx, ChargeLedger.jsx) As the MA design's
+ * option «سطر في الكشف»: the types as four tiles (the chosen one filled in
+ * the charge's red), the account's last lines on a white card, and the new
+ * line at their foot on a soft red band, its description and amount typed in
+ * place and the balance it leaves beside them.
+ */
+.gl-cl-types .gl-choices {
+    gap: 8px;
+}
+
+@media (max-width: 640px) {
+    .gl-cl-types .gl-choices {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.gl-cl-types .gl-choice-content,
+.gl-cl-types .gl-choice-content:hover {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    min-height: 0;
+    padding: 16px 12px 12px;
+    border: 0;
+    border-radius: 18px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+    color: var(--ma-ink);
+    text-align: center;
+    transition: background 0.15s, color 0.15s, transform 0.1s;
+}
+
+.gl-cl-types .gl-choice-content:hover {
+    transform: translateY(-1px);
+}
+
+.gl-cl-types .gl-choice-icon {
+    width: auto;
+    height: auto;
+    background: none;
+    box-shadow: none;
+    color: var(--ma-muted);
+}
+
+.gl-cl-types .gl-choice-icon svg {
+    width: 26px;
+    height: 26px;
+}
+
+.gl-cl-types .gl-choice-content b {
+    font-size: 15px;
+    line-height: 1.3;
+}
+
+.gl-cl-types .gl-choice-content small {
+    color: var(--ma-muted);
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.gl-cl-types .gl-choice-content[data-selected],
+.gl-cl-types .gl-choice-content[data-selected]:hover {
+    background: linear-gradient(170deg, color-mix(in oklab, var(--cl-t) 82%, white), var(--cl-t));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), 0 14px 26px -14px color-mix(in oklab, var(--cl-t) 80%, black);
+    color: #fff;
+}
+
+.gl-cl-types .gl-choice-content[data-selected] :is(.gl-choice-icon, small) {
+    color: rgb(255 255 255 / 0.85);
+}
+
+.gl-cl-types .gl-choice-content[data-focus-visible] {
+    outline: 2px solid var(--ma-brand);
+    outline-offset: 3px;
+}
+
+.gl-cl {
+    overflow: hidden;
+    border-radius: 22px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-cl-cap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    color: var(--ma-muted);
+    font-size: 13.5px;
+}
+
+.gl-cl-cap b {
+    color: var(--ma-ink);
+    font-size: 15px;
+}
+
+.gl-cl-scroll {
+    overflow-x: auto;
+    padding: 0 12px 8px;
+}
+
+.gl-cl-table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14.5px;
+}
+
+.gl-cl-table th {
+    height: 38px;
+    padding: 0 12px;
+    background: var(--ma-tile);
+    color: var(--ma-muted);
+    font-size: 12.5px;
+    font-weight: 700;
+    text-align: start;
+    white-space: nowrap;
+}
+
+.gl-cl-table th:first-child {
+    border-start-start-radius: 12px;
+    border-end-start-radius: 12px;
+}
+
+.gl-cl-table th:last-child {
+    border-start-end-radius: 12px;
+    border-end-end-radius: 12px;
+}
+
+.gl-cl-table td {
+    height: 52px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--ma-line);
+    vertical-align: middle;
+}
+
+.gl-cl-table tr.is-old td {
+    color: var(--ma-muted);
+}
+
+.gl-cl-table .gl-cl-desc {
+    display: block;
+    color: var(--ma-ink);
+}
+
+.gl-cl-table td small {
+    display: block;
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.gl-cl-table td.gl-num {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.gl-cl-table tr.is-new td {
+    height: 76px;
+    border-bottom: 0;
+    background: color-mix(in oklab, var(--cl-ts) 70%, transparent);
+}
+
+.gl-cl-table tr.is-new td:first-child {
+    border-start-start-radius: 14px;
+    border-end-start-radius: 14px;
+    box-shadow: inset -4px 0 0 var(--cl-t);
+}
+
+.gl-cl-table tr.is-new td:last-child {
+    border-start-end-radius: 14px;
+    border-end-end-radius: 14px;
+}
+
+.gl-cl-today {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 12px;
+    border-radius: 99px;
+    background: var(--cl-t);
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.dark .gl-cl-today {
+    color: #15181d;
+}
+
+/* The fields written into the new line. */
+.gl-cl-in {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 12px;
+    background: var(--ma-solid);
+    box-shadow: inset 0 0 0 1.5px color-mix(in oklab, var(--cl-t) 30%, transparent);
+    transition: box-shadow 0.15s;
+}
+
+.gl-cl-in:focus-within {
+    box-shadow: inset 0 0 0 2px var(--cl-t), 0 0 0 4px color-mix(in oklab, var(--cl-t) 14%, transparent);
+}
+
+.gl-cl-in[data-invalid] {
+    box-shadow: inset 0 0 0 2px var(--cl-t);
+}
+
+.gl-cl-in input,
+.gl-cl-in input:focus {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--ma-ink);
+    font-size: 15px;
+}
+
+.gl-cl-in input::placeholder {
+    color: var(--ma-faint);
+}
+
+.gl-cl-in.is-amount {
+    width: 150px;
+}
+
+.gl-cl-in.is-amount input {
+    color: var(--cl-t);
+    font: 900 22px var(--font-body, 'Zain'), sans-serif;
+    text-align: end;
+    caret-color: var(--cl-t);
+}
+
+.gl-cl-in.is-amount[data-readonly] input {
+    color: var(--ma-muted);
+}
+
+.gl-cl-in.is-amount span {
+    color: var(--ma-muted);
+    font-weight: 800;
+}
+
+.gl-cl-after {
+    color: var(--cl-t);
+    font: 900 20px var(--font-body, 'Zain'), sans-serif;
+    white-space: nowrap;
+}
+
+.gl-cl-after .text-red-600,
+.gl-cl-after [class*='text-'] {
+    color: inherit !important;
+}
+
+/* Under the statement: the usual amounts, the minimum's lock, and what the description is for. */
+.gl-cl-under {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    margin-top: 12px;
+}
+
+.gl-cl-quick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.gl-cl-quick button {
+    height: 34px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 11px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.gl-cl-lock {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 99px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+    color: var(--cl-t);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.gl-cl-hint {
+    color: var(--ma-muted);
+    font-size: 13px;
+}
+
+.gl-cl-hint b {
+    color: var(--ma-ink);
+}
+
+.gl-cl-hint.is-bad {
+    color: var(--cl-t);
+    font-weight: 700;
+}
+
+/* The footer's save button in the charge's red, with its light and shadow. */
+.gl-sheet[data-ledger-tone] .gl-sheet-btn.is-submit.button,
+.gl-sheet[data-ledger-tone] .gl-sheet-btn.is-submit.button:hover:not([data-disabled]) {
+    height: 50px;
+    padding: 0 24px;
+    border-radius: 15px;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--cl-btn) 88%, white), var(--cl-btn));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 8px 18px -10px color-mix(in oklab, var(--cl-btn) 80%, black);
+    color: #fff;
+    font-size: 16px;
+}
+
+.gl-sheet[data-ledger-tone] .gl-sheet-btn.is-submit.button:hover:not([data-disabled]) {
+    filter: brightness(1.05);
+}
+
+/* Phones: the statement's lines stack, and the new line puts its fields one under the other. */
+@media (max-width: 640px) {
+    .gl-cl-scroll {
+        overflow: visible;
+    }
+
+    .gl-cl-table,
+    .gl-cl-table tbody {
+        display: block;
+        min-width: 0;
+    }
+
+    .gl-cl-table thead {
+        display: none;
+    }
+
+    .gl-cl-table tr {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 4px 12px;
+        padding: 8px 8px;
+        border-bottom: 1px solid var(--ma-line);
+    }
+
+    .gl-cl-table td,
+    .gl-cl-table tr.is-new td {
+        height: auto;
+        padding: 0;
+        border: 0;
+        background: none;
+        box-shadow: none !important;
+    }
+
+    .gl-cl-table tr.is-old td:empty {
+        display: none;
+    }
+
+    .gl-cl-table tr.is-new {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        margin-top: 4px;
+        padding: 12px;
+        border: 0;
+        border-radius: 16px;
+        background: color-mix(in oklab, var(--cl-ts) 70%, transparent);
+        box-shadow: inset -4px 0 0 var(--cl-t);
+    }
+
+    .gl-cl-table tr.is-new td:nth-child(2) {
+        grid-column: 1 / -1;
+        order: 1;
+    }
+
+    .gl-cl-table tr.is-new td:is(:nth-child(3), :nth-child(4)) {
+        order: 2;
+    }
+
+    .gl-cl-table tr.is-new td:empty {
+        display: none;
+    }
+
+    .gl-cl-table tr.is-new td:nth-child(5) {
+        order: 3;
+    }
+
+    .gl-cl-in.is-amount {
+        width: 100%;
+    }
+
+    .gl-cl-cap .kbd {
+        display: none;
+    }
+}
+
+.gl-cl-types .gl-choice-content[data-selected] .gl-choice-icon {
+    width: auto;
+    height: auto;
+    background: none;
+    box-shadow: none;
+    color: rgb(255 255 255 / 0.9);
+}
+
+/* The charge window exactly as the prototype: the MA glass window, its header and footer. */
+.modal-sheet-panel:has(.gl-sheet[data-ledger-tone]),
+:root[data-ui-background='graphite'] .modal-sheet-panel:has(.gl-sheet[data-ledger-tone]) {
+    border: 0;
+    border-radius: 28px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: blur(28px) saturate(1.6);
+    backdrop-filter: blur(28px) saturate(1.6);
+    box-shadow: var(--ma-float);
+    color: var(--ma-ink);
+}
+
+:root:not([data-surface='glass']) .modal-sheet-panel:has(.gl-sheet[data-ledger-tone]) {
+    background: var(--ma-solid);
+}
+
+.gl-sheet[data-ledger-tone] .gl-dialog-head {
+    padding: 16px 24px 16px;
+    border: 0;
+}
+
+.gl-sheet[data-ledger-tone] .gl-dialog-head .gl-tone {
+    width: 46px;
+    height: 46px;
+    border-radius: 15px;
+    background: var(--cl-ts);
+    color: var(--cl-t);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-sheet[data-ledger-tone] .gl-dialog-head h3 {
+    font-size: 21px !important;
+}
+
+.gl-sheet[data-ledger-tone] .gl-dialog-head .gl-sub {
+    color: var(--ma-muted);
+    font-size: 14px !important;
+}
+
+.gl-sheet[data-ledger-tone] .gl-dialog-head button {
+    border: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--ma-muted);
+}
+
+.gl-sheet[data-ledger-tone] .gl-dialog-head button:hover {
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+}
+
+.gl-sheet[data-ledger-tone] .gl-sheet-body {
+    gap: 16px;
+    padding: 4px 24px 24px;
+}
+
+/* The type tiles carry their key number in the corner. */
+.gl-cl-types .gl-choices {
+    counter-reset: gl-cl-key;
+}
+
+.gl-cl-types .gl-choice {
+    counter-increment: gl-cl-key;
+}
+
+.gl-cl-types .gl-choice-content::before {
+    content: counter(gl-cl-key);
+    position: absolute;
+    top: 8px;
+    inset-inline-start: 8px;
+    padding: 0 8px;
+    border: 1px solid var(--ma-line);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    color: var(--ma-muted);
+    font-size: 11.5px;
+    font-weight: 800;
+    line-height: 1.5;
+}
+
+.gl-cl-types .gl-choice-content[data-selected]::before {
+    border-color: rgb(255 255 255 / 0.35);
+    color: #fff;
+}
+
+/* The usual amounts: raised white keys with the number only. */
+.gl-cl-quick button {
+    transition: transform 0.1s;
+}
+
+.gl-cl-quick button:hover {
+    transform: translateY(-1px);
+}
+
+/* Footer: the keys, the balance it leaves, then cancel and the red button. */
+.gl-cl-foot {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 12px 24px 16px;
+    border-top: 1px solid var(--ma-line);
+}
+
+.gl-cl-foot .gl-sheet-keys {
+    flex: 1;
+    color: var(--ma-muted);
+    font-size: 13px;
+}
+
+.gl-cl-total {
+    display: grid;
+    line-height: 1.25;
+    text-align: end;
+}
+
+.gl-cl-total small {
+    color: var(--ma-muted);
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.gl-cl-total b {
+    color: var(--ma-ink);
+    font: 900 20px var(--font-body, 'Zain'), sans-serif;
+}
+
+.gl-cl-foot .gl-sheet-btn.button:not(.is-submit),
+.gl-cl-foot .gl-sheet-btn.button:not(.is-submit):hover {
+    height: 42px;
+    padding: 0 16px;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+    color: var(--ma-ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.gl-cl-foot .gl-sheet-btn.is-submit[data-disabled] {
+    opacity: 0.45;
+}
+
+@media (max-width: 600px) {
+    .gl-cl-foot .gl-sheet-keys {
+        display: none;
+    }
+
+    .gl-cl-foot .gl-sheet-btn.is-submit {
+        flex: 1;
+    }
+}
+
+/* Each window's colour for its line, its tiles and its button. */
+.gl-sheet[data-ledger-tone] {
+    --cl-t: var(--ma-owe);
+    --cl-ts: var(--ma-owe-s);
+    --cl-btn: #b0524b;
+}
+
+.gl-sheet[data-ledger-tone='clearing'] {
+    --cl-t: var(--ma-clr);
+    --cl-ts: var(--ma-clr-s);
+    --cl-btn: #45678e;
+}
+
+.gl-sheet[data-ledger-tone='discount'] {
+    --cl-t: var(--ma-disc);
+    --cl-ts: var(--ma-disc-s);
+    --cl-btn: #6c599d;
+}
+
+.gl-sheet[data-ledger-tone='correction'] {
+    --cl-t: var(--ma-warn);
+    --cl-ts: var(--ma-warn-s);
+    --cl-btn: #946615;
+}
+
+/* A credit (له) line's amount is under له; its balance goes down. */
+.gl-cl[data-tone]:not([data-tone='charge']) .gl-cl-after {
+    color: var(--ma-ink);
+}
+
+/* Small extra fields under the line (a clearing's paper voucher number). */
+.gl-cl-extra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    margin-top: 12px;
+}
+
+.gl-cl-extra label {
+    color: var(--ma-muted);
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.gl-cl-extra .gl-cl-in {
+    width: 180px;
+    background: var(--ma-tile);
+    box-shadow: none;
+}
+
+.gl-cl-extra .gl-cl-in:focus-within {
+    background: var(--ma-solid);
+}
+
+.gl-cl-quick button.is-settle {
+    background: var(--ma-pay-s);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ma-pay) 25%, transparent);
+    color: var(--ma-pay);
+}
+
+/* A notice inside the window (an amount above what is owed). */
+.gl-cl-note {
+    margin-top: 12px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: var(--ma-warn-s);
+    color: var(--ma-ink);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.gl-cl-note label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.gl-cl-note input {
+    width: 19px;
+    height: 19px;
+    accent-color: var(--ma-act);
+}
+
+@media (max-width: 600px) {
+    .gl-cl-foot .gl-sheet-btn.is-submit.button {
+        min-width: 0;
+        padding-inline: 16px;
+        font-size: 15px;
+        white-space: normal;
+        line-height: 1.25;
+    }
+}
+
+/* A window whose keys pick something else (the discount) shows no numbers on its tiles. */
+.gl-cl-types.is-plain .gl-choice-content::before {
+    content: none;
+}
+
+/* The weekly discount keeps its card and steps, in the window's colours. */
+.gl-sheet[data-ledger-tone] .gl-step-n {
+    background: var(--ma-tile);
+    color: var(--ma-muted);
+}
+
+.gl-sheet[data-ledger-tone] .gl-step[data-done] .gl-step-n {
+    background: var(--cl-ts);
+    color: var(--cl-t);
+}
+
+/*
+ * The other choices and the big amount of these windows (the weekly
+ * discount's method and value), as the payment's: grey cards turning white,
+ * ringed in the window's colour with their icon filled; the value on a soft
+ * field ringed in that colour while typed.
+ */
+.gl-sheet[data-ledger-tone] .gl-step:not(.gl-cl-types .gl-step) .gl-choice-content,
+.gl-sheet[data-ledger-tone] .gl-step:not(.gl-cl-types .gl-step) .gl-choice-content:hover {
+    border: 0;
+    border-radius: 20px;
+    background: var(--ma-tile);
+    box-shadow: inset 0 0 0 1.5px transparent;
+}
+
+.gl-sheet[data-ledger-tone] .gl-step:not(.gl-cl-types .gl-step) .gl-choice-content:hover {
+    box-shadow: inset 0 0 0 1.5px var(--ma-line);
+}
+
+.gl-sheet[data-ledger-tone] .gl-step:not(.gl-cl-types .gl-step) .gl-choice-content[data-selected] {
+    background: var(--ma-solid);
+    box-shadow: inset 0 0 0 2px var(--cl-t), 0 14px 30px -18px color-mix(in oklab, var(--cl-t) 70%, transparent);
+}
+
+.gl-sheet[data-ledger-tone] .gl-step:not(.gl-cl-types .gl-step) .gl-choice-icon {
+    background: var(--ma-solid);
+    color: var(--ma-muted);
+    box-shadow: var(--ma-hl);
+}
+
+.gl-sheet[data-ledger-tone] .gl-step:not(.gl-cl-types .gl-step) .gl-choice-content[data-selected] .gl-choice-icon {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--cl-t) 85%, white), var(--cl-t));
+    color: #fff;
+}
+
+.gl-sheet[data-ledger-tone] .gl-amt-field,
+.gl-sheet[data-ledger-tone] .gl-amt-field:hover {
+    border: 0;
+    background: var(--ma-tile);
+    box-shadow: inset 0 1px 2px rgb(16 20 26 / 0.04);
+}
+
+.gl-sheet[data-ledger-tone] .gl-amt-field:focus-within {
+    background: var(--ma-solid);
+    box-shadow: inset 0 0 0 2px var(--cl-t), 0 0 0 5px color-mix(in oklab, var(--cl-t) 12%, transparent);
+}
+
+.gl-sheet[data-ledger-tone] .gl-amt-quick .button {
+    border: 0;
+    border-radius: 11px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+}
+
+/*
+ * ── Contrast ─────────────────────────────────────────────────────────────
+ * Every text at least 4.5:1 on what is behind it (3:1 when large), in
+ * both themes, measured on every page and money window:
+ * - the faint grey (hints, search, placeholders) is a step darker in the
+ *   light theme and a step lighter in the dark one;
+ * - the payment green and the charge red text a shade deeper on their
+ *   tints (statuses, «كل ما عليه»), and in the light theme the split teal
+ *   and the warning amber too (their chips);
+ * - a filled tile, badge or button always uses its colour's deep shade
+ *   with white text, also in the dark theme, where the light shades of
+ *   the tones are for text only.
+ */
+:root {
+    --ma-faint: #646b75;
+    --ma-pay: #23704c;
+    --ma-owe: #a1443d;
+    --ma-split: #277189;
+    --ma-warn: #8d6114;
+}
+
+.dark {
+    --ma-faint: #8a919b;
+    --ma-pay: #6dbf98;
+    --ma-owe: #e1938c;
+    --ma-split: #75bdd2;
+    --ma-warn: #e0b45c;
+}
+
+.gl-sheet[data-ledger-tone] {
+    --cl-fill: var(--cl-btn);
+}
+
+:is(input, textarea)::placeholder {
+    color: var(--ma-faint) !important;
+    opacity: 1 !important;
+}
+
+.tn-search .tn-search-text {
+    color: var(--ma-faint);
+}
+
+/* Filled tiles and the «today» tag: the deep shade with white text. */
+.gl-cl-types .gl-choice-content[data-selected],
+.gl-cl-types .gl-choice-content[data-selected]:hover {
+    background: linear-gradient(170deg, color-mix(in oklab, var(--cl-fill) 92%, white), var(--cl-fill));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), 0 14px 26px -14px color-mix(in oklab, var(--cl-fill) 80%, black);
+}
+
+.gl-cl-types .gl-choice-content[data-selected] b,
+.gl-cl-types .gl-choice-content[data-selected] small {
+    color: #fff;
+}
+
+.gl-cl-types .gl-choice-content[data-selected] small {
+    color: #fff;
+}
+
+.gl-cl-today,
+.dark .gl-cl-today {
+    background: var(--cl-fill);
+    color: #fff;
+}
+
+.gl-sheet[data-ledger-tone] .gl-step:not(.gl-cl-types .gl-step) .gl-choice-content[data-selected] .gl-choice-icon {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--cl-fill) 85%, white), var(--cl-fill));
+}
+
+/* The payment's chosen way of paying: its icon filled with the deep shade. */
+.gl-co-method[data-tone='cash'] {
+    --ma-tone-fill: #2d855c;
+}
+
+.gl-co-method[data-tone='transfer'] {
+    --ma-tone-fill: #45678e;
+}
+
+.gl-co .gl-co-method-content[data-selected] .gl-co-method-icon,
+.gl-co .gl-co-method[data-tone='cash'] .gl-co-method-content[data-selected] .gl-co-method-icon {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--ma-tone-fill) 85%, white), var(--ma-tone-fill));
+}
+
+.gl-co .gl-co-check {
+    background: var(--ma-tone-fill);
+}
+
+/* The readings' approve button: the payment green's deep shade in both themes. */
+.reading-entry .re-approval button.ui-btn-primary,
+.reading-entry .re-approval .ui-btn-primary {
+    border-color: #2d855c;
+    background: linear-gradient(180deg, color-mix(in oklab, #2d855c 88%, white), #2d855c);
+    color: #fff;
+}
+
+/* Statuses on their tints. */
+:root:not(.dark) .gl-st-status.chip--success {
+    color: #035c43;
+}
+
+:root:not(.dark) .gl-cb-chip[data-state='waiting'].chip {
+    --chip-fg: rgb(146 64 14);
+}
+
+/* Small coloured signs and links, a shade deeper in the light theme and lighter in the dark one. */
+:root:not(.dark) .text-amber-600 {
+    color: rgb(180 83 9);
+}
+
+:root:not(.dark) .text-emerald-600 {
+    color: rgb(4 120 87);
+}
+
+:root:not(.dark) .text-brand-500 {
+    color: rgb(var(--brand-600));
+}
+
+.dark .text-amber-700 {
+    color: rgb(251 191 36);
+}
+
+.dark .text-brand-500 {
+    color: rgb(var(--brand-600));
+}
+
+.dark .gl-av-bad {
+    color: rgb(252 165 165) !important;
+}
+
+.dark .ledger-page .day .tod {
+    background: rgb(160 60 10);
+}
+
+.dark .gl-cb-tab[aria-current='page'] .gl-cb-count {
+    color: #f3a77c;
+}
+
+.gl-cl-types .gl-choice-content[data-selected] :is(.gl-choice-icon, small, b) {
+    color: #fff;
+}
+
+/*
+ * ── The split payment (Pages/Payments/SplitPaymentForm.jsx) ──────────────
+ * In the family of the money windows, in the split teal: the total on a soft
+ * card ringed while typed, the transfer's details on a soft blue panel with
+ * white bank chips, the subscribers as lines of a distribution sheet (each
+ * share typed in its line, the balance it leaves beside it), and the
+ * distribution column at the end.
+ */
+.gl-sheet[data-ledger-tone='split'] {
+    --cl-t: var(--ma-split);
+    --cl-ts: var(--ma-split-s);
+    --cl-btn: #1f6a80;
+    --cl-fill: #1f6a80;
+}
+
+.gl-sheet[data-ledger-tone='split'] .gl-split-panel {
+    padding: 16px;
+    border: 0;
+    border-radius: 20px;
+    background: var(--ma-tile);
+    box-shadow: none;
+}
+
+.gl-sheet[data-ledger-tone='split'] .gl-split-panel[aria-labelledby='split-transfer-title'] {
+    background: color-mix(in oklab, var(--ma-clr-s) 55%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ma-clr) 14%, transparent);
+}
+
+.gl-sheet[data-ledger-tone='split'] .gl-split-panel-title {
+    color: var(--ma-ink);
+    font-size: 16px;
+    font-weight: 800;
+}

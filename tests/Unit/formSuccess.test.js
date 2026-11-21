@@ -24,8 +24,8 @@ before(async () => {
                 if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria'))) return { id: import.meta.resolve(id), external: true };
                 // HeroUI and react-aria load as the installed packages (they cannot be inlined into a data: URL module).
                 if (/^(?:@heroui\/|react-aria|@react-aria\/|@internationalized\/)/.test(id)) return { id: import.meta.resolve(id), external: true };
-                if (/(?:Components[/\\]Modal|Layouts[/\\]SettingsLayout|[/\\]BanksSection)(?:\.jsx)?$/.test(id)) return '\0container';
-                if (/Components[/\\]ConfirmDialog(?:\.jsx)?$/.test(id)) return '\0confirm';
+                if (/(?:Components[/\\]UI[/\\]Modal|Layouts[/\\]SettingsLayout|[/\\]BanksSection)(?:\.jsx)?$/.test(id)) return '\0container';
+                if (/Components[/\\]UI[/\\]ConfirmDialog(?:\.jsx)?$/.test(id)) return '\0confirm';
             },
             load(id) {
                 if (id === '\0entry') return `

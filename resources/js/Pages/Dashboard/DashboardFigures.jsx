@@ -1,11 +1,11 @@
 import { Button } from '@heroui/react';
 import { Link } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
-import ChartStudio from '@/Components/ChartStudio';
-import CountUp from '@/Components/CountUp';
+import Icon from '@/Components/UI/Icon';
+import ChartStudio from '@/Components/Charts/ChartStudio';
+import CountUp from '@/Components/Charts/CountUp';
 import Panel from '@/Components/Panel';
-import SplitBar from '@/Components/SplitBar';
-import { ChangePill } from '@/Components/StatStrip';
+import SplitBar from '@/Components/Charts/SplitBar';
+import { ChangePill } from '@/Components/Charts/StatStrip';
 import { formatMoney, formatNumber, formatShortDay, percentOf } from '@/lib/format';
 
 /**

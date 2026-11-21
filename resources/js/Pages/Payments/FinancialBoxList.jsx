@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { formatMoney } from '@/lib/format';
 import { activeBoxEntries, boxReconciliation, financialBoxTotals, isFlaggedEntry } from '@/lib/financialBoxes';
 import { Button, Chip } from '@heroui/react';

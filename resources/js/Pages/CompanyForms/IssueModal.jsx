@@ -1,14 +1,14 @@
 import { Button, Input, TextArea } from '@heroui/react';
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useForm, useHttp } from '@inertiajs/react';
-import Modal from '@/Components/Modal';
-import Icon from '@/Components/Icon';
+import Modal from '@/Components/UI/Modal';
+import Icon from '@/Components/UI/Icon';
 import FormField from '@/Components/Form/FormField';
-import ChoiceChips from '@/Components/ChoiceChips';
-import InputError from '@/Components/InputError';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
+import InputError from '@/Components/UI/InputError';
 import CompanyFormPaper from './CompanyFormPaper';
 import useCompanySource from './useCompanySource';
-import DateInput from '@/Components/DateInput';
+import DateInput from '@/Components/UI/DateInput';
 import { PrimaryKey, SearchableSelect, SecondaryKey } from '@/Components/UI';
 
 const MODE_OPTIONS = [{ value: 'blank', label: 'نموذج فارغ', icon: 'document' }, { value: 'filled', label: 'نسخة معبأة', icon: 'user' }];

@@ -1,5 +1,5 @@
 import { useId, useState } from 'react';
-import Modal from '@/Components/Modal';
+import Modal from '@/Components/UI/Modal';
 import { FormHeader, movementStyle, SHEET_FORM_CLASS } from '@/Pages/Subscriptions/AccountFormParts';
 import SplitPaymentForm from './SplitPaymentForm';
 import { ConfirmDialog } from '@/Components/UI';

@@ -5,7 +5,7 @@ import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import Pagination from '@/Components/DataTable/Pagination';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import { useDataTable } from '@/hooks/useDataTable';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { formatNumber, timeAgo } from '@/lib/format';
 import { openQuickMessage } from '@/lib/quickMessage';
 import { ChannelLabel, DeliveryCounts, KindPill, MessageText } from './MessageParts';

@@ -1,0 +1,177 @@
+/*
+ * The Superpower components: solid panels, figures, charts, fields,
+ * tables, drawers and board, prefixed
+ * `gl-` so they never meet Tailwind's own names. Every colour comes from
+ * theme.css (section 8, and the brand's shades), so both themes, the dark
+ * backgrounds and the company's colour follow.
+ */
+:root {
+    --gl-ink: rgb(var(--panel-ink));
+    --gl-muted: rgb(var(--panel-muted));
+    --gl-faint: rgb(var(--panel-faint));
+    --gl-line: rgb(var(--panel-line));
+    --gl-line-strong: rgb(var(--panel-line-strong));
+    --gl-fill: rgb(var(--panel-fill));
+    --gl-fill-2: rgb(var(--panel-fill-strong));
+    --gl-ok: rgb(var(--panel-success));
+    --gl-warn: rgb(var(--panel-warning));
+    --gl-bad: rgb(var(--panel-danger));
+    --gl-info: rgb(var(--panel-info));
+    /* The company's colour as text and lines (brand), and as a fill for a choice (btn); buttons use `--action`. */
+    --gl-brand: var(--brand-600);
+    --gl-btn: var(--brand-solid);
+    --gl-head: var(--font-heading, 'Cairo'), 'IBM Plex Sans Arabic', system-ui, sans-serif;
+    --gl-d: 1;
+    /* Text on a movement's tone (dark tones in the light theme, bright ones in the dark). */
+    --gl-tone-ink: #fff;
+    /*
+     * Room kept inside a box for something laid over its edge: an icon, a
+     * key, a unit, a card's mark, the floating save bar or dock. These are
+     * the overlay's own size, not spacing between elements, so they sit
+     * outside the spacing scale (0 and 4–32px).
+     */
+    --room-icon: 2.5rem;
+    --room-icon-wide: 2.75rem;
+    --room-key: 3rem;
+    --room-unit: 4rem;
+    --room-mark: 5.25rem;
+    --room-switch: 7.25rem;
+    --room-dock: 7.5rem;
+}
+
+.dark {
+    --gl-brand: var(--brand-soft);
+    --gl-tone-ink: #0a0a0a;
+}
+
+.gl-num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+}
+
+/*
+ * Floating surfaces (menus, lists, the calendar, a row's actions): HeroUI's
+ * frosted glass, so they sit clearly above the page and the user tells
+ * apart what they are choosing from. Solid where the system asks for less
+ * transparency.
+ */
+.gl-pop {
+    border: 0;
+    background: rgb(var(--panel-bg) / 0.74);
+    box-shadow:
+        0 0 0 1px rgb(var(--gray-900) / 0.1),
+        0 24px 48px -12px rgb(0 0 0 / 0.35),
+        0 8px 16px -8px rgb(0 0 0 / 0.2);
+    -webkit-backdrop-filter: blur(22px) saturate(1.7);
+    backdrop-filter: blur(22px) saturate(1.7);
+}
+
+.dark .gl-pop {
+    background: rgb(var(--panel-bg) / 0.7);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1), 0 24px 56px -12px rgb(0 0 0 / 0.7);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    .gl-pop {
+        background: rgb(var(--panel-bg));
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}
+
+/* ── Panels and layout ─────────────────────────────────────────────────── */
+.gl-card {
+    background: rgb(var(--panel-bg));
+    border: 1px solid transparent;
+    border-radius: calc(24px * var(--radius-scale, 1));
+    box-shadow: var(--panel-shadow);
+    color: var(--gl-ink);
+}
+
+.gl-page {
+    animation: gl-page-in 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: var(--gl-ink);
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.gl-page :is(h1, h2, h3) {
+    margin: 0;
+    font-family: var(--gl-head);
+    letter-spacing: 0;
+}
+
+.gl-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.gl-g4 {
+    grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr));
+}
+
+.gl-g3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.gl-dash {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 16px;
+    align-items: start;
+}
+
+.gl-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+.gl-sp {
+    flex: 1;
+}
+
+/* ── Page head ────────────────────────────────────────────────────────── */
+.gl-phead {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.gl-phead h1 {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.gl-phead p {
+    margin: 0 0 0;
+    color: var(--gl-muted);
+}
+
+.gl-phead-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-inline-start: auto;
+}
+
+.gl-word {
+    display: inline-block;
+    animation: gl-word 0.6s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+    animation-delay: calc(0.1s + var(--w) * 70ms);
+}
+
+@keyframes gl-page-in {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+        filter: blur(6px);
+    }
+}

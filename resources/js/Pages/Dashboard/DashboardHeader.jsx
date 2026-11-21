@@ -1,4 +1,4 @@
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import WordReveal from '@/Components/WordReveal';
 import { formatWeekDay } from '@/lib/weekDays';
 import { SearchableSelect, SegmentedChoice } from '@/Components/UI';

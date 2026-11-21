@@ -1,5 +1,5 @@
-import Icon from '@/Components/Icon';
-import ChoiceChips from '@/Components/ChoiceChips';
+import Icon from '@/Components/UI/Icon';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
 import { CHANNEL_ICONS, withIcons } from './MessageParts';
 import { Section } from './MessageFormParts';
 

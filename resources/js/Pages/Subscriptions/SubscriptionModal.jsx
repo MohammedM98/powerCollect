@@ -1,4 +1,4 @@
-import FormModal from '@/Components/FormModal';
+import FormModal from '@/Components/Form/FormModal';
 import { useResourceForm } from '@/hooks/useResourceForm';
 import SubscriptionForm, { SUBSCRIPTION_OUTLINE } from './SubscriptionForm';
 import { subscriptionFormData } from '@/lib/subscriptionForm';

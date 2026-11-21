@@ -18,7 +18,7 @@ before(async () => {
             if (id === 'reading-approval-components') return '\0entry';
             if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria')) || id === '@inertiajs/react') return { id: import.meta.resolve(id), external: true };
             if (id.endsWith('.css')) return '\0css';
-            if (/Components[/\\]Modal(?:\.jsx)?$/.test(id)) return '\0modal';
+            if (/Components[/\\]UI[/\\]Modal(?:\.jsx)?$/.test(id)) return '\0modal';
         }, load(id) {
             if (id === '\0entry') return "export {SheetRow} from '@/Pages/MeterReadings/ReadingSheetRow'; export {default as Dialog} from '@/Pages/MeterReadings/ReadingApprovalDialog'; export {default as History} from '@/Pages/Subscriptions/ReadingHistoryModal'; export * as Kit from '@/Components/UI/ListTable';";
             if (id === '\0css') return '';

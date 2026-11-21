@@ -2,7 +2,7 @@ import FormField from '@/Components/Form/FormField';
 import FormSelect, { namedOptions } from '@/Components/Form/FormSelect';
 import FormSection from '@/Components/Form/FormSection';
 import SettingRow from '@/Components/Form/SettingRow';
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/UI/InputError';
 import { Switch, TextInput } from '@/Components/UI';
 
 /**

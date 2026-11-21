@@ -1,8 +1,8 @@
 import { Button } from '@heroui/react';
-import BankReceivedDate from '@/Components/BankReceivedDate';
+import BankReceivedDate from '@/Components/Finance/BankReceivedDate';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
-import Balance from '@/Components/Balance';
-import LatePaymentDetails from '@/Components/LatePaymentDetails';
+import Balance from '@/Components/Finance/Balance';
+import LatePaymentDetails from '@/Components/Finance/LatePaymentDetails';
 import { chainColor, followsLineAbove, hasLineMenu, netOfReadingDiscount, rowClass } from '@/lib/accountStatement';
 
 import SplitPaymentBadge from '@/Pages/Payments/SplitPaymentBadge';

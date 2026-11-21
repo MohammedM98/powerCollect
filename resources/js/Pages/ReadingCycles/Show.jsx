@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { Button } from '@heroui/react';
 import { formatNumber, formatDate } from '@/lib/format';
 import { STAGES, stagedMoveGroups, assignmentMatches, boardColumns, boardCounters, boxMatches, columnTotals, distributionAreas, distributionBoxOptions, movePayload, toggleBoxSelection } from '@/lib/readingBoard';
@@ -11,7 +11,7 @@ import DistributionAreas from './DistributionAreas';
 import DistributionSummaryModal from './DistributionSummaryModal';
 import DistributionActionModal from './DistributionActionModal';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
-import PrintButton from '@/Components/PrintButton';
+import PrintButton from '@/Components/Print/PrintButton';
 import DistributionBoard, { DistributionMission, DistributionTray } from './DistributionBoard';
 import { AllocationReport, ReadingDayModal } from './CycleParts';
 import { ChoiceSelect, SearchableSelect, SegmentedChoice, StatusPill } from '@/Components/UI';

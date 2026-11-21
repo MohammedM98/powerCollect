@@ -1,4 +1,4 @@
-import FormPage from '@/Components/FormPage';
+import FormPage from '@/Components/Form/FormPage';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import { useResourceForm } from '@/hooks/useResourceForm';
 import MeterBoxForm, { meterBoxFormData } from './MeterBoxForm';

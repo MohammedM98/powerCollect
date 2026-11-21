@@ -1,12 +1,12 @@
 import { TextArea } from '@heroui/react';
 import { useId } from 'react';
 import { useForm } from '@inertiajs/react';
-import DialogFrame from '@/Components/DialogFrame';
-import InputLabel from '@/Components/InputLabel';
-import InputError from '@/Components/InputError';
-import Balance from '@/Components/Balance';
+import DialogFrame from '@/Components/UI/DialogFrame';
+import InputLabel from '@/Components/UI/InputLabel';
+import InputError from '@/Components/UI/InputError';
+import Balance from '@/Components/Finance/Balance';
 import { balanceWord } from '@/lib/balance';
-import DateInput from '@/Components/DateInput';
+import DateInput from '@/Components/UI/DateInput';
 import { CheckBox, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 export default function ArchiveSubscriptionModal({ subscription, today, onClose }) {

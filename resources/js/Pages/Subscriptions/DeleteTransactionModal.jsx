@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useState } from 'react';
 import { useForm } from '@inertiajs/react';
-import FormModal from '@/Components/FormModal';
+import FormModal from '@/Components/Form/FormModal';
 import { describeBalance } from '@/lib/accountStatement';
 import { balanceInText } from '@/lib/balance';
 import { BalanceAfter } from './AccountSummary';

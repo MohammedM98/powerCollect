@@ -1,0 +1,302 @@
+.gl-sheet[data-ledger-tone='split'] .gl-split-panel :is(input:not([type='checkbox'], [type='radio']), button[aria-haspopup]) {
+    border-color: transparent;
+    background: var(--ma-solid);
+}
+
+.gl-sheet[data-ledger-tone='split'] .gl-bank-chip-content,
+.gl-sheet[data-ledger-tone='split'] .gl-bank-chip-content:hover {
+    border: 0;
+    border-radius: 14px;
+    background: var(--ma-solid);
+    box-shadow: inset 0 0 0 1.5px transparent, var(--ma-hl);
+}
+
+.gl-sheet[data-ledger-tone='split'] .gl-bank-chip-content[data-selected] {
+    box-shadow: inset 0 0 0 2px var(--ma-ink), var(--ma-depth);
+}
+
+/* The distribution sheet. */
+.gl-sp-table {
+    min-width: 0;
+}
+
+.gl-sp-table .gl-cl-in.is-amount {
+    width: 130px;
+}
+
+.gl-sheet[data-ledger-tone] .gl-sheet-body > *,
+.gl-sheet[data-ledger-tone] .gl-amt,
+.gl-sheet[data-ledger-tone] .gl-amt-field {
+    min-width: 0;
+}
+
+.gl-sheet[data-ledger-tone] .gl-amt-field input.gl-amt-input {
+    width: 100%;
+    min-width: 0;
+}
+
+.gl-sp-table {
+    border-spacing: 0 8px;
+}
+
+.gl-sp-table thead th {
+    padding-block: 0;
+}
+
+.gl-sp-table tr.is-new td {
+    height: 68px;
+    padding: 8px 12px;
+}
+
+.gl-sp-table tr.is-new td:first-child {
+    width: 46%;
+}
+
+.gl-sp-table .gl-sp-who small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gl-sp-table .gl-sp-who > span:last-child {
+    min-width: 0;
+}
+
+.gl-sp-table td:last-child {
+    width: 46px;
+    padding-inline: 4px 12px;
+}
+
+.gl-sp-table td[data-tone],
+.gl-sp-after {
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.gl-sp-table [data-tone='owes'] {
+    color: var(--ma-owe);
+}
+
+.gl-sp-table :is([data-tone='credit'], [data-tone='settled']) {
+    color: var(--ma-pay);
+}
+
+.gl-sp-who {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.gl-sp-who b {
+    display: block;
+    color: var(--ma-ink);
+    font-weight: 700;
+}
+
+.gl-sp-who small {
+    display: block;
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.gl-sp-av {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-hl);
+    color: var(--ma-muted);
+    font-size: 13.5px;
+    font-weight: 800;
+}
+
+.gl-sp-av i {
+    position: absolute;
+    bottom: -2px;
+    inset-inline-end: -2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--ma-solid);
+}
+
+.gl-sp-x {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    color: var(--ma-muted);
+}
+
+.gl-sp-x:hover {
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+}
+
+.gl-sp-err td {
+    height: auto !important;
+    padding: 4px 12px 8px !important;
+    border: 0 !important;
+}
+
+.gl-sheet[data-ledger-tone='split'] .gl-split-panel .gl-cl {
+    margin-bottom: 12px;
+}
+
+.gl-sp-search input {
+    border-color: transparent !important;
+    background: var(--ma-solid) !important;
+}
+
+/* The distribution column in the window's tokens. */
+.gl-sheet[data-ledger-tone='split'] .gl-split-aside {
+    border-inline-start: 1px solid var(--ma-line);
+    background:
+        radial-gradient(120% 70% at 50% 0%, color-mix(in oklab, var(--ma-split) 10%, transparent), transparent 70%),
+        color-mix(in oklab, var(--ma-tile) 70%, transparent);
+}
+
+.gl-sheet[data-ledger-tone='split'] .gl-split-bar i {
+    background: var(--cl-fill);
+}
+
+.gl-sheet[data-ledger-tone='split'] .gl-split-bar[data-done] i {
+    background: #2d855c;
+}
+
+.gl-sheet[data-ledger-tone='split'] .gl-split-rows dd {
+    color: var(--ma-ink);
+}
+
+.gl-sheet[data-ledger-tone='split'] .gl-split-rows > [data-tone='left'] dd {
+    color: var(--ma-warn);
+}
+
+.gl-sheet[data-ledger-tone='split'] .gl-split-rows > [data-tone='over'] dd {
+    color: var(--ma-owe);
+}
+
+.gl-sheet[data-ledger-tone='split'] .gl-dialog-foot {
+    padding: 12px 24px 16px;
+    border-top: 1px solid var(--ma-line);
+}
+
+
+/* Phones: who (and the remove button) on the first line; now, the share and after on the second. */
+@media (max-width: 640px) {
+    .gl-sp-table {
+        border-spacing: 0;
+    }
+
+    .gl-sp-table tr.is-new {
+        position: relative;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 8px 12px;
+        margin-bottom: 8px;
+        padding: 12px;
+    }
+
+    .gl-sp-table tr.is-new td,
+    .gl-sp-table tr.is-new td:first-child,
+    .gl-sp-table tr.is-new td:last-child {
+        width: auto;
+        height: auto;
+        padding: 0;
+    }
+
+    .gl-sp-table tr.is-new td:nth-child(1) {
+        grid-column: 1 / -1;
+        order: 1;
+        padding-inline-end: var(--room-icon);
+    }
+
+    .gl-sp-table tr.is-new td:nth-child(2) {
+        grid-column: auto;
+        order: 2;
+    }
+
+    .gl-sp-table tr.is-new td:nth-child(3) {
+        grid-column: auto;
+        order: 3;
+    }
+
+    .gl-sp-table tr.is-new td:nth-child(4) {
+        order: 4;
+    }
+
+    .gl-sp-table tr.is-new td:nth-child(5) {
+        position: absolute;
+        top: 10px;
+        inset-inline-end: 8px;
+    }
+
+    .gl-sp-table .gl-cl-in.is-amount {
+        width: 100%;
+    }
+}
+
+/* The distribution sheet's columns: fixed widths for the figures, the rest for who. */
+@media (min-width: 641px) {
+    .gl-sp-table {
+        table-layout: fixed;
+    }
+
+    .gl-sp-table thead th:nth-child(2) {
+        width: 84px;
+    }
+
+    .gl-sp-table thead th:nth-child(3) {
+        width: 134px;
+    }
+
+    .gl-sp-table thead th:nth-child(4) {
+        width: 84px;
+    }
+
+    .gl-sp-table thead th:nth-child(5) {
+        width: 44px;
+    }
+
+    .gl-sp-table tr.is-new td:first-child {
+        width: auto;
+    }
+
+    .gl-sp-table .gl-sp-who b {
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    .gl-sp-table .gl-cl-in.is-amount {
+        width: 100%;
+    }
+}
+
+/*
+ * One spacing for every money window: the title 20/24/16, the body 24px at
+ * the sides with 20px between its sections, the footer 14/24/18.
+ */
+.gl-sheet[data-ledger-tone] .gl-sheet-body,
+.gl-co .gl-co-body {
+    gap: 24px;
+    padding: 4px 24px 24px;
+}
+
+@media (max-width: 640px) {
+    .gl-sheet[data-ledger-tone] .gl-sheet-body,
+    .gl-co .gl-co-body {
+        padding-inline: 16px;
+    }
+
+    .gl-sheet[data-ledger-tone] .gl-dialog-head,
+    .gl-sheet[data-ledger-tone] .gl-dialog-foot,
+    .gl-co-head .gl-dialog-head {
+        padding-inline: 16px;
+    }
+}

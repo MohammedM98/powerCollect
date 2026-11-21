@@ -2,8 +2,8 @@ import { Button } from '@heroui/react';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import FormField from '@/Components/Form/FormField';
-import InputError from '@/Components/InputError';
-import Icon from '@/Components/Icon';
+import InputError from '@/Components/UI/InputError';
+import Icon from '@/Components/UI/Icon';
 import { SearchableSelect, TextInput } from '@/Components/UI';
 
 export default function UserTypeSelect({ value, options, onChange, onCreated, canCreate, error }) {

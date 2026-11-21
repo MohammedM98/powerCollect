@@ -1,7 +1,7 @@
 import { Button, Input } from '@heroui/react';
 import { useRef } from 'react';
-import InputError from '@/Components/InputError';
-import Icon from '@/Components/Icon';
+import InputError from '@/Components/UI/InputError';
+import Icon from '@/Components/UI/Icon';
 import { brandPalette, contrastWithWhite, isHex, MIN_CONTRAST } from '@/lib/brandPalette';
 import { useFileUrl } from './useAppearanceFiles';
 import { DangerKey, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, PrimaryKey, SecondaryKey } from '@/Components/UI';

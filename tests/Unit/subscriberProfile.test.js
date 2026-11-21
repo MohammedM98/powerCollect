@@ -20,7 +20,7 @@ before(async () => {
                 if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria')) || id === '@inertiajs/react') {
                     return { id: import.meta.resolve(id), external: true };
                 }
-                if (id === '@/Components/Modal') {
+                if (id === '@/Components/UI/Modal') {
                     return '\0inline-modal';
                 }
                 if (id.endsWith('.css')) {

@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 
 export function Field({ label, htmlFor, children, className = '' }) {
     return (

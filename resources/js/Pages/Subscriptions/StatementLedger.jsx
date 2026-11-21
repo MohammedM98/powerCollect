@@ -1,8 +1,8 @@
 import { Fragment } from 'react';
 import { Button, Chip } from '@heroui/react';
-import BankReceivedDate from '@/Components/BankReceivedDate';
-import Balance from '@/Components/Balance';
-import Icon from '@/Components/Icon';
+import BankReceivedDate from '@/Components/Finance/BankReceivedDate';
+import Balance from '@/Components/Finance/Balance';
+import Icon from '@/Components/UI/Icon';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import SplitPaymentBadge from '@/Pages/Payments/SplitPaymentBadge';
 import { useRowActionsMenu } from '@/hooks/useRowActionsMenu';

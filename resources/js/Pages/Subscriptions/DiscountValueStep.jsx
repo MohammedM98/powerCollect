@@ -1,4 +1,4 @@
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/UI/InputError';
 import { formatMoney, normalizeDecimalInput } from '@/lib/format';
 import { AmountBox, FieldWarning, FormStep, QuickPick } from './AccountFormParts';
 

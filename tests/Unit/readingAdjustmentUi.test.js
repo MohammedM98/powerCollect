@@ -21,7 +21,7 @@ before(async () => {
                 name: 'render-modal-content-without-a-browser-portal',
                 resolveId(id) {
                     if (id === 'exceljs') return { id: import.meta.resolve(id), external: true };
-                    if (/Components[/\\]Modal(?:\.jsx)?$/.test(id)) return '\0modal-content';
+                    if (/Components[/\\]UI[/\\]Modal(?:\.jsx)?$/.test(id)) return '\0modal-content';
                     if (id.endsWith('.css')) return '\0empty-css';
                     if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria'))) return { id: import.meta.resolve(id), external: true };
                 },

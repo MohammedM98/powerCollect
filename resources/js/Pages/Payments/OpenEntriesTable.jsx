@@ -5,7 +5,7 @@ import ColumnWidths, { fixedTableStyle } from '@/Components/DataTable/ColumnWidt
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import Pagination from '@/Components/DataTable/Pagination';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
-import SegmentedTabs from '@/Components/SegmentedTabs';
+import SegmentedTabs from '@/Components/UI/SegmentedTabs';
 import { boxTypeStyles } from './CollectorCashBox';
 import { entryStatus } from '@/lib/financialBoxes';
 import { ledgerColumns, ledgerOf, ledgerTableClass, LedgerLeadCells, LedgerTrailCells } from './LedgerColumns';

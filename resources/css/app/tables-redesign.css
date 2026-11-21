@@ -1,0 +1,881 @@
+:root[data-ui-switches='slim'] .ui-switch-knob {
+    width: 1.375rem;
+    height: 1.375rem;
+    box-shadow: 0 1px 4px rgb(var(--shadow-ink) / 0.35);
+}
+
+/*
+ * More tables, wider than a phone: one card divided by lines, a dense
+ * spreadsheet, or rows floating apart on deep shadows; and room to breathe.
+ */
+@container (min-width: 641px) {
+    :root:is([data-ui-tables='boxed'], [data-ui-tables='spreadsheet']) .data-table {
+        border-spacing: 0;
+    }
+
+    :root:is([data-ui-tables='boxed'], [data-ui-tables='spreadsheet']) .data-table td,
+    :root:is([data-ui-tables='boxed'], [data-ui-tables='spreadsheet']) .data-table td:first-child,
+    :root:is([data-ui-tables='boxed'], [data-ui-tables='spreadsheet']) .data-table td:last-child {
+        border-width: 0;
+        border-radius: 0;
+    }
+
+    :root:is([data-ui-tables='boxed'], [data-ui-tables='spreadsheet']) .data-table tbody tr:is(:hover, :focus-within) {
+        filter: none;
+    }
+
+    :root[data-ui-tables='boxed'] .data-table th {
+        padding-block: 12px;
+        border-bottom: 1px solid rgb(var(--gray-200));
+    }
+
+    :root[data-ui-tables='boxed'] .data-table tbody tr + tr td {
+        border-top: 1px solid rgb(var(--gray-100));
+    }
+
+    :root[data-ui-tables='spreadsheet'] .data-table {
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    :root[data-ui-tables='spreadsheet'] .data-table :is(th, td),
+    :root[data-ui-tables='spreadsheet'] .data-table td:is(:first-child, :last-child) {
+        padding: 4px 12px;
+        border: 1px solid rgb(var(--gray-200));
+        font-variant-numeric: tabular-nums;
+    }
+
+    :root[data-ui-tables='spreadsheet'] .data-table th {
+        font-size: 13px;
+    }
+
+    /* A spreadsheet's grey column titles, unless the company colours them (`tableHeader`). */
+    :root[data-ui-tables='spreadsheet'][data-ui-table-header='plain'] .data-table th {
+        background: rgb(var(--gray-100));
+    }
+
+    :root[data-ui-tables='spreadsheet'] .data-table tbody tr:nth-child(even):not(.bg-brand-50) td {
+        background: rgb(var(--gray-50));
+    }
+
+    :root[data-ui-tables='elevated'] .data-table {
+        border-spacing: 0 14px;
+    }
+
+    :root[data-ui-tables='elevated'] .data-table tbody tr {
+        filter: drop-shadow(0 8px 12px rgb(var(--shadow-ink) / calc(0.08 * var(--shadow-strength, 1))));
+    }
+
+    :root[data-ui-tables='elevated'] .data-table td {
+        border-color: transparent;
+    }
+
+    :root[data-ui-density='spacious'] .data-table {
+        border-spacing: 0 14px;
+    }
+
+    :root[data-ui-density='spacious'] .data-table td {
+        padding-block: 16px;
+    }
+}
+
+:root[data-ui-tables='boxed'] .data-table-container {
+    padding: 0;
+    background: rgb(var(--surface));
+}
+
+:root[data-ui-tables='spreadsheet'] .data-table-container {
+    padding: 0;
+    background: rgb(var(--surface));
+}
+
+:root[data-ui-tables='elevated'] .data-table-container {
+    border-color: transparent;
+    background: transparent;
+}
+
+/* The tables' toolbar (`tableToolbar`): a card with a line of colour on top, nothing behind it, or a soft tint. */
+:root[data-ui-table-toolbar='plain'] .data-table-toolbar {
+    border-color: transparent;
+    background: transparent;
+    padding-inline: 4px;
+}
+
+:root[data-ui-table-toolbar='plain'] .data-table-toolbar::before {
+    display: none;
+}
+
+:root[data-ui-table-toolbar='tinted'] .data-table-toolbar {
+    border-color: rgb(var(--brand-500) / 0.15);
+    background: rgb(var(--brand-50));
+}
+
+/* A table's search and filters (`searchStyle`). */
+:root[data-ui-search-style='pill'] :is(.data-table-toolbar, .table-controls) :is(input:not([type='checkbox'], [type='radio']), select, button[aria-expanded]) {
+    border-radius: 999px;
+}
+
+:root[data-ui-search-style='filled'] :is(.data-table-toolbar, .table-controls) :is(input:not([type='checkbox'], [type='radio']), select, button[aria-expanded]) {
+    border-color: transparent;
+    background-color: rgb(var(--gray-100));
+}
+
+:root[data-ui-search-style='underline'] :is(.data-table-toolbar, .table-controls) :is(input:not([type='checkbox'], [type='radio']), select, button[aria-expanded]) {
+    border-width: 0 0 1.5px;
+    border-radius: 0;
+    background-color: transparent;
+}
+
+:root[data-ui-search-style='panel'] :is(.data-table-toolbar, .table-controls) {
+    background-image: linear-gradient(rgb(var(--gray-50)), rgb(var(--gray-50)));
+}
+
+:root[data-ui-search-style='panel'] :is(.data-table-toolbar, .table-controls) :is(input:not([type='checkbox'], [type='radio']), select, button[aria-expanded]) {
+    border-color: rgb(var(--gray-200));
+    background-color: rgb(var(--surface));
+    box-shadow: 0 1px 2px rgb(var(--shadow-ink) / 0.06);
+}
+
+/* Semantic secondary actions inherit the company's secondary colour when supplied. */
+:root[data-ui-navigation] .ui-btn-secondary:not(.tone-print, .tone-excel) {
+    border-color: rgb(var(--brand-secondary-200, var(--gray-200)));
+    background: rgb(var(--brand-secondary-50, var(--surface)));
+    color: rgb(var(--brand-secondary-on-soft, var(--gray-900)));
+}
+
+:root[data-ui-navigation] .ui-btn-secondary:not(.tone-print, .tone-excel):hover:not(:disabled) {
+    border-color: rgb(var(--brand-secondary-300, var(--gray-300)));
+    background: rgb(var(--brand-secondary-100, var(--gray-50)));
+}
+
+:root[data-ui-buttons='solid'] .ui-btn-secondary:not(.tone-print, .tone-excel) {
+    border-color: transparent;
+    background: rgb(var(--brand-secondary-solid, var(--gray-100)));
+    color: rgb(var(--brand-secondary-on-solid, var(--gray-900)));
+}
+
+:root[data-ui-buttons='solid'] .ui-btn-secondary:not(.tone-print, .tone-excel):hover:not(:disabled) {
+    background: rgb(var(--brand-secondary-hover, var(--gray-200)));
+}
+
+:root[data-ui-buttons='outline'] .ui-btn-secondary:not(.tone-print, .tone-excel) {
+    background: transparent;
+    border-color: var(--ui-secondary, rgb(var(--gray-200)));
+    color: var(--ui-secondary, rgb(var(--gray-900)));
+}
+
+/* A ledger is a continuous reading surface, rather than a stack of row cards. */
+@container (min-width: 641px) {
+    :root:is([data-ui-table-variant='ledger'], [data-ui-table-variant='striped'], [data-ui-table-variant='bordered']) .data-table {
+        border-collapse: separate;
+        border-spacing: 0;
+        font-variant-numeric: tabular-nums;
+    }
+
+    :root:is([data-ui-table-variant='ledger'], [data-ui-table-variant='striped'], [data-ui-table-variant='bordered']) .data-table :is(th, td),
+    :root:is([data-ui-table-variant='ledger'], [data-ui-table-variant='striped'], [data-ui-table-variant='bordered']) .data-table td:is(:first-child, :last-child) {
+        border: 0;
+        border-bottom: 1px solid rgb(var(--gray-200));
+        border-radius: 0;
+    }
+
+    :root:is([data-ui-table-variant='ledger'], [data-ui-table-variant='striped'], [data-ui-table-variant='bordered']) .data-table th {
+        padding-block: 12px;
+        font-weight: 700;
+    }
+
+    :root:is([data-ui-table-variant='ledger'], [data-ui-table-variant='striped'], [data-ui-table-variant='bordered'])[data-ui-table-header='plain'] .data-table th {
+        background: rgb(var(--gray-100));
+        color: rgb(var(--gray-900));
+    }
+
+    :root:is([data-ui-table-variant='ledger'], [data-ui-table-variant='striped'], [data-ui-table-variant='bordered']) .data-table tbody tr {
+        filter: none;
+    }
+
+    :root[data-ui-table-variant='ledger'] .data-table th {
+        border-block: 2px solid var(--ui-accent, rgb(var(--brand-600)));
+        letter-spacing: 0;
+    }
+
+    :root[data-ui-table-variant='ledger'][data-ui-table-header='plain'] .data-table th {
+        background: rgb(var(--surface));
+    }
+
+    :root[data-ui-table-variant='ledger'] .data-table td,
+    :root[data-ui-table-variant='ledger'] .data-table td:is(:first-child, :last-child) {
+        padding-block: 12px;
+    }
+
+    :root[data-ui-table-variant='ledger'] .data-table td:first-child {
+        border-inline-end: 1px solid rgb(var(--gray-200));
+        font-weight: 600;
+    }
+
+    :root[data-ui-table-variant='striped'] .data-table tbody tr:nth-child(even):not(.bg-brand-50, .ledger-cancelled, .ledger-follow-up, .ledger-history, .ledger-focused, [data-chain]) td {
+        background: rgb(var(--gray-50));
+    }
+
+    :root[data-ui-table-variant='bordered'] .data-table :is(th, td),
+    :root[data-ui-table-variant='bordered'] .data-table td:is(:first-child, :last-child) {
+        border-inline-end: 1px solid rgb(var(--gray-200));
+    }
+
+    :root[data-ui-table-variant='bordered'] .data-table :is(th, td):last-child {
+        border-inline-end: 0;
+    }
+
+    :root:is([data-ui-table-variant='ledger'], [data-ui-table-variant='striped'], [data-ui-table-variant='bordered']) .data-table tbody tr:not(.bg-brand-50, .ledger-cancelled, .ledger-follow-up, .ledger-history, .ledger-focused, [data-chain]):is(:hover, :focus-within) td {
+        background: var(--ui-accent-t, rgb(var(--brand-50)));
+    }
+}
+
+:root:is([data-ui-table-variant='ledger'], [data-ui-table-variant='striped'], [data-ui-table-variant='bordered']) .data-table-container {
+    background: rgb(var(--surface));
+}
+
+/* On phones, keep the readable cards and distinguish the rows through their edge. */
+@container (max-width: 640px) {
+    :root[data-ui-table-variant='ledger'] .data-table tbody tr {
+        border-inline-start: 3px solid var(--ui-accent, rgb(var(--brand-600)));
+        border-radius: calc(8px * var(--radius-scale, 1));
+    }
+
+    :root[data-ui-table-variant='striped'] .data-table tbody tr:nth-child(even):not(.bg-brand-50, .ledger-cancelled, .ledger-follow-up, .ledger-history, .ledger-focused, [data-chain]) {
+        background: rgb(var(--gray-50));
+    }
+
+    :root[data-ui-table-variant='bordered'] .data-table tbody tr {
+        border: 1px solid rgb(var(--gray-300));
+        box-shadow: none;
+    }
+}
+
+@keyframes brand-panel-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes brand-panel-slide {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* Motion follows an action (opening a window), rather than replaying on every row. */
+:root:is([data-ui-motion-style='fade'], [data-ui-motion-style='slide']) .data-table tbody tr {
+    animation: none;
+}
+
+:root[data-ui-motion-style='fade'] .animate-modal-panel {
+    animation: brand-panel-fade 180ms ease-out;
+}
+
+:root[data-ui-motion-style='slide'] .animate-modal-panel {
+    animation: brand-panel-slide 220ms ease-out;
+}
+
+:root[data-ui-motion-style='none'] *,
+:root[data-ui-motion-style='none'] *::before,
+:root[data-ui-motion-style='none'] *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0ms !important;
+    scroll-behavior: auto !important;
+}
+
+/* Secondary navigation marks a section; the accent can instead mark the current page. */
+:root[data-ui-nav-highlight='secondary'] {
+    --nav-role-solid: var(--brand-secondary-solid, var(--brand-solid));
+    --nav-role-ink: var(--brand-secondary-on-solid, 255 255 255);
+    --nav-role-line: var(--ui-secondary, rgb(var(--brand-600)));
+    --nav-role-tint: var(--ui-secondary-t, rgb(var(--brand-50)));
+}
+
+:root[data-ui-nav-highlight='accent'] {
+    --nav-role-solid: var(--brand-accent-solid, var(--brand-solid));
+    --nav-role-ink: var(--brand-accent-on-solid, 255 255 255);
+    --nav-role-line: var(--ui-accent, rgb(var(--brand-600)));
+    --nav-role-tint: var(--ui-accent-t, rgb(var(--brand-50)));
+}
+
+:root[data-ui-navigation]:is([data-ui-nav-highlight='secondary'], [data-ui-nav-highlight='accent']) .tn-highlight {
+    background: rgb(var(--nav-role-solid));
+    box-shadow: none;
+}
+
+:root[data-ui-navigation]:is([data-ui-nav-highlight='secondary'], [data-ui-nav-highlight='accent']) :is(.tn-section[data-lit='true'], .tn-section[data-lit='true'] .tn-section-icon) {
+    color: rgb(var(--nav-role-ink));
+}
+
+:root[data-ui-navigation]:is([data-ui-nav-highlight='secondary'], [data-ui-nav-highlight='accent']) .tn-drawer-group:is([aria-expanded='true'], [data-current='true']) {
+    background: rgb(var(--nav-role-solid));
+    color: rgb(var(--nav-role-ink));
+}
+
+:root[data-ui-navigation]:is([data-ui-nav-highlight='secondary'], [data-ui-nav-highlight='accent']) .tn-drawer-group:is([aria-expanded='true'], [data-current='true']) svg {
+    color: rgb(var(--nav-role-ink));
+}
+
+:root[data-ui-navigation]:is([data-ui-nav-highlight='secondary'], [data-ui-nav-highlight='accent']) .tn-drawer-link[aria-current='page'] {
+    background: rgb(var(--nav-role-solid));
+    color: rgb(var(--nav-role-ink));
+    box-shadow: inset -3px 0 0 rgb(var(--nav-role-ink));
+}
+
+:root[data-ui-navigation]:is([data-ui-nav-highlight='secondary'], [data-ui-nav-highlight='accent']) .tn-drawer-link[aria-current='page'] svg {
+    color: rgb(var(--nav-role-ink));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root[data-ui-motion-style] *,
+    :root[data-ui-motion-style] *::before,
+    :root[data-ui-motion-style] *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        animation-delay: 0ms !important;
+        transition-duration: 0ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+
+/*
+ * ── Tables in the panel look ──────────────────────────────────────────
+ * One panel holds a table's toolbar, the table, its totals and its
+ * pages, divided by thin lines. Column titles are small and quiet with no
+ * fill, rows are separated by a line and tinted under the pointer; figures
+ * keep tabular digits. On phones each row is a card.
+ */
+:root[data-ui-background='graphite'] :is(.data-table-toolbar, .data-table-container, .data-table-totals, .data-table-pagination) {
+    border-color: var(--gl-line);
+    background: rgb(var(--panel-bg) / var(--panel-opacity));
+    color: var(--gl-ink);
+}
+
+:root[data-ui-background='graphite'] .data-table-toolbar {
+    padding: 16px 16px;
+    border-radius: calc(20px * var(--radius-scale, 1)) calc(20px * var(--radius-scale, 1)) 0 0;
+    box-shadow: none;
+}
+
+:root[data-ui-background='graphite'] .data-table-toolbar::before {
+    display: none;
+}
+
+:root[data-ui-background='graphite'] .data-table-container {
+    padding: 4px 12px 8px;
+    border-radius: calc(20px * var(--radius-scale, 1));
+    box-shadow: var(--panel-shadow);
+}
+
+:root[data-ui-background='graphite'] .data-table-toolbar + .data-table-container {
+    border-top-color: var(--gl-line);
+    box-shadow: var(--panel-shadow);
+}
+
+:root[data-ui-background='graphite'] .data-table-totals {
+    padding: 12px 16px;
+}
+
+:root[data-ui-background='graphite'] .data-table-totals + .data-table-pagination {
+    border-top-color: var(--gl-line);
+}
+
+:root[data-ui-background='graphite'] .data-table-pagination {
+    padding: 12px 16px 12px;
+    border-radius: 0 0 calc(20px * var(--radius-scale, 1)) calc(20px * var(--radius-scale, 1));
+}
+
+:root[data-ui-background='graphite'] .data-table-totals:not(:has(+ .data-table-pagination)) {
+    border-radius: 0 0 calc(20px * var(--radius-scale, 1)) calc(20px * var(--radius-scale, 1));
+}
+
+:root[data-ui-background='graphite'] :is(.data-table-toolbar, .table-controls) :is(input:not([type='checkbox'], [type='radio']), select, button[aria-expanded]):hover:not(:disabled) {
+    border-color: var(--gl-line-strong);
+}
+
+:root[data-ui-background='graphite'] :is(.data-table-toolbar, .table-controls) :is(input:not([type='checkbox'], [type='radio']), select):focus,
+:root[data-ui-background='graphite'] :is(.data-table-toolbar, .table-controls) button[aria-expanded]:focus-visible,
+:root[data-ui-background='graphite'] :is(.data-table-toolbar, .table-controls) button[aria-expanded='true'] {
+    border-color: rgb(var(--gl-brand) / 0.6);
+    --tw-ring-color: rgb(var(--gl-brand) / 0.16);
+}
+
+:root[data-ui-background='graphite'] :is(.data-table-toolbar, .table-controls) button[data-active],
+:root[data-ui-background='graphite'] :is(.data-table-toolbar, .table-controls) select:has(option[value='']):has(option:checked:not([value=''])) {
+    border-color: rgb(var(--gl-brand) / 0.5);
+    background-color: rgb(var(--gl-brand) / 0.14);
+}
+
+@container (min-width: 641px) {
+    :root[data-ui-background='graphite'] .data-table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        font-size: 14px;
+    }
+
+    :root[data-ui-background='graphite'] .data-table th,
+    :root[data-ui-background='graphite'][data-ui-table-header] .data-table th {
+        padding: 8px 12px;
+        border: 0;
+        border-radius: 0;
+        background: none;
+        color: var(--gl-faint);
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    :root[data-ui-background='graphite'] .data-table td,
+    :root[data-ui-background='graphite'] .data-table td:first-child,
+    :root[data-ui-background='graphite'] .data-table td:last-child {
+        padding: 12px 12px;
+        border: 0;
+        border-top: 1px solid var(--gl-line);
+        border-radius: 0;
+        background: none;
+        box-shadow: none;
+    }
+
+    :root[data-ui-background='graphite'] .data-table tbody tr:hover,
+    :root[data-ui-background='graphite'] .data-table tbody tr:focus-within {
+        filter: none;
+    }
+
+    :root[data-ui-background='graphite'] .data-table tbody tr:hover td,
+    :root[data-ui-background='graphite'] .data-table tbody tr:focus-within td {
+        border-color: var(--gl-line);
+        background: var(--gl-fill);
+    }
+
+    :root[data-ui-background='graphite'] .data-table tbody tr.bg-brand-50 td {
+        background: rgb(var(--gl-brand) / 0.1);
+    }
+
+    :root[data-ui-background='graphite'] .data-table tbody tr.is-far-behind:not(.bg-brand-50, :focus-within) td:first-child {
+        box-shadow: inset -3px 0 0 var(--gl-bad);
+    }
+}
+
+/*
+ * HeroUI's table, in the default look (docs/redesign): the toolbar, the
+ * table and its foot on one card with 24px corners; the column titles on a
+ * soft rounded band, rows 56px tall (44px compact) parted by a fine line,
+ * tinted under the pointer and in the company's colour when chosen; the
+ * pages as small round buttons, the current one in the text's colour.
+ */
+:root[data-ui-background='graphite'][data-ui-navigation] :is(.data-table-toolbar, .data-table-container, .data-table-totals, .data-table-pagination) {
+    border-color: transparent;
+    background: rgb(var(--panel-bg));
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-toolbar {
+    padding: 16px 16px 12px;
+    border-radius: calc(24px * var(--radius-scale, 1)) calc(24px * var(--radius-scale, 1)) 0 0;
+    box-shadow: var(--panel-shadow);
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-container {
+    padding: 0 12px 8px;
+    border-radius: calc(24px * var(--radius-scale, 1));
+    box-shadow: var(--panel-shadow);
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-toolbar + .data-table-container {
+    border-top: 0;
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-pagination {
+    padding: 12px 16px 16px;
+    border-top: 1px solid var(--gl-line);
+    border-radius: 0 0 calc(24px * var(--radius-scale, 1)) calc(24px * var(--radius-scale, 1));
+    box-shadow: var(--panel-shadow);
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .data-table-totals:not(:has(+ .data-table-pagination)) {
+    border-radius: 0 0 calc(24px * var(--radius-scale, 1)) calc(24px * var(--radius-scale, 1));
+}
+
+@container (min-width: 641px) {
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table th,
+    :root[data-ui-background='graphite'][data-ui-navigation][data-ui-table-header] .data-table th {
+        height: 42px;
+        padding: 0 12px;
+        background: rgb(var(--panel-tile));
+        color: rgb(var(--panel-muted));
+        font-size: 12.5px;
+        font-weight: 700;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table th:first-child {
+        padding-inline-start: 16px;
+        border-start-start-radius: 12px;
+        border-end-start-radius: 12px;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table th:last-child {
+        border-start-end-radius: 12px;
+        border-end-end-radius: 12px;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table td,
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table td:first-child,
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table td:last-child {
+        height: 56px;
+        padding: 8px 12px;
+        border-top: 0;
+        border-bottom: 1px solid var(--gl-line);
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table td:first-child {
+        padding-inline-start: 16px;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation][data-table-density='compact'] .data-table td {
+        height: 44px;
+        padding-block: 4px;
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:hover td,
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:focus-within td {
+        border-color: var(--gl-line);
+        background: rgb(var(--gray-900) / 0.035);
+    }
+
+    .dark:root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:hover td,
+    .dark:root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr:focus-within td {
+        background: rgb(255 255 255 / 0.04);
+    }
+
+    :root[data-ui-background='graphite'][data-ui-navigation] .data-table tbody tr.bg-brand-50 td {
+        background: rgb(var(--brand-solid) / 0.07);
+    }
+}
+
+/* The pages under a table: small round buttons, the current one in the text's colour. */
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager {
+    gap: 4px;
+    padding: 0;
+    background: none;
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager button {
+    min-width: 34px;
+    min-height: 34px;
+    padding: 0 8px;
+    border-radius: 10px;
+    color: var(--gl-ink);
+    font-weight: 700;
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager button:hover:not(:disabled, [aria-current='page']) {
+    background: rgb(var(--group-fill));
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager button[aria-current='page'] {
+    background: rgb(var(--panel-ink));
+    color: rgb(var(--panel-bg));
+    box-shadow: none;
+}
+
+:root[data-ui-background='graphite'][data-ui-navigation] .gl-pager button:disabled {
+    opacity: 0.35;
+}
+
+@container (max-width: 640px) {
+    :root[data-ui-background='graphite'] .data-table tbody tr {
+        border-color: var(--gl-line);
+        background: rgb(var(--panel-bg));
+    }
+
+    :root[data-ui-background='graphite'] .data-table td:not(:first-child)[data-label]:not([data-label=''])::before {
+        color: var(--gl-faint);
+        font-size: 12px;
+    }
+}
+
+:root[data-ui-background='graphite'] .data-table td {
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* Row actions, export buttons and avatars in the panel look. */
+:root[data-ui-background='graphite'] .row-action {
+    width: 34px;
+    height: 34px;
+    border-color: var(--gl-line);
+    background: var(--gl-fill);
+    color: var(--gl-muted);
+    box-shadow: none;
+}
+
+:root[data-ui-background='graphite'] .row-action:hover {
+    border-color: var(--gl-line-strong);
+    background: var(--gl-fill-2);
+    color: var(--gl-ink);
+    box-shadow: none;
+}
+
+:root[data-ui-background='graphite'] .row-action-edit {
+    color: rgb(var(--gl-brand));
+}
+
+/* Editing fills in the identity's blue on hover, like the main buttons. */
+:root[data-ui-background='graphite'] .row-action-edit:hover {
+    border-color: transparent;
+    background: rgb(var(--gl-btn));
+    color: rgb(var(--brand-ink));
+}
+
+:root[data-ui-background='graphite'] .row-action-delete {
+    color: var(--gl-bad);
+}
+
+:root[data-ui-background='graphite'] :is(.row-action-delete, .row-action-print, .row-action-excel):hover {
+    border-color: transparent;
+    background: color-mix(in srgb, currentColor 18%, transparent);
+}
+
+:root[data-ui-background='graphite'] .row-action-print {
+    color: rgb(var(--print-300));
+}
+
+html:not(.dark)[data-ui-background='graphite'] .row-action-print {
+    color: rgb(var(--print-600));
+}
+
+:root[data-ui-background='graphite'] .row-action-excel {
+    color: rgb(var(--excel-300));
+}
+
+:root[data-ui-background='graphite'] .row-action[aria-expanded='true'] {
+    border-color: rgb(var(--gl-brand) / 0.5);
+    background: rgb(var(--gl-brand) / 0.2);
+    color: var(--gl-ink);
+}
+
+:root[data-ui-background='graphite'] .row-action-view {
+    height: 34px;
+    background: var(--gl-fill-2);
+    color: var(--gl-ink);
+    box-shadow: inset 0 0 0 1px var(--gl-line);
+}
+
+:root[data-ui-background='graphite'] .row-action-view:hover,
+:root[data-ui-background='graphite'] .row-action-view:focus-within {
+    background: rgb(var(--gl-btn));
+    color: rgb(var(--brand-ink));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18);
+}
+
+:root[data-ui-background='graphite'] .row-action-view > button {
+    font-size: 13px;
+}
+
+:root[data-ui-background='graphite'] :is(.tone-print, .tone-excel):not(.tone-solid) {
+    border-color: var(--gl-line);
+    background: var(--gl-fill-2);
+    color: var(--gl-ink);
+}
+
+:root[data-ui-background='graphite'] .tone-print:not(.tone-solid) svg {
+    color: rgb(var(--print-300));
+}
+
+:root[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg {
+    color: rgb(var(--excel-300));
+}
+
+html:not(.dark)[data-ui-background='graphite'] .tone-print:not(.tone-solid) svg {
+    color: rgb(var(--print-600));
+}
+
+html:not(.dark)[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg {
+    color: rgb(var(--excel-600));
+}
+
+:root[data-ui-background='graphite'] :is(.tone-print, .tone-excel):not(.tone-solid):hover:not(:disabled) {
+    border-color: var(--gl-line-strong);
+    background: var(--gl-fill-2);
+    color: var(--gl-ink);
+    box-shadow: none;
+    filter: brightness(1.1);
+}
+
+:root[data-ui-background='graphite'] .row-identity-avatar {
+    border: 1px solid var(--gl-line);
+    border-radius: 50%;
+    background: var(--gl-fill-2);
+    color: var(--gl-ink);
+    font-family: var(--gl-head);
+}
+
+:root[data-ui-background='graphite'] .row-identity-avatar > span:not(:empty) {
+    border-color: rgb(var(--panel-bg));
+}
+
+
+/* Cash-box entries and closing tables (financial-boxes.css). */
+:root[data-ui-background='graphite'] .financial-ledger-table th {
+    background: rgb(var(--panel-bg));
+    color: var(--gl-faint);
+    font-size: 12px;
+    font-weight: 700;
+    border-bottom: 1px solid var(--gl-line);
+}
+
+:root[data-ui-background='graphite'] .financial-ledger-table td {
+    background: none;
+    border-bottom-color: var(--gl-line);
+    color: var(--gl-ink);
+}
+
+:root[data-ui-background='graphite'] .financial-ledger-table tbody tr:hover td {
+    background: var(--gl-fill);
+}
+
+
+/*
+ * The old graphite cards and the grey inner boxes, in the panel look: a card
+ * that was graphite (white text on it) is a gradient in the company's
+ * colour, and a grey box inside a panel has a soft tint with a thin line.
+ */
+:root[data-ui-background='graphite'] .bg-graphite-gradient {
+    background-image: var(--ui-hero);
+    border-color: rgb(255 255 255 / 0.1);
+}
+
+:root[data-ui-background='graphite'] :is(.bg-gray-50, .data-chip):not(body) {
+    border-color: var(--gl-line);
+    background-color: var(--gl-fill);
+}
+
+:root[data-ui-background='graphite'] .bg-gray-100:not(body) {
+    background-color: var(--gl-fill-2);
+}
+
+
+/* A chosen chip drawn dark by hand (bg-gray-900 or graphite with light text) takes the company's colour in the panel look. */
+:root[data-ui-background='graphite'] .bg-gray-900:is(.text-surface, .text-white),
+:root[data-ui-background='graphite'] .bg-graphite-800.text-white {
+    background-color: rgb(var(--brand-solid));
+    color: rgb(var(--brand-ink));
+}
+
+
+:root[data-ui-background='graphite'] [class*='bg-gray-50/']:not(body),
+:root[data-ui-background='graphite'] [class*='bg-gray-100/']:not(body) {
+    background-color: var(--gl-fill);
+}
+
+/* The permissions screen (PermissionDesign.css): its hero and group icons in the deep blue instead of graphite. */
+:root[data-ui-background='graphite'] .pm-hero {
+    background: radial-gradient(90% 150% at 100% 0%, color-mix(in srgb, var(--role) 30%, transparent), transparent 58%), var(--ui-hero);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), var(--panel-shadow);
+}
+
+:root[data-ui-background='graphite'] .pm-group-icon {
+    background: rgb(var(--brand-solid));
+}
+
+/* Under the panel look a main fill (bg-brand-gradient) is the main action's flat charcoal, with no glow under it, like the panel buttons. */
+:root[data-ui-background='graphite'] {
+    --brand-fill: linear-gradient(rgb(var(--action)), rgb(var(--action)));
+    --shadow-glow: none;
+}
+
+/* The SMS page's segmented choices pick in the company's colour, like the panel segments. */
+:root[data-ui-background='graphite'] .sm-segments button[aria-pressed='true'] {
+    background: rgb(var(--brand-solid));
+    color: rgb(var(--brand-ink));
+}
+
+/*
+ * A ticked checkbox or radio shows only its fill, as it did before Tailwind 4:
+ * the forms plugin clears the border when checked, but in v4 a border utility
+ * on the box (e.g. `border-gray-300`) sits in a later layer and would win.
+ */
+[type='checkbox']:checked,
+[type='radio']:checked {
+    border-color: transparent;
+}
+
+/*
+ * ── The table as in the redesign (Components/DataTable) ─────────────────
+ * One card: the toolbar (search with the table's tools at the line's end,
+ * the filter pills under them, no rule between) runs straight into a soft band of column
+ * titles, then rows divided by hairlines and tinted under the pointer.
+ * Filters are soft rounded keys (not round pills), tinted in the company's
+ * colour while they narrow the table; a status carries a dot before its
+ * word; the current page is the dark key. Comes last, so it meets every
+ * look's own table rules (above) at their strength.
+ */
+:root[data-ui-navigation] .data-table-toolbar {
+    gap: 8px;
+    padding: 12px 16px 8px;
+    border-radius: calc(22px * var(--radius-scale, 1)) calc(22px * var(--radius-scale, 1)) 0 0;
+}
+
+:root[data-ui-navigation] .data-table-toolbar > .gl-filter-row {
+    padding-top: 4px;
+    border-top: 0;
+}
+
+:root[data-ui-navigation] .data-table-toolbar > .data-table-tools {
+    margin-inline-start: auto;
+}
+
+:root[data-ui-navigation] .data-table-toolbar + .data-table-container {
+    border-top-color: transparent;
+}
+
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger,
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-clear {
+    height: 36px;
+    border-radius: calc(11px * var(--radius-scale, 1));
+}
+
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger {
+    background: rgb(var(--panel-tile));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 0 0 1px var(--gl-line);
+}
+
+.dark:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger {
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 0 0 1px var(--gl-line);
+}
+
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger:hover {
+    background: rgb(var(--group-hover));
+}
+
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger[data-active] {
+    background: rgb(var(--brand-solid) / 0.12);
+    box-shadow: none;
+}
+
+:root[data-ui-navigation] .data-table-toolbar .gl-filter-trigger:is(.is-open, [aria-expanded='true']) {
+    box-shadow: 0 0 0 2px rgb(var(--brand-solid));
+}
+
+/* A status: its dot before its word, so the colour reads at a glance. */
+:root[data-ui-navigation] .data-table .gl-pill::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    flex: none;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* The pages: the current one is the dark key. */
+:root[data-ui-navigation] .gl-pager button[aria-current='page'] {
+    background: rgb(var(--action));
+    color: rgb(255 255 255);
+    box-shadow: none;
+}

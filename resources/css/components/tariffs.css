@@ -1,0 +1,236 @@
+.gl-set-switch .switch__control {
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl), inset 0 0 0 1px var(--ma-line);
+}
+
+.gl-set-switch[data-selected] .switch__control,
+.gl-set-switch .switch__content[data-selected] .switch__control {
+    background: var(--ma-pay-btn);
+    box-shadow: none;
+}
+
+.gl-set-switch .switch__thumb {
+    background: #fff;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.3);
+}
+
+/* A settings window (the template windows): its head with the icon tile, its body, its keys at the foot. */
+.gl-win {
+    color: var(--ma-ink);
+}
+
+.gl-win-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px 24px 8px;
+}
+
+.gl-win-body {
+    padding: 12px 24px 16px;
+}
+
+.gl-win-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 12px 24px 16px;
+    border-top: 1px solid var(--ma-line);
+}
+
+.gl-win-cancel.button {
+    min-height: 42px;
+    padding-inline: 16px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    font-weight: 800;
+    box-shadow: var(--ma-hl);
+}
+
+.gl-win-cancel.button:hover {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-set-field .input {
+    min-height: 44px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}
+
+/* The list a new template is for: HeroUI radios as tiles, the chosen one raised with the brand ring. */
+.gl-pt-pick {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 8px;
+}
+
+.gl-pt-pick-item {
+    display: block;
+}
+
+.gl-pt-pick-item .radio__content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 14px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s;
+}
+
+.gl-pt-pick-item:hover .radio__content {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-pt-pick-item[data-selected] .radio__content {
+    background: var(--ma-brand-soft);
+    box-shadow: inset 0 0 0 1.5px var(--ma-brand);
+}
+
+.gl-pt-pick-item[data-focus-visible] .radio__content {
+    outline: 2px solid var(--ma-brand);
+    outline-offset: 2px;
+}
+
+.gl-pt-pick-ico {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: var(--ma-solid);
+    color: var(--ma-muted);
+}
+
+.gl-pt-pick-item[data-selected] .gl-pt-pick-ico {
+    background: var(--ma-brand);
+    color: #fff;
+}
+
+.gl-pt-pick-ico svg {
+    width: 16px;
+    height: 16px;
+}
+
+.gl-pt-pick-name {
+    flex: 1;
+    min-width: 0;
+    color: var(--ma-ink);
+    font-size: 14.5px;
+    font-weight: 800;
+}
+
+.gl-pt-pick-count {
+    color: var(--ma-muted);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* The selected state sits on the switch's button (switch__content) in this HeroUI build: slide the knob to the end from there. */
+.gl-set-switch .switch__content[data-selected] .switch__thumb {
+    inset-inline-start: var(--switch-thumb-offset);
+}
+
+/* Tariffs: each tariff a HeroUI card on glass, the featured one on the prototype's charcoal; its keys soft MA keys. */
+.gl-tariff-card.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: hidden;
+    padding: 24px;
+    border: 0;
+    border-radius: 22px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+}
+
+.gl-tariff-card.card[data-dark] {
+    background: radial-gradient(120% 140% at 100% 0%, #3a3f49 0%, #22252c 55%, #191b20 100%);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 18px 40px -20px rgb(10 12 16 / 0.7);
+}
+
+.gl-tariff-card[data-dark]::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: -50px;
+    bottom: -90px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(226 100 42 / 0.26), transparent 70%);
+    pointer-events: none;
+}
+
+.gl-tariff-key.button {
+    gap: 8px;
+    height: 42px;
+    min-width: 42px;
+    padding-inline: 16px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+    font-weight: 800;
+    box-shadow: var(--ma-hl);
+}
+
+.gl-tariff-key.button:hover {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.gl-tariff-key.is-delete.button {
+    padding: 0;
+    color: var(--ma-owe);
+}
+
+.gl-tariff-key.is-delete.button:hover {
+    background: var(--ma-owe);
+    color: #fff;
+}
+
+.gl-tariff-card[data-dark] .gl-tariff-key.button {
+    background: rgb(255 255 255 / 0.1);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+
+.gl-tariff-card[data-dark] .gl-tariff-key.is-delete.button {
+    color: #f3a59e;
+}
+
+.gl-tariff-calc.card {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+    padding: 16px 24px;
+}
+
+.gl-tariff-kilos {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 16px;
+    border-radius: 14px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl);
+}

@@ -3,7 +3,7 @@ import { useBrand } from '@/hooks/useBrand';
 import { Alert, Chip } from '@heroui/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import PageHeader from '@/Components/PageHeader';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { SettingsSection } from '@/Components/Settings/SettingsKit';
 
 const STEPS = [

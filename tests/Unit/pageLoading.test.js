@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import { rolldown } from 'rolldown';
-import { handlePaletteShortcut } from '../../resources/js/Components/TopBar/shortcuts.js';
+import { handlePaletteShortcut } from '../../resources/js/Components/Layout/shortcuts.js';
 
 const shortcut = (overrides = {}) => ({ code: 'KeyK', key: 'k', ctrlKey: true, preventDefault() { this.defaultPrevented = true; }, ...overrides });
 
@@ -49,7 +49,7 @@ test('opening lists does not download dormant forms, statements or print tools',
             }
             collect(entry.fileName);
             const initialModules = modulesOf([...initial]);
-            for (const module of ['Subscriptions/SubscriptionModal.jsx', 'Subscriptions/SubscriptionDetailsModal.jsx', 'Subscriptions/ReadingHistoryModal.jsx', 'Subscriptions/StatementModal.jsx', 'Print/PrintDesigner.jsx', 'Messages/QuickMessageModal.jsx', 'Components/CommandPalette.jsx']) {
+            for (const module of ['Subscriptions/SubscriptionModal.jsx', 'Subscriptions/SubscriptionDetailsModal.jsx', 'Subscriptions/ReadingHistoryModal.jsx', 'Subscriptions/StatementModal.jsx', 'Print/PrintDesigner.jsx', 'Messages/QuickMessageModal.jsx', 'Components/Layout/CommandPalette.jsx']) {
                 assert.ok(allModules.some((id) => id.endsWith(module)), `${module} must remain available to open`);
                 assert.equal(initialModules.some((id) => id.endsWith(module)), false, `${module} must wait until requested on ${entry.name}`);
             }

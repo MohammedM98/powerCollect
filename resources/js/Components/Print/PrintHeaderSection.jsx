@@ -1,7 +1,7 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
+import ChoiceSelect from '@/Components/UI/ChoiceSelect';
 import { Input, TextArea } from '@heroui/react';
-import ChoiceChips from '@/Components/ChoiceChips';
-import Switch from '@/Components/Switch';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
+import Switch from '@/Components/UI/Switch';
 import { Section, Field, Group, NumberField, HeaderTypography } from './PrintSettingsFields';
 
 /** The printout's heading: the logo, the company's lines, the title and its typography. */

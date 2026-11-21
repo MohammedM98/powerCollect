@@ -1,6 +1,6 @@
 import { Button } from '@heroui/react';
-import Modal from '@/Components/Modal';
-import Icon from '@/Components/Icon';
+import Modal from '@/Components/UI/Modal';
+import Icon from '@/Components/UI/Icon';
 import { balanceInText } from '@/lib/balance';
 import { formatMoney, formatDate } from '@/lib/format';
 import { StatusPill } from '@/Components/UI';

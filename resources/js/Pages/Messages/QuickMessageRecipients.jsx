@@ -1,6 +1,6 @@
 import { Button, Input } from '@heroui/react';
-import Icon from '@/Components/Icon';
-import InputError from '@/Components/InputError';
+import Icon from '@/Components/UI/Icon';
+import InputError from '@/Components/UI/InputError';
 import { FOCUS_RING, Section } from './MessageFormParts';
 
 /** Who the quick message goes to: the picked subscriptions, a search to add more, and which of them the kind reaches. */

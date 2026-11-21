@@ -1,6 +1,6 @@
 import { Button } from '@heroui/react';
-import Icon from '@/Components/Icon';
-import Modal from '@/Components/Modal';
+import Icon from '@/Components/UI/Icon';
+import Modal from '@/Components/UI/Modal';
 import { permissionsWord } from '@/lib/permissions';
 import { RiskBadge } from './PermissionMatrix';
 import { CheckBox, PrimaryKey, SecondaryKey } from '@/Components/UI';

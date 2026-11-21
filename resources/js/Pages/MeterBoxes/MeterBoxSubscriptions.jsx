@@ -1,6 +1,6 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { Link, useHttp } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import { formatNumber } from '@/lib/format';
 import { SecondaryKey, StatusPill } from '@/Components/UI';

@@ -1,5 +1,5 @@
 import { Button } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { initials } from '@/lib/format';
 
 const DOT_CLASSES = {

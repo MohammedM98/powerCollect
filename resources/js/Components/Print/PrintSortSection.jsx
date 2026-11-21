@@ -1,9 +1,9 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
+import ChoiceSelect from '@/Components/UI/ChoiceSelect';
 import { Input } from '@heroui/react';
-import Icon from '@/Components/Icon';
-import ChoiceChips from '@/Components/ChoiceChips';
-import Switch from '@/Components/Switch';
-import SecondaryButton from '@/Components/SecondaryButton';
+import Icon from '@/Components/UI/Icon';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
+import Switch from '@/Components/UI/Switch';
+import SecondaryButton from '@/Components/UI/SecondaryButton';
 import { DIRECTIONS, GROUP_HEADINGS, GROUP_ALIGNMENTS } from './printSettingsOptions';
 import { Section, Field, Group, NumberField, HeadingStyles, IconButton } from './PrintSettingsFields';
 
