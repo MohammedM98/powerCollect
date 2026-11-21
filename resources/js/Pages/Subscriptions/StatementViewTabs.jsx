@@ -1,5 +1,5 @@
 import { ToggleButton, ToggleButtonGroup } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { STATEMENT_VIEWS } from '@/lib/accountStatement';
 
 /** The statement's views as HeroUI's ToggleButtonGroup, drawn as the redesign's segmented control (components.css `gl-seg-group`). */

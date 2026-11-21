@@ -1,4 +1,4 @@
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/UI/InputError';
 import { ChoiceCards, FormStep } from './AccountFormParts';
 import { fieldFor } from '@/lib/discountTerms';
 

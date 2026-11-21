@@ -1,7 +1,7 @@
 import { Button, Input } from '@heroui/react';
 import { useMemo, useState } from 'react';
-import Modal from '@/Components/Modal';
-import Icon from '@/Components/Icon';
+import Modal from '@/Components/UI/Modal';
+import Icon from '@/Components/UI/Icon';
 import PermissionPanel from './PermissionPanel';
 import { auditScopeLabel } from './AuditAccessCard';
 import { ICONS, permissionGuideEntries, permissionGuideHtml } from '@/lib/permissionGuide';

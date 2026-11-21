@@ -1,6 +1,6 @@
 import { cloneElement } from 'react';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
+import InputError from '@/Components/UI/InputError';
+import InputLabel from '@/Components/UI/InputLabel';
 
 /**
  * One labelled field of a form: its label (with a star when required), the

@@ -1,10 +1,10 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
+import ChoiceSelect from '@/Components/UI/ChoiceSelect';
 import { Button, Input } from '@heroui/react';
 import { useId } from 'react';
-import Icon from '@/Components/Icon';
-import ChoiceChips from '@/Components/ChoiceChips';
-import Switch from '@/Components/Switch';
-import SecondaryButton from '@/Components/SecondaryButton';
+import Icon from '@/Components/UI/Icon';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
+import Switch from '@/Components/UI/Switch';
+import SecondaryButton from '@/Components/UI/SecondaryButton';
 import { HIGHLIGHT_OPERATORS, PRINT_FONTS } from '@/lib/printLayout';
 import { FOCUS_RING, HEADING_SIZES, HIGHLIGHT_COLORS } from './printSettingsOptions';
 

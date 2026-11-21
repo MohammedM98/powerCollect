@@ -6,15 +6,15 @@ import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Pagination from '@/Components/DataTable/Pagination';
-import Modal from '@/Components/Modal';
-import ChoiceChips from '@/Components/ChoiceChips';
-import InputError from '@/Components/InputError';
-import Icon from '@/Components/Icon';
-import Balance from '@/Components/Balance';
+import Modal from '@/Components/UI/Modal';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
+import InputError from '@/Components/UI/InputError';
+import Icon from '@/Components/UI/Icon';
+import Balance from '@/Components/Finance/Balance';
 import { useDataTable } from '@/hooks/useDataTable';
 import ResultReport from './ResultReport';
 import PageHeader from '@/Components/PageHeader';
-import DateInput from '@/Components/DateInput';
+import DateInput from '@/Components/UI/DateInput';
 import { CheckBox, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
 
 /** The reason, note and date for the chosen subscribers, after saying how many. */

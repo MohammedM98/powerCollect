@@ -1,7 +1,7 @@
 import { Button } from '@heroui/react';
 import { useId } from 'react';
-import Modal from '@/Components/Modal';
-import Icon from '@/Components/Icon';
+import Modal from '@/Components/UI/Modal';
+import Icon from '@/Components/UI/Icon';
 
 export default function DistributionDialog({ title, subtitle, busy, onClose, children, footer }) {
     const titleId = useId();

@@ -1,5 +1,5 @@
 import { Dropdown } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 
 /**
  * A small menu under a button: HeroUI's Dropdown on the frosted pop

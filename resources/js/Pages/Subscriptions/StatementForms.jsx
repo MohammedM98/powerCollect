@@ -1,5 +1,5 @@
 import { Button } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import MeterReadingModal from '@/Pages/MeterReadings/MeterReadingModal';
 import ChargeModal from './ChargeModal';
 import ClearingModal from './ClearingModal';

@@ -1,10 +1,10 @@
-import ChoiceSelect from '@/Components/ChoiceSelect';
+import ChoiceSelect from '@/Components/UI/ChoiceSelect';
 import { useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
-import ExcelButton from '@/Components/ExcelButton';
+import Icon from '@/Components/UI/Icon';
+import PrimaryButton from '@/Components/UI/PrimaryButton';
+import SecondaryButton from '@/Components/UI/SecondaryButton';
+import ExcelButton from '@/Components/Excel/ExcelButton';
 import { tableExcelPart } from '@/lib/tableExcel';
 import { extractSummary, extractTable, paginatedProp, printScopeUrl } from '@/lib/print';
 import { defaultLayout, fitLayout, pageCss, paperSize, rememberedLayout, rememberLayout } from '@/lib/printLayout';

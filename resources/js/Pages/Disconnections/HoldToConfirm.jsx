@@ -1,1 +1,1 @@
-export { default } from '@/Components/HoldToConfirm';
+export { default } from '@/Components/UI/HoldToConfirm';

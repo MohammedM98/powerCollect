@@ -4,7 +4,7 @@ import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import Pagination from '@/Components/DataTable/Pagination';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { Chip } from '@heroui/react';
 import { BandRow, Figure, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable } from '@/Components/UI';
 import PeriodTabs, { periodCaption } from '@/Components/PeriodTabs';

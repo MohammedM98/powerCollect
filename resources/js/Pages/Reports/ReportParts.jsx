@@ -1,10 +1,10 @@
 import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { usePage } from '@inertiajs/react';
-import DateInput from '@/Components/DateInput';
-import Icon from '@/Components/Icon';
+import DateInput from '@/Components/UI/DateInput';
+import Icon from '@/Components/UI/Icon';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
-import KpiTile from '@/Components/KpiTile';
+import KpiTile from '@/Components/Charts/KpiTile';
 import { cents, reportMoney, shortDate } from '@/lib/reportFormatting';
 import { SearchableSelect } from '@/Components/UI';
 

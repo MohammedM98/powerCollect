@@ -1,5 +1,5 @@
 import { Avatar, Button, Chip } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { formatMoney } from '@/lib/format';
 import { activeBoxEntries, boxPersonName, boxStatus, financialBoxTotals, financialBoxesTotals, isFlaggedEntry } from '@/lib/financialBoxes';
 import { boxTypes, boxTypeStyles, currencies } from './CollectorCashBox';

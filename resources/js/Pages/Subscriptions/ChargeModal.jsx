@@ -1,8 +1,8 @@
 import { Button, Input } from '@heroui/react';
 import { useId, useRef, useState } from 'react';
-import InputError from '@/Components/InputError';
-import Icon from '@/Components/Icon';
-import Modal from '@/Components/Modal';
+import InputError from '@/Components/UI/InputError';
+import Icon from '@/Components/UI/Icon';
+import Modal from '@/Components/UI/Modal';
 import { useResourceForm } from '@/hooks/useResourceForm';
 import { describeBalance } from '@/lib/accountStatement';
 import { formatMoney, normalizeDecimalInput } from '@/lib/format';

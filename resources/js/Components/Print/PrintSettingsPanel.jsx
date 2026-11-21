@@ -1,10 +1,10 @@
 import { ToggleButton, ToggleButtonGroup } from '@heroui/react';
-import ChoiceSelect from '@/Components/ChoiceSelect';
+import ChoiceSelect from '@/Components/UI/ChoiceSelect';
 import { Input } from '@heroui/react';
 import { useState } from 'react';
-import ChoiceChips from '@/Components/ChoiceChips';
-import Switch from '@/Components/Switch';
-import ConfirmDialog from '@/Components/ConfirmDialog';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
+import Switch from '@/Components/UI/Switch';
+import ConfirmDialog from '@/Components/UI/ConfirmDialog';
 import { PAPER_SIZES, applyPrintPreset } from '@/lib/printLayout';
 import { FOCUS_RING, ORIENTATIONS, DENSITIES, BORDERS, ACCENTS } from './printSettingsOptions';
 import { Section, Field, Group, FontField, NumberField, Highlights } from './PrintSettingsFields';

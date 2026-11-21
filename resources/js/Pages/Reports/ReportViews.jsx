@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Button, Card, Chip, Label, Switch } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import Figure from '@/Components/UI/Figure';
 import { BandRow, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable } from '@/Components/UI';
 import { cents, reportMoney, shortDate } from '@/lib/reportFormatting';

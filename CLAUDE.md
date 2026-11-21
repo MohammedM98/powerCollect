@@ -217,7 +217,7 @@ These rules record the redesign the owner approved. Follow them on every page, w
 - Every pair must pass contrast in light and dark; the tokens are already tuned for it, so never substitute raw colours.
 
 ## Surfaces
-- Glass is the default (`<html data-surface="glass">`); solid is the user's choice from the account menu (the «شكل الأسطح» `SegmentedChoice` in `TopBar/TopBarMenus.jsx`, via `useSurface`). Every surface must work in both, and in light and dark.
+- Glass is the default (`<html data-surface="glass">`); solid is the user's choice from the account menu (the «شكل الأسطح» `SegmentedChoice` in `Components/Layout/TopBarMenus.jsx`, via `useSurface`). Every surface must work in both, and in light and dark.
 - Cards and sections: `background: var(--ma-panel)`, `backdrop-filter: var(--ma-blur)`, `box-shadow: var(--ma-depth)`, no border, radius 18–22px. Windows: radius 28px, `--ma-float`.
 - Soft controls (filters, segmented pills, secondary keys): `--ma-tile` with `--ma-hl`; the selected or raised key is `--ma-solid` with `--ma-depth`.
 - Every floating surface (drop-downs, menus, lists, calendars, the side bar's flyout) uses `--ma-pop` (near-solid frosted). A blurred container must drop its own blur while a menu inside it is open (see `.data-table-toolbar:has(.gl-pop)`), so the menu never shows what is under it.

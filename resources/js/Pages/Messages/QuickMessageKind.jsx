@@ -1,6 +1,6 @@
 import { Input } from '@heroui/react';
-import ChoiceChips from '@/Components/ChoiceChips';
-import InputError from '@/Components/InputError';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
+import InputError from '@/Components/UI/InputError';
 import { KIND_HINTS, KIND_ICONS, withIcons } from './MessageParts';
 import { Section } from './MessageFormParts';
 import { ChoiceSelect, Switch } from '@/Components/UI';

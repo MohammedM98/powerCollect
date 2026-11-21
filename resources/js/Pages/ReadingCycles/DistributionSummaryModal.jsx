@@ -2,7 +2,7 @@ import { Button } from '@heroui/react';
 import { useMemo } from 'react';
 import { boardCounters, branchDistributionSummary } from '@/lib/readingBoard';
 import { formatNumber, formatDate } from '@/lib/format';
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/UI/InputError';
 import DistributionDialog from './DistributionDialog';
 import DistributionAreaBreakdown from './DistributionAreaBreakdown';
 import { PrimaryKey, SecondaryKey } from '@/Components/UI';

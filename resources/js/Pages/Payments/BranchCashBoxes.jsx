@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { BranchFilterBanner } from '@/Components/BranchBanner';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { FilterField } from '@/Components/DataTable/DataTableFilterMenu';
 import { Button, Card, Chip, SearchField } from '@heroui/react';
 import { formatMoney } from '@/lib/format';

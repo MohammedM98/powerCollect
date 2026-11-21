@@ -1,4 +1,4 @@
-import FormPage from '@/Components/FormPage';
+import FormPage from '@/Components/Form/FormPage';
 import { useResourceForm } from '@/hooks/useResourceForm';
 import SubscriptionForm, { SUBSCRIPTION_OUTLINE } from './SubscriptionForm';
 import { subscriptionFormData } from '@/lib/subscriptionForm';

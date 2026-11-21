@@ -1,7 +1,7 @@
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
-import InputLabel from '@/Components/InputLabel';
-import Icon from '@/Components/Icon';
+import InputLabel from '@/Components/UI/InputLabel';
+import Icon from '@/Components/UI/Icon';
 import { ChoiceSelect, SearchableSelect, TextInput } from '@/Components/UI';
 
 function ReadOnlyField({ id, label, value, dir }) {

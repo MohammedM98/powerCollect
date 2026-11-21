@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Checkbox } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import AreaChip from '@/Components/DataTable/AreaChip';
 import MeterBoxCell from '@/Components/DataTable/MeterBoxCell';
 import TariffTag from '@/Components/DataTable/TariffTag';
@@ -10,7 +10,7 @@ import RowIdentity from '@/Components/DataTable/RowIdentity';
 import { printFieldsProps, printRowProps } from '@/lib/print';
 import { formatShekels } from '@/lib/currency';
 import PhoneQuickEdit from './PhoneQuickEdit';
-import Balance from '@/Components/Balance';
+import Balance from '@/Components/Finance/Balance';
 import { formatDate } from '@/lib/format';
 import { BandRow, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, StatusPill } from '@/Components/UI';
 

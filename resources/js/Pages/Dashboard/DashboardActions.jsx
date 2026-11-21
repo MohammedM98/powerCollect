@@ -1,6 +1,6 @@
 import { Button } from '@heroui/react';
 import { Link } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { shouldPrefetchPage } from '@/lib/navigation';
 
 /**

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useForm, useHttp } from '@inertiajs/react';
-import FormModal from '@/Components/FormModal';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
+import FormModal from '@/Components/Form/FormModal';
+import InputError from '@/Components/UI/InputError';
+import InputLabel from '@/Components/UI/InputLabel';
 import { plainDigits } from '@/lib/formValidation';
 import { TextInput } from '@/Components/UI';
 

@@ -1,6 +1,6 @@
 import { Button } from '@heroui/react';
 import { useState } from 'react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { formatMoney } from '@/lib/format';
 import SplitPaymentDetails from './SplitPaymentDetails';
 

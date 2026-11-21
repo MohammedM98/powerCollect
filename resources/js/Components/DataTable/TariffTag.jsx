@@ -1,4 +1,4 @@
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 
 const TAGS = {
     residential: { icon: 'home', className: 'text-blue-600 dark:text-blue-500' },

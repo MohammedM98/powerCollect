@@ -17,7 +17,7 @@ before(async () => {
             if (id.startsWith('file:')) return { id, external: true };
             if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria'))) return { id: import.meta.resolve(id), external: true };
             if (/Layouts[/\\]AuthenticatedLayout(?:\.jsx)?$/.test(id)) return '\0layout';
-            if (/Components[/\\]PrimaryButton(?:\.jsx)?$/.test(id)) return '\0primary';
+            if (/Components[/\\]UI[/\\]PrimaryButton(?:\.jsx)?$/.test(id)) return '\0primary';
             if (id.endsWith('.css')) return '\0css';
         }, load(id) {
             if (id === '\0entry') return "export {default as Paper} from '@/Pages/ReadingCycles/PaperSheet'; export {default as Designer} from '@/Components/Print/PrintDesigner'; export {state} from '@inertiajs/react';";

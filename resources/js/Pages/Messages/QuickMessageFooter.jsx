@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { FOCUS_RING } from './MessageFormParts';
 import { PrimaryKey, SecondaryKey } from '@/Components/UI';
 

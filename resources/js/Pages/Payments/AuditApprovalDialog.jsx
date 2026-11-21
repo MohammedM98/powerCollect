@@ -1,7 +1,7 @@
 import { useForm } from '@inertiajs/react';
-import DialogFrame from '@/Components/DialogFrame';
-import HoldToConfirm from '@/Components/HoldToConfirm';
-import InputError from '@/Components/InputError';
+import DialogFrame from '@/Components/UI/DialogFrame';
+import HoldToConfirm from '@/Components/UI/HoldToConfirm';
+import InputError from '@/Components/UI/InputError';
 import { formatMoney } from '@/lib/format';
 import { CheckBox, SecondaryKey } from '@/Components/UI';
 

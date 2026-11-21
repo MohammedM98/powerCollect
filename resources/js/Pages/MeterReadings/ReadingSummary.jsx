@@ -1,5 +1,5 @@
 import { Button, Card } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { formatMoney } from '@/lib/format';
 import { countReadings } from '@/lib/readingSheet';
 

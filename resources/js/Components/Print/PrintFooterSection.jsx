@@ -1,8 +1,8 @@
 import { Input, TextArea } from '@heroui/react';
-import Icon from '@/Components/Icon';
-import ChoiceChips from '@/Components/ChoiceChips';
-import Switch from '@/Components/Switch';
-import SecondaryButton from '@/Components/SecondaryButton';
+import Icon from '@/Components/UI/Icon';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
+import Switch from '@/Components/UI/Switch';
+import SecondaryButton from '@/Components/UI/SecondaryButton';
 import { PAGE_NUMBER_POSITIONS } from './printSettingsOptions';
 import { Section, Field, Group, IconButton } from './PrintSettingsFields';
 

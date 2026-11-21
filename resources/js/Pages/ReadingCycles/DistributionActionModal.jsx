@@ -2,7 +2,7 @@ import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { distributionAreaBreakdown, distributionTargetPreview, columnTotals } from '@/lib/readingBoard';
 import { formatNumber } from '@/lib/format';
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/UI/InputError';
 import DistributionDialog from './DistributionDialog';
 import DistributionAreaBreakdown from './DistributionAreaBreakdown';
 import { CheckBox, ChoiceSelect, PrimaryKey, RadioCards, SecondaryKey } from '@/Components/UI';

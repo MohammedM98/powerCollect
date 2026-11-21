@@ -1,4 +1,4 @@
-import KpiTile from '@/Components/KpiTile';
+import KpiTile from '@/Components/Charts/KpiTile';
 import { formatMoney, formatNumber, percentOf } from '@/lib/format';
 import { TileLink } from './DashboardParts';
 

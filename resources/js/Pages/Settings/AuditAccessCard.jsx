@@ -1,4 +1,4 @@
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { CheckBox, RadioCards, Switch } from '@/Components/UI';
 
 export function auditScopeLabel(settings, branches) {

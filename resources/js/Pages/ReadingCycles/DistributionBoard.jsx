@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Button, Card, Dropdown } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { formatNumber } from '@/lib/format';
 import { laneAreaGroups, stageMove } from '@/lib/readingBoard';
 import { SegmentedChoice } from '@/Components/UI';

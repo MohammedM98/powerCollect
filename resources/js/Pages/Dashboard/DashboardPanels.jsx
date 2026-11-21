@@ -1,6 +1,6 @@
 import { Button, Input } from '@heroui/react';
 import Pagination from '@/Components/DataTable/Pagination';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import Panel from '@/Components/Panel';
 import { formatMoney, timeAgo } from '@/lib/format';
 import { ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable } from '@/Components/UI';

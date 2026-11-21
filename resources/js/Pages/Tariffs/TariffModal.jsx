@@ -1,4 +1,4 @@
-import FormModal from '@/Components/FormModal';
+import FormModal from '@/Components/Form/FormModal';
 import { useResourceForm } from '@/hooks/useResourceForm';
 import TariffForm, { tariffFormData } from './TariffForm';
 

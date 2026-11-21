@@ -1,15 +1,15 @@
 import { Button, Input, TextArea } from '@heroui/react';
 import { useEffect, useEffectEvent, useId, useMemo, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
-import Modal from '@/Components/Modal';
-import Icon from '@/Components/Icon';
-import Balance from '@/Components/Balance';
-import ChoiceChips from '@/Components/ChoiceChips';
-import InputError from '@/Components/InputError';
+import Modal from '@/Components/UI/Modal';
+import Icon from '@/Components/UI/Icon';
+import Balance from '@/Components/Finance/Balance';
+import ChoiceChips from '@/Components/UI/ChoiceChips';
+import InputError from '@/Components/UI/InputError';
 import { formatMoney, formatDate } from '@/lib/format';
 import { feeError, fillPlaceholders, itemTone, operationId, smsParts, totalFees } from '@/lib/disconnections';
 import HoldToConfirm from './HoldToConfirm';
-import DateInput from '@/Components/DateInput';
+import DateInput from '@/Components/UI/DateInput';
 import { CheckBox, DangerKey, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
 
 const ACTIONS = {

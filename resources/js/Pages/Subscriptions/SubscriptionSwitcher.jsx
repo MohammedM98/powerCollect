@@ -1,6 +1,6 @@
 import { Button, Card, Chip } from '@heroui/react';
-import Balance from '@/Components/Balance';
-import Icon from '@/Components/Icon';
+import Balance from '@/Components/Finance/Balance';
+import Icon from '@/Components/UI/Icon';
 
 const STATUS_TONES = {
     active: 'success',

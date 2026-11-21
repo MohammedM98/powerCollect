@@ -1,12 +1,12 @@
 import { TextArea } from '@heroui/react';
-import BankReceivedDate from '@/Components/BankReceivedDate';
+import BankReceivedDate from '@/Components/Finance/BankReceivedDate';
 import { useEffect, useEffectEvent, useId, useState } from 'react';
 import { useForm, useHttp } from '@inertiajs/react';
-import DialogFrame from '@/Components/DialogFrame';
-import LatePaymentDetails from '@/Components/LatePaymentDetails';
+import DialogFrame from '@/Components/UI/DialogFrame';
+import LatePaymentDetails from '@/Components/Finance/LatePaymentDetails';
 import FormField from '@/Components/Form/FormField';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
+import InputError from '@/Components/UI/InputError';
+import InputLabel from '@/Components/UI/InputLabel';
 import { formatMoney } from '@/lib/format';
 import { bankAuditReasonChoice, bankAuditReasonPresets, splitAuditTotal } from '@/lib/bankAudit';
 import { httpErrorMessage } from '@/lib/httpError';

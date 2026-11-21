@@ -1,8 +1,8 @@
 import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { Link } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
-import { groupActionSurfaceClass, groupActionControlClass } from '@/Components/GroupActionButton';
+import Icon from '@/Components/UI/Icon';
+import { groupActionSurfaceClass, groupActionControlClass } from '@/Components/UI/GroupActionButton';
 import RowMenu from '@/Components/DataTable/RowMenu';
 
 const ACTIONS = [

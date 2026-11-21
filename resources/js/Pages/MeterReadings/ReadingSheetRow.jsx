@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 import { router } from '@inertiajs/react';
 import { notify } from '@/lib/notify';
 import LastReadingConfirmDialog from '@/Components/LastReadingConfirmDialog';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { useLastReadingEdit } from '@/hooks/useLastReadingEdit';
 import { printRowProps } from '@/lib/print';
 import { formatCurrency, formatShekels } from '@/lib/currency';

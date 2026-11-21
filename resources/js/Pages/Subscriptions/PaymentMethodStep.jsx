@@ -1,5 +1,5 @@
 import { Input } from '@heroui/react';
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/UI/InputError';
 import { FieldLabel, FormStep } from './AccountFormParts';
 import { inputClass, MethodTile, TransferFields } from './PaymentModalParts';
 import { RadioCards } from '@/Components/UI';

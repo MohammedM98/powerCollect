@@ -3,7 +3,7 @@ import { Button, Card, Input } from '@heroui/react';
 import { Head, router } from '@inertiajs/react';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import ClassificationChips from '@/Components/ClassificationChips';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { useDeleteRecord } from '@/hooks/useDeleteRecord';
 import { formatMoney, formatNumber, normalizeDecimalInput } from '@/lib/format';
 import { rateChange, stepRate } from '@/lib/tariffs';

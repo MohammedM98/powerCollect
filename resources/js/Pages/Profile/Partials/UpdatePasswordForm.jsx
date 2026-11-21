@@ -1,8 +1,8 @@
 import { Button } from '@heroui/react';
 import { useForm } from '@inertiajs/react';
-import PasswordInput from '@/Components/PasswordInput';
-import InputError from '@/Components/InputError';
-import Icon from '@/Components/Icon';
+import PasswordInput from '@/Components/UI/PasswordInput';
+import InputError from '@/Components/UI/InputError';
+import Icon from '@/Components/UI/Icon';
 import { passwordStrength } from '@/lib/profilePassword';
 
 const STRENGTH_LABELS = ['—', 'ضعيفة', 'متوسطة', 'جيدة', 'قوية'];

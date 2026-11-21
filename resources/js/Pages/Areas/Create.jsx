@@ -1,4 +1,4 @@
-import FormPage from '@/Components/FormPage';
+import FormPage from '@/Components/Form/FormPage';
 import { useResourceForm } from '@/hooks/useResourceForm';
 import AreaForm, { areaFormData } from './AreaForm';
 

@@ -1,7 +1,7 @@
 import { Button } from '@heroui/react';
 import { useEffect, useId, useRef, useState } from 'react';
-import Modal from '@/Components/Modal';
-import Icon from '@/Components/Icon';
+import Modal from '@/Components/UI/Modal';
+import Icon from '@/Components/UI/Icon';
 import TabStrip from '@/Components/UI/TabStrip';
 import { BALANCE_HINTS } from '@/lib/balance';
 import { chainColor, compactStatementEntries, describeBalance, filterStatementEntries, relatedLineChains } from '@/lib/accountStatement';

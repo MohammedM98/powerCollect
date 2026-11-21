@@ -1,6 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import { Chip, FieldError, InputGroup, Label, TextField } from '@heroui/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { formatMoney } from '@/lib/format';
 import { SaveButton, SettingsSection } from '@/Components/Settings/SettingsKit';
 

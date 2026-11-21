@@ -4,7 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card } from '@heroui/react';
 import { PAGE_SIZES } from '@/Components/DataTable/DataTableToolbar';
 import Pagination from '@/Components/DataTable/Pagination';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 import { financialBoxesTotals } from '@/lib/financialBoxes';
 import { FinancialBoxCard, FinancialBoxSummary, financialAmountsLine } from './FinancialBoxComponents';
 import FinancialBoxList from './FinancialBoxList';

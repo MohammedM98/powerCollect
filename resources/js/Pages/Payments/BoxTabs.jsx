@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import Icon from '@/Components/Icon';
+import Icon from '@/Components/UI/Icon';
 
 /** Each tab's icon, so a place is known at a glance. */
 const TAB_ICONS = { open: 'unlock', closed: 'lock', sent: 'send', entries: 'list' };

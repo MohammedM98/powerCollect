@@ -1,8 +1,8 @@
 import { Button, Checkbox } from '@heroui/react';
 import { useState } from 'react';
-import Icon from '@/Components/Icon';
-import InfoTip from '@/Components/InfoTip';
-import SegmentedTabs from '@/Components/SegmentedTabs';
+import Icon from '@/Components/UI/Icon';
+import InfoTip from '@/Components/UI/InfoTip';
+import SegmentedTabs from '@/Components/UI/SegmentedTabs';
 import { permissionEntries } from '@/lib/permissions';
 import { sectionIcon, TriToggle } from './PermissionMatrix';
 
