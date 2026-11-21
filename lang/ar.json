@@ -468,6 +468,7 @@
     " kWh": " كيلو",
     " shekels off the kWh price": " شيكل من سعر الكيلو",
     "Could not reach the SMS gateway: ": "تعذّر الاتصال ببوابة الرسائل: ",
+    "The SMS gateway did not confirm the message in time; check it was not delivered before sending it again.": "لم تؤكد بوابة الرسائل الإرسال في الوقت المحدد؛ تحقّق من أن الرسالة لم تصل قبل إعادة إرسالها.",
     "The SMS gateway refused to send (": "رفضت بوابة الرسائل الإرسال (",
     "All branches": "كل الفروع",
     "None of the chosen subscribers has a phone number and matches the message's conditions.": "لا يوجد بين المختارين من لديه رقم هاتف ويطابق شروط الرسالة.",

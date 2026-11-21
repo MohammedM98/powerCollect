@@ -386,6 +386,22 @@ class MessageTest extends TestCase
         $this->assertSame(MessageStatus::Pending, $message->fresh()->status);
     }
 
+    public function test_a_message_the_provider_did_not_answer_in_time_is_marked_failed_without_another_try(): void
+    {
+        config(['services.sms.driver' => 'http', 'services.sms.http.url' => 'https://sms.example.test/send']);
+        Http::preventStrayRequests();
+        Http::fake(fn () => throw new ConnectionException('cURL error 28: Operation timed out after 20001 milliseconds with 0 bytes received'));
+        $message = SubscriptionMessage::factory()->create();
+        $job = (new SendSubscriptionMessage($message))->withFakeQueueInteractions();
+
+        app()->call([$job, 'handle']);
+
+        $job->assertNotReleased();
+        $message->refresh();
+        $this->assertSame(MessageStatus::Failed, $message->status);
+        $this->assertSame(__('The SMS gateway did not confirm the message in time; check it was not delivered before sending it again.'), $message->error);
+    }
+
     public function test_a_queued_message_is_marked_failed_with_the_reason_when_its_last_try_fails(): void
     {
         config(['services.sms.driver' => 'http', 'services.sms.http.url' => 'https://sms.example.test/send']);
