@@ -46,6 +46,11 @@ export default function FlashNotifications({ initialStatus }) {
         // A single-field failure (e.g. a reading lower than the last one)
         // is shown with its own message; anything else gets the general one.
         const unsubscribeError = router.on('error', (event) => {
+            // A form that shows its own errors (data-errors-inline, e.g. the sign-in form) needs no card as well.
+            if (document.querySelector('[data-errors-inline]')) {
+                return;
+            }
+
             const errors = event.detail.errors ?? {};
             const messages = Object.values(errors);
 
