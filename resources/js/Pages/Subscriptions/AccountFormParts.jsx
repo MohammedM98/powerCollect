@@ -183,12 +183,12 @@ export function SheetBody({ children }) {
  */
 export function ChoiceCards({ name, label, value, onChange, options, columns = 2, isRequired = false }) {
     return (
-        <RadioGroup name={name} aria-label={label} isRequired={isRequired} value={value || null} onChange={onChange} className="gl-choices" style={{ '--gl-choice-cols': columns }}>
+        <RadioGroup name={name} aria-label={label} isRequired={isRequired} value={value || null} onChange={onChange} className="gl-choices" data-columns={columns} style={{ '--gl-choice-cols': columns }}>
             {options.map((option) => (
                 <Radio key={option.value} value={option.value} className="gl-choice">
                     <Radio.Content className="gl-choice-content">
                         <span className="gl-choice-icon" aria-hidden="true"><Icon name={option.icon} className="h-[18px] w-[18px]" strokeWidth={1.8} /></span>
-                        <span className="min-w-0">
+                        <span className="min-w-0 flex-1">
                             <b>{option.title}</b>
                             {option.hint && <small>{option.hint}</small>}
                         </span>

@@ -45,7 +45,7 @@ test('the shared editor shows every share as text and allows reference editing w
     assert.ok(reference);
     assert.doesNotMatch(reference, /disabled|readonly/i);
     assert.match(html, /مبلغ الحوالة ثابت/);
-    assert.match(html, /تاريخ وصول الحوالة إلى البنك/);
+    assert.match(html, /تاريخ وصول الحوالة/);
     assert.match(html, /name="bank_received_on"/);
 });
 

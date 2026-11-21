@@ -80,17 +80,14 @@ export function BankDropdown({ banks, id, name, onChange, value }) {
             onSelectionChange={(key) => onChange(key === EMPTY_BANK ? '' : String(key))}
         >
             <Label className="sr-only">البنك المرسل</Label>
-            <Select.Trigger id={id} className="flex min-h-[58px] w-full items-center gap-3 rounded-[14px] border-[1.5px] border-gray-200 bg-surface px-3 py-2 text-start transition hover:border-brand-500/45 data-[open=true]:border-brand-500 data-[open=true]:ring-4 data-[open=true]:ring-brand-500/15">
+            <Select.Trigger id={id} title={value ? `${value}، ${selectedLook?.kind ?? 'تحويل'}` : undefined} className="flex h-(--control-h) w-full items-center gap-2 rounded-control border border-gray-200 bg-surface px-3 text-start transition hover:border-brand-500/45 data-[open=true]:border-brand-500 data-[open=true]:ring-4 data-[open=true]:ring-brand-500/15">
                 {value ? (
                     <>
-                        <BankMark bank={value} />
-                        <span className="min-w-0">
-                            <b className="block truncate text-[14.5px] text-gray-900">{value}</b>
-                            <small className="block text-xs font-medium text-gray-500">{selectedLook?.kind ?? 'تحويل'}</small>
-                        </span>
+                        <BankMark bank={value} className="h-7 w-7 rounded-lg" />
+                        <b className="min-w-0 truncate text-[14.5px] text-gray-900">{value}</b>
                     </>
                 ) : (
-                    <span className="text-sm text-gray-400">اختر البنك أو المحفظة المحوّل منها</span>
+                    <span className="min-w-0 truncate text-sm text-gray-500">اختر البنك أو المحفظة المحوّل منها</span>
                 )}
                 <Select.Indicator className="ms-auto shrink-0 text-gray-400" />
             </Select.Trigger>
