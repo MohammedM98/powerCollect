@@ -1,0 +1,175 @@
+/*
+ * ── The button system ───────────────────────────────────────────────────
+ * HeroUI's buttons: rounded pills, one solid fill per role, no gradient,
+ * glow or drop shadow. Hover deepens the fill a step, a press shrinks it a
+ * touch, focus shows a ring in the company's colour. The company's colour
+ * never fills a button: it marks choice and focus.
+ *   gl-btn          main action: the logo's charcoal (a quiet slate in the dark theme)
+ *   gl-btn gl-sec   side action: a soft grey
+ *   gl-btn gl-ghost quiet action: text only until hovered
+ *   gl-btn gl-danger destructive: a soft red tint
+ *   gl-sm / gl-lg   34px and 48px (40px by default); a page's own sizes win
+ */
+.gl-btn {
+    --gl-btn-fill: rgb(var(--action));
+    --gl-btn-hover: rgb(var(--action-hover));
+    --gl-btn-press: color-mix(in srgb, rgb(var(--action)) 86%, #000);
+    --gl-btn-ink: rgb(var(--action-ink));
+    --gl-btn-line: transparent;
+    --gl-btn-rim: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 0 16px;
+    border: 1px solid var(--gl-btn-line);
+    border-radius: calc(20px * var(--radius-scale, 1));
+    background: var(--gl-btn-fill);
+    color: var(--gl-btn-ink);
+    box-shadow: inset 0 1px 0 var(--gl-btn-rim);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+}
+
+.gl-btn svg {
+    flex: none;
+}
+
+.gl-btn:hover:not(:disabled) {
+    background: var(--gl-btn-hover);
+}
+
+.gl-btn:active:not(:disabled) {
+    background: var(--gl-btn-press);
+    transform: scale(0.985);
+}
+
+/* Dimmed, not faded out: its words still read (about 3:1), so the user sees what it would do. */
+.gl-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.gl-btn.gl-sec {
+    --gl-btn-fill: rgb(var(--group-fill));
+    --gl-btn-hover: rgb(var(--group-hover));
+    --gl-btn-press: rgb(var(--group-press));
+    --gl-btn-ink: rgb(var(--group-ink));
+    --gl-btn-line: transparent;
+    --gl-btn-rim: transparent;
+}
+
+.gl-btn.gl-ghost {
+    --gl-btn-fill: transparent;
+    --gl-btn-hover: var(--gl-fill-2);
+    --gl-btn-press: var(--gl-fill);
+    --gl-btn-ink: var(--gl-muted);
+    --gl-btn-rim: transparent;
+}
+
+.gl-btn.gl-ghost:hover:not(:disabled) {
+    color: var(--gl-ink);
+}
+
+/* Adding something new (Components/AddButton.jsx): a main action, in its charcoal. */
+.gl-btn.gl-add {
+    --gl-btn-fill: rgb(var(--add-fill));
+    --gl-btn-hover: rgb(var(--add-hover));
+    --gl-btn-press: rgb(var(--add-press));
+    --gl-btn-ink: rgb(var(--add-ink));
+}
+
+/* Acting on a group of rows or managing a list (Components/GroupActionButton.jsx): a quiet grey button. */
+.gl-btn.gl-group {
+    --gl-btn-fill: rgb(var(--group-fill));
+    --gl-btn-hover: rgb(var(--group-hover));
+    --gl-btn-press: rgb(var(--group-press));
+    --gl-btn-ink: rgb(var(--group-ink));
+    --gl-btn-rim: transparent;
+}
+
+.gl-btn.gl-danger {
+    --gl-btn-fill: color-mix(in srgb, var(--gl-bad) 12%, rgb(var(--panel-bg)));
+    --gl-btn-hover: color-mix(in srgb, var(--gl-bad) 20%, rgb(var(--panel-bg)));
+    --gl-btn-press: color-mix(in srgb, var(--gl-bad) 26%, rgb(var(--panel-bg)));
+    --gl-btn-ink: var(--gl-bad);
+    --gl-btn-line: transparent;
+    --gl-btn-rim: transparent;
+}
+
+/* Recording a payment: the payment's green (theme.css `--tone-pay`), as on every payment action. */
+.gl-btn.gl-pay {
+    --gl-btn-fill: rgb(var(--tone-pay-solid));
+    --gl-btn-hover: color-mix(in srgb, rgb(var(--tone-pay-solid)) 86%, #000);
+    --gl-btn-press: color-mix(in srgb, rgb(var(--tone-pay-solid)) 76%, #000);
+    --gl-btn-ink: #fff;
+}
+
+.gl-btn.gl-correcting {
+    --gl-btn-fill: var(--gl-warn);
+    --gl-btn-hover: color-mix(in srgb, var(--gl-warn) 85%, #000);
+    --gl-btn-press: color-mix(in srgb, var(--gl-warn) 72%, #000);
+}
+
+.gl-btn.gl-sm {
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: calc(17px * var(--radius-scale, 1));
+    font-size: 13px;
+}
+
+.gl-btn.gl-lg {
+    min-height: 48px;
+    padding: 0 24px;
+    border-radius: calc(24px * var(--radius-scale, 1));
+    font-size: 15.5px;
+}
+
+/* The main button's look split into parts (a button and its menu). */
+.gl-btn-surface {
+    --gl-surface-fill: rgb(var(--action));
+    --gl-surface-hover: rgb(var(--action-hover));
+    --gl-surface-ink: rgb(var(--action-ink));
+    display: inline-flex;
+    overflow: hidden;
+    border-radius: calc(20px * var(--radius-scale, 1));
+    background: var(--gl-surface-fill);
+    color: var(--gl-surface-ink);
+    font-weight: 700;
+    box-shadow: none;
+}
+
+/* The split button in the group actions' charcoal (Pages/Subscriptions/BulkActionsMenu.jsx). */
+.gl-btn-surface.gl-group {
+    --gl-surface-fill: rgb(var(--group-fill));
+    --gl-surface-hover: rgb(var(--group-hover));
+    --gl-surface-ink: rgb(var(--group-ink));
+    box-shadow: none;
+}
+
+.gl-btn-part {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 0 16px;
+    font-size: 14px;
+    transition: background-color 0.15s;
+}
+
+.gl-btn-part + .gl-btn-part {
+    border-inline-start: 1px solid color-mix(in srgb, var(--gl-surface-ink) 22%, transparent);
+}
+
+.gl-btn-part:hover:not(:disabled) {
+    background: var(--gl-surface-hover);
+}
+
+.gl-btn-part:disabled {
+    opacity: 0.6;
+}

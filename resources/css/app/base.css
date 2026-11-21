@@ -1,0 +1,246 @@
+@layer base {
+    /*
+     * Table cells keep the browser's 1px padding, as under Tailwind 3, whose
+     * preflight left it alone (v4 zeroes padding on every element). Padding
+     * utilities on a cell still win: they sit outside this layer.
+     */
+    th,
+    td {
+        padding: 4px;
+    }
+
+    /* Buttons show the hand pointer, and nothing disabled does, as in Tailwind 3's reset. */
+    button,
+    [role='button'] {
+        cursor: pointer;
+    }
+
+    :disabled {
+        cursor: default;
+    }
+
+    /* Text with no size of its own takes the base size, with looser lines than the browser's 1.5. */
+    body {
+        font-size: 1.0625rem;
+        line-height: 1.7;
+    }
+
+    /*
+     * Page titles take the heading face (`font-luxe`); text, headings and
+     * numbers are all Zain by default (`font-display` follows the body face).
+     * Alexandria is kept for the company's name beside its logo.
+     */
+    h1,
+    h2 {
+        @apply font-luxe;
+    }
+
+    /*
+     * Fields (HeroUI's): the deepest layer, white on a light page and darker
+     * than the tile on a dark one, with no line but a soft shadow, 14px
+     * corners and one height (--control-h). The pointer draws a fine ring
+     * round it and typing a ring in the company's colour, so the user always
+     * sees which field they are on. Utility classes still win: they sit
+     * outside this layer.
+     * `select` and `textarea` carry `:not([hidden])` so they outrank the forms
+     * plugin's equally specific rules, which Tailwind 4 emits after this layer.
+     */
+    input:not([type], [hidden]),
+    [type='text'],
+    [type='email'],
+    [type='password'],
+    [type='number'],
+    [type='search'],
+    [type='tel'],
+    [type='date'],
+    select:not([hidden]),
+    textarea:not([hidden]) {
+        border-color: transparent;
+        border-radius: calc(14px * var(--radius-scale, 1));
+        background-color: rgb(var(--panel-field));
+        box-shadow: var(--field-shadow);
+        color: var(--gl-ink);
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    /*
+     * One field height everywhere (--control-h, theme.css), so every text
+     * field, list, date and search box is the same size wherever it is used
+     * and fields side by side line up.
+     */
+    input:not([type], [hidden]),
+    [type='text'],
+    [type='email'],
+    [type='password'],
+    [type='number'],
+    [type='search'],
+    [type='tel'],
+    [type='date'] {
+        height: var(--control-h);
+        min-height: var(--control-h);
+    }
+
+    :is(input:not([type], [hidden]), [type='text'], [type='email'], [type='password'], [type='number'], [type='search'], [type='tel'], [type='date'], select, textarea):hover:not(:focus, :disabled) {
+        box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+    }
+
+    /*
+     * A field's example text (a placeholder) is only a faint suggestion of
+     * what goes in it, light and never bold, so it is never mistaken for a
+     * value already typed. The label above the field names it.
+     */
+    ::placeholder {
+        color: rgb(var(--gray-400) / 0.55);
+        font-weight: 400;
+        opacity: 1;
+    }
+
+    /*
+     * A field written left to right (a username, a phone, an amount, a
+     * code) keeps its characters in that order but sits on the right like
+     * every other field, its example text with it: see the unlayered rule
+     * after the lists above.
+     */
+
+    input:not([type], [hidden]):focus,
+    [type='text']:focus,
+    [type='email']:focus,
+    [type='password']:focus,
+    [type='number']:focus,
+    [type='search']:focus,
+    [type='tel']:focus,
+    [type='date']:focus,
+    select:not([hidden]):focus,
+    textarea:not([hidden]):focus {
+        border-color: transparent;
+        box-shadow: 0 0 0 2px rgb(var(--brand-solid));
+        outline: none;
+    }
+
+    :is(
+            input:not([type], [hidden]),
+            [type='text'],
+            [type='email'],
+            [type='password'],
+            [type='number'],
+            [type='search'],
+            [type='tel'],
+            [type='date'],
+            select,
+            textarea
+        ):hover:not(:disabled, [readonly], :focus) {
+        box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+    }
+
+    /* A field with an error shown under it gets a red ring. */
+    :where(div):has(> [data-input-error]) :is(input:not([type='checkbox'], [type='radio']), select, textarea) {
+        border-color: transparent;
+        box-shadow: 0 0 0 2px var(--gl-bad);
+    }
+
+    /*
+     * A field with a format to fit (`data-feedback` and a `pattern`, e.g. an
+     * identity or mobile number) says so as soon as what was typed fits it:
+     * a green border and a ✓ at its end. Only once the user has typed in it.
+     */
+    input[data-feedback]:user-valid:not(:placeholder-shown) {
+        @apply border-emerald-600;
+        padding-inline-end: var(--room-icon);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23059669' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-size: 1.1rem;
+        background-position: left 0.85rem center;
+    }
+
+    input[data-feedback][dir='ltr']:user-valid:not(:placeholder-shown) {
+        background-position: right 0.85rem center;
+    }
+
+    input[data-feedback]:user-valid:not(:placeholder-shown):focus {
+        @apply ring-emerald-600/15;
+    }
+
+    /* A read-only or disabled field gets a dashed border. */
+    :read-only:where(input:not([type='checkbox'], [type='radio'])),
+    :disabled:where(input, select, textarea) {
+        border-style: dashed;
+        background-color: transparent;
+        color: var(--gl-muted);
+    }
+
+    [type='checkbox'] {
+        border-color: var(--gl-line-strong);
+        border-radius: 5px;
+        background-color: var(--gl-fill);
+        /* Checked: the brand's blue under a white tick. */
+        color: rgb(var(--brand-500));
+    }
+
+    [type='checkbox']:focus {
+        box-shadow: 0 0 0 3px rgb(var(--gl-brand) / 0.2);
+    }
+
+    [type='date'] {
+        color-scheme: inherit;
+    }
+
+    /*
+     * Drop-down lists drawn by the page instead of the operating system
+     * (Chrome/Edge's customizable select). They follow the theme, and they
+     * avoid the native list's glitch under zoom or display scaling, where it
+     * shrinks its options and fills the rest with white. Other browsers keep
+     * their own list.
+     */
+    @supports (appearance: base-select) {
+        select:not([multiple]),
+        ::picker(select) {
+            appearance: base-select;
+        }
+
+        /* The forms plugin already draws the chevron. */
+        select::picker-icon {
+            display: none;
+        }
+
+        ::picker(select) {
+            @apply my-2 rounded-2xl border p-2;
+            border-color: var(--gl-line);
+            background: rgb(var(--panel-bg));
+            color: var(--gl-ink);
+            box-shadow: var(--panel-shadow);
+            max-block-size: min(18rem, 60vh);
+        }
+
+        select option {
+            @apply gap-2 rounded-lg px-3 py-2 text-sm text-gray-700;
+        }
+
+        select option:hover,
+        select option:focus-visible {
+            @apply outline-hidden;
+            background: var(--gl-fill-2);
+            color: var(--gl-ink);
+        }
+
+        select option:checked {
+            @apply font-semibold text-gray-900;
+        }
+
+        select option::checkmark {
+            @apply text-brand-500;
+        }
+    }
+
+    /* Theme switch: colors glide instead of jumping. Added only while switching. */
+    .theme-transition,
+    .theme-transition *,
+    .theme-transition *::before,
+    .theme-transition *::after {
+        transition:
+            background-color 380ms ease,
+            border-color 380ms ease,
+            color 380ms ease,
+            fill 380ms ease,
+            box-shadow 380ms ease !important;
+    }
+}

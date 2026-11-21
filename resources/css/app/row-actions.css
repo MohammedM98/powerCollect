@@ -1,0 +1,503 @@
+@media print {
+    body:has(.account-statement) *:not(:has(.account-statement)):not(.account-statement):not(.account-statement *) {
+        display: none !important;
+    }
+
+    html:has(.account-statement),
+    body:has(.account-statement) {
+        background: #fff !important;
+    }
+
+    body:has(.account-statement) :has(.account-statement) {
+        display: block !important;
+        position: static !important;
+        overflow: visible !important;
+        width: auto !important;
+        max-width: none !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: #fff !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+
+    .account-statement {
+        page: statement;
+        color: rgb(var(--shadow-ink));
+    }
+
+    .account-statement .statement-print-only {
+        display: block;
+    }
+
+    .account-statement .statement-screen-only,
+    .account-statement .data-table-toolbar {
+        display: none !important;
+    }
+
+    .account-statement .statement-summary {
+        grid-template-columns: 1fr 4fr;
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    .account-statement .statement-summary .gl-st-kpis {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .account-statement .statement-summary :is(> div, .gl-st-kpis > div) {
+        padding: 6px 8px;
+        break-inside: avoid;
+    }
+
+    .account-statement .statement-summary .gl-st-acard {
+        background: none !important;
+        box-shadow: none !important;
+        color: inherit !important;
+    }
+
+    .account-statement .statement-summary .gl-st-acard :is(b, small, span, dt, dd) {
+        color: inherit !important;
+    }
+
+    .account-statement .statement-summary :is(.gl-st-acard-mark, .gl-st-acard-facts) {
+        display: none !important;
+    }
+
+    .account-statement .statement-summary > div > p:nth-child(2) {
+        font-size: 15px;
+    }
+
+    .account-statement .data-table-container {
+        overflow: visible !important;
+        padding: 0;
+        border: 0;
+        background: none;
+    }
+
+    .account-statement .data-table-ledger {
+        min-width: 0 !important;
+        border-collapse: collapse;
+        font-size: 9.5px;
+    }
+
+    .account-statement .data-table-ledger thead {
+        display: table-header-group;
+    }
+
+    .account-statement .data-table-ledger tr {
+        break-inside: avoid;
+        animation: none !important;
+    }
+
+    .account-statement .data-table-ledger th,
+    .account-statement .data-table-ledger td,
+    .account-statement .data-table-ledger td:first-child,
+    .account-statement .data-table-ledger td:last-child {
+        padding: 3px 5px;
+        border: 1px solid rgb(var(--silver-200));
+        border-radius: 0;
+        box-shadow: none !important;
+        white-space: normal;
+        color: rgb(var(--shadow-ink));
+    }
+
+    .account-statement .data-table-ledger th {
+        background: rgb(var(--silver-50));
+        font-size: 9.5px;
+        font-weight: 700;
+    }
+
+    .account-statement .data-table-ledger td *,
+    .account-statement .data-table-ledger th * {
+        font-size: inherit !important;
+        line-height: 1.4;
+    }
+
+    .account-statement .data-table-ledger .ledger-description {
+        min-width: 0;
+        max-width: none;
+    }
+
+    .account-statement .data-table-ledger button {
+        pointer-events: none;
+    }
+}
+
+/* Rows float in one after another, quickly. */
+.data-table tbody tr {
+    animation: rise-in 260ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.data-table tbody tr:nth-child(2) {
+    animation-delay: 20ms;
+}
+.data-table tbody tr:nth-child(3) {
+    animation-delay: 40ms;
+}
+.data-table tbody tr:nth-child(4) {
+    animation-delay: 60ms;
+}
+.data-table tbody tr:nth-child(5) {
+    animation-delay: 80ms;
+}
+.data-table tbody tr:nth-child(6) {
+    animation-delay: 100ms;
+}
+.data-table tbody tr:nth-child(n + 7) {
+    animation-delay: 120ms;
+}
+
+/* A row that opens when clicked anywhere (see useRowClick). */
+.data-table tbody tr[data-clickable] {
+    cursor: pointer;
+}
+
+/* A day's header in a table grouped by day (the financial log): plain text on the tray, not a card. */
+.data-table tbody tr.data-table-group td,
+.data-table tbody tr.data-table-group:hover td,
+.data-table tbody tr.data-table-group:hover td:first-child {
+    padding: 16px 8px 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: inherit;
+    font-size: inherit;
+    text-align: start;
+    white-space: normal;
+}
+
+@container (max-width: 640px) {
+    .data-table tbody tr.data-table-group {
+        display: block;
+        padding: 12px 4px 0;
+        border: 0;
+        background: none;
+    }
+}
+
+/*
+ * Compact rows (the density switch in the table's toolbar): thin rows,
+ * about twice as many on screen. Phones keep their cards.
+ */
+@container (min-width: 641px) {
+    :root[data-table-density='compact'] .data-table {
+        border-spacing: 0 4px;
+    }
+
+    :root[data-table-density='compact'] .data-table td {
+        padding-block: 8px;
+    }
+
+    :root[data-table-density='compact'] .data-table td:first-child {
+        border-top-right-radius: calc(12px * var(--radius-scale, 1));
+        border-bottom-right-radius: calc(12px * var(--radius-scale, 1));
+    }
+
+    :root[data-table-density='compact'] .data-table td:last-child {
+        border-top-left-radius: calc(12px * var(--radius-scale, 1));
+        border-bottom-left-radius: calc(12px * var(--radius-scale, 1));
+    }
+
+    :root[data-table-density='compact'] .row-identity-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: calc(10px * var(--radius-scale, 1));
+        font-size: 12px;
+    }
+
+    :root[data-table-density='compact'] .row-identity-text {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+    }
+
+    :root[data-table-density='compact'] .row-action {
+        width: 32px;
+        height: 32px;
+        border-radius: calc(10px * var(--radius-scale, 1));
+    }
+
+    :root[data-table-density='compact'] .row-action-view {
+        height: 32px;
+        border-radius: calc(10px * var(--radius-scale, 1));
+    }
+}
+
+/*
+ * Row actions, always showing: same-size icon buttons (edit in blue,
+ * delete in burgundy, print in teal, Excel in green, more) and the
+ * graphite "عرض" split button, the row's main action.
+ */
+.row-actions {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.row-actions-buttons {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.row-action {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid rgb(var(--gray-200));
+    border-radius: calc(12px * var(--radius-scale, 1));
+    background: rgb(var(--surface));
+    color: rgb(var(--gray-700));
+    box-shadow: 0 1px 2px rgb(var(--shadow-ink) / 0.05);
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease,
+        color 120ms ease;
+}
+
+.row-action:hover {
+    border-color: rgb(var(--gray-300));
+    background: rgb(var(--gray-100));
+    color: rgb(var(--gray-900));
+}
+
+.row-action-edit {
+    border-color: rgb(var(--blue-500) / 0.28);
+    background: rgb(var(--blue-500) / 0.08);
+    color: rgb(var(--blue-600));
+}
+
+.row-action-edit:hover {
+    border-color: transparent;
+    background: linear-gradient(180deg, rgb(var(--blue-hi)), rgb(var(--blue-lo)));
+    color: #fff;
+    box-shadow: 0 8px 16px -8px rgb(var(--blue-lo) / 0.8);
+}
+
+.row-action-delete {
+    border-color: rgb(var(--brand-500) / 0.25);
+    background: rgb(var(--brand-500) / 0.07);
+    color: rgb(var(--brand-600));
+}
+
+.row-action-delete:hover {
+    border-color: transparent;
+    background: linear-gradient(180deg, rgb(var(--danger-500)), rgb(var(--danger-700)));
+    color: #fff;
+    box-shadow: 0 8px 16px -8px rgb(var(--danger-600) / 0.6);
+}
+
+.row-action-print {
+    border-color: rgb(var(--print-500) / 0.28);
+    background: rgb(var(--print-500) / 0.08);
+    color: rgb(var(--print-600));
+}
+
+.row-action-print:hover {
+    border-color: transparent;
+    background: linear-gradient(180deg, rgb(var(--print-500)), rgb(var(--print-700)));
+    color: #fff;
+    box-shadow: 0 8px 16px -8px rgb(var(--print-500) / 0.8);
+}
+
+.row-action-excel {
+    border-color: rgb(var(--excel-500) / 0.28);
+    background: rgb(var(--excel-500) / 0.08);
+    color: rgb(var(--excel-600));
+}
+
+.row-action-excel:hover {
+    border-color: transparent;
+    background: linear-gradient(180deg, rgb(var(--excel-500)), rgb(var(--excel-700)));
+    color: #fff;
+    box-shadow: 0 8px 16px -8px rgb(var(--excel-500) / 0.8);
+}
+
+/*
+ * A print or Excel button in its own colour, on any button: a soft tint at
+ * rest, filled solid on hover. Outside the components layer so it wins over
+ * the colours of the button it sits on (PrimaryButton, SecondaryButton…).
+ * Page styles that restyle their own buttons read the same variables.
+ */
+.tone-print {
+    --tone: var(--print-500);
+    --tone-ink: var(--print-600);
+    --tone-deep: var(--print-700);
+    --tone-soft: var(--print-300);
+}
+
+.tone-excel {
+    --tone: var(--excel-500);
+    --tone-ink: var(--excel-600);
+    --tone-deep: var(--excel-700);
+    --tone-soft: var(--excel-300);
+}
+
+.tone-print,
+.tone-excel {
+    border-color: rgb(var(--tone) / 0.3);
+    background: rgb(var(--tone) / 0.08);
+    color: rgb(var(--tone-ink));
+}
+
+:is(.tone-print, .tone-excel):hover:not(:disabled) {
+    border-color: transparent;
+    background: linear-gradient(180deg, rgb(var(--tone)), rgb(var(--tone-deep)));
+    color: #fff;
+    box-shadow: 0 8px 16px -8px rgb(var(--tone) / 0.8);
+}
+
+/* The screen's main action: filled in its colour at rest too. */
+:is(.tone-print, .tone-excel).tone-solid {
+    border-color: transparent;
+    background: linear-gradient(180deg, rgb(var(--tone)), rgb(var(--tone-deep)));
+    color: #fff;
+    box-shadow: 0 10px 24px -12px rgb(var(--tone) / 0.9);
+}
+
+/* On a dark bar or header: a lighter ink so it stays readable. */
+:is(.tone-print, .tone-excel).tone-on-dark:not(:hover) {
+    border-color: rgb(var(--tone) / 0.5);
+    background: rgb(var(--tone) / 0.2);
+    color: rgb(var(--tone-soft));
+}
+
+.row-action[aria-expanded='true'] {
+    border-color: rgb(var(--gray-900));
+    background: rgb(var(--gray-900));
+    color: rgb(var(--surface));
+}
+
+.row-action-view {
+    display: inline-flex;
+    align-items: stretch;
+    height: 38px;
+    overflow: hidden;
+    border-radius: calc(12px * var(--radius-scale, 1));
+    background: linear-gradient(180deg, rgb(var(--graphite-700)), rgb(var(--graphite-900)));
+    color: #fff;
+    box-shadow:
+        0 8px 16px -8px rgb(var(--graphite-900) / 0.7),
+        inset 0 1px 0 rgb(255 255 255 / 0.13);
+    transition:
+        background 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.row-action-view:hover,
+.row-action-view:focus-within {
+    background: linear-gradient(180deg, rgb(var(--brand-hi)), rgb(var(--brand-lo)));
+    box-shadow:
+        0 10px 20px -8px rgb(var(--brand-solid) / 0.8),
+        inset 0 1px 0 rgb(255 255 255 / 0.2);
+}
+
+.row-action-view > button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding-inline: 12px;
+    font-size: 14.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.row-action-view > button + button {
+    padding-inline: 8px;
+    border-inline-start: 1px solid rgb(255 255 255 / 0.15);
+}
+
+.row-action-view > button[aria-expanded='true'] {
+    background: rgb(0 0 0 / 0.18);
+}
+
+.row-action:focus-visible,
+.row-action-view > button:focus-visible {
+    outline: 2px solid rgb(var(--gray-900));
+    outline-offset: 2px;
+}
+
+.row-action-view > button:focus-visible {
+    outline-offset: -3px;
+    outline-color: #fff;
+}
+
+/* In the dark theme the main button is polished silver, so it stays the brightest thing in the row. */
+.dark .row-action-view {
+    background: linear-gradient(180deg, rgb(var(--silver-50)), rgb(var(--silver-300)));
+    color: rgb(var(--graphite-900));
+}
+
+.dark .row-action-view > button + button {
+    border-inline-start-color: rgb(var(--graphite-900) / 0.15);
+}
+
+.dark .row-action-view > button:focus-visible {
+    outline-color: rgb(var(--graphite-900));
+}
+
+/* Phones: the buttons span the card, with 44px targets. */
+@container (max-width: 640px) {
+    .data-table td:has(> .row-actions) {
+        grid-column: 1 / -1;
+    }
+
+    .data-table .row-actions,
+    .data-table .row-actions-buttons {
+        display: flex;
+        width: 100%;
+    }
+
+    .data-table .row-action {
+        width: 44px;
+        height: 44px;
+    }
+
+    .data-table .row-action-view {
+        flex: 1;
+        height: 44px;
+    }
+
+    .data-table .row-action-view > button:first-child {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+/* Dialogs */
+@keyframes modal-backdrop-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modal-panel-in {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.animate-modal-backdrop {
+    animation: modal-backdrop-in 200ms ease-out;
+}
+
+.animate-modal-panel {
+    animation: modal-panel-in 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}

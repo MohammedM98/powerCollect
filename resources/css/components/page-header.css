@@ -1,0 +1,118 @@
+.gl-btn-part:focus-visible {
+    outline: 2px solid var(--gl-surface-ink);
+    outline-offset: -3px;
+}
+
+/* Bars grow from the start of the line: the right in Arabic, the left in a left-to-right block. */
+[dir='ltr'] {
+    --gl-start-x: left;
+}
+
+[dir='rtl'] {
+    --gl-start-x: right;
+}
+
+/* The statement window fills the screen's height; its header stays while the statement scrolls (Pages/Subscriptions/StatementModal.jsx). */
+.gl-statement {
+    height: calc(100dvh - 3rem);
+}
+
+@media (max-width: 639px) {
+    .gl-statement {
+        height: calc(100dvh - 12px - env(safe-area-inset-bottom, 0px));
+    }
+}
+
+/* ── Page head (Layouts/AuthenticatedLayout.jsx): the page's title and its actions, straight on the page ── */
+.gl-page-head {
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+}
+
+/* The page's top, in the redesign's order: trail, title and its line, the section's tabs, then the page's actions. */
+.gl-page-top {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.gl-page-top > .gl-page-head {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+@media (min-width: 640px) {
+    .gl-page-top > .gl-page-head {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+/* A page header (Components/PageHeader.jsx) lets its actions leave the title for their own row under the tabs. */
+.gl-page-top > .gl-page-head:has(> .gl-page-actions) {
+    display: contents;
+}
+
+.gl-page-top > .gl-page-head > .gl-page-title {
+    margin-top: -16px;
+}
+
+.gl-page-top > .tn-page-tabs {
+    order: 1;
+}
+
+.gl-page-top > .gl-page-head > .gl-page-actions {
+    order: 2;
+    align-self: flex-start;
+}
+
+/* The page's guidance under its title (the redesign's subtitle). */
+.gl-page-sub {
+    margin-top: 8px;
+    max-width: 72ch;
+    color: var(--color-gray-500);
+    font-size: 15.5px;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+/* The page's title: large and heavy, straight on the page as in the redesign. */
+.gl-page-head .ui-page-title {
+    font-size: clamp(30px, 3.4vw, 48px);
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+@media print {
+    .gl-page-head {
+        padding: 0;
+        border: 0;
+        background: none;
+        box-shadow: none;
+    }
+}
+
+/* An account statement's title (Pages/Subscriptions/StatementTitle.jsx): a small "كشف حساب", the subscriber's name large under it. */
+.gl-statement-title {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+
+.gl-statement-kicker {
+    color: var(--gl-muted);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.gl-statement-name {
+    margin: 0;
+    color: var(--gl-ink);
+    font: 800 clamp(24px, 2.4vw, 32px) / 1.25 var(--gl-head);
+    overflow-wrap: anywhere;
+}

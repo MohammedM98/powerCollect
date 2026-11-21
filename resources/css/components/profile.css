@@ -1,0 +1,220 @@
+/* A yes/no filter (HeroUI's switch) on the same pill as the other filters. */
+.gl-filter-switch.switch {
+    height: 38px;
+    padding-inline: 12px;
+    border-radius: 999px;
+    background: rgb(var(--group-fill));
+}
+
+.gl-filter-switch [data-slot='label'] {
+    color: var(--gl-ink);
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+/*
+ * The heroes that were dark cards (the employee on the permissions screen,
+ * the profile's header) as the redesign's white cards: the same content
+ * and layout, in the page's ink, with no washes or glows.
+ */
+html:root .pm-hero,
+html:root[data-ui-background='graphite'] .pm-hero {
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--panel-shadow);
+    color: var(--gl-ink);
+}
+
+:root .pm-hero h3,
+:root .pm-hero-stats b,
+:root .pm-hero-template b {
+    color: var(--gl-ink);
+}
+
+:root .pm-hero-meta,
+:root .pm-hero-stats,
+:root .pm-hero-template {
+    color: var(--gl-muted);
+}
+
+:root .pm-hero-stats .is-danger,
+:root .pm-hero-stats .is-danger b {
+    color: rgb(var(--danger-700));
+}
+
+:root .pm-hero-stats .is-sensitive,
+:root .pm-hero-stats .is-sensitive b {
+    color: rgb(var(--warning-700));
+}
+
+:root .pm-hero-button {
+    border-color: transparent;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+}
+
+:root .pm-hero-button:hover,
+:root .pm-hero-button[aria-expanded='true'] {
+    border-color: transparent;
+    background: rgb(var(--group-hover));
+}
+
+:root .pm-hero-button:focus-visible {
+    outline-color: rgb(var(--brand-solid));
+}
+
+:root .pm-hero-template {
+    background: rgb(var(--panel-tile));
+}
+
+:root .pm-hero-flag {
+    background: var(--warning-soft);
+    color: var(--warning-soft-foreground);
+}
+
+:root .profile-page .pp-hero {
+    background: rgb(var(--panel-bg));
+    box-shadow: var(--panel-shadow);
+    color: var(--gl-ink);
+}
+
+:root .profile-page .pp-hero::before,
+:root .profile-page .pp-hero::after {
+    content: none;
+}
+
+:root .profile-page .pp-hero .pp-username,
+:root .profile-page .pp-hero .pp-facts small {
+    color: var(--gl-muted);
+}
+
+:root .profile-page .pp-hero .pp-tag {
+    border-color: transparent;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+}
+
+:root .profile-page .pp-hero .pp-tag.role {
+    border-color: transparent;
+    background: rgb(var(--brand-solid) / 0.12);
+    color: rgb(var(--brand-600));
+}
+
+.dark .pm-hero-stats .is-danger,
+.dark .pm-hero-stats .is-danger b {
+    color: rgb(var(--danger-400));
+}
+
+.dark .pm-hero-stats .is-sensitive,
+.dark .pm-hero-stats .is-sensitive b {
+    color: rgb(var(--warning-400));
+}
+
+:root .pm-gauge.on-dark .pm-gauge-track {
+    stroke: rgb(var(--group-fill));
+}
+
+:root .pm-gauge.on-dark p b {
+    color: var(--gl-ink);
+}
+
+:root .pm-gauge.on-dark p span {
+    color: var(--gl-muted);
+}
+
+:root .pm-tabs {
+    border-top-color: var(--gl-line);
+}
+
+:root .pm-tab {
+    color: var(--gl-muted);
+}
+
+:root .pm-tab:hover,
+:root .pm-tab.is-active {
+    color: var(--gl-ink);
+}
+
+:root .pm-tab::after {
+    background: rgb(var(--brand-solid));
+    box-shadow: none;
+}
+
+:root .pm-tab:focus-visible {
+    outline-color: rgb(var(--brand-solid));
+}
+
+/* The ledger's header as every table's: a rounded grey band inside the card. */
+.ledger-page .pn .ledger-table thead tr {
+    margin: 4px 12px 0;
+    border-bottom: 0;
+    border-radius: 12px;
+    background: rgb(var(--panel-tile));
+    color: var(--gl-muted);
+}
+
+/* ── Details on demand (the redesign's dense tables): a chevron opens the row's other facts under it ── */
+.data-table .dt-exp {
+    width: 40px;
+    padding-inline: 12px 0;
+}
+
+.dt-exp-btn {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    color: var(--gl-muted);
+    transition: transform 0.18s, background-color 0.15s, color 0.15s;
+}
+
+.dt-exp-btn:hover {
+    background: rgb(var(--gray-900) / 0.06);
+    color: var(--gl-ink);
+}
+
+.dt-exp-btn[aria-expanded='true'] {
+    transform: rotate(180deg);
+    color: var(--gl-ink);
+}
+
+.data-table tbody tr.is-open > td {
+    background: rgb(var(--gray-900) / 0.03);
+    border-bottom-color: transparent;
+}
+
+.data-table tbody tr.dt-detail > td {
+    height: auto;
+    padding: 0 12px 16px;
+    background: rgb(var(--gray-900) / 0.03);
+}
+
+.dt-detail dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 8px 24px;
+    margin: 0;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: rgb(var(--panel-bg));
+    box-shadow: inset 0 0 0 1px rgb(var(--gray-100));
+}
+
+.dt-detail dt {
+    color: var(--gl-muted);
+    font-size: 11.5px;
+    font-weight: 600;
+}
+
+.dt-detail dd {
+    margin: 0 0 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    white-space: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dt-exp-btn {
+        transition: none;
+    }
+}

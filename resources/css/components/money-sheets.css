@@ -1,0 +1,292 @@
+.gl-sheet .gl-mv-cells {
+    align-items: center;
+    text-align: center;
+}
+
+.gl-sheet .gl-mv-cell.is-result {
+    padding: 4px 4px;
+    background: none;
+    box-shadow: none;
+}
+
+.gl-sheet .gl-mv-tag {
+    background: color-mix(in srgb, var(--gl-t) 14%, rgb(var(--panel-bg)));
+}
+
+.gl-sheet .gl-step > h4 {
+    font-size: 14px;
+}
+
+.gl-choices {
+    display: grid;
+    grid-template-columns: repeat(var(--gl-choice-cols, 2), minmax(0, 1fr));
+    gap: 12px;
+}
+
+@media (max-width: 639px) {
+    .gl-choices {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.gl-choice {
+    display: block;
+    min-width: 0;
+}
+
+.gl-choices[data-orientation] [data-slot='radio'] {
+    margin-top: 0;
+}
+
+.gl-choice-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    height: 100%;
+    min-height: 76px;
+    padding: 12px 16px;
+    border-radius: 18px;
+    background: rgb(var(--panel-field));
+    box-shadow: var(--field-shadow), 0 0 0 1px rgb(var(--gray-900) / 0.06);
+    cursor: pointer;
+    transition: box-shadow 0.15s, background-color 0.15s;
+}
+
+.gl-choice-content:hover {
+    box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+}
+
+/* Three across (a discount's methods), a card is too narrow for its icon beside its words: the icon over its name and line, centred, every card the same size. */
+@media (min-width: 640px) {
+    .gl-choices[data-columns='3'] .gl-choice-content {
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+        text-align: center;
+    }
+}
+
+.gl-choice-content[data-selected] {
+    background: rgb(var(--brand-solid) / 0.05);
+    box-shadow: 0 0 0 1.5px rgb(var(--brand-solid)), 0 0 0 4px rgb(var(--brand-solid) / 0.1);
+}
+
+.gl-choice-content[data-focus-visible] {
+    outline: 2px solid rgb(var(--brand-solid));
+    outline-offset: 3px;
+}
+
+.gl-choice-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.gl-choice-content[data-selected] .gl-choice-icon {
+    background: rgb(var(--brand-solid));
+    color: #fff;
+}
+
+.gl-choice-content b {
+    display: block;
+    color: var(--gl-ink);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.gl-choice-content small {
+    display: block;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.gl-amt {
+    display: grid;
+    gap: 12px;
+}
+
+.gl-amt-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: rgb(var(--panel-field));
+    box-shadow: var(--field-shadow), 0 0 0 1px rgb(var(--gray-900) / 0.06);
+    transition: box-shadow 0.15s;
+}
+
+.gl-amt-field:hover {
+    box-shadow: var(--field-shadow), 0 0 0 1px var(--field-hover-ring);
+}
+
+.gl-amt-field:focus-within {
+    box-shadow: 0 0 0 1.5px rgb(var(--brand-solid)), 0 0 0 4px rgb(var(--brand-solid) / 0.12);
+}
+
+.gl-amt-field[data-invalid] {
+    box-shadow: 0 0 0 1.5px rgb(var(--danger-600)), 0 0 0 4px rgb(var(--danger-600) / 0.1);
+}
+
+.gl-amt-field[data-readonly] {
+    background: rgb(var(--panel-tile));
+}
+
+.gl-amt-field input.gl-amt-input {
+    flex: 1;
+    min-width: 0;
+    height: 60px;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--gl-ink);
+    font: 800 34px / 1 var(--gl-head);
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+    outline: none;
+}
+
+.gl-amt-input::placeholder {
+    color: rgb(var(--gray-400) / 0.7);
+}
+
+.gl-amt-unit {
+    color: var(--gl-muted);
+    font: 700 18px var(--gl-head);
+}
+
+.gl-amt-quick {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.gl-quick.button {
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.gl-quick.button:hover {
+    background: rgb(var(--group-hover));
+}
+
+.gl-quick.is-settle.button {
+    background: color-mix(in srgb, var(--gl-t) 14%, rgb(var(--panel-bg)));
+    color: var(--gl-t);
+}
+
+.gl-sheet-foot {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    border-top: 1px solid var(--gl-line);
+}
+
+.gl-sheet-keys {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    margin-inline-end: auto;
+    color: var(--gl-muted);
+    font-size: 12.5px;
+}
+
+.gl-sheet-keys .kbd + .kbd,
+.gl-sheet-keys > .kbd:nth-of-type(2) {
+    margin-inline-start: 8px;
+}
+
+@media (min-width: 640px) {
+    .gl-sheet-keys {
+        display: inline-flex;
+    }
+}
+
+.gl-sheet-btn.button {
+    gap: 8px;
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 999px;
+    background: rgb(var(--group-fill));
+    color: var(--gl-ink);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.gl-sheet-btn.button:hover:not([data-disabled]) {
+    background: rgb(var(--group-hover));
+}
+
+.gl-sheet-btn.is-primary.button {
+    background: rgb(var(--action));
+    color: rgb(var(--action-ink));
+}
+
+.gl-sheet-btn.is-submit.button {
+    min-width: 0;
+    background: var(--gl-t-solid, rgb(var(--action)));
+    color: #fff;
+}
+
+.gl-sheet-btn.is-submit.button:hover:not([data-disabled]) {
+    background: color-mix(in srgb, var(--gl-t-solid, rgb(var(--action))) 86%, #000);
+}
+
+.gl-sheet-btn.is-submit[data-disabled] {
+    opacity: 0.45;
+}
+
+@media (max-width: 639px) {
+    .gl-sheet-foot {
+        padding: 12px 16px;
+    }
+
+    .gl-sheet-btn.is-submit.button {
+        flex: 1;
+    }
+}
+
+/* A shared payment's parts on grey panels: the transfer, then the subscribers it is spread over (Pages/Payments/Split*.jsx). */
+.gl-split-panel {
+    display: grid;
+    gap: 16px;
+    padding: 16px;
+    border-radius: 20px;
+    background: rgb(var(--panel-tile));
+}
+
+.gl-split-panel-title {
+    margin: 0;
+    color: var(--gl-ink);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+/* The company's banks as chips (Components/Banks.jsx BankChips, HeroUI's radio group). */
+.gl-bank-chips {
+    display: flex;
+    flex-flow: row wrap !important;
+    gap: 8px;
+}
+
+.gl-bank-chips [data-slot='radio'] {
+    margin-top: 0 !important;
+}

@@ -1,0 +1,322 @@
+@media (max-width: 639px) {
+    .gl-sheet-body {
+        padding-inline: 16px;
+    }
+
+    .gl-mv {
+        margin-inline: 16px;
+        padding: 12px;
+    }
+
+    .gl-mv-cells,
+    .gl-mv-cells[data-count='2'] {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .gl-mv-op {
+        display: none;
+    }
+
+    .gl-mv-cell.is-result {
+        grid-column: 1 / -1;
+    }
+
+}
+
+/* ── Notifications (Components/FlashNotifications.jsx, HeroUI Toast) ──── */
+/*
+ * Bottom right, each card in its own colour: a soft card in the tone's
+ * pair, lit by a wash of the tone from the icon's corner, a round icon
+ * with a faint halo, a shadow tinted with the tone, and the time left as a
+ * rounded bar inside the card that stops while the pointer is over them.
+ */
+.gl-toasts {
+    --z-index-toast: 120;
+}
+
+.gl-toast[data-tone='success'] {
+    --t: var(--ma-pay);
+    --t-s: var(--ma-pay-s);
+}
+
+.gl-toast[data-tone='warning'] {
+    --t: var(--ma-warn);
+    --t-s: var(--ma-warn-s);
+}
+
+.gl-toast[data-tone='danger'] {
+    --t: var(--ma-owe);
+    --t-s: var(--ma-owe-s);
+}
+
+.gl-toasts .gl-toast {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 12px;
+    padding: 16px 16px 24px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 22px;
+    background:
+        radial-gradient(120% 140% at 100% 0%, color-mix(in oklab, var(--t) 20%, transparent), transparent 60%),
+        linear-gradient(180deg, color-mix(in oklab, var(--t-s) 65%, var(--ma-solid)), var(--t-s));
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow:
+        0 20px 44px -24px color-mix(in oklab, var(--t) 75%, transparent),
+        0 2px 6px rgb(0 0 0 / 0.06),
+        var(--ma-hl),
+        inset 0 0 0 1px color-mix(in oklab, var(--t) 16%, transparent);
+    color: var(--ma-ink);
+}
+
+.gl-toasts .gl-toast-icon {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 999px;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--t) 78%, var(--ma-solid)), var(--t));
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--t) 14%, transparent), 0 8px 18px -8px var(--t);
+    color: var(--ma-solid);
+}
+
+.gl-toasts .gl-toast-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.gl-toasts .gl-toast-body {
+    gap: 4px;
+    padding-top: 4px;
+}
+
+.gl-toasts .gl-toast-title {
+    color: var(--ma-ink);
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.45;
+}
+
+.gl-toasts .gl-toast-desc {
+    color: var(--ma-ink);
+    font-size: 13.5px;
+    line-height: 1.6;
+}
+
+/* The way out is always there on the front card (HeroUI shows it on hover only), never on the cards stacked behind it. */
+.gl-toasts .gl-toast .gl-toast-close {
+    position: static;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--t);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.gl-toasts .gl-toast .gl-toast-close:hover {
+    background: color-mix(in oklab, var(--t) 14%, transparent);
+}
+
+.gl-toasts .gl-toast:not([data-frontmost='true']):not([data-expanded='true']) .gl-toast-close {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.gl-toast-timer {
+    position: absolute;
+    inset-inline: 16px;
+    bottom: 8px;
+    height: 4px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--t) 18%, transparent);
+}
+
+.gl-toast-timer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: var(--t);
+    transform-origin: right;
+    animation: gl-toast-time var(--gl-toast-ms, 4000ms) linear forwards;
+}
+
+.gl-toasts:is(:hover, :focus-within) .gl-toast-timer::after {
+    animation-play-state: paused;
+}
+
+@keyframes gl-toast-time {
+    to {
+        transform: scaleX(0);
+    }
+}
+
+/* Above the account statement's floating dock of keys while it is on screen. */
+body:has(.gl-st-dock) .gl-toasts.toast-region {
+    bottom: var(--room-dock);
+}
+
+/* While a window is open on a narrow screen, the messages move to the top, clear of its save bar. */
+@media (max-width: 1099px) {
+    body:has([role='dialog'], [role='alertdialog']:not([data-slot='toast'])) .gl-toasts.toast-region {
+        top: calc(12px + env(safe-area-inset-top, 0px));
+        bottom: auto;
+    }
+
+    /* Stacked from the top down, as HeroUI's top placements are. */
+    body:has([role='dialog'], [role='alertdialog']:not([data-slot='toast'])) .gl-toasts .gl-toast {
+        --dir: 1;
+        top: 0;
+        bottom: auto;
+        transform-origin: top center;
+    }
+}
+
+/* ── Pages of a table (DataTable/Pagination.jsx) ──────────────────────── */
+.gl-pager button {
+    height: 30px;
+}
+
+/* ── Recording a payment (Pages/Subscriptions/PaymentModal.jsx) ───────── */
+/* The payment's amount, drawn like every money form's amount box (AccountFormParts AmountBox): the figure large, its quick picks under a dashed line. */
+.gl-amount {
+    padding: 16px 16px 12px;
+    border-radius: 22px;
+    border: 1.5px solid rgb(var(--gray-200));
+    background: rgb(var(--surface));
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.gl-amount:focus-within {
+    border-color: rgb(var(--brand-500));
+    box-shadow: 0 0 0 5px rgb(var(--brand-500) / 0.12);
+}
+
+.gl-amount[data-invalid] {
+    border-color: var(--gl-bad);
+}
+
+.gl-amount-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    color: var(--gl-ink);
+    font: 800 44px/1.25 var(--gl-head);
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+    caret-color: rgb(var(--gl-brand));
+}
+
+.gl-amount-input::placeholder {
+    color: var(--gl-faint);
+}
+
+.gl-amount-quick {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed rgb(var(--gray-200));
+}
+
+.gl-method {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--gl-line);
+    background: var(--gl-fill);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.gl-method:hover {
+    border-color: var(--gl-line-strong);
+}
+
+.gl-method:focus-within {
+    outline: 2px solid rgb(var(--gl-brand));
+    outline-offset: 2px;
+}
+
+.gl-method[data-checked],
+.gl-method[data-selected='true'] {
+    border-color: rgb(var(--gl-brand) / 0.5);
+    background: rgb(var(--gl-brand) / 0.16);
+}
+
+.gl-method-icon {
+    width: 40px;
+    height: 40px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--gl-fill-2);
+    color: var(--gl-muted);
+}
+
+.gl-method[data-checked] .gl-method-icon,
+.gl-method[data-selected='true'] .gl-method-icon {
+    background: rgb(var(--gl-btn));
+    color: rgb(var(--brand-ink));
+}
+
+.gl-method-dot {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    margin-inline-start: auto;
+    border-radius: 50%;
+    border: 1.5px solid var(--gl-line-strong);
+}
+
+.gl-method[data-checked] .gl-method-dot,
+.gl-method[data-selected='true'] .gl-method-dot {
+    border-color: rgb(var(--gl-btn));
+    background: radial-gradient(circle, rgb(var(--brand-ink)) 0 3.5px, rgb(var(--gl-btn)) 4px);
+}
+
+.gl-receipt-cut {
+    position: relative;
+}
+
+.gl-receipt-cut::before,
+.gl-receipt-cut::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgb(var(--panel-bg));
+    transform: translateY(-50%);
+}
+
+.gl-receipt-cut::before {
+    inset-inline-start: -10px;
+}
+
+.gl-receipt-cut::after {
+    inset-inline-end: -10px;
+}
+
+.gl-notice {
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--gl-c) 40%, transparent);
+    background: color-mix(in srgb, var(--gl-c) 10%, transparent);
+    color: var(--gl-ink);
+    font-size: 14px;
+}

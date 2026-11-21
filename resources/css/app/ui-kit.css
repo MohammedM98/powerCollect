@@ -1,0 +1,331 @@
+/* The tables' column titles (`tableHeader`), wider than a phone. */
+@container (min-width: 641px) {
+    :root:is([data-ui-table-header='tinted'], [data-ui-table-header='dark'], [data-ui-table-header='brand']) .data-table th {
+        padding-block: 12px;
+    }
+
+    :root:is([data-ui-table-header='tinted'], [data-ui-table-header='dark'], [data-ui-table-header='brand']) .data-table th:first-child {
+        border-top-right-radius: calc(12px * var(--radius-scale, 1));
+        border-bottom-right-radius: calc(12px * var(--radius-scale, 1));
+    }
+
+    :root:is([data-ui-table-header='tinted'], [data-ui-table-header='dark'], [data-ui-table-header='brand']) .data-table th:last-child {
+        border-top-left-radius: calc(12px * var(--radius-scale, 1));
+        border-bottom-left-radius: calc(12px * var(--radius-scale, 1));
+    }
+
+    :root[data-ui-table-header='tinted'] .data-table th {
+        background: rgb(var(--gray-100));
+        color: rgb(var(--gray-800));
+    }
+
+    :root[data-ui-table-header='dark'] .data-table th {
+        background: rgb(var(--graphite-800));
+        color: rgb(var(--silver-50));
+    }
+
+    :root[data-ui-table-header='brand'] .data-table th {
+        background: rgb(var(--brand-solid));
+        color: rgb(var(--brand-ink));
+    }
+
+    :root:is([data-ui-table-header='dark'], [data-ui-table-header='brand']) .data-table th :is(button, a, svg) {
+        color: inherit;
+    }
+}
+
+/* Fields (`inputs`): filled with a soft background, or a line under them only. */
+:root[data-ui-inputs='filled'] main :is(input:not([type='checkbox'], [type='radio'], [type='color'], [type='file'], [type='range'], [type='hidden']), select, textarea) {
+    border-color: transparent;
+    background-color: rgb(var(--gray-100));
+}
+
+:root[data-ui-inputs='filled'] main :is(input, select, textarea):focus {
+    border-color: rgb(var(--brand-500));
+    background-color: rgb(var(--surface));
+}
+
+:root[data-ui-inputs='underline'] main :is(input:not([type='checkbox'], [type='radio'], [type='color'], [type='file'], [type='range'], [type='hidden']), select, textarea) {
+    border-width: 0 0 1.5px;
+    border-color: rgb(var(--gray-300));
+    border-radius: 0;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+:root[data-ui-inputs='underline'] main :is(input, select, textarea):focus {
+    border-color: rgb(var(--brand-500));
+}
+
+/* Status badges (`badges`, StatusPill): filled in their colour, or an outline only. */
+:root[data-ui-badges='solid'] .ui-badge {
+    border-color: transparent;
+    color: #fff;
+}
+
+:root[data-ui-badges='solid'] .ui-badge > span {
+    background: rgb(255 255 255 / 0.85);
+}
+
+:root[data-ui-badges='solid'] .ui-badge[data-tone='green'] {
+    background: rgb(var(--success-600));
+}
+
+:root[data-ui-badges='solid'] .ui-badge[data-tone='amber'] {
+    background: rgb(var(--warning-600));
+}
+
+:root[data-ui-badges='solid'] .ui-badge[data-tone='red'] {
+    background: rgb(var(--brand-600));
+}
+
+:root[data-ui-badges='solid'] .ui-badge[data-tone='blue'] {
+    background: rgb(var(--info-600));
+}
+
+:root[data-ui-badges='solid'] .ui-badge[data-tone='gray'] {
+    background: rgb(var(--gray-500));
+}
+
+:root[data-ui-badges='outline'] .ui-badge {
+    background: transparent;
+}
+
+/* Page titles (`pageTitle`, PageHeader): a bar of the company's colour at their start, or a line under them. */
+:root[data-ui-page-title='bar'] .ui-page-title {
+    padding-inline-start: 16px;
+    border-inline-start: 5px solid rgb(var(--brand-500));
+}
+
+:root[data-ui-page-title='underline'] .ui-page-title {
+    padding-bottom: 8px;
+    background: linear-gradient(rgb(var(--brand-500)), rgb(var(--brand-500))) no-repeat right bottom / 56px 3px;
+}
+
+/* The text's size (`textSize`): every rem-sized thing follows the root. */
+:root[data-ui-text-size='small'] {
+    font-size: 93.75%;
+}
+
+:root[data-ui-text-size='large'] {
+    font-size: 106.25%;
+}
+
+/* Nothing moves (`motion`), as for those who ask their device for less motion. */
+:root[data-ui-motion='reduced'] *,
+:root[data-ui-motion='reduced'] *::before,
+:root[data-ui-motion='reduced'] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+}
+
+/*
+ * Behaviour (`buttonHover`, `buttonPress`, `buttonSize`, `cardHover`,
+ * `rowHover`, `focusRing`, `navHighlight`): how things answer the pointer
+ * and the keyboard. `--hover-lift` and `--ui-transition` come from the
+ * company's exact values (`tokens`) when it sets them.
+ */
+:root {
+    --hover-lift: 2px;
+    --ui-transition: 160ms;
+    --shadow-strength: 1;
+}
+
+:root :is(.ui-btn-primary, .ui-btn-secondary, .ui-btn-danger) {
+    transition-property: transform, filter, box-shadow, background-color, border-color, color;
+    transition-duration: var(--ui-transition);
+}
+
+:root[data-ui-button-hover='lift'] :is(.ui-btn-primary, .ui-btn-secondary, .ui-btn-danger):hover:not(:disabled) {
+    filter: none;
+    transform: translateY(calc(-1 * var(--hover-lift)));
+    box-shadow: var(--shadow-lift);
+}
+
+:root[data-ui-button-hover='glow'] .ui-btn-primary:hover:not(:disabled) {
+    filter: none;
+    box-shadow: 0 0 0 4px rgb(var(--brand-500) / 0.22), var(--shadow-glow);
+}
+
+:root[data-ui-button-hover='glow'] :is(.ui-btn-secondary, .ui-btn-danger):hover:not(:disabled) {
+    box-shadow: 0 0 0 4px rgb(var(--gray-300) / 0.45);
+}
+
+:root[data-ui-button-hover='darken'] :is(.ui-btn-primary, .ui-btn-danger):hover:not(:disabled) {
+    filter: brightness(0.9);
+}
+
+:root[data-ui-button-hover='scale'] :is(.ui-btn-primary, .ui-btn-secondary, .ui-btn-danger):hover:not(:disabled) {
+    filter: none;
+    transform: scale(1.04);
+}
+
+:root[data-ui-button-hover='none'] :is(.ui-btn-primary, .ui-btn-secondary, .ui-btn-danger):hover:not(:disabled) {
+    filter: none;
+}
+
+:root[data-ui-button-press='shrink'] :is(.ui-btn-primary, .ui-btn-secondary, .ui-btn-danger):active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+:root[data-ui-button-press='none'] :is(.ui-btn-primary, .ui-btn-secondary, .ui-btn-danger):active:not(:disabled) {
+    transform: none;
+}
+
+:root[data-ui-button-size='compact'] :is(.ui-btn-primary, .ui-btn-secondary, .ui-btn-danger) {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+:root[data-ui-button-size='large'] :is(.ui-btn-primary, .ui-btn-secondary, .ui-btn-danger) {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.0625rem;
+}
+
+/* Cards that answer the pointer; ones holding a table or a form stay still. */
+:root:is([data-ui-card-hover='lift'], [data-ui-card-hover='glow'], [data-ui-card-hover='outline']) .shadow-card:not(:has(table, form)) {
+    transition: transform var(--ui-transition) ease, box-shadow var(--ui-transition) ease, border-color var(--ui-transition) ease;
+}
+
+:root[data-ui-card-hover='lift'] .shadow-card:not(:has(table, form)):hover {
+    transform: translateY(calc(-1 * var(--hover-lift)));
+    box-shadow: var(--shadow-lift);
+}
+
+:root[data-ui-card-hover='glow'] .shadow-card:not(:has(table, form)):hover {
+    box-shadow: 0 0 0 4px rgb(var(--brand-500) / 0.14), var(--shadow-lift);
+}
+
+:root[data-ui-card-hover='outline'] .shadow-card:not(:has(table, form)):hover {
+    border-color: rgb(var(--brand-500));
+}
+
+/* Table rows under the pointer, wider than a phone. */
+@container (min-width: 641px) {
+    :root:is([data-ui-row-hover='tint'], [data-ui-row-hover='edge'], [data-ui-row-hover='none']) .data-table tbody tr:hover,
+    :root:is([data-ui-row-hover='tint'], [data-ui-row-hover='edge'], [data-ui-row-hover='none']) .data-table tbody tr:focus-within {
+        filter: none;
+    }
+
+    :root[data-ui-row-hover='tint'] .data-table tbody tr:not(.bg-brand-50):hover td {
+        background: rgb(var(--brand-50));
+    }
+
+    :root[data-ui-row-hover='none'] .data-table tbody tr:not(.bg-brand-50):is(:hover, :focus-within) td:first-child {
+        box-shadow: none;
+    }
+}
+
+/* The keyboard's focus: in the company's colour, or a soft halo around the control. */
+:root[data-ui-focus-ring='brand'] :focus-visible {
+    outline-color: rgb(var(--brand-500)) !important;
+}
+
+:root[data-ui-focus-ring='halo'] :focus-visible:not(input, select, textarea) {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgb(var(--surface)), 0 0 0 5px rgb(var(--brand-500) / 0.55) !important;
+}
+
+/* The open section in the navigation: the company's colour instead of graphite, or a line under it. */
+:root[data-ui-nav-highlight='brand'] {
+    --tn-graphite: rgb(var(--brand-solid));
+    --tn-graphite-dark: var(--tn-graphite);
+    --tn-graphite-ink: rgb(var(--brand-ink));
+    --tn-graphite-icon: rgb(var(--brand-ink));
+}
+
+:root[data-ui-nav-highlight='brand'] .tn-highlight {
+    background: rgb(var(--brand-solid));
+}
+
+:root[data-ui-nav-highlight='brand'] .tn-section[data-lit='true'],
+:root[data-ui-nav-highlight='brand'] .tn-section[data-lit='true'] .tn-section-icon {
+    color: rgb(var(--brand-ink));
+}
+
+:root[data-ui-nav-highlight='underline'] .tn-highlight {
+    border-radius: 0;
+    background: none;
+    box-shadow: inset 0 -3px 0 rgb(var(--brand-500));
+}
+
+:root[data-ui-nav-highlight='underline'] .tn-section[data-lit='true'],
+:root[data-ui-nav-highlight='underline'] .tn-section[data-lit='true'] .tn-section-icon {
+    color: rgb(var(--brand-600));
+}
+
+:root[data-ui-nav-highlight='underline'] .tn-drawer-group:is([aria-expanded='true'], [data-current='true']) {
+    background: none;
+    color: rgb(var(--brand-600));
+    box-shadow: inset -3px 0 0 rgb(var(--brand-500));
+}
+
+:root[data-ui-nav-highlight='underline'] .tn-drawer-group:is([aria-expanded='true'], [data-current='true']) svg {
+    color: rgb(var(--brand-600));
+}
+
+/*
+ * Fields (`inputs`, `inputFocus`): pill-shaped, sunk in with an inner
+ * shadow, or with a thick border; and how one shows it is being typed in.
+ */
+:root[data-ui-inputs='pill'] main :is(input:not([type='checkbox'], [type='radio'], [type='color'], [type='file'], [type='range'], [type='hidden']), select, textarea) {
+    border-radius: 999px;
+}
+
+:root[data-ui-inputs='pill'] main textarea {
+    border-radius: calc(18px * var(--radius-scale, 1));
+}
+
+:root[data-ui-inputs='inset'] main :is(input:not([type='checkbox'], [type='radio'], [type='color'], [type='file'], [type='range'], [type='hidden']), select, textarea) {
+    border-color: transparent;
+    background-color: rgb(var(--gray-50));
+    box-shadow: inset 0 1px 3px rgb(var(--shadow-ink) / 0.14);
+}
+
+:root[data-ui-inputs='thick'] main :is(input:not([type='checkbox'], [type='radio'], [type='color'], [type='file'], [type='range'], [type='hidden']), select, textarea) {
+    border-width: 2px;
+    border-color: rgb(var(--gray-300));
+}
+
+:root[data-ui-input-focus='glow'] main :is(input:not([type='checkbox'], [type='radio'], [type='color'], [type='file'], [type='range'], [type='hidden']), select, textarea):focus {
+    --tw-ring-color: rgb(var(--brand-500) / 0.28);
+    box-shadow: 0 0 0 4px rgb(var(--brand-500) / 0.18), 0 6px 18px -8px rgb(var(--brand-500) / 0.55);
+}
+
+:root[data-ui-input-focus='border'] main :is(input:not([type='checkbox'], [type='radio'], [type='color'], [type='file'], [type='range'], [type='hidden']), select, textarea):focus {
+    box-shadow: none;
+    border-color: rgb(var(--brand-500));
+}
+
+/* Checkboxes (`checkboxes`). */
+:root[data-ui-checkboxes='rounded'] [type='checkbox'] {
+    border-radius: 6px;
+}
+
+:root[data-ui-checkboxes='circle'] [type='checkbox'] {
+    border-radius: 999px;
+}
+
+:root[data-ui-checkboxes='large'] [type='checkbox'] {
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 6px;
+    border-width: 2px;
+}
+
+/* On/off switches (`switches`, Components/Switch.jsx): green by default (theme.css `--switch-on`), in the company's colour, square, or a slim track under a big knob. */
+:root[data-ui-switches='brand'] .ui-switch[aria-checked='true'] {
+    background-color: rgb(var(--brand-solid));
+}
+
+:root[data-ui-switches='square'] :is(.ui-switch, .ui-switch-knob) {
+    border-radius: calc(6px * var(--radius-scale, 1));
+}
+
+:root[data-ui-switches='slim'] .ui-switch {
+    height: 0.875rem;
+    padding: 0;
+    overflow: visible;
+}

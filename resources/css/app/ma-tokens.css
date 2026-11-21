@@ -1,0 +1,71 @@
+/*
+ * ════════════════════════════════════════════════════════════════════════
+ * The MA design, final: its exact values (docs: the MA prototype). Tokens
+ * first (light, dark, and the glass surface that lets the ground through,
+ * frosted), then the pieces drawn with them: the payment window, the
+ * tables and the top bar. Last in app.css (after components.css and every
+ * look's own rules), so it settles them all.
+ * ════════════════════════════════════════════════════════════════════════
+ */
+:root {
+    --ma-bg: #eceef1;
+    --ma-solid: #ffffff;
+    --ma-tile: #f4f5f7;
+    --ma-line: rgb(22 26 33 / 0.08);
+    --ma-ink: #1f2329;
+    --ma-muted: #5d646e;
+    --ma-faint: #979ea8;
+    --ma-brand: rgb(var(--brand-solid));
+    --ma-brand-soft: color-mix(in oklab, rgb(var(--brand-solid)) 12%, #ffffff);
+    --ma-act: #24272e;
+    --ma-pay: #2d855c;
+    --ma-pay-s: #e4f1ea;
+    --ma-owe: #b0524b;
+    --ma-owe-s: #f6e8e6;
+    --ma-disc: #6c599d;
+    --ma-disc-s: #ece9f4;
+    --ma-clr: #45678e;
+    --ma-clr-s: #e6ecf3;
+    --ma-split: #2a7a93;
+    --ma-split-s: #e3eff3;
+    --ma-warn: #946615;
+    --ma-warn-s: #f4ecdb;
+    --ma-hl: inset 0 1px 0 rgb(255 255 255 / 0.9);
+    --ma-depth: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 1px 2px rgb(16 20 26 / 0.05), 0 10px 28px -14px rgb(16 20 26 / 0.16);
+    --ma-float: 0 2px 6px rgb(16 20 26 / 0.06), 0 30px 70px -24px rgb(16 20 26 / 0.38);
+    --ma-panel: var(--ma-solid);
+    --ma-blur: none;
+    --ma-ambient: none;
+}
+
+.dark {
+    --ma-bg: #0c0e11;
+    --ma-solid: #15181d;
+    --ma-tile: #1c2026;
+    --ma-line: rgb(255 255 255 / 0.07);
+    --ma-ink: #eef0f3;
+    --ma-muted: #a2a9b3;
+    --ma-faint: #6c737d;
+    --ma-brand-soft: color-mix(in oklab, rgb(var(--brand-solid)) 18%, #15181d);
+    --ma-act: #39404a;
+    --ma-pay: #6dbf98;
+    --ma-pay-s: #15261d;
+    --ma-owe: #e1938c;
+    --ma-owe-s: #2b1b19;
+    --ma-disc: #b19ce0;
+    --ma-disc-s: #221d2f;
+    --ma-clr: #93b2d8;
+    --ma-clr-s: #18212c;
+    --ma-split: #75bdd2;
+    --ma-split-s: #15252b;
+    --ma-warn: #e0b45c;
+    --ma-warn-s: #2a2314;
+    --ma-hl: inset 0 1px 0 rgb(255 255 255 / 0.05);
+    --ma-depth: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 12px 32px -16px rgb(0 0 0 / 0.8);
+    --ma-float: 0 0 0 1px rgb(255 255 255 / 0.06), 0 32px 80px -24px rgb(0 0 0 / 0.85);
+}
+
+/* The button green keeps its deep shade in the dark (white text on it). */
+:root {
+    --ma-pay-btn: #2d855c;
+}
