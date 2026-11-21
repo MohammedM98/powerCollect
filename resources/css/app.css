@@ -52,6 +52,7 @@
 @import '@heroui/styles/components/menu-item.css' layer(components);
 @import '@heroui/styles/components/menu-section.css' layer(components);
 @import '@heroui/styles/components/textarea.css' layer(components);
+@import '@heroui/styles/components/toast.css' layer(components);
 @import './heroui.css';
 
 @plugin '@tailwindcss/forms';
@@ -1822,78 +1823,6 @@ select:not([multiple], [size]) {
         flex: 1;
         justify-content: center;
     }
-}
-
-/* Notifications */
-@keyframes flash-notification-in {
-    from {
-        opacity: 0;
-        transform: translateY(16px) scale(0.96);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes flash-notification-out {
-    to {
-        opacity: 0;
-        transform: translateX(24px) scale(0.96);
-    }
-}
-
-/* A short nudge so a failed save catches the eye. */
-@keyframes flash-notification-shake {
-    0%,
-    100% {
-        transform: translateX(0);
-    }
-    20% {
-        transform: translateX(-6px);
-    }
-    40% {
-        transform: translateX(5px);
-    }
-    60% {
-        transform: translateX(-3px);
-    }
-    80% {
-        transform: translateX(2px);
-    }
-}
-
-@keyframes flash-notification-countdown {
-    from {
-        transform: scaleX(1);
-    }
-    to {
-        transform: scaleX(0);
-    }
-}
-
-.flash-notification {
-    animation: flash-notification-in 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.flash-notification-error {
-    animation:
-        flash-notification-in 260ms cubic-bezier(0.2, 0.7, 0.2, 1),
-        flash-notification-shake 420ms ease-in-out 260ms;
-}
-
-.flash-notification-leaving {
-    animation: flash-notification-out 200ms ease-in forwards;
-}
-
-/* Drains from left to right (toward the start in RTL); pauses while the card is hovered, as its timer does. */
-.flash-notification-countdown {
-    transform-origin: right;
-    animation: flash-notification-countdown var(--flash-duration, 4s) linear forwards;
-}
-
-.flash-notification:hover .flash-notification-countdown {
-    animation-play-state: paused;
 }
 
 /* Dialogs */
