@@ -2,18 +2,15 @@ import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
-import SortableTh from '@/Components/DataTable/SortableTh';
 import Pagination from '@/Components/DataTable/Pagination';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
-import ActionsTh from '@/Components/DataTable/ActionsTh';
 import { useDataTable } from '@/hooks/useDataTable';
-import { useRowClick } from '@/hooks/useRowClick';
 import Icon from '@/Components/Icon';
 import { formatNumber, timeAgo } from '@/lib/format';
 import { openQuickMessage } from '@/lib/quickMessage';
 import { ChannelLabel, DeliveryCounts, KindPill, MessageText } from './MessageParts';
 import { Button } from '@heroui/react';
-import { AddKey, Figure } from '@/Components/UI';
+import { AddKey, Figure, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable } from '@/Components/UI';
 import PageHeader from '@/Components/PageHeader';
 
 /**
@@ -21,7 +18,6 @@ import PageHeader from '@/Components/PageHeader';
  * its messages one by one.
  */
 export default function Index({ batches, canSend, filters, filterOptions, monthSummary }) {
-    const rowClick = useRowClick();
 
     function openBatch(batch) {
         router.visit(`/messages/${batch.id}`);
@@ -78,63 +74,57 @@ export default function Index({ batches, canSend, filters, filterOptions, monthS
             />
 
             <div className="data-table-container">
-                <table className="data-table w-full text-sm text-start">
-                    <thead>
-                        <tr>
-                            <SortableTh column="created_at" label="الوقت" sortState={filters} onSort={sort} />
-                            <th>النوع</th>
-                            <th>الرسالة</th>
-                            <th>طريقة الإرسال</th>
-                            <th>الفرع</th>
-                            <th>الحالة</th>
-                            <th>أرسلها</th>
-                            <ActionsTh />
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {batches.data.length === 0 ? (
-                            <tr>
-                                <td colSpan={8}>
-                                    {search || Object.values(filterValues).some(Boolean) ? (
-                                        <p className="gl-rp-empty">لا توجد رسائل مطابقة للبحث والتصفية.</p>
-                                    ) : (
-                                        <div className="gl-empty-how">
-                                            <span className="gl-set-ico" data-tone="clr" aria-hidden="true"><Icon name="send" /></span>
-                                            <b>لم تُرسل رسائل بعد</b>
-                                            <p>أرسل للمدينين تذكيرًا بأرصدتهم، أو قراءة الأسبوع لكل مشترك.</p>
-                                            {canSend && <Button onPress={() => router.visit('/messages/create')}><Icon name="plus" className="h-4 w-4" />رسالة جديدة</Button>}
-                                        </div>
-                                    )}
-                                </td>
-                            </tr>
-                        ) : (
-                            batches.data.map((batch) => (
-                                <tr key={batch.id} {...rowClick(() => openBatch(batch))}>
-                                    <td className="text-gray-600" title={new Date(batch.createdAt).toLocaleString('ar-EG-u-nu-latn')}>
-                                        {timeAgo(batch.createdAt)}
-                                    </td>
-                                    <td>
-                                        <KindPill kind={batch.kind} label={batch.kindLabel} />
-                                    </td>
-                                    <td className="max-w-md whitespace-normal! text-gray-700">
-                                        <MessageText text={batch.excerpt} />
-                                    </td>
-                                    <td>
-                                        <ChannelLabel channel={batch.channel} label={batch.channelLabel} />
-                                    </td>
-                                    <td className="text-gray-600">{batch.branchName}</td>
-                                    <td>
-                                        <DeliveryCounts batch={batch} />
-                                    </td>
-                                    <td className="text-gray-600">{batch.createdBy ?? '—'}</td>
-                                    <td className="text-end">
-                                        <RowActionsMenu onView={() => openBatch(batch)} />
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                <ListTable aria-label="الرسائل" sort={filters} onSort={sort}>
+                    <ListHeader>
+                        <ListColumn id="created_at" sortable>الوقت</ListColumn>
+                        <ListColumn id="kind">النوع</ListColumn>
+                        <ListColumn id="excerpt" isRowHeader>الرسالة</ListColumn>
+                        <ListColumn id="channel">طريقة الإرسال</ListColumn>
+                        <ListColumn id="branch">الفرع</ListColumn>
+                        <ListColumn id="status">الحالة</ListColumn>
+                        <ListColumn id="created_by">أرسلها</ListColumn>
+                        <ListColumn actions />
+                    </ListHeader>
+                    <ListBody
+                        empty={
+                            search || Object.values(filterValues).some(Boolean) ? (
+                                <p className="gl-rp-empty">لا توجد رسائل مطابقة للبحث والتصفية.</p>
+                            ) : (
+                                <div className="gl-empty-how">
+                                    <span className="gl-set-ico" data-tone="clr" aria-hidden="true"><Icon name="send" /></span>
+                                    <b>لم تُرسل رسائل بعد</b>
+                                    <p>أرسل للمدينين تذكيرًا بأرصدتهم، أو قراءة الأسبوع لكل مشترك.</p>
+                                    {canSend && <Button onPress={() => router.visit('/messages/create')}><Icon name="plus" className="h-4 w-4" />رسالة جديدة</Button>}
+                                </div>
+                            )
+                        }
+                    >
+                        {batches.data.map((batch) => (
+                            <ListRow key={batch.id} id={batch.id} onOpen={() => openBatch(batch)}>
+                                <ListCell className="text-gray-600">
+                                    <span title={new Date(batch.createdAt).toLocaleString('ar-EG-u-nu-latn')}>{timeAgo(batch.createdAt)}</span>
+                                </ListCell>
+                                <ListCell>
+                                    <KindPill kind={batch.kind} label={batch.kindLabel} />
+                                </ListCell>
+                                <ListCell className="max-w-md whitespace-normal! text-gray-700">
+                                    <MessageText text={batch.excerpt} />
+                                </ListCell>
+                                <ListCell>
+                                    <ChannelLabel channel={batch.channel} label={batch.channelLabel} />
+                                </ListCell>
+                                <ListCell className="text-gray-600">{batch.branchName}</ListCell>
+                                <ListCell>
+                                    <DeliveryCounts batch={batch} />
+                                </ListCell>
+                                <ListCell className="text-gray-600">{batch.createdBy ?? '—'}</ListCell>
+                                <ListCell className="text-end">
+                                    <RowActionsMenu onView={() => openBatch(batch)} />
+                                </ListCell>
+                            </ListRow>
+                        ))}
+                    </ListBody>
+                </ListTable>
             </div>
 
             <Pagination meta={batches} filters={filters} baseUrl="/messages" />

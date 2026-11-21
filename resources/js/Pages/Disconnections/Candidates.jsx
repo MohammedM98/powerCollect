@@ -4,7 +4,6 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
-import SortableTh from '@/Components/DataTable/SortableTh';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Pagination from '@/Components/DataTable/Pagination';
 import Modal from '@/Components/Modal';
@@ -16,7 +15,7 @@ import { useDataTable } from '@/hooks/useDataTable';
 import ResultReport from './ResultReport';
 import PageHeader from '@/Components/PageHeader';
 import DateInput from '@/Components/DateInput';
-import { CheckBox, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
+import { CheckBox, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
 
 /** The reason, note and date for the chosen subscribers, after saying how many. */
 function AddModal({ list, selection, count, reasonOptions, today, onClose, onDone }) {
@@ -163,42 +162,34 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
             )}
 
             <div className="data-table-container">
-                <table className="data-table w-full text-sm text-start" aria-label="المشتركون المتاحون للإضافة">
-                    <thead>
-                        <tr>
-                            <th data-actions="" className="w-10">
-                                <CheckBox checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)} indeterminate={!allMatching && pageSelectedCount > 0 && pageSelectedCount < pageIds.length} onChange={togglePage} aria-label="تحديد كل مشتركي هذه الصفحة" />
-                            </th>
-                            <SortableTh column="display_name" label="المشترك" sortState={filters} onSort={sort} />
-                            <th>الطبلون</th>
-                            <th>منطقة 2</th>
-                            <SortableTh column="balance" label="الرصيد" sortState={filters} onSort={sort} />
-                            <th>قوائم القطع</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {subscriptions.data.length === 0 ? (
-                            <tr>
-                                <td colSpan={6} className="text-gray-500">لا توجد نتائج مطابقة.</td>
-                            </tr>
-                        ) : (
-                            subscriptions.data.map((row) => (
-                                <tr key={row.id} className={allMatching || selectedIds.has(row.id) ? 'bg-brand-50' : undefined}>
-                                    <td>
-                                        <CheckBox disabled={Boolean(row.waitingOn)} checked={!row.waitingOn && (allMatching || selectedIds.has(row.id))} onChange={() => toggle(row.id)} aria-label={`تحديد ${row.name}`} />
-                                    </td>
-                                    <td data-label="المشترك"><RowIdentity name={row.name} subtitle={row.accountNumber} subtitleDir="ltr" /></td>
-                                    <td data-label="الطبلون" className="text-gray-600">{row.meterBoxNumber ? <span className="data-chip">{row.meterBoxNumber}</span> : '—'}</td>
-                                    <td data-label="منطقة 2" className="text-gray-600">{row.subAreaName ?? '—'}</td>
-                                    <td data-label="الرصيد" className="whitespace-nowrap font-semibold"><Balance value={row.balance} /></td>
-                                    <td data-label="قوائم القطع">
-                                        {row.waitingOn ? <StatusPill tone="amber" label={row.waitingOn.isThisList ? 'في هذه القائمة' : `في «${row.waitingOn.title}»`} /> : <span className="text-gray-400">—</span>}
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                <ListTable aria-label="المشتركون المتاحون للإضافة" sort={filters} onSort={sort}>
+                    <ListHeader>
+                        <ListColumn id="select" data-actions="" className="w-10">
+                            <CheckBox slot={null} checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)} indeterminate={!allMatching && pageSelectedCount > 0 && pageSelectedCount < pageIds.length} onChange={togglePage} aria-label="تحديد كل مشتركي هذه الصفحة" />
+                        </ListColumn>
+                        <ListColumn id="display_name" sortable isRowHeader>المشترك</ListColumn>
+                        <ListColumn id="meter_box">الطبلون</ListColumn>
+                        <ListColumn id="sub_area">منطقة 2</ListColumn>
+                        <ListColumn id="balance" sortable>الرصيد</ListColumn>
+                        <ListColumn id="lists">قوائم القطع</ListColumn>
+                    </ListHeader>
+                    <ListBody empty={<span className="text-gray-500">لا توجد نتائج مطابقة.</span>}>
+                        {subscriptions.data.map((row) => (
+                            <ListRow key={row.id} id={row.id} className={allMatching || selectedIds.has(row.id) ? 'bg-brand-50' : undefined}>
+                                <ListCell>
+                                    <CheckBox slot={null} disabled={Boolean(row.waitingOn)} checked={!row.waitingOn && (allMatching || selectedIds.has(row.id))} onChange={() => toggle(row.id)} aria-label={`تحديد ${row.name}`} />
+                                </ListCell>
+                                <ListCell data-label="المشترك"><RowIdentity name={row.name} subtitle={row.accountNumber} subtitleDir="ltr" /></ListCell>
+                                <ListCell data-label="الطبلون" className="text-gray-600">{row.meterBoxNumber ? <span className="data-chip">{row.meterBoxNumber}</span> : '—'}</ListCell>
+                                <ListCell data-label="منطقة 2" className="text-gray-600">{row.subAreaName ?? '—'}</ListCell>
+                                <ListCell data-label="الرصيد" className="whitespace-nowrap font-semibold"><Balance value={row.balance} /></ListCell>
+                                <ListCell data-label="قوائم القطع">
+                                    {row.waitingOn ? <StatusPill tone="amber" label={row.waitingOn.isThisList ? 'في هذه القائمة' : `في «${row.waitingOn.title}»`} /> : <span className="text-gray-400">—</span>}
+                                </ListCell>
+                            </ListRow>
+                        ))}
+                    </ListBody>
+                </ListTable>
             </div>
 
             <Pagination meta={subscriptions} filters={filters} baseUrl={`/disconnection-lists/${list.id}/candidates`} />

@@ -5,11 +5,10 @@ import Icon from '@/Components/Icon';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import Pagination from '@/Components/DataTable/Pagination';
-import ActionsTh from '@/Components/DataTable/ActionsTh';
 import { useDataTable } from '@/hooks/useDataTable';
 import { ChannelLabel, DeliveryCounts, KIND_ICONS, MessageStatusPill, MessageText } from './MessageParts';
 import PageHeader, { BackLink } from '@/Components/PageHeader';
-import { SecondaryKey } from '@/Components/UI';
+import { ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, SecondaryKey } from '@/Components/UI';
 
 const DATE_TIME_FORMAT = new Intl.DateTimeFormat('ar-EG-u-nu-latn', { dateStyle: 'medium', timeStyle: 'short' });
 
@@ -94,65 +93,55 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
             />
 
             <div className="data-table-container">
-                <table className="data-table w-full text-sm text-start">
-                    <thead>
-                        <tr>
-                            <th>المشترك</th>
-                            <th>الهاتف</th>
-                            <th>الرسالة</th>
-                            <th>الحالة</th>
-                            <th>وقت الإرسال</th>
-                            {isWhatsApp && <ActionsTh />}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {messages.data.length === 0 ? (
-                            <tr>
-                                <td className="text-gray-500" colSpan={isWhatsApp ? 6 : 5}>
-                                    لا توجد نتائج مطابقة.
-                                </td>
-                            </tr>
-                        ) : (
-                            messages.data.map((message) => (
-                                <tr key={message.id}>
-                                    <td>
-                                        <div className="font-semibold text-gray-900">{message.subscriptionName ?? '—'}</div>
-                                        {message.accountNumber && <div className="text-xs text-gray-500">{message.accountNumber}</div>}
-                                    </td>
-                                    <td dir="ltr" className="text-gray-700">
-                                        {message.phone}
-                                    </td>
-                                    <td className="min-w-[260px] max-w-lg whitespace-normal! text-gray-700">{message.body}</td>
-                                    <td>
-                                        <MessageStatusPill status={message.status} label={message.statusLabel} />
-                                        {message.error && <div className="mt-1 max-w-xs text-xs text-brand-600">{message.error}</div>}
-                                    </td>
-                                    <td className="text-gray-600">
-                                        {message.sentAt ? DATE_TIME_FORMAT.format(new Date(message.sentAt)) : '—'}
-                                        {message.sentBy && <div className="text-xs text-gray-500">{message.sentBy}</div>}
-                                    </td>
-                                    {isWhatsApp && (
-                                        <td className="text-end">
-                                            <Button data-raw="" variant="ghost"
-                                                onClick={() => openWhatsApp(message)}
-                                                aria-label={`${message.status === 'sent' ? 'فتح المحادثة مجددًا مع' : 'إرسال عبر واتساب إلى'} ${message.subscriptionName ?? message.phone}`}
-                                                title={message.status === 'sent' ? 'أُرسلت — افتح المحادثة مجددًا' : 'افتح واتساب والرسالة مكتوبة'}
-                                                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-control px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
-                                                    message.status === 'sent'
-                                                        ? 'border border-gray-200 text-gray-600 hover:text-gray-900'
-                                                        : 'bg-emerald-600 text-white hover:bg-emerald-700'
-                                                }`}
-                                            >
-                                                <Icon name={message.status === 'sent' ? 'repeat' : 'chat'} className="h-3.5 w-3.5" />
-                                                {message.status === 'sent' ? 'فتح مجددًا' : 'إرسال واتساب'}
-                                            </Button>
-                                        </td>
-                                    )}
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                <ListTable aria-label="رسائل الدفعة">
+                    <ListHeader>
+                        <ListColumn id="subscription" isRowHeader>المشترك</ListColumn>
+                        <ListColumn id="phone">الهاتف</ListColumn>
+                        <ListColumn id="body">الرسالة</ListColumn>
+                        <ListColumn id="status">الحالة</ListColumn>
+                        <ListColumn id="sent_at">وقت الإرسال</ListColumn>
+                        {isWhatsApp && <ListColumn actions />}
+                    </ListHeader>
+                    <ListBody empty={<span className="text-gray-500">لا توجد نتائج مطابقة.</span>}>
+                        {messages.data.map((message) => (
+                            <ListRow key={message.id} id={message.id}>
+                                <ListCell>
+                                    <div className="font-semibold text-gray-900">{message.subscriptionName ?? '—'}</div>
+                                    {message.accountNumber && <div className="text-xs text-gray-500">{message.accountNumber}</div>}
+                                </ListCell>
+                                <ListCell dir="ltr" className="text-gray-700">
+                                    {message.phone}
+                                </ListCell>
+                                <ListCell className="min-w-[260px] max-w-lg whitespace-normal! text-gray-700">{message.body}</ListCell>
+                                <ListCell>
+                                    <MessageStatusPill status={message.status} label={message.statusLabel} />
+                                    {message.error && <div className="mt-1 max-w-xs text-xs text-brand-600">{message.error}</div>}
+                                </ListCell>
+                                <ListCell className="text-gray-600">
+                                    {message.sentAt ? DATE_TIME_FORMAT.format(new Date(message.sentAt)) : '—'}
+                                    {message.sentBy && <div className="text-xs text-gray-500">{message.sentBy}</div>}
+                                </ListCell>
+                                {isWhatsApp && (
+                                    <ListCell className="text-end">
+                                        <Button data-raw="" variant="ghost"
+                                            onClick={() => openWhatsApp(message)}
+                                            aria-label={`${message.status === 'sent' ? 'فتح المحادثة مجددًا مع' : 'إرسال عبر واتساب إلى'} ${message.subscriptionName ?? message.phone}`}
+                                            title={message.status === 'sent' ? 'أُرسلت — افتح المحادثة مجددًا' : 'افتح واتساب والرسالة مكتوبة'}
+                                            className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-control px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
+                                                message.status === 'sent'
+                                                    ? 'border border-gray-200 text-gray-600 hover:text-gray-900'
+                                                    : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                                            }`}
+                                        >
+                                            <Icon name={message.status === 'sent' ? 'repeat' : 'chat'} className="h-3.5 w-3.5" />
+                                            {message.status === 'sent' ? 'فتح مجددًا' : 'إرسال واتساب'}
+                                        </Button>
+                                    </ListCell>
+                                )}
+                            </ListRow>
+                        ))}
+                    </ListBody>
+                </ListTable>
             </div>
 
             <Pagination meta={messages} filters={filters} baseUrl={baseUrl} />
