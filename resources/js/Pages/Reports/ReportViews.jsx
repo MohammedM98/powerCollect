@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/react';
 import { Button, Card, Chip, Label, Switch } from '@heroui/react';
 import Icon from '@/Components/Icon';
 import Figure from '@/Components/UI/Figure';
+import { BandRow, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable } from '@/Components/UI';
 import { cents, reportMoney, shortDate } from '@/lib/reportFormatting';
 import { weekDayName } from '@/lib/weekDays';
 
@@ -82,39 +83,39 @@ export function OverviewView({ flow, collections, comparison = null, branchSumma
 
             <div className="gl-rp-split">
                 {receipts && <Panel icon="scale" tone="clr" title="كشف تسوية المقبوضات" note="من المسجّل إلى المؤكَّد">
-                    <table className="gl-rp-table">
-                        <thead><tr><th>البند</th><th className="num">المبلغ ₪</th></tr></thead>
-                        <tbody>
-                            <tr><td><b>المقبوضات المسجّلة بعد التصحيحات</b></td><td className="num"><b><bdi dir="ltr">{reportMoney(receipts.adjusted)}</bdi></b></td></tr>
-                            <tr className="is-sub"><td>نقد مؤكَّد بالعدّ</td><td className="num"><bdi dir="ltr">{reportMoney(receipts.cashConfirmed)}</bdi></td></tr>
-                            <tr className="is-sub"><td>حوالات مثبتة مع البنك</td><td className="num"><bdi dir="ltr">{reportMoney(receipts.bankVerified)}</bdi></td></tr>
-                            <tr><td><b>المؤكَّد</b></td><td className="num" data-tone="pay"><b><bdi dir="ltr">{reportMoney(receipts.confirmed)}</bdi></b></td></tr>
-                            <tr className="is-sub"><td>نقد في صناديق لم يُؤكَّد إغلاقها</td><td className="num" data-tone="warn"><bdi dir="ltr">{reportMoney(receipts.cashPending)}</bdi></td></tr>
-                            <tr className="is-sub"><td>حوالات قيد التدقيق</td><td className="num" data-tone="warn"><bdi dir="ltr">{reportMoney(receipts.bankPending)}</bdi></td></tr>
-                            <tr className={cents(receipts.shortage) || cents(receipts.excess) ? 'is-flag' : 'is-sub'}><td>فروق بنكية معتمدة (نقص / زيادة)</td><td className="num"><bdi dir="ltr">{reportMoney(receipts.shortage)} / {reportMoney(receipts.excess)}</bdi></td></tr>
-                        </tbody>
-                        <tfoot><tr><td>غير مسوّى حتى الآن</td><td className="num" data-tone={cents(receipts.adjusted) - cents(receipts.confirmed) > 0 ? 'warn' : 'pay'}><bdi dir="ltr">{reportMoney((cents(receipts.adjusted) - cents(receipts.confirmed)) / 100)}</bdi></td></tr></tfoot>
-                    </table>
+                    <ListTable className="gl-rp-table" aria-label="كشف تسوية المقبوضات">
+                        <ListHeader><ListColumn id="item" isRowHeader>البند</ListColumn><ListColumn id="amount" className="num">المبلغ ₪</ListColumn></ListHeader>
+                        <ListBody>
+                            <ListRow id="adjusted"><ListCell><b>المقبوضات المسجّلة بعد التصحيحات</b></ListCell><ListCell className="num"><b><bdi dir="ltr">{reportMoney(receipts.adjusted)}</bdi></b></ListCell></ListRow>
+                            <ListRow id="cash" className="is-sub"><ListCell>نقد مؤكَّد بالعدّ</ListCell><ListCell className="num"><bdi dir="ltr">{reportMoney(receipts.cashConfirmed)}</bdi></ListCell></ListRow>
+                            <ListRow id="bank" className="is-sub"><ListCell>حوالات مثبتة مع البنك</ListCell><ListCell className="num"><bdi dir="ltr">{reportMoney(receipts.bankVerified)}</bdi></ListCell></ListRow>
+                            <ListRow id="confirmed"><ListCell><b>المؤكَّد</b></ListCell><ListCell className="num" data-tone="pay"><b><bdi dir="ltr">{reportMoney(receipts.confirmed)}</bdi></b></ListCell></ListRow>
+                            <ListRow id="cash-pending" className="is-sub"><ListCell>نقد في صناديق لم يُؤكَّد إغلاقها</ListCell><ListCell className="num" data-tone="warn"><bdi dir="ltr">{reportMoney(receipts.cashPending)}</bdi></ListCell></ListRow>
+                            <ListRow id="bank-pending" className="is-sub"><ListCell>حوالات قيد التدقيق</ListCell><ListCell className="num" data-tone="warn"><bdi dir="ltr">{reportMoney(receipts.bankPending)}</bdi></ListCell></ListRow>
+                            <ListRow id="differences" className={cents(receipts.shortage) || cents(receipts.excess) ? 'is-flag' : 'is-sub'}><ListCell>فروق بنكية معتمدة (نقص / زيادة)</ListCell><ListCell className="num"><bdi dir="ltr">{reportMoney(receipts.shortage)} / {reportMoney(receipts.excess)}</bdi></ListCell></ListRow>
+                            <ListRow id="totals" className="is-total"><ListCell>غير مسوّى حتى الآن</ListCell><ListCell className="num" data-tone={cents(receipts.adjusted) - cents(receipts.confirmed) > 0 ? 'warn' : 'pay'}><bdi dir="ltr">{reportMoney((cents(receipts.adjusted) - cents(receipts.confirmed)) / 100)}</bdi></ListCell></ListRow>
+                        </ListBody>
+                    </ListTable>
                     <p className="gl-rp-basis">{receipts.basis}</p>
                 </Panel>}
 
                 <div className="gl-rp-stack">
                     {branchSummary.length > 0 && <Panel icon="trend" title="المقبوضات حسب الفرع" note="والتحصيل من التحميلات">
-                        <table className="gl-rp-table">
-                            <thead><tr><th>الفرع</th><th className="num">المقبوضات</th><th>الحصة</th><th className="num">التحصيل</th></tr></thead>
-                            <tbody>
+                        <ListTable className="gl-rp-table" aria-label="المقبوضات حسب الفرع">
+                            <ListHeader><ListColumn id="branch" isRowHeader>الفرع</ListColumn><ListColumn id="collections" className="num">المقبوضات</ListColumn><ListColumn id="share">الحصة</ListColumn><ListColumn id="rate" className="num">التحصيل</ListColumn></ListHeader>
+                            <ListBody>
                                 {branches.map((row) => (
-                                    <tr key={row.id}>
-                                        <td><b>{row.name}</b></td>
-                                        <td className="num"><b><bdi dir="ltr">{reportMoney(row.collections.total)}</bdi></b></td>
-                                        <td><ShareBar value={share(row.collections.total, branchTotal)} /></td>
-                                        <td className="num" data-tone="pay">{cents(row.flow.chargesTotal) > 0 ? `${share(row.collections.total, row.flow.chargesTotal)}%` : '—'}</td>
-                                    </tr>
+                                    <ListRow key={row.id} id={row.id}>
+                                        <ListCell><b>{row.name}</b></ListCell>
+                                        <ListCell className="num"><b><bdi dir="ltr">{reportMoney(row.collections.total)}</bdi></b></ListCell>
+                                        <ListCell><ShareBar value={share(row.collections.total, branchTotal)} /></ListCell>
+                                        <ListCell className="num" data-tone="pay">{cents(row.flow.chargesTotal) > 0 ? `${share(row.collections.total, row.flow.chargesTotal)}%` : '—'}</ListCell>
+                                    </ListRow>
                                 ))}
-                                {quiet > 0 && <tr className="is-sub"><td>{quiet} {quiet === 1 ? 'فرع آخر' : 'فروع أخرى'} بلا حركة</td><td className="num">0</td><td /><td className="num">—</td></tr>}
-                            </tbody>
-                            <tfoot><tr><td>المجموع، {branchSummary.length} فروع</td><td className="num"><bdi dir="ltr">{reportMoney(branchTotal)}</bdi></td><td /><td className="num">{branchCharges > 0 ? `${share(branchTotal, branchCharges)}%` : '—'}</td></tr></tfoot>
-                        </table>
+                                {quiet > 0 && <ListRow id="quiet" className="is-sub"><ListCell>{quiet} {quiet === 1 ? 'فرع آخر' : 'فروع أخرى'} بلا حركة</ListCell><ListCell className="num">0</ListCell><ListCell /><ListCell className="num">—</ListCell></ListRow>}
+                                <ListRow id="totals" className="is-total"><ListCell>المجموع، {branchSummary.length} فروع</ListCell><ListCell className="num"><bdi dir="ltr">{reportMoney(branchTotal)}</bdi></ListCell><ListCell /><ListCell className="num">{branchCharges > 0 ? `${share(branchTotal, branchCharges)}%` : '—'}</ListCell></ListRow>
+                            </ListBody>
+                        </ListTable>
                     </Panel>}
                     {readings && <Panel icon="gauge" tone="warn" title="القراءات في الفترة">
                         <div className="gl-rp-trio">
@@ -177,24 +178,26 @@ export function CollectionsView({ collections, comparison, days = [], onOpenDay 
                     </ul>
                 </Panel>
                 <Panel icon="currency" tone="disc" title="حسب العملة" note="المبلغ الأصلي وما يعادله">
-                    <table className="gl-rp-table">
-                        <thead><tr><th>العملة</th><th className="num">الدفعات</th><th className="is-start">بالعملة</th><th className="num">سعر الصرف الفعلي</th><th className="num">بالشيكل</th></tr></thead>
-                        <tbody>{collections.currencies.map((row) => (
-                            <tr key={row.currency}><td><b>{row.label}</b></td><td className="num">{row.count}</td><td className="is-start"><bdi dir="ltr">{reportMoney(row.amount)} {row.currency}</bdi></td><td className="num">{row.currency === 'ILS' || cents(row.amount) === 0 ? '1' : (Number(row.total) / Number(row.amount)).toFixed(2)}</td><td className="num"><b><bdi dir="ltr">{reportMoney(row.total)}</bdi></b></td></tr>
-                        ))}</tbody>
-                        <tfoot><tr><td>المجموع</td><td className="num">{collections.count}</td><td /><td /><td className="num"><bdi dir="ltr">{reportMoney(collections.total)}</bdi></td></tr></tfoot>
-                    </table>
+                    <ListTable className="gl-rp-table" aria-label="المقبوضات حسب العملة">
+                        <ListHeader><ListColumn id="currency" isRowHeader>العملة</ListColumn><ListColumn id="count" className="num">الدفعات</ListColumn><ListColumn id="amount" className="is-start">بالعملة</ListColumn><ListColumn id="rate" className="num">سعر الصرف الفعلي</ListColumn><ListColumn id="total" className="num">بالشيكل</ListColumn></ListHeader>
+                        <ListBody>{collections.currencies.map((row) => (
+                            <ListRow key={row.currency} id={row.currency}><ListCell><b>{row.label}</b></ListCell><ListCell className="num">{row.count}</ListCell><ListCell className="is-start"><bdi dir="ltr">{reportMoney(row.amount)} {row.currency}</bdi></ListCell><ListCell className="num">{row.currency === 'ILS' || cents(row.amount) === 0 ? '1' : (Number(row.total) / Number(row.amount)).toFixed(2)}</ListCell><ListCell className="num"><b><bdi dir="ltr">{reportMoney(row.total)}</bdi></b></ListCell></ListRow>
+                        ))}
+                            <ListRow id="totals" className="is-total"><ListCell>المجموع</ListCell><ListCell className="num">{collections.count}</ListCell><ListCell /><ListCell /><ListCell className="num"><bdi dir="ltr">{reportMoney(collections.total)}</bdi></ListCell></ListRow>
+                        </ListBody>
+                    </ListTable>
                 </Panel>
             </div>
 
             <Panel icon="user" title="حسب المحصّل" note="من جمع كم، وكيف">
-                <div className="gl-rp-scroll"><table className="gl-rp-table">
-                    <thead><tr><th>المحصّل</th><th className="num">الدفعات</th><th className="num">نقدًا</th><th className="num">تحويلات</th><th className="num">المجموع</th><th>الحصة</th></tr></thead>
-                    <tbody>{collections.collectors.map((row) => (
-                        <tr key={row.name}><td><b>{row.name}</b></td><td className="num">{row.count}</td><td className="num"><bdi dir="ltr">{reportMoney(row.cash)}</bdi></td><td className="num"><bdi dir="ltr">{reportMoney(transfers(row))}</bdi></td><td className="num"><b><bdi dir="ltr">{reportMoney(row.total)}</bdi></b></td><td><ShareBar value={share(row.total, collections.total)} tone="brand" /> <small className="gl-rp-pct">{share(row.total, collections.total)}%</small></td></tr>
-                    ))}</tbody>
-                    <tfoot><tr><td>المجموع، {collections.collectors.length} {collections.collectors.length === 1 ? 'محصّل' : 'محصّلين'}</td><td className="num">{collections.count}</td><td className="num"><bdi dir="ltr">{reportMoney(collections.cash)}</bdi></td><td className="num"><bdi dir="ltr">{reportMoney(collections.nonCash)}</bdi></td><td className="num"><bdi dir="ltr">{reportMoney(collections.total)}</bdi></td><td /></tr></tfoot>
-                </table></div>
+                <div className="gl-rp-scroll"><ListTable className="gl-rp-table" aria-label="المقبوضات حسب المحصّل">
+                    <ListHeader><ListColumn id="collector" isRowHeader>المحصّل</ListColumn><ListColumn id="count" className="num">الدفعات</ListColumn><ListColumn id="cash" className="num">نقدًا</ListColumn><ListColumn id="transfers" className="num">تحويلات</ListColumn><ListColumn id="total" className="num">المجموع</ListColumn><ListColumn id="share">الحصة</ListColumn></ListHeader>
+                    <ListBody>{collections.collectors.map((row) => (
+                        <ListRow key={row.name} id={`collector:${row.name}`}><ListCell><b>{row.name}</b></ListCell><ListCell className="num">{row.count}</ListCell><ListCell className="num"><bdi dir="ltr">{reportMoney(row.cash)}</bdi></ListCell><ListCell className="num"><bdi dir="ltr">{reportMoney(transfers(row))}</bdi></ListCell><ListCell className="num"><b><bdi dir="ltr">{reportMoney(row.total)}</bdi></b></ListCell><ListCell><ShareBar value={share(row.total, collections.total)} tone="brand" /> <small className="gl-rp-pct">{share(row.total, collections.total)}%</small></ListCell></ListRow>
+                    ))}
+                        <ListRow id="totals" className="is-total"><ListCell>المجموع، {collections.collectors.length} {collections.collectors.length === 1 ? 'محصّل' : 'محصّلين'}</ListCell><ListCell className="num">{collections.count}</ListCell><ListCell className="num"><bdi dir="ltr">{reportMoney(collections.cash)}</bdi></ListCell><ListCell className="num"><bdi dir="ltr">{reportMoney(collections.nonCash)}</bdi></ListCell><ListCell className="num"><bdi dir="ltr">{reportMoney(collections.total)}</bdi></ListCell><ListCell /></ListRow>
+                    </ListBody>
+                </ListTable></div>
             </Panel>
 
             {days.length > 1 && <Panel icon="calendar" tone="pay" title="يومًا بيوم" aside={(
@@ -202,20 +205,21 @@ export function CollectionsView({ collections, comparison, days = [], onOpenDay 
                     <Switch.Content><Switch.Control><Switch.Thumb /></Switch.Control><Label>إخفاء الأيام بلا حركة</Label></Switch.Content>
                 </Switch>
             )}>
-                <div className="gl-rp-scroll"><table className="gl-rp-table">
-                    <thead><tr><th>اليوم</th><th className="num">التحميلات</th><th className="num">الدفعات</th><th className="num">الخصومات</th><th className="num">الإلغاءات</th><th className="num">الرصيد الختامي</th></tr></thead>
-                    <tbody>{shownDays.map((day) => (
-                        <tr key={day.day} data-empty={day.lines === 0 || undefined}>
-                            <td><Button data-raw="" variant="ghost" className="gl-rp-day" onClick={() => onOpenDay(day.day)}>{weekDayName(day.day)} {shortDate(day.day)}</Button></td>
-                            <td className="num" data-tone="owe"><bdi dir="ltr">{reportMoney(day.charges)}</bdi></td>
-                            <td className="num" data-tone="pay"><bdi dir="ltr">{reportMoney(day.payments)}</bdi></td>
-                            <td className="num"><bdi dir="ltr">{reportMoney(day.discounts)}</bdi></td>
-                            <td className="num"><bdi dir="ltr">{reportMoney(day.corrections)}</bdi></td>
-                            <td className="num"><b><bdi dir="ltr">{reportMoney(day.balance)}</bdi></b></td>
-                        </tr>
-                    ))}{shownDays.length === 0 && <tr><td colSpan={6} className="gl-rp-empty">لا حركة في أيام الفترة.</td></tr>}</tbody>
-                    <tfoot><tr><td>المجموع، {days.filter((day) => day.lines > 0).length} يوم بحركة من {days.length}</td><td className="num"><bdi dir="ltr">{reportMoney(totals.charges)}</bdi></td><td className="num"><bdi dir="ltr">{reportMoney(totals.payments)}</bdi></td><td className="num"><bdi dir="ltr">{reportMoney(totals.discounts)}</bdi></td><td className="num"><bdi dir="ltr">{reportMoney(totals.corrections)}</bdi></td><td className="num"><bdi dir="ltr">{reportMoney(days.at(-1)?.balance ?? 0)}</bdi></td></tr></tfoot>
-                </table></div>
+                <div className="gl-rp-scroll"><ListTable className="gl-rp-table" aria-label="المقبوضات يومًا بيوم">
+                    <ListHeader><ListColumn id="day" isRowHeader>اليوم</ListColumn><ListColumn id="charges" className="num">التحميلات</ListColumn><ListColumn id="payments" className="num">الدفعات</ListColumn><ListColumn id="discounts" className="num">الخصومات</ListColumn><ListColumn id="corrections" className="num">الإلغاءات</ListColumn><ListColumn id="balance" className="num">الرصيد الختامي</ListColumn></ListHeader>
+                    <ListBody>{shownDays.map((day) => (
+                        <ListRow key={day.day} id={day.day} data-empty={day.lines === 0 || undefined}>
+                            <ListCell><Button data-raw="" variant="ghost" className="gl-rp-day" onClick={() => onOpenDay(day.day)}>{weekDayName(day.day)} {shortDate(day.day)}</Button></ListCell>
+                            <ListCell className="num" data-tone="owe"><bdi dir="ltr">{reportMoney(day.charges)}</bdi></ListCell>
+                            <ListCell className="num" data-tone="pay"><bdi dir="ltr">{reportMoney(day.payments)}</bdi></ListCell>
+                            <ListCell className="num"><bdi dir="ltr">{reportMoney(day.discounts)}</bdi></ListCell>
+                            <ListCell className="num"><bdi dir="ltr">{reportMoney(day.corrections)}</bdi></ListCell>
+                            <ListCell className="num"><b><bdi dir="ltr">{reportMoney(day.balance)}</bdi></b></ListCell>
+                        </ListRow>
+                    ))}{shownDays.length === 0 && <BandRow id="empty" columns={6} className="" cellClassName="gl-rp-empty">لا حركة في أيام الفترة.</BandRow>}
+                        <ListRow id="totals" className="is-total"><ListCell>المجموع، {days.filter((day) => day.lines > 0).length} يوم بحركة من {days.length}</ListCell><ListCell className="num"><bdi dir="ltr">{reportMoney(totals.charges)}</bdi></ListCell><ListCell className="num"><bdi dir="ltr">{reportMoney(totals.payments)}</bdi></ListCell><ListCell className="num"><bdi dir="ltr">{reportMoney(totals.discounts)}</bdi></ListCell><ListCell className="num"><bdi dir="ltr">{reportMoney(totals.corrections)}</bdi></ListCell><ListCell className="num"><bdi dir="ltr">{reportMoney(days.at(-1)?.balance ?? 0)}</bdi></ListCell></ListRow>
+                    </ListBody>
+                </ListTable></div>
             </Panel>}
         </>
     );
@@ -241,15 +245,16 @@ export function BoxesFigures({ data }) {
                 ))}
             </div>
             {data.byType && <Panel icon="table" tone="clr" title="الأموال حسب نوع الصندوق ومرحلته" note="بالشيكل، الصفوف أنواع والأعمدة مراحل">
-                <div className="gl-rp-scroll"><table className="gl-rp-table is-pivot">
-                    <thead><tr><th>النوع</th>{data.byType[0].stages.map((stage, index) => <th key={stage.status}>{['مفتوح', 'مغلق، لم يُستلم', 'مستلم'][index]}</th>)}<th>المجموع</th></tr></thead>
-                    <tbody>{data.byType.map((row) => (
-                        <tr key={row.type}><td><b>{row.label}</b></td>{row.stages.map((stage, index) => (
-                            <td key={stage.status} data-tone={cents(stage.amount) > 0 ? STAGE_TONES[index] : undefined}><b><bdi dir="ltr">{reportMoney(stage.amount)}</bdi></b><small>{stage.boxes} صندوق</small></td>
-                        ))}<td><b><bdi dir="ltr">{reportMoney(typeTotal(row))}</bdi></b></td></tr>
-                    ))}</tbody>
-                    <tfoot><tr><td>المجموع</td>{data.byType[0].stages.map((stage, index) => <td key={stage.status}><bdi dir="ltr">{reportMoney(data.byType.reduce((sum, row) => sum + cents(row.stages[index].amount), 0) / 100)}</bdi></td>)}<td><bdi dir="ltr">{reportMoney(data.byType.reduce((sum, row) => sum + cents(typeTotal(row)), 0) / 100)}</bdi></td></tr></tfoot>
-                </table></div>
+                <div className="gl-rp-scroll"><ListTable className="gl-rp-table is-pivot" aria-label="الأموال حسب نوع الصندوق ومرحلته">
+                    <ListHeader><ListColumn id="type" isRowHeader>النوع</ListColumn>{data.byType[0].stages.map((stage, index) => <ListColumn key={stage.status} id={`stage:${stage.status}`}>{['مفتوح', 'مغلق، لم يُستلم', 'مستلم'][index]}</ListColumn>)}<ListColumn id="total">المجموع</ListColumn></ListHeader>
+                    <ListBody>{data.byType.map((row) => (
+                        <ListRow key={row.type} id={`type:${row.type}`}><ListCell><b>{row.label}</b></ListCell>{row.stages.map((stage, index) => (
+                            <ListCell key={stage.status} data-tone={cents(stage.amount) > 0 ? STAGE_TONES[index] : undefined}><b><bdi dir="ltr">{reportMoney(stage.amount)}</bdi></b><small>{stage.boxes} صندوق</small></ListCell>
+                        ))}<ListCell><b><bdi dir="ltr">{reportMoney(typeTotal(row))}</bdi></b></ListCell></ListRow>
+                    ))}
+                        <ListRow id="totals" className="is-total"><ListCell>المجموع</ListCell>{data.byType[0].stages.map((stage, index) => <ListCell key={stage.status}><bdi dir="ltr">{reportMoney(data.byType.reduce((sum, row) => sum + cents(row.stages[index].amount), 0) / 100)}</bdi></ListCell>)}<ListCell><bdi dir="ltr">{reportMoney(data.byType.reduce((sum, row) => sum + cents(typeTotal(row)), 0) / 100)}</bdi></ListCell></ListRow>
+                    </ListBody>
+                </ListTable></div>
             </Panel>}
         </>
     );

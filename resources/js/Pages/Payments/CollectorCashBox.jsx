@@ -13,7 +13,7 @@ import { periodLabel, periodRange } from '@/lib/closingPeriods';
 import { boxStatus, entryStatus } from '@/lib/financialBoxes';
 import { printUrl } from '@/lib/print';
 import { ledgerColumns, ledgerOf, ledgerTableClass, BoxNumberCell, LedgerLeadCells, LedgerTrailCells } from './LedgerColumns';
-import { PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
+import { ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
 
 export const currencies = { ILS: 'شيكل', USD: 'دولار', JOD: 'دينار' };
 export const boxTypes = { cash: 'الصندوق النقدي', bank_transfer: 'صندوق الحوالات البنكية', clearing: 'صندوق المقاصات' };
@@ -100,29 +100,29 @@ export function CountSummary({ box }) {
 
     return (
         <div className="mt-4 overflow-x-auto rounded-control border border-gray-100">
-            <table className="w-full text-start text-xs">
-                <thead className="bg-gray-50 text-gray-500">
-                    <tr>{['العملة', 'المتوقع', 'عدّ الفرع', 'الفرق', 'القرار'].map((label) => <th key={label} className="whitespace-nowrap p-3 text-start">{label}</th>)}</tr>
-                </thead>
-                <tbody>
+            <ListTable aria-label="عدّ الصندوق" className="w-full text-start text-xs">
+                <ListHeader className="bg-gray-50 text-gray-500">
+                    {['العملة', 'المتوقع', 'عدّ الفرع', 'الفرق', 'القرار'].map((label, index) => <ListColumn key={label} id={label} isRowHeader={index === 0} className="whitespace-nowrap p-3 text-start">{label}</ListColumn>)}
+                </ListHeader>
+                <ListBody>
                     {shownCurrencies(box).map((currency) => {
                         const difference = Number(box.differences?.[currency] ?? 0);
                         const decision = difference !== 0 ? decisionLabels[box.decisions?.[currency]] : null;
 
                         return (
-                            <tr key={currency} className="border-t border-gray-100 text-gray-700">
-                                <td className="p-3">{currencies[currency]}</td>
-                                <td dir="ltr" className="p-3 text-start font-display">{formatMoney(box.expectedCounts?.[currency] ?? 0)}</td>
-                                <td dir="ltr" className="p-3 text-start font-display">{formatMoney(box.receivedCounts[currency] ?? 0)}</td>
-                                <td className={`p-3 font-semibold ${difference < 0 ? 'text-red-600' : difference > 0 ? 'text-emerald-600' : 'text-gray-400'}`}>
+                            <ListRow key={currency} id={currency} className="border-t border-gray-100 text-gray-700">
+                                <ListCell className="p-3">{currencies[currency]}</ListCell>
+                                <ListCell dir="ltr" className="p-3 text-start font-display">{formatMoney(box.expectedCounts?.[currency] ?? 0)}</ListCell>
+                                <ListCell dir="ltr" className="p-3 text-start font-display">{formatMoney(box.receivedCounts[currency] ?? 0)}</ListCell>
+                                <ListCell className={`p-3 font-semibold ${difference < 0 ? 'text-red-600' : difference > 0 ? 'text-emerald-600' : 'text-gray-400'}`}>
                                     {difference === 0 ? 'مطابق' : <>{difference < 0 ? 'عجز' : 'زيادة'} <bdi dir="ltr" className="font-display">{formatMoney(Math.abs(difference))}</bdi></>}
-                                </td>
-                                <td className="p-3">{decision ? <StatusPill tone={decision[1]} label={decision[0]} /> : '—'}</td>
-                            </tr>
+                                </ListCell>
+                                <ListCell className="p-3">{decision ? <StatusPill tone={decision[1]} label={decision[0]} /> : '—'}</ListCell>
+                            </ListRow>
                         );
                     })}
-                </tbody>
-            </table>
+                </ListBody>
+            </ListTable>
         </div>
     );
 }

@@ -1,11 +1,11 @@
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import Icon from '@/Components/Icon';
-import { useRowClick } from '@/hooks/useRowClick';
 import { formatMoney } from '@/lib/format';
 import { activeBoxEntries, boxReconciliation, financialBoxTotals, isFlaggedEntry } from '@/lib/financialBoxes';
 import { Button, Chip } from '@heroui/react';
 import { BoxStage, boxTypeStyles, currencies } from './CollectorCashBox';
 import { BoxPerson, FinancialBoxButton, FinancialBoxDates, FinancialBoxEntries, FinancialBoxMark, FinancialBoxTimes, financialAmountsLine } from './FinancialBoxComponents';
+import { ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable } from '@/Components/UI';
 import './financial-boxes.css';
 
 
@@ -73,7 +73,6 @@ function BoxTotal({ box }) {
  * closed and audited, and by whom. The whole row opens the box.
  */
 export default function FinancialBoxList({ boxes, onOpen, periodFor, sortState, onSort, collector = false, renderActions }) {
-    const rowClick = useRowClick();
     const [opened, setOpened] = useState(() => new Set());
 
     function toggle(boxId) {
@@ -106,103 +105,98 @@ export default function FinancialBoxList({ boxes, onOpen, periodFor, sortState, 
 
     return (
         <div className="gl-cb-scroll">
-            <table className="gl-cb-table">
-                <caption className="sr-only">الصناديق المالية</caption>
-                <thead>
-                    <tr>
-                        <th className="gl-cb-x"><span className="sr-only">تفاصيل</span></th>
-                        <th>{heading('number', 'الصندوق')}</th>
-                        <th>{collector ? 'أغلقه / المستلم' : 'الموظف'}</th>
-                        {collector ? <>
-                            <th>الحركات</th>
-                            <th className="gl-cb-cash">{heading('total', 'الإجمالي')}</th>
-                            <th>{heading('status', 'الحالة')}</th>
-                        </> : <>
-                            <th>{heading('status', 'المرحلة')}</th>
-                            <th className="gl-cb-cash">{heading('total', 'المتوقع')}</th>
-                            <th className="gl-cb-cash">المؤكَّد</th>
-                            <th className="gl-cb-cash">الفرق</th>
-                        </>}
-                        <th className="gl-cb-act"><span className="sr-only">الإجراءات</span></th>
-                    </tr>
-                </thead>
-                <tbody>
+            <ListTable className="gl-cb-table" aria-label="الصناديق المالية">
+                <ListHeader>
+                    <ListColumn id="details" className="gl-cb-x"><span className="sr-only">تفاصيل</span></ListColumn>
+                    <ListColumn id="number" isRowHeader>{heading('number', 'الصندوق')}</ListColumn>
+                    <ListColumn id="person">{collector ? 'أغلقه / المستلم' : 'الموظف'}</ListColumn>
+                    {collector ? <>
+                        <ListColumn id="entries">الحركات</ListColumn>
+                        <ListColumn id="total" className="gl-cb-cash">{heading('total', 'الإجمالي')}</ListColumn>
+                        <ListColumn id="status">{heading('status', 'الحالة')}</ListColumn>
+                    </> : <>
+                        <ListColumn id="status">{heading('status', 'المرحلة')}</ListColumn>
+                        <ListColumn id="total" className="gl-cb-cash">{heading('total', 'المتوقع')}</ListColumn>
+                        <ListColumn id="confirmed" className="gl-cb-cash">المؤكَّد</ListColumn>
+                        <ListColumn id="difference" className="gl-cb-cash">الفرق</ListColumn>
+                    </>}
+                    <ListColumn id="actions" className="gl-cb-act"><span className="sr-only">الإجراءات</span></ListColumn>
+                </ListHeader>
+                <ListBody>
                     {boxes.map((box) => {
                         const open = opened.has(box.id);
                         const period = periodFor ? periodFor(box) : null;
                         const reconciliation = collector ? null : boxReconciliation(box);
 
-                        return (
-                            <Fragment key={box.id}>
-                                <tr className={open ? 'is-open' : undefined} {...rowClick(() => onOpen(box))}>
-                                    <td className="gl-cb-x">
-                                        <Button data-raw="" variant="ghost" className="gl-st-exp" aria-expanded={open} aria-label={`تفاصيل صندوق ${box.number}`} onClick={() => toggle(box.id)}>
-                                            <Icon name="chevron-down" className="h-4 w-4" />
-                                        </Button>
-                                    </td>
-                                    <td>
-                                        <span className="gl-cb-box">
-                                            <FinancialBoxMark box={box} />
-                                            <span className="min-w-0">
-                                                <Button data-raw="" variant="ghost" className="gl-cb-no" onClick={() => onOpen(box)} aria-label={`عرض صندوق ${box.number}`}>
-                                                    <bdi dir="ltr">{box.number}</bdi>
-                                                </Button>
-                                                <small>{boxTypeStyles[box.type].label}{period && period !== '—' ? `، ${period}` : ''}</small>
-                                            </span>
+                        return [
+                            <ListRow key={box.id} id={box.id} className={open ? 'is-open' : undefined} onOpen={() => onOpen(box)}>
+                                <ListCell className="gl-cb-x">
+                                    <Button data-raw="" variant="ghost" className="gl-st-exp" aria-expanded={open} aria-label={`تفاصيل صندوق ${box.number}`} onClick={() => toggle(box.id)}>
+                                        <Icon name="chevron-down" className="h-4 w-4" />
+                                    </Button>
+                                </ListCell>
+                                <ListCell>
+                                    <span className="gl-cb-box">
+                                        <FinancialBoxMark box={box} />
+                                        <span className="min-w-0">
+                                            <Button data-raw="" variant="ghost" className="gl-cb-no" onClick={() => onOpen(box)} aria-label={`عرض صندوق ${box.number}`}>
+                                                <bdi dir="ltr">{box.number}</bdi>
+                                            </Button>
+                                            <small>{boxTypeStyles[box.type].label}{period && period !== '—' ? `، ${period}` : ''}</small>
                                         </span>
-                                    </td>
-                                    <td>
-                                        {collector ? (
-                                            <BoxPerson name={box.closedBy} note={box.receivedAt ? `المستلم: ${financialAmountsLine(box.receivedAmounts ?? {})}` : null} />
-                                        ) : (
-                                            <BoxPerson name={box.user?.name} suffix={box.isOwn ? '(أنت)' : null} note={box.branchName} />
+                                    </span>
+                                </ListCell>
+                                <ListCell>
+                                    {collector ? (
+                                        <BoxPerson name={box.closedBy} note={box.receivedAt ? `المستلم: ${financialAmountsLine(box.receivedAmounts ?? {})}` : null} />
+                                    ) : (
+                                        <BoxPerson name={box.user?.name} suffix={box.isOwn ? '(أنت)' : null} note={box.branchName} />
+                                    )}
+                                </ListCell>
+                                {collector ? <>
+                                    <ListCell className="gl-cb-n"><EntriesCount box={box} /></ListCell>
+                                    <ListCell className="gl-cb-cash"><BoxTotal box={box} /></ListCell>
+                                    <ListCell><BoxStage box={box} /></ListCell>
+                                </> : <>
+                                    <ListCell><BoxSteps reconciliation={reconciliation} /></ListCell>
+                                    <ListCell className="gl-cb-cash"><BoxTotal box={box} /><small className="gl-rc-count"><EntriesCount box={box} /></small></ListCell>
+                                    <ListCell className="gl-cb-cash">
+                                        <Shekels value={reconciliation.confirmed} />
+                                        {reconciliation.toReview > 0 && box.type !== 'cash' && (
+                                            <Chip size="sm" variant="soft" className="gl-rc-chip" data-tone={reconciliation.reviewed === reconciliation.toReview ? 'pay' : 'warn'}>
+                                                طوبق {reconciliation.reviewed} من {reconciliation.toReview}
+                                            </Chip>
                                         )}
-                                    </td>
-                                    {collector ? <>
-                                        <td className="gl-cb-n"><EntriesCount box={box} /></td>
-                                        <td className="gl-cb-cash"><BoxTotal box={box} /></td>
-                                        <td><BoxStage box={box} /></td>
-                                    </> : <>
-                                        <td><BoxSteps reconciliation={reconciliation} /></td>
-                                        <td className="gl-cb-cash"><BoxTotal box={box} /><small className="gl-rc-count"><EntriesCount box={box} /></small></td>
-                                        <td className="gl-cb-cash">
-                                            <Shekels value={reconciliation.confirmed} />
-                                            {reconciliation.toReview > 0 && box.type !== 'cash' && (
-                                                <Chip size="sm" variant="soft" className="gl-rc-chip" data-tone={reconciliation.reviewed === reconciliation.toReview ? 'pay' : 'warn'}>
-                                                    طوبق {reconciliation.reviewed} من {reconciliation.toReview}
-                                                </Chip>
-                                            )}
-                                        </td>
-                                        <td className="gl-cb-cash"><Shekels value={reconciliation.difference} tone={reconciliation.problem ? (reconciliation.difference < 0 ? 'owe' : 'warn') : 'pay'} /></td>
-                                    </>}
-                                    <td className="gl-cb-act">{renderActions ? renderActions(box) : <FinancialBoxButton box={box} onOpen={onOpen} />}</td>
-                                </tr>
-                                {open && (
-                                    <tr className="gl-st-detail gl-cb-detail">
-                                        <td />
-                                        <td colSpan={collector ? 6 : 7}>
-                                            <dl>
-                                                <div>
-                                                    <dt>{collector ? 'فُتح ← أُغلق' : 'الأوقات'}</dt>
-                                                    <dd>{collector ? <FinancialBoxDates box={box} /> : <FinancialBoxTimes box={box} />}</dd>
-                                                </div>
-                                                <div>
-                                                    <dt>الحركات</dt>
-                                                    <dd><FinancialBoxEntries box={box} /></dd>
-                                                </div>
-                                                <div>
-                                                    <dt>الإجمالي بكل العملات</dt>
-                                                    <dd>{financialAmountsLine(financialBoxTotals(box))}</dd>
-                                                </div>
-                                            </dl>
-                                        </td>
-                                    </tr>
-                                )}
-                            </Fragment>
-                        );
+                                    </ListCell>
+                                    <ListCell className="gl-cb-cash"><Shekels value={reconciliation.difference} tone={reconciliation.problem ? (reconciliation.difference < 0 ? 'owe' : 'warn') : 'pay'} /></ListCell>
+                                </>}
+                                <ListCell className="gl-cb-act">{renderActions ? renderActions(box) : <FinancialBoxButton box={box} onOpen={onOpen} />}</ListCell>
+                            </ListRow>,
+                            open && (
+                                <ListRow key={`${box.id}:detail`} id={`${box.id}:detail`} className="gl-st-detail gl-cb-detail">
+                                    <ListCell />
+                                    <ListCell colSpan={collector ? 6 : 7}>
+                                        <dl>
+                                            <div>
+                                                <dt>{collector ? 'فُتح ← أُغلق' : 'الأوقات'}</dt>
+                                                <dd>{collector ? <FinancialBoxDates box={box} /> : <FinancialBoxTimes box={box} />}</dd>
+                                            </div>
+                                            <div>
+                                                <dt>الحركات</dt>
+                                                <dd><FinancialBoxEntries box={box} /></dd>
+                                            </div>
+                                            <div>
+                                                <dt>الإجمالي بكل العملات</dt>
+                                                <dd>{financialAmountsLine(financialBoxTotals(box))}</dd>
+                                            </div>
+                                        </dl>
+                                    </ListCell>
+                                </ListRow>
+                            ),
+                        ];
                     })}
-                </tbody>
-            </table>
+                </ListBody>
+            </ListTable>
         </div>
     );
 }
