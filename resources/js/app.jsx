@@ -3,6 +3,7 @@ import { createInertiaApp, router } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import FlashNotifications from '@/Components/Layout/FlashNotifications';
 import NavigationProgress from '@/Components/Layout/NavigationProgress';
+import AppShell from '@/Layouts/AppShell';
 import { notify } from '@/lib/notify';
 
 // Pages load ahead of time when a link is hovered. A save can change any
@@ -27,6 +28,8 @@ createInertiaApp({
         const pages = import.meta.glob(['./Pages/**/*.jsx', '!./Pages/**/*Modal.jsx', '!./Pages/**/*Form.jsx']);
         return pages[`./Pages/${name}.jsx`]();
     },
+    // Every page sits in the shell, which stays from one page to the next (Layouts/AppShell.jsx).
+    layout: () => AppShell,
     setup({ el, App, props }) {
         createRoot(el).render(
             <>
