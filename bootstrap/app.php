@@ -30,9 +30,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'mobile.auth' => AuthenticateMobileToken::class,
             'mobile.supported' => EnsureSupportedMobileApp::class,
         ]);
-        // The field app has its own sign-in and home (routes/field.php).
-        $middleware->redirectGuestsTo(fn (Request $request): string => $request->is('field', 'field/*') ? route('field.login') : route('login'));
-        $middleware->redirectUsersTo(fn (Request $request): string => $request->is('field', 'field/*') ? route('field.home') : route('dashboard'));
         // Every response, the API's and the error pages' too, carries the security headers.
         $middleware->append(SecurityHeaders::class);
         $middleware->prepend(ResolveBranchDomain::class);

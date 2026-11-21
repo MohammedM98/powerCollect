@@ -257,7 +257,6 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
-require __DIR__.'/field.php';
 
 // An address that matches nothing (outside the mobile API) is still answered inside the web group, so a signed-in
 // user's 404 page knows who they are. Any method is caught, so a real address asked with a wrong one stays a 405.
