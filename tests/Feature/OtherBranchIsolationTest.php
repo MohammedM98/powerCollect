@@ -105,7 +105,7 @@ class OtherBranchIsolationTest extends TestCase
                 'captured_at' => now(), 'received_at' => now(), 'status' => ReadingSubmissionStatus::NeedsReview, 'issue' => 'below_previous',
             ]);
 
-            return [[$held], $held, ['decision' => 'approve']];
+            return [[$held], $held, ['decision' => 'reject']];
         };
         $box = fn (Branch $branch): array => [[$record = MeterBox::factory()->create(['branch_id' => $branch->id])], $record];
         $list = fn (Branch $branch): array => [[$record = DisconnectionList::factory()->create(['branch_id' => $branch->id])], $record];

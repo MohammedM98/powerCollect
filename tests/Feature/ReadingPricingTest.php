@@ -130,7 +130,6 @@ class ReadingPricingTest extends TestCase
         $this->put(route('meter-readings.pricing', $reading), ['unit_price' => 3])->assertRedirect(route('login'));
     }
 
-    /** @return array{User, Subscription, MeterReading} */
     public function test_repricing_an_approved_reading_reopens_it_and_tells_the_branchs_other_approvers(): void
     {
         Notification::fake();
@@ -150,6 +149,7 @@ class ReadingPricingTest extends TestCase
         Notification::assertNotSentTo([$actor, $otherBranchApprover], ReadingNeedsReapproval::class);
     }
 
+    /** @return array{User, Subscription, MeterReading} */
     private function context(PermissionKey $permission): array
     {
         $actor = User::factory()->dataEntry()->create();

@@ -4,7 +4,7 @@
  * recorded in `submissions` (method, url, the data after transform(), and
  * the visit options) instead of going to a server.
  */
-import { useRef, useState } from 'react';
+import { act, useRef, useState } from 'react';
 
 export const submissions = [];
 let page = { props: {}, url: '/' };
@@ -27,18 +27,25 @@ export function rejectNext(errors) {
     rejection = errors;
 }
 
-/** Answer a recorded visit: nothing unless a refusal is queued, which it then spends. */
+/**
+ * Answer a recorded visit. An accepted one clears the page's errors, as a
+ * real response replaces them. A queued refusal is spent, and its callbacks
+ * run after the caller's own code, as a real response arrives later.
+ */
 function settle(options, setErrors = null) {
     if (!rejection) {
+        page = { ...page, props: { ...page.props, errors: {} } };
         return;
     }
     const errors = rejection;
     rejection = null;
-    page = { ...page, props: { ...page.props, errors } };
-    options.onStart?.();
-    setErrors?.(errors);
-    options.onError?.(errors);
-    options.onFinish?.();
+    queueMicrotask(() => act(() => {
+        page = { ...page, props: { ...page.props, errors } };
+        options.onStart?.();
+        setErrors?.(errors);
+        options.onError?.(errors);
+        options.onFinish?.();
+    }));
 }
 
 /** Answer useHttp requests whose URL starts with `prefix` with `body`. */

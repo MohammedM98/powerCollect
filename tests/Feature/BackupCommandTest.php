@@ -122,7 +122,7 @@ class BackupCommandTest extends TestCase
             if (DB::connection()->getDriverName() !== 'sqlite') {
                 // Importing the dump needs a MySQL client; the dump must at least carry every line.
                 foreach (['120.50', '-70.25', '-15.00'] as $amount) {
-                    $this->assertStringContainsString("'{$amount}'", $database);
+                    $this->assertMatchesRegularExpression('/[(,]'.preg_quote($amount, '/').'[,)]/', $database);
                 }
 
                 return;
@@ -142,9 +142,12 @@ class BackupCommandTest extends TestCase
             }
             $this->assertSame('50.25', $owing->balance());
             $this->assertSame('-15.00', $inCredit->balance());
-            File::delete($copy);
         } finally {
-            // No transaction rolls these rows back, so the next test migrates afresh.
+            $restored = null;
+            if (isset($copy)) {
+                File::delete($copy);
+            }
+            // No transaction rolls these rows back; on MySQL the next test must migrate afresh (SQLite in memory always does).
             RefreshDatabaseState::$migrated = false;
         }
     }
