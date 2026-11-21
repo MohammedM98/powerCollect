@@ -349,6 +349,19 @@ class BranchReportTest extends TestCase
         ]))->assertInertia(fn ($page) => $page->where('period.mode', 'monthly'));
     }
 
+    public function test_a_branch_report_weeks_start_on_the_branchs_own_day_like_its_cash_boxes(): void
+    {
+        ClosingSetting::startFor($this->north)->update(['week_starts_on' => 1]);
+        $this->actingAs($this->preparer());
+
+        $response = $this->get(route('reports.index', ['from' => '2026-09-28', 'to' => '2026-10-01', 'view' => 'weekly']));
+
+        $response->assertInertia(fn ($page) => $page
+            ->where('period.mode', 'weekly')
+            ->where('period.previous', ['from' => '2026-09-21', 'to' => '2026-09-27'])
+            ->where('presets.2', ['key' => 'week', 'label' => __('This week'), 'from' => '2026-09-28', 'to' => '2026-10-01']));
+    }
+
     private function preparer(): User
     {
         $user = User::factory()->accountant()->create(['branch_id' => $this->north->id]);

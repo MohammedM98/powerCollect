@@ -26,4 +26,20 @@ class MovedSubscriptionReadingTest extends TestCase
 
         $this->assertSame(1500.0, $previous);
     }
+
+    public function test_a_moved_subscription_shows_its_last_reading_from_the_old_branch(): void
+    {
+        $oldBranch = Branch::factory()->create();
+        $newBranch = Branch::factory()->create();
+        $subscription = Subscription::factory()->for($oldBranch)->create(['initial_reading' => 1000]);
+        MeterReading::factory()->approved()->for($subscription)->create(['week_start' => '2026-10-03', 'previous_reading' => 1000, 'current_reading' => 1500]);
+        $subscription->update(['branch_id' => $newBranch->id]);
+        request()->attributes->add(['domain_branch' => $newBranch, 'branch_domain_authorized' => true]);
+
+        $lazy = $subscription->fresh()->latestMeterReading;
+        $eager = Subscription::query()->with('latestMeterReading')->findOrFail($subscription->id)->latestMeterReading;
+
+        $this->assertSame(1500.0, (float) $lazy?->current_reading);
+        $this->assertSame(1500.0, (float) $eager?->current_reading);
+    }
 }
