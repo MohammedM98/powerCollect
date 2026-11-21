@@ -10,6 +10,7 @@
         "test:reports": "node tests/Browser/run.mjs --reports",
         "test:print": "node tests/Browser/run.mjs --print",
         "test:readings": "node tests/Browser/run.mjs --readings",
+        "test:a11y": "node tests/Browser/run.mjs --a11y",
         "check:release": "npm run check -- --apk && npm run test:browser && npm run test:reports && npm run test:print && npm run test:readings",
         "check": "node .claude/automation/check.mjs --full",
         "check:changed": "node .claude/automation/check.mjs --changed",
@@ -21,6 +22,7 @@
         "test:components": "vitest run"
     },
     "devDependencies": {
+        "@axe-core/playwright": "^4.14.0",
         "@eslint/js": "^9.39.5",
         "@tailwindcss/forms": "^0.5.2",
         "@tailwindcss/postcss": "^4.3.5",
