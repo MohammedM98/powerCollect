@@ -160,8 +160,8 @@ export default function FormModal({
                     ) : (
                         <>
                             <DialogHeader titleId={`${id}-title`} title={title} description={description} icon={icon} tone={headerTone} onClose={requestClose} />
-                            <div ref={bodyRef} className={`min-h-0 flex-1 space-y-5 overflow-y-auto px-5 pb-2 pt-4 sm:px-6 ${bodyClassName}`}>{children}</div>
-                            <div className="gl-dialog-foot flex shrink-0 flex-wrap items-center gap-3 px-5 sm:px-6">
+                            <div ref={bodyRef} className={`min-h-0 flex-1 space-y-6 overflow-y-auto px-4 pb-2 pt-4 sm:px-6 ${bodyClassName}`}>{children}</div>
+                            <div className="gl-dialog-foot flex shrink-0 flex-wrap items-center gap-3 px-4 sm:px-6">
                                 <span className="gl-sheet-keys"><span className="kbd" dir="ltr">Esc</span> إغلاق</span>
                                 <span className="flex-1" />
                                 {form.isEdit && form.isDirty && <span className="gl-unsaved" role="status">تغييرات غير محفوظة</span>}

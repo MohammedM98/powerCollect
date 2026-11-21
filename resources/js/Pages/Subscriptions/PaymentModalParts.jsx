@@ -38,12 +38,12 @@ export function PaymentReceipt({ receipt, subscriptionName, title, onAnother, on
     ];
 
     return (
-        <div className="px-6 pb-8 pt-10 text-center sm:px-8">
-            <span className="gl-tone mx-auto mb-3.5 flex h-[76px] w-[76px] items-center justify-center rounded-3xl" style={{ '--gl-c': 'var(--gl-ok)' }}>
+        <div className="px-6 pb-8 pt-8 text-center sm:px-8">
+            <span className="gl-tone mx-auto mb-3 flex h-[76px] w-[76px] items-center justify-center rounded-3xl" style={{ '--gl-c': 'var(--gl-ok)' }}>
                 <Icon name="check" className="h-10 w-10" strokeWidth={2.2} />
             </span>
             <h3 className="text-[24px] font-extrabold font-(family-name:--gl-head)!">{title}</h3>
-            <p className="gl-sub mt-1.5 text-sm!">
+            <p className="gl-sub mt-2 text-sm!">
                 {formatMoney(receipt.currency === 'ILS' ? receipt.amount : receipt.inShekels)} شيكل من {subscriptionName}، الرصيد الجديد {balanceText(after)}
             </p>
             <dl className="gl-receipt gl-receipt-cut mx-auto mt-6 w-full max-w-[420px] text-start">
@@ -54,24 +54,24 @@ export function PaymentReceipt({ receipt, subscriptionName, title, onAnother, on
                     </div>
                 ))}
             </dl>
-            <div className="mt-6 flex flex-wrap justify-center gap-2.5">
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
                 {receipt.receiptUrl && (
                     <SecondaryKey
                         onClick={() => window.open(receipt.receiptUrl, '_blank')}
                         title="يُفتح سند القبض في نافذة جديدة جاهزًا للطباعة"
-                        className="tone-print h-12 rounded-[14px] px-5 text-[15.5px]"
+                        className="tone-print h-12 rounded-[14px] px-4 text-[15.5px]"
                     >
                         <Icon name="printer" className="h-[18px] w-[18px]" />
                         طباعة السند
                     </SecondaryKey>
                 )}
                 {onAnother && (
-                    <SecondaryKey onClick={onAnother} className="h-12 rounded-[14px] px-5 text-[15.5px]">
+                    <SecondaryKey onClick={onAnother} className="h-12 rounded-[14px] px-4 text-[15.5px]">
                         <Icon name="plus" className="h-[18px] w-[18px]" strokeWidth={2} />
                         دفعة جديدة
                     </SecondaryKey>
                 )}
-                <PrimaryKey type="button" onClick={onDone} autoFocus className="h-12 min-w-28 rounded-[14px] px-5 text-[15.5px]">
+                <PrimaryKey type="button" onClick={onDone} autoFocus className="h-12 min-w-28 rounded-[14px] px-4 text-[15.5px]">
                     تم
                 </PrimaryKey>
             </div>
@@ -110,7 +110,7 @@ export function TransferFields({ data, setData, errors, transferBanks, senderBan
 
             <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                    <div className="mb-2 flex items-center justify-between gap-2.5">
+                    <div className="mb-2 flex items-center justify-between gap-3">
                         <label htmlFor="sender_name" className="text-[14.5px] font-semibold text-gray-700">
                             اسم المحوِّل <span className="text-brand-600">*</span>
                         </label>
@@ -160,7 +160,7 @@ export function TransferFields({ data, setData, errors, transferBanks, senderBan
                                     {referenceStatus.conflict.subscriptionName}
                                 </a>
                             </p>
-                            <label className="mt-1.5 flex items-center gap-2">
+                            <label className="mt-2 flex items-center gap-2">
                                 <CheckBox
                                     checked={Boolean(data.confirm_duplicate_reference)}
                                     onChange={(e) => setData('confirm_duplicate_reference', e.target.checked)}

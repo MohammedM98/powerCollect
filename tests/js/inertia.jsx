@@ -10,11 +10,13 @@ export const submissions = [];
 let page = { props: {}, url: '/' };
 const responses = [];
 let rejection = null;
+let success = null;
 
 export function resetInertia() {
     submissions.length = 0;
     responses.length = 0;
     rejection = null;
+    success = null;
     page = { props: {}, url: '/' };
 }
 
@@ -28,6 +30,14 @@ export function rejectNext(errors) {
 }
 
 /**
+ * Accept the next visit as the server would and run its onSuccess with a page
+ * carrying `flash`, then its onFinish. Other accepted visits run no callbacks.
+ */
+export function succeedNext(flash = {}) {
+    success = { flash };
+}
+
+/**
  * Answer a recorded visit. An accepted one clears the page's errors, as a
  * real response replaces them. A queued refusal is spent, and its callbacks
  * run after the caller's own code, as a real response arrives later.
@@ -35,6 +45,14 @@ export function rejectNext(errors) {
 function settle(options, setErrors = null) {
     if (!rejection) {
         page = { ...page, props: { ...page.props, errors: {} } };
+        if (success) {
+            const answered = { ...page, flash: success.flash };
+            success = null;
+            queueMicrotask(() => act(() => {
+                options.onSuccess?.(answered);
+                options.onFinish?.();
+            }));
+        }
         return;
     }
     const errors = rejection;
@@ -98,6 +116,7 @@ export function useForm(initial = {}) {
         wasSuccessful: false,
         recentlySuccessful: false,
         isDirty: JSON.stringify(data) !== JSON.stringify(defaults.current),
+        setDefaults: (key, value) => { defaults.current = key === undefined ? latest.current : typeof key === 'object' ? key : { ...defaults.current, [key]: value }; },
         defaults: (key, value) => { defaults.current = key === undefined ? latest.current : typeof key === 'object' ? key : { ...defaults.current, [key]: value }; },
         reset: (...keys) => setDataState((current) => (keys.length ? { ...current, ...Object.fromEntries(keys.map((key) => [key, defaults.current[key]])) } : defaults.current)),
         resetAndClearErrors: () => { setDataState(defaults.current); setErrors({}); },

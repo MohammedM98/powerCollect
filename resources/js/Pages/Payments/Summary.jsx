@@ -96,7 +96,7 @@ function TodaysPayments({ today }) {
             {today.payments.length > 0 ? (
                 <ul className="divide-y divide-gray-100 overflow-hidden rounded-panel border border-gray-100 bg-surface shadow-card">
                     {today.payments.map((payment) => (
-                        <li key={payment.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3.5 text-sm">
+                        <li key={payment.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-sm">
                             <span className="min-w-0 flex-1 basis-48 font-semibold text-gray-900">{payment.subscriptionName}</span>
                             <span className="text-gray-500">
                                 {payment.methodLabel}
@@ -115,7 +115,7 @@ function TodaysPayments({ today }) {
                                 href={payment.receiptUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="tone-print inline-flex items-center gap-1.5 rounded-control border px-3 py-1.5 text-xs font-semibold transition"
+                                className="tone-print inline-flex items-center gap-2 rounded-control border px-3 py-2 text-xs font-semibold transition"
                             >
                                 <Icon name="printer" className="h-4 w-4" />
                                 السند
@@ -124,7 +124,7 @@ function TodaysPayments({ today }) {
                     ))}
                 </ul>
             ) : (
-                <p className="rounded-panel border border-dashed border-gray-200 bg-surface px-5 py-8 text-center text-sm text-gray-500">لم تسجّل أي دفعة اليوم بعد.</p>
+                <p className="rounded-panel border border-dashed border-gray-200 bg-surface px-4 py-8 text-center text-sm text-gray-500">لم تسجّل أي دفعة اليوم بعد.</p>
             )}
         </section>
     );
@@ -163,7 +163,7 @@ export default function Summary({ today, recentDays = [], cashBox, current, entr
             {recentDays.length > 0 && <RecentDays days={recentDays} />}
         </div>
         {cashBox.started ? <div className="space-y-8">
-            {needsAction.length > 0 && <section className="space-y-3 rounded-panel border border-amber-500/25 bg-amber-500/5 p-5">
+            {needsAction.length > 0 && <section className="space-y-3 rounded-panel border border-amber-500/25 bg-amber-500/5 p-4">
                 <h3 className="font-bold text-gray-900">تحتاج إجراء منك</h3>
                 {needsAction.map((box) => <div key={box.id} className="flex flex-wrap items-center justify-between gap-3 border-t border-amber-500/15 pt-3"><div className="flex items-center gap-3"><BoxTypeIcon type={box.type} className="h-10 w-10" /><div className="space-y-2"><Link href={box.urls.show} prefetch className="font-semibold text-gray-900">{boxTypes[box.type]}، <bdi dir="ltr" className="font-display text-xs">{box.number}</bdi></Link><BoxStage box={box} /></div></div><PrimaryKey onClick={() => setSelected({ box, action: boxAction(box) })}>{actionLabel(box)}</PrimaryKey></div>)}
             </section>}

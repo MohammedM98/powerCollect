@@ -51,7 +51,7 @@ const pickChoice = (field, choice) => field.locator('xpath=ancestor-or-self::*[c
 
         // HeroUI tick boxes keep their input visually hidden, so the tests press them through their label (force).
         await page.getByRole('checkbox', { name: 'عرض منطقة المخيم', exact: true }).check({ force: true });
-        assert.equal(await page.getByRole('table', { name: 'توزيع الطبلونات حسب المنطقة' }).locator('tbody input').count(), 20);
+        assert.equal(await page.getByRole('grid', { name: 'توزيع الطبلونات حسب المنطقة' }).locator('tbody input').count(), 20);
         await openSummary();
         assert.match(await summary().getByText('إجمالي الطبلونات', { exact: true }).locator('..').innerText(), /100/);
         await page.keyboard.press('Escape');

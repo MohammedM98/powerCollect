@@ -207,7 +207,7 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                 {failed ? (
                     <p role="alert" className="m-6 rounded-control bg-red-500/10 p-4 text-sm text-red-700">تعذّر تحميل بيانات التقرير. أغلق النافذة وأعد المحاولة.</p>
                 ) : !parts || !settings ? (
-                    <div className="flex flex-1 items-center justify-center p-10 text-sm text-gray-500" role="status">جارٍ تجهيز بيانات الجدول…{loadedRows > 0 && ` تم تحميل ${loadedRows.toLocaleString('en-US')} سجل`}</div>
+                    <div className="flex flex-1 items-center justify-center p-8 text-sm text-gray-500" role="status">جارٍ تجهيز بيانات الجدول…{loadedRows > 0 && ` تم تحميل ${loadedRows.toLocaleString('en-US')} سجل`}</div>
                 ) : (
                     <>
                         <div className="shrink-0 border-b border-gray-100 p-2 lg:hidden">
@@ -221,9 +221,9 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                             />
                         </div>
                         <div className="grid min-h-0 flex-1 lg:grid-cols-[380px_minmax(0,1fr)]">
-                            <div className={`min-h-0 overflow-y-auto border-gray-100 px-5 pb-6 lg:block lg:border-e ${tab === 'settings' ? 'block' : 'hidden'}`}>
+                            <div className={`min-h-0 overflow-y-auto border-gray-100 px-4 pb-6 lg:block lg:border-e ${tab === 'settings' ? 'block' : 'hidden'}`}>
                                 <Section title="ماذا يحوي الملف" hint={`${parts.filter((candidate) => settings.parts[candidate.key].on).length} من ${parts.length}`}>
-                                    <ul className="space-y-1.5">
+                                    <ul className="space-y-2">
                                         {parts.map((candidate) => (
                                             <li key={candidate.key} className={`flex items-center gap-2 rounded-control border px-3 py-2 ${editing === candidate.key ? 'border-excel-500/50 bg-excel-500/5' : 'border-gray-100'}`}>
                                                 <CheckBox checked={settings.parts[candidate.key].on} onChange={(event) => changePart(candidate.key, { on: event.target.checked })} aria-label={`تضمين ${candidate.name}`} />
@@ -242,7 +242,7 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                             {partSettings.columns.map((column, index) => {
                                                 const definition = part.columns.find((candidate) => candidate.key === column.key);
                                                 return (
-                                                    <li key={column.key} className="flex items-center gap-2 border-b border-gray-100 px-3 py-1.5 last:border-b-0">
+                                                    <li key={column.key} className="flex items-center gap-2 border-b border-gray-100 px-3 py-2 last:border-b-0">
                                                         <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 text-sm">
                                                             <CheckBox checked={column.on} onChange={() => changePart(part.key, { columns: partSettings.columns.map((candidate) => (candidate.key === column.key ? { ...candidate, on: !candidate.on } : candidate)) })} />
                                                             <span className="truncate">{definition.label}</span>
@@ -254,7 +254,7 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                                             max={COLUMN_WIDTH_RANGE[1]}
                                                             value={columnWidth(definition, partSettings)}
                                                             onChange={(event) => setColumnWidth(column.key, event.target.value === '' ? undefined : Number(event.target.value))}
-                                                            className="w-14 rounded-md border-gray-200 px-1.5 py-0.5 text-center font-display text-xs"
+                                                            className="w-14 rounded-md border-gray-200 px-2 py-1 text-center font-display text-xs"
                                                             aria-label={`عرض عمود ${definition.label}`}
                                                             title="عرض العمود بالأحرف"
                                                         />
@@ -275,7 +275,7 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                         {(part.groupBys ?? []).length > 0 && (
                                             <label className="mt-3 block text-sm font-semibold text-gray-700">
                                                 تجميع الصفوف حسب
-                                                <ChoiceSelect className="mt-1.5 block w-full rounded-control border-gray-200 text-sm" value={partSettings.groupBy} onChange={(event) => changePart(part.key, { groupBy: event.target.value })}>
+                                                <ChoiceSelect className="mt-2 block w-full rounded-control border-gray-200 text-sm" value={partSettings.groupBy} onChange={(event) => changePart(part.key, { groupBy: event.target.value })}>
                                                     <option value="">بدون تجميع</option>
                                                     {part.groupBys.map((group) => (
                                                         <option key={group.key} value={group.key}>{group.label}</option>
@@ -289,11 +289,11 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                 <Section title="العنوان والملف">
                                     <label className="block text-sm font-semibold text-gray-700">
                                         عنوان الملف (أول سطر في كل ورقة)
-                                        <TextInput className="mt-1.5 w-full" value={settings.title} onChange={(event) => change({ title: event.target.value })} />
+                                        <TextInput className="mt-2 w-full" value={settings.title} onChange={(event) => change({ title: event.target.value })} />
                                     </label>
                                     <label className="mt-3 block text-sm font-semibold text-gray-700">
                                         اسم الملف
-                                        <TextInput className="mt-1.5 w-full font-display text-sm" dir="auto" value={settings.fileName} onChange={(event) => change({ fileName: event.target.value })} />
+                                        <TextInput className="mt-2 w-full font-display text-sm" dir="auto" value={settings.fileName} onChange={(event) => change({ fileName: event.target.value })} />
                                     </label>
                                 </Section>
 
@@ -327,8 +327,8 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                                         <div className="mb-3 flex flex-wrap gap-2">
                                             {templates.map((template) => (
                                                 <span key={template.name} className="inline-flex items-center gap-1 rounded-control border border-gray-200 bg-surface ps-3 text-sm font-semibold">
-                                                    <Button data-raw="" variant="ghost" className="py-1.5" onClick={() => applyTemplate(template.settings)}>{template.name}</Button>
-                                                    <Button data-raw="" variant="ghost" className="rounded p-1.5 text-gray-400 hover:text-red-600" onClick={() => removeTemplate(template.name)} aria-label={`حذف القالب ${template.name}`}><Icon name="close" className="h-3.5 w-3.5" /></Button>
+                                                    <Button data-raw="" variant="ghost" className="py-2" onClick={() => applyTemplate(template.settings)}>{template.name}</Button>
+                                                    <Button data-raw="" variant="ghost" className="rounded p-2 text-gray-400 hover:text-red-600" onClick={() => removeTemplate(template.name)} aria-label={`حذف القالب ${template.name}`}><Icon name="close" className="h-3.5 w-3.5" /></Button>
                                                 </span>
                                             ))}
                                         </div>
@@ -347,7 +347,7 @@ export default function ExcelStudio({ show, onClose, title, storageKey, template
                     </>
                 )}
 
-                <footer className="flex shrink-0 flex-wrap items-center gap-3 border-t border-gray-100 bg-gray-50 px-5 py-4">
+                <footer className="flex shrink-0 flex-wrap items-center gap-3 border-t border-gray-100 bg-gray-50 px-4 py-4">
                     <div className="min-w-0 basis-full text-sm text-gray-500 sm:flex-1 sm:basis-0">
                         {settings && parts && (
                             <>

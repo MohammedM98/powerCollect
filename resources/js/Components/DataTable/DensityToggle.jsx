@@ -15,7 +15,7 @@ export default function DensityToggle() {
     const [density, setDensity] = useTableDensity();
 
     return (
-        <div role="group" aria-label="كثافة الصفوف" className="inline-flex gap-0.5 rounded-control border border-gray-100 bg-gray-50 p-[3px]">
+        <div role="group" aria-label="كثافة الصفوف" className="inline-flex gap-1 rounded-control border border-gray-100 bg-gray-50 p-1">
             {DENSITIES.map((option) => (
                 <Button data-raw="" variant="ghost"
                     key={option.value}

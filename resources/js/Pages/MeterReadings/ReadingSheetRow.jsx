@@ -8,7 +8,7 @@ import { useLastReadingEdit } from '@/hooks/useLastReadingEdit';
 import { printRowProps } from '@/lib/print';
 import { formatCurrency, formatShekels } from '@/lib/currency';
 import { calculateCharges, steppedReading } from '@/lib/readings';
-import { CheckBox, ConfirmDialog } from '@/Components/UI';
+import { CheckBox, ConfirmDialog, ListCell, ListRow } from '@/Components/UI';
 
 /** The details printing can show as columns of their own (see printFieldsProps). */
 export const PRINT_FIELDS = [
@@ -57,7 +57,7 @@ export function LastReadingCell({ row }) {
     });
 
     return (
-        <td className="re-last re-number">
+        <ListCell className="re-last re-number">
             <LastReadingConfirmDialog editor={editor} subscriptionName={row.fullName} />
                 <span className="re-last-value">
                     <span className="re-last-number">{row.previousReading}</span>
@@ -72,7 +72,7 @@ export function LastReadingCell({ row }) {
                         </Button>
                     )}
                 </span>
-        </td>
+        </ListCell>
     );
 }
 
@@ -187,11 +187,12 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
     }
 
     return (
-        <tr
+        <ListRow
+            id={`${week}-${row.id}`}
             className={`re-row ${justSaved ? 'is-just-saved' : ''} ${selected ? 'is-selected' : ''} ${error ? 'has-error' : ''} ${isDraft ? 'is-draft' : ''} ${row.reading?.unusual ? 'is-unusual' : ''}`}
             {...printRowProps(Object.fromEntries(PRINT_FIELDS.map((field) => [field.key, row[field.key]])))}
         >
-            <td className="re-sub">
+            <ListCell className="re-sub">
                 <div className="flex items-center gap-3">
                     {approvable && (
                         <CheckBox
@@ -216,9 +217,9 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
                         </p>
                     </div>
                 </div>
-            </td>
+            </ListCell>
             <LastReadingCell row={row} />
-            <td className="re-input-cell">
+            <ListCell className="re-input-cell">
                 <div className="re-input" dir="ltr"><Button data-raw="" variant="ghost" tabIndex={-1} className="re-step" aria-label={`إنقاص قراءة ${row.fullName}`} onMouseDown={(e) => e.preventDefault()} onClick={() => step(-1)} isDisabled={!row.canEdit || saving || (value !== '' && Number(value) <= Number(row.previousReading))}>−</Button><Input
                     type="number"
                     inputMode="decimal"
@@ -274,24 +275,26 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
                     }}
                     className={error ? 'has-error' : missed ? 'is-missed' : isSaved ? 'is-saved' : ''}
                 /><Button data-raw="" variant="ghost" tabIndex={-1} className="re-step" aria-label={`زيادة قراءة ${row.fullName}`} onMouseDown={(e) => e.preventDefault()} onClick={() => step(1)} isDisabled={!row.canEdit || saving}>+</Button></div>
-            </td>
-            <td className={`re-diff re-number ${charges && charges.consumption < 0 ? 'text-red-600' : 'text-brand-700'}`}>
+            </ListCell>
+            <ListCell className={`re-diff re-number ${charges && charges.consumption < 0 ? 'text-red-600' : 'text-brand-700'}`}>
                 {charges ? charges.consumption : '—'}
-            </td>
-            <td className={`re-due re-number ${billCancelled && !isDraft ? 'text-gray-400' : ''}`} title={dueBreakdown}>
-                {charges && charges.consumption >= 0 ? <span className={billCancelled && !isDraft ? 'line-through' : ''}>{formatShekels(charges.amountDue)}</span> : '—'}
-                {dueNotes.length > 0 && (
-                    <p className="re-line text-xs font-normal text-gray-500" title={dueNotes.map((note) => note.text).join('، ')}>
-                        {dueNotes.map((note, index) => (
-                            <span key={note.text} className={note.className}>
-                                {index > 0 && '، '}
-                                {note.text}
-                            </span>
-                        ))}
-                    </p>
-                )}
-            </td>
-            <td className="re-status">
+            </ListCell>
+            <ListCell className={`re-due re-number ${billCancelled && !isDraft ? 'text-gray-400' : ''}`}>
+                <div title={dueBreakdown}>
+                    {charges && charges.consumption >= 0 ? <span className={billCancelled && !isDraft ? 'line-through' : ''}>{formatShekels(charges.amountDue)}</span> : '—'}
+                    {dueNotes.length > 0 && (
+                        <p className="re-line text-xs font-normal text-gray-500" title={dueNotes.map((note) => note.text).join('، ')}>
+                            {dueNotes.map((note, index) => (
+                                <span key={note.text} className={note.className}>
+                                    {index > 0 && '، '}
+                                    {note.text}
+                                </span>
+                            ))}
+                        </p>
+                    )}
+                </div>
+            </ListCell>
+            <ListCell className="re-status">
                 <ConfirmDialog
                     show={confirmingApprovedEdit}
                     onConfirm={() => {
@@ -332,8 +335,8 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
                 ) : (
                     <span className="re-pill missing"><i />لم تُدخل</span>
                 )}
-            </td>
-            {showRecorder && <td className="re-by">
+            </ListCell>
+            {showRecorder && <ListCell className="re-by">
                 {row.reading ? <>
                     <span className="re-line">
                         <b>{row.reading.recordedByName || '—'}</b>
@@ -345,7 +348,7 @@ export function SheetRow({ row, week, approvable, showRecorder, selected, onTogg
                     </span>
                     <small><Icon name="clock" />{row.reading.recordedAt}، {row.reading.recordedSource === 'app' ? 'التطبيق' : 'الموقع'}</small>
                 </> : <span>—</span>}
-            </td>}
-        </tr>
+            </ListCell>}
+        </ListRow>
     );
 }

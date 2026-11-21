@@ -27,7 +27,7 @@ export default function QuickMessageBody({
         <Section title="نص الرسالة" hint="اضغط على أي معلومة لإضافتها، وتُكتب لكل مشترك بقيمته.">
             {kindTemplates.length > 0 && (
                 <div>
-                    <label htmlFor={`${id}-template`} className="mb-1.5 block text-sm font-semibold text-gray-700">
+                    <label htmlFor={`${id}-template`} className="mb-2 block text-sm font-semibold text-gray-700">
                         القالب
                     </label>
                     <ChoiceSelect id={`${id}-template`} value={templateId} onChange={(e) => pickTemplate(e.target.value)} className="block w-full text-sm">
@@ -40,13 +40,13 @@ export default function QuickMessageBody({
                     </ChoiceSelect>
                 </div>
             )}
-            <div role="group" aria-label="أضف معلومة من بيانات المشترك إلى النص" className="flex flex-wrap gap-1.5">
+            <div role="group" aria-label="أضف معلومة من بيانات المشترك إلى النص" className="flex flex-wrap gap-2">
                 {setup.placeholders[kind].map((name) => (
                     <Button data-raw="" variant="ghost"
                         key={name}
                         onClick={() => insertPlaceholder(name)}
                         aria-label={`أضف «${name.replaceAll('_', ' ')}» إلى نص الرسالة`}
-                        className={`inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-semibold text-gray-700 transition hover:border-brand-500/40 hover:text-brand-600 ${FOCUS_RING}`}
+                        className={`inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-700 transition hover:border-brand-500/40 hover:text-brand-600 ${FOCUS_RING}`}
                     >
                         <Icon name="plus" className="h-3.5 w-3.5" strokeWidth={2} />
                         {name.replaceAll('_', ' ')}
@@ -71,8 +71,8 @@ export default function QuickMessageBody({
             <InputError message={errors.body} />
             {previewRow && body.trim() !== '' && (
                 <div>
-                    <p className="mb-1.5 text-xs font-semibold text-gray-600">كما تصل إلى {previewRow.name}:</p>
-                    <div className="whitespace-pre-line rounded-2xl rounded-tr-sm bg-emerald-500/10 px-4 py-3 text-sm leading-7 text-gray-900">
+                    <p className="mb-2 text-xs font-semibold text-gray-600">كما تصل إلى {previewRow.name}:</p>
+                    <div className="whitespace-pre-line rounded-2xl rounded-ss-sm bg-emerald-500/10 px-4 py-3 text-sm leading-7 text-gray-900">
                         <MessageText text={previewText} />
                     </div>
                 </div>

@@ -168,7 +168,7 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
 
 
     return (
-        <div className="tn-scrim flex items-start justify-center px-4 pt-[11vh]" dir="rtl" role="presentation" onClick={(event) => event.target === event.currentTarget && onOpenChange(false)}>
+        <div className="tn-scrim flex items-start justify-center px-4 scrim-top" dir="rtl" role="presentation" onClick={(event) => event.target === event.currentTarget && onOpenChange(false)}>
             {/* The dialog takes Esc and Tab; the results take the arrows and Enter. */}
             <div
                 ref={dialogRef}
@@ -180,7 +180,7 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
                 onKeyDownCapture={onKeyDown}
             >
                 <Autocomplete.Filter inputValue={query} onInputChange={setQuery}>
-                    <div className="flex items-center gap-3 border-b border-gray-200/70 px-5 py-4">
+                    <div className="flex items-center gap-3 border-b border-gray-200/70 px-4 py-4">
                         <SearchField aria-label="بحث وأوامر" className="min-w-0 flex-1">
                             <SearchField.Group className="tn-palette-field">
                                 <SearchField.SearchIcon />
@@ -199,7 +199,7 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
                         className="flex-1 overflow-y-auto p-2 outline-hidden"
                         onAction={(key) => run(items.find((item) => keyOf(item) === key))}
                         renderEmptyState={() => (
-                            <div className="grid justify-items-center gap-2 px-6 py-10 text-center text-gray-500">
+                            <div className="grid justify-items-center gap-2 px-6 py-8 text-center text-gray-500">
                                 <Icon name="search" className="h-8 w-8 text-gray-300" />
                                 <b className="text-gray-900">لا نتائج لـ «{query}»</b>
                                 <small>{searchSubscribers ? 'جرّب اسم صفحة مثل «الصناديق» أو اسم مشترك' : 'جرّب اسم صفحة مثل «الصناديق»'}</small>
@@ -208,7 +208,7 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
                     >
                         {groups.map(([title, entries]) => (
                             <ListBox.Section key={title} id={title} aria-label={title}>
-                                <Header className="px-2.5 pb-1 pt-3 text-[12px] font-bold text-gray-500">{title}</Header>
+                                <Header className="px-3 pb-1 pt-3 text-[12px] font-bold text-gray-500">{title}</Header>
                                 {entries.map((item) => (
                                     <ListBox.Item key={keyOf(item)} id={keyOf(item)} textValue={item.label} className="tn-palette-item">
                                         <span className="tn-tile"><Icon name={item.icon} /></span>
@@ -225,9 +225,9 @@ export default function CommandPalette({ open, onOpenChange, sections, commands,
                     </ListBox>
                 </Autocomplete.Filter>
 
-                <div className="flex flex-wrap items-center gap-4 border-t border-gray-200/70 bg-gray-50 px-4 py-2.5 text-[12.5px] text-gray-500">
-                    <span className="inline-flex items-center gap-1.5"><span className="tn-kbd">↑ ↓</span>اختيار</span>
-                    <span className="inline-flex items-center gap-1.5"><span className="tn-kbd">Enter</span>فتح</span>
+                <div className="flex flex-wrap items-center gap-4 border-t border-gray-200/70 bg-gray-50 px-4 py-2 text-[12.5px] text-gray-500">
+                    <span className="inline-flex items-center gap-2"><span className="tn-kbd">↑ ↓</span>اختيار</span>
+                    <span className="inline-flex items-center gap-2"><span className="tn-kbd">Enter</span>فتح</span>
                     <span className="ms-auto">{searchSubscribers ? 'يبحث في الصفحات والمشتركين والأوامر' : 'يبحث في الصفحات والأوامر'}</span>
                 </div>
             </div>

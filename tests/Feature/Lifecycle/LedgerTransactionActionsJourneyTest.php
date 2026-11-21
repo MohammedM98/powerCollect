@@ -31,7 +31,7 @@ class LedgerTransactionActionsJourneyTest extends TestCase
         $collector = User::factory()->collector()->for($branch)->create();
         $subscription = Subscription::factory()->for($branch)->create();
         SubscriptionTransaction::factory()->for($subscription)->create(['amount' => '100.00']);
-        $this->actingAs($head)->post(route('subscriptions.charges.store', $subscription), ['type' => 'penalty', 'amount' => '40', 'notes' => 'تلاعب بالعداد'])->assertSessionHasNoErrors();
+        $this->actingAs($head)->post(route('subscriptions.charges.store', $subscription), ['operation_token' => (string) Str::uuid(), 'type' => 'penalty', 'amount' => '40', 'notes' => 'تلاعب بالعداد'])->assertSessionHasNoErrors();
         $penalty = $subscription->transactions()->where('type', 'penalty')->sole();
 
         $this->act($head, $penalty, ['edit', 'delete'], ['action' => 'edit', 'amount' => '45', 'amendment_reason' => 'المبلغ الصحيح']);
@@ -69,7 +69,7 @@ class LedgerTransactionActionsJourneyTest extends TestCase
         $this->assertLog($head, $subscription, charged: 100, credited: 50, cancelledCount: 2, rows: 6, cancelledRows: 4);
 
         $this->travel(1)->minute();
-        $this->actingAs($head)->post(route('subscriptions.discounts.store', $subscription), ['method' => 'shekel', 'value' => '10'])->assertSessionHasNoErrors();
+        $this->actingAs($head)->post(route('subscriptions.discounts.store', $subscription), ['operation_token' => (string) Str::uuid(), 'method' => 'shekel', 'value' => '10'])->assertSessionHasNoErrors();
         $discount = $subscription->transactions()->where('type', SubscriptionTransaction::TYPE_DISCOUNT)->sole();
         $this->assertLog($head, $subscription, charged: 100, credited: 60, cancelledCount: 2, rows: 7, cancelledRows: 4);
         $this->act($head, $discount, ['delete'], ['action' => 'delete', 'correction_notes' => 'خصم مكرر']);

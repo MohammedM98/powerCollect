@@ -66,7 +66,7 @@ export default function PaymentReceipt({ subscription, receipt, printedBy }) {
     }, [logoReady]);
 
     return (
-        <div className="min-h-screen bg-gray-100 px-4 py-6 text-gray-900 sm:py-10 print:min-h-0 print:bg-white print:p-0" dir="rtl">
+        <div className="min-h-screen bg-gray-100 px-4 py-6 text-gray-900 sm:py-8 print:min-h-0 print:bg-white print:p-0" dir="rtl">
             <Head title={`${title} ${receipt.voucherNumber ?? ''} — ${subscription.fullName}`} />
             <style>{'@page { size: A5 portrait; margin: 10mm; }'}</style>
 
@@ -83,7 +83,7 @@ export default function PaymentReceipt({ subscription, receipt, printedBy }) {
                 </div>
             </div>
 
-            <article className="pd-paper relative mx-auto w-full max-w-[148mm] overflow-hidden rounded-xl p-[10mm] text-[13px] print:max-w-none print:rounded-none">
+            <article className="pd-paper pd-receipt relative mx-auto w-full max-w-[148mm] overflow-hidden rounded-xl text-[13px] print:max-w-none print:rounded-none">
                 {receipt.cancellation && (
                     <div
                         className="pointer-events-none absolute inset-x-0 top-1/3 flex -rotate-12 justify-center"
@@ -189,7 +189,7 @@ export default function PaymentReceipt({ subscription, receipt, printedBy }) {
                     {receipt.balanceAfter != null && <ReceiptLine label={receipt.isClearing ? 'الرصيد بعد المقاصة' : 'الرصيد بعد الدفعة'}>{balanceOnPaper(receipt.balanceAfter)}</ReceiptLine>}
                 </dl>
 
-                <div className="pd-signatures mt-10 grid grid-cols-2 gap-8 text-center">
+                <div className="pd-signatures mt-8 grid grid-cols-2 gap-8 text-center">
                     <div>
                         <div className="mb-1 h-10 border-b border-gray-500" />
                         <div className="font-semibold">المستلم{receipt.recordedByName && `: ${receipt.recordedByName}`}</div>

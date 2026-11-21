@@ -10,7 +10,7 @@ export default function TariffTag({ category, label }) {
     const tag = TAGS[category];
 
     return (
-        <span className="inline-flex items-center gap-1.5 font-semibold text-gray-700">
+        <span className="inline-flex items-center gap-2 font-semibold text-gray-700">
             {tag && <Icon name={tag.icon} className={`h-4 w-4 shrink-0 ${tag.className}`} />}
             {label}
         </span>

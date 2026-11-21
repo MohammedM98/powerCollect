@@ -60,7 +60,7 @@ export default function BarChart({ data, label, formatValue = formatNumber, coun
 
     return (
         <figure className="relative" dir="ltr">
-            <div className="flex gap-2.5">
+            <div className="flex gap-3">
                 <div
                     className="flex shrink-0 flex-col justify-between text-end font-display text-[12px] tabular-nums text-gray-400"
                     style={{ height }}
@@ -91,7 +91,7 @@ export default function BarChart({ data, label, formatValue = formatNumber, coun
                         onFocus={() => setActive((current) => current ?? data.length - 1)}
                         onBlur={() => setActive(null)}
                         onPointerLeave={() => setActive(null)}
-                        className="relative flex items-end rounded-sm outline-hidden focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-4 focus-visible:ring-offset-surface"
+                        className="relative flex items-end gap-1 rounded-sm outline-hidden focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-4 focus-visible:ring-offset-surface"
                         style={{ height }}
                     >
                         {data.map((day, index) => {
@@ -103,7 +103,7 @@ export default function BarChart({ data, label, formatValue = formatNumber, coun
                                 <div
                                     key={day.date}
                                     onPointerEnter={() => setActive(index)}
-                                    className="flex h-full flex-1 items-end justify-center px-px"
+                                    className="flex h-full flex-1 items-end justify-center"
                                 >
                                     {day.value > 0 && (
                                         <span

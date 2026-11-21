@@ -34,7 +34,7 @@ function branchCount(count) {
     return `${formatNumber(count)} ${count % 100 >= 3 && count % 100 <= 10 ? 'فروع' : 'فرعاً'}`;
 }
 
-export default function BranchBanner({ scope, eyebrow = 'تعرض الآن البيانات المالية لـ', allLabel = 'تقرير مجمّع', options = [], value = '', allValue = 'all', onChange = null, controls = null, ownControls = false, meta = null, children = null, className = 'mb-5' }) {
+export default function BranchBanner({ scope, eyebrow = 'تعرض الآن البيانات المالية لـ', allLabel = 'تقرير مجمّع', options = [], value = '', allValue = 'all', onChange = null, controls = null, ownControls = false, meta = null, children = null, className = 'mb-6' }) {
     const view = useBranchView();
     // The working branch is picked in the top bar (WorkingBranchChip) and kept across pages; the banner then only prints.
     const printOnly = view.available && !ownControls;
@@ -76,7 +76,7 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
                 </div>
                 {controls && <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-end sm:gap-3 print:hidden">{controls}</div>}
                 {!controls && pick && pickerOptions.length > 1 && (
-                    <label className="flex w-full flex-col gap-1.5 sm:w-60 print:hidden">
+                    <label className="flex w-full flex-col gap-2 sm:w-60 print:hidden">
                         <span className="gl-label">تغيير الفرع</span>
                         <span className="relative">
                             <ChoiceSelect
@@ -84,7 +84,7 @@ export default function BranchBanner({ scope, eyebrow = 'تعرض الآن ال�
                                 value={pickerValue ?? ''}
                                 disabled={view.switching}
                                 onChange={(event) => pick(event.target.value)}
-                                className="h-10 w-full appearance-none bg-none pe-10 ps-3.5 font-bold"
+                                className="h-10 w-full appearance-none bg-none field-room-end ps-4 font-bold"
                             >
                                 <option value={allValue}>جميع الفروع (تقرير مجمّع)</option>
                                 {pickerOptions.map((option) => (
@@ -136,7 +136,7 @@ export function BranchFilterBanner({ scope, eyebrow, group, value, onChange, all
             eyebrow={eyebrow}
             controls={
                 options && (
-                    <label className="gl-label flex w-full flex-col gap-1.5 sm:w-64">
+                    <label className="gl-label flex w-full flex-col gap-2 sm:w-64">
                         الفرع
                         <SearchableSelect
                             value={view.available ? String(view.value) : value ?? ''}

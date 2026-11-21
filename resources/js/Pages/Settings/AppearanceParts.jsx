@@ -4,7 +4,7 @@ import InputError from '@/Components/InputError';
 import Icon from '@/Components/Icon';
 import { brandPalette, contrastWithWhite, isHex, MIN_CONTRAST } from '@/lib/brandPalette';
 import { useFileUrl } from './useAppearanceFiles';
-import { DangerKey, PrimaryKey, SecondaryKey } from '@/Components/UI';
+import { DangerKey, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 export const LOGOS = [
     { key: 'main', label: 'الشعار الرئيسي', hint: 'يظهر في الشريط والقائمة والفوتر وشاشة الدخول.' },
@@ -41,7 +41,7 @@ export function LogoSlot({ slot, current, own, file, removed, error, onFile, onR
             </div>
             <div className="min-w-0 flex-1">
                 <b className="block text-[15px] text-gray-900">{slot.label}</b>
-                <p className="mt-0.5 text-[13px] leading-6 text-gray-500">{slot.hint}</p>
+                <p className="mt-1 text-[13px] leading-6 text-gray-500">{slot.hint}</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                     <input
                         ref={input}
@@ -51,13 +51,13 @@ export function LogoSlot({ slot, current, own, file, removed, error, onFile, onR
                         aria-label={`ملف ${slot.label}`}
                         onChange={(event) => onFile(event.target.files?.[0] ?? null)}
                     />
-                    <SecondaryKey className="px-3! py-1.5! text-[13px]" onClick={() => input.current?.click()}>
+                    <SecondaryKey className="px-3! py-2! text-[13px]" onClick={() => input.current?.click()}>
                         <Icon name="arrow-up" className="h-4 w-4" />
                         {own || file ? 'تغيير' : 'رفع صورة'}
                     </SecondaryKey>
                     {file && (
                         <SecondaryKey
-                            className="px-3! py-1.5! text-[13px]"
+                            className="px-3! py-2! text-[13px]"
                             onClick={() => {
                                 onFile(null);
                                 input.current.value = '';
@@ -70,11 +70,11 @@ export function LogoSlot({ slot, current, own, file, removed, error, onFile, onR
                         own &&
                         !file &&
                         (removed ? (
-                            <SecondaryKey className="px-3! py-1.5! text-[13px]" onClick={onUndo}>
+                            <SecondaryKey className="px-3! py-2! text-[13px]" onClick={onUndo}>
                                 إبقاء الشعار
                             </SecondaryKey>
                         ) : (
-                            <SecondaryKey className="px-3! py-1.5! text-[13px]" onClick={onRemove}>
+                            <SecondaryKey className="px-3! py-2! text-[13px]" onClick={onRemove}>
                                 إزالة
                             </SecondaryKey>
                         ))}
@@ -121,7 +121,7 @@ export function ColorField({ id, label, value, onChange, suggestions = [], allow
                 </p>
             )}
             {suggestions.length > 0 && (
-                <div className="flex flex-wrap items-center gap-1.5">
+                <div className="flex flex-wrap items-center gap-2">
                     <span className="text-[13px] text-gray-500">من الشعار:</span>
                     {suggestions.map((color) => (
                         <Button data-raw="" variant="ghost"
@@ -171,34 +171,32 @@ export function PresetCard({ id, preset, active, onPick }) {
 export function SampleTable() {
     return (
         <div className="data-table-container" data-excel-source="custom">
-            <table className="data-table">
-                <thead>
-                    <tr>
-                        <th>المشترك</th>
-                        <th>رقم الاشتراك</th>
-                        <th>المنطقة</th>
-                        <th>الرصيد</th>
-                        <th>الحالة</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <ListTable aria-label="معاينة الجدول" className="data-table">
+                <ListHeader>
+                    <ListColumn id="name" isRowHeader>المشترك</ListColumn>
+                    <ListColumn id="number">رقم الاشتراك</ListColumn>
+                    <ListColumn id="area">المنطقة</ListColumn>
+                    <ListColumn id="balance">الرصيد</ListColumn>
+                    <ListColumn id="state">الحالة</ListColumn>
+                </ListHeader>
+                <ListBody>
                     {SAMPLE_ROWS.map(([name, number, area, balance, state], index) => (
-                        <tr key={number} className={index === 1 ? 'bg-brand-50' : undefined}>
-                            <td className="font-semibold">{name}</td>
-                            <td dir="ltr">{number}</td>
-                            <td>{area}</td>
-                            <td dir="ltr">{balance}</td>
-                            <td>
+                        <ListRow key={number} id={number} className={index === 1 ? 'bg-brand-50' : undefined}>
+                            <ListCell className="font-semibold">{name}</ListCell>
+                            <ListCell dir="ltr">{number}</ListCell>
+                            <ListCell>{area}</ListCell>
+                            <ListCell dir="ltr">{balance}</ListCell>
+                            <ListCell>
                                 <span
-                                    className={`rounded-full px-2.5 py-0.5 text-[13px] font-semibold ${state === 'عليه' ? 'bg-brand-50 text-brand-700' : 'bg-success-50 text-success-700'}`}
+                                    className={`rounded-full px-3 py-1 text-[13px] font-semibold ${state === 'عليه' ? 'bg-brand-50 text-brand-700' : 'bg-success-50 text-success-700'}`}
                                 >
                                     {state}
                                 </span>
-                            </td>
-                        </tr>
+                            </ListCell>
+                        </ListRow>
                     ))}
-                </tbody>
-            </table>
+                </ListBody>
+            </ListTable>
         </div>
     );
 }
@@ -209,7 +207,7 @@ export function Sample({ brand }) {
 
     return (
         <div className="grid gap-4">
-            <div className="rounded-card border border-gray-100 bg-surface p-5 shadow-card">
+            <div className="rounded-card border border-gray-100 bg-surface p-4 shadow-card">
                 <b className="text-sm text-gray-500">الأزرار</b>
                 <div className="mt-3 flex flex-wrap gap-2">
                     <PrimaryKey type="button">

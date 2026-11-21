@@ -410,7 +410,7 @@
 
 @utility data-chip {
   /* Small monospace chip for codes like a meter box number. */
-  @apply inline-block whitespace-nowrap rounded-lg border border-gray-200 bg-gray-50 px-2 py-0.5 font-mono text-xs text-gray-700;
+  @apply inline-block whitespace-nowrap rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 font-mono text-xs text-gray-700;
 }
 
 @utility login-brand-panel {
@@ -454,8 +454,38 @@
   outline-offset: 2px;
 }
 
+/*
+ * Room kept inside a field for an icon, key or unit laid over its edge: the
+ * --room-* sizes (components.css), not spacing between elements.
+ */
+@utility field-room-start {
+  padding-inline-start: var(--room-icon);
+}
+
+@utility field-room-start-wide {
+  padding-inline-start: var(--room-icon-wide);
+}
+
+@utility field-room-end {
+  padding-inline-end: var(--room-icon);
+}
+
+@utility field-room-end-unit {
+  padding-inline-end: var(--room-unit);
+}
+
+/* A sheet pinned to the bottom of a phone keeps clear of the home indicator. */
+@utility safe-bottom {
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+/* Search and shortcut windows open a little below the top of the screen. */
+@utility scrim-top {
+  padding-top: 12vh;
+}
+
 @utility kbd {
-  @apply inline-flex items-center rounded-md border border-gray-200 bg-surface px-1.5 py-0.5 font-display text-[12px] font-semibold text-gray-500;
+  @apply inline-flex items-center rounded-md border border-gray-200 bg-surface px-2 py-1 font-display text-[12px] font-semibold text-gray-500;
 }
 
 /*
@@ -476,9 +506,9 @@
 
   select:not([multiple], [size])::picker(select) {
     appearance: base-select;
-    margin-block: 6px;
+    margin-block: 8px;
     max-height: min(320px, 50vh);
-    padding: 6px;
+    padding: 8px;
     border: 0;
     border-radius: 16px;
     /* Frosted glass, like every floating list (components.css gl-pop). */
@@ -540,7 +570,7 @@ select:not([multiple], [size]) {
 }
 
 :is(input:not([type='checkbox'], [type='radio']), textarea)[dir='ltr'] {
-    text-align: right;
+    text-align: end;
 }
 
 @layer base {
@@ -551,7 +581,7 @@ select:not([multiple], [size]) {
      */
     th,
     td {
-        padding: 1px;
+        padding: 4px;
     }
 
     /* Buttons show the hand pointer, and nothing disabled does, as in Tailwind 3's reset. */
@@ -690,7 +720,7 @@ select:not([multiple], [size]) {
      */
     input[data-feedback]:user-valid:not(:placeholder-shown) {
         @apply border-emerald-600;
-        padding-inline-end: 2.5rem;
+        padding-inline-end: var(--room-icon);
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23059669' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-size: 1.1rem;
@@ -748,7 +778,7 @@ select:not([multiple], [size]) {
         }
 
         ::picker(select) {
-            @apply my-1.5 rounded-2xl border p-1.5;
+            @apply my-2 rounded-2xl border p-2;
             border-color: var(--gl-line);
             background: rgb(var(--panel-bg));
             color: var(--gl-ink);
@@ -798,7 +828,7 @@ select:not([multiple], [size]) {
     position: relative;
     /* Above the table under it: a filter's drop-down list opens over the rows. */
     z-index: 2;
-    padding: 20px 24px;
+    padding: 16px 24px;
     border: 1px solid rgb(var(--gray-100));
     border-bottom: 0;
     border-radius: calc(28px * var(--radius-scale, 1)) calc(28px * var(--radius-scale, 1)) 0 0;
@@ -896,7 +926,7 @@ select:not([multiple], [size]) {
     border-radius: 999px;
     border: 1px solid hsl(var(--area-hue) 60% 45% / 0.25);
     background: hsl(var(--area-hue) 70% 50% / 0.1);
-    padding: 1px 10px;
+    padding: 4px 12px;
     font-size: 13px;
     font-weight: 600;
     color: hsl(var(--area-hue) 55% 30%);
@@ -920,7 +950,7 @@ select:not([multiple], [size]) {
     align-items: center;
     justify-content: space-between;
     gap: 8px 24px;
-    padding: 14px 24px;
+    padding: 12px 24px;
     border: 1px solid rgb(var(--gray-100));
     border-top: 0;
     background: rgb(var(--surface));
@@ -941,7 +971,7 @@ select:not([multiple], [size]) {
 }
 
 .data-table-pagination {
-    padding: 16px 24px 20px;
+    padding: 16px 24px 16px;
     border: 1px solid rgb(var(--gray-100));
     border-top: 0;
     border-radius: 0 0 calc(28px * var(--radius-scale, 1)) calc(28px * var(--radius-scale, 1));
@@ -963,7 +993,7 @@ select:not([multiple], [size]) {
 
 /* Column titles: 14.5px and dark enough to read at a glance (about 9:1). */
 .data-table th {
-    padding: 10px 16px 0;
+    padding: 8px 16px 0;
     color: rgb(var(--gray-700));
     font-size: 14.5px;
     font-weight: 600;
@@ -973,7 +1003,7 @@ select:not([multiple], [size]) {
 }
 
 .data-table td {
-    padding: 14px 16px;
+    padding: 12px 16px;
     white-space: nowrap;
     vertical-align: middle;
     background: rgb(var(--surface));
@@ -987,7 +1017,7 @@ select:not([multiple], [size]) {
    every column fits on the screen without scrolling sideways. */
 .data-table-dense th,
 .data-table-dense td {
-    padding-inline: 10px;
+    padding-inline: 12px;
 }
 
 .data-table-dense th {
@@ -1038,7 +1068,7 @@ select:not([multiple], [size]) {
 }
 
 .data-table td[colspan] {
-    padding: 48px 16px;
+    padding: 32px 16px;
     text-align: center;
     white-space: normal;
     color: rgb(var(--gray-400));
@@ -1054,7 +1084,7 @@ select:not([multiple], [size]) {
 @container (max-width: 1180px) {
     .data-table th,
     .data-table td {
-        padding-inline: 10px;
+        padding-inline: 12px;
     }
 
     .data-table td {
@@ -1077,8 +1107,8 @@ select:not([multiple], [size]) {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 12px;
-        margin-top: 10px;
-        padding: 14px;
+        margin-top: 8px;
+        padding: 16px;
         border: 1px solid rgb(var(--gray-100));
         border-radius: calc(18px * var(--radius-scale, 1));
         background: rgb(var(--surface));
@@ -1105,7 +1135,7 @@ select:not([multiple], [size]) {
     .data-table td:not(:first-child)[data-label]:not([data-label=''])::before {
         content: attr(data-label);
         display: block;
-        margin-bottom: 2px;
+        margin-bottom: 0;
         color: rgb(var(--gray-500));
         font-size: 13px;
         font-weight: 600;
@@ -1498,7 +1528,7 @@ select:not([multiple], [size]) {
 @container (max-width: 640px) {
     .data-table tbody tr.data-table-group {
         display: block;
-        padding: 14px 4px 0;
+        padding: 12px 4px 0;
         border: 0;
         background: none;
     }
@@ -1514,7 +1544,7 @@ select:not([multiple], [size]) {
     }
 
     :root[data-table-density='compact'] .data-table td {
-        padding-block: 6px;
+        padding-block: 8px;
     }
 
     :root[data-table-density='compact'] .data-table td:first-child {
@@ -1537,7 +1567,7 @@ select:not([multiple], [size]) {
     :root[data-table-density='compact'] .row-identity-text {
         display: flex;
         align-items: baseline;
-        gap: 10px;
+        gap: 12px;
     }
 
     :root[data-table-density='compact'] .row-action {
@@ -1566,7 +1596,7 @@ select:not([multiple], [size]) {
 .row-actions-buttons {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .row-action {
@@ -1725,7 +1755,7 @@ select:not([multiple], [size]) {
 .row-action-view > button {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     padding-inline: 12px;
     font-size: 14.5px;
     font-weight: 600;
@@ -1900,6 +1930,12 @@ html[data-modal-open] {
     overflow: hidden;
 }
 
+/* A window closes at once, as it always has: no exit animation holds it on screen. */
+:root .modal-scroll[data-exiting],
+:root .modal-scroll .modal-sheet-panel[data-exiting] {
+    animation: none;
+}
+
 /* Windows: the page behind is dimmed in neutral black, and the panel is a solid card. */
 .modal-scrim {
     background: rgb(10 13 17 / 0.5);
@@ -2038,7 +2074,7 @@ html[data-modal-open] {
     position: relative;
     width: min(270px, 70vw);
     aspect-ratio: 782 / 455;
-    margin: 0 auto 34px;
+    margin: 0 auto 32px;
     perspective: 600px;
 }
 
@@ -2357,8 +2393,8 @@ input[type='radio'] {
 
 /* Dashboard rows that open a subscriber's statement: the whole row answers the pointer and the press. */
 .dashboard-row-link {
-    margin-inline: -10px;
-    padding-inline: 10px;
+    margin-inline: -12px;
+    padding-inline: 12px;
     border-radius: calc(14px * var(--radius-scale, 1));
     transition:
         background-color 140ms ease,
@@ -2410,7 +2446,7 @@ input[type='radio'] {
 .pd-source {
     position: fixed;
     top: 0;
-    left: 0;
+    inset-inline-start: 0;
     z-index: -1;
     width: 1400px;
     height: 1px;
@@ -2439,6 +2475,11 @@ input[type='radio'] {
     box-shadow: 0 18px 40px -18px rgb(var(--shadow-ink) / 0.45);
 }
 
+/* A receipt is a sheet of paper: its 10mm margin is print geometry, not screen spacing. */
+.pd-receipt {
+    padding: 10mm;
+}
+
 .pd-table {
     width: 100%;
     border-collapse: collapse;
@@ -2446,7 +2487,7 @@ input[type='radio'] {
 
 .pd-table th,
 .pd-table td {
-    padding: var(--pd-pad) 6px;
+    padding: var(--pd-pad) 8px;
     vertical-align: top;
     white-space: pre-line;
 }
@@ -3041,7 +3082,7 @@ input[type='radio'] {
 
 :root[data-ui-buttons='pill'] :is(.ui-btn-primary, .ui-btn-secondary, .ui-btn-danger) {
     border-radius: 999px;
-    padding-inline: 1.25rem;
+    padding-inline: 1.5rem;
 }
 
 /*
@@ -3164,7 +3205,7 @@ input[type='radio'] {
  */
 :root[data-ui-background='graphite'] button.tn-drawer-group {
     min-height: 36px;
-    padding-inline: 10px;
+    padding-inline: 12px;
     border-radius: 10px;
     font-size: 12px;
     font-weight: 700;
@@ -3191,7 +3232,7 @@ input[type='radio'] {
 
 :root[data-ui-background='graphite'] :is(a.tn-drawer-group, .tn-drawer-link) {
     min-height: 40px;
-    padding-inline: 10px;
+    padding-inline: 12px;
     border-radius: 12px;
     font-size: 14px;
     font-weight: 600;
@@ -3352,7 +3393,7 @@ input[type='radio'] {
 
 /* Page titles (`pageTitle`, PageHeader): a bar of the company's colour at their start, or a line under them. */
 :root[data-ui-page-title='bar'] .ui-page-title {
-    padding-inline-start: 14px;
+    padding-inline-start: 16px;
     border-inline-start: 5px solid rgb(var(--brand-500));
 }
 
@@ -3434,12 +3475,12 @@ input[type='radio'] {
 }
 
 :root[data-ui-button-size='compact'] :is(.ui-btn-primary, .ui-btn-secondary, .ui-btn-danger) {
-    padding: 0.4rem 0.8rem;
+    padding: 0.5rem 0.75rem;
     font-size: 0.875rem;
 }
 
 :root[data-ui-button-size='large'] :is(.ui-btn-primary, .ui-btn-secondary, .ui-btn-danger) {
-    padding: 0.8rem 1.35rem;
+    padding: 0.75rem 1.5rem;
     font-size: 1.0625rem;
 }
 
@@ -3631,7 +3672,7 @@ input[type='radio'] {
 
     :root[data-ui-tables='spreadsheet'] .data-table :is(th, td),
     :root[data-ui-tables='spreadsheet'] .data-table td:is(:first-child, :last-child) {
-        padding: 5px 10px;
+        padding: 4px 12px;
         border: 1px solid rgb(var(--gray-200));
         font-variant-numeric: tabular-nums;
     }
@@ -3666,7 +3707,7 @@ input[type='radio'] {
     }
 
     :root[data-ui-density='spacious'] .data-table td {
-        padding-block: 20px;
+        padding-block: 16px;
     }
 }
 
@@ -3771,7 +3812,7 @@ input[type='radio'] {
     }
 
     :root:is([data-ui-table-variant='ledger'], [data-ui-table-variant='striped'], [data-ui-table-variant='bordered']) .data-table th {
-        padding-block: 13px;
+        padding-block: 12px;
         font-weight: 700;
     }
 
@@ -3795,7 +3836,7 @@ input[type='radio'] {
 
     :root[data-ui-table-variant='ledger'] .data-table td,
     :root[data-ui-table-variant='ledger'] .data-table td:is(:first-child, :last-child) {
-        padding-block: 11px;
+        padding-block: 12px;
     }
 
     :root[data-ui-table-variant='ledger'] .data-table td:first-child {
@@ -3945,7 +3986,7 @@ input[type='radio'] {
 }
 
 :root[data-ui-background='graphite'] .data-table-toolbar {
-    padding: 16px 18px;
+    padding: 16px 16px;
     border-radius: calc(20px * var(--radius-scale, 1)) calc(20px * var(--radius-scale, 1)) 0 0;
     box-shadow: none;
 }
@@ -3955,7 +3996,7 @@ input[type='radio'] {
 }
 
 :root[data-ui-background='graphite'] .data-table-container {
-    padding: 4px 10px 8px;
+    padding: 4px 12px 8px;
     border-radius: calc(20px * var(--radius-scale, 1));
     box-shadow: var(--panel-shadow);
 }
@@ -3966,7 +4007,7 @@ input[type='radio'] {
 }
 
 :root[data-ui-background='graphite'] .data-table-totals {
-    padding: 12px 18px;
+    padding: 12px 16px;
 }
 
 :root[data-ui-background='graphite'] .data-table-totals + .data-table-pagination {
@@ -3974,7 +4015,7 @@ input[type='radio'] {
 }
 
 :root[data-ui-background='graphite'] .data-table-pagination {
-    padding: 12px 18px 14px;
+    padding: 12px 16px 12px;
     border-radius: 0 0 calc(20px * var(--radius-scale, 1)) calc(20px * var(--radius-scale, 1));
 }
 
@@ -4008,7 +4049,7 @@ input[type='radio'] {
 
     :root[data-ui-background='graphite'] .data-table th,
     :root[data-ui-background='graphite'][data-ui-table-header] .data-table th {
-        padding: 10px 12px;
+        padding: 8px 12px;
         border: 0;
         border-radius: 0;
         background: none;
@@ -4020,7 +4061,7 @@ input[type='radio'] {
     :root[data-ui-background='graphite'] .data-table td,
     :root[data-ui-background='graphite'] .data-table td:first-child,
     :root[data-ui-background='graphite'] .data-table td:last-child {
-        padding: 11px 12px;
+        padding: 12px 12px;
         border: 0;
         border-top: 1px solid var(--gl-line);
         border-radius: 0;
@@ -4061,13 +4102,13 @@ input[type='radio'] {
 }
 
 :root[data-ui-background='graphite'][data-ui-navigation] .data-table-toolbar {
-    padding: 16px 20px 12px;
+    padding: 16px 16px 12px;
     border-radius: calc(24px * var(--radius-scale, 1)) calc(24px * var(--radius-scale, 1)) 0 0;
     box-shadow: var(--panel-shadow);
 }
 
 :root[data-ui-background='graphite'][data-ui-navigation] .data-table-container {
-    padding: 0 12px 6px;
+    padding: 0 12px 8px;
     border-radius: calc(24px * var(--radius-scale, 1));
     box-shadow: var(--panel-shadow);
 }
@@ -4079,7 +4120,7 @@ input[type='radio'] {
 }
 
 :root[data-ui-background='graphite'][data-ui-navigation] .data-table-pagination {
-    padding: 12px 20px 16px;
+    padding: 12px 16px 16px;
     border-top: 1px solid var(--gl-line);
     border-radius: 0 0 calc(24px * var(--radius-scale, 1)) calc(24px * var(--radius-scale, 1));
     box-shadow: var(--panel-shadow);
@@ -4409,12 +4450,12 @@ html:not(.dark)[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg 
  */
 :root[data-ui-navigation] .data-table-toolbar {
     gap: 8px;
-    padding: 14px 16px 10px;
+    padding: 12px 16px 8px;
     border-radius: calc(22px * var(--radius-scale, 1)) calc(22px * var(--radius-scale, 1)) 0 0;
 }
 
 :root[data-ui-navigation] .data-table-toolbar > .gl-filter-row {
-    padding-top: 2px;
+    padding-top: 4px;
     border-top: 0;
 }
 
@@ -4610,7 +4651,7 @@ body {
 }
 
 .gl-co-head .gl-dialog-head {
-    padding: 20px 24px 16px;
+    padding: 16px 24px 16px;
 }
 
 .gl-co-head .gl-tone {
@@ -4639,14 +4680,14 @@ body {
 }
 
 .gl-co-body {
-    gap: 22px;
-    padding: 4px 26px 24px;
+    gap: 24px;
+    padding: 4px 24px 24px;
 }
 
 /* The amount: one soft card, its figure large, ringed in green while typed. */
 .gl-co-amount {
-    gap: 10px;
-    padding: 18px 12px 20px;
+    gap: 12px;
+    padding: 16px 12px 16px;
     border-radius: 24px;
     background: linear-gradient(180deg, color-mix(in oklab, var(--ma-solid) 70%, transparent), color-mix(in oklab, var(--ma-tile) 80%, transparent));
     box-shadow: var(--ma-hl), inset 0 0 0 1px var(--ma-line);
@@ -4676,7 +4717,7 @@ body {
 .gl-co-currency button {
     height: 44px;
     min-height: 44px;
-    padding-inline: 12px 10px;
+    padding-inline: 12px 12px;
     border: 0 !important;
     border-radius: 14px;
     background: var(--ma-solid) !important;
@@ -4685,12 +4726,12 @@ body {
 }
 
 .gl-co-quick {
-    gap: 6px;
+    gap: 8px;
 }
 
 .gl-co .gl-co-chip {
     height: 34px;
-    padding: 0 13px;
+    padding: 0 12px;
     border: 0;
     border-radius: 11px;
     background: var(--ma-solid);
@@ -4742,7 +4783,7 @@ body {
 .gl-co .gl-co-method-content,
 .gl-co .gl-co-method-content:hover {
     min-height: 0;
-    gap: 14px;
+    gap: 16px;
     padding: 16px;
     border-radius: 20px;
     background: var(--ma-tile);
@@ -4829,8 +4870,8 @@ body {
 
 /* The receipt's column: a green light over the tile. */
 .gl-co-aside {
-    gap: 14px;
-    padding: 22px 22px 24px;
+    gap: 16px;
+    padding: 24px 24px 24px;
     border-inline-start: 1px solid var(--ma-line);
     background:
         radial-gradient(120% 70% at 50% 0%, color-mix(in oklab, var(--ma-pay) 10%, transparent), transparent 70%),
@@ -4838,7 +4879,7 @@ body {
 }
 
 .gl-co-paper {
-    padding: 20px 20px 26px;
+    padding: 16px 16px 24px;
     border-radius: 18px 18px 6px 6px;
     background: var(--ma-solid);
     box-shadow: 0 1px 2px rgb(16 20 26 / 0.06), 0 22px 40px -22px rgb(16 20 26 / 0.45);
@@ -4865,7 +4906,7 @@ body {
 
 /* The footer: the keys, what will be recorded, and the green button with its light and shadow. */
 .gl-co-foot {
-    padding: 14px 24px 18px;
+    padding: 12px 24px 16px;
     border-top: 1px solid var(--ma-line);
 }
 
@@ -4952,14 +4993,14 @@ body {
 
 :root[data-ui-navigation] .data-table-toolbar,
 :root[data-ui-background='graphite'][data-ui-navigation] .data-table-toolbar {
-    padding: 14px 16px 10px;
+    padding: 12px 16px 8px;
     border-radius: 22px 22px 0 0;
     box-shadow: var(--ma-hl);
 }
 
 :root[data-ui-navigation] .data-table-container,
 :root[data-ui-background='graphite'][data-ui-navigation] .data-table-container {
-    padding: 0 10px 4px;
+    padding: 0 12px 4px;
     border-radius: 22px;
     box-shadow: var(--ma-depth);
 }
@@ -4978,7 +5019,7 @@ body {
 
 :root[data-ui-navigation] .data-table-pagination,
 :root[data-ui-background='graphite'][data-ui-navigation] .data-table-pagination {
-    padding: 12px 16px 14px;
+    padding: 12px 16px 12px;
     border-radius: 0 0 22px 22px;
     color: var(--ma-muted);
     font-size: 14px;
@@ -5135,7 +5176,7 @@ body {
 :root[data-ui-navigation] .data-table .area-chip,
 .dark:root[data-ui-navigation] .data-table .area-chip {
     height: 26px;
-    padding: 0 10px;
+    padding: 0 12px;
     border: 0;
     border-radius: 99px;
     background: var(--ma-tile);
@@ -5157,7 +5198,7 @@ body {
 :root[data-ui-navigation] .data-table .gl-pill {
     height: 26px;
     min-height: 26px;
-    padding: 0 10px;
+    padding: 0 12px;
     background: var(--ma-tile);
     color: var(--ma-muted);
     font-size: 13px;
@@ -5253,7 +5294,7 @@ body {
 
 :root[data-ui-navigation] .tn-header .tn-bar .tn-branch-chip {
     height: 42px;
-    padding-inline: 14px;
+    padding-inline: 16px;
     border: 0;
     border-radius: 14px;
     background: var(--ma-panel);
@@ -5290,8 +5331,8 @@ body {
 
 /* Solid or glass: a grey track, the chosen one white and raised. */
 :root[data-ui-navigation] .tn-header .tn-bar .tn-surface.gl-seg {
-    gap: 2px;
-    padding: 3px;
+    gap: 4px;
+    padding: 4px;
     border: 0;
     border-radius: 12px;
     background: var(--ma-tile);
@@ -5300,7 +5341,7 @@ body {
 :root[data-ui-navigation] .tn-header .tn-bar .tn-surface.gl-seg button {
     height: 34px;
     min-height: 34px;
-    padding-inline: 10px;
+    padding-inline: 12px;
     border-radius: 9px;
     color: var(--ma-muted);
     font-size: 13px;
@@ -5352,9 +5393,9 @@ body {
         flex: 1 1 260px;
         min-width: 0;
         max-width: 460px;
-        gap: 10px;
+        gap: 12px;
         margin-inline-end: auto;
-        padding-inline: 14px;
+        padding-inline: 16px;
     }
 
     :root[data-ui-navigation] .tn-header .tn-bar .tn-search .tn-search-text {
@@ -5409,9 +5450,9 @@ body {
     position: relative;
     display: grid;
     justify-items: center;
-    gap: 6px;
+    gap: 8px;
     min-height: 0;
-    padding: 16px 10px 14px;
+    padding: 16px 12px 12px;
     border: 0;
     border-radius: 18px;
     background: var(--ma-tile);
@@ -5476,7 +5517,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
     padding: 12px 16px;
     color: var(--ma-muted);
     font-size: 13.5px;
@@ -5489,7 +5530,7 @@ body {
 
 .gl-cl-scroll {
     overflow-x: auto;
-    padding: 0 10px 10px;
+    padding: 0 12px 8px;
 }
 
 .gl-cl-table {
@@ -5523,7 +5564,7 @@ body {
 
 .gl-cl-table td {
     height: 52px;
-    padding: 6px 12px;
+    padding: 8px 12px;
     border-bottom: 1px solid var(--ma-line);
     vertical-align: middle;
 }
@@ -5569,7 +5610,7 @@ body {
     display: inline-flex;
     align-items: center;
     height: 24px;
-    padding: 0 10px;
+    padding: 0 12px;
     border-radius: 99px;
     background: var(--cl-t);
     color: #fff;
@@ -5586,7 +5627,7 @@ body {
 .gl-cl-in {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     min-height: 44px;
     padding: 0 12px;
     border-radius: 12px;
@@ -5656,19 +5697,19 @@ body {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px 14px;
+    gap: 8px 16px;
     margin-top: 12px;
 }
 
 .gl-cl-quick {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
 }
 
 .gl-cl-quick button {
     height: 34px;
-    padding: 0 13px;
+    padding: 0 12px;
     border: 0;
     border-radius: 11px;
     background: var(--ma-solid);
@@ -5681,7 +5722,7 @@ body {
 .gl-cl-lock {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     height: 32px;
     padding: 0 12px;
     border-radius: 99px;
@@ -5742,8 +5783,8 @@ body {
         display: grid;
         grid-template-columns: auto minmax(0, 1fr) auto;
         align-items: center;
-        gap: 4px 10px;
-        padding: 10px 6px;
+        gap: 4px 12px;
+        padding: 8px 8px;
         border-bottom: 1px solid var(--ma-line);
     }
 
@@ -5762,7 +5803,7 @@ body {
 
     .gl-cl-table tr.is-new {
         grid-template-columns: minmax(0, 1fr) auto;
-        gap: 10px;
+        gap: 12px;
         margin-top: 4px;
         padding: 12px;
         border: 0;
@@ -5822,7 +5863,7 @@ body {
 }
 
 .gl-sheet[data-ledger-tone] .gl-dialog-head {
-    padding: 20px 24px 16px;
+    padding: 16px 24px 16px;
     border: 0;
 }
 
@@ -5857,8 +5898,8 @@ body {
 }
 
 .gl-sheet[data-ledger-tone] .gl-sheet-body {
-    gap: 18px;
-    padding: 4px 24px 22px;
+    gap: 16px;
+    padding: 4px 24px 24px;
 }
 
 /* The type tiles carry their key number in the corner. */
@@ -5875,7 +5916,7 @@ body {
     position: absolute;
     top: 8px;
     inset-inline-start: 8px;
-    padding: 0 6px;
+    padding: 0 8px;
     border: 1px solid var(--ma-line);
     border-bottom-width: 2px;
     border-radius: 6px;
@@ -5902,8 +5943,8 @@ body {
 /* Footer: the keys, the balance it leaves, then cancel and the red button. */
 .gl-cl-foot {
     flex-wrap: wrap;
-    gap: 10px 14px;
-    padding: 14px 24px 18px;
+    gap: 8px 16px;
+    padding: 12px 24px 16px;
     border-top: 1px solid var(--ma-line);
 }
 
@@ -6020,7 +6061,7 @@ body {
 /* A notice inside the window (an amount above what is owed). */
 .gl-cl-note {
     margin-top: 12px;
-    padding: 12px 14px;
+    padding: 12px 16px;
     border-radius: 16px;
     background: var(--ma-warn-s);
     color: var(--ma-ink);
@@ -6031,8 +6072,8 @@ body {
 .gl-cl-note label {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-top: 6px;
+    gap: 12px;
+    margin-top: 8px;
     font-weight: 700;
     cursor: pointer;
 }
@@ -6046,7 +6087,7 @@ body {
 @media (max-width: 600px) {
     .gl-cl-foot .gl-sheet-btn.is-submit.button {
         min-width: 0;
-        padding-inline: 14px;
+        padding-inline: 16px;
         font-size: 15px;
         white-space: normal;
         line-height: 1.25;
@@ -6339,7 +6380,7 @@ body {
 
 .gl-sp-table tr.is-new td {
     height: 68px;
-    padding: 10px 12px;
+    padding: 8px 12px;
 }
 
 .gl-sp-table tr.is-new td:first-child {
@@ -6358,7 +6399,7 @@ body {
 
 .gl-sp-table td:last-child {
     width: 46px;
-    padding-inline: 4px 10px;
+    padding-inline: 4px 12px;
 }
 
 .gl-sp-table td[data-tone],
@@ -6435,7 +6476,7 @@ body {
 
 .gl-sp-err td {
     height: auto !important;
-    padding: 2px 12px 8px !important;
+    padding: 4px 12px 8px !important;
     border: 0 !important;
 }
 
@@ -6477,7 +6518,7 @@ body {
 }
 
 .gl-sheet[data-ledger-tone='split'] .gl-dialog-foot {
-    padding: 14px 24px 18px;
+    padding: 12px 24px 16px;
     border-top: 1px solid var(--ma-line);
 }
 
@@ -6492,7 +6533,7 @@ body {
         position: relative;
         grid-template-columns: auto minmax(0, 1fr) auto;
         align-items: center;
-        gap: 10px 12px;
+        gap: 8px 12px;
         margin-bottom: 8px;
         padding: 12px;
     }
@@ -6508,7 +6549,7 @@ body {
     .gl-sp-table tr.is-new td:nth-child(1) {
         grid-column: 1 / -1;
         order: 1;
-        padding-inline-end: 40px;
+        padding-inline-end: var(--room-icon);
     }
 
     .gl-sp-table tr.is-new td:nth-child(2) {
@@ -6578,7 +6619,7 @@ body {
  */
 .gl-sheet[data-ledger-tone] .gl-sheet-body,
 .gl-co .gl-co-body {
-    gap: 20px;
+    gap: 24px;
     padding: 4px 24px 24px;
 }
 
@@ -6665,7 +6706,7 @@ body {
 }
 
 :root[data-ui-navigation] .data-table .row-action-view > button {
-    gap: 6px;
+    gap: 8px;
     padding-inline: 12px;
     font-size: 13.5px;
     font-weight: 700;
@@ -6938,7 +6979,7 @@ body {
 .modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)) :is(.gl-dialog-foot, .gl-fm-foot) .ui-btn-primary,
 .modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)) :is(.gl-dialog-foot, .gl-fm-foot) .ui-btn-primary:hover:not(:disabled) {
     height: 46px;
-    padding-inline: 22px;
+    padding-inline: 24px;
     border: 0;
     border-radius: 14px;
     background: linear-gradient(180deg, color-mix(in oklab, var(--ma-act) 88%, white), var(--ma-act));
@@ -6954,7 +6995,7 @@ body {
 .modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)) :is(.gl-dialog-foot, .gl-fm-foot) .gl-sec,
 .modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)) :is(.gl-dialog-foot, .gl-fm-foot) .gl-sec:hover:not(:disabled) {
     height: 46px;
-    padding-inline: 18px;
+    padding-inline: 16px;
     border: 0;
     border-radius: 14px;
     background: var(--ma-tile);
@@ -7005,7 +7046,7 @@ body {
 }
 
 .gl-statement > .gl-dialog-head {
-    padding: 18px 22px 14px;
+    padding: 16px 24px 12px;
     border: 0;
 }
 
@@ -7064,7 +7105,7 @@ body {
 .account-statement .gl-st-top {
     display: grid;
     grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
-    gap: 14px;
+    gap: 16px;
     align-items: start;
     margin-bottom: 16px;
 }
@@ -7072,7 +7113,7 @@ body {
 .account-statement .gl-st-kpis {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
+    gap: 12px;
 }
 
 @media (max-width: 900px) {
@@ -7086,8 +7127,8 @@ body {
 }
 
 .account-statement .gl-kpi.card.gl-st-fig {
-    gap: 2px;
-    padding: 14px 16px;
+    gap: 4px;
+    padding: 12px 16px;
     border: 0;
     border-radius: 18px;
     background: var(--ma-panel);
@@ -7099,7 +7140,7 @@ body {
 .account-statement .gl-st-fig > small {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     color: var(--ma-muted);
     font-size: 13px;
     font-weight: 700;
@@ -7156,7 +7197,7 @@ body {
     position: relative;
     z-index: 1;
     gap: 4px 16px;
-    padding-inline-end: 84px;
+    padding-inline-end: var(--room-mark);
     font-size: 13.5px;
 }
 
@@ -7178,7 +7219,7 @@ body {
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-    padding: 14px 16px 10px;
+    padding: 12px 16px 8px;
 }
 
 .gl-st-tb-grow {
@@ -7223,8 +7264,8 @@ body {
 }
 
 .gl-st-tb .gl-seg-group {
-    gap: 2px;
-    padding: 3px;
+    gap: 4px;
+    padding: 4px;
     border: 0;
     border-radius: 12px;
     background: var(--ma-tile);
@@ -7270,7 +7311,7 @@ body {
 .account-statement .gl-st-scroll {
     position: relative;
     overflow-x: auto;
-    padding: 0 10px 10px;
+    padding: 0 12px 8px;
 }
 
 .account-statement .gl-st-table {
@@ -7286,7 +7327,7 @@ body {
     top: 0;
     z-index: 2;
     height: 40px;
-    padding: 0 10px;
+    padding: 0 12px;
     border: 0;
     background: var(--ma-tile);
     color: var(--ma-muted);
@@ -7308,7 +7349,7 @@ body {
 
 .account-statement .gl-st-table tbody td {
     height: 56px;
-    padding: 6px 10px;
+    padding: 8px 12px;
     border: 0;
     border-bottom: 1px solid var(--ma-line);
     vertical-align: middle;
@@ -7431,7 +7472,7 @@ body {
 }
 
 .account-statement .gl-st-foot {
-    padding: 10px 16px 14px;
+    padding: 8px 16px 12px;
     border: 0;
     color: var(--ma-muted);
     font-size: 13.5px;
@@ -7564,9 +7605,9 @@ body {
         position: relative;
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px 14px;
+        gap: 8px 16px;
         margin-bottom: 8px;
-        padding: 12px 14px;
+        padding: 12px 16px;
         border-radius: 18px;
         background: var(--ma-solid);
         box-shadow: var(--ma-depth);
@@ -7574,7 +7615,7 @@ body {
 
     .account-statement .gl-st-table tbody tr:not(.gl-st-month) > td {
         display: grid;
-        gap: 1px;
+        gap: 4px;
         height: auto;
         padding: 0;
         border: 0;
@@ -7593,7 +7634,7 @@ body {
         grid-column: 1 / -1;
         order: -2;
         max-width: none;
-        padding-inline-end: 44px;
+        padding-inline-end: var(--room-icon-wide);
     }
 
     .account-statement .gl-st-table tbody tr > td.gl-st-desc::before,
@@ -7624,7 +7665,7 @@ body {
 
     .account-statement .gl-st-table tr.gl-st-month {
         display: block;
-        margin: 10px 0 8px;
+        margin: 8px 0 8px;
     }
 
     .account-statement .gl-st-table tr.gl-st-month > td {
@@ -7646,7 +7687,7 @@ body {
         justify-content: flex-start;
         max-width: calc(100% - 8px);
         overflow-x: auto;
-        padding: 6px;
+        padding: 8px;
         border-radius: 16px;
         scrollbar-width: none;
     }
@@ -7687,7 +7728,7 @@ body {
 }
 
 .gl-statement-body {
-    padding: 0 22px 22px;
+    padding: 0 24px 24px;
 }
 
 .gl-st-sort {

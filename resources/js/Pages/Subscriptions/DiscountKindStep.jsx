@@ -15,7 +15,7 @@ export default function DiscountKindStep({ changeKind, data, isStanding, setConf
         <FormStep number={steps.kind} title="نوع الخصم" done>
             <ChoiceCards name="kind" label="نوع الخصم" value={data.kind} onChange={changeKind} options={KINDS} />
             {isStanding && standingDiscount && (
-                <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-emerald-600/45 bg-emerald-500/10 px-3.5 py-3 text-sm">
+                <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-emerald-600/45 bg-emerald-500/10 px-4 py-3 text-sm">
                     <Icon name="repeat" className="h-[18px] w-[18px] shrink-0 text-emerald-700 dark:text-emerald-400" />
                     <div className="min-w-0 flex-1">
                         <b className="font-bold text-gray-900">

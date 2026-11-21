@@ -230,7 +230,7 @@ export default function AuthenticatedLayout({ header, badges = NO_BADGES, scope 
             />
 
             <div className="tn-content">
-                <main id="main-content" tabIndex={-1} className="mx-auto max-w-(--ui-content-width) px-(--tn-gutter) pb-16 pt-7 outline-hidden">
+                <main id="main-content" tabIndex={-1} className="mx-auto max-w-(--ui-content-width) px-(--tn-gutter) pb-8 pt-6 outline-hidden">
                     {/* As in the redesign: the trail, the title and its line, the section's tabs, then the page's actions. */}
                     <div className="gl-page-top">
                         <Breadcrumb trail={trail} />

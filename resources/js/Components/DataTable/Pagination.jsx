@@ -69,7 +69,7 @@ export default function Pagination({ meta, filters, baseUrl, extraParams = {}, p
 
                     {pageNumbers(current, last).map((page, index) =>
                         page === '…' ? (
-                            <span key={`ellipsis-${index}`} className="px-1.5 text-sm text-(--gl-faint)!">
+                            <span key={`ellipsis-${index}`} className="px-2 text-sm text-(--gl-faint)!">
                                 …
                             </span>
                         ) : (

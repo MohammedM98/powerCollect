@@ -2,7 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Card, Chip } from '@heroui/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Sparkline from '@/Components/Charts/Sparkline';
-import { Figure, SegmentedChoice } from '@/Components/UI';
+import { Figure, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, SegmentedChoice } from '@/Components/UI';
 import { formatMoney, formatNumber, percentOf, timeAgo } from '@/lib/format';
 import { branchPlace } from './BranchMark';
 import PageHeader from '@/Components/PageHeader';
@@ -76,55 +76,51 @@ export default function Index({ sort, summary, branches }) {
                         <p className="gl-rp-empty">لا توجد فروع بعد.</p>
                     ) : (
                         <div className="gl-rp-scroll">
-                            <table className="gl-rp-table" aria-label="ترتيب الفروع">
-                                <thead>
-                                    <tr>
-                                        <th><span className="sr-only">الترتيب</span></th>
-                                        <th>الفرع</th>
-                                        <th className="num">التحميلات</th>
-                                        <th className="num">المقبوضات</th>
-                                        <th>نسبة التحصيل</th>
-                                        <th className="num">الديون</th>
-                                        <th className="num">+90 يومًا</th>
-                                        <th>آخر 14 يومًا</th>
-                                        <th>المشتركون</th>
-                                        <th>آخر حركة</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                            <ListTable className="gl-rp-table" aria-label="ترتيب الفروع">
+                                <ListHeader>
+                                    <ListColumn id="rank"><span className="sr-only">الترتيب</span></ListColumn>
+                                    <ListColumn id="name" isRowHeader>الفرع</ListColumn>
+                                    <ListColumn id="charges" className="num">التحميلات</ListColumn>
+                                    <ListColumn id="collected" className="num">المقبوضات</ListColumn>
+                                    <ListColumn id="rate">نسبة التحصيل</ListColumn>
+                                    <ListColumn id="owed" className="num">الديون</ListColumn>
+                                    <ListColumn id="older" className="num">+90 يومًا</ListColumn>
+                                    <ListColumn id="sparkline">آخر 14 يومًا</ListColumn>
+                                    <ListColumn id="subscriptions">المشتركون</ListColumn>
+                                    <ListColumn id="last">آخر حركة</ListColumn>
+                                </ListHeader>
+                                <ListBody>
                                     {branches.map((branch) => (
-                                        <tr key={branch.id} data-quiet={branch.weekEntries === 0 || undefined}>
-                                            <td><span className="gl-bp-rank" data-top={branch.rank === 1 || undefined}>{branch.rank}</span></td>
-                                            <td>
+                                        <ListRow key={branch.id} id={branch.id} data-quiet={branch.weekEntries === 0 || undefined}>
+                                            <ListCell><span className="gl-bp-rank" data-top={branch.rank === 1 || undefined}>{branch.rank}</span></ListCell>
+                                            <ListCell>
                                                 <Link href={`/branch-performance/${branch.id}`} className="gl-bp-name">{branch.name}</Link>
                                                 <small className="gl-bp-place">{[branchPlace(branch), `${formatNumber(branch.staff)} موظف`, !branch.isActive && 'متوقف'].filter(Boolean).join('، ')}</small>
-                                            </td>
-                                            <td className="num"><bdi dir="ltr">{formatMoney(branch.chargesTotal)}</bdi></td>
-                                            <td className="num" data-tone="pay"><b><bdi dir="ltr">{formatMoney(branch.collectedTotal)}</bdi></b></td>
-                                            <td><RateBar value={branch.collectionRate} /></td>
-                                            <td className="num" data-tone={Number(branch.owed) > 0 ? 'owe' : undefined}><bdi dir="ltr">{formatMoney(branch.owed)}</bdi><small className="gl-bp-place">{formatNumber(branch.debtors)} مدين</small></td>
-                                            <td className="num" data-tone={Number(branch.older) > 0 ? 'owe' : undefined}><bdi dir="ltr">{formatMoney(branch.older)}</bdi></td>
-                                            <td><Sparkline values={branch.sparkline} label={`إدخالات ${branch.name} في آخر 14 يومًا`} className="h-7 w-24" /></td>
-                                            <td>{formatNumber(branch.activeSubscriptions)} نشط<small className="gl-bp-place">{percentOf(branch.activeSubscriptions, branch.subscriptions)}% من {formatNumber(branch.subscriptions)}</small></td>
-                                            <td>{branch.lastEntryAt ? timeAgo(branch.lastEntryAt) : <Chip size="sm" variant="soft" className="gl-bp-none" data-tone="warn">لا حركة</Chip>}</td>
-                                        </tr>
+                                            </ListCell>
+                                            <ListCell className="num"><bdi dir="ltr">{formatMoney(branch.chargesTotal)}</bdi></ListCell>
+                                            <ListCell className="num" data-tone="pay"><b><bdi dir="ltr">{formatMoney(branch.collectedTotal)}</bdi></b></ListCell>
+                                            <ListCell><RateBar value={branch.collectionRate} /></ListCell>
+                                            <ListCell className="num" data-tone={Number(branch.owed) > 0 ? 'owe' : undefined}><bdi dir="ltr">{formatMoney(branch.owed)}</bdi><small className="gl-bp-place">{formatNumber(branch.debtors)} مدين</small></ListCell>
+                                            <ListCell className="num" data-tone={Number(branch.older) > 0 ? 'owe' : undefined}><bdi dir="ltr">{formatMoney(branch.older)}</bdi></ListCell>
+                                            <ListCell><Sparkline values={branch.sparkline} label={`إدخالات ${branch.name} في آخر 14 يومًا`} className="h-7 w-24" /></ListCell>
+                                            <ListCell>{formatNumber(branch.activeSubscriptions)} نشط<small className="gl-bp-place">{percentOf(branch.activeSubscriptions, branch.subscriptions)}% من {formatNumber(branch.subscriptions)}</small></ListCell>
+                                            <ListCell>{branch.lastEntryAt ? timeAgo(branch.lastEntryAt) : <Chip size="sm" variant="soft" className="gl-bp-none" data-tone="warn">لا حركة</Chip>}</ListCell>
+                                        </ListRow>
                                     ))}
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td />
-                                        <td>المجموع، {formatNumber(summary.branches)} فروع</td>
-                                        <td className="num"><bdi dir="ltr">{formatMoney(summary.chargesTotal)}</bdi></td>
-                                        <td className="num"><bdi dir="ltr">{formatMoney(summary.collectedTotal)}</bdi></td>
-                                        <td>{totalRate === null ? '—' : `${totalRate}%`}</td>
-                                        <td className="num"><bdi dir="ltr">{formatMoney(summary.owed)}</bdi></td>
-                                        <td className="num"><bdi dir="ltr">{formatMoney(summary.older)}</bdi></td>
-                                        <td>{formatNumber(summary.weekEntries)} في 7 أيام</td>
-                                        <td>{formatNumber(summary.activeSubscriptions)} نشط</td>
-                                        <td />
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                    <ListRow id="totals" className="is-total">
+                                        <ListCell />
+                                        <ListCell>المجموع، {formatNumber(summary.branches)} فروع</ListCell>
+                                        <ListCell className="num"><bdi dir="ltr">{formatMoney(summary.chargesTotal)}</bdi></ListCell>
+                                        <ListCell className="num"><bdi dir="ltr">{formatMoney(summary.collectedTotal)}</bdi></ListCell>
+                                        <ListCell>{totalRate === null ? '—' : `${totalRate}%`}</ListCell>
+                                        <ListCell className="num"><bdi dir="ltr">{formatMoney(summary.owed)}</bdi></ListCell>
+                                        <ListCell className="num"><bdi dir="ltr">{formatMoney(summary.older)}</bdi></ListCell>
+                                        <ListCell>{formatNumber(summary.weekEntries)} في 7 أيام</ListCell>
+                                        <ListCell>{formatNumber(summary.activeSubscriptions)} نشط</ListCell>
+                                        <ListCell />
+                                    </ListRow>
+                                </ListBody>
+                            </ListTable>
                         </div>
                     )}
                 </Card.Content>

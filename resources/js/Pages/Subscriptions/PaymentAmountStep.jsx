@@ -99,7 +99,7 @@ export default function PaymentAmountStep({
                 <InputError message={errors.payment_token} className="mt-2" />
                 <InputError message={errors.exchange_rate} className="mt-2" />
                 {errors.amount && (
-                    <p id={`${titleId}-amount-error`} role="alert" className="gl-error mt-2 flex items-center gap-1.5">
+                    <p id={`${titleId}-amount-error`} role="alert" className="gl-error mt-2 flex items-center gap-2">
                         <Icon name="info" className="h-[18px] w-[18px]" />
                         {errors.amount}
                     </p>
@@ -111,7 +111,7 @@ export default function PaymentAmountStep({
                         style={{ '--gl-c': overpayment === 'confirm' ? 'var(--gl-bad)' : 'var(--gl-warn)' }}
                     >
                         <p className="flex items-start gap-2 font-medium">
-                            <Icon name="alert" className="mt-0.5 h-[18px] w-[18px] shrink-0" />
+                            <Icon name="alert" className="mt-1 h-[18px] w-[18px] shrink-0" />
                             <span>
                                 {overpayment === 'confirm' ? 'المبلغ أكبر بكثير من المستحق' : 'المبلغ أكبر من المستحق'} على المشترك (
                                 <bdi className="font-display">{formatMoney(owed)}</bdi> ₪)، وسيبقى له رصيد دائن قدره{' '}

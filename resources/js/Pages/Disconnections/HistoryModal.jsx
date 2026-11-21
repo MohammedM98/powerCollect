@@ -36,7 +36,7 @@ export default function HistoryModal({ history, loading, reasonOptions, onClose 
     return (
         <Modal show onClose={onClose} maxWidth="2xl">
             <div role="dialog" aria-modal="true" aria-labelledby="history-title" className="flex max-h-[90vh] flex-col">
-                <div className="flex items-center justify-between border-b border-gray-100 px-7 py-5">
+                <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
                     <div>
                         <h3 id="history-title" className="text-lg font-bold text-gray-900">سجل المشترك في القائمة</h3>
                         {history && (
@@ -49,11 +49,11 @@ export default function HistoryModal({ history, loading, reasonOptions, onClose 
                         <Icon name="close" />
                     </Button>
                 </div>
-                <div className="flex-1 overflow-y-auto px-7 py-6">
+                <div className="flex-1 overflow-y-auto px-6 py-6">
                     {loading || !history ? (
                         <p className="py-8 text-center text-sm text-gray-500">جارٍ التحميل…</p>
                     ) : (
-                        <ol className="relative space-y-5 border-s border-gray-200 ps-6">
+                        <ol className="relative space-y-6 border-s border-gray-200 ps-6">
                             {history.events.map((event) => (
                                 <li key={event.id} className="relative">
                                     <span className="absolute inset-s-[-35px] flex h-7 w-7 items-center justify-center rounded-full bg-graphite-gradient text-white">

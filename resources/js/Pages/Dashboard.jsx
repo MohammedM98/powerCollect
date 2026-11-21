@@ -247,7 +247,7 @@ export default function Dashboard({
                 <DashboardActions actions={quickActions} />
 
                 {!hasAnyData ? (
-                    <Panel index={1} className="py-14 text-center">
+                    <Panel index={1} className="py-8 text-center">
                         {fieldApp ? (
                             <>
                                 <span className="gl-ico mx-auto w-[56px]! h-[56px]! text-[rgb(var(--gl-brand))]!"><Icon name="phone" className="h-7 w-7" /></span>

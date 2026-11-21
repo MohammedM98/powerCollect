@@ -42,9 +42,9 @@ export default function CashBoxShow({ box, entries, collectionUrls, pendingCount
         meta={<>صندوق رقم <bdi dir="ltr" className="font-display">{box.number}</bdi></>}
     />}>
         <Head title={`${boxTypes[box.type]} ${box.number}`} />
-        <div className="financial-surface space-y-5">
+        <div className="financial-surface space-y-6">
             {saved && <p role="status" className="rounded-control bg-emerald-500/10 p-4 text-sm text-emerald-700">{saved}</p>}
-            <section className="space-y-5 rounded-panel border border-gray-100 bg-surface p-5 shadow-card">
+            <section className="space-y-6 rounded-panel border border-gray-100 bg-surface p-4 shadow-card">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-2"><BoxTypeChip type={box.type} /><BoxStage box={box} /></div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -56,7 +56,7 @@ export default function CashBoxShow({ box, entries, collectionUrls, pendingCount
                     {timeline.map(([label, time, icon]) => (
                         <li key={label} className={`flex items-center gap-3 rounded-control border p-3 ${time ? 'border-emerald-500/25 bg-emerald-500/5' : 'border-gray-100 bg-gray-50'}`}>
                             <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${time ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-gray-100 text-gray-400'}`}><Icon name={icon} className="h-4 w-4" /></span>
-                            <div><b className="text-sm text-gray-900">{label}</b><p className="mt-0.5 text-xs text-gray-500">{time ? dateTime(time) : 'لم يحدث بعد'}</p></div>
+                            <div><b className="text-sm text-gray-900">{label}</b><p className="mt-1 text-xs text-gray-500">{time ? dateTime(time) : 'لم يحدث بعد'}</p></div>
                         </li>
                     ))}
                 </ol>

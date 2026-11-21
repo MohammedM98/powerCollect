@@ -92,7 +92,7 @@ export default function FormPage({ title, form, cancelHref, layout: Layout = Aut
                     children
                 )}
 
-                <div className={`sticky bottom-4 z-10 mt-6 flex items-center justify-end gap-3 rounded-card border border-gray-100 bg-surface px-5 py-4 shadow-lift ${outline ? 'gl-fp-foot' : ''}`}>
+                <div className={`sticky bottom-4 z-10 mt-6 flex items-center justify-end gap-3 rounded-card border border-gray-100 bg-surface px-4 py-4 shadow-lift ${outline ? 'gl-fp-foot' : ''}`}>
                     {outline && <FormProgress sections={outline} done={done} />}
                     {outline && <span className="flex-1" />}
                     <Link href={cancelHref} prefetch className={secondaryButtonClass}>

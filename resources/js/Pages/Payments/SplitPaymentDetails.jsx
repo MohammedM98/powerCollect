@@ -11,7 +11,7 @@ function Detail({ label, children, ltr = false }) {
     return (
         <div className="min-w-0 text-start">
             <dt className="text-[13px] font-semibold text-gray-500">{label}</dt>
-            <dd className="mt-0.5 wrap-break-word text-[15px] font-semibold text-gray-900">
+            <dd className="mt-1 wrap-break-word text-[15px] font-semibold text-gray-900">
                 {ltr ? <bdi dir="ltr">{children || '—'}</bdi> : children || '—'}
             </dd>
         </div>
@@ -29,7 +29,7 @@ export default function SplitPaymentDetails({ id, onClose }) {
     return (
         <Modal show onClose={onClose} maxWidth="2xl">
             <div role="dialog" aria-modal="true" aria-label="تفاصيل الدفعة المقسّمة" dir="rtl" className="flex max-h-[90vh] flex-col text-start">
-                <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-5 py-5 sm:px-7">
+                <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-4 py-4 sm:px-6">
                     <div className="flex min-w-0 items-center gap-3">
                         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-glow">
                             <Icon name="layers" />
@@ -44,23 +44,23 @@ export default function SplitPaymentDetails({ id, onClose }) {
                     </Button>
                 </div>
 
-                <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-6 sm:px-7">
+                <div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-6 sm:px-6">
                     {!split && <AsyncState loading={loading} error={error} onRetry={retry} loadingLabel="جارٍ تحميل تفاصيل الدفعة…" />}
 
                     {split && (
                         <>
-                            <div className="flex flex-wrap items-center justify-between gap-3 rounded-[18px] border border-gray-100 bg-gray-50 px-5 py-4">
+                            <div className="flex flex-wrap items-center justify-between gap-3 rounded-[18px] border border-gray-100 bg-gray-50 px-4 py-4">
                                 <div>
                                     <p className="text-[13px] font-semibold text-gray-500">المبلغ المحوَّل</p>
                                     <p className="font-display text-3xl font-bold text-gray-900"><bdi dir="ltr">{formatMoney(split.total)} ₪</bdi></p>
                                 </div>
                                 {split.isComplete ? (
-                                    <p className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3.5 py-1.5 text-sm font-bold text-emerald-700 dark:text-emerald-400">
+                                    <p className="flex items-center gap-2 rounded-full bg-emerald-500/10 px-4 py-2 text-sm font-bold text-emerald-700 dark:text-emerald-400">
                                         <Icon name="check" className="h-4 w-4" />
                                         <span>الأجزاء كاملة = <bdi dir="ltr" className="whitespace-nowrap">{formatMoney(split.standingTotal)} ₪</bdi></span>
                                     </p>
                                 ) : (
-                                    <p className="flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3.5 py-1.5 text-sm font-bold text-amber-800 dark:text-amber-300">
+                                    <p className="flex items-center gap-2 rounded-full bg-amber-500/10 px-4 py-2 text-sm font-bold text-amber-800 dark:text-amber-300">
                                         <Icon name="warning" className="h-4 w-4" />
                                         <span>ناقصة: القائم <bdi dir="ltr">{formatMoney(split.standingTotal)}</bdi> من <bdi dir="ltr" className="whitespace-nowrap">{formatMoney(split.total)} ₪</bdi></span>
                                     </p>
@@ -88,11 +88,11 @@ export default function SplitPaymentDetails({ id, onClose }) {
                                     {split.parts.map((part, index) => (
                                         <li key={part.id} className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 px-4 py-3 text-sm sm:grid-cols-[minmax(0,1fr)_7rem_4.75rem] ${part.isCancelled ? 'bg-gray-50 text-gray-400' : 'bg-surface'}`}>
                                             <div className="flex min-w-0 items-start gap-3">
-                                                <span className="w-5 shrink-0 pt-0.5 font-display text-xs text-gray-400">{index + 1}</span>
+                                                <span className="w-5 shrink-0 pt-1 font-display text-xs text-gray-400">{index + 1}</span>
                                                 <div className="min-w-0">
                                                     <b className={`block wrap-break-word ${part.isCancelled ? 'line-through' : 'text-gray-900'}`}>{part.subscriptionName}</b>
                                                     <bdi dir="ltr" className="mt-1 block text-end font-display text-xs text-gray-500">{part.accountNumber}</bdi>
-                                                    {part.isCancelled && <span className="mt-1 inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs font-bold text-gray-600">{part.cancellationLabel ?? 'ملغاة'}</span>}
+                                                    {part.isCancelled && <span className="mt-1 inline-block rounded-full bg-gray-100 px-2 py-1 text-xs font-bold text-gray-600">{part.cancellationLabel ?? 'ملغاة'}</span>}
                                                 </div>
                                             </div>
                                             <bdi dir="ltr" className={`justify-self-end whitespace-nowrap font-display text-base font-bold ${part.isCancelled ? 'line-through' : 'text-gray-900'}`}>{formatMoney(part.amount)} ₪</bdi>
@@ -101,7 +101,7 @@ export default function SplitPaymentDetails({ id, onClose }) {
                                                     href={part.receiptUrl}
                                                     target="_blank"
                                                     rel="noreferrer"
-                                                    className="tone-print col-start-2 inline-flex items-center gap-1.5 justify-self-end rounded-control border px-2.5 py-1 text-xs font-semibold transition sm:col-start-auto"
+                                                    className="tone-print col-start-2 inline-flex items-center gap-2 justify-self-end rounded-control border px-3 py-1 text-xs font-semibold transition sm:col-start-auto"
                                                 >
                                                     <Icon name="printer" className="h-3.5 w-3.5" />
                                                     السند
@@ -120,7 +120,7 @@ export default function SplitPaymentDetails({ id, onClose }) {
                     )}
                 </div>
 
-                <div className="flex items-center justify-end border-t border-gray-100 bg-gray-50 px-7 py-4">
+                <div className="flex items-center justify-end border-t border-gray-100 bg-gray-50 px-6 py-4">
                     <SecondaryKey onClick={onClose}>إغلاق</SecondaryKey>
                 </div>
             </div>

@@ -5,7 +5,7 @@ import { describeBalance } from '@/lib/accountStatement';
 import { initials, normalizeDecimalInput } from '@/lib/format';
 import { balanceText, BALANCE_CHIPS, FieldLabel } from '@/Pages/Subscriptions/AccountFormParts';
 import { inputClass } from '@/Pages/Subscriptions/PaymentModal';
-import { SecondaryKey } from '@/Components/UI';
+import { BandRow, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, SecondaryKey } from '@/Components/UI';
 
 /**
  * One subscription of the split as a line of the distribution sheet: who,
@@ -17,8 +17,8 @@ function PartRow({ part, onAmount, onRemove, error }) {
 
     return (
         <>
-            <tr className="is-new">
-                <td>
+            <ListRow id={part.subscription.id} className="is-new">
+                <ListCell>
                     <div className="gl-sp-who">
                         <span className="gl-sp-av" aria-hidden="true">
                             {initials(part.subscription.fullName)}
@@ -32,9 +32,9 @@ function PartRow({ part, onAmount, onRemove, error }) {
                             </small>
                         </span>
                     </div>
-                </td>
-                <td className="gl-num" data-tone={now.tone}>{balanceText(now)}</td>
-                <td>
+                </ListCell>
+                <ListCell className="gl-num" data-tone={now.tone}>{balanceText(now)}</ListCell>
+                <ListCell>
                     <div className="gl-cl-in is-amount" data-invalid={error ? true : undefined}>
                         <Input
                             id={`part-${part.subscription.id}`}
@@ -48,18 +48,18 @@ function PartRow({ part, onAmount, onRemove, error }) {
                         />
                         <span aria-hidden="true">₪</span>
                     </div>
-                </td>
-                <td><b className="gl-sp-after gl-num" data-tone={after.tone}>{balanceText(after)}</b></td>
-                <td>
+                </ListCell>
+                <ListCell><b className="gl-sp-after gl-num" data-tone={after.tone}>{balanceText(after)}</b></ListCell>
+                <ListCell>
                     <Button data-raw="" variant="ghost" onClick={onRemove} aria-label={`إزالة ${part.subscription.fullName}`} className="gl-sp-x">
                         <Icon name="close" className="h-[18px] w-[18px]" />
                     </Button>
-                </td>
-            </tr>
+                </ListCell>
+            </ListRow>
             {error && (
-                <tr className="gl-sp-err">
-                    <td colSpan={5}><InputError message={error} /></td>
-                </tr>
+                <BandRow id={`${part.subscription.id}:error`} columns={5} className="gl-sp-err">
+                    <InputError message={error} />
+                </BandRow>
             )}
         </>
     );
@@ -87,17 +87,15 @@ export default function SplitRecipientsSection({
             {parts.length > 0 && (
                 <div className="gl-cl" data-tone="split" data-excel-source="custom">
                     <div className="gl-cl-scroll">
-                        <table className="gl-cl-table gl-sp-table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">المشترك</th>
-                                    <th scope="col">الرصيد الحالي</th>
-                                    <th scope="col">يدفع</th>
-                                    <th scope="col">بعد الدفعة</th>
-                                    <th scope="col"><span className="sr-only">إزالة</span></th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <ListTable className="gl-cl-table gl-sp-table" aria-label="حصص المشتركين">
+                            <ListHeader>
+                                <ListColumn id="subscription" isRowHeader>المشترك</ListColumn>
+                                <ListColumn id="balance">الرصيد الحالي</ListColumn>
+                                <ListColumn id="amount">يدفع</ListColumn>
+                                <ListColumn id="after">بعد الدفعة</ListColumn>
+                                <ListColumn id="remove"><span className="sr-only">إزالة</span></ListColumn>
+                            </ListHeader>
+                            <ListBody>
                                 {parts.map((part, index) => (
                                     <PartRow
                                         key={part.subscription.id}
@@ -107,8 +105,8 @@ export default function SplitRecipientsSection({
                                         error={errors[`parts.${index}.amount`] ?? errors[`parts.${index}.subscription_id`]}
                                     />
                                 ))}
-                            </tbody>
-                        </table>
+                            </ListBody>
+                        </ListTable>
                     </div>
                 </div>
             )}
@@ -125,10 +123,10 @@ export default function SplitRecipientsSection({
                         onChange={(event) => setTerm(event.target.value)}
                         placeholder={parts.length === 0 ? 'ابحث عن مشترك بالاسم أو رقم الحساب أو الجوال…' : 'إضافة مشترك آخر إلى هذه الدفعة…'}
                         disabled={parts.length >= MAX_PARTS}
-                        className={`${inputClass} ps-11`}
+                        className={`${inputClass} field-room-start-wide`}
                     />
                     {found.searched && (
-                        <ul className="animate-modal-panel absolute inset-x-0 z-30 mt-2 max-h-80 overflow-y-auto rounded-2xl p-1.5 gl-pop">
+                        <ul className="animate-modal-panel absolute inset-x-0 z-30 mt-2 max-h-80 overflow-y-auto rounded-2xl p-2 gl-pop">
                             {found.subscriptions.length === 0 && (
                                 <li className="px-3 py-3 text-center text-sm text-gray-500">لا يوجد مشترك يطابق بحثك.</li>
                             )}
@@ -140,7 +138,7 @@ export default function SplitRecipientsSection({
                                         <Button data-raw="" variant="ghost"
                                             isDisabled={added}
                                             onClick={() => addSubscription(subscription)}
-                                            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition hover:bg-gray-50 disabled:opacity-40"
+                                            className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-start transition hover:bg-gray-50 disabled:opacity-40"
                                         >
                                             <span className="min-w-0 flex-1">
                                                 <b className="block truncate text-[14.5px] text-gray-900">{subscription.fullName}</b>
@@ -152,7 +150,7 @@ export default function SplitRecipientsSection({
                                                 </small>
                                             </span>
                                             <span
-                                                className={`whitespace-nowrap rounded-[10px] px-2 py-0.5 font-display text-[13px] font-bold ${added ? 'bg-gray-100 text-gray-700' : BALANCE_CHIPS[describeBalance(subscription.balance).tone]}`}
+                                                className={`whitespace-nowrap rounded-[10px] px-2 py-1 font-display text-[13px] font-bold ${added ? 'bg-gray-100 text-gray-700' : BALANCE_CHIPS[describeBalance(subscription.balance).tone]}`}
                                             >
                                                 {added ? 'مُضاف' : balanceText(describeBalance(subscription.balance))}
                                             </span>

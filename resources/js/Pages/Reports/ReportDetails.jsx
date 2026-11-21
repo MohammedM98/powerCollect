@@ -4,7 +4,6 @@ import Balance from '@/Components/Balance';
 import TableExportActions from '@/Components/DataTable/TableExportActions';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
-import SortableTh from '@/Components/DataTable/SortableTh';
 import Pagination from '@/Components/DataTable/Pagination';
 import { useDataTable } from '@/hooks/useDataTable';
 import Icon from '@/Components/Icon';
@@ -18,7 +17,7 @@ import { printUrl } from '@/lib/print';
 import { boxColumns, debtColumns, detailExcelPart, statementColumns } from '@/lib/reportDetailParts';
 import { formatDate } from '@/lib/format';
 import { BoxesFigures, DebtFigures, debtCell } from './ReportViews';
-import { SecondaryKey, secondaryButtonClass } from '@/Components/UI';
+import { ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, SecondaryKey, secondaryButtonClass } from '@/Components/UI';
 
 const isAmount = (column) => ['money', 'decimal'].includes(column.type);
 const reportHelp = {
@@ -73,10 +72,10 @@ function ReportTable({ columns, title, section, nameCell, cell, empty, exportRow
             filterMenu={<DataTableFilterMenu tableKey={`reports:${section}`} groups={model.options} values={controls.filterValues} onChange={controls.setFilter} onChangeMany={controls.setFilters} onClear={controls.clearFilters} />}
         />
         <div className="data-table-container">
-            <table aria-label={title} className="data-table reports-detail-table w-full text-start">
-                <thead><tr>{columns.map((column) => <SortableTh key={column.key} column={column.key} label={column.label} sortState={model.state} onSort={controls.sort} className={isAmount(column) || column.type === 'int' ? 'text-right!' : ''} />)}</tr></thead>
-                <tbody>{rows.length ? rows.map((row, index) => <tr key={row.id ?? index}>{columns.map((column) => <td key={column.key} data-label={column.label} dir={isAmount(column) || column.type === 'int' ? 'ltr' : undefined} className={isAmount(column) || column.type === 'int' ? 'font-display tabular-nums' : ''}>{renderValue(row, column)}</td>)}</tr>) : <tr><td colSpan={columns.length}><div role="status" className="mx-auto flex max-w-lg flex-col items-center gap-3 py-4"><Icon name="list" className="h-8 w-8 text-gray-400" /><b className="text-base text-gray-700">{model.active ? 'لا توجد حركات تطابق البحث والفلاتر' : empty?.title ?? 'لا توجد سجلات خلال الفترة المختارة'}</b><p className="text-sm leading-7 text-gray-500">{model.active ? 'جرّب تعديل البحث أو إزالة الفلاتر لعرض السجلات المتاحة.' : empty?.description ?? 'اختر فترة أخرى أو فرعًا آخر من أعلى الصفحة.'}</p>{model.active ? <Button data-raw="" variant="ghost" className={secondaryButtonClass} onClick={() => { controls.setSearch(''); controls.clearFilters(); }}>مسح البحث والفلاتر</Button> : empty?.action}</div></td></tr>}</tbody>
-            </table>
+            <ListTable aria-label={title} sort={model.state} onSort={controls.sort} className="data-table reports-detail-table w-full text-start">
+                <ListHeader>{columns.map((column, index) => <ListColumn key={column.key} id={column.key} sortable isRowHeader={index === 0} className={isAmount(column) || column.type === 'int' ? 'text-start!' : ''}>{column.label}</ListColumn>)}</ListHeader>
+                <ListBody empty={<div role="status" className="mx-auto flex max-w-lg flex-col items-center gap-3 py-4"><Icon name="list" className="h-8 w-8 text-gray-400" /><b className="text-base text-gray-700">{model.active ? 'لا توجد حركات تطابق البحث والفلاتر' : empty?.title ?? 'لا توجد سجلات خلال الفترة المختارة'}</b><p className="text-sm leading-7 text-gray-500">{model.active ? 'جرّب تعديل البحث أو إزالة الفلاتر لعرض السجلات المتاحة.' : empty?.description ?? 'اختر فترة أخرى أو فرعًا آخر من أعلى الصفحة.'}</p>{model.active ? <Button data-raw="" variant="ghost" className={secondaryButtonClass} onClick={() => { controls.setSearch(''); controls.clearFilters(); }}>مسح البحث والفلاتر</Button> : empty?.action}</div>}>{rows.map((row, index) => <ListRow key={row.id ?? index} id={row.id ?? index}>{columns.map((column) => <ListCell key={column.key} data-label={column.label} dir={isAmount(column) || column.type === 'int' ? 'ltr' : undefined} className={isAmount(column) || column.type === 'int' ? 'font-display tabular-nums' : ''}>{renderValue(row, column)}</ListCell>)}</ListRow>)}</ListBody>
+            </ListTable>
         </div>
         {model.total > 0 && Object.keys(model.totals).length > 0 && <div className="data-table-totals flex flex-wrap items-center gap-x-8 gap-y-3"><b className="text-sm">{model.active ? 'إجمالي الحركات المطابقة' : 'إجمالي النتائج'}</b>{columns.filter((column) => model.totals[column.key] != null).map((column) => <span key={column.key} className="text-sm text-gray-500">{column.label} <bdi dir="ltr" className="ms-2 font-display font-bold text-gray-900">{reportMoney(model.totals[column.key])}</bdi></span>)}</div>}
         <Pagination meta={model.meta} onPageChange={controls.setPage} />
@@ -92,7 +91,7 @@ function TableReport({ section, ...props }) {
 export function DebtReport({ data, visit }) {
     const { canViewStatements } = usePage().props;
     if (!data) return null;
-    return <div className="space-y-5">
+    return <div className="space-y-6">
         <DebtFigures data={data} />
         <TableReport section="debts" title="ديون المشتركين" columns={debtColumns} cell={debtCell} nameCell={(row) => canViewStatements ? <Button data-raw="" variant="ghost" className="font-semibold text-brand-600 underline-offset-4 hover:underline" onClick={() => visit({ section: 'statement', subscription: row.id, page: undefined })}>{row.name}</Button> : row.name} />
     </div>;
@@ -100,7 +99,7 @@ export function DebtReport({ data, visit }) {
 
 export function BoxesReport({ data }) {
     if (!data) return null;
-    return <div className="space-y-5">
+    return <div className="space-y-6">
         <BoxesFigures data={data} />
         <TableReport section="boxes" title="الصناديق والأموال" columns={boxColumns} />
     </div>;
@@ -113,10 +112,10 @@ export function StatementReport({ data, visit }) {
     const withBalances = (lines) => [{ id: 'opening', day: filters.from, description: 'الرصيد الافتتاحي', balance: data.opening, debit: '0.00', credit: '0.00' }, ...lines, { id: 'closing', day: filters.to, description: 'الرصيد الختامي', balance: data.closing, debit: '0.00', credit: '0.00' }];
     const last90 = (presets ?? []).find((preset) => preset.key === 'last90' || preset.key === 'quarter');
     const closingHint = Number(data.closing) > 0 ? 'مستحق للشركة' : Number(data.closing) < 0 ? 'لصالح المشترك' : 'الحساب مسدّد';
-    return <div className="space-y-5">
-        <section aria-label="المشترك المحدد" className="rounded-panel border border-gray-100 bg-surface p-5 shadow-card sm:p-6">
+    return <div className="space-y-6">
+        <section aria-label="المشترك المحدد" className="rounded-panel border border-gray-100 bg-surface p-4 shadow-card sm:p-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex min-w-0 items-center gap-3"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-graphite-gradient text-white"><Icon name="users" className="h-6 w-6" /></span><div className="min-w-0"><p className="text-[13.5px] font-semibold text-gray-700">كشف حساب المشترك المحدد</p><h3 className="mt-1 wrap-break-word text-lg font-bold text-gray-900">{data.subscription.name}</h3><div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500"><span>رقم الحساب <bdi dir="ltr" className="font-display font-semibold text-gray-700">{data.subscription.accountNumber}</bdi></span><span className="inline-flex items-center gap-1.5"><Icon name="building" className="h-4 w-4" />{data.subscription.branchName}</span></div></div></div>
+                <div className="flex min-w-0 items-center gap-3"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-graphite-gradient text-white"><Icon name="users" className="h-6 w-6" /></span><div className="min-w-0"><p className="text-[13.5px] font-semibold text-gray-700">كشف حساب المشترك المحدد</p><h3 className="mt-1 wrap-break-word text-lg font-bold text-gray-900">{data.subscription.name}</h3><div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500"><span>رقم الحساب <bdi dir="ltr" className="font-display font-semibold text-gray-700">{data.subscription.accountNumber}</bdi></span><span className="inline-flex items-center gap-2"><Icon name="building" className="h-4 w-4" />{data.subscription.branchName}</span></div></div></div>
                 <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto"><SecondaryKey className="h-11 w-full sm:w-auto" onClick={() => visit({ subscription: undefined, page: undefined })}><Icon name="users" className="h-4 w-4" />اختيار مشترك آخر</SecondaryKey><GroupActionButton className="h-11 w-full sm:w-auto" onClick={() => router.visit(data.subscription.url)}><Icon name="ledger" className="h-4 w-4" />كشف الحساب الكامل</GroupActionButton></div>
             </div>
         </section>
@@ -137,8 +136,8 @@ function AccountDirectory({ visit }) {
     if (!accounts) return null;
     return <section aria-label="قائمة المشتركين" data-excel-source="custom">
         <DataTableToolbar search={controls.search} onSearchChange={controls.setSearch} placeholder="بحث في جميع المشتركين بالاسم أو رقم الحساب..." perPage={accountFilters.per_page} onPerPageChange={controls.setPerPage} total={accounts.total} printable={false} actions={<InfoTip label="معلومة عن قائمة المشتركين">ابحث بالاسم أو رقم الحساب، ثم اضغط عرض الكشف.</InfoTip>} />
-        <div className="data-table-container"><table className="data-table w-full text-start" aria-label="المشتركون المتاحون"><thead><tr><SortableTh column="account_number" label="رقم الحساب" sortState={accountFilters} onSort={controls.sort} /><SortableTh column="display_name" label="المشترك" sortState={accountFilters} onSort={controls.sort} /><th>الفرع</th><th>كشف الحساب</th></tr></thead><tbody>
-            {accounts.data.length ? accounts.data.map((account) => <tr key={account.id}><td data-label="رقم الحساب" className="font-display tabular-nums"><bdi dir="ltr">{account.accountNumber}</bdi></td><td data-label="المشترك"><Button data-raw="" variant="ghost" className="font-bold text-brand-600 underline-offset-4 hover:underline" onClick={() => visit({ subscription: account.id, page: undefined })}>{account.name}</Button></td><td data-label="الفرع">{account.branchName}</td><td data-label="كشف الحساب"><RowActionsMenu onView={() => visit({ subscription: account.id, page: undefined })} viewLabel="عرض الكشف" viewIcon="ledger" /></td></tr>) : <tr><td colSpan={4}>لا يوجد مشتركون مطابقون للبحث ضمن الفروع المتاحة.</td></tr>}
-        </tbody></table></div><Pagination meta={accounts} onPageChange={controls.setPage} />
+        <div className="data-table-container"><ListTable className="data-table w-full text-start" aria-label="المشتركون المتاحون" sort={accountFilters} onSort={controls.sort}><ListHeader><ListColumn id="account_number" sortable>رقم الحساب</ListColumn><ListColumn id="display_name" sortable isRowHeader>المشترك</ListColumn><ListColumn id="branch">الفرع</ListColumn><ListColumn id="statement">كشف الحساب</ListColumn></ListHeader><ListBody empty="لا يوجد مشتركون مطابقون للبحث ضمن الفروع المتاحة.">
+            {accounts.data.map((account) => <ListRow key={account.id} id={account.id}><ListCell data-label="رقم الحساب" className="font-display tabular-nums"><bdi dir="ltr">{account.accountNumber}</bdi></ListCell><ListCell data-label="المشترك"><Button data-raw="" variant="ghost" className="font-bold text-brand-600 underline-offset-4 hover:underline" onClick={() => visit({ subscription: account.id, page: undefined })}>{account.name}</Button></ListCell><ListCell data-label="الفرع">{account.branchName}</ListCell><ListCell data-label="كشف الحساب"><RowActionsMenu onView={() => visit({ subscription: account.id, page: undefined })} viewLabel="عرض الكشف" viewIcon="ledger" /></ListCell></ListRow>)}
+        </ListBody></ListTable></div><Pagination meta={accounts} onPageChange={controls.setPage} />
     </section>;
 }

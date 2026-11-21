@@ -26,7 +26,7 @@ export default function QuickMessageKind({
             {kind === 'weekly_reading' && (
                 <div className="flex flex-wrap items-end gap-4">
                     <div className="min-w-[220px] flex-1">
-                        <label htmlFor={`${id}-week`} className="mb-1.5 block text-sm font-semibold text-gray-700">
+                        <label htmlFor={`${id}-week`} className="mb-2 block text-sm font-semibold text-gray-700">
                             أسبوع القراءة
                         </label>
                         <ChoiceSelect id={`${id}-week`} value={weekStart} onChange={(e) => setWeekStart(e.target.value)} className="block w-full text-sm">
@@ -45,7 +45,7 @@ export default function QuickMessageKind({
             )}
             {kind === 'balance_reminder' && (
                 <div className="max-w-xs">
-                    <label htmlFor={`${id}-min-balance`} className="mb-1.5 block text-sm font-semibold text-gray-700">
+                    <label htmlFor={`${id}-min-balance`} className="mb-2 block text-sm font-semibold text-gray-700">
                         لمن عليه رصيد أكبر من (₪)
                     </label>
                     <Input

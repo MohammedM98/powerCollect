@@ -4,7 +4,6 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
-import SortableTh from '@/Components/DataTable/SortableTh';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Pagination from '@/Components/DataTable/Pagination';
 import Modal from '@/Components/Modal';
@@ -16,7 +15,7 @@ import { useDataTable } from '@/hooks/useDataTable';
 import ResultReport from './ResultReport';
 import PageHeader from '@/Components/PageHeader';
 import DateInput from '@/Components/DateInput';
-import { CheckBox, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
+import { CheckBox, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
 
 /** The reason, note and date for the chosen subscribers, after saying how many. */
 function AddModal({ list, selection, count, reasonOptions, today, onClose, onDone }) {
@@ -35,35 +34,35 @@ function AddModal({ list, selection, count, reasonOptions, today, onClose, onDon
     return (
         <Modal show onClose={onClose} maxWidth="lg">
             <form onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="add-title">
-                <div className="flex items-start gap-4 px-7 pb-2 pt-7">
+                <div className="flex items-start gap-4 px-6 pb-2 pt-6">
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600">
                         <Icon name="plus" strokeWidth={2} />
                     </span>
                     <div>
                         <h3 id="add-title" className="text-lg font-bold text-gray-900">إضافة إلى «{list.title}»</h3>
-                        <p className="mt-1.5 text-sm text-gray-600">
+                        <p className="mt-2 text-sm text-gray-600">
                             <b className="text-gray-900">{count.toLocaleString('en')}</b> مشترك{selection.all ? ' (كل النتائج المطابقة للفلاتر في كل الصفحات)' : ' محدد'}. من لا يمكن إدراجه (مدرج في قائمة أخرى أو خدمته غير فعّالة) يُستثنى ويظهر في التقرير.
                         </p>
                     </div>
                 </div>
-                <div className="space-y-4 px-7 py-5">
+                <div className="space-y-4 px-6 py-4">
                     <div>
                         <ChoiceChips options={reasonOptions} value={reason} onChange={setReason} label="سبب القطع" required name="reason" />
                         <InputError message={errors.reason} className="mt-1" />
                     </div>
                     <div>
-                        <label htmlFor="add-note" className="mb-1.5 block text-sm font-semibold text-gray-700">ملاحظة {reason === 'other' ? '(يُفضّل توضيح السبب)' : '(اختياري)'}</label>
+                        <label htmlFor="add-note" className="mb-2 block text-sm font-semibold text-gray-700">ملاحظة {reason === 'other' ? '(يُفضّل توضيح السبب)' : '(اختياري)'}</label>
                         <TextArea id="add-note" value={note} onChange={(event) => setNote(event.target.value)} rows={2} className="block w-full text-sm" maxLength={1000} />
                         <InputError message={errors.note} className="mt-1" />
                     </div>
                     <div>
-                        <label htmlFor="add-date" className="mb-1.5 block text-sm font-semibold text-gray-700">موعد القطع المخطط</label>
+                        <label htmlFor="add-date" className="mb-2 block text-sm font-semibold text-gray-700">موعد القطع المخطط</label>
                         <DateInput id="add-date" name="scheduled_for" min={today} value={date} onChange={setDate} required />
                         <InputError message={errors.scheduled_for} className="mt-1" />
                         <p className="mt-1 text-xs text-gray-500">الموعد للتخطيط فقط: لا يُقطع أحد ولا تُرسل رسائل تلقائيًا.</p>
                     </div>
                 </div>
-                <div className="flex justify-end gap-3 border-t border-gray-100 bg-gray-50 px-7 py-4">
+                <div className="flex justify-end gap-3 border-t border-gray-100 bg-gray-50 px-6 py-4">
                     <SecondaryKey onClick={onClose}>إلغاء</SecondaryKey>
                     <PrimaryKey type="submit" disabled={saving || !reason || !date}>{saving ? 'جارٍ الإضافة…' : `إضافة ${count.toLocaleString('en')} مشترك`}</PrimaryKey>
                 </div>
@@ -154,7 +153,7 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
             />
 
             {!allMatching && pageIds.length > 0 && pageSelectedCount === pageIds.length && subscriptions.total > pageIds.length && (
-                <div role="status" className="flex flex-wrap items-center justify-center gap-2 border-x border-gray-100 bg-brand-500/5 px-4 py-2.5 text-sm text-gray-700">
+                <div role="status" className="flex flex-wrap items-center justify-center gap-2 border-x border-gray-100 bg-brand-500/5 px-4 py-2 text-sm text-gray-700">
                     تم تحديد {pageIds.length.toLocaleString('en')} مشترك في هذه الصفحة.
                     <Button data-raw="" variant="ghost" onClick={() => setAllMatching(true)} className="rounded font-semibold text-brand-600 hover:underline">
                         تحديد كل النتائج المطابقة ({subscriptions.total.toLocaleString('en')})
@@ -163,42 +162,34 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
             )}
 
             <div className="data-table-container">
-                <table className="data-table w-full text-sm text-start" aria-label="المشتركون المتاحون للإضافة">
-                    <thead>
-                        <tr>
-                            <th data-actions="" className="w-10">
-                                <CheckBox checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)} indeterminate={!allMatching && pageSelectedCount > 0 && pageSelectedCount < pageIds.length} onChange={togglePage} aria-label="تحديد كل مشتركي هذه الصفحة" />
-                            </th>
-                            <SortableTh column="display_name" label="المشترك" sortState={filters} onSort={sort} />
-                            <th>الطبلون</th>
-                            <th>منطقة 2</th>
-                            <SortableTh column="balance" label="الرصيد" sortState={filters} onSort={sort} />
-                            <th>قوائم القطع</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {subscriptions.data.length === 0 ? (
-                            <tr>
-                                <td colSpan={6} className="text-gray-500">لا توجد نتائج مطابقة.</td>
-                            </tr>
-                        ) : (
-                            subscriptions.data.map((row) => (
-                                <tr key={row.id} className={allMatching || selectedIds.has(row.id) ? 'bg-brand-50' : undefined}>
-                                    <td>
-                                        <CheckBox disabled={Boolean(row.waitingOn)} checked={!row.waitingOn && (allMatching || selectedIds.has(row.id))} onChange={() => toggle(row.id)} aria-label={`تحديد ${row.name}`} />
-                                    </td>
-                                    <td data-label="المشترك"><RowIdentity name={row.name} subtitle={row.accountNumber} subtitleDir="ltr" /></td>
-                                    <td data-label="الطبلون" className="text-gray-600">{row.meterBoxNumber ? <span className="data-chip">{row.meterBoxNumber}</span> : '—'}</td>
-                                    <td data-label="منطقة 2" className="text-gray-600">{row.subAreaName ?? '—'}</td>
-                                    <td data-label="الرصيد" className="whitespace-nowrap font-semibold"><Balance value={row.balance} /></td>
-                                    <td data-label="قوائم القطع">
-                                        {row.waitingOn ? <StatusPill tone="amber" label={row.waitingOn.isThisList ? 'في هذه القائمة' : `في «${row.waitingOn.title}»`} /> : <span className="text-gray-400">—</span>}
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                <ListTable aria-label="المشتركون المتاحون للإضافة" sort={filters} onSort={sort}>
+                    <ListHeader>
+                        <ListColumn id="select" data-actions="" className="w-10">
+                            <CheckBox slot={null} checked={allMatching || (pageIds.length > 0 && pageSelectedCount === pageIds.length)} indeterminate={!allMatching && pageSelectedCount > 0 && pageSelectedCount < pageIds.length} onChange={togglePage} aria-label="تحديد كل مشتركي هذه الصفحة" />
+                        </ListColumn>
+                        <ListColumn id="display_name" sortable isRowHeader>المشترك</ListColumn>
+                        <ListColumn id="meter_box">الطبلون</ListColumn>
+                        <ListColumn id="sub_area">منطقة 2</ListColumn>
+                        <ListColumn id="balance" sortable>الرصيد</ListColumn>
+                        <ListColumn id="lists">قوائم القطع</ListColumn>
+                    </ListHeader>
+                    <ListBody empty={<span className="text-gray-500">لا توجد نتائج مطابقة.</span>}>
+                        {subscriptions.data.map((row) => (
+                            <ListRow key={row.id} id={row.id} className={allMatching || selectedIds.has(row.id) ? 'bg-brand-50' : undefined}>
+                                <ListCell>
+                                    <CheckBox slot={null} disabled={Boolean(row.waitingOn)} checked={!row.waitingOn && (allMatching || selectedIds.has(row.id))} onChange={() => toggle(row.id)} aria-label={`تحديد ${row.name}`} />
+                                </ListCell>
+                                <ListCell data-label="المشترك"><RowIdentity name={row.name} subtitle={row.accountNumber} subtitleDir="ltr" /></ListCell>
+                                <ListCell data-label="الطبلون" className="text-gray-600">{row.meterBoxNumber ? <span className="data-chip">{row.meterBoxNumber}</span> : '—'}</ListCell>
+                                <ListCell data-label="منطقة 2" className="text-gray-600">{row.subAreaName ?? '—'}</ListCell>
+                                <ListCell data-label="الرصيد" className="whitespace-nowrap font-semibold"><Balance value={row.balance} /></ListCell>
+                                <ListCell data-label="قوائم القطع">
+                                    {row.waitingOn ? <StatusPill tone="amber" label={row.waitingOn.isThisList ? 'في هذه القائمة' : `في «${row.waitingOn.title}»`} /> : <span className="text-gray-400">—</span>}
+                                </ListCell>
+                            </ListRow>
+                        ))}
+                    </ListBody>
+                </ListTable>
             </div>
 
             <Pagination meta={subscriptions} filters={filters} baseUrl={`/disconnection-lists/${list.id}/candidates`} />
@@ -211,7 +202,7 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
                             <b className="font-display">{selectionCount.toLocaleString('en')}</b> {allMatching ? 'مشترك (كل النتائج المطابقة)' : 'مشترك محدد'}
                         </span>
                         <div className="flex items-center gap-2">
-                            <Button data-raw="" variant="ghost" onClick={() => setAdding(true)} className="inline-flex items-center gap-1.5 rounded-control bg-white px-4 py-2 text-sm font-bold text-gray-900">
+                            <Button data-raw="" variant="ghost" onClick={() => setAdding(true)} className="inline-flex items-center gap-2 rounded-control bg-white px-4 py-2 text-sm font-bold text-gray-900">
                                 <Icon name="plus" className="h-4 w-4" />
                                 إضافة إلى القائمة
                             </Button>

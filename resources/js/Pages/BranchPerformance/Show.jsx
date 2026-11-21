@@ -8,7 +8,7 @@ import KpiTile from '@/Components/KpiTile';
 import { formatDayLabel, formatMoney, formatNumber, timeAgo } from '@/lib/format';
 import { branchPlace } from './BranchMark';
 import PageHeader, { BackLink } from '@/Components/PageHeader';
-import { StatusPill } from '@/Components/UI';
+import { ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, StatusPill } from '@/Components/UI';
 
 /** Status colors, fixed because the card behind them is always graphite; each comes with its word and count. */
 const STATUS_BARS = { active: 'bg-emerald-400', suspended: 'bg-amber-400', disconnected: 'bg-white/40' };
@@ -29,7 +29,7 @@ function StatusMix({ statusCounts }) {
     return (
         <>
             {shown.length > 0 && (
-                <div className="mt-5 flex h-2.5 gap-0.5" aria-hidden="true">
+                <div className="mt-6 flex h-2.5 gap-1" aria-hidden="true">
                     {shown.map((status) => (
                         <span key={status.value} className={`rounded-full ${STATUS_BARS[status.value]}`} style={{ flex: `${status.count} 1 0` }} />
                     ))}
@@ -37,7 +37,7 @@ function StatusMix({ statusCounts }) {
             )}
             <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-white/70">
                 {statusCounts.map((status) => (
-                    <li key={status.value} className="inline-flex items-center gap-1.5">
+                    <li key={status.value} className="inline-flex items-center gap-2">
                         <span className={`h-2 w-2 rounded-full ${STATUS_BARS[status.value]}`} aria-hidden="true" />
                         {status.label}
                         <b className="font-display text-sm text-white">{formatNumber(status.count)}</b>
@@ -51,7 +51,7 @@ function StatusMix({ statusCounts }) {
 function ChartCard({ title, caption, children }) {
     return (
         <section className="rise-in min-w-0 rounded-panel border border-gray-100 bg-surface p-6 shadow-card">
-            <div className="mb-7 flex items-baseline justify-between gap-3">
+            <div className="mb-6 flex items-baseline justify-between gap-3">
                 <h3 className="text-lg font-bold text-gray-900">{title}</h3>
                 <span className="text-xs text-gray-500">{caption}</span>
             </div>
@@ -65,7 +65,7 @@ function TableHeading({ title, caption }) {
     return (
         <div className="data-table-toolbar">
             <h3 className="text-lg font-bold text-gray-900">{title}</h3>
-            <p className="mt-0.5 text-sm text-gray-500">{caption}</p>
+            <p className="mt-1 text-sm text-gray-500">{caption}</p>
         </div>
     );
 }
@@ -75,73 +75,65 @@ function TeamTable({ team }) {
     const busiest = Math.max(1, ...team.map((member) => member.entries));
 
     return (
-        <section className="mt-5">
+        <section className="mt-6">
             <TableHeading title="فريق الفرع" caption={`${formatNumber(team.length)} موظف، مرتبون حسب عدد الإدخالات`} />
             <div className="data-table-container">
-                <table className="data-table w-full text-start text-sm">
-                    <thead>
-                        <tr>
-                            <th>الموظف</th>
-                            <th>اسم المستخدم</th>
-                            <th>الإدخالات</th>
-                            <th>آخر 7 أيام</th>
-                            <th>القيود المسجلة</th>
-                            <th>آخر نشاط</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {team.length === 0 ? (
-                            <tr>
-                                <td colSpan={6}>لا يوجد موظفون في هذا الفرع.</td>
-                            </tr>
-                        ) : (
-                            team.map((member) => (
-                                <tr key={member.id}>
-                                    <td>
-                                        <RowIdentity name={member.name} subtitle={member.roleLabel} status={member.isActive ? 'green' : 'gray'} />
-                                    </td>
-                                    <td className="text-gray-600" dir="ltr">
-                                        {member.username}
-                                    </td>
-                                    <td>
-                                        <span className="flex min-w-36 items-center gap-3">
-                                            <b className="w-9 shrink-0 font-display text-gray-900">{formatNumber(member.entries)}</b>
-                                            <MeterBar value={member.entries} max={busiest} className="flex-1" />
+                <ListTable aria-label="فريق الفرع" className="data-table w-full text-start text-sm">
+                    <ListHeader>
+                        <ListColumn id="name" isRowHeader>الموظف</ListColumn>
+                        <ListColumn id="username">اسم المستخدم</ListColumn>
+                        <ListColumn id="entries">الإدخالات</ListColumn>
+                        <ListColumn id="week">آخر 7 أيام</ListColumn>
+                        <ListColumn id="recorded">القيود المسجلة</ListColumn>
+                        <ListColumn id="last">آخر نشاط</ListColumn>
+                    </ListHeader>
+                    <ListBody empty="لا يوجد موظفون في هذا الفرع.">
+                        {team.map((member) => (
+                            <ListRow key={member.id} id={member.id}>
+                                <ListCell>
+                                    <RowIdentity name={member.name} subtitle={member.roleLabel} status={member.isActive ? 'green' : 'gray'} />
+                                </ListCell>
+                                <ListCell className="text-gray-600" dir="ltr">
+                                    {member.username}
+                                </ListCell>
+                                <ListCell>
+                                    <span className="flex min-w-36 items-center gap-3">
+                                        <b className="w-9 shrink-0 font-display text-gray-900">{formatNumber(member.entries)}</b>
+                                        <MeterBar value={member.entries} max={busiest} className="flex-1" />
+                                    </span>
+                                </ListCell>
+                                <ListCell className="font-display font-semibold text-gray-900">{formatNumber(member.weekEntries)}</ListCell>
+                                <ListCell>
+                                    {member.recordedCount === 0 ? (
+                                        <span className="text-gray-400">—</span>
+                                    ) : (
+                                        <span className="flex flex-col gap-1">
+                                            {member.recordedCharged > 0 && (
+                                                <span>
+                                                    <span className="text-xs text-gray-500">عليه</span>{' '}
+                                                    <Shekels amount={member.recordedCharged} />
+                                                </span>
+                                            )}
+                                            {member.recordedCredited > 0 && (
+                                                <span>
+                                                    <span className="text-xs text-gray-500">له</span>{' '}
+                                                    <Shekels
+                                                        amount={member.recordedCredited}
+                                                        className="text-emerald-700 dark:text-emerald-400"
+                                                    />
+                                                </span>
+                                            )}
+                                            <span className="text-xs text-gray-500">{formatNumber(member.recordedCount)} قيد</span>
                                         </span>
-                                    </td>
-                                    <td className="font-display font-semibold text-gray-900">{formatNumber(member.weekEntries)}</td>
-                                    <td>
-                                        {member.recordedCount === 0 ? (
-                                            <span className="text-gray-400">—</span>
-                                        ) : (
-                                            <span className="flex flex-col gap-0.5">
-                                                {member.recordedCharged > 0 && (
-                                                    <span>
-                                                        <span className="text-xs text-gray-500">عليه</span>{' '}
-                                                        <Shekels amount={member.recordedCharged} />
-                                                    </span>
-                                                )}
-                                                {member.recordedCredited > 0 && (
-                                                    <span>
-                                                        <span className="text-xs text-gray-500">له</span>{' '}
-                                                        <Shekels
-                                                            amount={member.recordedCredited}
-                                                            className="text-emerald-700 dark:text-emerald-400"
-                                                        />
-                                                    </span>
-                                                )}
-                                                <span className="text-xs text-gray-500">{formatNumber(member.recordedCount)} قيد</span>
-                                            </span>
-                                        )}
-                                    </td>
-                                    <td className="whitespace-nowrap text-gray-600">
-                                        {member.lastActivityAt ? timeAgo(member.lastActivityAt) : '—'}
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                                    )}
+                                </ListCell>
+                                <ListCell className="whitespace-nowrap text-gray-600">
+                                    {member.lastActivityAt ? timeAgo(member.lastActivityAt) : '—'}
+                                </ListCell>
+                            </ListRow>
+                        ))}
+                    </ListBody>
+                </ListTable>
             </div>
         </section>
     );
@@ -153,30 +145,28 @@ function WorkLog({ days }) {
         <section className="min-w-0 xl:col-span-2">
             <TableHeading title="سجل العمل اليومي" caption={`آخر ${formatNumber(days.length)} يوم`} />
             <div className="data-table-container">
-                <table className="data-table w-full text-start text-sm">
-                    <thead>
-                        <tr>
-                            <th>اليوم</th>
-                            <th>مشتركون جدد</th>
-                            <th>الإدخالات</th>
-                            <th>القيود</th>
-                            <th>الأكثر إدخالاً</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                <ListTable aria-label="سجل العمل اليومي" className="data-table w-full text-start text-sm">
+                    <ListHeader>
+                        <ListColumn id="day" isRowHeader>اليوم</ListColumn>
+                        <ListColumn id="new">مشتركون جدد</ListColumn>
+                        <ListColumn id="entries">الإدخالات</ListColumn>
+                        <ListColumn id="charges">القيود</ListColumn>
+                        <ListColumn id="top">الأكثر إدخالاً</ListColumn>
+                    </ListHeader>
+                    <ListBody>
                         {days.map((day, index) => (
-                            <tr key={day.date}>
-                                <td>
+                            <ListRow key={day.date} id={day.date}>
+                                <ListCell>
                                     <span className="inline-flex items-center gap-2 whitespace-nowrap font-semibold text-gray-900">
                                         {formatDayLabel(day.date)}
                                         {index === 0 && (
-                                            <span className="rounded-full bg-brand-500 px-2 py-0.5 text-[12px] font-bold text-white">اليوم</span>
+                                            <span className="rounded-full bg-brand-500 px-2 py-1 text-[12px] font-bold text-white">اليوم</span>
                                         )}
                                     </span>
-                                </td>
-                                <td className="font-display font-semibold text-gray-900">{formatNumber(day.newSubscriptions)}</td>
-                                <td className="font-display font-semibold text-gray-900">{formatNumber(day.entries)}</td>
-                                <td>
+                                </ListCell>
+                                <ListCell className="font-display font-semibold text-gray-900">{formatNumber(day.newSubscriptions)}</ListCell>
+                                <ListCell className="font-display font-semibold text-gray-900">{formatNumber(day.entries)}</ListCell>
+                                <ListCell>
                                     {day.chargesCount === 0 ? (
                                         <span className="text-gray-400">—</span>
                                     ) : (
@@ -185,12 +175,12 @@ function WorkLog({ days }) {
                                             <span className="block text-xs text-gray-500">{formatNumber(day.chargesCount)} قيد</span>
                                         </>
                                     )}
-                                </td>
-                                <td className="text-gray-600">{day.topEntrant ?? '—'}</td>
-                            </tr>
+                                </ListCell>
+                                <ListCell className="text-gray-600">{day.topEntrant ?? '—'}</ListCell>
+                            </ListRow>
                         ))}
-                    </tbody>
-                </table>
+                    </ListBody>
+                </ListTable>
             </div>
         </section>
     );
@@ -206,11 +196,11 @@ function LatestRegistrations({ subscriptions }) {
             </div>
 
             {subscriptions.length === 0 ? (
-                <p className="py-12 text-center text-sm text-gray-500">لا مشتركين في هذا الفرع بعد.</p>
+                <p className="py-8 text-center text-sm text-gray-500">لا مشتركين في هذا الفرع بعد.</p>
             ) : (
-                <ol className="relative mt-5 space-y-5 before:absolute before:inset-y-2 before:inset-s-[5px] before:w-px before:bg-gray-200">
+                <ol className="relative mt-6 space-y-6 before:absolute before:inset-y-2 before:inset-s-[5px] before:w-px before:bg-gray-200">
                     {subscriptions.map((subscription) => (
-                        <li key={subscription.id} className="relative ps-7">
+                        <li key={subscription.id} className="relative ps-6">
                             <span
                                 className={`absolute inset-s-0 top-2 h-[11px] w-[11px] rounded-full ring-4 ring-surface ${TIMELINE_DOTS[subscription.status]}`}
                                 aria-hidden="true"
@@ -221,7 +211,7 @@ function LatestRegistrations({ subscriptions }) {
                                     {timeAgo(subscription.createdAt)}
                                 </time>
                             </div>
-                            <p className="mt-0.5 flex flex-wrap gap-x-1.5 text-xs text-gray-500">
+                            <p className="mt-1 flex flex-wrap gap-x-2 text-xs text-gray-500">
                                 {subscription.registeredByName && <span>بواسطة {subscription.registeredByName}</span>}
                                 {subscription.registeredByName && subscription.phone && <span aria-hidden="true">·</span>}
                                 {subscription.phone && (
@@ -278,7 +268,7 @@ export default function Show({ branch, canCompareBranches, dailyRegistrations, d
         >
             <Head title={`أداء ${branch.name}`} />
 
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 <KpiTile hero className="sm:col-span-2" label="المشتركون" value={formatNumber(branch.subscriptions)}>
                     <StatusMix statusCounts={branch.statusCounts} />
                 </KpiTile>
@@ -297,7 +287,7 @@ export default function Show({ branch, canCompareBranches, dailyRegistrations, d
                 />
             </div>
 
-            <div className="mt-5 grid gap-5 lg:grid-cols-2">
+            <div className="mt-6 grid gap-6 lg:grid-cols-2">
                 <ChartCard title="المشتركون الجدد يوميًا" caption={`آخر ${formatNumber(dailyRegistrations.length)} يوم`}>
                     <BarChart
                         data={dailyRegistrations}
@@ -317,7 +307,7 @@ export default function Show({ branch, canCompareBranches, dailyRegistrations, d
 
             <TeamTable team={team} />
 
-            <div className="mt-5 grid items-start gap-5 xl:grid-cols-3">
+            <div className="mt-6 grid items-start gap-6 xl:grid-cols-3">
                 <WorkLog days={workLog} />
                 <LatestRegistrations subscriptions={latestRegistrations} />
             </div>

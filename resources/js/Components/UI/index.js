@@ -25,9 +25,13 @@ export { default as Switch } from '@/Components/Switch';
 export { default as TabStrip } from './TabStrip';
 export { default as RadioCards } from './RadioCards';
 
+// Tables
+export { default as ListTable, ListHeader, ListColumn, ListBody, ListRow, ListCell, BandRow } from './ListTable';
+
 // Display
 export { default as Figure } from './Figure';
 export { default as StatusPill } from '@/Components/DataTable/StatusPill';
 
 // Windows
+export { default as Window } from './Window';
 export { default as ConfirmDialog, SaveConfirmDialog } from '@/Components/ConfirmDialog';

@@ -5,6 +5,14 @@ import InputLabel from '@/Components/InputLabel';
 import PasswordInput from '@/Components/PasswordInput';
 import { CheckBox, PrimaryKey, TextInput } from '@/Components/UI';
 
+/**
+ * The sign-in fields take their direction from what is typed (dir="auto") but
+ * keep to the right edge like the Arabic form around them. A logical side
+ * would follow the typed text instead, so this side is physical on purpose.
+ */
+// eslint-disable-next-line local/spacing-scale -- deliberate physical side, see above.
+const SIGN_IN_FIELD = 'mt-2 block h-11 w-full text-right';
+
 export default function Login() {
     const { branchContext } = usePage().props;
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -31,30 +39,30 @@ export default function Login() {
                     <InputLabel htmlFor="username" value="اسم المستخدم" />
                     <TextInput
                         id="username"
-                        className="mt-1.5 block h-11 w-full text-right"
+                        className={SIGN_IN_FIELD}
                         dir="auto"
                         value={data.username}
                         autoFocus
                         autoComplete="username"
                         onChange={(e) => setData('username', e.target.value)}
                     />
-                    <InputError message={errors.username} className="mt-1.5" />
+                    <InputError message={errors.username} className="mt-2" />
                 </div>
 
                 <div>
                     <InputLabel htmlFor="password" value="كلمة المرور" />
                     <PasswordInput
                         id="password"
-                        className="mt-1.5 block h-11 w-full text-right"
+                        className={SIGN_IN_FIELD}
                         value={data.password}
                         autoComplete="current-password"
                         onChange={(e) => setData('password', e.target.value)}
                     />
-                    <InputError message={errors.password} className="mt-1.5" />
+                    <InputError message={errors.password} className="mt-2" />
                 </div>
 
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                    <label className="flex items-center gap-2.5 font-semibold">
+                    <label className="flex items-center gap-3 font-semibold">
                         <CheckBox
                             checked={data.remember}
                             onChange={(e) => setData('remember', e.target.checked)}

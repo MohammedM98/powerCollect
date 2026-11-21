@@ -13,7 +13,7 @@ export default function ExcelLookSection({ change, settings }) {
                     <ToggleButton
                         key={key}
                         id={key}
-                        className={`flex flex-col items-center gap-1 rounded-control border p-1.5 text-[11px] font-semibold transition ${settings.theme === key ? 'border-excel-500 bg-excel-500/5 text-gray-900' : 'border-gray-100 text-gray-600 hover:border-gray-200'}`}
+                        className={`flex flex-col items-center gap-1 rounded-control border p-2 text-[11px] font-semibold transition ${settings.theme === key ? 'border-excel-500 bg-excel-500/5 text-gray-900' : 'border-gray-100 text-gray-600 hover:border-gray-200'}`}
                     >
                         <span className="flex h-7 w-full flex-col overflow-hidden rounded border border-gray-200" aria-hidden="true">
                             <span className="h-2" style={{ background: `#${theme.title}` }} />

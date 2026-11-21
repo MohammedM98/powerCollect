@@ -6,7 +6,7 @@ import InputError from '@/Components/InputError';
 
 function NameInput({ value, onChange, onSave, onCancel, processing, error, label, maxLength }) {
     return <div className="max-w-full">
-        <span className="inline-flex h-[38px] max-w-full items-center rounded-full border border-gray-900 bg-surface pe-1 ps-1.5">
+        <span className="inline-flex h-[38px] max-w-full items-center rounded-full border border-gray-900 bg-surface pe-1 ps-2">
             <Input autoFocus value={value} placeholder={label} aria-label={label} aria-invalid={Boolean(error)} maxLength={maxLength} disabled={processing}
                 onChange={(event) => onChange(event.target.value)}
                 onKeyDown={(event) => {
@@ -57,12 +57,12 @@ export default function ClassificationChips({ title, description, items, baseUrl
     }
 
     return <section aria-label={title} className={`overflow-hidden rounded-card border border-gray-100 bg-surface shadow-card ${className}`}>
-        {showHeader && <div className="border-b border-gray-100 px-5 py-4 sm:px-6">
+        {showHeader && <div className="border-b border-gray-100 px-4 py-4 sm:px-6">
             <h2 className="font-luxe text-lg font-bold text-gray-900">{title}</h2>
             <p className="text-[13.5px] text-gray-500">{description}</p>
         </div>}
-        <div className="flex flex-wrap items-center gap-2 px-5 py-4 sm:px-6">
-            {items.map((item) => editing === item.id ? editor(item.id) : <span key={item.id} className="inline-flex min-h-[38px] w-full max-w-full items-center gap-2 rounded-full border border-gray-100 bg-gray-50 py-1 pe-1.5 ps-3.5 text-sm font-semibold text-gray-900 sm:h-[38px] sm:w-auto sm:py-0">
+        <div className="flex flex-wrap items-center gap-2 px-4 py-4 sm:px-6">
+            {items.map((item) => editing === item.id ? editor(item.id) : <span key={item.id} className="inline-flex min-h-[38px] w-full max-w-full items-center gap-2 rounded-full border border-gray-100 bg-gray-50 py-1 pe-2 ps-4 text-sm font-semibold text-gray-900 sm:h-[38px] sm:w-auto sm:py-0">
                 <span className="min-w-0 flex-1 wrap-break-word sm:flex-initial sm:truncate" title={item.name}>{item.name}</span>
                 <span className="shrink-0 font-display text-[13.5px] font-semibold text-gray-700">{item.count} {countLabel}</span>
                 <span className="hidden h-[5px] w-11 shrink-0 overflow-hidden rounded-full bg-gray-200 sm:block" aria-hidden="true"><i className="block h-full rounded-full bg-gray-700" style={{ width: `${(item.count / busiest) * 100}%` }} /></span>
@@ -70,7 +70,7 @@ export default function ClassificationChips({ title, description, items, baseUrl
                 {item.canDelete && item.count === 0 && <Button data-raw="" variant="ghost" isDisabled={form.processing} onClick={() => onDelete(item)} aria-label={`حذف ${item.name}`} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-brand-600 hover:bg-brand-500/10 disabled:opacity-40"><Icon name="trash" className="h-[15px] w-[15px]" /></Button>}
             </span>)}
             {items.length === 0 && editing !== 'new' && <span className="text-[13.5px] text-gray-500">{emptyLabel}</span>}
-            {canCreate && (editing === 'new' ? editor('new') : <Button data-raw="" variant="ghost" isDisabled={form.processing} onClick={() => edit()} className="inline-flex h-[38px] items-center gap-1.5 rounded-full border-[1.5px] border-dashed border-gray-300 px-3.5 text-sm font-semibold text-gray-600 transition hover:border-gray-900 hover:text-gray-900 disabled:opacity-40"><Icon name="plus" className="h-[15px] w-[15px]" strokeWidth={2} />{addLabel}</Button>)}
+            {canCreate && (editing === 'new' ? editor('new') : <Button data-raw="" variant="ghost" isDisabled={form.processing} onClick={() => edit()} className="inline-flex h-[38px] items-center gap-2 rounded-full border-[1.5px] border-dashed border-gray-300 px-4 text-sm font-semibold text-gray-600 transition hover:border-gray-900 hover:text-gray-900 disabled:opacity-40"><Icon name="plus" className="h-[15px] w-[15px]" strokeWidth={2} />{addLabel}</Button>)}
         </div>
     </section>;
 }

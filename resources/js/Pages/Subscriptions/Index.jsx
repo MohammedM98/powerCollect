@@ -7,7 +7,6 @@ import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import Pagination from '@/Components/DataTable/Pagination';
 import { useDataTable } from '@/hooks/useDataTable';
 import { useDeleteRecord } from '@/hooks/useDeleteRecord';
-import { useRowClick } from '@/hooks/useRowClick';
 import { useStatementWindow } from '@/hooks/useStatementWindow';
 import { hasLatestWeekReading, weekOptionsFor } from '@/lib/readings';
 import { openQuickMessage } from '@/lib/quickMessage';
@@ -73,7 +72,6 @@ export default function Index({
     const { search, setSearch, sort, setPage, setPerPage, filterValues, setFilter, setFilters, clearFilters } = useDataTable('/subscriptions', filters, {}, {
         only: ['subscriptions', 'listSummary', 'filters', 'filterOptions', 'branchScope', 'can', 'canCreate', 'canViewArchived', 'showArchived', 'archiveToday', 'canRecordReadings', 'bulkActions', 'canEditMinimumCharge', 'canEditKilowattPrice', 'readingWeekOptions'],
     });
-    const rowClick = useRowClick();
     const localFilterKey = subscriptionFilterKey(filterValues);
     const serverFilterKey = subscriptionFilterKey(filters.filter);
     const filtersKey = JSON.stringify([search.trim(), localFilterKey, filters.search, serverFilterKey]);
@@ -304,14 +302,14 @@ export default function Index({
             />
 
             {balanceLabel && (
-                <div role="status" className="flex flex-wrap items-center justify-between gap-3 border-x border-gray-100 bg-brand-500/5 px-5 py-3 text-sm text-gray-700">
+                <div role="status" className="flex flex-wrap items-center justify-between gap-3 border-x border-gray-100 bg-brand-500/5 px-4 py-3 text-sm text-gray-700">
                     <span><b className="font-display text-gray-900">{subscriptions.total.toLocaleString('en')}</b> اشتراكًا، {balanceLabel}{filtersPending && '، جارٍ تحديث النتائج…'}</span>
                     {canSelect && subscriptions.total > 0 && !allMatching && <Button variant="secondary" size="sm" isDisabled={filtersPending} onPress={selectAllMatching}>تحديد جميع النتائج ({subscriptions.total.toLocaleString('en')})</Button>}
                 </div>
             )}
 
             {canSelect && !allMatching && pageIds.length > 0 && pageSelectedCount === pageIds.length && subscriptions.total > pageIds.length && (
-                <div role="status" className="flex flex-wrap items-center justify-center gap-2 border-x border-gray-100 bg-brand-500/5 px-4 py-2.5 text-sm text-gray-700">
+                <div role="status" className="flex flex-wrap items-center justify-center gap-2 border-x border-gray-100 bg-brand-500/5 px-4 py-2 text-sm text-gray-700">
                     تم تحديد {pageIds.length.toLocaleString('en')} مشترك في هذه الصفحة.
                     <Button variant="ghost" size="sm" onPress={() => setAllMatching(true)}>
                         تحديد كل النتائج المطابقة ({subscriptions.total.toLocaleString('en')})
@@ -328,7 +326,6 @@ export default function Index({
                     pageIds={pageIds}
                     pageSelectedCount={pageSelectedCount}
                     requestDelete={requestDelete}
-                    rowClick={rowClick}
                     rowMenu={rowMenu}
                     selectedIds={selectedIds}
                     setModalSubscription={setModalSubscription}

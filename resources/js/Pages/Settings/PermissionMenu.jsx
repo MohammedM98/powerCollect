@@ -23,7 +23,7 @@ export function MenuButton({ icon, label, items, empty = null, className = '' })
                     renderEmptyState={() => <p className="px-3 py-4 text-center text-sm text-gray-500">{empty}</p>}
                 >
                     {items.map((item) => (
-                        <Dropdown.Item key={item.id} id={String(item.id)} textValue={item.title} className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-start text-sm">
+                        <Dropdown.Item key={item.id} id={String(item.id)} textValue={item.title} className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-start text-sm">
                             {item.leading}
                             <span className="min-w-0 flex-1">
                                 <span className="block truncate font-semibold text-gray-900">{item.title}</span>

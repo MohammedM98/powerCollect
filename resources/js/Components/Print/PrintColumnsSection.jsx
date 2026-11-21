@@ -23,7 +23,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                             layout.columns.map((column) => ({ ...column, visible: true })),
                         )
                     }
-                    className="flex-1 px-2! py-1.5! text-xs"
+                    className="flex-1 px-2! py-2! text-xs"
                 >
                     إظهار الكل
                 </SecondaryButton>
@@ -34,7 +34,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                             layout.columns.map((column) => ({ ...column, visible: false })),
                         )
                     }
-                    className="flex-1 px-2! py-1.5! text-xs"
+                    className="flex-1 px-2! py-2! text-xs"
                 >
                     إخفاء الكل
                 </SecondaryButton>
@@ -54,7 +54,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                     .map(({ column, index }) => (
                         <li
                             key={column.key}
-                            className={`rounded-control border p-2.5 ${column.visible ? 'border-gray-200 bg-surface' : 'border-dashed border-gray-200 bg-gray-50'}`}
+                            className={`rounded-control border p-3 ${column.visible ? 'border-gray-200 bg-surface' : 'border-dashed border-gray-200 bg-gray-50'}`}
                         >
                             <div className="flex items-center gap-2">
                                 <CheckBox
@@ -71,7 +71,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                     className={`block min-w-0 flex-1 py-1! text-sm ${column.visible ? '' : 'text-gray-400'}`}
                                 />
                                 {column.extra && (
-                                    <span className="shrink-0 rounded-full bg-sky-500/10 px-2 py-0.5 text-[11px] font-semibold text-sky-800">
+                                    <span className="shrink-0 rounded-full bg-sky-500/10 px-2 py-1 text-[11px] font-semibold text-sky-800">
                                         حقل إضافي
                                     </span>
                                 )}
@@ -103,7 +103,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                             </div>
                             {column.visible && (
                                 <div className="mt-2 flex flex-wrap items-center gap-3 ps-6 text-xs">
-                                    <label className="flex items-center gap-1.5 text-gray-600">
+                                    <label className="flex items-center gap-2 text-gray-600">
                                         العرض (مم)
                                         <Input
                                             type="number"
@@ -112,12 +112,12 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                             step="1"
                                             value={column.width ?? 0}
                                             onChange={(event) => setColumn(index, { width: Math.max(0, Math.min(120, Number(event.target.value))) })}
-                                            className="w-20 py-0.5! text-xs"
+                                            className="w-20 py-1! text-xs"
                                             aria-label={`عرض عمود ${column.label}`}
                                         />
                                         <span>0 تلقائي</span>
                                     </label>
-                                    <label className="flex items-center gap-1.5 text-gray-600">
+                                    <label className="flex items-center gap-2 text-gray-600">
                                         <CheckBox
                                             checked={Boolean(column.blank)}
                                             onChange={(event) => setColumn(index, { blank: event.target.checked, total: false })}
@@ -125,13 +125,13 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                         خانة فارغة للكتابة
                                     </label>
                                     {!column.blank && (
-                                        <label className="flex items-center gap-1.5 text-gray-600">
+                                        <label className="flex items-center gap-2 text-gray-600">
                                             سطر إضافي تحته
                                             <ChoiceSelect
                                                 aria-label={`السطر الإضافي لعمود ${column.label}`}
                                                 value={column.secondaryKey ?? ''}
                                                 onChange={(event) => setColumn(index, { secondaryKey: event.target.value })}
-                                                className="max-w-44 py-0.5! text-xs"
+                                                className="max-w-44 py-1! text-xs"
                                             >
                                                 <option value="">بدون</option>
                                                 {layout.columns
@@ -144,12 +144,12 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                             </ChoiceSelect>
                                         </label>
                                     )}
-                                    <label className="flex items-center gap-1.5 text-gray-600">
+                                    <label className="flex items-center gap-2 text-gray-600">
                                         المحاذاة
                                         <ChoiceSelect
                                             value={column.align}
                                             onChange={(e) => setColumn(index, { align: e.target.value })}
-                                            className="py-0.5! text-xs"
+                                            className="py-1! text-xs"
                                         >
                                             {ALIGNMENTS.map((alignment) => (
                                                 <option key={alignment.value} value={alignment.value}>
@@ -158,7 +158,7 @@ export default function PrintColumnsSection({ columnSearch, layout, set, setColu
                                             ))}
                                         </ChoiceSelect>
                                     </label>
-                                    <label className="flex items-center gap-1.5 text-gray-600">
+                                    <label className="flex items-center gap-2 text-gray-600">
                                         <CheckBox
                                             checked={column.total}
                                             onChange={(e) => setColumn(index, { total: e.target.checked })}
