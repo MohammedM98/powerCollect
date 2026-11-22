@@ -16,87 +16,6 @@
 
 ## 1. المشاكل المفتوحة وتعليمات إصلاحها
 
-### 1.1 الشعار: حرف M يبقى داكنًا في الوضع الداكن (لم يُصلح)
-
-**المطلوب:** M أسود على الخلفية الفاتحة، وأبيض في الوضع الداكن. حرف A البرتقالي لا يتغير.
-
-**السبب (مؤكد من الكود ومن اللقطات):**
-- `public/images/logo-ma.svg` يرسم M والخط بلون ثابت `fill="#2A2D34"` (في موضعين)، و A بـ`#E2642A`.
-- `resources/brand/default.json` فيه `"light": null`، أي لا يوجد شعار للخلفيات الداكنة.
-- `app/Support/Branding/Brand.php` (الدالة `logoUrl`) تعيد الشعار الرئيسي عندما يكون `light` فارغًا.
-- `resources/js/Components/BrandLogo.jsx`: عند `light === main` يرسم الصورة نفسها في الوضعين.
-
-**خطوات الإصلاح:**
-
-1. أنشئ نسخة الشعار للخلفيات الداكنة:
-
-```bash
-sed 's/#2A2D34/#FFFFFF/g' public/images/logo-ma.svg > public/images/logo-ma-light.svg
-```
-
-2. في `resources/brand/default.json` غيّر السطر:
-
-```json
-"light": null,
-```
-
-إلى:
-
-```json
-"light": "/images/logo-ma-light.svg",
-```
-
-3. في `resources/js/hooks/useBrand.js` داخل `DEFAULT_BRAND` غيّر `light: defaults.logos.main` إلى:
-
-```js
-light: defaults.logos.light ?? defaults.logos.main,
-```
-
-4. لا حاجة لتعديل `BrandLogo.jsx` ولا CSS: التبديل موجود أصلًا (`.brand-logo-on-dark` / `.brand-logo-on-light` في `resources/css/app/windows.css`).
-
-**تحقق بعد الإصلاح:**
-- الشريط العلوي والقائمة الجانبية (`Components/Layout/TopBar.jsx` سطرا 92 و218، `NavigationDrawer.jsx` سطر 120): بدّل بين الفاتح والداكن وتأكد أن M يتبدل فورًا.
-- البطاقات الداكنة دائمًا (`Subscriptions/SubscriptionPreview.jsx`، `AccountStatement.jsx`، `Auth/DrawnMark.jsx`) تستخدم `onDark`، فسيصير M فيها أبيض في الوضعين — وهذا صحيح.
-- `Subscriptions/PaymentCheckout.jsx` (سطر 353) يتبع الثيم: معاينة فقط، دون تعديل النافذة.
-- شغّل:
-
-```bash
-npm test
-```
-
-```bash
-php artisan test --compact --filter=Brand
-```
-
-(`tests/Unit/brandPalette.test.js` و`tests/Unit/BrandPaletteTest.php` قد يثبّتان قيم `default.json`.)
-
-**تنبيه:** شركة رفعت شعارها الخاص من شاشة المظهر دون شعار للخلفيات الداكنة ستبقى على شعار واحد؛ حلّها رفع شعار داكن من الشاشة نفسها.
-
-### 1.2 القائمة المنسدلة المغلقة بلا أيقونة قفل
-
-**الوصف:** الحقل النصي المغلق يحمل قفلًا، أما القائمة المعطّلة (مثل «المنطقة» قبل اختيار المحافظة في الفرع والطبلون) فتظهر مخطّطة ومتقطعة مع سهمها فقط.
-
-**الإصلاح:** في `resources/css/app/ma-forms.css` داخل الكتلة الرئيسية، أضف قاعدة تخفي سهم القائمة المعطّلة وترسم القفل مكانه:
-
-```css
-& :is(button.rounded-control.border, .gl-choice-trigger):is(:disabled, [aria-disabled='true'], [data-disabled]) {
-    background-image: var(--ma-lock), var(--ma-hatch);
-    background-repeat: no-repeat, repeat;
-    background-size: 17px 17px, auto;
-    background-position: left 16px center, 0 0;
-}
-
-& :is(button.rounded-control.border, .gl-choice-trigger):is(:disabled, [aria-disabled='true'], [data-disabled]) svg {
-    visibility: hidden;
-}
-```
-
-### 1.3 صف المفتاح خارج البطاقة في صفحة الفرع
-
-**الوصف:** في `/branches/create` صف «فرع نشط» يقع تحت بطاقات الأقسام لا داخل إحداها.
-
-**الإصلاح:** في `resources/js/Pages/Branches/BranchForm.jsx` انقل `<SettingRow title="فرع نشط">` وخطأه إلى داخل `<FormSection icon="pin" title="الموقع">` في `<div className="sm:col-span-2">`، كما في «حساب نشط» بنموذج المستخدم.
-
 ### 1.4 تباين الحقل المفتوح مع البطاقة الزجاجية
 
 **الوصف:** في الوضع الفاتح الزجاجي، لون الحقل (`--ma-tile`) قريب من لون البطاقة، والتمييز يعتمد على الخط الرفيع.
@@ -115,14 +34,38 @@ php artisan test --compact --filter=Brand
 
 صار: المفتاح «تحميل رسوم اشتراك»، ثم الرسوم، ثم القراءة السابقة، ثم التاريخ (كان: القراءة، الرسوم، التاريخ، ثم المفتاح). للرجوع: أعد ترتيب العناصر داخل `<FormSection icon="calendar">` في `resources/js/Pages/Subscriptions/SubscriptionForm.jsx`.
 
-### 1.6 أنماط لم تعد مستخدمة
+### 1.6 أشرطة التحديد الجماعي ما زالت بألوان خام
 
-- حُذف `resources/js/Components/Form/InsetList.jsx` (كان يستخدمه نموذج التعرفة فقط). قواعده `gl-inset*` ما زالت في `resources/css/components/forms.css` (أسطر ~300–370) ويمكن حذفها.
-- `FieldLock` و`ReadOnlyField` أُزيلا من `SubscriptionLocationSection.jsx`.
+**الوصف:** الشريط العائم عند تحديد صفوف (`Subscriptions/BulkActionBar.jsx`، `Disconnections/Show.jsx`، `Disconnections/Candidates.jsx`) يستخدم `bg-brand-gradient` و`bg-white` و`text-white`.
 
-### 1.7 ملاحظة عن بيئة الفحص (ليست خطأ في الموقع)
+**الإصلاح:** اصنع جزءًا واحدًا في الكِت (`UI/SelectionBar.jsx`) بنفس سطح شريط الحفظ في الصلاحيات (`.pm-savebar` في `Settings/PermissionDesign.css`: `--ma-pop` + `--ma-float`)، بمفاتيح `SecondaryKey`/`DangerKey`، ثم استعمله في الملفات الثلاثة.
 
-نسخة Playwright في `node_modules` تطلب متصفحًا غير المثبّت في البيئة السحابية؛ اختبارات المتصفح تفشل ما لم يُضبط `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` (انظر القسم 5). وخادم MCP «laravel-boost» لم يتصل في هذه الجلسة.
+### 1.7 صفحة الملف الشخصي على نظام أصناف خاص
+
+**الوصف:** `Profile/Edit.jsx` و`Profile/Partials/*` تعمل بأصناف `pp-*` (`Profile.css`: `pp-field`، `pp-button`) لا بـ`FormField` ومفاتيح الكِت. نافذة «تسجيل الخروج من الأجهزة» فقط نُقلت إلى `DialogFrame`.
+
+**الإصلاح:** أعد بناء الأقسام بـ`FormSection` + `FormField` + مفاتيح الكِت، ثم احذف قواعد `pp-field`/`pp-button` و`.profile-page.pp-dialog` (أسطر ~162–164 من `Profile.css`، لم تعد مستخدمة).
+
+### 1.8 أجزاء صغيرة بقيت خارج الكِت
+
+- لا يوجد `TextArea` في الكِت؛ النوافذ تستخدم `TextArea` من HeroUI مباشرة (`Disconnections/ActionModal.jsx`، `CompanyForms/IssueModal.jsx`). أضف `UI/TextArea.jsx` وصدّره من `UI/index.js`.
+- `UI/PasswordInput.jsx`: زر الإظهار يحمل `text-gray-400 hover:text-gray-900`؛ بدّلهما بـ`text-(--ma-faint) hover:text-(--ma-ink)`.
+- `Messages/QuickMessage{Kind,Recipients,Body,Channel}.jsx` و`Disconnections/ResultReport.jsx` لم تُراجع ألوانها.
+- `Subscriptions/ReadingHistoryModal.jsx` بقي على بنيته (نافذة بملء الشاشة بورقة أنماطها ورأس طباعة)؛ نُظّفت ألوانه فقط.
+- `Payments/CloseBoxesByType.jsx`: `text-white`/`bg-white` باقية في `CloseSteps` و`StepHeading` فوق `--ma-act` و`--ma-pay-btn` (داكنان في الوضعين)؛ لذلك الملف غير مدرج في قاعدة ESLint.
+
+### 1.9 تغييرات سلوك صغيرة تحتاج نظرة المالك
+
+- نوافذ التوزيع (`ReadingCycles/DistributionDialog.jsx`) صارت بالعرض القياسي 820px بدل 880px؛ عُدّل الفحص في `tests/Browser/reading-distribution.cjs`.
+- في `MeterReadings/MeterReadingModal.jsx`: «اعتماد القراءة المصحّحة الآن» صار مفتاحًا (`SettingRow` + `Switch`) بدل خانة اختيار، وحقلا القراءة أخذا شكل الحقل الموحّد بدل الشكل الكبير المتوسّط.
+- في `Payments/CloseBoxesByType.jsx`: صف الخطوات صار في أعلى الجسم المتحرك لا ثابتًا في الرأس.
+- في `Settings/PrintTemplates.jsx`: نافذة إعادة التسمية لا تُغلق أثناء الحفظ.
+- زر الإغلاق في كل النوافذ المرحّلة صار اسمه «إغلاق النافذة».
+- شاشة المظهر تعرض الآن «شعار الخلفيات الداكنة» الافتراضي كشعار قابل للإزالة؛ ورفع شعار رئيسي خاص يزيل النسخة الافتراضية الداكنة تلقائيًا (`BrandSettingController@update`).
+
+### 1.10 ملاحظة عن بيئة الفحص (ليست خطأ في الموقع)
+
+نسخة Playwright في `node_modules` تطلب متصفحًا غير المثبّت في البيئة السحابية؛ اختبارات المتصفح تفشل ما لم يُضبط `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` (انظر القسم 5). وخادم MCP «laravel-boost» لم يتصل. و`composer install` في البيئة السحابية ينزّل الحزم بالاستنساخ من git فيستغرق نحو 15 دقيقة؛ شغّله في الخلفية أولًا.
 
 **فُحص ولم يكن مشكلة:** تجاوز العرض الأفقي في `/users/create` و`/profile` الذي بدا في لقطات الصفحة الكاملة — القياس عند 1440 و1280 و390 أظهر أنه لا يوجد تجاوز.
 
@@ -174,11 +117,29 @@ php artisan test --compact --filter=Brand
 | الطبلون | `MeterBoxes/MeterBoxForm.jsx`, `MeterBoxSubAreaSelect.jsx` | الاسم بعرض كامل ثم اللاحقة والرقم جنبًا إلى جنب؛ `Notice`؛ نموذج الإضافة المضمّن بمفاتيح الكِت |
 | البنك أو المحفظة | `Settings/BanksSection.jsx` | ثلاثة صفوف إعداد بمفاتيح؛ اختيار الشعار بـ`ma-file-pick` |
 
-### 2.4 الفحوص التي نجحت
+### 2.4 الجولة الثانية (الشعار، الصلاحيات، النوافذ)
 
-`npm run lint`، `npm test`، `npx vitest run`، واختبارات المتصفح: الأساسية، `--a11y`، `--subscriber-navigation`، `--meter-boxes`، `--branches`، `--access`.
+| البند | الملفات | التعديل |
+|---|---|---|
+| الشعار | `public/images/logo-ma-light.svg` (جديد)، `resources/brand/default.json`، `hooks/useBrand.js`، `Components/Auth/DrawnMark.jsx`، `BrandSettingController.php` | M أسود في الفاتح وأبيض في الداكن، A برتقالي ثابت. شاشة الدخول ما زالت ترسم الشعار المتحرك. شعار خاص مرفوع لا يرث النسخة الداكنة الافتراضية |
+| قفل القائمة المغلقة | `ma-forms.css` | القائمة المعطّلة تعرض القفل مكان السهم |
+| «فرع نشط» | `Branches/BranchForm.jsx` | الصف داخل بطاقة «الموقع» |
+| تنظيف | `components/forms.css` | حُذفت قواعد `gl-inset*` |
+| `Notice` | `UI/Notice.jsx`، `ma-forms.css` | العنوان بصنف `ma-notice-title` (سطر مستقل)؛ `<b>`/`<strong>` داخل النص يبقى في السطر |
+| صفحة الصلاحيات | `Settings/PermissionGuide.jsx`، `PermissionReview.jsx`، `Permissions.jsx`، `PermissionDesign.css`، وبقية `Permission*.jsx` و`AuditAccessCard.jsx` | الدليل والشرح والمراجعة على `DialogFrame`؛ التنبيهات `Notice`؛ شريط «تغييرات لم تُحفظ» وإشعار «حُفظت» سطحان عائمان بمفاتيح الكِت؛ كل الألوان رموز `--ma-*` |
+| نماذج 4.1 | `Subscriptions/PersonalDetailsModal.jsx`، `ArchiveSubscriptionModal.jsx`، `BulkChangeModal.jsx`، `MeterReadings/MeterReadingModal.jsx`، `Messages/Create.jsx`، `Profile/Edit.jsx` (نافذة الأجهزة) | `FormSection`/`FormField`/`Notice`/`SettingRow`؛ القراءة السابقة مغلقة بسببها؛ `BulkChangeModal` على `DialogFrame` |
+| نوافذ 4.2 | `Disconnections/ActionModal.jsx`، `HistoryModal.jsx`، `Candidates.jsx`، `Messages/QuickMessageModal.jsx`، `QuickMessageFooter.jsx`، `SubscriptionMessageHistoryModal.jsx`، `CompanyForms/IssueModal.jsx`، `ReadingCycles/DistributionDialog.jsx`، `CycleParts.jsx`، `Payments/CloseBoxesByType.jsx`، `Settings/PrintTemplates.jsx`، `Subscriptions/BulkChanges.jsx` | كلها على `DialogFrame`؛ النماذج داخلها بـ`<form id>` ومفاتيح التذييل تشير إليها بـ`form=` |
+| الحماية | `eslint.config.js` | القاعدة `local/ma-colours` ومنع استيراد `Modal` الخام على قائمة `MA_MIGRATED`؛ أضف كل ملف يُرحَّل إلى القائمة |
 
-معاينة بالعين: المشترك، الفرع، المستخدم، القاطع، التعرفة، المنطقة، الطبلون، البنك — فاتح/داكن، زجاجي/مصمت، وهاتف (ليست كل التركيبات لكل نموذج). **لم تُعاين بالعين:** نوافذ المال، نماذج التعديل (Edit)، منطقة 2، المحافظة، رابط الفرع.
+صفحات التعديل (Edit) تستخدم مكوّن النموذج نفسه الذي تستخدمه صفحات الإنشاء، وليس فيها ألوان خام.
+
+### 2.5 الفحوص التي نجحت
+
+`npm run lint`، `npm test` (433)، `npx vitest run` (81)، `php artisan test --compact --filter=Brand` (42)، `vendor/bin/pint --dirty`، واختبارات المتصفح: الأساسية، `--a11y`، `--access`، `--branches`، `--meter-boxes`، `--subscriber-navigation`، `--distribution`، `--print`، `--readings`. لم تُشغَّل: مجموعة PHP الكاملة، `--reports`، `--statement-actions`.
+
+**عُوين بالعين (فاتح وداكن):** الشعار في الشريط العلوي والقائمة الجانبية؛ صفحة الصلاحيات ونوافذها الثلاث وشريط الحفظ وإشعار الحفظ؛ صفحة الفرع (زجاجي ومصمت وهاتف)؛ البيانات الشخصية، إدخال قراءة، سجل الرسائل، الرسالة السريعة، التغيير الجماعي (الحد الأدنى والنقل) — مع الهاتف؛ قالب طباعة جديد، أرشفة طلب ورقي — مع الهاتف؛ إنذار وتأكيد وتمديد القطع — مع الهاتف؛ ملخّص التوزيع. المصمت: نافذة المراجعة وإدخال القراءة فقط.
+
+**لم يُعاين بالعين:** أرشفة/استعادة الاشتراك، نافذة الأجهزة في الملف الشخصي، سجل المشترك في قائمة القطع، «إضافة إلى القائمة» في المرشحين، إغلاق الصناديق حسب النوع، إعادة تسمية القالب، يوم القراءة، إصدار نموذج معبّأ، تفاصيل التعديل الجماعي، سجل القراءات بعد تنظيف ألوانه، صفحات التعديل (Edit)، منطقة 2، المحافظة، رابط الفرع، ومعظم النوافذ على السطح المصمت.
 
 ---
 
@@ -235,30 +196,23 @@ import { Affix, FieldAction, Notice, Switch, TextInput } from '@/Components/UI';
 
 ## 4. ما بقي من الخطة
 
-### 4.1 نماذج ورثت الشكل ولم تُراجع
-`Subscriptions/PersonalDetailsModal.jsx`, `ArchiveSubscriptionModal.jsx`, `BulkChangeModal.jsx`, `MeterReadings/MeterReadingModal.jsx`, `Profile/Partials/*`, صفحات التعديل (Edit) لكل الموارد.
-العمل: معاينة، إزالة الألوان الخام، استخدام `lock` / `Notice` / `SettingRow`.
+### 4.1 المعاينة الباقية
+كل ما ورد في «لم يُعاين بالعين» (القسم 2.5)، في الفاتح والداكن، الزجاجي والمصمت، والهاتف.
 
-### 4.2 نوافذ تبني رأسها وتذييلها يدويًا فوق `Modal`
-تُنقل إلى `DialogFrame` (`@/Components/UI/DialogFrame`):
-- الصلاحيات: `Settings/PermissionGuide.jsx` (`PermissionGuide` و`PermissionExplanation`)، `PermissionReview.jsx`.
-- `Disconnections/ActionModal.jsx`, `HistoryModal.jsx`, `Candidates.jsx`.
-- `Messages/QuickMessageModal.jsx`, `SubscriptionMessageHistoryModal.jsx`.
-- `CompanyForms/IssueModal.jsx`, `ReadingCycles/DistributionDialog.jsx`, `CycleParts.jsx`.
-- `Payments/CloseBoxesByType.jsx`, `Settings/PrintTemplates.jsx`, `Subscriptions/BulkChanges.jsx`, `ReadingHistoryModal.jsx`.
-
-### 4.3 رسائل التنبيه والتحذير
-- صفحة الصلاحيات: صناديق `amber`/`red` في `PermissionReview.jsx` (أسطر ~80، 91، 184، 202)، ألوان خام في `PermissionInsights.jsx`, `PermissionMatrix.jsx`, `PermissionPeople.jsx`, و`pm-toast` بألوان hex في `PermissionDesign.css`. تُستبدل بـ`Notice` والرموز.
-- عمومًا: نحو 98 صندوقًا يدويًا في المشروع. للبحث عنها:
+### 4.2 رسائل التنبيه اليدوية
+بقي نحو 90 صندوقًا يدويًا خارج الملفات المرحّلة. للبحث عنها:
 
 ```bash
 grep -rnE "className=\"[^\"]*rounded-(control|card|xl|lg)[^\"]*bg-(gray-50|amber|red|blue|emerald|yellow)" resources/js --include=*.jsx
 ```
 
-### 4.4 التنظيف والحماية
-- حذف قواعد `gl-*` و`--panel-*` الخاصة بالنماذج بعد اكتمال الترحيل (`resources/css/components/forms.css`, `form-windows.css`).
+لتبديل أصناف الألوان الخام آليًا ثم مراجعة الباقي يدويًا، التحويل المعتمد: `text-gray-700..900` → `text-(--ma-ink)`، `text-gray-500/600` → `text-(--ma-muted)`، `text-gray-300/400` → `text-(--ma-faint)`، `bg-gray-50/100` → `bg-(--ma-tile)`، `bg-surface`/`bg-white` → `bg-(--ma-solid)`، `border-gray-*` → `border-(--ma-line)`، الأحمر → `--ma-owe`/`-s`، الكهرماني → `--ma-warn`/`-s`، الأخضر → `--ma-pay`/`-s`، الأزرق → `--ma-clr`/`-s`، مع حذف أصناف `dark:` المقابلة.
+
+### 4.3 التنظيف والحماية
+- حذف قواعد `gl-*` و`--panel-*` الخاصة بالنماذج بعد اكتمال الترحيل (`resources/css/components/forms.css`, `form-windows.css`)، والقواعد القديمة برموز `--gray-*` في `Settings/PermissionDesign.css` التي تغطيها كتلة MA في آخره.
 - توحيد `SettingSwitch` (في `Components/Settings/SettingsKit.jsx`) مع `SettingRow` + `Switch`.
-- قاعدة ESLint: منع استيراد `Modal` الخام داخل `Pages/`، ومنع أصناف الألوان الخام في الملفات المرحّلة (موجودة اليوم في 195 ملفًا).
+- توسيع قائمة `MA_MIGRATED` في `eslint.config.js` مع كل ملف يُرحَّل، حتى تشمل `resources/js/Pages/**`.
+- البنود 1.6 إلى 1.8.
 
 ---
 
