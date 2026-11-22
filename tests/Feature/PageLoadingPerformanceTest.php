@@ -15,6 +15,7 @@ use App\Models\UserType;
 use App\Support\Ledger\RecordPayment;
 use App\Support\Readings\ReadingWeeks;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
@@ -36,7 +37,7 @@ class PageLoadingPerformanceTest extends TestCase
             'X-Inertia-Partial-Data' => 'filters',
         ])->assertOk()->assertJsonMissingPath('props.auth')->assertJsonMissingPath('props.can');
 
-        $profileQueries = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains($query['query'], 'from "user_types"'));
+        $profileQueries = $this->loggedQueries()->filter(fn (string $query): bool => str_contains($query, 'from "user_types"'));
         DB::disableQueryLog();
         $this->assertCount(0, $profileQueries);
     }
@@ -53,8 +54,8 @@ class PageLoadingPerformanceTest extends TestCase
 
         $this->actingAs($actor)->get(route('subscriptions.statement', $subscription))->assertOk();
 
-        $perLine = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains($query['query'], 'from "cash_boxes" where exists')
-            || str_contains($query['query'], 'from "closing_payments" where "subscription_transaction_id" = ?'))->count();
+        $perLine = $this->loggedQueries()->filter(fn (string $query): bool => str_contains($query, 'from "cash_boxes" where exists')
+            || str_contains($query, 'from "closing_payments" where "subscription_transaction_id" = ?'))->count();
         DB::disableQueryLog();
         $this->assertSame(0, $perLine);
     }
@@ -84,7 +85,7 @@ class PageLoadingPerformanceTest extends TestCase
             ->assertJsonPath('props.subscriptions.data.0.meterReadingsCount', 4)
             ->assertJsonMissingPath('props.subscriptions.data.0.meterReadings');
 
-        $queries = collect(DB::getQueryLog())->pluck('query');
+        $queries = $this->loggedQueries();
         DB::disableQueryLog();
         $rowQueries = $queries->filter(fn (string $query): bool => preg_match('/from "(?:subscriptions|meter_readings|subscription_archive_events)" where (?:exists\(select \* from "subscription_archive_events" where )?"(?:subscriptions|meter_readings|subscription_archive_events)"\.(?:"id"|"subscription_id") = \?/', $query) === 1);
         $this->assertCount(0, $rowQueries);
@@ -159,7 +160,7 @@ class PageLoadingPerformanceTest extends TestCase
             'X-Inertia-Partial-Component' => 'MeterReadings/Index', 'X-Inertia-Partial-Data' => 'filters',
         ])->assertOk()->assertJsonMissingPath('props.rows')->assertJsonMissingPath('props.summary');
 
-        $readingQueries = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains($query['query'], 'from "meter_readings"'));
+        $readingQueries = $this->loggedQueries()->filter(fn (string $query): bool => str_contains($query, 'from "meter_readings"'));
         DB::disableQueryLog();
         $this->assertCount(0, $readingQueries);
     }
@@ -210,7 +211,7 @@ class PageLoadingPerformanceTest extends TestCase
         ])->assertJsonPath('props.latestPayments.sum', '0.00')
             ->assertJsonMissingPath('props.sections');
 
-        $summaryQueries = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains($query['query'], 'from "meter_readings"'));
+        $summaryQueries = $this->loggedQueries()->filter(fn (string $query): bool => str_contains($query, 'from "meter_readings"'));
         DB::disableQueryLog();
         $this->assertCount(0, $summaryQueries);
     }
@@ -231,7 +232,7 @@ class PageLoadingPerformanceTest extends TestCase
             ->assertJsonMissingPath('props.tariffs')
             ->assertJsonMissingPath('props.circuitBreakers');
 
-        $optionQueries = collect(DB::getQueryLog())->filter(fn (array $query): bool => str_contains($query['query'], 'from "tariffs"') || str_contains($query['query'], 'from "circuit_breakers"'));
+        $optionQueries = $this->loggedQueries()->filter(fn (string $query): bool => str_contains($query, 'from "tariffs"') || str_contains($query, 'from "circuit_breakers"'));
         DB::disableQueryLog();
         $this->assertCount(0, $optionQueries);
     }
@@ -251,5 +252,16 @@ class PageLoadingPerformanceTest extends TestCase
             ->assertJsonPath('subscription.national_id', '123456789')
             ->assertJsonPath('subscription.personal_phone', '0599000111')
             ->assertJsonPath('subscription.sub_area_name', 'الحي الشرقي');
+    }
+
+    /**
+     * The queries logged so far, with MySQL's backtick quoting written as SQLite's double quotes
+     * so the same checks hold on both databases.
+     *
+     * @return Collection<int, string>
+     */
+    private function loggedQueries(): Collection
+    {
+        return collect(DB::getQueryLog())->map(fn (array $query): string => str_replace('`', '"', $query['query']));
     }
 }
