@@ -5,7 +5,7 @@ import FormSelect, { namedOptions } from '@/Components/Form/FormSelect';
 import FormSection from '@/Components/Form/FormSection';
 import Icon from '@/Components/UI/Icon';
 import MeterBoxSubAreaSelect from './MeterBoxSubAreaSelect';
-import { TextInput } from '@/Components/UI';
+import { Notice, TextInput } from '@/Components/UI';
 
 /**
  * The form's starting values: the meter box's own when editing,
@@ -59,23 +59,21 @@ export default function MeterBoxForm({ data, setData, errors, branches, canChoos
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px]">
             <div className="min-w-0 space-y-6">
 
-            <FormSection icon="grid" title="بيانات الطبلون" columns={2}>
-                <div className="flex items-start gap-3 sm:col-span-2">
-                    <FormField id="name" label="اسم الطبلون" required error={errors.name} span="min-w-0 flex-1">
+            <FormSection icon="grid" title="بيانات الطبلون" description="الاسم واللاحقة والرقم" columns={2}>
+                    <FormField id="name" label="اسم الطبلون" required error={errors.name} span="sm:col-span-2">
                         <TextInput className="block w-full" value={data.name} autoFocus onChange={(e) => setData('name', e.target.value)} />
                     </FormField>
-                    <FormField id="name_suffix" label="لاحقة (اختياري)" error={errors.name_suffix} span="w-28 shrink-0">
+                    <FormField id="name_suffix" label="لاحقة (اختياري)" error={errors.name_suffix} hint="مثل 2 أو 2A، تُضاف بعد الاسم.">
                         <TextInput
                             name="name_suffix"
                             maxLength={50}
                             placeholder="2 / 2A"
                             dir="auto"
-                            className="block w-full text-center"
+                            className="block w-full"
                             value={data.name_suffix}
                             onChange={(e) => setData('name_suffix', e.target.value)}
                         />
                     </FormField>
-                </div>
 
                 <FormField
                     id="box_number"
@@ -97,7 +95,7 @@ export default function MeterBoxForm({ data, setData, errors, branches, canChoos
             <FormSection
                 icon="pin"
                 title="الموقع"
-               
+                description="المحافظة ثم المنطقة ثم الفرع ومنطقة الطبلون"
                 columns={2}
             >
                 {canChooseBranch ? (
@@ -135,7 +133,7 @@ export default function MeterBoxForm({ data, setData, errors, branches, canChoos
                         />
                     </>
                 ) : (
-                    <p className="text-sm text-gray-500 sm:col-span-2">سينتمي هذا الطبلون إلى فرعك.</p>
+                    <Notice className="sm:col-span-2">سينتمي هذا الطبلون إلى فرعك.</Notice>
                 )}
 
                 <MeterBoxSubAreaSelect

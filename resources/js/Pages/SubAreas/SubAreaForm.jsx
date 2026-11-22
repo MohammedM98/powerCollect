@@ -21,7 +21,7 @@ export default function SubAreaForm({ data, setData, errors, areas, allowNoArea 
     const area = areas.find((option) => String(option.id) === String(data.area_id));
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             <FormPreview
                 avatar={<Icon name="pin" className="h-6 w-6 text-white/70" />}
                 title={data.name.trim() || 'منطقة 2 جديدة'}
@@ -30,7 +30,7 @@ export default function SubAreaForm({ data, setData, errors, areas, allowNoArea 
                 total={1}
             />
 
-            <FormSection icon="pin" title="بيانات منطقة 2" columns={2}>
+            <FormSection icon="pin" title="بيانات منطقة 2" description="الاسم والمنطقة التي تقع ضمنها" columns={2}>
                 <FormField id="name" label="الاسم" required error={errors.name}>
                     <TextInput className="block w-full" value={data.name} autoFocus onChange={(e) => setData('name', e.target.value)} />
                 </FormField>

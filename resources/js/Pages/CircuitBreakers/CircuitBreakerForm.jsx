@@ -2,7 +2,7 @@ import FormField from '@/Components/Form/FormField';
 import FormPreview, { countFilled } from '@/Components/Form/FormPreview';
 import FormSection from '@/Components/Form/FormSection';
 import Icon from '@/Components/UI/Icon';
-import { TextInput } from '@/Components/UI';
+import { Affix, TextInput } from '@/Components/UI';
 
 /**
  * The form's starting values: the circuit breaker's own when editing,
@@ -17,7 +17,7 @@ export default function CircuitBreakerForm({ data, setData, errors }) {
     const minimum = String(data.minimum_payment).trim();
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             <FormPreview
                 avatar={<Icon name="bolt" className="h-6 w-6 text-white/70" />}
                 title={ampere === '' ? 'قاطع جديد' : `قاطع ${ampere} أمبير`}
@@ -26,12 +26,15 @@ export default function CircuitBreakerForm({ data, setData, errors }) {
                 total={2}
             />
 
-            <FormSection icon="bolt" title="بيانات القاطع" columns={2}>
+            <FormSection icon="bolt" title="بيانات القاطع" description="قوة القاطع وأقل مبلغ يُدفع عنه" columns={2}>
                 <FormField id="ampere" label="الأمبير" required error={errors.ampere}>
-                    <TextInput type="number" min={2} step={1} required className="block w-full" value={data.ampere} onChange={(event) => setData('ampere', event.target.value)} />
+                    <Affix unit="أمبير">
+                        <TextInput type="number" min={2} step={1} required className="block w-full" value={data.ampere} onChange={(event) => setData('ampere', event.target.value)} />
+                    </Affix>
                 </FormField>
 
-                <FormField id="minimum_payment" label="الحد الأدنى للدفع (شيكل)" required error={errors.minimum_payment}>
+                <FormField id="minimum_payment" label="الحد الأدنى للدفع (شيكل)" required error={errors.minimum_payment} hint="يُملأ تلقائيًا في نموذج المشترك عند اختيار هذا القاطع.">
+                    <Affix unit="₪">
                     <TextInput
                         type="number"
                         min={0}
@@ -41,6 +44,7 @@ export default function CircuitBreakerForm({ data, setData, errors }) {
                         value={data.minimum_payment}
                         onChange={(event) => setData('minimum_payment', event.target.value)}
                     />
+                    </Affix>
                 </FormField>
             </FormSection>
         </div>

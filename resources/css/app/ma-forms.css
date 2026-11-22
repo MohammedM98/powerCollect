@@ -475,3 +475,63 @@
 .ma-inline-add :is(input, textarea):not(:disabled, [readonly]) {
     background-color: var(--ma-solid) !important;
 }
+
+/* Choosing a file (a bank's logo): its picture on a white tile, its name, and the key that opens the chooser. */
+.ma-file-pick {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+}
+
+.ma-file-pick > div:not(.relative) {
+    flex: 1 1 160px;
+    min-width: 0;
+}
+
+.ma-file-thumb {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-faint);
+}
+
+.ma-file-name {
+    margin: 0;
+    color: var(--ma-ink);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.ma-file-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 40px;
+    padding-inline: 16px;
+    border-radius: 12px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.ma-file-key[data-disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.peer:focus-visible + .ma-file-key {
+    outline: 2px solid var(--ma-brand);
+    outline-offset: 2px;
+}
