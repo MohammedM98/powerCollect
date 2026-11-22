@@ -171,11 +171,11 @@ export default function MessageRecipientCriteria({
             </div>
 
             {criteria.subscription_ids.length > 0 && (
-                <div className="mt-4 flex items-center justify-between gap-3 rounded-control bg-gray-50 px-3 py-2 text-sm text-gray-600">
+                <div className="mt-4 flex items-center justify-between gap-3 rounded-control bg-(--ma-tile) px-3 py-2 text-sm text-(--ma-muted)">
                     <span>الرسالة لمشترك محدد من قائمة المشتركين.</span>
                     <Button data-raw="" variant="ghost"
                         onClick={() => setCriterion('subscription_ids', [])}
-                        className={`rounded font-semibold text-brand-600 hover:underline ${FOCUS_RING}`}
+                        className={`rounded font-semibold text-(--ma-brand) hover:underline ${FOCUS_RING}`}
                     >
                         إلغاء التحديد
                     </Button>

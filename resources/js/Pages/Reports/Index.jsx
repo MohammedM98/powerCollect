@@ -17,7 +17,7 @@ import { BoxesReport, DebtReport, StatementReport } from './ReportDetails';
 import { PeriodCard } from './ReportParts';
 import { CollectionsView, OverviewView } from './ReportViews';
 import { Transactions } from './ReportSections';
-import { ChoiceSelect } from '@/Components/UI';
+import { ChoiceSelect, Notice } from '@/Components/UI';
 
 const ExcelStudio = lazy(() => import('@/Components/Excel/ExcelStudio'));
 
@@ -91,7 +91,7 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                     actions={hasFigures && ['overview', 'collections', 'movements'].includes(section) ? (
                         // As in the redesign: what to print, Excel and print in the page's actions row, under the section tabs.
                         <div className="flex flex-wrap items-center gap-2">
-                            <label className="reports-print-view flex items-center gap-2 text-sm text-gray-600">محتوى الطباعة
+                            <label className="reports-print-view flex items-center gap-2 text-sm text-(--ma-muted)">محتوى الطباعة
                                 <ChoiceSelect aria-label="محتوى الطباعة" value={printView} onChange={(event) => setPrintView(event.target.value)}>
                                     <option value="summary">الملخص المالي</option>
                                     <option value="lines">الحركات التفصيلية</option>
@@ -149,20 +149,17 @@ export default function Index({ branches, filters, scopeLabel, branchScope, pres
                 <PeriodCard branches={branches} branchScope={branchScope} scopeLabel={scopeLabel} filters={filters} presets={presets} today={today} period={period} periodText={periodText} visit={visit} />
 
                 {errors.from && (
-                    <p role="alert" className="flex items-center gap-2 rounded-card border border-red-200 bg-red-500/5 px-4 py-3 text-sm font-semibold text-red-700">
-                        <Icon name="alert" className="h-5 w-5" />
-                        {errors.from}
-                    </p>
+                    <Notice tone="danger" role="alert">{errors.from}</Notice>
                 )}
 
                 {branches.length === 0 && (
-                    <div className="rounded-card border border-dashed border-gray-200 bg-surface px-6 py-8 text-center">
-                        <b className="text-gray-900">لا توجد فروع</b>
-                        <p className="mt-1 text-sm text-gray-500">أضف فرعًا أولًا لعرض تقاريره.</p>
+                    <div className="rounded-card border border-dashed border-(--ma-line) bg-(--ma-solid) px-6 py-8 text-center">
+                        <b className="text-(--ma-ink)">لا توجد فروع</b>
+                        <p className="mt-1 text-sm text-(--ma-muted)">أضف فرعًا أولًا لعرض تقاريره.</p>
                     </div>
                 )}
 
-                <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold text-gray-900">{current.heading}</h2><InfoTip label={`معلومة عن ${current.heading}`}>{current.hint}</InfoTip></div>
+                <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold text-(--ma-ink)">{current.heading}</h2><InfoTip label={`معلومة عن ${current.heading}`}>{current.hint}</InfoTip></div>
                 {hasFigures && section === 'overview' && <OverviewView flow={flow} collections={collections} comparison={comparison} branchSummary={branchSummary ?? []} readings={readings} />}
                 {hasFigures && section === 'collections' && <CollectionsView collections={collections} comparison={comparison} days={days} onOpenDay={openDay} />}
                 {section === 'boxes' && <BoxesReport data={boxData} />}

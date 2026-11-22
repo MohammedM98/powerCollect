@@ -8,25 +8,25 @@ import KpiTile from '@/Components/Charts/KpiTile';
 import { cents, reportMoney, shortDate } from '@/lib/reportFormatting';
 import { SearchableSelect } from '@/Components/UI';
 
-export const TH = 'px-3 py-2 text-start text-[13.5px] font-semibold text-gray-700';
+export const TH = 'px-3 py-2 text-start text-[13.5px] font-semibold text-(--ma-ink)';
 
 /** A figure column's heading sits on the same side as its right-aligned (ltr) figures: the RTL start. */
 export const NUM_TH = TH;
 
 export const TD = 'px-3 py-2 text-start';
 
-export const NUM = 'px-3 py-2 text-end [direction:ltr] font-display tabular-nums text-gray-900';
+export const NUM = 'px-3 py-2 text-end [direction:ltr] font-display tabular-nums text-(--ma-ink)';
 
 export function Comparison({ comparison }) {
     const difference = Number(comparison.difference);
 
     return (
-        <section className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-gray-100 bg-surface p-4 shadow-card" aria-label="المقارنة بالفترة السابقة">
+        <section className="flex flex-wrap items-center justify-between gap-3 rounded-panel border border-(--ma-line) bg-(--ma-solid) p-4 shadow-card" aria-label="المقارنة بالفترة السابقة">
             <div>
-                <h3 className="text-sm font-bold text-gray-900">التحصيل مقارنة بالفترة السابقة</h3>
-                <p className="mt-1 text-xs text-gray-500">{shortDate(comparison.from, true)} – {shortDate(comparison.to, true)}، المحصّل سابقًا {reportMoney(comparison.total)} ₪</p>
+                <h3 className="text-sm font-bold text-(--ma-ink)">التحصيل مقارنة بالفترة السابقة</h3>
+                <p className="mt-1 text-xs text-(--ma-muted)">{shortDate(comparison.from, true)} – {shortDate(comparison.to, true)}، المحصّل سابقًا {reportMoney(comparison.total)} ₪</p>
             </div>
-            <p className={`text-sm font-semibold ${difference > 0 ? 'text-emerald-700 dark:text-emerald-400' : difference < 0 ? 'text-red-700 dark:text-red-400' : 'text-gray-600'}`}>
+            <p className={`text-sm font-semibold ${difference > 0 ? 'text-(--ma-pay)' : difference < 0 ? 'text-(--ma-owe)' : 'text-(--ma-muted)'}`}>
                 {difference > 0 ? 'زيادة' : difference < 0 ? 'انخفاض' : 'لم يتغير'} {reportMoney(Math.abs(difference))} ₪
                 {comparison.percentage === null ? '، لا تحصيل في الفترة السابقة' : ` (${Math.abs(comparison.percentage)}%)`}
             </p>
@@ -38,13 +38,13 @@ export function Comparison({ comparison }) {
 export function Panel({ icon, title, hint = null, className = '', excelParts, children }) {
     const { canExport, auth, scopeLabel, filters } = usePage().props;
     return (
-        <section data-excel-source={excelParts ? 'custom' : undefined} className={`rounded-panel border border-gray-100 bg-surface p-4 shadow-card sm:p-6 ${className}`}>
+        <section data-excel-source={excelParts ? 'custom' : undefined} className={`rounded-panel border border-(--ma-line) bg-(--ma-solid) p-4 shadow-card sm:p-6 ${className}`}>
             <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-gray-100 bg-gray-50 text-gray-500">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-(--ma-line) bg-(--ma-tile) text-(--ma-muted)">
                     <Icon name={icon} className="h-[18px] w-[18px]" />
                 </span>
-                <h3 className="font-bold text-gray-900">{title}</h3>
-                {hint && <span className="text-xs text-gray-500">{hint}</span>}
+                <h3 className="font-bold text-(--ma-ink)">{title}</h3>
+                {hint && <span className="text-xs text-(--ma-muted)">{hint}</span>}
                 {canExport && excelParts && <TableExportActions title={title} showPrint={false} excelProps={{ storageKey: `reports:${title}`, templateKind: 'reports', loadParts: async (options) => (await excelParts(options)).map((part) => ({ ...part, default: true })), meta: { lines: [scopeLabel, `${filters.from} – ${filters.to}`].filter(Boolean), criteria: [['أعدّه', auth?.user?.name ?? ''], ['من', filters.from], ['إلى', filters.to]] } }} />}
             </div>
             {children}
@@ -129,19 +129,19 @@ export function Figures({ flow, collections }) {
                     {total > 0 && (
                         <>
                             <span style={{ width: `${(Number(collections.cash) / total) * 100}%`, background: 'var(--gl-ink)' }} />
-                            <span className="bg-brand-500" style={{ width: `${(Number(collections.nonCash) / total) * 100}%` }} />
+                            <span className="bg-(--ma-brand)" style={{ width: `${(Number(collections.nonCash) / total) * 100}%` }} />
                         </>
                     )}
                 </div>
                 <div className="gl-hint mt-3 flex flex-wrap gap-x-6 gap-y-1 text-xs">
                     <span className="flex items-center gap-2"><i className="h-2 w-2 rounded-full" style={{ background: 'var(--gl-ink)' }} />نقدي <b className="font-display text-(--gl-ink)!">{reportMoney(collections.cash)} ₪</b></span>
-                    <span className="flex items-center gap-2"><i className="h-2 w-2 rounded-full bg-brand-500" />تحويلات وشيكات <b className="font-display text-(--gl-ink)!">{reportMoney(collections.nonCash)} ₪</b></span>
+                    <span className="flex items-center gap-2"><i className="h-2 w-2 rounded-full bg-(--ma-brand)" />تحويلات وشيكات <b className="font-display text-(--gl-ink)!">{reportMoney(collections.nonCash)} ₪</b></span>
                 </div>
             </KpiTile>
             <KpiTile label="الرصيد الافتتاحي" value={<bdi dir="ltr">{reportMoney(flow.opening)}</bdi>} unit="₪" hint={Number(flow.opening) < 0 ? 'لصالح المشتركين' : 'على المشتركين'} />
             <KpiTile label="التحميلات" value={reportMoney(flow.chargesTotal)} unit="₪" hint="قراءات ورسوم وغرامات" />
             <KpiTile label="الرصيد الختامي" value={<bdi dir="ltr">{reportMoney(flow.closing)}</bdi>} unit="₪">
-                <p className={`mt-2 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${change > 0 ? 'bg-amber-500/10 text-amber-700' : change < 0 ? 'bg-emerald-500/10 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                <p className={`mt-2 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${change > 0 ? 'bg-(--ma-warn-s) text-(--ma-warn)' : change < 0 ? 'bg-(--ma-pay-s) text-(--ma-pay)' : 'bg-(--ma-tile) text-(--ma-muted)'}`}>
                     {change > 0 ? 'زاد' : change < 0 ? 'نقص' : 'لم يتغير'}
                     {change !== 0 && <b className="font-display">{reportMoney(Math.abs(Number(flow.change)))} ₪</b>}
                     <span className="font-normal">خلال الفترة</span>

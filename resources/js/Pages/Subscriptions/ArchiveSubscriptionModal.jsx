@@ -1,4 +1,3 @@
-import { TextArea } from '@heroui/react';
 import { useId } from 'react';
 import { useForm } from '@inertiajs/react';
 import DialogFrame from '@/Components/UI/DialogFrame';
@@ -7,7 +6,7 @@ import InputError from '@/Components/UI/InputError';
 import Balance from '@/Components/Finance/Balance';
 import { balanceWord } from '@/lib/balance';
 import DateInput from '@/Components/UI/DateInput';
-import { CheckBox, Notice, PrimaryKey, SecondaryKey } from '@/Components/UI';
+import { CheckBox, Notice, PrimaryKey, SecondaryKey, TextArea } from '@/Components/UI';
 
 export default function ArchiveSubscriptionModal({ subscription, today, onClose }) {
     const id = useId();

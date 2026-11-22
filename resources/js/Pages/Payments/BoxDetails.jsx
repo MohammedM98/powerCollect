@@ -20,8 +20,8 @@ import { ConfirmDialog, ListBody, ListCell, ListColumn, ListHeader, ListRow, Lis
 
 
 /** A small action in an entry's row. */
-const rowButton = 'inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold transition hover:bg-gray-100';
-const auditEditButton = `${rowButton} border border-brand-500/25 bg-brand-500/5 text-brand-700 hover:border-brand-500/40 hover:bg-brand-500/10 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:text-brand-300`;
+const rowButton = 'inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold transition hover:bg-(--ma-tile)';
+const auditEditButton = `${rowButton} border border-(--ma-brand) bg-(--ma-brand-soft) text-(--ma-brand) focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ma-brand)`;
 
 const isActive = (entry) => !entry.transaction || entry.transaction.status === 'active';
 const subscriberName = (entry) => entry.transaction?.subscription?.subscription_name || entry.transaction?.subscription?.full_name || '—';
@@ -133,9 +133,9 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
             <Journey box={box} />
 
             {!editable && <section aria-label="تدقيق الصندوق" className="gl-bd-card">
-                <div className="flex flex-wrap items-center justify-between gap-3"><h3>مراجعة قسم التدقيق</h3>{box.audit ? <p className="text-sm text-gray-600">اعتمدها {box.audit.auditor?.name}، {dateTime(box.audit.audited_at)}</p> : box.canAudit && <Button isDisabled={!box.canCompleteAudit} onPress={() => setConfirmingAudit(true)} className="gl-sheet-btn is-primary"><Icon name="check" className="h-4 w-4" />اعتماد الصندوق كاملًا</Button>}</div>
-                {bankAudit && <p className="text-sm leading-7 text-gray-600">حُفظت مراجعة <b>{box.auditSummary?.reviewed ?? 0}</b> من <b>{box.auditSummary?.total ?? active.length}</b> حوالة. المثبت بحسب المراجعات: <b>{formatMoney(box.auditSummary?.verified ?? 0)} شيكل</b>، صافي الفروق على المشتركين: <b dir="ltr">{formatMoney(box.auditSummary?.difference ?? 0)} شيكل</b>. إجمالي الصندوق التاريخي محفوظ كما أُغلق.</p>}
-                {bankAudit && (box.canReviewTransfers ?? box.canAudit) && <p className="text-sm leading-7 text-gray-600">سجّل الحوالات التي فيها مشاكل فقط. عند اعتماد الصندوق تُرحّل فروق المراجعات المحفوظة ماليًا وتُعتمد بقية الحوالات كمطابقة تلقائيًا.</p>}
+                <div className="flex flex-wrap items-center justify-between gap-3"><h3>مراجعة قسم التدقيق</h3>{box.audit ? <p className="text-sm text-(--ma-muted)">اعتمدها {box.audit.auditor?.name}، {dateTime(box.audit.audited_at)}</p> : box.canAudit && <Button isDisabled={!box.canCompleteAudit} onPress={() => setConfirmingAudit(true)} className="gl-sheet-btn is-primary"><Icon name="check" className="h-4 w-4" />اعتماد الصندوق كاملًا</Button>}</div>
+                {bankAudit && <p className="text-sm leading-7 text-(--ma-muted)">حُفظت مراجعة <b>{box.auditSummary?.reviewed ?? 0}</b> من <b>{box.auditSummary?.total ?? active.length}</b> حوالة. المثبت بحسب المراجعات: <b>{formatMoney(box.auditSummary?.verified ?? 0)} شيكل</b>، صافي الفروق على المشتركين: <b dir="ltr">{formatMoney(box.auditSummary?.difference ?? 0)} شيكل</b>. إجمالي الصندوق التاريخي محفوظ كما أُغلق.</p>}
+                {bankAudit && (box.canReviewTransfers ?? box.canAudit) && <p className="text-sm leading-7 text-(--ma-muted)">سجّل الحوالات التي فيها مشاكل فقط. عند اعتماد الصندوق تُرحّل فروق المراجعات المحفوظة ماليًا وتُعتمد بقية الحوالات كمطابقة تلقائيًا.</p>}
             </section>}
 
             <BoxBreakdown type={type} entries={active.map(breakdownEntry)} />
@@ -181,7 +181,7 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
                         <thead><tr>{columns.map(([label], index) => index === columns.length - 1 ? <ActionsTh key={index} /> : <th key={index}>{label}</th>)}</tr></thead>
                         <tbody>
                             {shown.length === 0 ? (
-                                <tr><td colSpan={columns.length} className="text-center text-gray-500">{entries.length ? 'لا توجد حركات تطابق البحث والفلاتر المحددة.' : 'لا توجد حركات في هذا الصندوق.'}</td></tr>
+                                <tr><td colSpan={columns.length} className="text-center text-(--ma-muted)">{entries.length ? 'لا توجد حركات تطابق البحث والفلاتر المحددة.' : 'لا توجد حركات في هذا الصندوق.'}</td></tr>
                             ) : shown.map((entry) => {
                                 const [label, tone] = entryStatus(entry);
                                 const live = isActive(entry);
@@ -191,12 +191,12 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
                                     <BoxNumberCell number={box.number} position={entries.indexOf(entry) + 1} />
                                     <LedgerLeadCells ledger={ledger} />
                                     <td title={subscriberName(entry)} className="whitespace-normal!">
-                                        {entry.statement_url ? <Link href={entry.statement_url} className="font-semibold text-gray-900 hover:text-brand-600">{subscriberName(entry)}</Link> : <span className="font-semibold text-gray-900">{subscriberName(entry)}</span>}
-                                        <span className="block font-display text-xs text-gray-400"><bdi dir="ltr">{entry.transaction?.subscription?.account_number ?? '—'}</bdi></span>
+                                        {entry.statement_url ? <Link href={entry.statement_url} className="font-semibold text-(--ma-ink) hover:text-(--ma-brand)">{subscriberName(entry)}</Link> : <span className="font-semibold text-(--ma-ink)">{subscriberName(entry)}</span>}
+                                        <span className="block font-display text-xs text-(--ma-faint)"><bdi dir="ltr">{entry.transaction?.subscription?.account_number ?? '—'}</bdi></span>
                                     </td>
                                     <LedgerTrailCells ledger={ledger} amount={entry.amount} currency={entry.currency} cancelled={!live} />
                                     <td className="whitespace-normal!"><Chip size="sm" className="gl-cb-chip" data-state={{ green: 'closed', red: 'bad', amber: 'waiting', blue: 'open' }[tone] ?? 'cancelled'}><i aria-hidden="true" />{label}</Chip></td>
-                                    {bankAudit && <td className="whitespace-normal!">{entry.audit ? <div className="space-y-1"><StatusPill tone={entry.audit.outcome === 'missing' ? 'red' : entry.audit.outcome === 'matched' ? 'green' : 'amber'} label={{ matched: 'مطابقة', missing: 'غير موجودة', short: 'نقص في المبلغ', over: 'زيادة لصالح المشترك' }[entry.audit.outcome]} /><p className="text-xs font-semibold text-gray-600">{entry.audit.posted_at || entry.audit.adjustment_transaction_id ? 'معتمدة نهائيًا' : 'مسودة، لم تُرحّل ماليًا'}</p><p className="text-xs text-gray-600">المثبت: {formatMoney(entry.audit.bank_amount)} {ledger.currencyLabel}</p><p className="text-xs text-gray-500">{entry.audit.auditor?.name}، {dateTime(entry.audit.audited_at)}</p>{entry.audit.reason && <p className="text-xs text-gray-600">{entry.audit.reason}</p>}</div> : <StatusPill tone="gray" label={live ? 'تُطابق عند اعتماد الصندوق' : 'حركة غير سارية'} />}</td>}
+                                    {bankAudit && <td className="whitespace-normal!">{entry.audit ? <div className="space-y-1"><StatusPill tone={entry.audit.outcome === 'missing' ? 'red' : entry.audit.outcome === 'matched' ? 'green' : 'amber'} label={{ matched: 'مطابقة', missing: 'غير موجودة', short: 'نقص في المبلغ', over: 'زيادة لصالح المشترك' }[entry.audit.outcome]} /><p className="text-xs font-semibold text-(--ma-muted)">{entry.audit.posted_at || entry.audit.adjustment_transaction_id ? 'معتمدة نهائيًا' : 'مسودة، لم تُرحّل ماليًا'}</p><p className="text-xs text-(--ma-muted)">المثبت: {formatMoney(entry.audit.bank_amount)} {ledger.currencyLabel}</p><p className="text-xs text-(--ma-muted)">{entry.audit.auditor?.name}، {dateTime(entry.audit.audited_at)}</p>{entry.audit.reason && <p className="text-xs text-(--ma-muted)">{entry.audit.reason}</p>}</div> : <StatusPill tone="gray" label={live ? 'تُطابق عند اعتماد الصندوق' : 'حركة غير سارية'} />}</td>}
                                     <td className="whitespace-normal!"><div className="flex flex-wrap items-center gap-1">
                                         {bankAudit && (box.canReviewTransfers ?? box.canAudit) && live && !entry.audit?.posted_at && !entry.audit?.adjustment_transaction_id && <Button data-raw="" variant="ghost" onClick={() => setAuditingEntry(entry)} className={auditEditButton}><Icon name="pencil" className="h-3.5 w-3.5" />تعديل الحوالة</Button>}
                                         {box.canPrint !== false && entry.receipt_url && <a href={entry.receipt_url} target="_blank" rel="noopener noreferrer" className={`${rowButton} tone-print border`}><Icon name="printer" className="h-3.5 w-3.5" />السند</a>}
@@ -230,11 +230,11 @@ export default function BoxDetails({ box, onClose, perform, initialSearch = '' }
             confirmLabel="نعم، أغلق الصندوق"
             icon="lock"
         >
-            <dl className="grid grid-cols-2 gap-x-6 gap-y-4 rounded-control bg-gray-50 p-4">
-                <div><dt className="text-base text-gray-600">الصندوق</dt><dd className="mt-1 font-semibold text-gray-900">{boxTypes[type]}، <bdi dir="ltr">{box.number}</bdi></dd></div>
-                <div><dt className="text-base text-gray-600">المحصّل</dt><dd className="mt-1 font-semibold text-gray-900">{box.user?.name ?? '—'}</dd></div>
-                <div><dt className="text-base text-gray-600">الإجمالي</dt><dd className="mt-1 font-display text-xl font-bold text-gray-900">{amountsLine(totals)}</dd></div>
-                <div><dt className="text-base text-gray-600">الحركات السارية</dt><dd className="mt-1 font-display text-xl font-bold text-gray-900">{active.length}</dd></div>
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-4 rounded-control bg-(--ma-tile) p-4">
+                <div><dt className="text-base text-(--ma-muted)">الصندوق</dt><dd className="mt-1 font-semibold text-(--ma-ink)">{boxTypes[type]}، <bdi dir="ltr">{box.number}</bdi></dd></div>
+                <div><dt className="text-base text-(--ma-muted)">المحصّل</dt><dd className="mt-1 font-semibold text-(--ma-ink)">{box.user?.name ?? '—'}</dd></div>
+                <div><dt className="text-base text-(--ma-muted)">الإجمالي</dt><dd className="mt-1 font-display text-xl font-bold text-(--ma-ink)">{amountsLine(totals)}</dd></div>
+                <div><dt className="text-base text-(--ma-muted)">الحركات السارية</dt><dd className="mt-1 font-display text-xl font-bold text-(--ma-ink)">{active.length}</dd></div>
             </dl>
         </ConfirmDialog>
         {confirmingAudit && <AuditApprovalDialog title="اعتماد تدقيق الصندوق؟" scope={`${boxTypes[type]}، صندوق ${box.number}، ${box.user?.name ?? '—'}`} summary={auditApprovalSummary([box])} url={box.completeAuditUrl} onClose={() => setConfirmingAudit(false)} />}
@@ -246,10 +246,10 @@ function BoxCountSummary({ box }) {
     if (!box.expected_counts) return null;
     const money = (amount) => formatMoney(amount ?? 0);
 
-    return <div className="overflow-x-auto rounded-panel border border-gray-100 bg-surface">
+    return <div className="overflow-x-auto rounded-panel border border-(--ma-line) bg-(--ma-solid)">
         <ListTable aria-label="عدّ الصندوق" className="w-full text-start text-sm">
-            <ListHeader className="bg-gray-50 text-xs text-gray-500">{['العملة', 'المتوقع', 'عدّ المحصّل', 'عدّ المستلم', 'الفرق', 'القرار'].map((title, index) => <ListColumn key={title} id={title} isRowHeader={index === 0} className="whitespace-nowrap p-3 text-start">{title}</ListColumn>)}</ListHeader>
-            <ListBody>{Object.entries(currencies).map(([currency, label]) => <ListRow key={currency} id={currency} className="border-t border-gray-100 text-gray-700">
+            <ListHeader className="bg-(--ma-tile) text-xs text-(--ma-muted)">{['العملة', 'المتوقع', 'عدّ المحصّل', 'عدّ المستلم', 'الفرق', 'القرار'].map((title, index) => <ListColumn key={title} id={title} isRowHeader={index === 0} className="whitespace-nowrap p-3 text-start">{title}</ListColumn>)}</ListHeader>
+            <ListBody>{Object.entries(currencies).map(([currency, label]) => <ListRow key={currency} id={currency} className="border-t border-(--ma-line) text-(--ma-ink)">
                 <ListCell className="p-3">{label}</ListCell>
                 <ListCell className="p-3 font-display" dir="ltr">{money(box.expected_counts[currency])}</ListCell>
                 <ListCell className="p-3 font-display" dir="ltr">{box.collector_counts ? money(box.collector_counts[currency]) : '—'}</ListCell>
@@ -258,6 +258,6 @@ function BoxCountSummary({ box }) {
                 <ListCell className="p-3">{box.decisions?.[currency] === 'debt' ? 'دين على المحصّل' : box.decisions?.[currency] === 'accepted' ? 'مقبول' : '—'}</ListCell>
             </ListRow>)}</ListBody>
         </ListTable>
-        {box.reason && <p className="border-t border-gray-100 p-3 text-xs text-gray-500">السبب: {box.reason}</p>}
+        {box.reason && <p className="border-t border-(--ma-line) p-3 text-xs text-(--ma-muted)">السبب: {box.reason}</p>}
     </div>;
 }

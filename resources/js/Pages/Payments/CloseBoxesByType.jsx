@@ -170,10 +170,10 @@ function CloseSteps({ steps, current, onGo }) {
             const active = step.key === current;
             const state = active ? 'current' : step.done ? 'done' : 'ahead';
             return <li key={step.key} className="min-w-0">
-                <Button data-raw="" variant="ghost" onClick={() => onGo(step.key)} aria-current={active ? 'step' : undefined} className={`flex w-full min-w-0 items-center gap-3 rounded-[14px] px-3 py-2 text-start transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-(--ma-ink) ${state === 'current' ? 'bg-(--ma-act) text-white shadow-(--ma-depth)' : state === 'done' ? 'bg-(--ma-pay-s)' : 'bg-(--ma-tile) shadow-(--ma-hl)'}`}>
-                    <span aria-hidden="true" className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-display text-sm font-bold ${state === 'current' ? 'bg-white text-(--ma-act)' : state === 'done' ? 'bg-(--ma-pay-btn) text-white' : 'bg-(--ma-solid) text-(--ma-muted)'}`}>{step.done ? <Icon name="check" className="h-4 w-4" strokeWidth={3} /> : index + 1}</span>
-                    <span className="min-w-0">
-                        <span className={`block truncate text-xs font-bold sm:text-sm ${state === 'current' ? 'text-white' : state === 'done' ? 'text-(--ma-ink)' : 'text-(--ma-muted)'}`}>{step.label}</span>
+                <Button data-raw="" variant="ghost" onClick={() => onGo(step.key)} aria-current={active ? 'step' : undefined} className={`flex w-full min-w-0 items-center justify-center gap-3 rounded-[14px] px-3 py-2 text-start sm:justify-start transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-(--ma-ink) ${state === 'current' ? 'bg-(--ma-act) text-white shadow-(--ma-depth)' : state === 'done' ? 'bg-(--ma-pay-s)' : 'bg-(--ma-tile) shadow-(--ma-hl)'}`}>
+                    <span aria-hidden="true" className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-display text-sm font-bold ${state === 'current' ? 'bg-(--ma-solid) text-(--ma-ink)' : state === 'done' ? 'bg-(--ma-pay-btn) text-white' : 'bg-(--ma-solid) text-(--ma-muted)'}`}>{step.done ? <Icon name="check" className="h-4 w-4" strokeWidth={3} /> : index + 1}</span>
+                    <span className="sr-only min-w-0 sm:not-sr-only">
+                        <span className={`block truncate text-sm font-bold ${state === 'current' ? 'text-white' : state === 'done' ? 'text-(--ma-ink)' : 'text-(--ma-muted)'}`}>{step.label}</span>
                         <span className={`hidden truncate text-xs sm:block ${state === 'current' ? 'text-white/75' : 'text-(--ma-muted)'}`}>{step.detail}</span>
                     </span>
                     <span className="sr-only">{active ? '(الخطوة الحالية)' : step.done ? '(مكتملة)' : '(لاحقًا)'}</span>

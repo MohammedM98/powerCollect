@@ -60,22 +60,22 @@ export default function Submissions({ cycle, submissions, canReview, filters, fi
                         <ListColumn id="status">الحالة</ListColumn>
                         {canReview && <ListColumn id="review">المراجعة</ListColumn>}
                     </ListHeader>
-                    <ListBody empty={<span className="text-gray-500">لا توجد قراءات مرفوعة.</span>}>
+                    <ListBody empty={<span className="text-(--ma-muted)">لا توجد قراءات مرفوعة.</span>}>
                         {submissions.data.map((submission) => (
                             <ListRow key={submission.id} id={submission.id}>
                                 <ListCell data-label="المشترك">
-                                    <b className="text-gray-900">{submission.name}</b>
-                                    <span className="block text-xs text-gray-500" dir="ltr">{submission.accountNumber}</span>
+                                    <b className="text-(--ma-ink)">{submission.name}</b>
+                                    <span className="block text-xs text-(--ma-muted)" dir="ltr">{submission.accountNumber}</span>
                                 </ListCell>
-                                <ListCell data-label="الطبلون" className="text-gray-600">{submission.boxLabel}</ListCell>
-                                <ListCell data-label="القارئ" className="text-gray-600">{submission.readerName}</ListCell>
+                                <ListCell data-label="الطبلون" className="text-(--ma-muted)">{submission.boxLabel}</ListCell>
+                                <ListCell data-label="القارئ" className="text-(--ma-muted)">{submission.readerName}</ListCell>
                                 <ListCell data-label="القراءة" className="font-display font-semibold">{submission.currentReading}</ListCell>
-                                <ListCell data-label="وقت التسجيل" className="whitespace-nowrap text-xs text-gray-600" dir="ltr">{submission.capturedAt}</ListCell>
-                                <ListCell data-label="وقت الوصول" className="whitespace-nowrap text-xs text-gray-600" dir="ltr">{submission.receivedAt}</ListCell>
+                                <ListCell data-label="وقت التسجيل" className="whitespace-nowrap text-xs text-(--ma-muted)" dir="ltr">{submission.capturedAt}</ListCell>
+                                <ListCell data-label="وقت الوصول" className="whitespace-nowrap text-xs text-(--ma-muted)" dir="ltr">{submission.receivedAt}</ListCell>
                                 <ListCell data-label="الحالة">
                                     <StatusPill tone={TONES[submission.status]} label={submission.statusLabel} />
-                                    {submission.issue && <span className="mt-1 block max-w-[16rem] text-xs text-gray-600">{submission.issue}</span>}
-                                    {submission.reviewedBy && <span className="mt-1 block text-xs text-gray-500">راجعها {submission.reviewedBy}{submission.reviewNote ? `: ${submission.reviewNote}` : ''}</span>}
+                                    {submission.issue && <span className="mt-1 block max-w-[16rem] text-xs text-(--ma-muted)">{submission.issue}</span>}
+                                    {submission.reviewedBy && <span className="mt-1 block text-xs text-(--ma-muted)">راجعها {submission.reviewedBy}{submission.reviewNote ? `: ${submission.reviewNote}` : ''}</span>}
                                 </ListCell>
                                 {canReview && (
                                     <ListCell data-label="المراجعة">
@@ -83,12 +83,12 @@ export default function Submissions({ cycle, submissions, canReview, filters, fi
                                             <div className="flex min-w-56 flex-col gap-2">
                                                 <Input type="text" placeholder="ملاحظة (اختياري)" value={notes[submission.id] ?? ''} onChange={(event) => setNotes((current) => ({ ...current, [submission.id]: event.target.value }))} className="block w-full text-xs" />
                                                 <div className="flex gap-2">
-                                                    <Button data-raw="" variant="ghost" onClick={() => review(submission, 'accept')} className="rounded-control bg-emerald-600 px-3 py-2 text-xs font-bold text-white hover:bg-emerald-700">قبول كقراءة الأسبوع</Button>
-                                                    <Button data-raw="" variant="ghost" onClick={() => review(submission, 'reject')} className="rounded-control border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50">رفض</Button>
+                                                    <Button data-raw="" variant="ghost" onClick={() => review(submission, 'accept')} className="rounded-control bg-(--ma-pay-btn) px-3 py-2 text-xs font-bold text-white hover:brightness-110">قبول كقراءة الأسبوع</Button>
+                                                    <Button data-raw="" variant="ghost" onClick={() => review(submission, 'reject')} className="rounded-control border border-(--ma-line) px-3 py-2 text-xs font-semibold text-(--ma-ink) hover:bg-(--ma-tile)">رفض</Button>
                                                 </div>
                                             </div>
                                         ) : (
-                                            <span className="text-gray-400">—</span>
+                                            <span className="text-(--ma-faint)">—</span>
                                         )}
                                     </ListCell>
                                 )}

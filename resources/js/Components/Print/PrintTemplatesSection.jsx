@@ -49,27 +49,27 @@ export function TemplatesSection({ templates, onReset, onPreset }) {
                 )}
             </Field>
             {!supported ? (
-                <p className="text-xs text-gray-500">هذه الصفحة لا تحفظ قوالب. يُحفظ آخر تصميم لها في هذا المتصفح.</p>
+                <p className="text-xs text-(--ma-muted)">هذه الصفحة لا تحفظ قوالب. يُحفظ آخر تصميم لها في هذا المتصفح.</p>
             ) : (
                 <>
-                    <div className="rounded-control border border-gray-200 bg-gray-50 px-3 py-2 text-sm" aria-live="polite">
+                    <div className="rounded-control border border-(--ma-line) bg-(--ma-tile) px-3 py-2 text-sm" aria-live="polite">
                         {active ? (
                             <span className="flex flex-wrap items-center gap-2">
-                                <Icon name="folder" className="h-4 w-4 text-gray-500" />
+                                <Icon name="folder" className="h-4 w-4 text-(--ma-muted)" />
                                 القالب: <b>{active.name}</b>
                                 {active.isDefault && (
-                                    <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-[11px] font-semibold text-emerald-800">
+                                    <span className="rounded-full bg-(--ma-pay-s) px-2 py-1 text-[11px] font-semibold text-(--ma-pay)">
                                         افتراضي
                                     </span>
                                 )}
                                 {isChanged && (
-                                    <span className="rounded-full bg-amber-500/10 px-2 py-1 text-[11px] font-semibold text-amber-800">
+                                    <span className="rounded-full bg-(--ma-warn-s) px-2 py-1 text-[11px] font-semibold text-(--ma-warn)">
                                         تعديلات غير محفوظة
                                     </span>
                                 )}
                             </span>
                         ) : (
-                            <span className="text-gray-600">تصميم غير محفوظ في قالب</span>
+                            <span className="text-(--ma-muted)">تصميم غير محفوظ في قالب</span>
                         )}
                     </div>
 
@@ -106,7 +106,7 @@ export function TemplatesSection({ templates, onReset, onPreset }) {
                             )}
                         </Field>
                     ) : (
-                        <p className="text-xs text-gray-500">لا توجد قوالب محفوظة لهذه القائمة بعد.</p>
+                        <p className="text-xs text-(--ma-muted)">لا توجد قوالب محفوظة لهذه القائمة بعد.</p>
                     )}
 
                     {canManage && (
@@ -155,7 +155,7 @@ export function TemplatesSection({ templates, onReset, onPreset }) {
                                                 حفظ
                                             </PrimaryButton>
                                         </div>
-                                        {errors.name && <p className="text-xs text-brand-600">{errors.name}</p>}
+                                        {errors.name && <p className="text-xs text-(--ma-brand)">{errors.name}</p>}
                                         <Switch checked={newIsDefault} onChange={setNewIsDefault} label="اجعله الافتراضي لهذه القائمة" />
                                     </form>
                                 )}
@@ -164,14 +164,14 @@ export function TemplatesSection({ templates, onReset, onPreset }) {
                                 href="/settings/print-templates"
                                 target="_blank"
                                 rel="noopener"
-                                className={`flex items-center gap-2 rounded text-xs font-semibold text-brand-600 hover:underline ${FOCUS_RING}`}
+                                className={`flex items-center gap-2 rounded text-xs font-semibold text-(--ma-brand) hover:underline ${FOCUS_RING}`}
                             >
                                 <Icon name="external" className="h-4 w-4" />
                                 كل قوالب الطباعة (صفحة القوالب)
                             </a>
                         </>
                     )}
-                    {!canManage && <p className="text-xs text-gray-500">حفظ القوالب يحتاج صلاحية «إدارة قوالب الطباعة».</p>}
+                    {!canManage && <p className="text-xs text-(--ma-muted)">حفظ القوالب يحتاج صلاحية «إدارة قوالب الطباعة».</p>}
                 </>
             )}
 

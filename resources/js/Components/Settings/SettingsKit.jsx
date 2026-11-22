@@ -1,5 +1,7 @@
-import { Alert, Button, Card, Label, ListBox, Select, Switch } from '@heroui/react';
+import { Alert, Button, Card, Label, ListBox, Select } from '@heroui/react';
+import FormSettingRow from '@/Components/Form/SettingRow';
 import Icon from '@/Components/UI/Icon';
+import KitSwitch from '@/Components/UI/Switch';
 
 /**
  * The settings pages' kit, built from HeroUI in the MA look: a section is a
@@ -124,17 +126,11 @@ export function SettingsHeading({ id, icon, tone = 'brand', title, description =
     );
 }
 
-/** An on/off setting: HeroUI's Switch, its knob sliding to the end and the track in the pay green when on, `hint` as a line under it. */
+/** An on/off setting: the shared setting row with the kit's switch at its end, `hint` as the line under its name. */
 export function SettingSwitch({ label, isSelected, onChange, isDisabled = false, hint = null }) {
     return (
-        <div className="gl-set-switch-wrap">
-            <Switch isSelected={isSelected} onChange={onChange} isDisabled={isDisabled} className="gl-set-switch">
-                <Switch.Content>
-                    <Switch.Control><Switch.Thumb /></Switch.Control>
-                    <Label>{label}</Label>
-                </Switch.Content>
-            </Switch>
-            {hint && <p className="gl-set-hint">{hint}</p>}
-        </div>
+        <FormSettingRow title={label} description={hint}>
+            <KitSwitch checked={isSelected} onChange={onChange} disabled={isDisabled} ariaLabel={label} />
+        </FormSettingRow>
     );
 }

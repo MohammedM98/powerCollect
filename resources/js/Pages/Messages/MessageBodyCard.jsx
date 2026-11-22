@@ -53,7 +53,7 @@ export default function MessageBodyCard({
                         onClick={() => setConfirmingTemplateDelete(true)}
                         aria-label={`حذف القالب «${selectedTemplate.name}»`}
                         title="حذف القالب"
-                        className="text-brand-600 hover:border-brand-500/40!"
+                        className="text-(--ma-brand) hover:border-(--ma-brand)!"
                     >
                         <Icon name="trash" className="h-4 w-4" />
                         <span className="hidden sm:inline">حذف</span>
@@ -68,7 +68,7 @@ export default function MessageBodyCard({
             </div>
 
             {templateName !== null && (
-                <div className="mb-4 flex flex-wrap items-end gap-3 rounded-control bg-gray-50 p-3">
+                <div className="mb-4 flex flex-wrap items-end gap-3 rounded-control bg-(--ma-tile) p-3">
                     <Field label="اسم القالب" htmlFor="template_name" className="min-w-[200px] flex-1">
                         <Input
                             id="template_name"
@@ -88,7 +88,7 @@ export default function MessageBodyCard({
                 </div>
             )}
 
-            <p id="placeholders-hint" className="mb-2 text-xs font-semibold text-gray-600">
+            <p id="placeholders-hint" className="mb-2 text-xs font-semibold text-(--ma-muted)">
                 أضف معلومة من بيانات المشترك إلى النص:
             </p>
             <div role="group" aria-labelledby="placeholders-hint" className="mb-3 flex flex-wrap gap-2">
@@ -98,7 +98,7 @@ export default function MessageBodyCard({
                         onClick={() => insertPlaceholder(name)}
                         aria-label={`أضف «${name.replaceAll('_', ' ')}» إلى نص الرسالة`}
                         title={`أضف ${name.replaceAll('_', ' ')} مكان المؤشر`}
-                        className={`inline-flex items-center gap-1 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-700 transition hover:border-brand-500/40 hover:text-brand-600 ${FOCUS_RING}`}
+                        className={`inline-flex items-center gap-1 rounded-full border border-(--ma-line) bg-(--ma-tile) px-3 py-1 text-xs font-semibold text-(--ma-ink) transition hover:border-(--ma-brand) hover:text-(--ma-brand) ${FOCUS_RING}`}
                     >
                         <Icon name="plus" className="h-3.5 w-3.5" strokeWidth={2} />
                         {name.replaceAll('_', ' ')}
@@ -122,7 +122,7 @@ export default function MessageBodyCard({
                 aria-invalid={errors.body ? true : undefined}
             />
             <InputError message={errors.body} className="mt-1" />
-            <div id="body-length" className="mt-1 text-xs text-gray-500">
+            <div id="body-length" className="mt-1 text-xs text-(--ma-muted)">
                 {previewText.length} حرفًا
                 {channel === 'sms' && <> — نحو {smsParts(previewText)} رسالة SMS لكل مشترك</>}
             </div>

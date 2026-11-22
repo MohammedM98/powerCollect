@@ -1,4 +1,3 @@
-import { TextArea } from '@heroui/react';
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useForm, useHttp } from '@inertiajs/react';
 import DialogFrame from '@/Components/UI/DialogFrame';
@@ -9,7 +8,7 @@ import InputError from '@/Components/UI/InputError';
 import CompanyFormPaper from './CompanyFormPaper';
 import useCompanySource from './useCompanySource';
 import DateInput from '@/Components/UI/DateInput';
-import { Notice, PrimaryKey, SearchableSelect, SecondaryKey, TextInput } from '@/Components/UI';
+import { Notice, PrimaryKey, SearchableSelect, SecondaryKey, TextArea, TextInput } from '@/Components/UI';
 
 const MODE_OPTIONS = [{ value: 'blank', label: 'نموذج فارغ', icon: 'document' }, { value: 'filled', label: 'نسخة معبأة', icon: 'user' }];
 const ARCHIVE_LAYOUT = { paper: 'A4', orientation: 'portrait', margin: 16, fontSize: 15, header: { enabled: false }, watermark: { enabled: false }, footer: '', pages: [{ id: 'archive', blocks: [] }], overlays: [] };

@@ -4,7 +4,7 @@ import { router, usePage } from '@inertiajs/react';
 import Icon from '@/Components/UI/Icon';
 import DialogFrame from '@/Components/UI/DialogFrame';
 import InputError from '@/Components/UI/InputError';
-import { formatNumber } from '@/lib/format';
+import { formatDate, formatNumber } from '@/lib/format';
 import DateInput from '@/Components/UI/DateInput';
 import { Notice, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
@@ -77,15 +77,15 @@ export function ReadingDayModal({ cycle, onClose }) {
                 <p className="text-sm text-(--ma-muted)">
                     موعد القراءة حسب إعدادات الفرع أو الموقع:{' '}
                     <bdi dir="ltr" className="whitespace-nowrap">
-                        {cycle.scheduledReadingDate}
+                        {formatDate(cycle.scheduledReadingDate)}
                     </bdi>
                     . يمكنك اختيار موعد من{' '}
                     <bdi dir="ltr" className="whitespace-nowrap">
-                        {cycle.minReadingDate}
+                        {formatDate(cycle.minReadingDate)}
                     </bdi>{' '}
                     إلى{' '}
                     <bdi dir="ltr" className="whitespace-nowrap">
-                        {cycle.maxReadingDate}
+                        {formatDate(cycle.maxReadingDate)}
                     </bdi>
                     . تغيير يوم القراءة الأسبوعي الدائم يتم من صفحة إعدادات القراءات.
                 </p>
