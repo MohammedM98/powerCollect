@@ -52,7 +52,7 @@ export default function DataTableToolbar({
         <div className="data-table-toolbar flex flex-wrap items-center justify-between gap-3">
             {showSearch && (
                 <div className="data-table-search relative w-full sm:w-auto sm:max-w-sm sm:flex-[1_1_240px]">
-                    <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
+                    <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-[18px] w-[18px] text-(--ma-faint)" />
                     <Input
                         ref={searchRef}
                         type="text"
@@ -73,8 +73,8 @@ export default function DataTableToolbar({
 
             <div className="data-table-tools flex flex-wrap items-center gap-2">
                 {typeof total === 'number' && (
-                    <span className="inline-flex items-center gap-2 rounded-control border border-gray-100 bg-gray-50 px-3 py-2 text-sm text-gray-500">
-                        <b className="font-display font-bold text-gray-900">{total.toLocaleString('en')}</b>
+                    <span className="inline-flex items-center gap-2 rounded-control border border-(--ma-line) bg-(--ma-tile) px-3 py-2 text-sm text-(--ma-muted)">
+                        <b className="font-display font-bold text-(--ma-ink)">{total.toLocaleString('en')}</b>
                         نتيجة
                     </span>
                 )}
@@ -82,7 +82,7 @@ export default function DataTableToolbar({
                 <div
                     role="group"
                     aria-label="عدد الصفوف في الصفحة"
-                    className="inline-flex gap-1 rounded-control border border-gray-100 bg-gray-50 p-1"
+                    className="inline-flex gap-1 rounded-control border border-(--ma-line) bg-(--ma-tile) p-1"
                 >
                     {PAGE_SIZES.map((size) => (
                         <Button
@@ -91,8 +91,8 @@ export default function DataTableToolbar({
                             size="sm"
                             aria-pressed={perPage === size}
                             onPress={() => onPerPageChange(size)}
-                            className={`rounded-lg px-3 py-1 font-display text-xs font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${
-                                perPage === size ? 'bg-surface text-gray-900 shadow-xs' : 'text-gray-500 hover:text-gray-900'
+                            className={`rounded-lg px-3 py-1 font-display text-xs font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-(--ma-ink) ${
+                                perPage === size ? 'bg-(--ma-solid) text-(--ma-ink) shadow-xs' : 'text-(--ma-muted) hover:text-(--ma-ink)'
                             }`}
                         >
                             {size}

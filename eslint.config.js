@@ -89,6 +89,8 @@ const MA_MIGRATED = [
     'resources/js/Pages/Branches/{Access,Index}.jsx',
     'resources/js/Pages/Profile/**/*.jsx',
     'resources/js/Components/UI/PasswordInput.jsx',
+    'resources/js/Components/DataTable/{DataTableToolbar,DensityToggle,DataTableFilterMenu}.jsx',
+    'resources/js/Components/Layout/NavigationMenu.jsx',
 ];
 const RAW_COLOUR = /^(?:\S*?:)*!?(?:(?:bg|text|border|ring|divide|outline|decoration|placeholder|fill|stroke|from|via|to)-(?:gray|slate|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|brand|danger|success|warning|info)-\d{2,3}|(?:bg|border)-(?:white|black|surface))(?:\/\S+)?!?$/;
 

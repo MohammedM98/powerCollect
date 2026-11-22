@@ -660,3 +660,9 @@
         justify-content: flex-start;
     }
 }
+
+/* On a form page the open field is white, so it stands off its glass card; windows keep the tile. */
+.ma-form-page :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color'], [type='hidden']), textarea, select):not(:disabled, [readonly]),
+.ma-form-page :is(button.rounded-control.border[aria-expanded]:not([class*='tone-']), .gl-choice-trigger):not(:disabled, [aria-disabled='true'], [data-disabled]) {
+    background-color: var(--ma-solid) !important;
+}

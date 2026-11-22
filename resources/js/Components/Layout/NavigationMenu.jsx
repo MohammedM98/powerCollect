@@ -24,7 +24,7 @@ export default function NavigationMenu({ groups, badges, expanded, onExpandedCha
     const searchLabel = props.can?.recordPayments && props.can?.viewSubscriptions ? 'ابحث عن صفحة أو مشترك…' : 'ابحث عن صفحة أو أمر…';
 
     return <>
-        <Button data-raw="" variant="ghost" onClick={onOpenPalette} className="tn-nav-search mb-3 flex h-12 w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 px-4 text-[15px] text-gray-500" aria-label={compact ? searchLabel : undefined} title={compact ? searchLabel : undefined}>
+        <Button data-raw="" variant="ghost" onClick={onOpenPalette} className="tn-nav-search mb-3 flex h-12 w-full items-center gap-3 rounded-2xl border border-(--ma-line) bg-(--ma-tile) px-4 text-[15px] text-(--ma-muted)" aria-label={compact ? searchLabel : undefined} title={compact ? searchLabel : undefined}>
             <Icon name="search" className="h-5 w-5 shrink-0" />
             <span className="tn-nav-label">{searchLabel}</span>
         </Button>
@@ -48,7 +48,7 @@ export default function NavigationMenu({ groups, badges, expanded, onExpandedCha
                         >
                             <Icon name={group.icon} className="tn-section-icon" />
                             <span className="tn-nav-label">{group.label}</span>
-                            {badge > 0 && <span className="tn-nav-badge rounded-full bg-brand-500 px-2 text-[11px] font-bold leading-[18px] text-white">{badge}</span>}
+                            {badge > 0 && <span className="tn-nav-badge rounded-full bg-(--ma-brand) px-2 text-[11px] font-bold leading-[18px] text-white">{badge}</span>}
                             <Icon name="chevron-down" className="tn-chevron" />
                         </Button>
                         {!compact && <div className={`tn-drawer-pages ${isOpen ? 'is-open' : ''}`} inert={!isOpen}>
@@ -59,7 +59,7 @@ export default function NavigationMenu({ groups, badges, expanded, onExpandedCha
                                             <Icon name={link.icon} />
                                             <span className="flex-1">{link.label}</span>
                                             {link.locked && <LockMark />}
-                                            {badges[link.href] > 0 && <span className="rounded-full bg-brand-500 px-2 text-[11px] font-bold leading-[18px] text-white">{badges[link.href]}</span>}
+                                            {badges[link.href] > 0 && <span className="rounded-full bg-(--ma-brand) px-2 text-[11px] font-bold leading-[18px] text-white">{badges[link.href]}</span>}
                                         </Link>
                                     ))}
                                 </div>
@@ -77,12 +77,12 @@ export function NavigationAccount({ compact = false }) {
     const user = usePage().props.auth?.user;
 
     return <>
-        <div className={`mb-2 flex items-center gap-3 rounded-2xl bg-gray-50 p-3 ${compact ? 'flex-col' : ''}`}>
+        <div className={`mb-2 flex items-center gap-3 rounded-2xl bg-(--ma-tile) p-3 ${compact ? 'flex-col' : ''}`}>
             <Link href="/profile" prefetch className="flex min-w-0 flex-1 items-center gap-3" aria-label={`${user?.name ?? ''}، الملف الشخصي`} title={compact ? user?.name : undefined}>
                 <Avatar name={user?.name} />
                 {!compact && <span className="min-w-0 flex-1">
                     <b dir="auto" className="block truncate text-[14.5px]">{user?.name}</b>
-                    <small dir="auto" className="block text-[12.5px] text-gray-500">{user?.roleLabel}</small>
+                    <small dir="auto" className="block text-[12.5px] text-(--ma-muted)">{user?.roleLabel}</small>
                 </span>}
             </Link>
             <LogoutForm>

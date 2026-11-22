@@ -16,28 +16,15 @@
 
 ## 1. المشاكل المفتوحة وتعليمات إصلاحها
 
-### 1.4 تباين الحقل المفتوح مع البطاقة الزجاجية
+### 1.4 و1.5 (أُغلقا بقرار المالك)
 
-**الوصف:** في الوضع الفاتح الزجاجي، لون الحقل (`--ma-tile`) قريب من لون البطاقة، والتمييز يعتمد على الخط الرفيع.
-
-**الإصلاح (إن أراده المالك):** في `ma-forms.css` اجعل حقول الصفحات بيضاء:
-
-```css
-.ma-form-page :is(input:not([type='checkbox'], [type='radio'], [type='hidden']), textarea):not(:disabled, [readonly]) {
-    background-color: var(--ma-solid) !important;
-}
-```
-
-يحتاج قرار المالك لأنه يغيّر شكل الحقل عن النوافذ.
-
-### 1.5 ترتيب قسم «معلومات الاشتراك» تغيّر
-
-صار: المفتاح «تحميل رسوم اشتراك»، ثم الرسوم، ثم القراءة السابقة، ثم التاريخ (كان: القراءة، الرسوم، التاريخ، ثم المفتاح). للرجوع: أعد ترتيب العناصر داخل `<FormSection icon="calendar">` في `resources/js/Pages/Subscriptions/SubscriptionForm.jsx`.
+- **1.4:** حقول صفحات النماذج بيضاء (`--ma-solid`) فوق البطاقة؛ حقول النوافذ تبقى بلون البلاطة. القاعدة في آخر `ma-forms.css` (`.ma-form-page …`). الفرق في الوضع الفاتح الزجاجي صغير لأن البطاقة نفسها شبه بيضاء.
+- **1.5:** يبقى الترتيب الجديد لقسم «معلومات الاشتراك» (المفتاح، الرسوم، القراءة السابقة، التاريخ).
 
 ### 1.6 ما بقي خارج الكِت عمدًا
 
 - **نوافذ المال وكشف الحساب** وما تشاركه معها لم يُمَس: `Components/Finance/Banks.jsx`، `Components/UI/AsyncState.jsx`، `Subscriptions/{PaymentModalParts,DiscountKindStep,AmendTransactionModal,DeleteTransactionModal,ForceDeleteTransactionModal,AccountSummary,ReadingPricingField}.jsx`، `Payments/{SplitTransferDetails,EditSplitPaymentModal,SplitRecipientsSection}.jsx`. فيها آخر الصناديق اليدوية.
-- **أجزاء الجداول المشتركة** (`Components/DataTable/{DataTableToolbar,DensityToggle,DataTableFilterMenu}.jsx`، `UI/SearchableSelect.jsx`، `Layout/NavigationMenu.jsx`، `Excel/ExcelStudio.jsx`) ما زالت تحمل أصناف ألوان خام؛ تظهر داخل كشف الحساب ونوافذ المال أيضًا، فترحيلها يحتاج معاينة تلك النوافذ وموافقة المالك.
+- **أجزاء الجداول المشتركة** رُحّلت بقرار المالك إلى رموز `--ma-*` (`DataTable/{DataTableToolbar,DensityToggle,DataTableFilterMenu}.jsx`، `Layout/NavigationMenu.jsx`، `Excel/ExcelStudio.jsx`، `UI/SearchableSelect.jsx`)، مع مقارنة قبل/بعد لكشف الحساب والجداول دون فرق ظاهر. بقي في `SearchableSelect` شكله فوق الخلفيات الداكنة (`bg-white/10` وما شابه) فلم يُدرج في قاعدة ESLint، و`ExcelStudio` نافذة بملء الشاشة على `Modal` الخام. نافذة Excel لم تُعاين بالعين بعد الترحيل.
 - نافذتان بملء الشاشة بقيتا على بنيتهما (ألوانهما رموز): `Subscriptions/ReadingHistoryModal.jsx` و`Payments/BoxDetails.jsx`.
 - حقول `file` / `color` / `range` الخام في `Settings/Appearance.jsx`، `CompanyForms/Editor.jsx`، `Print/PrintSettingsPanel.jsx`: لا جزء لها في الكِت.
 - بطاقة رأس الملف الشخصي واختيار الثيم فيه بقيا بأنماط `pp-*` (البطاقة داكنة في الوضعين).
@@ -209,13 +196,12 @@ import { Affix, FieldAction, Notice, Switch, TextInput } from '@/Components/UI';
 ### 4.1 المعاينة الباقية
 ما ورد في «لم يُعاين بالعين» (القسم 2.6).
 
-### 4.2 ما يحتاج قرار المالك
-- 1.4 تباين الحقل المفتوح، و1.5 ترتيب «معلومات الاشتراك».
-- ترحيل أجزاء الجداول المشتركة ومكوّنات نوافذ المال (البند 1.6): يمسّ ما طلب المالك ألا يُعدَّل.
+### 4.2 قرارات المالك
+كلها أُغلقت: 1.4 حقول الصفحات بيضاء، 1.5 الترتيب الجديد يبقى، أجزاء الجداول المشتركة رُحّلت، ونوافذ المال نفسها لا تُمَس.
 
 ### 4.3 التنظيف
 - حذف قواعد `gl-*` و`--panel-*` الخاصة بالنماذج (`resources/css/components/forms.css`, `form-windows.css`) والقواعد القديمة برموز `--gray-*` في `Settings/PermissionDesign.css` التي تغطيها كتلة MA في آخره، بعد التأكد بالبحث من كل صنف.
-- توسيع `MA_MIGRATED` في `eslint.config.js` حتى تشمل `resources/js/Pages/**` بعد قرار البند 4.2.
+- توسيع `MA_MIGRATED` في `eslint.config.js` مع أي ملف يُرحَّل لاحقًا.
 
 ---
 
