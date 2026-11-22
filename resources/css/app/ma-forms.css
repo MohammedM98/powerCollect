@@ -85,7 +85,7 @@
 
     /* ── Locked: hatched, dashed, quiet ink and a lock at its end. ── */
     & :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color'], [type='hidden']), textarea, select):is(:disabled, [readonly]),
-    & :is(button.rounded-control.border, .gl-choice-trigger):is(:disabled, [aria-disabled='true'], [data-disabled]) {
+    & :is(button.rounded-control.border[aria-expanded]:not([class*='tone-']), .gl-choice-trigger):is(:disabled, [aria-disabled='true'], [data-disabled]) {
         border: 1.5px dashed var(--ma-dash) !important;
         background-color: transparent !important;
         background-image: var(--ma-hatch);
@@ -112,15 +112,15 @@
         background-position: left 14px top 14px, 0 0;
     }
 
-    /* A locked list shows the lock where its arrow was. */
-    & :is(button.rounded-control.border, .gl-choice-trigger):is(:disabled, [aria-disabled='true'], [data-disabled]) {
+    /* A locked list shows the lock where its arrow was (a list's key carries aria-expanded; action keys are left alone). */
+    & :is(button.rounded-control.border[aria-expanded]:not([class*='tone-']), .gl-choice-trigger):is(:disabled, [aria-disabled='true'], [data-disabled]) {
         background-image: var(--ma-lock), var(--ma-hatch);
         background-repeat: no-repeat, repeat;
         background-size: 17px 17px, auto;
         background-position: left 16px center, 0 0;
     }
 
-    & :is(button.rounded-control.border, .gl-choice-trigger):is(:disabled, [aria-disabled='true'], [data-disabled]) svg {
+    & :is(button.rounded-control.border[aria-expanded]:not([class*='tone-']), .gl-choice-trigger):is(:disabled, [aria-disabled='true'], [data-disabled]) svg {
         visibility: hidden;
     }
 

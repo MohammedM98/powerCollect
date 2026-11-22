@@ -118,7 +118,7 @@ export default function IssueModal({ templateId = null, mode = 'blank', onClose 
                     <div role="status" className="animate-pulse rounded-[18px] bg-(--ma-tile) p-8 text-center text-(--ma-muted)">جارٍ تحميل النموذج…</div>
                 ) : (
                     <div className="grid items-start gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
-                        <div className="space-y-6">
+                        <div className="flex flex-col gap-6">
                             {!archive && <ChoiceChips label="طريقة تعبئة النموذج" options={MODE_OPTIONS} value={data.mode} onChange={changeMode} disabled={processing} />}
                             {data.mode === 'blank' && <Notice>تُطبع الترويسة والنصوص الثابتة، وتبقى بيانات المشترك والتوقيعات فارغة للتعبئة اليدوية.</Notice>}
                             {(archive || data.mode === 'filled') && <FormField id="company-issue-subscription" label="الاشتراك" hint="يمكنك تعبئة نموذج لشخص لم يُسجّل بعد."><SearchableSelect value={data.subscription_id ?? ''} options={[]} loadOptions={loadSubscriptions} onChange={(next) => setData({ ...data, subscription_id: next || null, values: next ? {} : loaded?.values ?? {} })} placeholder="ابحث واختر الاشتراك" disabled={processing} /></FormField>}
