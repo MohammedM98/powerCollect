@@ -2,7 +2,12 @@
 
 return [
 
-    'mobile_app' => ['directory' => resource_path('mobile')],
+    'mobile_app' => [
+        'directory' => resource_path('mobile'),
+        // A read-only GitHub token (Contents: read on the private repository) used to fetch a
+        // short-lived download link for the APK attached to the private release.
+        'github_token' => env('MOBILE_APP_GITHUB_TOKEN'),
+    ],
 
     'branch_domains_enabled' => (bool) env('BRANCH_DOMAINS_ENABLED', false),
 
