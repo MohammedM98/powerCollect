@@ -1,9 +1,9 @@
 {
   "build": 9,
   "type": "release",
-  "server": "https://powercollect.abuzaed.ps",
-  "size": 89341201,
+  "server": "https://superpowers.laravel.cloud",
+  "size": 89373969,
   "version": "1.0.8",
   "download_url": "https://github.com/MohammedM98/powerCollect/releases/download/android-v1.0.8/powercollect.apk",
-  "sha256": "1354e215e0ded7deca810f284df61e6c67bee1778946cda49cb4c8fa0e5ec305"
+  "sha256": "6115a3138f218f7d0e9debd931417dcf407906855f8f673b934f279a12eaf3c0"
 }
