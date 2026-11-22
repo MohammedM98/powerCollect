@@ -1,9 +1,8 @@
-import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Icon from '@/Components/UI/Icon';
-import Modal from '@/Components/UI/Modal';
+import DialogFrame from '@/Components/UI/DialogFrame';
 import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import Pagination from '@/Components/DataTable/Pagination';
 import { useDataTable } from '@/hooks/useDataTable';
@@ -15,58 +14,46 @@ const FIELD_ICONS = { minimum_charge: 'wallet', status: 'flag', meter_box_id: 'g
 
 const DATE_TIME_FORMAT = new Intl.DateTimeFormat('ar-EG-u-nu-latn', { dateStyle: 'medium', timeStyle: 'short' });
 
-const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900';
-
 /** One change's subscriptions: each one's value before, after, and now. */
 function DetailsModal({ change, details, onClose }) {
     const loaded = details && details.id === change.id;
 
     return (
-        <Modal show onClose={onClose} maxWidth="3xl">
-            <div role="dialog" aria-modal="true" aria-labelledby="bulk-details-title">
-                <div className="flex items-start justify-between gap-4 px-6 pb-3 pt-6">
-                    <div>
-                        <h3 id="bulk-details-title" className="flex items-center gap-2 text-lg font-bold text-gray-900">
-                            <Icon name={FIELD_ICONS[change.field]} className="h-5 w-5" />
-                            {change.description}
-                        </h3>
-                        <p className="mt-1 text-sm text-gray-500">
-                            {change.changedCount.toLocaleString('en')} مشترك — {DATE_TIME_FORMAT.format(new Date(change.createdAt))}
-                        </p>
-                    </div>
-                    <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق" className={`rounded-lg p-2 text-gray-500 hover:bg-gray-100 ${FOCUS_RING}`}>
-                        <Icon name="close" className="h-5 w-5" />
-                    </Button>
-                </div>
-                <div className="max-h-[60vh] overflow-y-auto px-6 pb-6">
-                    {!loaded ? (
-                        <p className="py-8 text-center text-sm text-gray-500">جارٍ التحميل...</p>
-                    ) : (
-                        <ListTable aria-label="مشتركو التعديل" className="w-full text-start text-sm">
-                            <ListHeader className="sticky top-0 border-b border-gray-100 bg-surface text-xs text-gray-600">
-                                <ListColumn id="name" isRowHeader className="py-2 text-start font-semibold">المشترك</ListColumn>
-                                <ListColumn id="old" className="px-3 py-2 text-start font-semibold">قبل</ListColumn>
-                                <ListColumn id="new" className="px-3 py-2 text-start font-semibold">بعد</ListColumn>
-                                <ListColumn id="now" className="px-3 py-2 text-start font-semibold">الآن</ListColumn>
-                            </ListHeader>
-                            <ListBody>
-                                {details.items.map((item) => (
-                                    <ListRow key={item.id} id={item.id} className="border-b border-gray-100 last:border-0">
-                                        <ListCell className="py-2">
-                                            <span className="font-semibold text-gray-900">{item.name}</span>
-                                            {item.accountNumber && <span className="block text-xs text-gray-500">{item.accountNumber}</span>}
-                                        </ListCell>
-                                        <ListCell className="px-3 py-2 text-gray-600">{item.old}</ListCell>
-                                        <ListCell className="px-3 py-2 text-gray-900">{item.new}</ListCell>
-                                        <ListCell className={`px-3 py-2 ${item.now === item.new ? 'text-gray-600' : 'font-semibold text-amber-700'}`}>{item.now}</ListCell>
-                                    </ListRow>
-                                ))}
-                            </ListBody>
-                        </ListTable>
-                    )}
-                </div>
-            </div>
-        </Modal>
+        <DialogFrame
+            show
+            onClose={onClose}
+            title={change.description}
+            description={<><bdi dir="ltr">{change.changedCount.toLocaleString('en')}</bdi> مشترك — {DATE_TIME_FORMAT.format(new Date(change.createdAt))}</>}
+            icon={FIELD_ICONS[change.field]}
+            tone="blue"
+            maxWidth="3xl"
+        >
+            {!loaded ? (
+                <p className="py-8 text-center text-sm text-(--ma-muted)">جارٍ التحميل...</p>
+            ) : (
+                <ListTable aria-label="مشتركو التعديل" className="w-full text-start text-sm">
+                    <ListHeader className="border-b border-(--ma-line) text-xs text-(--ma-muted)">
+                        <ListColumn id="name" isRowHeader className="py-2 text-start font-semibold">المشترك</ListColumn>
+                        <ListColumn id="old" className="px-3 py-2 text-start font-semibold">قبل</ListColumn>
+                        <ListColumn id="new" className="px-3 py-2 text-start font-semibold">بعد</ListColumn>
+                        <ListColumn id="now" className="px-3 py-2 text-start font-semibold">الآن</ListColumn>
+                    </ListHeader>
+                    <ListBody>
+                        {details.items.map((item) => (
+                            <ListRow key={item.id} id={item.id} className="border-b border-(--ma-line) last:border-0">
+                                <ListCell className="py-2">
+                                    <span className="font-semibold text-(--ma-ink)">{item.name}</span>
+                                    {item.accountNumber && <bdi dir="ltr" className="block text-xs text-(--ma-muted)">{item.accountNumber}</bdi>}
+                                </ListCell>
+                                <ListCell className="px-3 py-2 text-(--ma-muted)">{item.old}</ListCell>
+                                <ListCell className="px-3 py-2 text-(--ma-ink)">{item.new}</ListCell>
+                                <ListCell className={`px-3 py-2 ${item.now === item.new ? 'text-(--ma-muted)' : 'font-semibold text-(--ma-warn)'}`}>{item.now}</ListCell>
+                            </ListRow>
+                        ))}
+                    </ListBody>
+                </ListTable>
+            )}
+        </DialogFrame>
     );
 }
 
@@ -106,26 +93,26 @@ export default function BulkChanges({ changes, filters, details }) {
                         <ListColumn id="status">الحالة</ListColumn>
                         <ListColumn actions />
                     </ListHeader>
-                    <ListBody empty={<span className="text-gray-500">لا توجد تعديلات جماعية بعد. حدّد مشتركين من قائمة المشتركين لتطبيق تعديل عليهم.</span>}>
+                    <ListBody empty={<span className="text-(--ma-muted)">لا توجد تعديلات جماعية بعد. حدّد مشتركين من قائمة المشتركين لتطبيق تعديل عليهم.</span>}>
                         {changes.data.map((change) => (
                             <ListRow key={change.id} id={change.id}>
-                                <ListCell className="text-gray-600">
+                                <ListCell className="text-(--ma-muted)">
                                     <span title={DATE_TIME_FORMAT.format(new Date(change.createdAt))}>{timeAgo(change.createdAt)}</span>
                                 </ListCell>
                                 <ListCell>
-                                    <span className="flex items-center gap-2 font-semibold text-gray-900">
-                                        <Icon name={FIELD_ICONS[change.field]} className="h-4 w-4 shrink-0 text-gray-500" />
+                                    <span className="flex items-center gap-2 font-semibold text-(--ma-ink)">
+                                        <Icon name={FIELD_ICONS[change.field]} className="h-4 w-4 shrink-0 text-(--ma-muted)" />
                                         {change.description}
                                     </span>
                                 </ListCell>
-                                <ListCell className="text-gray-700">{change.changedCount.toLocaleString('en')}</ListCell>
-                                <ListCell className="text-gray-600">{change.branchName}</ListCell>
-                                <ListCell className="text-gray-600">{change.userName ?? '—'}</ListCell>
+                                <ListCell className="text-(--ma-ink)">{change.changedCount.toLocaleString('en')}</ListCell>
+                                <ListCell className="text-(--ma-muted)">{change.branchName}</ListCell>
+                                <ListCell className="text-(--ma-muted)">{change.userName ?? '—'}</ListCell>
                                 <ListCell>
                                     {change.undoneAt ? (
                                         <span>
                                             <StatusPill tone="gray" label="تم التراجع" />
-                                            <span className="mt-1 block text-xs text-gray-500">
+                                            <span className="mt-1 block text-xs text-(--ma-muted)">
                                                 أُعيد {change.restoredCount?.toLocaleString('en')} من {change.changedCount.toLocaleString('en')} — {change.undoneBy}
                                             </span>
                                         </span>
@@ -142,7 +129,7 @@ export default function BulkChanges({ changes, filters, details }) {
                                         {change.canUndo && (
                                             <SecondaryKey
                                                 onClick={() => setUndoing(change)}
-                                                className="px-3! py-2! text-xs text-brand-600"
+                                                className="px-3! py-2! text-xs text-(--ma-brand)"
                                                 aria-label={`التراجع عن «${change.description}»`}
                                             >
                                                 <Icon name="undo" className="h-4 w-4" />

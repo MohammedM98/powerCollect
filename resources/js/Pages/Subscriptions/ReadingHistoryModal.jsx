@@ -74,7 +74,7 @@ function ReadingAdjustmentHistory({ reading }) {
     return <>
         {reading.requiresReentry && <span className="rh-note">بانتظار إدخال القراءة الحالية من جديد</span>}
         {!reading.requiresReentry && reading.nextPreviousReading != null && Number(reading.nextPreviousReading) !== Number(reading.current_reading) && <span className="rh-note">نقطة البداية التالية: {formatMoney(reading.nextPreviousReading)}، القراءة المفوترة: {formatMoney(reading.current_reading)}</span>}
-        {reading.adjustmentHistory?.length > 0 && <details className="mt-2 text-xs font-normal"><summary className="cursor-pointer text-brand-700">سجل التعديلات ({reading.adjustmentHistory.length})</summary><div className="space-y-2 py-2">{[...reading.adjustmentHistory].reverse().map((entry, index) => <div key={index} className="rounded border border-gray-200 p-2">
+        {reading.adjustmentHistory?.length > 0 && <details className="mt-2 text-xs font-normal"><summary className="cursor-pointer text-(--ma-brand)">سجل التعديلات ({reading.adjustmentHistory.length})</summary><div className="space-y-2 py-2">{[...reading.adjustmentHistory].reverse().map((entry, index) => <div key={index} className="rounded-[10px] border border-(--ma-line) p-2">
             <b>{labels[entry.kind] ?? 'تعديل'}</b><p>{entry.userName}، <bdi dir="ltr">{entry.at}</bdi></p>
             {Object.entries(entry.after).filter(([field]) => fields[field]).map(([field, value]) => <p key={field}>{fields[field]}: <bdi dir="ltr">{entry.before[field] == null ? '—' : formatMoney(entry.before[field])} ← {value == null ? '—' : formatMoney(value)}</bdi></p>)}
             {entry.reason && <p>السبب: {entry.reason}</p>}
@@ -365,7 +365,7 @@ export default function ReadingHistoryModal({ subscription, onClose, readingWeek
                         الفترة: {PERIODS.find(([value]) => value === period)[1]}، الحالة: {STATUSES.find(([value]) => value === status)[1]}
                         {visibleReadings.length > 0 && <>، {visibleReadings.at(-1).weekStart} – {visibleReadings[0].weekEnd}</>}
                     </p>
-                    {initialReading && !liveRowShown && !entryReading && <div className="mb-4 flex flex-wrap items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm"><span>القراءة السابقة لآخر أسبوع:</span><span className="px-8"><LastReadingField subscription={subscription} lastReading={initialReading} /></span></div>}
+                    {initialReading && !liveRowShown && !entryReading && <div className="mb-4 flex flex-wrap items-center gap-3 rounded-[14px] bg-(--ma-tile) p-3 text-sm shadow-(--ma-hl)"><span>القراءة السابقة لآخر أسبوع:</span><span className="px-8"><LastReadingField subscription={subscription} lastReading={initialReading} /></span></div>}
                     <div className="rh-table-wrap">
                         <ListTable aria-label="سجل القراءات" className="rh-table">
                             <ListHeader>

@@ -1,9 +1,8 @@
-import { Button } from '@heroui/react';
-import Modal from '@/Components/UI/Modal';
+import DialogFrame from '@/Components/UI/DialogFrame';
 import Icon from '@/Components/UI/Icon';
 import { balanceInText } from '@/lib/balance';
 import { formatMoney, formatDate } from '@/lib/format';
-import { StatusPill } from '@/Components/UI';
+import { Notice, StatusPill } from '@/Components/UI';
 
 const EVENT_ICONS = { added: 'plus', extended: 'calendar', warned: 'send', removed: 'undo', disconnected: 'power' };
 
@@ -34,53 +33,44 @@ export default function HistoryModal({ history, loading, reasonOptions, onClose 
     const reasonLabels = Object.fromEntries(reasonOptions.map((option) => [option.value, option.label]));
 
     return (
-        <Modal show onClose={onClose} maxWidth="2xl">
-            <div role="dialog" aria-modal="true" aria-labelledby="history-title" className="flex max-h-[90vh] flex-col">
-                <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-                    <div>
-                        <h3 id="history-title" className="text-lg font-bold text-gray-900">سجل المشترك في القائمة</h3>
-                        {history && (
-                            <p className="text-sm text-gray-500">
-                                {history.name} <span dir="ltr" className="font-display">{history.accountNumber}</span>
+        <DialogFrame
+            show
+            onClose={onClose}
+            title="سجل المشترك في القائمة"
+            description={history && <>{history.name} <bdi dir="ltr" className="font-display">{history.accountNumber}</bdi></>}
+            icon="history"
+            tone="blue"
+            maxWidth="2xl"
+        >
+            {loading || !history ? (
+                <p className="py-8 text-center text-sm text-(--ma-muted)">جارٍ التحميل…</p>
+            ) : (
+                <ol className="relative space-y-6 border-s border-(--ma-line) ps-6">
+                    {history.events.map((event) => (
+                        <li key={event.id} className="relative">
+                            <span className="absolute inset-s-[-35px] flex h-7 w-7 items-center justify-center rounded-full bg-(--ma-tile) text-(--ma-muted) shadow-(--ma-hl)">
+                                <Icon name={EVENT_ICONS[event.type] ?? 'history'} className="h-3.5 w-3.5" />
+                            </span>
+                            <p className="font-semibold text-(--ma-ink)">{event.typeLabel}</p>
+                            <p className="text-xs text-(--ma-muted)">
+                                {event.userName}، <bdi dir="ltr">{event.at}</bdi>
                             </p>
-                        )}
-                    </div>
-                    <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق" className="rounded-xl p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900">
-                        <Icon name="close" />
-                    </Button>
-                </div>
-                <div className="flex-1 overflow-y-auto px-6 py-6">
-                    {loading || !history ? (
-                        <p className="py-8 text-center text-sm text-gray-500">جارٍ التحميل…</p>
-                    ) : (
-                        <ol className="relative space-y-6 border-s border-gray-200 ps-6">
-                            {history.events.map((event) => (
-                                <li key={event.id} className="relative">
-                                    <span className="absolute inset-s-[-35px] flex h-7 w-7 items-center justify-center rounded-full bg-graphite-gradient text-white">
-                                        <Icon name={EVENT_ICONS[event.type] ?? 'history'} className="h-3.5 w-3.5" />
-                                    </span>
-                                    <p className="font-semibold text-gray-900">{event.typeLabel}</p>
-                                    <p className="text-xs text-gray-500">
-                                        {event.userName}، <span dir="ltr">{event.at}</span>
+                            {eventDetails(event, reasonLabels) && <p className="mt-1 text-sm text-(--ma-ink)">{eventDetails(event, reasonLabels)}</p>}
+                            {event.reason && <p className="mt-1 text-sm text-(--ma-muted)">السبب: {event.reason}</p>}
+                            {event.message && (
+                                <Notice icon="send" className="mt-2">
+                                    <p className="whitespace-pre-line">{event.message.body}</p>
+                                    <p className="mt-2 flex flex-wrap items-center gap-2 text-xs text-(--ma-muted)">
+                                        <bdi dir="ltr">{event.message.phone}</bdi>
+                                        <StatusPill tone={event.message.status === 'sent' ? 'green' : event.message.status === 'failed' ? 'red' : 'amber'} label={event.message.statusLabel} />
+                                        {event.message.error && <span>{event.message.error}</span>}
                                     </p>
-                                    {eventDetails(event, reasonLabels) && <p className="mt-1 text-sm text-gray-700">{eventDetails(event, reasonLabels)}</p>}
-                                    {event.reason && <p className="mt-1 text-sm text-gray-600">السبب: {event.reason}</p>}
-                                    {event.message && (
-                                        <div className="mt-2 rounded-control border border-gray-100 bg-gray-50 p-3 text-sm text-gray-700">
-                                            <p className="whitespace-pre-line">{event.message.body}</p>
-                                            <p className="mt-2 flex items-center gap-2 text-xs text-gray-500">
-                                                <span dir="ltr">{event.message.phone}</span>
-                                                <StatusPill tone={event.message.status === 'sent' ? 'green' : event.message.status === 'failed' ? 'red' : 'amber'} label={event.message.statusLabel} />
-                                                {event.message.error && <span>{event.message.error}</span>}
-                                            </p>
-                                        </div>
-                                    )}
-                                </li>
-                            ))}
-                        </ol>
-                    )}
-                </div>
-            </div>
-        </Modal>
+                                </Notice>
+                            )}
+                        </li>
+                    ))}
+                </ol>
+            )}
+        </DialogFrame>
     );
 }

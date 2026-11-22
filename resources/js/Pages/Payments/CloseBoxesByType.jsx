@@ -2,13 +2,13 @@ import { Button } from '@heroui/react';
 import { useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import Icon from '@/Components/UI/Icon';
-import Modal from '@/Components/UI/Modal';
+import DialogFrame from '@/Components/UI/DialogFrame';
 import { formatMoney } from '@/lib/format';
 import { boxTypes, boxTypeStyles, BoxTypeIcon } from './CollectorCashBox';
 import { BoxPersonAvatar, financialAmountsLine } from './FinancialBoxComponents';
 import { financialBoxesTotals } from '@/lib/financialBoxes';
 import BoxBreakdown from './BoxBreakdown';
-import { CheckBox, ConfirmDialog, PrimaryKey, SecondaryKey } from '@/Components/UI';
+import { CheckBox, ConfirmDialog, Notice, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 /**
  * Closes the open boxes of one type the closer ticks, together, for those
@@ -65,90 +65,98 @@ export default function CloseBoxesByType({ boxes, branchId, userId, initialType,
         });
     }
 
-    return <Modal show onClose={onClose} maxWidth="3xl" panelClassName="flex max-h-[calc(100dvh-4rem)] flex-col">
-        <header className="shrink-0 space-y-4 border-b border-gray-100 p-4 sm:p-6">
-            <div className="flex items-start justify-between gap-3">
-            <div className="flex items-start gap-3">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600"><Icon name="lock" className="h-5 w-5" /></span>
-                <div>
-                    <h2 className="text-xl font-bold text-gray-900">إغلاق الصناديق حسب النوع</h2>
-                    <p className="mt-1 text-sm leading-6 text-gray-500">اختر النوع ثم الصناديق المفتوحة{userId ? ' للموظف المختار' : ''} التي تريد إغلاقها، وراجع ملخصها قبل التأكيد. بعد التأكيد تُقفل حركاتها وتذهب إلى التدقيق.</p>
+    const footer = (
+        <div className="w-full space-y-3">
+            {cash && selected.length > 0 && (
+                <Notice tone="success">
+                    <label className="flex cursor-pointer items-start gap-3">
+                        <CheckBox checked={cashCounted} onChange={(event) => setCashCounted(event.target.checked)} />
+                        <span>عددتُ نقد كل صندوق من الصناديق المختارة ووجدته مطابقًا لإجماليه: <strong>{financialAmountsLine(totals)}</strong></span>
+                    </label>
+                </Notice>
+            )}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm text-(--ma-muted)">{selected.length ? <>{selected.length === 1 ? 'صندوق واحد مختار' : <><b className="font-display text-(--ma-ink)">{selected.length}</b> صناديق مختارة</>}، <b className="text-(--ma-ink)">{financialAmountsLine(totals)}</b></> : 'لم تختر أي صندوق بعد'}</p>
+                <div className="flex flex-wrap items-center gap-2">
+                    <SecondaryKey onClick={onClose}>إلغاء</SecondaryKey>
+                    <PrimaryKey type="button" disabled={processing || !selected.length || (cash && !cashCounted)} onClick={() => setConfirming(true)}><Icon name="check" className="h-4 w-4" />{selected.length === 1 ? 'تأكيد إغلاق الصندوق' : selected.length ? `تأكيد إغلاق ${selected.length} صناديق` : 'تأكيد الإغلاق'}</PrimaryKey>
                 </div>
             </div>
-            <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق النافذة" className="rounded-control p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"><Icon name="close" className="h-5 w-5" /></Button>
-            </div>
+        </div>
+    );
+
+    return <>
+        <DialogFrame
+            show
+            onClose={onClose}
+            title="إغلاق الصناديق حسب النوع"
+            description={`اختر النوع ثم الصناديق المفتوحة${userId ? ' للموظف المختار' : ''} التي تريد إغلاقها، وراجع ملخصها قبل التأكيد. بعد التأكيد تُقفل حركاتها وتذهب إلى التدقيق.`}
+            icon="lock"
+            maxWidth="3xl"
+            busy={processing}
+            footer={footer}
+        >
             <CloseSteps steps={steps} current={current} onGo={(key) => sections[key].current?.scrollIntoView({ behavior: 'smooth', block: 'start' })} />
-        </header>
-        <div className="min-h-0 flex-1 space-y-6 overflow-y-auto bg-gray-50/60 p-4 sm:p-6">
+
             <section ref={sections.type} aria-label="نوع الصندوق" className="scroll-mt-4 space-y-3">
-            <StepHeading number={1} title="اختر نوع الصندوق" done />
-            <div role="group" aria-label="نوع الصندوق" className="grid gap-2 sm:grid-cols-3">
-                {types.map((value) => {
-                    const ofType = boxes.filter((box) => box.type === value);
-                    const chosen = value === type;
-                    return <Button data-raw="" variant="ghost" key={value} aria-pressed={chosen} onClick={() => pickType(value)} className={`flex items-center gap-3 rounded-2xl border bg-surface p-3 text-start transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${chosen ? 'border-gray-900 shadow-[0_0_0_3px_rgb(var(--gray-900)/0.08)]' : 'border-gray-100 hover:border-gray-300'}`}>
-                        <span className="relative shrink-0"><BoxTypeIcon type={value} className="h-10 w-10" />{chosen && <span className="absolute -inset-e-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-900 text-surface ring-2 ring-surface"><Icon name="check" className="h-2.5 w-2.5" strokeWidth={3} /></span>}</span>
-                        <span className="min-w-0">
-                            <span className="block font-semibold text-gray-900">{boxTypeStyles[value].label}</span>
-                            <span className="block truncate text-xs text-gray-500"><b className="font-display text-gray-700">{ofType.length}</b> صناديق، <bdi dir="ltr" className="font-display">{formatMoney(financialBoxesTotals(ofType).ILS)}</bdi> شيكل</span>
-                        </span>
-                    </Button>;
-                })}
-            </div>
+                <StepHeading number={1} title="اختر نوع الصندوق" done />
+                <div role="group" aria-label="نوع الصندوق" className="grid gap-2 sm:grid-cols-3">
+                    {types.map((value) => {
+                        const ofType = boxes.filter((box) => box.type === value);
+                        const chosen = value === type;
+                        return <Button data-raw="" variant="ghost" key={value} aria-pressed={chosen} onClick={() => pickType(value)} className={`flex items-center gap-3 rounded-[16px] p-3 text-start transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-(--ma-ink) ${chosen ? 'bg-(--ma-solid) shadow-(--ma-depth) ring-2 ring-(--ma-ink)' : 'bg-(--ma-tile) shadow-(--ma-hl)'}`}>
+                            <span className="relative shrink-0"><BoxTypeIcon type={value} className="h-10 w-10" />{chosen && <span className="absolute -inset-e-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-(--ma-ink) text-(--ma-solid) ring-2 ring-(--ma-solid)"><Icon name="check" className="h-2.5 w-2.5" strokeWidth={3} /></span>}</span>
+                            <span className="min-w-0">
+                                <span className="block font-semibold text-(--ma-ink)">{boxTypeStyles[value].label}</span>
+                                <span className="block truncate text-xs text-(--ma-muted)"><b className="font-display text-(--ma-ink)">{ofType.length}</b> صناديق، <bdi dir="ltr" className="font-display">{formatMoney(financialBoxesTotals(ofType).ILS)}</bdi> شيكل</span>
+                            </span>
+                        </Button>;
+                    })}
+                </div>
             </section>
 
-            {errors?.action && <p role="alert" className="rounded-control bg-red-500/10 p-3 text-sm text-red-700">{errors.action}</p>}
+            {errors?.action && <Notice tone="danger" role="alert">{errors.action}</Notice>}
 
             <section ref={sections.boxes} aria-label="الصناديق المفتوحة" className="scroll-mt-4 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <StepHeading number={2} title="اختر الصناديق" done={selected.length > 0} active={current === 'boxes'} hint={`${selected.length} من ${shown.length}`} />
-                    {shown.length > 1 && <Button data-raw="" variant="ghost" onClick={toggleAll} className="rounded-lg px-2 py-1 text-sm font-semibold text-brand-600 transition hover:bg-brand-500/10">{allSelected ? 'إلغاء تحديد الكل' : 'تحديد الكل'}</Button>}
+                    {shown.length > 1 && <SecondaryKey onClick={toggleAll}>{allSelected ? 'إلغاء تحديد الكل' : 'تحديد الكل'}</SecondaryKey>}
                 </div>
-                {!shown.length ? <p className="rounded-2xl border border-dashed border-gray-200 bg-surface p-6 text-center text-sm text-gray-500">لا توجد صناديق مفتوحة من هذا النوع يمكنك إغلاقها.</p> : <ul className="grid gap-2 sm:grid-cols-2">
+                {!shown.length ? <p className="rounded-[16px] border border-dashed border-(--ma-line) p-6 text-center text-sm text-(--ma-muted)">لا توجد صناديق مفتوحة من هذا النوع يمكنك إغلاقها.</p> : <ul className="grid gap-2 sm:grid-cols-2">
                     {shown.map((box) => {
                         const picked = selectedIds.includes(box.id);
-                        return <li key={box.id}><label className={`flex cursor-pointer items-center gap-3 rounded-2xl border bg-surface p-3 transition focus-within:outline-solid focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-gray-900 ${picked ? 'border-gray-900 shadow-[0_0_0_3px_rgb(var(--gray-900)/0.08)]' : 'border-gray-100 hover:border-gray-300'}`}>
-                            <input type="checkbox" className="sr-only" checked={picked} onChange={() => toggle(box.id)} aria-label={`اختيار صندوق ${box.number}`} />
-                            <span aria-hidden="true" className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-[1.5px] transition ${picked ? 'border-gray-900 bg-gray-900 text-surface' : 'border-gray-300'}`}>{picked && <Icon name="check" className="h-3.5 w-3.5" strokeWidth={3} />}</span>
-                            <BoxPersonAvatar name={box.person} />
-                            <span className="min-w-0 flex-1">
-                                <span className="block truncate font-semibold text-gray-900">{box.person ?? '—'}</span>
-                                <span className="block text-xs text-gray-500">صندوق <bdi dir="ltr" className="font-display">{box.number}</bdi>، <b className="font-display text-gray-700">{box.count}</b> حركة</span>
-                            </span>
-                            <span className="shrink-0 text-end"><b dir="ltr" className="block font-display text-gray-900">{formatMoney(financialBoxesTotals([box]).ILS)}</b><span className="text-xs text-gray-500">₪</span></span>
-                        </label></li>;
+                        return <li key={box.id}>
+                            <CheckBox checked={picked} onChange={() => toggle(box.id)} aria-label={`اختيار صندوق ${box.number}`} showControl={false} className={`block w-full cursor-pointer rounded-[16px] p-3 text-start transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-(--ma-ink) ${picked ? 'bg-(--ma-solid) shadow-(--ma-depth) ring-2 ring-(--ma-ink)' : 'bg-(--ma-tile) shadow-(--ma-hl)'}`}>
+                                <span className="flex w-full items-center gap-3">
+                                    <span aria-hidden="true" className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-[1.5px] transition ${picked ? 'border-(--ma-ink) bg-(--ma-ink) text-(--ma-solid)' : 'border-(--ma-faint)'}`}>{picked && <Icon name="check" className="h-3.5 w-3.5" strokeWidth={3} />}</span>
+                                    <BoxPersonAvatar name={box.person} />
+                                    <span className="min-w-0 flex-1">
+                                        <span className="block truncate font-semibold text-(--ma-ink)">{box.person ?? '—'}</span>
+                                        <span className="block text-xs text-(--ma-muted)">صندوق <bdi dir="ltr" className="font-display">{box.number}</bdi>، <b className="font-display text-(--ma-ink)">{box.count}</b> حركة</span>
+                                    </span>
+                                    <span className="shrink-0 text-end"><bdi dir="ltr" className="block font-display font-bold text-(--ma-ink)">{formatMoney(financialBoxesTotals([box]).ILS)}</bdi><span className="text-xs text-(--ma-muted)">₪</span></span>
+                                </span>
+                            </CheckBox>
+                        </li>;
                     })}
                 </ul>}
             </section>
 
             {shown.length > 0 && <section ref={sections.review} aria-label="المراجعة والتأكيد" className="scroll-mt-4 space-y-3">
                 <StepHeading number={3} title="راجع الملخص ثم أكّد الإغلاق" done={ready} active={current === 'review'} hint={selected.length && cash && !cashCounted ? 'أكّد عدّ النقد في الأسفل' : undefined} />
-                {selected.length ? <BoxBreakdown type={type} entries={selected.flatMap((box) => box.entries ?? [])} /> : <p className="flex items-center gap-3 rounded-2xl border border-dashed border-gray-200 bg-surface p-4 text-sm text-gray-500"><Icon name="list" className="h-5 w-5 shrink-0 text-gray-400" />اختر صندوقًا أو أكثر ليظهر ملخصه {type === 'bank_transfer' ? 'حسب البنك' : type === 'clearing' ? 'حسب الخدمة' : 'حسب عملة الدفع'} قبل الإغلاق.</p>}
+                {selected.length ? <BoxBreakdown type={type} entries={selected.flatMap((box) => box.entries ?? [])} /> : <p className="flex items-center gap-3 rounded-[16px] border border-dashed border-(--ma-line) p-4 text-sm text-(--ma-muted)"><Icon name="list" className="h-5 w-5 shrink-0 text-(--ma-faint)" />اختر صندوقًا أو أكثر ليظهر ملخصه {type === 'bank_transfer' ? 'حسب البنك' : type === 'clearing' ? 'حسب الخدمة' : 'حسب عملة الدفع'} قبل الإغلاق.</p>}
             </section>}
-        </div>
-        <footer className="shrink-0 space-y-3 border-t border-gray-100 bg-surface p-4 sm:px-6">
-            {cash && selected.length > 0 && <label className="flex cursor-pointer items-start gap-3 rounded-control border border-emerald-500/25 bg-emerald-500/5 p-3 text-sm text-gray-800">
-                <CheckBox checked={cashCounted} onChange={(event) => setCashCounted(event.target.checked)} />
-                <span>عددتُ نقد كل صندوق من الصناديق المختارة ووجدته مطابقًا لإجماليه: <b className="text-gray-900">{financialAmountsLine(totals)}</b></span>
-            </label>}
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm text-gray-600">{selected.length ? <>{selected.length === 1 ? 'صندوق واحد مختار' : <><b className="font-display text-gray-900">{selected.length}</b> صناديق مختارة</>}، <b className="text-gray-900">{financialAmountsLine(totals)}</b></> : 'لم تختر أي صندوق بعد'}</p>
-                <div className="flex flex-wrap items-center gap-2">
-                    <SecondaryKey onClick={onClose}>إلغاء</SecondaryKey>
-                    <PrimaryKey disabled={processing || !selected.length || (cash && !cashCounted)} onClick={() => setConfirming(true)}><Icon name="check" className="h-4 w-4" />{selected.length === 1 ? 'تأكيد إغلاق الصندوق' : selected.length ? `تأكيد إغلاق ${selected.length} صناديق` : 'تأكيد الإغلاق'}</PrimaryKey>
-                </div>
-            </div>
-        </footer>
+        </DialogFrame>
         <ConfirmDialog
             show={confirming}
             onCancel={() => setConfirming(false)}
             onConfirm={() => { setConfirming(false); submit(); }}
             title={selected.length === 1 ? 'إغلاق الصندوق؟' : `إغلاق ${selected.length} صناديق؟`}
-            message={<>{selected.length === 1 ? 'سيُغلق صندوق' : `ستُغلق ${selected.length} صناديق`} {boxTypeStyles[type].label} ({[...new Set(selected.map((box) => box.person ?? '—'))].join('، ')}) بإجمالي <b className="text-gray-900">{financialAmountsLine(totals)}</b>.{cash ? ' وأنت تؤكد أنك عددت نقد كل صندوق ووجدته مطابقًا لإجماليه.' : ''} بعد الإغلاق تُقفل حركاتها فلا يستطيع المحصّل تعديلها، وتنتقل إلى قسم التدقيق.</>}
+            message={<>{selected.length === 1 ? 'سيُغلق صندوق' : `ستُغلق ${selected.length} صناديق`} {boxTypeStyles[type].label} ({[...new Set(selected.map((box) => box.person ?? '—'))].join('، ')}) بإجمالي <b className="text-(--ma-ink)">{financialAmountsLine(totals)}</b>.{cash ? ' وأنت تؤكد أنك عددت نقد كل صندوق ووجدته مطابقًا لإجماليه.' : ''} بعد الإغلاق تُقفل حركاتها فلا يستطيع المحصّل تعديلها، وتنتقل إلى قسم التدقيق.</>}
             confirmLabel={selected.length === 1 ? 'نعم، أغلق الصندوق' : `نعم، أغلق ${selected.length} صناديق`}
             icon="lock"
         />
-    </Modal>;
+    </>;
 }
 
 /**
@@ -162,11 +170,11 @@ function CloseSteps({ steps, current, onGo }) {
             const active = step.key === current;
             const state = active ? 'current' : step.done ? 'done' : 'ahead';
             return <li key={step.key} className="min-w-0">
-                <Button data-raw="" variant="ghost" onClick={() => onGo(step.key)} aria-current={active ? 'step' : undefined} className={`flex w-full min-w-0 items-center gap-3 rounded-xl border px-3 py-2 text-start transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-gray-900 ${state === 'current' ? 'border-gray-900 bg-gray-900 text-surface shadow-xs' : state === 'done' ? 'border-emerald-500/25 bg-emerald-500/5 hover:border-emerald-500/40' : 'border-gray-100 bg-gray-50 hover:border-gray-200'}`}>
-                    <span aria-hidden="true" className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-display text-sm font-bold ${state === 'current' ? 'bg-surface text-gray-900' : state === 'done' ? 'bg-emerald-600 text-white' : 'bg-gray-200 text-gray-500'}`}>{step.done ? <Icon name="check" className="h-4 w-4" strokeWidth={3} /> : index + 1}</span>
+                <Button data-raw="" variant="ghost" onClick={() => onGo(step.key)} aria-current={active ? 'step' : undefined} className={`flex w-full min-w-0 items-center gap-3 rounded-[14px] px-3 py-2 text-start transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-(--ma-ink) ${state === 'current' ? 'bg-(--ma-act) text-white shadow-(--ma-depth)' : state === 'done' ? 'bg-(--ma-pay-s)' : 'bg-(--ma-tile) shadow-(--ma-hl)'}`}>
+                    <span aria-hidden="true" className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-display text-sm font-bold ${state === 'current' ? 'bg-white text-(--ma-act)' : state === 'done' ? 'bg-(--ma-pay-btn) text-white' : 'bg-(--ma-solid) text-(--ma-muted)'}`}>{step.done ? <Icon name="check" className="h-4 w-4" strokeWidth={3} /> : index + 1}</span>
                     <span className="min-w-0">
-                        <span className={`block truncate text-xs font-bold sm:text-sm ${state === 'current' ? 'text-surface' : state === 'done' ? 'text-gray-900' : 'text-gray-500'}`}>{step.label}</span>
-                        <span className={`hidden truncate text-xs sm:block ${state === 'current' ? 'text-surface/70' : 'text-gray-500'}`}>{step.detail}</span>
+                        <span className={`block truncate text-xs font-bold sm:text-sm ${state === 'current' ? 'text-white' : state === 'done' ? 'text-(--ma-ink)' : 'text-(--ma-muted)'}`}>{step.label}</span>
+                        <span className={`hidden truncate text-xs sm:block ${state === 'current' ? 'text-white/75' : 'text-(--ma-muted)'}`}>{step.detail}</span>
                     </span>
                     <span className="sr-only">{active ? '(الخطوة الحالية)' : step.done ? '(مكتملة)' : '(لاحقًا)'}</span>
                 </Button>
@@ -177,9 +185,9 @@ function CloseSteps({ steps, current, onGo }) {
 
 /** A step's title in the window, numbered as in the steps row, checked once it is done. */
 function StepHeading({ number, title, done = false, active = false, hint }) {
-    return <h3 className="flex items-center gap-2 font-bold text-gray-900">
-        <span aria-hidden="true" className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-display text-xs font-bold ${done ? 'bg-emerald-600 text-white' : active ? 'bg-gray-900 text-surface' : 'bg-gray-200 text-gray-500'}`}>{done ? <Icon name="check" className="h-3.5 w-3.5" strokeWidth={3} /> : number}</span>
+    return <h3 className="flex items-center gap-2 font-bold text-(--ma-ink)">
+        <span aria-hidden="true" className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-display text-xs font-bold ${done ? 'bg-(--ma-pay-btn) text-white' : active ? 'bg-(--ma-act) text-white' : 'bg-(--ma-tile) text-(--ma-muted)'}`}>{done ? <Icon name="check" className="h-3.5 w-3.5" strokeWidth={3} /> : number}</span>
         {title}
-        {hint && <span className="text-sm font-normal text-gray-500">({hint})</span>}
+        {hint && <span className="text-sm font-normal text-(--ma-muted)">({hint})</span>}
     </h3>;
 }

@@ -28,7 +28,7 @@ const pickChoice = (field, choice) => field.locator('xpath=ancestor-or-self::*[c
         await page.goto(`/reading-cycles/${fixture.cycleId}`);
         await page.getByRole('radio', { name: 'جدول', exact: true }).click();
         await page.getByRole('button', { name: 'يوم القراءة', exact: true }).click();
-        const dayForm = page.locator('form[aria-labelledby="reading-day-title"]');
+        const dayForm = page.getByRole('dialog', { name: 'تغيير يوم القراءة لهذه الدورة', exact: true });
         const calendar = page.getByRole('dialog', { name: 'اختيار التاريخ', exact: true });
         for (const event of ['scroll', 'resize']) {
             await dayForm.getByRole('button', { name: /^يوم القراءة:/ }).click();
@@ -44,7 +44,7 @@ const pickChoice = (field, choice) => field.locator('xpath=ancestor-or-self::*[c
         assert.match(await khalil.innerText(), /10 من 20 طبلون/);
         assert.match(await khalil.innerText(), /السوق كاملة/);
         const geometry = await summary().evaluate((node) => { const r = node.getBoundingClientRect(); return { width: r.width, center: (r.left + r.right) / 2 }; });
-        assert.ok(geometry.width >= 878 && geometry.width <= 880, JSON.stringify(geometry));
+        assert.ok(geometry.width >= 818 && geometry.width <= 820, JSON.stringify(geometry));
         assert.ok(Math.abs(geometry.center - 800) < 12);
         await page.screenshot({ path: `${process.env.OUT_DIR}/distribution-summary-desktop.png` });
         await page.keyboard.press('Escape');

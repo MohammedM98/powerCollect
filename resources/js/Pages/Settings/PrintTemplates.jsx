@@ -4,12 +4,12 @@ import { Button, Card, Chip, FieldError, Input, Label, Radio, RadioGroup, TextFi
 import { SaveButton } from '@/Components/Settings/SettingsKit';
 import SettingsLayout from '@/Layouts/SettingsLayout';
 import Icon from '@/Components/UI/Icon';
-import Modal from '@/Components/UI/Modal';
+import DialogFrame from '@/Components/UI/DialogFrame';
 import { printUrl } from '@/lib/print';
 import { PAPER_SIZES } from '@/lib/printLayout';
 import { timeAgo } from '@/lib/format';
 import PageHeader from '@/Components/PageHeader';
-import { AddKey, ConfirmDialog } from '@/Components/UI';
+import { AddKey, ConfirmDialog, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 /** Open the print designer on a list, with one of its templates (an id) or a new one. */
 function openDesigner(page, template) {
@@ -26,19 +26,6 @@ function TemplateKey({ icon, label, onPress, tone = 'ink' }) {
     );
 }
 
-/** A settings window's head: its icon on the MA tile, its title and a line under it. */
-function WindowHead({ id, icon, title, description = null }) {
-    return (
-        <div className="gl-win-head">
-            <span className="gl-set-ico" aria-hidden="true"><Icon name={icon} /></span>
-            <div className="min-w-0">
-                <h2 id={id} className="gl-set-title">{title}</h2>
-                {description && <p className="gl-set-desc">{description}</p>}
-            </div>
-        </div>
-    );
-}
-
 function RenameModal({ template, onClose }) {
     const id = useId();
     const { errors } = usePage().props;
@@ -52,63 +39,72 @@ function RenameModal({ template, onClose }) {
     }
 
     return (
-        <Modal show onClose={onClose} maxWidth="md">
-            <form onSubmit={save} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} className="gl-win">
-                <WindowHead id={`${id}-title`} icon="tag" title="إعادة تسمية القالب" description={`الاسم الحالي: ${template.name}`} />
-                <div className="gl-win-body">
-                    <TextField isRequired isInvalid={Boolean(errors.name)} value={name} onChange={setName} className="gl-set-field" autoFocus>
-                        <Label>الاسم الجديد</Label>
-                        <Input id={`${id}-name`} />
-                        <FieldError>{errors.name}</FieldError>
-                    </TextField>
-                </div>
-                <div className="gl-win-foot">
-                    <Button type="button" onPress={onClose} className="gl-win-cancel">إلغاء</Button>
-                    <SaveButton processing={saving} isDisabled={name.trim() === ''}>حفظ الاسم</SaveButton>
-                </div>
+        <DialogFrame
+            show
+            onClose={onClose}
+            title="إعادة تسمية القالب"
+            description={`الاسم الحالي: ${template.name}`}
+            icon="tag"
+            tone="blue"
+            maxWidth="md"
+            busy={saving}
+            footer={
+                <>
+                    <SecondaryKey onClick={onClose} disabled={saving}>إلغاء</SecondaryKey>
+                    <SaveButton form={`${id}-form`} processing={saving} isDisabled={name.trim() === ''}>حفظ الاسم</SaveButton>
+                </>
+            }
+        >
+            <form id={`${id}-form`} onSubmit={save}>
+                <TextField isRequired isInvalid={Boolean(errors.name)} value={name} onChange={setName} className="gl-set-field" autoFocus>
+                    <Label>الاسم الجديد</Label>
+                    <Input id={`${id}-name`} />
+                    <FieldError>{errors.name}</FieldError>
+                </TextField>
             </form>
-        </Modal>
+        </DialogFrame>
     );
 }
 
 function NewTemplateModal({ pages, onClose }) {
-    const id = useId();
     const [path, setPath] = useState(pages[0]?.path ?? '');
 
+    function open() {
+        openDesigner(pages.find((page) => page.path === path), 'new');
+        onClose();
+    }
+
     return (
-        <Modal show onClose={onClose} maxWidth="2xl">
-            <div role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} className="gl-win">
-                <WindowHead id={`${id}-title`} icon="printer" title="قالب طباعة جديد" description="اختر القائمة، فيُفتح مصمم الطباعة على بياناتها. صمّم كما تريد ثم احفظه كقالب." />
-                <div className="gl-win-body">
-                    <RadioGroup aria-label="القائمة" value={path} onChange={setPath} className="gl-pt-pick">
-                        {pages.map((page) => (
-                            <Radio key={page.path} value={page.path} className="gl-pt-pick-item">
-                                <Radio.Content>
-                                    <span className="gl-pt-pick-ico" aria-hidden="true"><Icon name={page.icon} /></span>
-                                    <span className="gl-pt-pick-name">{page.label}</span>
-                                    <span className="gl-pt-pick-count">{page.templates.length ? `${page.templates.length} قالب` : 'جديد'}</span>
-                                    <Radio.Control className="sr-only"><Radio.Indicator /></Radio.Control>
-                                </Radio.Content>
-                            </Radio>
-                        ))}
-                    </RadioGroup>
-                </div>
-                <div className="gl-win-foot">
-                    <Button type="button" onPress={onClose} className="gl-win-cancel">إلغاء</Button>
-                    <Button
-                        type="button"
-                        className="gl-set-save"
-                        onPress={() => {
-                            openDesigner(pages.find((page) => page.path === path), 'new');
-                            onClose();
-                        }}
-                    >
+        <DialogFrame
+            show
+            onClose={onClose}
+            title="قالب طباعة جديد"
+            description="اختر القائمة، فيُفتح مصمم الطباعة على بياناتها. صمّم كما تريد ثم احفظه كقالب."
+            icon="printer"
+            maxWidth="2xl"
+            footer={
+                <>
+                    <SecondaryKey onClick={onClose}>إلغاء</SecondaryKey>
+                    <PrimaryKey type="button" onClick={open}>
                         <Icon name="external" className="h-4 w-4" />
                         فتح المصمم
-                    </Button>
-                </div>
-            </div>
-        </Modal>
+                    </PrimaryKey>
+                </>
+            }
+        >
+            <RadioGroup aria-label="القائمة" value={path} onChange={setPath} className="gl-pt-pick">
+                {pages.map((page) => (
+                    <Radio key={page.path} value={page.path} className="gl-pt-pick-item">
+                        <Radio.Content>
+                            <span className="gl-pt-pick-ico" aria-hidden="true"><Icon name={page.icon} /></span>
+                            <span className="gl-pt-pick-name">{page.label}</span>
+                            <span className="gl-pt-pick-count">{page.templates.length ? `${page.templates.length} قالب` : 'جديد'}</span>
+                            <Radio.Control className="sr-only"><Radio.Indicator /></Radio.Control>
+                        </Radio.Content>
+                    </Radio>
+                ))}
+            </RadioGroup>
+        </DialogFrame>
     );
 }
 

@@ -2,11 +2,11 @@ import { Button } from '@heroui/react';
 import { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import Icon from '@/Components/UI/Icon';
-import Modal from '@/Components/UI/Modal';
+import DialogFrame from '@/Components/UI/DialogFrame';
 import InputError from '@/Components/UI/InputError';
 import { formatNumber } from '@/lib/format';
 import DateInput from '@/Components/UI/DateInput';
-import { PrimaryKey, SecondaryKey } from '@/Components/UI';
+import { Notice, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 /** What a move or approval did, with each box it could not move and why. */
 export function AllocationReport({ result, onConfirmDownloaded, onClose }) {
@@ -16,36 +16,33 @@ export function AllocationReport({ result, onConfirmDownloaded, onClose }) {
         <section
             role="status"
             aria-live="polite"
-            className={`mb-6 rounded-card border p-4 ${result.conflicts.length ? 'border-amber-500/30 bg-amber-500/5' : 'border-emerald-500/30 bg-emerald-500/5'}`}
+            className={`mb-6 rounded-[18px] p-4 shadow-(--ma-hl) ${result.conflicts.length ? 'bg-(--ma-warn-s)' : 'bg-(--ma-pay-s)'}`}
         >
             <div className="flex items-start justify-between gap-3">
-                <p className="font-bold text-gray-900">
+                <p className="font-bold text-(--ma-ink)">
                     {result.action === 'approve' ? 'اعتُمد' : result.action === 'copy' ? 'نُسخ من الدورة السابقة' : 'نُقل'}{' '}
                     {formatNumber(result.moved)} طبلون
                     {result.conflicts.length > 0 && <>، راجع الطبلونات التي تعذّر تحديثها أدناه</>}
                 </p>
-                <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-2 text-gray-500 hover:bg-gray-100">
+                <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق التقرير" className="gl-ib">
                     <Icon name="close" className="h-4 w-4" />
                 </Button>
             </div>
             {result.conflicts.length > 0 && (
-                <ul className="mt-3 max-h-48 divide-y divide-gray-100 overflow-y-auto rounded-control border border-gray-100 bg-surface text-sm">
+                <ul className="mt-3 max-h-48 divide-y divide-(--ma-line) overflow-y-auto rounded-[14px] bg-(--ma-solid) text-sm">
                     {result.conflicts.map((conflict, index) => (
                         <li key={`${conflict.boxId ?? conflict.label}-${index}`} className="flex flex-wrap justify-between gap-2 px-3 py-2">
-                            <b className="text-gray-900">{conflict.label}</b>
-                            <span className="text-xs text-gray-600">{conflict.reason}</span>
+                            <b className="text-(--ma-ink)">{conflict.label}</b>
+                            <span className="text-xs text-(--ma-muted)">{conflict.reason}</span>
                         </li>
                     ))}
                 </ul>
             )}
             {needsConfirmation && onConfirmDownloaded && (
-                <Button data-raw="" variant="ghost"
-                    onClick={onConfirmDownloaded}
-                    className="mt-3 inline-flex items-center gap-2 rounded-control bg-amber-600 px-3 py-2 text-sm font-bold text-white"
-                >
-                    <Icon name="warning" className="h-4 w-4" />
+                <SecondaryKey onClick={onConfirmDownloaded} className="mt-3">
+                    <Icon name="warning" className="h-4 w-4 text-(--ma-warn)" />
                     أؤكد نقل الطبلونات التي نزّلها القارئ (قراءاته غير المرفوعة تُحفظ للمراجعة)
-                </Button>
+                </SecondaryKey>
             )}
         </section>
     );
@@ -62,12 +59,22 @@ export function ReadingDayModal({ cycle, onClose }) {
     }
 
     return (
-        <Modal show onClose={onClose} maxWidth="md">
-            <form onSubmit={submit} className="space-y-4 p-6" aria-labelledby="reading-day-title">
-                <h3 id="reading-day-title" className="text-lg font-bold text-gray-900">
-                    تغيير يوم القراءة لهذه الدورة
-                </h3>
-                <p className="text-sm text-gray-600">
+        <DialogFrame
+            show
+            onClose={onClose}
+            title="تغيير يوم القراءة لهذه الدورة"
+            icon="calendar"
+            tone="blue"
+            maxWidth="md"
+            footer={
+                <>
+                    <SecondaryKey onClick={onClose}>إلغاء</SecondaryKey>
+                    <PrimaryKey type="submit" form="reading-day-form">حفظ</PrimaryKey>
+                </>
+            }
+        >
+            <form id="reading-day-form" onSubmit={submit} className="space-y-4">
+                <p className="text-sm text-(--ma-muted)">
                     موعد القراءة حسب إعدادات الفرع أو الموقع:{' '}
                     <bdi dir="ltr" className="whitespace-nowrap">
                         {cycle.scheduledReadingDate}
@@ -92,14 +99,8 @@ export function ReadingDayModal({ cycle, onClose }) {
                     required
                 />
                 <InputError message={errors.reading_date} />
-                <p className="text-xs text-gray-500">
-                    القرّاء الذين نزّلوا مهامهم ينزّلونها من جديد ليعرفوا اليوم الجديد؛ القراءات في غير يوم القراءة تُحفظ للمراجعة.
-                </p>
-                <div className="flex justify-end gap-3">
-                    <SecondaryKey onClick={onClose}>إلغاء</SecondaryKey>
-                    <PrimaryKey type="submit">حفظ</PrimaryKey>
-                </div>
+                <Notice>القرّاء الذين نزّلوا مهامهم ينزّلونها من جديد ليعرفوا اليوم الجديد؛ القراءات في غير يوم القراءة تُحفظ للمراجعة.</Notice>
             </form>
-        </Modal>
+        </DialogFrame>
     );
 }
