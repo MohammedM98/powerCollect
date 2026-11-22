@@ -3,15 +3,16 @@ import { useState } from 'react';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Icon from '@/Components/UI/Icon';
-import Modal from '@/Components/UI/Modal';
+import DialogFrame from '@/Components/UI/DialogFrame';
+import FormField from '@/Components/Form/FormField';
 import PasswordInput from '@/Components/UI/PasswordInput';
-import InputError from '@/Components/UI/InputError';
 import { useTheme } from '@/hooks/useTheme';
 import { ACTION_MESSAGES } from '@/lib/actionMessages';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import './Profile.css';
 import PageHeader from '@/Components/PageHeader';
+import { DangerKey, SecondaryKey } from '@/Components/UI';
 
 const THEMES = [
     { value: 'light', label: 'فاتح', colors: ['#eff1f4', '#fff'] },
@@ -79,14 +80,28 @@ function Devices({ devices, dateLabel }) {
                 {!device.current && <Button data-raw="" variant="ghost" className="pp-logout" onClick={() => open(device)}>تسجيل خروج</Button>}
             </div>)}</div>
             <div className="pp-actions"><Button data-raw="" variant="ghost" className="pp-button" isDisabled={!others.length} onClick={() => open(null)}><Icon name="logout" />تسجيل الخروج من كل الأجهزة الأخرى</Button></div>
-            <Modal show={target !== null} onClose={close} maxWidth="md">
-                <form onSubmit={logout} className="profile-page pp-dialog" dir="rtl" role="dialog" aria-modal="true" aria-labelledby="device-logout-title">
-                    <h3 id="device-logout-title">تسجيل الخروج من {target?.label}؟</h3>
-                    <p>يبقى هذا الجهاز مسجّل الدخول. أدخل كلمة المرور للتأكيد.</p>
-                    <div className="pp-field"><label className="l" htmlFor="device_password">كلمة المرور</label><div className="pp-input"><PasswordInput id="device_password" dir="ltr" toggleTabIndex={0} value={form.data.password} onChange={(e) => form.setData('password', e.target.value)} autoComplete="current-password" autoFocus required /></div><InputError message={form.errors.deviceLogout?.password ?? form.errors.password} /></div>
-                    <div className="pp-actions"><Button data-raw="" variant="ghost" className="pp-button" isDisabled={form.processing} onClick={close}>إلغاء</Button><Button data-raw="" variant="ghost" type="submit" className="pp-button danger" isDisabled={form.processing}><Icon name="logout" />تسجيل الخروج</Button></div>
+            <DialogFrame
+                show={target !== null}
+                onClose={close}
+                title={`تسجيل الخروج من ${target?.label}؟`}
+                description="يبقى هذا الجهاز مسجّل الدخول. أدخل كلمة المرور للتأكيد."
+                icon="logout"
+                tone="danger"
+                maxWidth="md"
+                busy={form.processing}
+                footer={(
+                    <>
+                        <SecondaryKey disabled={form.processing} onClick={close}>إلغاء</SecondaryKey>
+                        <DangerKey form="device-logout-form" disabled={form.processing}><Icon name="logout" className="h-4 w-4" />تسجيل الخروج</DangerKey>
+                    </>
+                )}
+            >
+                <form id="device-logout-form" onSubmit={logout} className="ma-form">
+                    <FormField id="device_password" label="كلمة المرور" error={form.errors.deviceLogout?.password ?? form.errors.password}>
+                        <PasswordInput dir="ltr" toggleTabIndex={0} className="block w-full" value={form.data.password} onChange={(e) => form.setData('password', e.target.value)} autoComplete="current-password" autoFocus required />
+                    </FormField>
                 </form>
-            </Modal>
+            </DialogFrame>
         </section>
     );
 }
