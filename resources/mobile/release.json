@@ -1,9 +1,9 @@
 {
-  "build": 8,
+  "build": 9,
   "type": "release",
-  "server": "https://powercollect.abuzaed.ps",
-  "size": 88673573,
-  "version": "1.0.7",
-  "download_url": "https://github.com/MohammedM98/AF-powercollect/releases/download/android-v1.0.7/powercollect.apk",
-  "sha256": "07add2215fa1a56546f3f00da866e24fbb310947b69d188c278c177d6ac472c6"
+  "server": "https://superpowers.laravel.cloud",
+  "size": 89373969,
+  "version": "1.0.8",
+  "download_url": "https://github.com/MohammedM98/powerCollect/releases/download/android-v1.0.8/powercollect.apk",
+  "sha256": "6115a3138f218f7d0e9debd931417dcf407906855f8f673b934f279a12eaf3c0"
 }

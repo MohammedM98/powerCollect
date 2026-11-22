@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -24,7 +26,7 @@ class MobileAppDownloadTest extends TestCase
     {
         Storage::disk('local')->put('release/release.json', json_encode([
             'version' => '1.0.1', 'type' => $type, 'size' => 19, 'sha256' => str_repeat('a', 64),
-            'download_url' => 'https://github.com/MohammedM98/AF-powercollect/releases/download/android-v1.0.1/powercollect.apk',
+            'download_url' => 'https://github.com/MohammedM98/powerCollect/releases/download/android-v1.0.1/powercollect.apk',
         ]));
     }
 
@@ -43,7 +45,7 @@ class MobileAppDownloadTest extends TestCase
             ->assertInertia(fn (AssertableInertia $page) => $page->component('Settings/MobileApp')
                 ->where('release.version', '1.0.1')->where('release.downloadUrl', route('settings.mobile-app.download')));
         $this->get(route('settings.mobile-app.download', ['url' => 'https://untrusted.test/app.apk']))
-            ->assertRedirect('https://github.com/MohammedM98/AF-powercollect/releases/download/android-v1.0.1/powercollect.apk')
+            ->assertRedirect('https://github.com/MohammedM98/powerCollect/releases/download/android-v1.0.1/powercollect.apk')
             ->assertHeader('Cache-Control', 'no-store, private')->assertHeader('Referrer-Policy', 'no-referrer');
         $this->assertFileDoesNotExist(Storage::disk('local')->path('release/powercollect.apk'));
         $this->get(route('settings.sms.edit'))->assertForbidden();
@@ -67,28 +69,43 @@ class MobileAppDownloadTest extends TestCase
         $this->get(route('settings.mobile-app.download'))->assertNotFound();
     }
 
-    public function test_an_existing_github_apk_can_be_downloaded_from_an_immutable_commit(): void
+    public function test_with_a_token_the_private_release_apk_is_handed_out_through_a_short_lived_link(): void
     {
         $this->publishFixture();
-        $release = json_decode(Storage::disk('local')->get('release/release.json'), true);
-        $release['download_url'] = 'https://raw.githubusercontent.com/MohammedM98/AF-powercollect/218e664cc0c0a965a4ffd5024ea8fac35da954ca/resources/mobile/powercollect.apk';
-        Storage::disk('local')->put('release/release.json', json_encode($release));
+        config(['powercollect.mobile_app.github_token' => 'read-only-token']);
+        $signed = 'https://release-assets.githubusercontent.com/github-production-release-asset/1/apk?sig=abc';
+        Http::preventStrayRequests();
+        Http::fake([
+            'api.github.com/repos/MohammedM98/powerCollect/releases/tags/android-v1.0.1' => Http::response(['assets' => [
+                ['id' => 11, 'name' => 'notes.txt'], ['id' => 42, 'name' => 'powercollect.apk'],
+            ]]),
+            'api.github.com/repos/MohammedM98/powerCollect/releases/assets/42' => Http::response('', 302, ['Location' => $signed]),
+        ]);
 
-        $this->actingAs(User::factory()->collector()->create())->get(route('settings.mobile-app.index'))->assertOk()
-            ->assertInertia(fn (AssertableInertia $page) => $page->where('release.version', '1.0.1'));
-        $this->get(route('settings.mobile-app.download'))->assertRedirect($release['download_url'])
-            ->assertHeader('Cache-Control', 'no-store, private');
+        $this->actingAs(User::factory()->collector()->create())->get(route('settings.mobile-app.download'))
+            ->assertRedirect($signed)->assertHeader('Cache-Control', 'no-store, private');
+        Http::assertSent(fn (Request $request) => $request->hasHeader('Authorization', 'Bearer read-only-token')
+            && str_ends_with($request->url(), 'releases/assets/42') && $request->hasHeader('Accept', 'application/octet-stream'));
+    }
+
+    public function test_a_private_release_without_the_apk_or_an_unreachable_github_offers_no_download(): void
+    {
+        $this->publishFixture();
+        config(['powercollect.mobile_app.github_token' => 'read-only-token']);
+        $user = User::factory()->collector()->create();
+
+        Http::fake(['api.github.com/*' => Http::sequence()
+            ->push(['assets' => [['id' => 11, 'name' => 'notes.txt']]])
+            ->push(['message' => 'Bad credentials'], 401)]);
+        $this->actingAs($user)->get(route('settings.mobile-app.download'))->assertNotFound();
+        $this->get(route('settings.mobile-app.download'))->assertServiceUnavailable();
     }
 
     #[TestWith(['download_url', null])]
-    #[TestWith(['download_url', 'http://github.com/MohammedM98/AF-powercollect/releases/download/android-v1.0.1/powercollect.apk'])]
+    #[TestWith(['download_url', 'http://github.com/MohammedM98/powerCollect/releases/download/android-v1.0.1/powercollect.apk'])]
     #[TestWith(['download_url', 'https://untrusted.test/powercollect.apk'])]
     #[TestWith(['download_url', 'https://github.com/other/project/releases/download/android-v1.0.1/powercollect.apk'])]
-    #[TestWith(['download_url', 'https://github.com/MohammedM98/AF-powercollect/releases/download/android-v1.0.2/powercollect.apk'])]
-    #[TestWith(['download_url', 'https://raw.githubusercontent.com/MohammedM98/AF-powercollect/main/resources/mobile/powercollect.apk'])]
-    #[TestWith(['download_url', 'https://raw.githubusercontent.com/other/project/218e664cc0c0a965a4ffd5024ea8fac35da954ca/resources/mobile/powercollect.apk'])]
-    #[TestWith(['download_url', 'http://raw.githubusercontent.com/MohammedM98/AF-powercollect/218e664cc0c0a965a4ffd5024ea8fac35da954ca/resources/mobile/powercollect.apk'])]
-    #[TestWith(['download_url', 'https://raw.githubusercontent.com/MohammedM98/AF-powercollect/218e664cc0c0a965a4ffd5024ea8fac35da954ca/resources/mobile/powercollect.apk?url=https://untrusted.test'])]
+    #[TestWith(['download_url', 'https://github.com/MohammedM98/powerCollect/releases/download/android-v1.0.2/powercollect.apk'])]
     #[TestWith(['version', '../1.0.1'])]
     #[TestWith(['sha256', 'invalid'])]
     #[TestWith(['size', 0])]
