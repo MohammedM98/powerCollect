@@ -21,20 +21,7 @@
 .permission-panel-body input,.permission-panel-body button{scroll-margin-top:150px}
 
 /* The guide's tabs and entries */
-.permission-design-tabs{display:flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:calc(16px * var(--radius-scale, 1));background:rgb(var(--gray-100));width:fit-content;max-width:100%}
-.permission-design-tab{position:relative;display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgb(var(--gray-200));border-radius:calc(12px * var(--radius-scale, 1));background:rgb(var(--surface));color:rgb(var(--gray-700));font-size:14px;font-weight:600;transition:background .16s,color .16s}
-.permission-design-tab:after{content:'';position:absolute;bottom:-4px;inset-inline:17px;height:3px;border-radius:calc(3px * var(--radius-scale, 1));background:rgb(var(--brand-500));box-shadow:0 2px 10px rgb(var(--brand-500)/.4);opacity:0}
-.permission-design-tab.active,.permission-design-tab:hover,.permission-design-tab:focus-visible{color:white;background:linear-gradient(135deg,rgb(var(--graphite-600)),rgb(var(--graphite-900)));border-color:rgb(var(--graphite-700));box-shadow:0 10px 20px -12px rgb(var(--graphite-950) / 0.8)}
-.permission-design-tab.active:after,.permission-design-tab:hover:after,.permission-design-tab:focus-visible:after{opacity:1}
-.permission-guide-entry{padding:16px;border-top:1px solid rgb(var(--gray-100));break-inside:avoid}
 .permission-guide-entry:first-child{border-top:0}
-.permission-guide-entry h4{font-size:16px;font-weight:700;color:rgb(var(--gray-900))}
-.permission-guide-entry p{font-size:15px;line-height:1.9;margin-top:8px;color:rgb(var(--gray-700))}
-.permission-guide-entry small{display:block;font-size:13px;line-height:1.9;margin-top:8px;color:rgb(var(--gray-500))}
-.permission-guide-entry:hover{background:rgb(var(--gray-50))}
-.permission-help-header{transition:background .16s,color .16s}
-.permission-help-dialog:hover .permission-help-header,.permission-help-dialog:focus-within .permission-help-header{background:linear-gradient(135deg,rgb(var(--graphite-600)),rgb(var(--graphite-900)));color:white;border-bottom:3px solid rgb(var(--brand-500))}
-.permission-guide-scroll{min-height:0;overflow-y:auto;flex:1}
 
 /* ═════ The employees, by job title ═════ */
 .pm-people{display:flex;flex-direction:column;border:1px solid rgb(var(--gray-100));border-radius:calc(24px * var(--radius-scale, 1));background:rgb(var(--surface));box-shadow:0 1px 2px rgb(var(--shadow-ink) / 0.04),0 14px 34px -18px rgb(var(--shadow-ink) / 0.18)}
@@ -328,27 +315,7 @@
 .pm-soft-button:focus-visible{outline:2px solid rgb(var(--brand-500));outline-offset:2px}
 
 /* ═════ Save bar, review and undo ═════ */
-.pm-savebar{position:fixed;inset-inline:0;bottom:16px;z-index:30;margin-inline:auto;display:flex;flex-wrap:wrap;align-items:center;gap:12px;width:calc(100% - 2rem);max-width:56rem;padding:12px 16px;border-radius:calc(18px * var(--radius-scale, 1));background:linear-gradient(135deg,rgb(var(--graphite-700)),rgb(var(--graphite-800)) 60%,rgb(var(--graphite-900)));color:#fff;box-shadow:0 0 0 1px #ffffff1a,0 24px 44px -20px rgb(var(--shadow-ink) / 0.6);opacity:0;pointer-events:none;transform:translateY(24px);transition:transform .2s,opacity .2s}
 .pm-savebar.is-visible{opacity:1;pointer-events:auto;transform:none}
-.pm-delta{display:inline-flex;gap:8px;font-family:var(--font-body, 'Zain'),sans-serif;font-size:13px;font-weight:700;color:rgb(var(--gray-500))}
-.pm-delta .is-added{color:rgb(var(--success-600))}
-.pm-delta .is-removed{color:rgb(var(--danger-700))}
-.dark .pm-delta .is-added{color:rgb(var(--success-400))}
-.dark .pm-delta .is-removed{color:rgb(var(--danger-400))}
-.pm-savebar .pm-delta .is-added{color:rgb(var(--success-300))}
-.pm-savebar .pm-delta .is-removed{color:rgb(var(--danger-300))}
-.pm-review-strip{margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;border-radius:calc(12px * var(--radius-scale, 1));border:1px solid rgb(var(--gray-100));background:rgb(var(--gray-50));padding:8px 16px;font-size:14px;color:rgb(var(--gray-600))}
-.pm-review-strip b{color:rgb(var(--gray-900))}
-.pm-review-level{margin-inline-start:auto;border-radius:999px;padding:0 12px;font-size:12px;font-weight:700;line-height:22px;background:rgb(var(--success-600) / 0.12);color:rgb(var(--success-700))}
-.pm-review-level.is-mid{background:rgb(var(--warning-500) / 0.14);color:rgb(var(--warning-700))}
-.pm-review-level.is-high{background:rgb(var(--danger-500) / 0.12);color:rgb(var(--danger-700))}
-.dark .pm-review-level{color:rgb(var(--success-400))}
-.dark .pm-review-level.is-mid{color:rgb(var(--warning-400))}
-.dark .pm-review-level.is-high{color:rgb(var(--danger-400))}
-.pm-toast{position:fixed;inset-inline-end:16px;bottom:16px;z-index:31;display:flex;align-items:center;gap:12px;width:calc(100% - 2rem);max-width:30rem;padding:8px 12px;padding-inline-start:16px;border-radius:calc(16px * var(--radius-scale, 1));background:linear-gradient(135deg,rgb(var(--graphite-700)),rgb(var(--graphite-800)) 60%,rgb(var(--graphite-900)));color:#fff;font-size:15px;box-shadow:0 0 0 1px #ffffff1a,0 24px 44px -20px rgb(var(--shadow-ink) / 0.6);animation:pm-rise .25s ease}
-.pm-toast-action{display:inline-flex;flex:none;align-items:center;gap:8px;border-radius:calc(10px * var(--radius-scale, 1));background:#ffffff17;padding:8px 12px;font-size:14px;font-weight:700;transition:background .16s}
-.pm-toast-action:hover:not(:disabled){background:#ffffff2b}
-.pm-toast-action:focus-visible{outline:2px solid #fff;outline-offset:2px}
 
 @keyframes pm-open{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 @keyframes pm-rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
@@ -359,7 +326,6 @@
 .permission-panel-copy>b{font-size:15px}
 .permission-panel-copy>small{font-size:12px}
 .permission-open-label{display:none}
-.permission-design-tab{font-size:13px;padding:8px 12px}
 .permission-panel-count{font-size:12px;padding:4px 8px}
 .permission-guide-entry{padding:16px}
 .pm-hero-main{padding:16px 16px 8px}
@@ -375,10 +341,9 @@
 .pm-mode{white-space:nowrap}
 .pm-savebar{bottom:8px;gap:8px}
 .pm-savebar>p{flex:1 1 100%}
-.pm-toast{bottom:8px;inset-inline-end:8px;width:calc(100% - 1rem)}
 }
 @media(prefers-reduced-motion:reduce){
-.permission-panel,.permission-panel-heading,.permission-design-tab,.permission-help-header,.pm-person,.pm-check,.pm-check svg,.pm-tri,.pm-more,.pm-chevron,.pm-gauge-value,.pm-reach i,.pm-savebar,.pm-tab:after{transition:none!important}
+.permission-panel,.permission-panel-heading,.pm-person,.pm-check,.pm-check svg,.pm-tri,.pm-more,.pm-chevron,.pm-gauge-value,.pm-reach i,.pm-savebar,.pm-tab:after{transition:none!important}
 .pm-body,.pm-toast{animation:none!important}
 }
 
@@ -434,10 +399,45 @@
 .permission-panel { border: 0; border-radius: 18px; background: var(--ma-solid); box-shadow: var(--ma-depth); }
 .permission-panel-body { background: var(--ma-solid); }
 .permission-panel-icon { background: var(--ma-tile); color: var(--ma-muted); }
-.permission-design-tabs { background: var(--ma-tile); box-shadow: var(--ma-hl); }
-.permission-design-tab { border: 0; background: transparent; color: var(--ma-muted); }
-.permission-design-tab.active { background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-depth); }
-.permission-design-tab.active:after { opacity: 0; }
+/* The guide's entries. */
+.permission-guide-entry { padding: 16px; border-top: 1px solid var(--ma-line); break-inside: avoid; }
+.permission-guide-entry h4 { font-size: 16px; font-weight: 700; color: var(--ma-ink); }
+.permission-guide-entry p { margin-top: 8px; font-size: 15px; line-height: 1.9; color: var(--ma-ink); }
+.permission-guide-entry small { display: block; margin-top: 8px; font-size: 13px; line-height: 1.9; color: var(--ma-muted); }
+.permission-guide-entry:hover { background: var(--ma-tile); }
+
+/* The unsaved-changes bar and the saved note: floating frosted surfaces at the foot of the page. */
+.pm-savebar, .pm-toast {
+    position: fixed;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 22px;
+    background: var(--ma-pop, var(--ma-solid));
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    backdrop-filter: blur(24px) saturate(1.6);
+    box-shadow: var(--ma-float);
+    color: var(--ma-ink);
+}
+.pm-savebar { inset-inline: 0; bottom: 16px; flex-wrap: wrap; width: calc(100% - 2rem); max-width: 56rem; margin-inline: auto; padding: 12px 16px; opacity: 0; pointer-events: none; transform: translateY(24px); transition: transform .2s, opacity .2s; }
+.pm-savebar-count { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; padding-inline: 8px; border-radius: 999px; background: var(--ma-act); color: #fff; font-family: var(--font-display, inherit); font-size: 14px; font-weight: 700; }
+.pm-savebar-danger { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 999px; background: var(--ma-owe-s); color: var(--ma-owe); font-size: 12px; font-weight: 700; }
+.pm-savebar-danger svg { width: 14px; height: 14px; }
+.pm-savebar-error { width: 100%; color: var(--ma-owe); font-size: 14px; font-weight: 600; }
+.pm-toast { inset-inline-end: 16px; bottom: 16px; z-index: 31; width: calc(100% - 2rem); max-width: 34rem; padding: 8px 12px; padding-inline-start: 16px; font-size: 15px; animation: pm-rise .25s ease; }
+.pm-toast > svg { color: var(--ma-pay); }
+.pm-delta { display: inline-flex; gap: 8px; font-family: var(--font-body, 'Zain'), sans-serif; font-size: 13px; font-weight: 700; color: var(--ma-muted); }
+.pm-delta .is-added { color: var(--ma-pay); }
+.pm-delta .is-removed { color: var(--ma-owe); }
+
+/* The review window: before and after on one tile, the level as a tone pill. */
+.pm-review-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 8px 16px; border-radius: 14px; background: var(--ma-tile); box-shadow: var(--ma-hl); color: var(--ma-muted); font-size: 14px; }
+.pm-review-strip b { color: var(--ma-ink); }
+.pm-review-strip b.is-more { color: var(--ma-owe); }
+.pm-review-level { margin-inline-start: auto; padding: 0 12px; border-radius: 999px; background: var(--ma-pay-s); color: var(--ma-pay); font-size: 12px; font-weight: 700; line-height: 22px; }
+.pm-review-level.is-mid { background: var(--ma-warn-s); color: var(--ma-warn); }
+.pm-review-level.is-high { background: var(--ma-owe-s); color: var(--ma-owe); }
 .pm-soft-button { border-color: transparent; background: var(--ma-tile); color: var(--ma-ink); box-shadow: var(--ma-hl); }
 /* An open or hovered panel: raised white with the brand mark at its edge, not the dark band. */
 .permission-panel:hover, .permission-panel:focus-within, .permission-panel.is-open { border: 0; box-shadow: var(--ma-depth), inset 3px 0 0 var(--ma-brand); }
@@ -446,7 +446,6 @@
 .permission-panel:hover > .permission-panel-heading .permission-panel-icon, .permission-panel:focus-within > .permission-panel-heading .permission-panel-icon, .permission-panel.is-open > .permission-panel-heading .permission-panel-icon { background: var(--ma-brand-soft); color: var(--ma-brand); }
 .permission-panel:hover > .permission-panel-heading small, .permission-panel:focus-within > .permission-panel-heading small, .permission-panel.is-open > .permission-panel-heading small { color: var(--ma-muted); }
 .permission-panel-count { background: var(--ma-solid); color: var(--ma-ink); box-shadow: var(--ma-hl); }
-.permission-help-dialog:hover .permission-help-header, .permission-help-dialog:focus-within .permission-help-header { background: transparent; color: inherit; border-bottom: 1px solid var(--ma-line); }
 
 /* The grid's checks are HeroUI's Checkbox: the drawn box is its control, the focus ring follows its hidden input. */
 .pm-check-field{display:inline-flex}

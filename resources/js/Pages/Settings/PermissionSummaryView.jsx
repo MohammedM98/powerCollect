@@ -29,9 +29,9 @@ export default function PermissionSummaryView({
             />
             <div className="space-y-4">
                 <div className="pm-card flex flex-col items-center gap-2 p-4 text-center">
-                    <h4 className="font-bold text-gray-900">مستوى الخطورة</h4>
+                    <h4 className="font-bold text-(--ma-ink)">مستوى الخطورة</h4>
                     <RiskGauge sections={sections} selected={selected} large />
-                    <p className="text-[13.5px] leading-6 text-gray-500">
+                    <p className="text-[13.5px] leading-6 text-(--ma-muted)">
                         يزيد مع الصلاحيات التي تحرّك المال أو تغيّر الخدمة. اسحب ما لا يحتاجه {firstName} لعمله.
                     </p>
                 </div>

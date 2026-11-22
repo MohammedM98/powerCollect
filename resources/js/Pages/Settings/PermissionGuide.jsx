@@ -1,14 +1,34 @@
-import { Button, Input } from '@heroui/react';
 import { useMemo, useState } from 'react';
-import Modal from '@/Components/UI/Modal';
+import DialogFrame from '@/Components/UI/DialogFrame';
 import Icon from '@/Components/UI/Icon';
 import PermissionPanel from './PermissionPanel';
 import { auditScopeLabel } from './AuditAccessCard';
 import { ICONS, permissionGuideEntries, permissionGuideHtml } from '@/lib/permissionGuide';
-import { PrimaryKey, SecondaryKey } from '@/Components/UI';
+import { Notice, PrimaryKey, SecondaryKey, SegmentedChoice, TextInput } from '@/Components/UI';
 
 export function PermissionExplanation({ entry, onClose }) {
-    return <Modal show={Boolean(entry)} onClose={onClose} maxWidth="2xl"><div className="permission-help-dialog" dir="rtl"><header className="permission-help-header flex items-start justify-between gap-4 border-b border-gray-100 p-6"><div><p className="text-sm opacity-70">{entry?.sectionLabel}</p><h3 className="mt-1 text-xl font-bold">{entry?.label}</h3></div><Button data-raw="" variant="ghost" aria-label="إغلاق شرح الصلاحية" onClick={onClose} className="rounded-control p-1"><Icon name="close" className="h-5 w-5" /></Button></header><div className="space-y-6 p-6"><div><h4 className="font-bold text-gray-900">ماذا تسمح؟</h4><p className="mt-2 text-base leading-8 text-gray-600">{entry?.description}</p></div><div><h4 className="font-bold text-gray-900">حدود الصلاحية</h4><p className="mt-2 text-base leading-8 text-gray-600">{entry?.limit}</p></div><p className="rounded-control border border-gray-100 bg-gray-50 p-4 text-sm leading-7 text-gray-600">{entry?.delegation}</p></div><footer className="flex justify-end border-t border-gray-100 p-4"><SecondaryKey onClick={onClose}>فهمت</SecondaryKey></footer></div></Modal>;
+    return (
+        <DialogFrame
+            show={Boolean(entry)}
+            onClose={onClose}
+            title={entry?.label}
+            description={entry?.sectionLabel}
+            icon="info"
+            tone="blue"
+            maxWidth="2xl"
+            footer={<SecondaryKey onClick={onClose}>فهمت</SecondaryKey>}
+        >
+            <div>
+                <h3 className="font-bold text-(--ma-ink)">ماذا تسمح؟</h3>
+                <p className="mt-2 text-base leading-8 text-(--ma-muted)">{entry?.description}</p>
+            </div>
+            <div>
+                <h3 className="font-bold text-(--ma-ink)">حدود الصلاحية</h3>
+                <p className="mt-2 text-base leading-8 text-(--ma-muted)">{entry?.limit}</p>
+            </div>
+            <Notice>{entry?.delegation}</Notice>
+        </DialogFrame>
+    );
 }
 
 export default function PermissionGuide({ show, onClose, sections, employee, selected, scopedToOwnBranch, auditOptions, auditValue, initialAudience = 'all' }) {
@@ -39,5 +59,63 @@ export default function PermissionGuide({ show, onClose, sections, employee, sel
         target.document.open(); target.document.write(html()); target.document.close();
         target.document.fonts.ready.then(() => { target.focus(); target.print(); });
     }
-    return <Modal show={show} onClose={onClose} maxWidth="6xl"><div className="flex max-h-[90dvh] min-h-0 flex-col" role="dialog" aria-modal="true" aria-labelledby="permission-guide-title" dir="rtl"><header className="flex shrink-0 items-start justify-between gap-4 border-b border-gray-100 p-4 sm:px-6"><div><h3 id="permission-guide-title" className="text-xl font-bold text-gray-900">دليل الصلاحيات</h3><p className="mt-1 text-sm text-gray-500">ماذا تسمح كل صلاحية، وما حدودها ومن يستطيع تفويضها؟</p></div><Button data-raw="" variant="ghost" aria-label="إغلاق دليل الصلاحيات" onClick={onClose} className="rounded-control p-2 text-gray-500"><Icon name="close" className="h-5 w-5" /></Button></header><div className="permission-guide-scroll space-y-4 bg-gray-50 p-4 sm:px-6"><div className="permission-design-tabs" role="group" aria-label="محتوى دليل الصلاحيات">{[['all', scopedToOwnBranch ? 'كل الصلاحيات المتاحة لك' : 'كل الصلاحيات'], ['selected', `صلاحيات ${employee.name} المختارة`]].map(([key, label]) => <Button data-raw="" variant="ghost" key={key} aria-pressed={audience === key} onClick={() => setAudience(key)} className={`permission-design-tab ${audience === key ? 'active' : ''}`}>{label}</Button>)}</div><p className="text-sm leading-7 text-gray-600">الطباعة والتنزيل يشملان الدليل المختار كاملًا، حتى لو كانت البطاقات مغلقة أو نتائج البحث محدودة. دليل الموظف يعكس الاختيارات الحالية.</p><div className="relative"><Icon name="search" className="pointer-events-none absolute inset-s-3 top-3 h-5 w-5 text-gray-400" /><Input type="search" aria-label="البحث في دليل الصلاحيات" value={query} onChange={event => setQuery(event.target.value)} placeholder="ابحث باسم الصلاحية أو وظيفتها…" className="w-full ps-8 text-sm" /></div><p className="text-xs text-gray-500">عدد الصلاحيات المطابقة: {matching.length}</p>{sections.filter(section => matching.some(entry => entry.section === section.key)).map(section => <PermissionPanel key={`${audience}:${section.key}`} title={section.label} icon={ICONS[section.key]} count={matching.filter(entry => entry.section === section.key).length} summary="الوظيفة والحدود ونطاق التفويض">{matching.filter(entry => entry.section === section.key).map(entry => <article key={entry.id} className="permission-guide-entry"><h4>{entry.label}</h4><p>{entry.description}</p><small><b>حدودها:</b> {entry.limit}</small><small>{entry.delegation}</small></article>)}</PermissionPanel>)}{matching.length === 0 && <p className="py-6 text-center text-gray-500">لا توجد صلاحيات مطابقة.</p>}{auditActions.length > 0 && <PermissionPanel key={`audit-${audience}`} title="إجراءات التدقيق المالي" icon="shield" count={auditActions.length} summary="مرتبطة بتفعيل التدقيق وفروعه المسموحة">{auditActions.map(action => <article key={action.value} className="permission-guide-entry"><h4>{action.label}</h4><p>{action.hint}</p></article>)}</PermissionPanel>}{audience === 'selected' && employee.lockedPermissions?.length > 0 && <p className="rounded-control border border-gray-200 bg-surface p-4 text-sm leading-7 text-gray-600">صلاحيات محفوظة خارج نطاق إدارتك: {employee.lockedPermissions.join('، ')}.</p>}{error && <p role="alert" className="text-sm text-red-600">{error}</p>}</div><footer className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-gray-100 bg-surface p-4 sm:px-6"><SecondaryKey onClick={onClose}>إغلاق</SecondaryKey><SecondaryKey onClick={download}><Icon name="document" className="h-4 w-4" />تنزيل HTML</SecondaryKey><PrimaryKey onClick={print}><Icon name="printer" className="h-4 w-4" />طباعة / حفظ PDF</PrimaryKey></footer></div></Modal>;
+    const footer = (
+        <>
+            <SecondaryKey onClick={onClose}>إغلاق</SecondaryKey>
+            <SecondaryKey onClick={download}><Icon name="document" className="h-4 w-4" />تنزيل HTML</SecondaryKey>
+            <PrimaryKey onClick={print}><Icon name="printer" className="h-4 w-4" />طباعة / حفظ PDF</PrimaryKey>
+        </>
+    );
+
+    return (
+        <DialogFrame
+            show={show}
+            onClose={onClose}
+            title="دليل الصلاحيات"
+            description="ماذا تسمح كل صلاحية، وما حدودها ومن يستطيع تفويضها؟"
+            icon="shield"
+            maxWidth="6xl"
+            footer={footer}
+        >
+            <div className="space-y-4">
+                <SegmentedChoice
+                    label="محتوى دليل الصلاحيات"
+                    value={audience}
+                    onChange={setAudience}
+                    options={[
+                        { value: 'all', label: scopedToOwnBranch ? 'كل الصلاحيات المتاحة لك' : 'كل الصلاحيات' },
+                        { value: 'selected', label: `صلاحيات ${employee.name} المختارة` },
+                    ]}
+                />
+                <p className="text-sm leading-7 text-(--ma-muted)">الطباعة والتنزيل يشملان الدليل المختار كاملًا، حتى لو كانت البطاقات مغلقة أو نتائج البحث محدودة. دليل الموظف يعكس الاختيارات الحالية.</p>
+                <TextInput type="search" aria-label="البحث في دليل الصلاحيات" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="ابحث باسم الصلاحية أو وظيفتها…" className="block w-full" />
+                <p className="text-xs text-(--ma-muted)">عدد الصلاحيات المطابقة: <bdi dir="ltr">{matching.length}</bdi></p>
+                {sections.filter((section) => matching.some((entry) => entry.section === section.key)).map((section) => (
+                    <PermissionPanel key={`${audience}:${section.key}`} title={section.label} icon={ICONS[section.key]} count={matching.filter((entry) => entry.section === section.key).length} summary="الوظيفة والحدود ونطاق التفويض">
+                        {matching.filter((entry) => entry.section === section.key).map((entry) => (
+                            <article key={entry.id} className="permission-guide-entry">
+                                <h4>{entry.label}</h4>
+                                <p>{entry.description}</p>
+                                <small><b>حدودها:</b> {entry.limit}</small>
+                                <small>{entry.delegation}</small>
+                            </article>
+                        ))}
+                    </PermissionPanel>
+                ))}
+                {matching.length === 0 && <p className="py-6 text-center text-(--ma-muted)">لا توجد صلاحيات مطابقة.</p>}
+                {auditActions.length > 0 && (
+                    <PermissionPanel key={`audit-${audience}`} title="إجراءات التدقيق المالي" icon="shield" count={auditActions.length} summary="مرتبطة بتفعيل التدقيق وفروعه المسموحة">
+                        {auditActions.map((action) => (
+                            <article key={action.value} className="permission-guide-entry">
+                                <h4>{action.label}</h4>
+                                <p>{action.hint}</p>
+                            </article>
+                        ))}
+                    </PermissionPanel>
+                )}
+                {audience === 'selected' && employee.lockedPermissions?.length > 0 && <Notice>صلاحيات محفوظة خارج نطاق إدارتك: {employee.lockedPermissions.join('، ')}.</Notice>}
+                {error && <Notice tone="danger" role="alert">{error}</Notice>}
+            </div>
+        </DialogFrame>
+    );
 }

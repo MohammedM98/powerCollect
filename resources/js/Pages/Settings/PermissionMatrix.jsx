@@ -49,7 +49,7 @@ export function RiskBadge({ risk }) {
     return (
         <span
             className={`inline-flex items-center gap-1 rounded-md px-2 text-[12px] font-bold leading-[20px] ${
-                risk === 'danger' ? 'bg-red-500/10 text-red-700 dark:text-red-400' : 'bg-amber-500/10 text-amber-700 dark:text-amber-400'
+                risk === 'danger' ? 'bg-(--ma-owe-s) text-(--ma-owe)' : 'bg-(--ma-warn-s) text-(--ma-warn)'
             }`}
         >
             {RISK_LABELS[risk]}
@@ -118,12 +118,12 @@ function OptionItem({ section, item, selected, saved, onChange, disabled, onExpl
                 disabled={disabled || locked}
             />
             <div className="min-w-0 flex-1">
-                <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-gray-900">
+                <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-(--ma-ink)">
                     <Mark text={item.label} query={query} />
                     <RiskBadge risk={item.risk} />
                 </p>
                 {locked && (
-                    <p className="mt-1 text-[13px] text-blue-700 dark:text-blue-500">
+                    <p className="mt-1 text-[13px] text-(--ma-clr)">
                         يتطلب «{section.ladder.labels[item.needs - 1]}» أولًا
                     </p>
                 )}
@@ -275,8 +275,8 @@ export function SectionRow({
                                 <div key={cell.id} className="pm-explained">
                                     <i className={`pm-held-dot ${selected.includes(cell.id) ? 'is-held' : ''}`} aria-hidden="true" />
                                     <div className="min-w-0 flex-1">
-                                        <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-gray-900">
-                                            <span className="text-gray-500">{cell.column.label}:</span> {describe(cell.id)?.label ?? cell.label}
+                                        <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-(--ma-ink)">
+                                            <span className="text-(--ma-muted)">{cell.column.label}:</span> {describe(cell.id)?.label ?? cell.label}
                                             <RiskBadge risk={cell.risk} />
                                         </p>
                                     </div>
@@ -352,7 +352,7 @@ export function MatrixLegend() {
                 لم تُحفظ بعد
             </span>
             <span>
-                <b className="text-gray-400">—</b> غير متاحة لهذا القسم
+                <b className="text-(--ma-faint)">—</b> غير متاحة لهذا القسم
             </span>
         </div>
     );
