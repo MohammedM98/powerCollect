@@ -169,6 +169,17 @@ export function PermissionReviewDialog({
                     </span>
                     <span className={`pm-review-level is-${heroRisk.level}`}>خطورة {heroRisk.label}</span>
                 </div>
+                {dangerousGrants.length > 0 && (
+                    <Notice tone="danger">
+                        <label className="flex cursor-pointer items-start gap-3">
+                            <CheckBox checked={acknowledged} onChange={(event) => onAcknowledgedChange(event.target.checked)} />
+                            <span>
+                                يحصل {firstName} على صلاحيات خطيرة: <strong>{dangerousGrants.map((item) => item.label).join('، ')}</strong>. أؤكد أنه
+                                يحتاجها لعمله.
+                            </span>
+                        </label>
+                    </Notice>
+                )}
                 <PermissionChangeReview employee={employee} changes={changes} />
                 {takenFromOthers.length > 0 && (
                     <Notice tone="warn">
@@ -187,17 +198,6 @@ export function PermissionReviewDialog({
                             </div>
                         ))}
                     </div>
-                )}
-                {dangerousGrants.length > 0 && (
-                    <Notice tone="danger">
-                        <label className="flex cursor-pointer items-start gap-3">
-                            <CheckBox checked={acknowledged} onChange={(event) => onAcknowledgedChange(event.target.checked)} />
-                            <span>
-                                يحصل {firstName} على صلاحيات خطيرة: <strong>{dangerousGrants.map((item) => item.label).join('، ')}</strong>. أؤكد أنه
-                                يحتاجها لعمله.
-                            </span>
-                        </label>
-                    </Notice>
                 )}
             </div>
         </DialogFrame>
