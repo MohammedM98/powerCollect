@@ -24,12 +24,15 @@ export { default as SegmentedChoice } from '@/Components/UI/SegmentedChoice';
 export { default as Switch } from '@/Components/UI/Switch';
 export { default as TabStrip } from './TabStrip';
 export { default as RadioCards } from './RadioCards';
+export { default as Affix } from './Affix';
+export { default as FieldAction } from './FieldAction';
 
 // Tables
 export { default as ListTable, ListHeader, ListColumn, ListBody, ListRow, ListCell, BandRow } from './ListTable';
 
 // Display
 export { default as Figure } from './Figure';
+export { default as Notice } from './Notice';
 export { default as StatusPill } from '@/Components/DataTable/StatusPill';
 
 // Windows

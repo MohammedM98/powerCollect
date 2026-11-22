@@ -133,7 +133,7 @@ export default function FormModal({
                     onSubmit={submit}
                     onInput={(e) => clearErrorOnInput(e, form)}
                     onKeyDown={submitOnCtrlEnter}
-                    className={outline ? 'gl-fm' : 'flex max-h-[90vh] flex-col'}
+                    className={outline ? 'ma-form gl-fm' : 'ma-form flex max-h-[90dvh] flex-col'}
                 >
                     {outline ? (
                         <FormAsideContext value={{ slot: asideSlot }}>

@@ -28,7 +28,7 @@ export default function BranchForm({ data, setData, errors, governorates, areas 
 
     return (
         <div className="space-y-6">
-            <FormSection icon="building" title="بيانات الفرع" columns={1}>
+            <FormSection icon="building" title="بيانات الفرع" description="الاسم ورقم الهاتف" columns={2}>
                 <FormField id="name" label="الاسم" required error={errors.name}>
                     <TextInput className="block w-full" value={data.name} autoFocus onChange={(e) => setData('name', e.target.value)} />
                 </FormField>
@@ -38,7 +38,7 @@ export default function BranchForm({ data, setData, errors, governorates, areas 
                 </FormField>
             </FormSection>
 
-            <FormSection icon="pin" title="الموقع" columns={2}>
+            <FormSection icon="pin" title="الموقع" description="المحافظة ثم المنطقة التابعة لها" columns={2}>
                 <FormSelect
                     id="governorate_id"
                     label="المحافظة"

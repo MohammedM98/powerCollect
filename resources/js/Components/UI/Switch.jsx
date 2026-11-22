@@ -8,9 +8,9 @@ import InfoTip from '@/Components/UI/InfoTip';
  * switch labelled "عرض". `hint` is what turning it off or on means, kept
  * behind an "!" beside the label.
  */
-export default function Switch({ checked, onChange, label, ariaLabel, hint = null, disabled = false }) {
+export default function Switch({ checked, onChange, label, ariaLabel, hint = null, disabled = false, id }) {
     const control = (
-        <HeroSwitch isSelected={Boolean(checked)} onChange={onChange} isDisabled={disabled} aria-label={ariaLabel} className="gl-set-switch gl-switch-row">
+        <HeroSwitch id={id} isSelected={Boolean(checked)} onChange={onChange} isDisabled={disabled} aria-label={ariaLabel} className="gl-set-switch gl-switch-row">
             <HeroSwitch.Content>
                 <HeroSwitch.Control><HeroSwitch.Thumb /></HeroSwitch.Control>
                 {label && <Label>{label}</Label>}

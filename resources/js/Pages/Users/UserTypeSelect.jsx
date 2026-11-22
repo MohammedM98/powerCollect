@@ -1,10 +1,8 @@
-import { Button } from '@heroui/react';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import FormField from '@/Components/Form/FormField';
-import InputError from '@/Components/UI/InputError';
 import Icon from '@/Components/UI/Icon';
-import { SearchableSelect, TextInput } from '@/Components/UI';
+import { PrimaryKey, SearchableSelect, SecondaryKey, TextInput } from '@/Components/UI';
 
 export default function UserTypeSelect({ value, options, onChange, onCreated, canCreate, error }) {
     const http = useHttp({ name: '' });
@@ -57,15 +55,15 @@ export default function UserTypeSelect({ value, options, onChange, onCreated, ca
                 portal
             />
         </FormField>
-        {adding && <div role="group" aria-label="إضافة مسمى وظيفي" className="space-y-3 rounded-control border border-brand-500/25 bg-brand-500/4 p-3">
-            <label htmlFor="new_user_type_name" className="flex items-center gap-2 text-xs font-bold text-brand-600"><Icon name="plus" className="h-4 w-4" />نوع مستخدم / مسمى وظيفي جديد</label>
-            <TextInput id="new_user_type_name" value={http.data.name} autoFocus maxLength={255} disabled={http.processing} placeholder="مثلاً: فني صيانة" className="w-full text-sm"
-                onChange={(event) => { http.setData('name', event.target.value); http.clearErrors('name'); setFailed(false); }}
-                onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); save(); } }} />
-            <InputError message={http.errors.name || (failed ? 'تعذّر إضافة المسمى الوظيفي. حاول مرة أخرى.' : null)} />
-            <div className="flex flex-wrap gap-2">
-                <Button data-raw="" variant="ghost" onClick={save} isDisabled={http.processing || !http.data.name.trim()} className="rounded-control bg-brand-500 px-3 py-2 text-xs font-bold text-white hover:bg-brand-600 disabled:opacity-50">{http.processing ? 'جارٍ الإضافة...' : 'إضافة واختيار المسمى'}</Button>
-                <Button data-raw="" variant="ghost" onClick={() => setAdding(false)} isDisabled={http.processing} className="rounded-control px-3 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100">إلغاء</Button>
+        {adding && <div role="group" aria-label="إضافة مسمى وظيفي" className="ma-inline-add">
+            <FormField id="new_user_type_name" label="نوع مستخدم / مسمى وظيفي جديد" error={http.errors.name || (failed ? 'تعذّر إضافة المسمى الوظيفي. حاول مرة أخرى.' : null)}>
+                <TextInput value={http.data.name} autoFocus maxLength={255} disabled={http.processing} placeholder="مثلاً: فني صيانة" className="block w-full"
+                    onChange={(event) => { http.setData('name', event.target.value); http.clearErrors('name'); setFailed(false); }}
+                    onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); save(); } }} />
+            </FormField>
+            <div className="flex flex-wrap justify-end gap-2">
+                <SecondaryKey onClick={() => setAdding(false)} disabled={http.processing}>إلغاء</SecondaryKey>
+                <PrimaryKey type="button" onClick={save} disabled={http.processing || !http.data.name.trim()}><Icon name="plus" className="h-4 w-4" />{http.processing ? 'جارٍ الإضافة...' : 'إضافة واختيار المسمى'}</PrimaryKey>
             </div>
         </div>}
     </div>;

@@ -1,13 +1,9 @@
-import { Button } from '@heroui/react';
-import Affix from '@/Components/UI/Affix';
 import ChoiceChips from '@/Components/UI/ChoiceChips';
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
-import InputError from '@/Components/UI/InputError';
-import InputLabel from '@/Components/UI/InputLabel';
 import { formatAmount } from '@/lib/currency';
 import { formatMoney } from '@/lib/format';
-import { ConfirmDialog, SearchableSelect, TextInput } from '@/Components/UI';
+import { Affix, ConfirmDialog, FieldAction, SearchableSelect, TextInput } from '@/Components/UI';
 
 const ACCOUNTING_TYPE_OPTIONS = [
     { value: 'weekly', label: 'أسبوعي' },
@@ -42,9 +38,17 @@ export default function SubscriptionTariffSection({
     unlockKilowattPrice,
     unlockMinimumCharge,
 }) {
+    const kilowattPriceNote = kilowattPriceUnlocked
+        ? `سعر التعرفة ${formatMoney(tariffRate)} شيكل؛ يمكن أن يكون أقل منه أو أكثر.`
+        : hasOwnKilowattPrice
+          ? `سعر خاص بهذا المشترك — سعر التعرفة ${formatMoney(tariffRate)} شيكل.`
+          : kilowattPriceDropped
+            ? 'أُلغي السعر الخاص بهذا المشترك لتغيير نوع الاشتراك.'
+            : 'يتبع نوع الاشتراك المختار.';
+
     return (
-        <FormSection icon="bolt" title="نوع الاشتراك والقاطع" description="المحاسبة والتعرفة والقاطع والحد الأدنى" info="سعر الكيلو والحد الأدنى يُحسبان تلقائيًا من اختيارك" columns={2}>
-            <FormField id="accounting_type" label="نوع المحاسبة" error={errors.accounting_type} span="sm:col-span-2">
+        <FormSection icon="bolt" title="نوع الاشتراك والقاطع" description="المحاسبة والتعرفة والقاطع والحد الأدنى" info="سعر الكيلو والحد الأدنى يُحسبان تلقائيًا من اختيارك">
+            <FormField id="accounting_type" label="نوع المحاسبة" error={errors.accounting_type}>
                 <ChoiceChips
                     label="نوع المحاسبة"
                     value={data.accounting_type}
@@ -71,65 +75,42 @@ export default function SubscriptionTariffSection({
                 />
             </FormField>
 
-            <div className="grid min-w-0 content-start gap-2">
-                <div className="flex items-center justify-between gap-2">
-                    <InputLabel htmlFor="tariff_rate" value="سعر الكيلو" />
-                    {canEditKilowattPrice && selectedTariff && !kilowattPriceUnlocked && (
-                        <Button data-raw="" variant="ghost"
-                            onClick={() => setConfirmingKilowattPriceUnlock(true)}
-                            className="text-[13px] font-semibold text-brand-600 hover:underline"
-                        >
-                            تعديل السعر
-                        </Button>
-                    )}
-                    {kilowattPriceUnlocked && (
-                        <Button data-raw="" variant="ghost" onClick={lockKilowattPrice} className="text-[13.5px] font-semibold text-gray-700 hover:underline">
-                            إلغاء التعديل
-                        </Button>
-                    )}
-                </div>
-                <div>
-                    <Affix unit="₪">
-                        <TextInput
-                            id="tariff_rate"
-                            type={kilowattPriceLocked ? 'text' : 'number'}
-                            step="0.01"
-                            min={kilowattPriceLocked ? undefined : 0}
-                            required={!kilowattPriceLocked}
-                            readOnly={kilowattPriceLocked}
-                            title={kilowattPriceLocked ? 'للقراءة فقط' : undefined}
-                            value={
-                                kilowattPriceLocked
-                                    ? hasOwnKilowattPrice
-                                        ? formatAmount(data.kilowatt_price)
-                                        : selectedTariff
-                                          ? formatAmount(selectedTariff.rate)
-                                          : '—'
-                                    : data.kilowatt_price
-                            }
-                            onChange={(e) => setData('kilowatt_price', e.target.value)}
-                            className={`block w-full ${kilowattPriceLocked ? 'bg-gray-50 text-gray-600' : ''}`}
-                        />
-                    </Affix>
-                </div>
-                {kilowattPriceUnlocked ? (
-                    <p className="m-0 text-[13px] text-gray-500">سعر التعرفة {formatMoney(tariffRate)} شيكل؛ يمكن أن يكون أقل منه أو أكثر.</p>
-                ) : hasOwnKilowattPrice ? (
-                    <p className="m-0 text-[13px] font-semibold text-brand-600">سعر خاص بهذا المشترك — سعر التعرفة {formatMoney(tariffRate)} شيكل.</p>
-                ) : kilowattPriceDropped ? (
-                    <p className="m-0 text-[13px] text-amber-600">أُلغي السعر الخاص بهذا المشترك لتغيير نوع الاشتراك.</p>
-                ) : null}
-                <InputError message={errors.kilowatt_price} />
-                <ConfirmDialog
-                    show={confirmingKilowattPriceUnlock}
-                    onConfirm={unlockKilowattPrice}
-                    onCancel={() => setConfirmingKilowattPriceUnlock(false)}
-                    title="تعديل سعر الكيلو لهذا المشترك؟"
-                    message={`سيصبح لهذا المشترك سعر كيلو خاص به بدل سعر التعرفة (${selectedTariff ? formatMoney(selectedTariff.rate) : ''} شيكل)، ويُحسب به استهلاكه وخصوماته في القراءات القادمة. هل تريد المتابعة؟`}
-                    confirmLabel="نعم، عدّل"
-                    icon="alert"
-                />
-            </div>
+            <FormField
+                id="tariff_rate"
+                label="سعر الكيلو"
+                error={errors.kilowatt_price}
+                lock={kilowattPriceLocked ? 'locked' : 'open'}
+                hint={kilowattPriceNote}
+                action={
+                    kilowattPriceUnlocked ? (
+                        <FieldAction icon="lock" onClick={lockKilowattPrice}>إلغاء التعديل</FieldAction>
+                    ) : canEditKilowattPrice && selectedTariff ? (
+                        <FieldAction icon="pencil" onClick={() => setConfirmingKilowattPriceUnlock(true)}>تعديل السعر</FieldAction>
+                    ) : null
+                }
+            >
+                <Affix unit="₪">
+                    <TextInput
+                        type={kilowattPriceLocked ? 'text' : 'number'}
+                        step="0.01"
+                        min={kilowattPriceLocked ? undefined : 0}
+                        required={!kilowattPriceLocked}
+                        readOnly={kilowattPriceLocked}
+                        title={kilowattPriceLocked ? 'للقراءة فقط' : undefined}
+                        value={
+                            kilowattPriceLocked
+                                ? hasOwnKilowattPrice
+                                    ? formatAmount(data.kilowatt_price)
+                                    : selectedTariff
+                                      ? formatAmount(selectedTariff.rate)
+                                      : '—'
+                                : data.kilowatt_price
+                        }
+                        onChange={(e) => setData('kilowatt_price', e.target.value)}
+                        className="block w-full"
+                    />
+                </Affix>
+            </FormField>
 
             <FormField id="circuit_breaker_id" label="القاطع" error={errors.circuit_breaker_id}>
                 <SearchableSelect
@@ -147,45 +128,27 @@ export default function SubscriptionTariffSection({
                 />
             </FormField>
 
-            <div className="grid min-w-0 content-start gap-2">
-                <div className="flex items-center justify-between gap-2">
-                    <InputLabel htmlFor="minimum_charge">
-                        الحد الأدنى
-                        <span className="text-red-500"> *</span>
-                    </InputLabel>
-                    {canEditMinimumCharge && !minimumChargeUnlocked && (
-                        <Button data-raw="" variant="ghost"
-                            onClick={() => setConfirmingMinimumChargeUnlock(true)}
-                            className="text-[13px] font-semibold text-brand-600 hover:underline"
-                        >
-                            تعديل يدوي
-                        </Button>
-                    )}
-                </div>
-                <div>
-                    <Affix unit="₪">
-                        <TextInput
-                            id="minimum_charge"
-                            type="number"
-                            step="0.01"
-                            disabled={minimumChargeLocked}
-                            className={`block w-full disabled:opacity-100 ${minimumChargeLocked ? 'bg-gray-50 text-gray-600' : ''}`}
-                            value={data.minimum_charge}
-                            onChange={(e) => setData('minimum_charge', e.target.value)}
-                        />
-                    </Affix>
-                </div>
-                <InputError message={errors.minimum_charge} />
-                <ConfirmDialog
-                    show={confirmingMinimumChargeUnlock}
-                    onConfirm={unlockMinimumCharge}
-                    onCancel={() => setConfirmingMinimumChargeUnlock(false)}
-                    title="تعديل الحد الأدنى يدويًا؟"
-                    message="أنت على وشك تعديل الحد الأدنى لهذا المشترك يدويًا بدل القيمة المأخوذة من القاطع. هل تريد المتابعة؟"
-                    confirmLabel="نعم، عدّل"
-                    icon="alert"
-                />
-            </div>
+            <FormField
+                id="minimum_charge"
+                label="الحد الأدنى"
+                required
+                error={errors.minimum_charge}
+                lock={minimumChargeLocked ? 'locked' : 'open'}
+                hint={minimumChargeLocked ? 'يُؤخذ من القاطع المختار.' : 'تعديل يدوي بدل قيمة القاطع.'}
+                action={canEditMinimumCharge && !minimumChargeUnlocked ? <FieldAction icon="pencil" onClick={() => setConfirmingMinimumChargeUnlock(true)}>تعديل يدوي</FieldAction> : null}
+            >
+                <Affix unit="₪">
+                    <TextInput
+                        type="number"
+                        step="0.01"
+                        disabled={minimumChargeLocked}
+                        className="block w-full"
+                        value={data.minimum_charge}
+                        onChange={(e) => setData('minimum_charge', e.target.value)}
+                    />
+                </Affix>
+            </FormField>
+
             {segments.length > 0 && (
                 <FormField id="tariff_segment_id" label="تصنيف الزبائن" error={errors.tariff_segment_id}>
                     <SearchableSelect
@@ -199,6 +162,25 @@ export default function SubscriptionTariffSection({
                     />
                 </FormField>
             )}
+
+            <ConfirmDialog
+                show={confirmingKilowattPriceUnlock}
+                onConfirm={unlockKilowattPrice}
+                onCancel={() => setConfirmingKilowattPriceUnlock(false)}
+                title="تعديل سعر الكيلو لهذا المشترك؟"
+                message={`سيصبح لهذا المشترك سعر كيلو خاص به بدل سعر التعرفة (${selectedTariff ? formatMoney(selectedTariff.rate) : ''} شيكل)، ويُحسب به استهلاكه وخصوماته في القراءات القادمة. هل تريد المتابعة؟`}
+                confirmLabel="نعم، عدّل"
+                icon="alert"
+            />
+            <ConfirmDialog
+                show={confirmingMinimumChargeUnlock}
+                onConfirm={unlockMinimumCharge}
+                onCancel={() => setConfirmingMinimumChargeUnlock(false)}
+                title="تعديل الحد الأدنى يدويًا؟"
+                message="أنت على وشك تعديل الحد الأدنى لهذا المشترك يدويًا بدل القيمة المأخوذة من القاطع. هل تريد المتابعة؟"
+                confirmLabel="نعم، عدّل"
+                icon="alert"
+            />
         </FormSection>
     );
 }

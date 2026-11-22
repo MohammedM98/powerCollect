@@ -1,7 +1,6 @@
 import { TextArea } from '@heroui/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useHttp } from '@inertiajs/react';
-import Affix from '@/Components/UI/Affix';
 import FormField from '@/Components/Form/FormField';
 import FormSection from '@/Components/Form/FormSection';
 import SettingRow from '@/Components/Form/SettingRow';
@@ -12,7 +11,7 @@ import SubscriptionLocationSection from './SubscriptionLocationSection';
 import SubscriberSection from './SubscriberSection';
 import { FormAsideCard } from '@/Components/Form/FormAside';
 import { SubscriptionCard, SubscriptionPreview } from './SubscriptionPreview';
-import { Switch, TextInput } from '@/Components/UI';
+import { Affix, Notice, Switch, TextInput } from '@/Components/UI';
 
 const STATUS_OPTIONS = [
     { value: 'active', label: 'نشط', dot: 'green' },
@@ -231,12 +230,12 @@ export default function SubscriptionForm({
             </FormAsideCard>
 
             {(sharedPersonalDetails || subscriptionCount > 1) && (
-                <div className="rounded-xl border border-brand-100 bg-brand-50 p-4 text-sm text-brand-800">
+                <Notice tone="brand">
                     {sharedPersonalDetails
                         ? 'سيُضاف اشتراك جديد بنفس الهوية. يمكنك إضافة وصف إلى الاسم وتغيير رقم الجوال لهذا الاشتراك.'
                         : 'الاسم ورقم الجوال قابلان للتعديل لهذا الاشتراك فقط. الهوية والعنوان مشتركان بين الاشتراكات.'}
                     <InputError message={errors.source_subscription_id} className="mt-1" />
-                </div>
+                </Notice>
             )}
 
             <div id="subscription-subscriber" className="scroll-mt-4">
@@ -309,12 +308,57 @@ export default function SubscriptionForm({
 
             <div id="subscription-fees" className="scroll-mt-4">
                 <FormSection icon="calendar" title="معلومات الاشتراك" description="القراءة والرسوم والتاريخ">
+                    {'charge_subscription_fee' in data && (
+                        <div className="sm:col-span-2 lg:col-span-3">
+                            <SettingRow
+                                title="تحميل رسوم اشتراك"
+                                description={
+                                    subscriptionFeeCharged
+                                        ? 'حُمّلت الرسوم على الحساب؛ يُعدَّل مبلغها من سجل المعاملات.'
+                                        : data.charge_subscription_fee
+                                          ? 'مفعّل: حقل الرسوم مفتوح، وتُضاف الرسوم إلى الرصيد وسجل المعاملات عند الحفظ.'
+                                          : 'متوقف: حقل الرسوم مغلق ولن تُضاف رسوم. يمكنك تحميلها لاحقًا من سجل المعاملات.'
+                                }
+                            >
+                                <Switch
+                                    checked={data.charge_subscription_fee}
+                                    onChange={(checked) => choose('charge_subscription_fee', checked)}
+                                    ariaLabel="تحميل رسوم اشتراك"
+                                />
+                            </SettingRow>
+                            <InputError message={errors.charge_subscription_fee} className="mt-1" />
+                        </div>
+                    )}
+
+                    <FormField
+                        id="subscription_fee"
+                        label="رسوم الاشتراك"
+                        required={data.charge_subscription_fee}
+                        error={errors.subscription_fee}
+                        lock={subscriptionFeeLocked ? 'locked' : 'charge_subscription_fee' in data ? 'open' : null}
+                        hint={subscriptionFeeCharged ? 'حُمّلت الرسوم على الحساب؛ عدّلها من سجل المعاملات.' : subscriptionFeeLocked ? 'فعّل «تحميل رسوم اشتراك» لفتح الحقل.' : undefined}
+                    >
+                        <Affix unit="₪">
+                            <TextInput
+                                type="number"
+                                step="0.01"
+                                disabled={subscriptionFeeLocked}
+                                className="block w-full"
+                                required={data.charge_subscription_fee}
+                                min={data.charge_subscription_fee ? '0.01' : '0'}
+                                value={data.subscription_fee}
+                                onChange={(e) => setData('subscription_fee', e.target.value)}
+                            />
+                        </Affix>
+                    </FormField>
+
                     <FormField
                         id="initial_reading"
                         label="القراءة السابقة"
                         required={readingRequired}
                         error={errors.initial_reading}
-                        hint={readingRequired ? 'منها يبدأ حساب الاستهلاك.' : 'تُدخل القراءة عند تفعيل المشترك، منها يبدأ حساب استهلاكه.'}
+                        lock={readingRequired ? null : 'locked'}
+                        hint={readingRequired ? 'منها يبدأ حساب الاستهلاك.' : 'يُفتح عند اختيار الحالة «نشط».'}
                     >
                         <Affix unit="ك.و.س">
                             <TextInput
@@ -323,25 +367,9 @@ export default function SubscriptionForm({
                                 disabled={!readingRequired}
                                 min={0}
                                 step="0.01"
-                                className={`block w-full disabled:opacity-100 ${readingRequired ? '' : 'bg-gray-50 text-gray-600'}`}
+                                className="block w-full"
                                 value={data.initial_reading}
                                 onChange={(event) => setData('initial_reading', event.target.value)}
-                            />
-                        </Affix>
-                    </FormField>
-
-                    <FormField id="subscription_fee" label="رسوم الاشتراك" required={data.charge_subscription_fee} error={errors.subscription_fee}>
-                        <Affix unit="₪">
-                            <TextInput
-                                type="number"
-                                step="0.01"
-                                disabled={subscriptionFeeLocked}
-                                title={subscriptionFeeCharged ? 'حُمّلت الرسوم على الحساب؛ عدّلها من سجل المعاملات.' : subscriptionFeeLocked ? 'فعّل تحميل رسوم اشتراك لإدخال المبلغ' : undefined}
-                                className={`block w-full disabled:opacity-100 ${subscriptionFeeLocked ? 'bg-gray-50 text-gray-600' : ''}`}
-                                required={data.charge_subscription_fee}
-                                min={data.charge_subscription_fee ? '0.01' : '0'}
-                                value={data.subscription_fee}
-                                onChange={(e) => setData('subscription_fee', e.target.value)}
                             />
                         </Affix>
                     </FormField>
@@ -355,26 +383,6 @@ export default function SubscriptionForm({
                             onChange={(value) => setData('subscription_date', value)}
                         />
                     </FormField>
-
-                    {'charge_subscription_fee' in data && (
-                        <div className="sm:col-span-2 lg:col-span-3">
-                            <SettingRow
-                                title="تحميل رسوم اشتراك"
-                                description={
-                                    data.charge_subscription_fee
-                                        ? 'تُضاف رسوم الاشتراك إلى الرصيد وسجل المعاملات عند حفظ المشترك.'
-                                        : 'لن تُضاف الرسوم إلى الرصيد أو سجل المعاملات. يمكنك تحميلها لاحقًا من سجل المعاملات.'
-                                }
-                            >
-                                <Switch
-                                    checked={data.charge_subscription_fee}
-                                    onChange={(checked) => choose('charge_subscription_fee', checked)}
-                                    ariaLabel="تحميل رسوم اشتراك"
-                                />
-                            </SettingRow>
-                            <InputError message={errors.charge_subscription_fee} className="mt-1" />
-                        </div>
-                    )}
                 </FormSection>
             </div>
 

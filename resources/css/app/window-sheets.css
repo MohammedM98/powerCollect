@@ -56,43 +56,7 @@
     color: var(--ma-ink);
 }
 
-/* Fields: grey tiles, white with the company's ring while typed in. */
-.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)) :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color']), textarea, select),
-.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)) button.rounded-control.border {
-    min-height: 48px;
-    border: 0 !important;
-    border-radius: 14px;
-    background-color: var(--ma-tile) !important;
-    box-shadow: inset 0 0 0 1px transparent, inset 0 1px 2px rgb(16 20 26 / 0.04) !important;
-    color: var(--ma-ink);
-    font-size: 16px;
-    transition: box-shadow 0.15s, background-color 0.15s;
-}
-
-.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)) textarea {
-    min-height: 76px;
-}
-
-.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)) :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color']), textarea, select):hover:not(:disabled, [readonly]),
-.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)) button.rounded-control.border:hover:not(:disabled) {
-    box-shadow: inset 0 0 0 1px var(--ma-line) !important;
-}
-
-.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)) :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color']), textarea, select):focus,
-.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)) button.rounded-control.border:is(:focus-visible, [aria-expanded='true']) {
-    background-color: var(--ma-solid) !important;
-    box-shadow: inset 0 0 0 1.5px var(--ma-brand), 0 0 0 4px color-mix(in oklab, var(--ma-brand) 14%, transparent) !important;
-    outline: none;
-}
-
-.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)) :is(input, textarea, select):is(:disabled, [readonly]) {
-    color: var(--ma-muted);
-    background-color: color-mix(in oklab, var(--ma-tile) 70%, transparent) !important;
-}
-
-.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)) :is(input[aria-invalid='true'], textarea[aria-invalid='true'], select[aria-invalid='true']) {
-    box-shadow: inset 0 0 0 1.5px var(--ma-owe) !important;
-}
+/* Fields (open, locked, focused) are drawn in ma-forms.css, for windows and form pages alike. */
 
 /* The window's footer: a hairline, then cancel and the dark save key. */
 .modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)) :is(.gl-dialog-foot, .gl-fm-foot) {
