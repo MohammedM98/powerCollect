@@ -1,4 +1,4 @@
-import { Button, TextArea } from '@heroui/react';
+import { Button } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -10,13 +10,12 @@ import DialogFrame from '@/Components/UI/DialogFrame';
 import FormField from '@/Components/Form/FormField';
 import ChoiceChips from '@/Components/UI/ChoiceChips';
 import InputError from '@/Components/UI/InputError';
-import Icon from '@/Components/UI/Icon';
 import Balance from '@/Components/Finance/Balance';
 import { useDataTable } from '@/hooks/useDataTable';
 import ResultReport from './ResultReport';
 import PageHeader from '@/Components/PageHeader';
 import DateInput from '@/Components/UI/DateInput';
-import { CheckBox, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, Notice, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
+import { CheckBox, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, Notice, PrimaryKey, SecondaryKey, SelectionBar, SelectionBarKey, StatusPill, TextArea } from '@/Components/UI';
 
 /** The reason, note and date for the chosen subscribers, after saying how many. */
 function AddModal({ list, selection, count, reasonOptions, today, onClose, onDone }) {
@@ -52,7 +51,7 @@ function AddModal({ list, selection, count, reasonOptions, today, onClose, onDon
         >
             <form id="add-form" onSubmit={submit} className="space-y-4">
                 <div>
-                    <ChoiceChips options={reasonOptions} value={reason} onChange={setReason} label="سبب القطع" required name="reason" />
+                    <ChoiceChips options={reasonOptions} value={reason} onChange={setReason} label="سبب القطع" showLabel required name="reason" />
                     <InputError message={errors.reason} className="mt-1" />
                 </div>
                 <FormField id="add-note" label={`ملاحظة ${reason === 'other' ? '(يُفضّل توضيح السبب)' : '(اختياري)'}`} error={errors.note}>
@@ -190,23 +189,9 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
             <Pagination meta={subscriptions} filters={filters} baseUrl={`/disconnection-lists/${list.id}/candidates`} />
 
             {selectionCount > 0 && !list.isClosed && (
-                <>
-                    <div className="h-24" aria-hidden="true" />
-                    <div role="region" aria-label="إضافة المحددين" className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[calc(100%-2rem)] max-w-2xl flex-wrap items-center justify-between gap-2 rounded-2xl bg-brand-gradient px-4 py-3 text-white shadow-lift">
-                        <span className="text-sm" aria-live="polite">
-                            <b className="font-display">{selectionCount.toLocaleString('en')}</b> {allMatching ? 'مشترك (كل النتائج المطابقة)' : 'مشترك محدد'}
-                        </span>
-                        <div className="flex items-center gap-2">
-                            <Button data-raw="" variant="ghost" onClick={() => setAdding(true)} className="inline-flex items-center gap-2 rounded-control bg-white px-4 py-2 text-sm font-bold text-gray-900">
-                                <Icon name="plus" className="h-4 w-4" />
-                                إضافة إلى القائمة
-                            </Button>
-                            <Button data-raw="" variant="ghost" onClick={() => { setSelectedIds(new Set()); setAllMatching(false); }} aria-label="إلغاء التحديد" className="flex h-9 w-9 items-center justify-center rounded-control text-white/80 hover:bg-white/10">
-                                <Icon name="close" className="h-5 w-5" />
-                            </Button>
-                        </div>
-                    </div>
-                </>
+                <SelectionBar label="إضافة المحددين" count={selectionCount} caption={allMatching ? 'مشترك (كل النتائج المطابقة)' : 'مشترك محدد'} onClear={() => { setSelectedIds(new Set()); setAllMatching(false); }} narrow>
+                    <SelectionBarKey icon="plus" label="إضافة إلى القائمة" tone="primary" onClick={() => setAdding(true)} />
+                </SelectionBar>
             )}
 
             {adding && (

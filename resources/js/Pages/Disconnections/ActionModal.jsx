@@ -1,4 +1,3 @@
-import { TextArea } from '@heroui/react';
 import { useEffect, useEffectEvent, useId, useMemo, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import DialogFrame from '@/Components/UI/DialogFrame';
@@ -12,7 +11,7 @@ import { formatMoney, formatDate } from '@/lib/format';
 import { feeError, fillPlaceholders, itemTone, operationId, smsParts, totalFees } from '@/lib/disconnections';
 import HoldToConfirm from './HoldToConfirm';
 import DateInput from '@/Components/UI/DateInput';
-import { Affix, CheckBox, DangerKey, FieldAction, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, Notice, PrimaryKey, SecondaryKey, StatusPill, TextInput } from '@/Components/UI';
+import { Affix, CheckBox, DangerKey, FieldAction, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, Notice, PrimaryKey, SecondaryKey, StatusPill, TextArea, TextInput } from '@/Components/UI';
 
 const ACTIONS = {
     reschedule: { title: 'تغيير موعد القطع', icon: 'calendar', tone: 'blue', url: 'reschedule' },

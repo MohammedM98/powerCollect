@@ -17,6 +17,7 @@ export { ViewKey, EditKey, DeleteKey, PrintKey, ExcelKey, MenuKey, RowActionKey 
 
 // Fields and choices
 export { default as TextInput } from '@/Components/UI/TextInput';
+export { default as TextArea } from './TextArea';
 export { default as CheckBox } from '@/Components/UI/CheckBox';
 export { default as ChoiceSelect } from '@/Components/UI/ChoiceSelect';
 export { default as SearchableSelect } from '@/Components/UI/SearchableSelect';
@@ -33,6 +34,7 @@ export { default as ListTable, ListHeader, ListColumn, ListBody, ListRow, ListCe
 // Display
 export { default as Figure } from './Figure';
 export { default as Notice } from './Notice';
+export { default as SelectionBar, SelectionBarKey } from './SelectionBar';
 export { default as StatusPill } from '@/Components/DataTable/StatusPill';
 
 // Windows

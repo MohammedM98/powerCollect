@@ -550,3 +550,113 @@
     outline: 2px solid var(--ma-brand);
     outline-offset: 2px;
 }
+
+/* ── The selection bar (UI/SelectionBar.jsx): floats at the foot of a table while rows are chosen. ── */
+.ma-selection-room {
+    height: 96px;
+}
+
+.ma-selection {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 16px;
+    z-index: 40;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    width: calc(100% - 2rem);
+    max-width: 56rem;
+    margin-inline: auto;
+    padding: 12px 16px;
+    border-radius: 22px;
+    background: var(--ma-pop, var(--ma-solid));
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    backdrop-filter: blur(24px) saturate(1.6);
+    box-shadow: var(--ma-float);
+    color: var(--ma-ink);
+}
+
+.ma-selection[data-narrow] {
+    max-width: 42rem;
+}
+
+.ma-selection-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ma-selection-count bdi {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding-inline: 8px;
+    border-radius: 999px;
+    background: var(--ma-act);
+    color: #fff;
+    font-family: var(--font-display, inherit);
+    font-weight: 700;
+}
+
+.ma-selection-keys {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    min-width: 0;
+}
+
+.ma-selection-keys :is(.ui-btn-secondary, .ui-btn-danger, .ui-btn-primary) {
+    min-height: 40px;
+    height: 40px;
+    padding-inline: 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.ma-selection-keys .ui-btn-secondary:not(.tone-print) {
+    border: 0;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl), 0 0 0 1px var(--ma-line);
+    color: var(--ma-ink);
+}
+
+.ma-selection-keys .ui-btn-secondary:not(.tone-print):hover:not(:disabled) {
+    background: color-mix(in oklab, var(--ma-tile) 82%, var(--ma-ink) 7%);
+}
+
+.ma-selection-keys :is(.ui-btn-secondary, .ui-btn-danger, .ui-btn-primary):disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+@media (max-width: 640px) {
+    .ma-selection-room {
+        height: 208px;
+    }
+
+    .ma-selection {
+        bottom: 8px;
+        width: calc(100% - 1rem);
+    }
+
+    /* The count and the clear key share the first row; the keys take the rows under them. */
+    .ma-selection-count {
+        flex: 1;
+    }
+
+    .ma-selection-keys {
+        order: 3;
+        flex-basis: 100%;
+        justify-content: flex-start;
+    }
+}

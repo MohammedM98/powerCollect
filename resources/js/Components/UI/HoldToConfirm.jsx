@@ -1,6 +1,7 @@
 import { Button as HeroButton } from '@heroui/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import Icon from '@/Components/UI/Icon';
+import DangerButton from '@/Components/UI/DangerButton';
 import PrimaryButton from '@/Components/UI/PrimaryButton';
 import TextInput from '@/Components/UI/TextInput';
 import { holdProgress, typedCountMatches } from '@/lib/holdConfirmation';
@@ -25,6 +26,7 @@ export default function HoldToConfirm({ count, disabled, busy, onConfirm, label,
     const blocked = useRef(false);
     blocked.current = disabled || busy;
     const Button = tone === 'primary' ? PrimaryButton : 'button';
+    const ConfirmKey = tone === 'primary' ? PrimaryButton : DangerButton;
 
     useEffect(() => () => cancelAnimationFrame(frame.current), []);
 
@@ -131,9 +133,9 @@ export default function HoldToConfirm({ count, disabled, busy, onConfirm, label,
                 onKeyUp={onKeyUp}
                 onBlur={reset}
                 onContextMenu={(event) => event.preventDefault()}
-                className={`relative flex w-full touch-none select-none items-center justify-center gap-2 overflow-hidden ${tone === 'primary' ? 'py-3 text-base!' : 'rounded-control bg-red-700 px-4 py-3 text-base font-bold text-white shadow-card transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700'}`}
+                className={`relative flex w-full touch-none select-none items-center justify-center gap-2 overflow-hidden ${tone === 'primary' ? 'py-3 text-base!' : 'rounded-[14px] bg-(--ma-owe) px-4 py-3 text-base font-bold text-(--ma-solid) shadow-(--ma-depth) transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ma-owe) disabled:cursor-not-allowed disabled:bg-(--ma-tile) disabled:text-(--ma-muted) disabled:shadow-none'}`}
             >
-                <span aria-hidden="true" className="absolute inset-y-0 inset-s-0 bg-red-950/45" style={{ width: `${progress}%` }} />
+                <span aria-hidden="true" className="absolute inset-y-0 inset-s-0 bg-[color-mix(in_oklab,var(--ma-ink)_30%,transparent)]" style={{ width: `${progress}%` }} />
                 <span className="relative flex items-center gap-2">
                     <Icon name={icon} className="h-5 w-5" />
                     {busy ? 'جارٍ التنفيذ…' : progress > 0 ? `استمر بالضغط… ${progress}%` : label}
@@ -145,21 +147,21 @@ export default function HoldToConfirm({ count, disabled, busy, onConfirm, label,
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-valuenow={progress}
-                className="h-2 overflow-hidden rounded-full bg-gray-100"
+                className="h-2 overflow-hidden rounded-full bg-(--ma-tile)"
             >
-                <div className={`h-full rounded-full transition-[width] duration-75 ${tone === 'primary' ? 'bg-brand-600' : 'bg-red-600'}`} style={{ width: `${progress}%` }} />
+                <div className={`h-full rounded-full transition-[width] duration-75 ${tone === 'primary' ? 'bg-(--ma-brand)' : 'bg-(--ma-owe)'}`} style={{ width: `${progress}%` }} />
             </div>
-            <p id={`${id}-hint`} className="text-sm leading-7 text-gray-600">
+            <p id={`${id}-hint`} className="text-sm leading-7 text-(--ma-muted)">
                 استمر ٣ ثوانٍ بالضغط أو بمفتاح Space / Enter. ترك الزر يوقف التأكيد.
             </p>
 
             {!typing ? (
-                <HeroButton variant="ghost" onClick={() => setTyping(true)} isDisabled={disabled || busy} className="min-h-11 text-sm font-semibold text-gray-700 underline-offset-2 hover:underline disabled:opacity-50">
+                <HeroButton variant="ghost" onClick={() => setTyping(true)} isDisabled={disabled || busy} className="min-h-11 text-sm font-semibold text-(--ma-ink) underline-offset-2 hover:underline disabled:opacity-50">
                     أو أكّد بكتابة عدد {noun}
                 </HeroButton>
             ) : (
-                <div className="rounded-control border border-gray-200 bg-gray-50 p-3">
-                    <label htmlFor={`${id}-count`} className="mb-2 block text-base font-semibold text-gray-700">
+                <div className="rounded-control border border-(--ma-line) bg-(--ma-tile) p-3">
+                    <label htmlFor={`${id}-count`} className="mb-2 block text-base font-semibold text-(--ma-ink)">
                         اكتب عدد {noun} (<b>{count.toLocaleString('en')}</b>) للتأكيد
                     </label>
                     <div className="flex gap-2">
@@ -173,14 +175,9 @@ export default function HoldToConfirm({ count, disabled, busy, onConfirm, label,
                             disabled={disabled || busy}
                             className="block w-28 text-sm"
                         />
-                        <Button
-                            type="button"
-                            disabled={disabled || busy || !typedMatches || done.current}
-                            onClick={finish}
-                            className={tone === 'primary' ? '' : 'rounded-control bg-red-700 px-4 py-2 text-sm font-bold text-white disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500'}
-                        >
+                        <ConfirmKey type="button" disabled={disabled || busy || !typedMatches || done.current} onClick={finish}>
                             {confirmLabel}
-                        </Button>
+                        </ConfirmKey>
                     </div>
                 </div>
             )}

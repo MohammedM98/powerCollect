@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useId, useRef } from 'react';
 import { ToggleButton, ToggleButtonGroup } from '@heroui/react';
 import Icon from '@/Components/UI/Icon';
 
@@ -17,18 +17,31 @@ const DOT_COLORS = {
  * cannot be picked (with `title` saying why). The arrow keys move the
  * choice, as HeroUI's group does.
  *
+ * `label` names the group for assistive tech; `showLabel` also writes it
+ * above the chips, as a field's label (with the star when required).
+ *
  * `required` adds a hidden radio named `name`, so the form's own check
  * (validateFormFields) reports a missing choice under the field.
  */
-export default function ChoiceChips({ id, name, value, onChange, options, label, required = false, disabled = false }) {
+export default function ChoiceChips({ id, name, value, onChange, options, label, showLabel = false, required = false, disabled = false }) {
     const groupRef = useRef(null);
+    const labelId = useId();
     const selectedIndex = options.findIndex((option) => String(option.value) === String(value));
 
     return (
         <div ref={groupRef} className="contents">
+            {showLabel && label && (
+                <div className="ma-field-head mb-2">
+                    <span id={labelId} className="gl-label block">
+                        {label}
+                        {required && <span className="ma-field-req"> *</span>}
+                    </span>
+                </div>
+            )}
             <ToggleButtonGroup
                 id={id}
-                aria-label={label}
+                aria-label={showLabel ? undefined : label}
+                aria-labelledby={showLabel && label ? labelId : undefined}
                 aria-required={required || undefined}
                 selectionMode="single"
                 disallowEmptySelection

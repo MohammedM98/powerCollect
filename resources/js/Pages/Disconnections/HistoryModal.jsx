@@ -44,6 +44,8 @@ export default function HistoryModal({ history, loading, reasonOptions, onClose 
         >
             {loading || !history ? (
                 <p className="py-8 text-center text-sm text-(--ma-muted)">جارٍ التحميل…</p>
+            ) : history.events.length === 0 ? (
+                <p className="py-8 text-center text-sm text-(--ma-muted)">لا توجد أحداث مسجّلة لهذا المشترك في القائمة.</p>
             ) : (
                 <ol className="relative space-y-6 border-s border-(--ma-line) ps-6">
                     {history.events.map((event) => (
