@@ -112,6 +112,18 @@
         background-position: left 14px top 14px, 0 0;
     }
 
+    /* A locked list shows the lock where its arrow was. */
+    & :is(button.rounded-control.border, .gl-choice-trigger):is(:disabled, [aria-disabled='true'], [data-disabled]) {
+        background-image: var(--ma-lock), var(--ma-hatch);
+        background-repeat: no-repeat, repeat;
+        background-size: 17px 17px, auto;
+        background-position: left 16px center, 0 0;
+    }
+
+    & :is(button.rounded-control.border, .gl-choice-trigger):is(:disabled, [aria-disabled='true'], [data-disabled]) svg {
+        visibility: hidden;
+    }
+
     /* ── A field's unit (Affix): a small white key at its end; with a lock on a locked field. ── */
     & .ma-affix-unit {
         inset-block: 6px;
@@ -281,9 +293,12 @@
     color: var(--nt);
 }
 
-.ma-notice b {
-    display: block;
+.ma-notice :is(b, strong) {
     font-weight: 700;
+}
+
+.ma-notice-title {
+    display: block;
 }
 
 .ma-notice[data-tone='info'] { --nt: var(--ma-clr); --nt-s: var(--ma-clr-s); }

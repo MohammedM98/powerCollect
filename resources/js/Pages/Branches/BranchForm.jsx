@@ -61,14 +61,14 @@ export default function BranchForm({ data, setData, errors, governorates, areas 
                     emptyMessage="لا توجد مناطق في هذه المحافظة بعد"
                     error={errors.area_id}
                 />
-            </FormSection>
 
-            <div>
-                <SettingRow title="فرع نشط" description="الفرع المتوقف لا يظهر بين الفروع ولا تُسجّل عليه دفعات.">
-                    <Switch checked={data.is_active} onChange={(checked) => setData('is_active', checked)} ariaLabel="فرع نشط" />
-                </SettingRow>
-                <InputError message={errors.is_active} className="mt-1" />
-            </div>
+                <div className="sm:col-span-2">
+                    <SettingRow title="فرع نشط" description="الفرع المتوقف لا يظهر بين الفروع ولا تُسجّل عليه دفعات.">
+                        <Switch checked={data.is_active} onChange={(checked) => setData('is_active', checked)} ariaLabel="فرع نشط" />
+                    </SettingRow>
+                    <InputError message={errors.is_active} className="mt-1" />
+                </div>
+            </FormSection>
         </div>
     );
 }

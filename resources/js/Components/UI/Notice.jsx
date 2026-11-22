@@ -13,7 +13,7 @@ export default function Notice({ tone = 'neutral', title = null, icon, role, cla
         <div className={`ma-notice ${className}`} data-tone={tone} role={role}>
             <Icon name={icon ?? ICONS[tone] ?? 'info'} />
             <div className="min-w-0 flex-1">
-                {title && <b>{title}</b>}
+                {title && <b className="ma-notice-title">{title}</b>}
                 {children}
             </div>
         </div>
