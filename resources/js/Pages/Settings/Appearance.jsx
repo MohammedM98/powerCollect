@@ -113,7 +113,7 @@ export default function Appearance({ profile, isImported, options, presets, them
             info="شعار الشركة واسمها وألوانها وشكل الواجهة كلها. كل تغيير يظهر مباشرة على الصفحة لتجربته، ولا يُعتمد إلا بعد الحفظ. هوية مطوّر البرنامج في الفوتر ثابتة ولا تتغير من هنا."
             meta={isImported ? 'هوية خاصة بهذه الشركة' : 'الهوية الافتراضية'}
             actions={<div className="flex flex-wrap gap-2">
-                <a href="/settings/appearance/export" className="inline-flex items-center gap-2 rounded-control border border-gray-200 bg-surface px-3 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-50"><Icon name="arrow-down-tray" className="h-4 w-4" />تنزيل ملف الهوية</a>
+                <a href="/settings/appearance/export" className="inline-flex items-center gap-2 rounded-control border border-(--ma-line) bg-(--ma-solid) px-3 py-2 text-sm font-semibold text-(--ma-ink) hover:bg-(--ma-tile)"><Icon name="arrow-down-tray" className="h-4 w-4" />تنزيل ملف الهوية</a>
                 <input ref={importInput} type="file" accept="application/json,.json" className="sr-only" aria-label="ملف هوية" onChange={(event) => importFile(event.target.files?.[0])} />
                 <SecondaryKey onClick={() => importInput.current?.click()}><Icon name="arrow-up" className="h-4 w-4" />رفع ملف هوية</SecondaryKey>
                 {isImported && <DangerKey type="button" onClick={() => setConfirmReset(true)}>الرجوع للأصل</DangerKey>}
@@ -164,8 +164,8 @@ export default function Appearance({ profile, isImported, options, presets, them
 
                     <FormSection icon="swatch" title="الألوان" columns={2} info="من اللون الرئيسي تتولد كل درجات الواجهة في الوضعين الفاتح والغامق. ألوان الأخطاء تبقى حمراء.">
                         <div className="col-span-full flex flex-wrap gap-3" role="group" aria-label="لوحات ألوان الشركة">
-                            {BRAND_PALETTES.map((palette) => <Button data-raw="" variant="ghost" key={palette.id} className="rounded-xl border border-gray-200 bg-surface px-4 py-3 text-start text-sm font-semibold text-gray-800 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2" onClick={() => form.setData('colors', { ...data.colors, ...palette.colors })}>
-                                <span className="mb-2 flex gap-1" aria-hidden="true">{Object.values(palette.colors).filter(Boolean).map((color, index) => <span key={index} className="h-5 w-5 rounded-full border border-gray-200" style={{ backgroundColor: color }} />)}</span>
+                            {BRAND_PALETTES.map((palette) => <Button data-raw="" variant="ghost" key={palette.id} className="rounded-xl border border-(--ma-line) bg-(--ma-solid) px-4 py-3 text-start text-sm font-semibold text-(--ma-ink) focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2" onClick={() => form.setData('colors', { ...data.colors, ...palette.colors })}>
+                                <span className="mb-2 flex gap-1" aria-hidden="true">{Object.values(palette.colors).filter(Boolean).map((color, index) => <span key={index} className="h-5 w-5 rounded-full border border-(--ma-line)" style={{ backgroundColor: color }} />)}</span>
                                 {palette.name}
                             </Button>)}
                         </div>
@@ -179,7 +179,7 @@ export default function Appearance({ profile, isImported, options, presets, them
                     <FormSection icon="columns" title="التخطيط والمكوّنات" columns={1} info="الجدول تحت الخيارات يتغير مع اختيارك، وكذلك الأزرار والقائمة والصفحة كلها.">
                         {Object.entries(options).map(([key, choice]) => (
                             <div key={key} className="grid gap-2 sm:grid-cols-[150px_minmax(0,1fr)] sm:items-center">
-                                <span id={`design-${key}`} className="text-sm font-semibold text-gray-800">{choice.label}</span>
+                                <span id={`design-${key}`} className="text-sm font-semibold text-(--ma-ink)">{choice.label}</span>
                                 <ChoiceChips id={`design-${key}-choices`} label={choice.label} value={data.design[key]} onChange={(value) => setDesign(key, value)}
                                     options={Object.entries(choice.options).map(([value, label]) => ({ value, label }))} />
                             </div>
@@ -189,12 +189,12 @@ export default function Appearance({ profile, isImported, options, presets, them
                 </div>
 
                 <aside className="grid gap-4 2xl:sticky 2xl:top-24">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-gray-600"><Icon name="eye" className="h-4 w-4" />معاينة مباشرة</div>
+                    <div className="flex items-center gap-2 text-sm font-semibold text-(--ma-muted)"><Icon name="eye" className="h-4 w-4" />معاينة مباشرة</div>
                     <Sample brand={tried} />
                 </aside>
 
                 <div className="ap-savebar 2xl:col-span-2">
-                    <span className="text-sm text-gray-600">{form.isDirty ? 'تغييرات لم تُحفظ بعد: تراها الآن على الواجهة كلها.' : 'لا تغييرات غير محفوظة.'}</span>
+                    <span className="text-sm text-(--ma-muted)">{form.isDirty ? 'تغييرات لم تُحفظ بعد: تراها الآن على الواجهة كلها.' : 'لا تغييرات غير محفوظة.'}</span>
                     <div className="flex gap-2">
                         {form.isDirty && <SecondaryKey onClick={() => form.reset()}>تجاهل التغييرات</SecondaryKey>}
                         <PrimaryKey disabled={form.processing || !form.isDirty}><Icon name="check" className="h-4 w-4" />حفظ الهوية والمظهر</PrimaryKey>

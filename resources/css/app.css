@@ -82,6 +82,7 @@
 @import './app/row-menus.css'; /* Row actions and row menus */
 @import './app/window-sheets.css'; /* Window sheets */
 @import './app/statement.css'; /* The account statement, option A */
+@import './app/ma-forms.css'; /* The MA design: forms, open and locked fields, notes */
 
 @plugin '@tailwindcss/forms';
 

@@ -1,23 +1,10 @@
 import { useState } from 'react';
 import { useForm, useHttp } from '@inertiajs/react';
 import FormModal from '@/Components/Form/FormModal';
-import InputError from '@/Components/UI/InputError';
-import InputLabel from '@/Components/UI/InputLabel';
+import FormField from '@/Components/Form/FormField';
+import FormSection from '@/Components/Form/FormSection';
 import { plainDigits } from '@/lib/formValidation';
-import { TextInput } from '@/Components/UI';
-
-function Field({ id, label, required, error, children }) {
-    return (
-        <div>
-            <InputLabel htmlFor={id}>
-                {label}
-                {required && <span className="text-red-500"> *</span>}
-            </InputLabel>
-            <div className="mt-1">{children}</div>
-            <InputError message={error} className="mt-1" />
-        </div>
-    );
-}
+import { Notice, TextInput } from '@/Components/UI';
 
 /** An empty value of a field, as it reads in the history. */
 const EMPTY = '—';
@@ -41,20 +28,20 @@ function ChangeHistory({ subscriptionId }) {
     const changes = http.response?.data;
 
     return (
-        <details onToggle={load} className="rounded-control border border-gray-100 bg-surface px-3 py-2 text-sm">
-            <summary className="cursor-pointer font-semibold text-gray-700">سجل تعديل البيانات</summary>
+        <details onToggle={load} className="rounded-[14px] bg-(--ma-tile) px-4 py-3 text-sm">
+            <summary className="cursor-pointer font-semibold text-(--ma-ink)">سجل تعديل البيانات</summary>
             <div className="mt-2" aria-busy={http.processing}>
                 {failed ? (
-                    <p role="alert" className="text-red-600">تعذّر تحميل السجل، أغلقه وافتحه مرة أخرى.</p>
+                    <p role="alert" className="text-(--ma-owe)">تعذّر تحميل السجل، أغلقه وافتحه مرة أخرى.</p>
                 ) : changes === undefined ? (
-                    <p className="text-gray-500">جارٍ التحميل...</p>
+                    <p className="text-(--ma-muted)">جارٍ التحميل...</p>
                 ) : changes.length === 0 ? (
-                    <p className="text-gray-500">لم تُعدَّل هذه البيانات منذ تسجيلها.</p>
+                    <p className="text-(--ma-muted)">لم تُعدَّل هذه البيانات منذ تسجيلها.</p>
                 ) : (
                     <ol className="max-h-64 space-y-3 overflow-y-auto">
                         {changes.map((change) => (
-                            <li key={change.id} className="border-b border-gray-100 pb-2 last:border-0">
-                                <p className="text-xs text-gray-500">
+                            <li key={change.id} className="border-b border-(--ma-line) pb-2 last:border-0">
+                                <p className="text-xs text-(--ma-muted)">
                                     <span dir="ltr" className="font-display">{change.at}</span>
                                     {'، '}
                                     {change.userName ?? 'النظام'}
@@ -63,11 +50,11 @@ function ChangeHistory({ subscriptionId }) {
                                 <ul className="mt-1 space-y-1">
                                     {change.changes.map((field) => (
                                         <li key={field.field}>
-                                            <span className="text-gray-500">{field.label}: </span>
+                                            <span className="text-(--ma-muted)">{field.label}: </span>
                                             {/* Isolated, so names in another script do not turn the from → to order around. */}
-                                            <bdi className="text-gray-500 line-through">{field.from || EMPTY}</bdi>
+                                            <bdi className="text-(--ma-muted) line-through">{field.from || EMPTY}</bdi>
                                             {' ← '}
-                                            <bdi className="font-bold text-gray-900">{field.to || EMPTY}</bdi>
+                                            <bdi className="font-bold text-(--ma-ink)">{field.to || EMPTY}</bdi>
                                         </li>
                                     ))}
                                 </ul>
@@ -97,73 +84,67 @@ export default function PersonalDetailsModal({ subscription, onClose }) {
 
     return (
         <FormModal show onClose={onClose} form={{ ...form, isEdit: true, save }} title="تعديل البيانات الشخصية" icon="pencil" maxWidth="lg">
-            <div className="space-y-4">
-                {subscriptions > 1 && (
-                    <p className="rounded-control bg-blue-500/10 px-3 py-2 text-sm text-gray-700">
-                        هذه البيانات مشتركة بين اشتراكات هذا الشخص ({subscriptions})، وتتغير فيها كلها.
-                    </p>
-                )}
+            {subscriptions > 1 && (
+                <Notice tone="info">
+                    هذه البيانات مشتركة بين اشتراكات هذا الشخص (<bdi dir="ltr">{subscriptions}</bdi>)، وتتغير فيها كلها.
+                </Notice>
+            )}
 
-                <Field id="personal_full_name" label="الاسم الكامل" required error={form.errors.full_name}>
+            <FormSection icon="user" title="البيانات الشخصية" description="الاسم والهوية والجوال والعنوان" columns={2}>
+                <FormField id="personal_full_name" label="الاسم الكامل" required error={form.errors.full_name} span="sm:col-span-2">
                     <TextInput
-                        id="personal_full_name"
                         name="full_name"
                         required
-                        className="w-full"
+                        className="block w-full"
                         value={form.data.full_name}
                         onChange={(event) => form.setData('full_name', event.target.value)}
                     />
-                </Field>
+                </FormField>
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                    <Field id="personal_national_id" label="رقم الهوية" error={form.errors.national_id}>
-                        <TextInput
-                            id="personal_national_id"
-                            name="national_id"
-                            dir="ltr"
-                            inputMode="numeric"
-                            maxLength={9}
-                            pattern="[0-9]{9}"
-                            data-feedback
-                            title="رقم الهوية يجب أن يتكون من 9 أرقام"
-                            placeholder="9 أرقام"
-                            className="w-full"
-                            value={form.data.national_id}
-                            onChange={(event) => form.setData('national_id', plainDigits(event.target.value))}
-                        />
-                    </Field>
-
-                    <Field id="personal_phone" label="رقم الجوال" error={form.errors.phone}>
-                        <TextInput
-                            id="personal_phone"
-                            name="phone"
-                            type="tel"
-                            dir="ltr"
-                            inputMode="numeric"
-                            maxLength={10}
-                            pattern="05[69][0-9]{7}"
-                            data-feedback
-                            title="رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 059 أو 056"
-                            placeholder="059XXXXXXX"
-                            className="w-full"
-                            value={form.data.phone}
-                            onChange={(event) => form.setData('phone', plainDigits(event.target.value))}
-                        />
-                    </Field>
-                </div>
-
-                <Field id="personal_address" label="العنوان" error={form.errors.address}>
+                <FormField id="personal_national_id" label="رقم الهوية" error={form.errors.national_id}>
                     <TextInput
-                        id="personal_address"
+                        name="national_id"
+                        dir="ltr"
+                        inputMode="numeric"
+                        maxLength={9}
+                        pattern="[0-9]{9}"
+                        data-feedback
+                        title="رقم الهوية يجب أن يتكون من 9 أرقام"
+                        placeholder="9 أرقام"
+                        className="block w-full"
+                        value={form.data.national_id}
+                        onChange={(event) => form.setData('national_id', plainDigits(event.target.value))}
+                    />
+                </FormField>
+
+                <FormField id="personal_phone" label="رقم الجوال" error={form.errors.phone}>
+                    <TextInput
+                        name="phone"
+                        type="tel"
+                        dir="ltr"
+                        inputMode="numeric"
+                        maxLength={10}
+                        pattern="05[69][0-9]{7}"
+                        data-feedback
+                        title="رقم الجوال يجب أن يتكون من 10 أرقام ويبدأ بـ 059 أو 056"
+                        placeholder="059XXXXXXX"
+                        className="block w-full"
+                        value={form.data.phone}
+                        onChange={(event) => form.setData('phone', plainDigits(event.target.value))}
+                    />
+                </FormField>
+
+                <FormField id="personal_address" label="العنوان" error={form.errors.address} span="sm:col-span-2">
+                    <TextInput
                         name="address"
-                        className="w-full"
+                        className="block w-full"
                         value={form.data.address}
                         onChange={(event) => form.setData('address', event.target.value)}
                     />
-                </Field>
+                </FormField>
+            </FormSection>
 
-                <ChangeHistory subscriptionId={subscription.id} />
-            </div>
+            <ChangeHistory subscriptionId={subscription.id} />
         </FormModal>
     );
 }

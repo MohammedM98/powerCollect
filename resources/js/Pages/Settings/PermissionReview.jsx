@@ -1,9 +1,8 @@
-import { Button } from '@heroui/react';
+import DialogFrame from '@/Components/UI/DialogFrame';
 import Icon from '@/Components/UI/Icon';
-import Modal from '@/Components/UI/Modal';
 import { permissionsWord } from '@/lib/permissions';
 import { RiskBadge } from './PermissionMatrix';
-import { CheckBox, PrimaryKey, SecondaryKey } from '@/Components/UI';
+import { CheckBox, Notice, PrimaryKey, SecondaryKey } from '@/Components/UI';
 
 /** «+3 −1»: what a change would grant and take away. */
 export function Delta({ added, removed }) {
@@ -27,38 +26,36 @@ export function PermissionChangeReview({ employee, changes }) {
     }, {});
 
     return (
-        <div className="px-4 pb-4 sm:px-6">
-            <p className="mb-4 rounded-control border border-gray-100 bg-gray-50 p-3 text-sm leading-6 text-gray-600">
-                <b className="text-gray-900">{employee.name}</b>، {employee.roleLabel}، {employee.branchName ?? 'بلا فرع'}
-                <br />
+        <div className="space-y-4">
+            <Notice title={`${employee.name}، ${employee.roleLabel}، ${employee.branchName ?? 'بلا فرع'}`}>
                 لا تتغيّر الصلاحيات خارج نطاق إدارتك.
-            </p>
-            <div role="region" className="max-h-[50vh] space-y-3 overflow-y-auto" tabIndex={0} aria-label="جميع تغييرات الصلاحيات">
+            </Notice>
+            <div role="region" className="space-y-3" aria-label="جميع تغييرات الصلاحيات">
                 {Object.entries(bySection).map(([section, items]) => (
-                    <section key={section} className="overflow-hidden rounded-control border border-gray-100">
-                        <h4 className="bg-gray-50 px-3 py-2 text-sm font-bold text-gray-700">{section}</h4>
+                    <section key={section} className="overflow-hidden rounded-[14px] border border-(--ma-line)">
+                        <h4 className="bg-(--ma-tile) px-3 py-2 text-sm font-bold text-(--ma-ink)">{section}</h4>
                         <ul className="space-y-1 p-2">
                             {items.map((change) => (
                                 <li
                                     key={change.id}
-                                    className={`flex items-start gap-3 rounded-[10px] px-3 py-2 ${change.added ? 'bg-emerald-500/[0.07]' : 'bg-gray-50'}`}
+                                    className={`flex items-start gap-3 rounded-[10px] px-3 py-2 ${change.added ? 'bg-(--ma-pay-s)' : 'bg-(--ma-tile)'}`}
                                 >
                                     <b
-                                        className={`w-3 text-center ${change.added ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-400'}`}
+                                        className={`w-3 text-center ${change.added ? 'text-(--ma-pay)' : 'text-(--ma-muted)'}`}
                                     >
                                         {change.added ? '+' : '−'}
                                     </b>
                                     <div className="min-w-0 flex-1">
                                         <p
-                                            className={`flex flex-wrap items-center gap-2 text-sm font-semibold ${change.added ? 'text-gray-900' : 'text-gray-500 line-through'}`}
+                                            className={`flex flex-wrap items-center gap-2 text-sm font-semibold ${change.added ? 'text-(--ma-ink)' : 'text-(--ma-muted) line-through'}`}
                                         >
                                             {change.label}
                                             {change.added && <RiskBadge risk={change.risk} />}
                                         </p>
-                                        {change.hint && <p className="text-xs text-gray-500">{change.hint}</p>}
+                                        {change.hint && <p className="text-xs text-(--ma-muted)">{change.hint}</p>}
                                     </div>
                                     <span
-                                        className={`shrink-0 text-xs font-bold ${change.added ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-500'}`}
+                                        className={`shrink-0 text-xs font-bold ${change.added ? 'text-(--ma-pay)' : 'text-(--ma-muted)'}`}
                                     >
                                         {change.added ? 'سيُمنح' : 'سيُلغى'}
                                     </span>
@@ -77,31 +74,25 @@ export function PermissionSaveBar({ dirty, errors, changes, auditChanges, firstN
     return (
         <div role="region" aria-label="تغييرات لم تُحفظ" className={`pm-savebar ${dirty ? 'is-visible' : ''}`} aria-hidden={!dirty} inert={!dirty}>
             {Object.keys(errors).length > 0 && (
-                <p className="w-full text-sm font-semibold text-red-300" role="alert">
+                <p className="pm-savebar-error" role="alert">
                     تعذّر حفظ الصلاحيات: {Object.values(errors)[0]}
                 </p>
             )}
             <p className="flex min-w-0 flex-1 flex-wrap items-center gap-2 text-sm" role="status">
-                <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-white px-2 font-display text-sm font-bold text-gray-900">
-                    {changes.length + auditChanges.length}
-                </span>
+                <bdi dir="ltr" className="pm-savebar-count">{changes.length + auditChanges.length}</bdi>
                 <span>تغييرات لم تُحفظ لـ {firstName}</span>
                 {changes.length > 0 && <Delta added={added} removed={removed} />}
                 {dangerousGrants.length > 0 && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-red-500/20 px-2 py-1 text-xs font-bold text-red-200">
+                    <span className="pm-savebar-danger">
                         <Icon name="alert" className="h-3.5 w-3.5" />
                         {dangerousGrants.length} خطيرة
                     </span>
                 )}
             </p>
-            <Button data-raw="" variant="ghost"
-                onClick={onDiscard}
-                isDisabled={processing || !dirty}
-                className="inline-flex items-center gap-2 rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-white disabled:opacity-40"
-            >
+            <SecondaryKey onClick={onDiscard} disabled={processing || !dirty}>
                 <Icon name="undo" className="h-4 w-4" />
                 تراجع
-            </Button>
+            </SecondaryKey>
             <PrimaryKey type="button" onClick={onSave} disabled={processing || !dirty} title="Ctrl + S">
                 <Icon name="check" className="h-4 w-4" strokeWidth={2} />
                 {processing ? 'جارٍ الحفظ...' : 'مراجعة وحفظ'}
@@ -136,94 +127,79 @@ export function PermissionReviewDialog({
     onCancel,
     onConfirm,
 }) {
+    const summary = [
+        `${added} تُمنح، ${removed} تُلغى`,
+        auditChanges.length > 0 && `${auditChanges.length} تغييرات في عمل التدقيق`,
+        keyChanges.added + keyChanges.removed > 0 && `حق المنح: ${keyChanges.added} يُعطى، ${keyChanges.removed} يُسحب`,
+    ].filter(Boolean).join('، ');
+
+    const footer = (
+        <>
+            <SecondaryKey onClick={onCancel} disabled={processing} autoFocus>
+                العودة للتعديل
+            </SecondaryKey>
+            <PrimaryKey type="button" onClick={onConfirm} disabled={processing || !dirty || (dangerousGrants.length > 0 && !acknowledged)}>
+                {processing ? 'جارٍ الحفظ...' : 'تأكيد وحفظ الصلاحيات'}
+            </PrimaryKey>
+        </>
+    );
+
     return (
-        <Modal
+        <DialogFrame
             show={show}
-            onClose={() => {
-                if (!processing) {
-                    onCancel();
-                }
-            }}
+            onClose={onCancel}
+            title="مراجعة تغييرات الصلاحيات"
+            description={summary}
+            icon="shield"
+            tone={dangerousGrants.length > 0 ? 'danger' : 'primary'}
             maxWidth="2xl"
+            busy={processing}
+            footer={footer}
         >
-            <div
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby={`permission-review-${employee.id}`}
-                dir="rtl"
-                className="flex max-h-[90dvh] min-h-0 flex-col"
-            >
-                <div className="shrink-0 px-4 pb-4 pt-6 sm:px-6">
-                    <h3 id={`permission-review-${employee.id}`} className="text-lg font-bold text-gray-900">
-                        مراجعة تغييرات الصلاحيات
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                        {added} تُمنح، {removed} تُلغى
-                        {auditChanges.length > 0 && `، ${auditChanges.length} تغييرات في عمل التدقيق`}
-                        {keyChanges.added + keyChanges.removed > 0 && `، حق المنح: ${keyChanges.added} يُعطى، ${keyChanges.removed} يُسحب`}
-                    </p>
-                    <div className="pm-review-strip">
-                        <span>
-                            قبل: <b className="font-display">{before.total}</b> {permissionsWord(before.total)}، منها{' '}
-                            <b className="font-display">{before.danger}</b> خطيرة
-                        </span>
-                        <Icon name="arrow-left" className="h-4 w-4 shrink-0 text-gray-400" />
-                        <span>
-                            بعد: <b className="font-display">{after.total}</b> {permissionsWord(after.total)}، منها{' '}
-                            <b className={`font-display ${after.danger > before.danger ? 'text-red-700 dark:text-red-400' : ''}`}>
-                                {after.danger}
-                            </b>{' '}
-                            خطيرة
-                        </span>
-                        <span className={`pm-review-level is-${heroRisk.level}`}>خطورة {heroRisk.label}</span>
-                    </div>
+            <div className="space-y-4">
+                <div className="pm-review-strip">
+                    <span>
+                        قبل: <b className="font-display">{before.total}</b> {permissionsWord(before.total)}، منها{' '}
+                        <b className="font-display">{before.danger}</b> خطيرة
+                    </span>
+                    <Icon name="arrow-left" className="h-4 w-4 shrink-0 text-(--ma-faint)" />
+                    <span>
+                        بعد: <b className="font-display">{after.total}</b> {permissionsWord(after.total)}، منها{' '}
+                        <b className={`font-display ${after.danger > before.danger ? 'is-more' : ''}`}>{after.danger}</b> خطيرة
+                    </span>
+                    <span className={`pm-review-level is-${heroRisk.level}`}>خطورة {heroRisk.label}</span>
                 </div>
-                <div className="min-h-0 flex-1 overflow-y-auto">
-                    <PermissionChangeReview employee={employee} changes={changes} />
-                    {takenFromOthers.length > 0 && (
-                        <p className="mx-6 mb-6 rounded-control bg-amber-500/10 px-4 py-3 text-sm leading-7 text-amber-800 dark:text-amber-300 sm:mx-6">
-                            تُسحب أيضًا من الموظفين الذين منحهم {firstName} إياها:{' '}
-                            <b>{takenFromOthers.map((change) => `${change.text} (${employee.grantsGiven[change.id]})`).join('، ')}</b>
-                        </p>
-                    )}
-                    {auditChanges.length > 0 && (
-                        <div className="mx-6 mb-6 space-y-3 rounded-control border border-gray-100 p-4 sm:mx-6">
-                            <h4 className="font-bold text-gray-900">تغييرات عمل التدقيق</h4>
-                            {auditChanges.map((change) => (
-                                <div key={change.key} className="text-sm leading-7">
-                                    <b className="text-gray-900">{change.label}</b>
-                                    <p className="text-gray-500">قبل: {change.before}</p>
-                                    <p className="font-semibold text-gray-900">بعد: {change.after}</p>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    {dangerousGrants.length > 0 && (
-                        <label className="mx-6 mb-6 flex cursor-pointer items-start gap-3 rounded-control bg-red-500/[0.07] px-4 py-3 text-sm text-red-800 dark:text-red-300 sm:mx-6">
-                            <CheckBox
-                                checked={acknowledged}
-                                onChange={(event) => onAcknowledgedChange(event.target.checked)}
-                            />
+                {dangerousGrants.length > 0 && (
+                    <Notice tone="danger">
+                        <label className="flex cursor-pointer items-start gap-3">
+                            <CheckBox checked={acknowledged} onChange={(event) => onAcknowledgedChange(event.target.checked)} />
                             <span>
-                                يحصل {firstName} على صلاحيات خطيرة: <b>{dangerousGrants.map((item) => item.label).join('، ')}</b>. أؤكد أنه
+                                يحصل {firstName} على صلاحيات خطيرة: <strong>{dangerousGrants.map((item) => item.label).join('، ')}</strong>. أؤكد أنه
                                 يحتاجها لعمله.
                             </span>
                         </label>
-                    )}
-                </div>
-                <div className="flex shrink-0 flex-wrap justify-end gap-3 border-t border-gray-100 bg-gray-50 px-4 py-4 sm:px-6">
-                    <SecondaryKey onClick={onCancel} disabled={processing} autoFocus>
-                        العودة للتعديل
-                    </SecondaryKey>
-                    <PrimaryKey
-                        type="button"
-                        onClick={onConfirm}
-                        disabled={processing || !dirty || (dangerousGrants.length > 0 && !acknowledged)}
-                    >
-                        {processing ? 'جارٍ الحفظ...' : 'تأكيد وحفظ الصلاحيات'}
-                    </PrimaryKey>
-                </div>
+                    </Notice>
+                )}
+                <PermissionChangeReview employee={employee} changes={changes} />
+                {takenFromOthers.length > 0 && (
+                    <Notice tone="warn">
+                        تُسحب أيضًا من الموظفين الذين منحهم {firstName} إياها:{' '}
+                        <strong>{takenFromOthers.map((change) => `${change.text} (${employee.grantsGiven[change.id]})`).join('، ')}</strong>
+                    </Notice>
+                )}
+                {auditChanges.length > 0 && (
+                    <div className="space-y-3 rounded-[14px] border border-(--ma-line) p-4">
+                        <h3 className="font-bold text-(--ma-ink)">تغييرات عمل التدقيق</h3>
+                        {auditChanges.map((change) => (
+                            <div key={change.key} className="text-sm leading-7">
+                                <b className="text-(--ma-ink)">{change.label}</b>
+                                <p className="text-(--ma-muted)">قبل: {change.before}</p>
+                                <p className="font-semibold text-(--ma-ink)">بعد: {change.after}</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
-        </Modal>
+        </DialogFrame>
     );
 }

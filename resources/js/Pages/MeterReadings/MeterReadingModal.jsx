@@ -1,21 +1,20 @@
-import { TextArea } from '@heroui/react';
 import FormModal from '@/Components/Form/FormModal';
-import InputLabel from '@/Components/UI/InputLabel';
-import InputError from '@/Components/UI/InputError';
+import FormField from '@/Components/Form/FormField';
+import SettingRow from '@/Components/Form/SettingRow';
 import { useResourceForm } from '@/hooks/useResourceForm';
 import { consumptionBetween } from '@/lib/readings';
 import { formatDate } from '@/lib/format';
-import { CheckBox, ChoiceSelect, SearchableSelect, TextInput } from '@/Components/UI';
+import { ChoiceSelect, Notice, SearchableSelect, Switch, TextArea, TextInput } from '@/Components/UI';
 
 const APPROVED_READING_WARNING = 'هذه القراءة معتمدة. تعديلها يعيدها إلى قيد المراجعة ويزيل مبلغها من المعاملات المالية للمشترك حتى يُعاد اعتمادها.';
 const APPROVE_NOW_NOTE = 'هذه القراءة معتمدة. سيُلغى مبلغها السابق بقيد عكسي يبقى في الكشف، وتُعتمد القراءة المصحّحة ويُحمَّل مبلغها الجديد فورًا.';
 
-function Summary({ label, value, tone = 'text-gray-900' }) {
+function Summary({ label, value, negative = false }) {
     return (
-        <div className="min-w-0 rounded-lg bg-gray-50 px-3 py-2 text-center">
-            <p className="text-xs text-gray-500">{label}</p>
-            <p className={`mt-1 wrap-break-word text-center font-display text-base font-bold tabular-nums ${tone}`} dir="ltr">
-                {value}
+        <div className="min-w-0 rounded-[14px] bg-(--ma-tile) px-4 py-2 text-center">
+            <p className="text-xs text-(--ma-muted)">{label}</p>
+            <p className={`mt-1 wrap-break-word text-center font-display text-base font-bold tabular-nums ${negative ? 'text-(--ma-owe)' : 'text-(--ma-brand)'}`}>
+                <bdi dir="ltr">{value}</bdi>
             </p>
         </div>
     );
@@ -60,21 +59,16 @@ export default function MeterReadingModal({ show, onClose, reading, subscription
             saveConfirmMessage={`${approvesNow ? APPROVE_NOW_NOTE : APPROVED_READING_WARNING} هل تريد المتابعة؟`}
         >
             {isEdit ? (
-                <div className="rounded-lg border border-gray-100 px-4 py-3 text-sm">
-                    <p className="font-semibold text-gray-900">{reading.subscriptionName}</p>
-                    <p className="mt-1 text-gray-500">
-                        <span dir="ltr">{reading.accountNumber}</span>، الأسبوع {formatDate(reading.weekStart)} ← {formatDate(reading.weekEnd)}
-                    </p>
-                </div>
+                <Notice title={reading.subscriptionName}>
+                    <bdi dir="ltr">{reading.accountNumber}</bdi>، الأسبوع {formatDate(reading.weekStart)} ← {formatDate(reading.weekEnd)}
+                </Notice>
             ) : (
                 <>
                     {fixedSubscription ? (
-                        <div className="rounded-lg border border-gray-100 px-4 py-3 text-sm font-semibold text-gray-900">{fixedSubscription.label}</div>
+                        <Notice title={fixedSubscription.label} />
                     ) : (
-                        <div>
-                            <InputLabel value="المشترك" />
+                        <FormField label="المشترك" error={errors.subscription_id}>
                             <SearchableSelect
-                                className="mt-1"
                                 value={data.subscription_id}
                                 onChange={(value) => setData('subscription_id', value)}
                                 options={subscriptionOptions}
@@ -82,93 +76,63 @@ export default function MeterReadingModal({ show, onClose, reading, subscription
                                 searchPlaceholder="بحث بالاسم أو رقم الاشتراك..."
                                 emptyLabel="لا يوجد مشتركون مطابقون"
                             />
-                            <InputError message={errors.subscription_id} className="mt-2" />
-                        </div>
+                        </FormField>
                     )}
 
-                    <div>
-                        <InputLabel htmlFor="week_start" value="الأسبوع" />
-                        <ChoiceSelect
-                            id="week_start"
-                            className="mt-1 block w-full"
-                            value={data.week_start}
-                            onChange={(e) => setData('week_start', e.target.value)}
-                        >
+                    <FormField
+                        id="week_start"
+                        label="الأسبوع"
+                        error={errors.week_start}
+                        hint={selectedSubscription?.lastWeekStart ? `آخر قراءة مسجلة لأسبوع يبدأ في ${selectedSubscription.lastWeekStart}` : undefined}
+                    >
+                        <ChoiceSelect className="block w-full" value={data.week_start} onChange={(e) => setData('week_start', e.target.value)}>
                             {weekOptions.map((week) => (
                                 <option key={week.value} value={week.value}>
                                     {week.label}
                                 </option>
                             ))}
                         </ChoiceSelect>
-                        <InputError message={errors.week_start} className="mt-2" />
-                        {selectedSubscription?.lastWeekStart && (
-                            <p className="mt-1 text-xs text-gray-500">آخر قراءة مسجلة لأسبوع يبدأ في {selectedSubscription.lastWeekStart}</p>
-                        )}
-                    </div>
+                    </FormField>
                 </>
             )}
 
             <div className={`grid items-start gap-4 ${hasPrevious ? 'sm:grid-cols-2' : ''}`}>
-                {hasPrevious && <div>
-                    <InputLabel htmlFor="previous_reading" value="القراءة السابقة" className="text-center" />
+                {hasPrevious && (
+                    <FormField id="previous_reading" label="القراءة السابقة" lock="locked" hint="من آخر قراءة مسجّلة؛ لا تُعدَّل من هنا.">
+                        <TextInput dir="ltr" readOnly value={previousReading} className="block w-full font-display text-xl font-semibold" />
+                    </FormField>
+                )}
+                <FormField id="current_reading" label="القراءة الحالية" error={errors.current_reading}>
                     <TextInput
-                        id="previous_reading"
-                        dir="ltr"
-                        readOnly
-                        value={previousReading}
-                        className="mt-2 h-12 w-full bg-gray-50 text-center! font-display text-xl font-semibold text-gray-600"
-                    />
-                </div>}
-                <div>
-                    <InputLabel htmlFor="current_reading" value="القراءة الحالية" className="text-center" />
-                    <TextInput
-                        id="current_reading"
                         type="number"
                         min="0"
                         step="0.01"
                         inputMode="decimal"
                         dir="ltr"
-                        className="mt-2 h-12 w-full text-center! font-display text-xl font-semibold"
+                        className="block w-full font-display text-xl font-semibold"
                         value={data.current_reading}
                         autoFocus={isEdit}
                         onChange={(e) => setData('current_reading', e.target.value)}
                     />
-                    <InputError message={errors.current_reading} className="mt-2" />
-                </div>
+                </FormField>
             </div>
 
-            {hasPrevious && (
-                <div>
-                    <Summary
-                        label="الاستهلاك (كيلو)"
-                        value={consumption ?? '—'}
-                        tone={consumption !== null && consumption < 0 ? 'text-red-600' : 'text-brand-700'}
-                    />
-                </div>
-            )}
+            {hasPrevious && <Summary label="الاستهلاك (كيلو)" value={consumption ?? '—'} negative={consumption !== null && consumption < 0} />}
 
             {offersApproval && (
-                <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 text-sm">
-                    <CheckBox
-                        checked={data.approve}
-                        onChange={(e) => setData('approve', e.target.checked)}
-                    />
-                    <span>
-                        <span className="block font-semibold text-gray-900">اعتماد القراءة المصحّحة الآن</span>
-                        <span className="block text-xs text-gray-500">
-                            {data.approve
-                                ? 'يُحمَّل المبلغ الجديد على الحساب مباشرة، دون انتظار المراجعة.'
-                                : 'تعود القراءة إلى قيد المراجعة، ولا يُحمَّل مبلغها حتى يعتمدها أحد المعتمِدين.'}
-                        </span>
-                    </span>
-                </label>
+                <SettingRow
+                    title="اعتماد القراءة المصحّحة الآن"
+                    description={data.approve
+                        ? 'يُحمَّل المبلغ الجديد على الحساب مباشرة، دون انتظار المراجعة.'
+                        : 'تعود القراءة إلى قيد المراجعة، ولا يُحمَّل مبلغها حتى يعتمدها أحد المعتمِدين.'}
+                >
+                    <Switch checked={data.approve} onChange={(checked) => setData('approve', checked)} ariaLabel="اعتماد القراءة المصحّحة الآن" />
+                </SettingRow>
             )}
 
-            <div>
-                <InputLabel htmlFor="notes" value="ملاحظات" />
-                <TextArea id="notes" rows={2} className="mt-1 block w-full" value={data.notes} onChange={(e) => setData('notes', e.target.value)} />
-                <InputError message={errors.notes} className="mt-2" />
-            </div>
+            <FormField id="notes" label="ملاحظات" error={errors.notes}>
+                <TextArea rows={2} className="block w-full" value={data.notes} onChange={(e) => setData('notes', e.target.value)} />
+            </FormField>
         </FormModal>
     );
 }

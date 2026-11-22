@@ -28,7 +28,7 @@ export default function Index({ branches, canCreate, filters, filterOptions, gov
             }
         >
             <Head title="الفروع" />
-            {canManageDomains && !domainRoutingEnabled && <p className="mb-6 rounded-control border border-gray-200 bg-surface p-4 text-sm leading-7 text-gray-600">يمكنك تجهيز روابط الفروع هنا. تشغيلها يحتاج ربط DNS وHTTPS بالاستضافة وتفعيل توجيه الدومينات عند النشر.</p>}
+            {canManageDomains && !domainRoutingEnabled && <p className="mb-6 rounded-control border border-(--ma-line) bg-(--ma-solid) p-4 text-sm leading-7 text-(--ma-muted)">يمكنك تجهيز روابط الفروع هنا. تشغيلها يحتاج ربط DNS وHTTPS بالاستضافة وتفعيل توجيه الدومينات عند النشر.</p>}
 
             <DataTableToolbar
                 search={search}
@@ -60,7 +60,7 @@ export default function Index({ branches, canCreate, filters, filterOptions, gov
                         <ListColumn id="is_active" sortable>الحالة</ListColumn>
                         <ListColumn actions />
                     </ListHeader>
-                    <ListBody empty={<span className="text-gray-500">لا توجد نتائج مطابقة.</span>}>
+                    <ListBody empty={<span className="text-(--ma-muted)">لا توجد نتائج مطابقة.</span>}>
                         {branches.data.map((branch) => (
                             <ListRow key={branch.id} id={branch.id} onOpen={branch.canUpdate ? () => setModalBranch(branch) : null}>
                                 <ListCell>
@@ -71,14 +71,14 @@ export default function Index({ branches, canCreate, filters, filterOptions, gov
                                         status={branch.is_active ? 'green' : 'gray'}
                                     />
                                 </ListCell>
-                                <ListCell className="text-gray-600" dir="ltr">
+                                <ListCell className="text-(--ma-muted)" dir="ltr">
                                     {branch.phone}
                                 </ListCell>
-                                <ListCell className="text-gray-600">{branch.governorate?.name ?? '—'}</ListCell>
-                                <ListCell className="text-gray-600">{branch.area?.name ?? '—'}</ListCell>
+                                <ListCell className="text-(--ma-muted)">{branch.governorate?.name ?? '—'}</ListCell>
+                                <ListCell className="text-(--ma-muted)">{branch.area?.name ?? '—'}</ListCell>
                                 <ListCell onClick={(e) => e.stopPropagation()}><div className="space-y-2">
-                                    {branch.domain ? <><p dir="ltr" className="text-start text-xs text-gray-600">{branch.domain}</p><StatusPill tone={branch.domain_enabled ? 'green' : 'gray'} label={branch.domain_enabled ? 'الرابط مفعّل' : 'الرابط متوقف'} /></> : <p className="text-gray-400">لم يُحدد رابط</p>}
-                                    <div className="flex flex-wrap gap-3 text-xs font-semibold">{canManageDomains && <Button data-raw="" variant="ghost" onClick={() => setDomainBranch(branch)} className="text-brand-600 hover:underline">إدارة الرابط</Button>}{domainRoutingEnabled && branch.url && <a href={branch.url} className="text-gray-700 hover:underline">فتح الفرع</a>}</div>
+                                    {branch.domain ? <><p dir="ltr" className="text-start text-xs text-(--ma-muted)">{branch.domain}</p><StatusPill tone={branch.domain_enabled ? 'green' : 'gray'} label={branch.domain_enabled ? 'الرابط مفعّل' : 'الرابط متوقف'} /></> : <p className="text-(--ma-faint)">لم يُحدد رابط</p>}
+                                    <div className="flex flex-wrap gap-3 text-xs font-semibold">{canManageDomains && <Button data-raw="" variant="ghost" onClick={() => setDomainBranch(branch)} className="text-(--ma-brand) hover:underline">إدارة الرابط</Button>}{domainRoutingEnabled && branch.url && <a href={branch.url} className="text-(--ma-ink) hover:underline">فتح الفرع</a>}</div>
                                 </div></ListCell>
                                 <ListCell>
                                     <StatusPill tone={branch.is_active ? 'green' : 'gray'} label={branch.is_active ? 'نشط' : 'متوقف'} />

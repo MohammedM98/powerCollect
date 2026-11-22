@@ -7,17 +7,10 @@ import FormSection from '@/Components/Form/FormSection';
 import Icon from '@/Components/UI/Icon';
 import InputError from '@/Components/UI/InputError';
 import PasswordInput from '@/Components/UI/PasswordInput';
-import { SettingSwitch } from '@/Components/Settings/SettingsKit';
+import SettingRow from '@/Components/Form/SettingRow';
 import { initials } from '@/lib/format';
 import UserTypeSelect from './UserTypeSelect';
-import { CheckBox, TextInput } from '@/Components/UI';
-
-function DeviceResetCheckbox({ id, checked, onChange }) {
-    return <label htmlFor={id} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-control border border-gray-200 px-3 py-2 text-sm leading-6">
-        <CheckBox id={id} checked={checked} onChange={onChange} />
-        <span>إنهاء كل جلسات هذا المستخدم عند الحفظ</span>
-    </label>;
-}
+import { Switch, TextInput } from '@/Components/UI';
 
 /**
  * The form's starting values: the user's own when editing (with the
@@ -49,7 +42,7 @@ export default function UserForm({ data, setData, errors, isEdit, branches, canC
     const requiredFields = ['name', 'username', ...(isEdit ? [] : ['password'])];
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             <FormPreview
                 avatar={name ? initials(name) : <Icon name="user" className="h-6 w-6 text-white/70" />}
                 dotClass={data.is_active ? 'bg-emerald-500' : 'bg-gray-400'}
@@ -65,9 +58,9 @@ export default function UserForm({ data, setData, errors, isEdit, branches, canC
                 total={requiredFields.length}
             />
 
-            <FormSection icon="user" title="بيانات الحساب" columns={2}>
+            <FormSection icon="user" title="بيانات الحساب" description="الاسم واسم المستخدم وكلمة المرور" columns={2}>
                 <FormField id="name" label="الاسم" required error={errors.name}>
-                    <TextInput className="block h-11 w-full" value={data.name} autoFocus onChange={(e) => setData('name', e.target.value)} />
+                    <TextInput className="block w-full" value={data.name} autoFocus onChange={(e) => setData('name', e.target.value)} />
                 </FormField>
 
                 <FormField id="username" label="اسم المستخدم" required error={errors.username}>
@@ -78,7 +71,7 @@ export default function UserForm({ data, setData, errors, isEdit, branches, canC
                         data-feedback
                         title="يمكن استخدام الحروف العربية والإنجليزية والأرقام والمسافات والرموز . _ -"
                         autoComplete="off"
-                        className="block h-11 w-full"
+                        className="block w-full"
                         value={data.username}
                         onChange={(e) => setData('username', e.target.value)}
                     />
@@ -93,26 +86,31 @@ export default function UserForm({ data, setData, errors, isEdit, branches, canC
                             error={errors.password}
                             hint={isEdit ? 'اتركها فارغة للاحتفاظ بالحالية. عند تغييرها: 8 خانات على الأقل، ويمكن استخدام حروف فقط أو أرقام فقط.' : '8 خانات على الأقل، ويمكن استخدام حروف فقط أو أرقام فقط.'}
                         >
-                            <PasswordInput className="block h-11 w-full" value={data.password} onChange={(e) => setData('password', e.target.value)} />
+                            <PasswordInput className="block w-full" value={data.password} onChange={(e) => setData('password', e.target.value)} />
                         </FormField>
 
                         <FormField id="password_confirmation" label="تأكيد كلمة المرور">
-                            <PasswordInput className="block h-11 w-full" value={data.password_confirmation} onChange={(e) => setData('password_confirmation', e.target.value)} />
+                            <PasswordInput className="block w-full" value={data.password_confirmation} onChange={(e) => setData('password_confirmation', e.target.value)} />
                         </FormField>
                     </>
                 )}
             </FormSection>
 
-            {(!isEdit || canUpdatePassword) && <FormSection icon="lock" title="أجهزة تسجيل الدخول" columns={2}>
+            {(!isEdit || canUpdatePassword) && <FormSection icon="devices" title="أجهزة تسجيل الدخول" description="عدد الأجهزة المسموح بها وجلساتها" columns={2}>
                 <FormField id="max_devices" label="الحد الأقصى للأجهزة" required error={errors.max_devices} hint="جهاز واحد افتراضيًا. يشترك الموقع والتطبيق في هذا الحد؛ عند الدخول من جهاز جديد وبلوغ الحد يُسجّل خروج الجهاز الأقدم تلقائيًا.">
-                    <TextInput type="number" min="1" max="20" step="1" dir="ltr" className="block h-11 w-full" value={data.max_devices} onChange={(event) => setData('max_devices', event.target.value)} />
+                    <TextInput type="number" min="1" max="20" step="1" dir="ltr" className="block w-full" value={data.max_devices} onChange={(event) => setData('max_devices', event.target.value)} />
                 </FormField>
-                {isEdit && <FormField id="reset_devices" label="إنهاء جلسات الأجهزة" error={errors.reset_devices} hint="استخدمه عند فقدان جهاز. بعد الحفظ ستحتاج جميع الأجهزة، بما فيها جهاز هذا المستخدم الحالي، إلى تسجيل الدخول مجددًا.">
-                    <DeviceResetCheckbox checked={data.reset_devices} onChange={(event) => setData('reset_devices', event.target.checked)} />
-                </FormField>}
+                {isEdit && (
+                    <div className="sm:col-span-2">
+                        <SettingRow title="إنهاء كل جلسات هذا المستخدم عند الحفظ" description="استخدمه عند فقدان جهاز. بعد الحفظ ستحتاج جميع الأجهزة، بما فيها جهاز هذا المستخدم الحالي، إلى تسجيل الدخول مجددًا.">
+                            <Switch id="reset_devices" checked={data.reset_devices} onChange={(checked) => setData('reset_devices', checked)} ariaLabel="إنهاء كل جلسات هذا المستخدم عند الحفظ" />
+                        </SettingRow>
+                        <InputError message={errors.reset_devices} className="mt-1" />
+                    </div>
+                )}
             </FormSection>}
 
-            <FormSection icon="badge" title="النوع والفرع والحالة" columns={2}>
+            <FormSection icon="badge" title="النوع والفرع والحالة" description="المسمى الوظيفي ونطاق العمل وحالة الحساب" columns={2}>
                 <UserTypeSelect value={data.user_type_id} options={availableTypes} canCreate={canCreateUserType} error={errors.user_type_id}
                     onChange={(value) => setData('user_type_id', value)}
                     onCreated={(type) => { setCreatedTypes((types) => [...types, type]); setData('user_type_id', String(type.value)); }} />
@@ -152,7 +150,9 @@ export default function UserForm({ data, setData, errors, isEdit, branches, canC
                 )}
 
                 <div className="sm:col-span-2">
-                    <SettingSwitch isSelected={data.is_active} onChange={(checked) => setData('is_active', checked)} label="حساب نشط" hint="الحساب الموقوف لا يستطيع تسجيل الدخول." />
+                    <SettingRow title="حساب نشط" description={data.is_active ? 'مفعّل: يستطيع تسجيل الدخول.' : 'موقوف: لا يستطيع تسجيل الدخول.'}>
+                        <Switch checked={data.is_active} onChange={(checked) => setData('is_active', checked)} ariaLabel="حساب نشط" />
+                    </SettingRow>
                     <InputError message={errors.is_active} className="mt-1" />
                 </div>
             </FormSection>

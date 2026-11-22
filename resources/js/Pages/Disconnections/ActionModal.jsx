@@ -1,7 +1,8 @@
-import { Button, Input, TextArea } from '@heroui/react';
 import { useEffect, useEffectEvent, useId, useMemo, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
-import Modal from '@/Components/UI/Modal';
+import DialogFrame from '@/Components/UI/DialogFrame';
+import FormField from '@/Components/Form/FormField';
+import InputLabel from '@/Components/UI/InputLabel';
 import Icon from '@/Components/UI/Icon';
 import Balance from '@/Components/Finance/Balance';
 import ChoiceChips from '@/Components/UI/ChoiceChips';
@@ -10,13 +11,13 @@ import { formatMoney, formatDate } from '@/lib/format';
 import { feeError, fillPlaceholders, itemTone, operationId, smsParts, totalFees } from '@/lib/disconnections';
 import HoldToConfirm from './HoldToConfirm';
 import DateInput from '@/Components/UI/DateInput';
-import { CheckBox, DangerKey, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
+import { Affix, CheckBox, DangerKey, FieldAction, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, Notice, PrimaryKey, SecondaryKey, StatusPill, TextArea, TextInput } from '@/Components/UI';
 
 const ACTIONS = {
-    reschedule: { title: 'تغيير موعد القطع', icon: 'calendar', tone: 'bg-blue-500/10 text-blue-600', url: 'reschedule' },
-    remove: { title: 'إزالة من القائمة', icon: 'undo', tone: 'bg-amber-500/10 text-amber-700', url: 'remove' },
-    warn: { title: 'إرسال إنذار', icon: 'send', tone: 'bg-sky-500/10 text-sky-600', url: 'warn' },
-    confirm: { title: 'تأكيد تنفيذ القطع', icon: 'power', tone: 'bg-red-900/10 text-red-800', url: 'confirm' },
+    reschedule: { title: 'تغيير موعد القطع', icon: 'calendar', tone: 'blue', url: 'reschedule' },
+    remove: { title: 'إزالة من القائمة', icon: 'undo', tone: 'amber', url: 'remove' },
+    warn: { title: 'إرسال إنذار', icon: 'send', tone: 'blue', url: 'warn' },
+    confirm: { title: 'تأكيد تنفيذ القطع', icon: 'power', tone: 'danger', url: 'confirm' },
 };
 
 /** Why an item would be left out of the action, or null when it is reached. */
@@ -128,9 +129,37 @@ export default function ActionModal({ action, list, selection, count, channelOpt
     const firstText = reached[0] ? fillPlaceholders(body, placeholderValues(reached[0], list)) : '';
     const parts = smsParts(firstText);
 
+    const description = preview ? (
+        <>
+            يُطبَّق على <b className="font-display text-(--ma-ink)"><bdi dir="ltr">{reached.length.toLocaleString('en')}</bdi></b> مشترك
+            {excluded.length > 0 && <>، يُستثنى <b className="font-display"><bdi dir="ltr">{excluded.length.toLocaleString('en')}</bdi></b></>}
+            {selection.all ? ' (من كل النتائج المطابقة للفلاتر في كل الصفحات)' : ' (من المحددين)'}
+        </>
+    ) : (
+        `جارٍ تحميل ${count.toLocaleString('en')} مشترك…`
+    );
+
+    const footer = (
+        <>
+            <SecondaryKey onClick={onClose} disabled={saving}>إلغاء</SecondaryKey>
+            {action === 'remove' && (
+                <DangerKey type="submit" form={`${id}-form`} disabled={saving || !preview || reached.length === 0}>
+                    {saving ? 'جارٍ التنفيذ…' : `إزالة ${reached.length.toLocaleString('en')} مشترك`}
+                </DangerKey>
+            )}
+            {(action === 'reschedule' || action === 'warn') && (
+                <PrimaryKey type="submit" form={`${id}-form`} disabled={saving || !preview || reached.length === 0 || (action === 'warn' && !body.trim())}>
+                    <Icon name={meta.icon} className="h-4 w-4" />
+                    {saving ? 'جارٍ التنفيذ…' : action === 'warn' ? `إرسال إلى ${reached.length.toLocaleString('en')} مشترك` : `تطبيق على ${reached.length.toLocaleString('en')} مشترك`}
+                </PrimaryKey>
+            )}
+        </>
+    );
+
     return (
-        <Modal show onClose={saving ? undefined : onClose} maxWidth="3xl">
+        <DialogFrame show onClose={onClose} title={meta.title} description={description} icon={meta.icon} tone={meta.tone} maxWidth="3xl" busy={saving} footer={footer}>
             <form
+                id={`${id}-form`}
                 onSubmit={(event) => {
                     event.preventDefault();
 
@@ -139,214 +168,164 @@ export default function ActionModal({ action, list, selection, count, channelOpt
                         submit();
                     }
                 }}
-                role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} className="flex max-h-[92vh] flex-col">
-                <div className="flex items-start gap-4 border-b border-gray-100 px-6 py-4">
-                    <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${meta.tone}`}>
-                        <Icon name={meta.icon} strokeWidth={2} />
-                    </span>
-                    <div className="min-w-0">
-                        <h3 id={`${id}-title`} className="text-lg font-bold text-gray-900">{meta.title}</h3>
-                        <p className="mt-1 text-sm text-gray-600">
-                            {preview ? (
-                                <>
-                                    يُطبَّق على <b className="font-display text-gray-900">{reached.length.toLocaleString('en')}</b> مشترك
-                                    {excluded.length > 0 && <>، يُستثنى <b className="font-display">{excluded.length.toLocaleString('en')}</b></>}
-                                    {selection.all ? ' (من كل النتائج المطابقة للفلاتر في كل الصفحات)' : ' (من المحددين)'}
-                                </>
-                            ) : (
-                                `جارٍ تحميل ${count.toLocaleString('en')} مشترك…`
-                            )}
+                className="space-y-6"
+            >
+                {failed && <Notice tone="danger" role="alert">تعذّر تحميل المشتركين؛ أغلق النافذة وحاول مرة أخرى.</Notice>}
+                {preview?.tooMany && (
+                    <Notice tone="warn">
+                        النتائج أكثر من <bdi dir="ltr">{preview.max.toLocaleString('en')}</bdi> مشترك؛ ضيّق الفلاتر. لن يُطبَّق الإجراء إلا على المعروضين هنا.
+                    </Notice>
+                )}
+
+                {preview && (
+                    <div className="overflow-hidden rounded-[14px] border border-(--ma-line)">
+                        <div className="max-h-64 overflow-y-auto">
+                            <ListTable aria-label="المشتركون المشمولون بالإجراء" className="w-full text-sm">
+                                <ListHeader className="sticky top-0 bg-(--ma-tile) text-xs text-(--ma-muted)">
+                                    <ListColumn id="name" isRowHeader className="px-3 py-2 text-start">المشترك</ListColumn>
+                                    <ListColumn id="status" className="px-3 py-2 text-start">الحالة</ListColumn>
+                                    {action === 'warn' && <ListColumn id="phone" className="px-3 py-2 text-start">الجوال</ListColumn>}
+                                    {action === 'confirm' && <ListColumn id="service" className="px-3 py-2 text-start">الخدمة</ListColumn>}
+                                    <ListColumn id="balance" className="px-3 py-2 text-start">الرصيد</ListColumn>
+                                    {action === 'confirm' && <ListColumn id="fee" className="px-3 py-2 text-start">رسوم القطع</ListColumn>}
+                                    {action !== 'confirm' && <ListColumn id="scheduled_for" className="px-3 py-2 text-start">الموعد</ListColumn>}
+                                </ListHeader>
+                                <ListBody className="divide-y divide-(--ma-line)">
+                                    {preview.items.map((item) => {
+                                        const why = exclusion(action, item);
+
+                                        return (
+                                            <ListRow key={item.id} id={item.id} className={why ? 'bg-(--ma-tile) text-(--ma-muted)' : undefined}>
+                                                <ListCell className="px-3 py-2">
+                                                    <b className={why ? 'line-through' : 'text-(--ma-ink)'}>{item.name}</b>
+                                                    <bdi dir="ltr" className="block text-end font-display text-xs text-(--ma-muted) rtl:text-start">{item.accountNumber}</bdi>
+                                                    {why && <span className="block text-xs text-(--ma-warn)">يُستثنى: {why}</span>}
+                                                </ListCell>
+                                                <ListCell className="px-3 py-2"><StatusPill tone={itemTone(item)} label={item.isOverdue ? 'متأخر' : item.statusLabel} /></ListCell>
+                                                {action === 'warn' && <ListCell className="px-3 py-2 font-display text-xs"><bdi dir="ltr">{item.phone ?? '—'}</bdi></ListCell>}
+                                                {action === 'confirm' && <ListCell className="px-3 py-2 text-xs">{item.serviceStatusLabel}</ListCell>}
+                                                <ListCell className="whitespace-nowrap px-3 py-2"><Balance value={item.balance} /></ListCell>
+                                                {action === 'confirm' && (
+                                                    <ListCell className="whitespace-nowrap px-3 py-2 font-semibold">
+                                                        {canChangeFee && !why ? (
+                                                            <Affix unit="₪">
+                                                            <TextInput
+                                                                type="number"
+                                                                min={0}
+                                                                step="0.01"
+                                                                value={fees[item.id] ?? ''}
+                                                                onChange={(event) => setFees((current) => ({ ...current, [item.id]: event.target.value }))}
+                                                                aria-label={`رسوم قطع ${item.name}`}
+                                                                className="block w-32"
+                                                            />
+                                                            </Affix>
+                                                        ) : (
+                                                            <><bdi dir="ltr">{formatMoney(fees[item.id] ?? item.fee)}</bdi> ₪</>
+                                                        )}
+                                                    </ListCell>
+                                                )}
+                                                {action !== 'confirm' && <ListCell className="whitespace-nowrap px-3 py-2 text-xs"><bdi dir="ltr">{formatDate(item.scheduledFor)}</bdi></ListCell>}
+                                            </ListRow>
+                                        );
+                                    })}
+                                </ListBody>
+                            </ListTable>
+                        </div>
+                    </div>
+                )}
+
+                {preview && action === 'reschedule' && (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <FormField id={`${id}-date`} label="موعد القطع الجديد" required error={errors.scheduled_for}>
+                            <DateInput name="scheduled_for" min={today} value={date} onChange={setDate} required />
+                        </FormField>
+                        <FormField id={`${id}-reason`} label="سبب التمديد (اختياري)">
+                            <TextInput type="text" value={reason} onChange={(event) => setReason(event.target.value)} className="block w-full" maxLength={1000} />
+                        </FormField>
+                        <Notice className="sm:col-span-2">يُسجَّل كل تمديد بالموعد القديم والجديد. لا تُرسل أي رسالة للمشتركين.</Notice>
+                    </div>
+                )}
+
+                {preview && action === 'remove' && (
+                    <FormField id={`${id}-reason`} label="سبب الإزالة (اختياري)" hint="يبقى سجلهم في القائمة، ويمكن إدراجهم من جديد لاحقًا.">
+                        <TextInput type="text" value={reason} onChange={(event) => setReason(event.target.value)} className="block w-full" maxLength={1000} />
+                    </FormField>
+                )}
+
+                {preview && action === 'warn' && (
+                    <div className="space-y-4">
+                        <ChoiceChips options={channelOptions} value={channel} onChange={setChannel} label="طريقة الإرسال" />
+                        {channel === 'sms' && !smsDeliversMessages && (
+                            <Notice tone="warn">بوابة الرسائل غير مفعّلة؛ تُسجَّل الرسائل في السجل فقط ولا تصل للمشتركين.</Notice>
+                        )}
+                        {warningTemplates.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                                {warningTemplates.map((template) => (
+                                    <FieldAction key={template.id} onClick={() => setBody(template.body)}>{template.name}</FieldAction>
+                                ))}
+                            </div>
+                        )}
+                        <div>
+                            <InputLabel htmlFor={`${id}-body`} className="mb-2">نص الإنذار</InputLabel>
+                            <TextArea id={`${id}-body`} value={body} onChange={(event) => setBody(event.target.value)} rows={4} className="block w-full text-sm" maxLength={1000} required />
+                            <p className="mt-2 flex flex-wrap items-center gap-2 text-xs text-(--ma-muted)">
+                                الحقول:
+                                {placeholders.map((name) => (
+                                    <FieldAction key={name} onClick={() => setBody((current) => `${current} {${name}}`)}>{`{${name}}`}</FieldAction>
+                                ))}
+                            </p>
+                            <InputError message={errors.body} className="mt-1" />
+                        </div>
+                        {firstText && (
+                            <Notice icon="send" title={`معاينة رسالة ${reached[0].name}`}>
+                                <p className="whitespace-pre-line">{firstText}</p>
+                            </Notice>
+                        )}
+                        <p className="text-xs text-(--ma-muted)">
+                            المستلمون: <b className="font-display">{reached.length.toLocaleString('en')}</b>
+                            {channel === 'sms' && <>، كل رسالة نحو <b className="font-display">{parts}</b> جزء SMS، التكلفة التقريبية <b className="font-display">{(parts * reached.length).toLocaleString('en')}</b> رسالة</>}
+                            . الإرسال يدوي في كل مرة؛ لا تُرسل إنذارات تلقائيًا.
                         </p>
                     </div>
-                </div>
+                )}
 
-                <div className="flex-1 space-y-6 overflow-y-auto px-6 py-4">
-                    {failed && <p className="text-sm text-brand-600">تعذّر تحميل المشتركين؛ أغلق النافذة وحاول مرة أخرى.</p>}
-                    {preview?.tooMany && (
-                        <p className="rounded-control bg-amber-500/10 px-3 py-2 text-sm text-amber-800">
-                            النتائج أكثر من {preview.max.toLocaleString('en')} مشترك؛ ضيّق الفلاتر. لن يُطبَّق الإجراء إلا على المعروضين هنا.
+                {preview && action === 'confirm' && (
+                    <div className="space-y-4">
+                        {canChangeFee && reached.length > 0 && (
+                            <div className="flex flex-wrap items-end gap-3 rounded-[14px] border border-(--ma-line) p-4">
+                                <FormField id={`${id}-fee`} label="رسوم قطع الخدمة">
+                                    <Affix unit="₪">
+                                        <TextInput type="number" min={0} step="0.01" value={feeForAll} onChange={(event) => setFeeForAll(event.target.value)} className="block w-40" />
+                                    </Affix>
+                                </FormField>
+                                <SecondaryKey onClick={() => setFees((current) => ({ ...current, ...Object.fromEntries(reached.map((item) => [item.id, feeForAll])) }))} disabled={feeForAll === '' || Number(feeForAll) < 0}>
+                                    تطبيق على الجميع ({reached.length.toLocaleString('en')})
+                                </SecondaryKey>
+                                <p className="basis-full text-xs text-(--ma-muted)">الرسوم المعتادة <bdi dir="ltr">{formatMoney(usualFee)}</bdi> ₪. يمكنك تغييرها لكل مشترك في الجدول، و0 يعفيه منها.</p>
+                            </div>
+                        )}
+                        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[14px] bg-(--ma-owe-s) px-4 py-3">
+                            <p className="text-sm text-(--ma-ink)">
+                                <b className="font-display"><bdi dir="ltr">{reached.length.toLocaleString('en')}</bdi></b> مشترك، إجمالي رسوم القطع المقدّرة
+                            </p>
+                            <p className="font-display text-2xl font-bold text-(--ma-owe)"><bdi dir="ltr">{formatMoney(totalFees(chosenFees))}</bdi> ₪</p>
+                        </div>
+                        <p className="text-xs leading-5 text-(--ma-muted)">
+                            عند التأكيد تتحول خدمة كل مشترك إلى «مفصول» وتُحمَّل عليه رسوم قطع الخدمة المبيّنة مرة واحدة. إن تغيّرت حالة الخدمة بعد هذه المعاينة يُستثنى المشترك ويظهر في التقرير.
                         </p>
-                    )}
+                        <label className="flex items-start gap-3 rounded-[14px] border border-(--ma-line) p-4 text-sm font-semibold text-(--ma-ink)">
+                            <CheckBox checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} />
+                            أؤكد أن قطع الخدمة قد نُفّذ فعليًا للمشتركين المحددين.
+                        </label>
+                        <InputError message={errors.confirmed} />
+                        <InputError message={feeError(errors)} />
+                        {!feesAreValid && <Notice tone="danger">أدخل رسوم القطع لكل مشترك (0 للإعفاء).</Notice>}
+                        <HoldToConfirm count={reached.length} disabled={!confirmed || reached.length === 0 || !feesAreValid} busy={saving} onConfirm={() => submit()} label={`اضغط مع الاستمرار لتأكيد قطع ${reached.length.toLocaleString('en')} مشترك`} />
+                    </div>
+                )}
 
-                    {preview && (
-                        <div className="overflow-hidden rounded-control border border-gray-100">
-                            <div className="max-h-64 overflow-y-auto">
-                                <ListTable aria-label="المشتركون المشمولون بالإجراء" className="w-full text-sm">
-                                    <ListHeader className="sticky top-0 bg-gray-50 text-xs text-gray-500">
-                                        <ListColumn id="name" isRowHeader className="px-3 py-2 text-start">المشترك</ListColumn>
-                                        <ListColumn id="status" className="px-3 py-2 text-start">الحالة</ListColumn>
-                                        {action === 'warn' && <ListColumn id="phone" className="px-3 py-2 text-start">الجوال</ListColumn>}
-                                        {action === 'confirm' && <ListColumn id="service" className="px-3 py-2 text-start">الخدمة</ListColumn>}
-                                        <ListColumn id="balance" className="px-3 py-2 text-start">الرصيد</ListColumn>
-                                        {action === 'confirm' && <ListColumn id="fee" className="px-3 py-2 text-start">رسوم القطع</ListColumn>}
-                                        {action !== 'confirm' && <ListColumn id="scheduled_for" className="px-3 py-2 text-start">الموعد</ListColumn>}
-                                    </ListHeader>
-                                    <ListBody className="divide-y divide-gray-100">
-                                        {preview.items.map((item) => {
-                                            const why = exclusion(action, item);
-
-                                            return (
-                                                <ListRow key={item.id} id={item.id} className={why ? 'bg-gray-50 text-gray-400' : undefined}>
-                                                    <ListCell className="px-3 py-2">
-                                                        <b className={why ? 'line-through' : 'text-gray-900'}>{item.name}</b>
-                                                        <span dir="ltr" className="block text-end font-display text-xs text-gray-500 rtl:text-start">{item.accountNumber}</span>
-                                                        {why && <span className="block text-xs text-amber-700">يُستثنى: {why}</span>}
-                                                    </ListCell>
-                                                    <ListCell className="px-3 py-2"><StatusPill tone={itemTone(item)} label={item.isOverdue ? 'متأخر' : item.statusLabel} /></ListCell>
-                                                    {action === 'warn' && <ListCell className="px-3 py-2 font-display text-xs" dir="ltr">{item.phone ?? '—'}</ListCell>}
-                                                    {action === 'confirm' && <ListCell className="px-3 py-2 text-xs">{item.serviceStatusLabel}</ListCell>}
-                                                    <ListCell className="whitespace-nowrap px-3 py-2"><Balance value={item.balance} /></ListCell>
-                                                    {action === 'confirm' && (
-                                                        <ListCell className="whitespace-nowrap px-3 py-2 font-semibold">
-                                                            {canChangeFee && !why ? (
-                                                                <span className="flex items-center gap-2">
-                                                                    <Input
-                                                                        type="number"
-                                                                        min={0}
-                                                                        step="0.01"
-                                                                        value={fees[item.id] ?? ''}
-                                                                        onChange={(event) => setFees((current) => ({ ...current, [item.id]: event.target.value }))}
-                                                                        aria-label={`رسوم قطع ${item.name}`}
-                                                                        className="w-24 py-1 text-sm"
-                                                                    />
-                                                                    ₪
-                                                                </span>
-                                                            ) : (
-                                                                <>{formatMoney(fees[item.id] ?? item.fee)} ₪</>
-                                                            )}
-                                                        </ListCell>
-                                                    )}
-                                                    {action !== 'confirm' && <ListCell className="whitespace-nowrap px-3 py-2 text-xs" dir="ltr">{formatDate(item.scheduledFor)}</ListCell>}
-                                                </ListRow>
-                                            );
-                                        })}
-                                    </ListBody>
-                                </ListTable>
-                            </div>
-                        </div>
-                    )}
-
-                    {preview && action === 'reschedule' && (
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            <div>
-                                <label htmlFor={`${id}-date`} className="mb-2 block text-sm font-semibold text-gray-700">موعد القطع الجديد</label>
-                                <DateInput id={`${id}-date`} name="scheduled_for" min={today} value={date} onChange={setDate} required />
-                                <InputError message={errors.scheduled_for} className="mt-1" />
-                            </div>
-                            <div>
-                                <label htmlFor={`${id}-reason`} className="mb-2 block text-sm font-semibold text-gray-700">سبب التمديد (اختياري)</label>
-                                <Input id={`${id}-reason`} type="text" value={reason} onChange={(event) => setReason(event.target.value)} className="block w-full text-sm" maxLength={1000} />
-                            </div>
-                            <p className="flex items-start gap-2 text-xs text-gray-500 sm:col-span-2">
-                                <Icon name="info" className="mt-1 h-4 w-4 shrink-0" />
-                                يُسجَّل كل تمديد بالموعد القديم والجديد. لا تُرسل أي رسالة للمشتركين.
-                            </p>
-                        </div>
-                    )}
-
-                    {preview && action === 'remove' && (
-                        <div>
-                            <label htmlFor={`${id}-reason`} className="mb-2 block text-sm font-semibold text-gray-700">سبب الإزالة (اختياري)</label>
-                            <Input id={`${id}-reason`} type="text" value={reason} onChange={(event) => setReason(event.target.value)} className="block w-full text-sm" maxLength={1000} />
-                            <p className="mt-2 text-xs text-gray-500">يبقى سجلهم في القائمة، ويمكن إدراجهم من جديد لاحقًا.</p>
-                        </div>
-                    )}
-
-                    {preview && action === 'warn' && (
-                        <div className="space-y-4">
-                            <ChoiceChips options={channelOptions} value={channel} onChange={setChannel} label="طريقة الإرسال" />
-                            {channel === 'sms' && !smsDeliversMessages && (
-                                <p className="rounded-control bg-amber-500/10 px-3 py-2 text-xs text-amber-800">بوابة الرسائل غير مفعّلة؛ تُسجَّل الرسائل في السجل فقط ولا تصل للمشتركين.</p>
-                            )}
-                            {warningTemplates.length > 0 && (
-                                <div className="flex flex-wrap gap-2">
-                                    {warningTemplates.map((template) => (
-                                        <Button data-raw="" variant="ghost" key={template.id} onClick={() => setBody(template.body)} className="rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50">
-                                            {template.name}
-                                        </Button>
-                                    ))}
-                                </div>
-                            )}
-                            <div>
-                                <label htmlFor={`${id}-body`} className="mb-2 block text-sm font-semibold text-gray-700">نص الإنذار</label>
-                                <TextArea id={`${id}-body`} value={body} onChange={(event) => setBody(event.target.value)} rows={4} className="block w-full text-sm" maxLength={1000} required />
-                                <p className="mt-1 flex flex-wrap gap-2 text-xs text-gray-500">
-                                    الحقول:
-                                    {placeholders.map((name) => (
-                                        <Button data-raw="" variant="ghost" key={name} onClick={() => setBody((current) => `${current} {${name}}`)} className="rounded bg-gray-100 px-2 font-display">{`{${name}}`}</Button>
-                                    ))}
-                                </p>
-                                <InputError message={errors.body} className="mt-1" />
-                            </div>
-                            {firstText && (
-                                <div className="rounded-control border border-gray-100 bg-gray-50 p-3 text-sm">
-                                    <p className="mb-1 text-[13.5px] font-semibold text-gray-700">معاينة رسالة {reached[0].name}</p>
-                                    <p className="whitespace-pre-line text-gray-800">{firstText}</p>
-                                </div>
-                            )}
-                            <p className="text-xs text-gray-600">
-                                المستلمون: <b className="font-display">{reached.length.toLocaleString('en')}</b>
-                                {channel === 'sms' && <>، كل رسالة نحو <b className="font-display">{parts}</b> جزء SMS، التكلفة التقريبية <b className="font-display">{(parts * reached.length).toLocaleString('en')}</b> رسالة</>}
-                                . الإرسال يدوي في كل مرة؛ لا تُرسل إنذارات تلقائيًا.
-                            </p>
-                        </div>
-                    )}
-
-                    {preview && action === 'confirm' && (
-                        <div className="space-y-4">
-                            {canChangeFee && reached.length > 0 && (
-                                <div className="flex flex-wrap items-end gap-3 rounded-control border border-gray-200 p-3">
-                                    <div>
-                                        <label htmlFor={`${id}-fee`} className="mb-2 block text-sm font-semibold text-gray-700">رسوم قطع الخدمة</label>
-                                        <span className="flex items-center gap-2">
-                                            <Input id={`${id}-fee`} type="number" min={0} step="0.01" value={feeForAll} onChange={(event) => setFeeForAll(event.target.value)} className="w-28 text-sm" />
-                                            ₪
-                                        </span>
-                                    </div>
-                                    <SecondaryKey onClick={() => setFees((current) => ({ ...current, ...Object.fromEntries(reached.map((item) => [item.id, feeForAll])) }))} disabled={feeForAll === '' || Number(feeForAll) < 0}>
-                                        تطبيق على الجميع ({reached.length.toLocaleString('en')})
-                                    </SecondaryKey>
-                                    <p className="basis-full text-xs text-gray-500">الرسوم المعتادة {formatMoney(usualFee)} ₪. يمكنك تغييرها لكل مشترك في الجدول، و0 يعفيه منها.</p>
-                                </div>
-                            )}
-                            <div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-red-500/20 bg-red-500/5 px-4 py-3">
-                                <p className="text-sm text-gray-700">
-                                    <b className="font-display text-gray-900">{reached.length.toLocaleString('en')}</b> مشترك، إجمالي رسوم القطع المقدّرة
-                                </p>
-                                <p className="font-display text-2xl font-bold text-gray-900">{formatMoney(totalFees(chosenFees))} ₪</p>
-                            </div>
-                            <p className="text-xs leading-5 text-gray-600">
-                                عند التأكيد تتحول خدمة كل مشترك إلى «مفصول» وتُحمَّل عليه رسوم قطع الخدمة المبيّنة مرة واحدة. إن تغيّرت حالة الخدمة بعد هذه المعاينة يُستثنى المشترك ويظهر في التقرير.
-                            </p>
-                            <label className="flex items-start gap-3 rounded-control border border-gray-200 p-3 text-sm font-semibold text-gray-800">
-                                <CheckBox checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} />
-                                أؤكد أن قطع الخدمة قد نُفّذ فعليًا للمشتركين المحددين.
-                            </label>
-                            <InputError message={errors.confirmed} />
-                            <InputError message={feeError(errors)} />
-                            {!feesAreValid && <p className="text-sm text-brand-600">أدخل رسوم القطع لكل مشترك (0 للإعفاء).</p>}
-                            <HoldToConfirm count={reached.length} disabled={!confirmed || reached.length === 0 || !feesAreValid} busy={saving} onConfirm={() => submit()} label={`اضغط مع الاستمرار لتأكيد قطع ${reached.length.toLocaleString('en')} مشترك`} />
-                        </div>
-                    )}
-
-                    <InputError message={errors.ids} />
-                </div>
-
-                <div className="flex flex-wrap items-center justify-end gap-3 border-t border-gray-100 bg-gray-50 px-6 py-4">
-                    <SecondaryKey onClick={onClose} disabled={saving}>إلغاء</SecondaryKey>
-                    {action === 'remove' && (
-                        <DangerKey type="submit" disabled={saving || !preview || reached.length === 0}>
-                            {saving ? 'جارٍ التنفيذ…' : `إزالة ${reached.length.toLocaleString('en')} مشترك`}
-                        </DangerKey>
-                    )}
-                    {(action === 'reschedule' || action === 'warn') && (
-                        <PrimaryKey type="submit" disabled={saving || !preview || reached.length === 0 || (action === 'warn' && !body.trim())}>
-                            <Icon name={meta.icon} className="h-4 w-4" />
-                            {saving ? 'جارٍ التنفيذ…' : action === 'warn' ? `إرسال إلى ${reached.length.toLocaleString('en')} مشترك` : `تطبيق على ${reached.length.toLocaleString('en')} مشترك`}
-                        </PrimaryKey>
-                    )}
-                </div>
+                <InputError message={errors.ids} />
             </form>
-        </Modal>
+        </DialogFrame>
     );
 }

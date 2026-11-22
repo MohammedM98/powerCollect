@@ -1,7 +1,8 @@
-import { Button, Input } from '@heroui/react';
+import { Button } from '@heroui/react';
 import Icon from '@/Components/UI/Icon';
 import InputError from '@/Components/UI/InputError';
 import { FOCUS_RING, Section } from './MessageFormParts';
+import { Notice, TextInput } from '@/Components/UI';
 
 /** Who the quick message goes to: the picked subscriptions, a search to add more, and which of them the kind reaches. */
 export default function QuickMessageRecipients({
@@ -35,17 +36,17 @@ export default function QuickMessageRecipients({
             }
         >
             {selectionError && (
-                <p role="alert" className="text-sm text-red-600">
+                <Notice tone="danger" role="alert">
                     {selectionError}
-                </p>
+                </Notice>
             )}
             <div>
                 <label htmlFor={`${id}-search`} className="sr-only">
                     بحث عن مشترك
                 </label>
                 <div className="relative">
-                    <Icon name="search" className="pointer-events-none absolute inset-s-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                    <Input
+                    <Icon name="search" className="pointer-events-none absolute inset-s-3 top-1/2 h-4 w-4 -translate-y-1/2 text-(--ma-faint)" />
+                    <TextInput
                         ref={searchRef}
                         id={`${id}-search`}
                         type="search"
@@ -70,10 +71,10 @@ export default function QuickMessageRecipients({
                         id={`${id}-search-results`}
                         aria-label="نتائج البحث"
                         aria-busy={searchHttp.processing}
-                        className="mt-2 divide-y divide-gray-100 overflow-hidden rounded-control border border-gray-200 bg-surface shadow-card"
+                        className="mt-2 divide-y divide-(--ma-line) overflow-hidden rounded-control border border-(--ma-line) bg-(--ma-solid) shadow-card"
                     >
                         {results.length === 0 ? (
-                            <li className="px-3 py-2 text-sm text-gray-500">{searchHttp.processing ? 'جارٍ البحث...' : 'لا يوجد مشترك مطابق.'}</li>
+                            <li className="px-3 py-2 text-sm text-(--ma-muted)">{searchHttp.processing ? 'جارٍ البحث...' : 'لا يوجد مشترك مطابق.'}</li>
                         ) : (
                             results.map((row) => {
                                 const alreadyPicked = pickedIds.includes(row.id);
@@ -83,14 +84,14 @@ export default function QuickMessageRecipients({
                                         <Button data-raw="" variant="ghost"
                                             onClick={() => pick(row)}
                                             isDisabled={alreadyPicked}
-                                            className={`flex w-full items-center gap-3 px-3 py-2 text-start text-sm transition hover:bg-gray-50 disabled:cursor-default disabled:opacity-60 ${FOCUS_RING}`}
+                                            className={`flex w-full items-center gap-3 px-3 py-2 text-start text-sm transition hover:bg-(--ma-tile) disabled:cursor-default disabled:opacity-60 ${FOCUS_RING}`}
                                         >
-                                            <Icon name={alreadyPicked ? 'check' : 'plus'} className="h-4 w-4 shrink-0 text-gray-400" />
+                                            <Icon name={alreadyPicked ? 'check' : 'plus'} className="h-4 w-4 shrink-0 text-(--ma-faint)" />
                                             <span className="min-w-0 flex-1">
-                                                <span className="block truncate font-semibold text-gray-900">{row.name}</span>
-                                                <span className="block truncate text-xs text-gray-500">{row.accountNumber}</span>
+                                                <span className="block truncate font-semibold text-(--ma-ink)">{row.name}</span>
+                                                <span className="block truncate text-xs text-(--ma-muted)">{row.accountNumber}</span>
                                             </span>
-                                            <span dir="ltr" className="shrink-0 text-xs text-gray-600">
+                                            <span dir="ltr" className="shrink-0 text-xs text-(--ma-muted)">
                                                 {row.phone ?? 'لا يوجد رقم'}
                                             </span>
                                         </Button>
@@ -103,15 +104,15 @@ export default function QuickMessageRecipients({
             </div>
 
             {pickedIds.length >= maxRecipients && (
-                <p className="text-sm text-amber-700">
-                    الرسالة السريعة تصل لـ {maxRecipients.toLocaleString('en')} مشترك على الأكثر؛ للأكثر استخدم صفحة الرسائل.
-                </p>
+                <Notice tone="warn">
+                    الرسالة السريعة تصل لـ <bdi dir="ltr">{maxRecipients.toLocaleString('en')}</bdi> مشترك على الأكثر؛ للأكثر استخدم صفحة الرسائل.
+                </Notice>
             )}
 
             {pickedIds.length > 0 && (
                 <ul
                     aria-label="المستلمون المختارون"
-                    className="max-h-56 divide-y divide-gray-100 overflow-y-auto rounded-control border border-gray-100"
+                    className="max-h-56 divide-y divide-(--ma-line) overflow-y-auto rounded-control border border-(--ma-line)"
                 >
                     {pickedIds.map((subscriptionId) => {
                         const person = people[subscriptionId];
@@ -120,7 +121,7 @@ export default function QuickMessageRecipients({
                         return (
                             <li
                                 key={subscriptionId}
-                                className={`flex items-center gap-3 px-3 py-2 text-sm ${previewRow?.id === subscriptionId ? 'bg-brand-500/5' : ''}`}
+                                className={`flex items-center gap-3 px-3 py-2 text-sm ${previewRow?.id === subscriptionId ? 'bg-(--ma-brand-soft)' : ''}`}
                             >
                                 <Button data-raw="" variant="ghost"
                                     onClick={() => setPreviewId(subscriptionId)}
@@ -128,10 +129,10 @@ export default function QuickMessageRecipients({
                                     title="معاينة رسالته"
                                     className={`min-w-0 flex-1 rounded-lg text-start disabled:cursor-default ${FOCUS_RING}`}
                                 >
-                                    <span className={`block truncate font-semibold ${reason ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
+                                    <span className={`block truncate font-semibold ${reason ? 'text-(--ma-faint) line-through' : 'text-(--ma-ink)'}`}>
                                         {person?.name ?? (detailsLoaded ? `مشترك رقم ${subscriptionId}` : '…')}
                                     </span>
-                                    <span className="block truncate text-xs text-gray-500">
+                                    <span className="block truncate text-xs text-(--ma-muted)">
                                         {person?.accountNumber}
                                         {person?.phone && (
                                             <>
@@ -142,7 +143,7 @@ export default function QuickMessageRecipients({
                                     </span>
                                 </Button>
                                 {reason && (
-                                    <span className="inline-flex shrink-0 items-center gap-1 text-xs text-amber-700 dark:text-amber-400">
+                                    <span className="inline-flex shrink-0 items-center gap-1 text-xs text-(--ma-warn)">
                                         <Icon name="warning" className="h-3.5 w-3.5" />
                                         {reason}
                                     </span>
@@ -151,7 +152,7 @@ export default function QuickMessageRecipients({
                                     onClick={() => unpick(subscriptionId)}
                                     aria-label={`إزالة ${person?.name ?? 'المشترك'}`}
                                     title="إزالة"
-                                    className={`shrink-0 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-brand-600 ${FOCUS_RING}`}
+                                    className={`shrink-0 rounded-lg p-1 text-(--ma-faint) hover:bg-(--ma-tile) hover:text-(--ma-brand) ${FOCUS_RING}`}
                                 >
                                     <Icon name="close" className="h-4 w-4" />
                                 </Button>

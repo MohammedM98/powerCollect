@@ -1,10 +1,8 @@
-import { Button } from '@heroui/react';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
 import FormSelect from '@/Components/Form/FormSelect';
-import InputError from '@/Components/UI/InputError';
-import Icon from '@/Components/UI/Icon';
-import { TextInput } from '@/Components/UI';
+import FormField from '@/Components/Form/FormField';
+import { Notice, PrimaryKey, SecondaryKey, TextInput } from '@/Components/UI';
 
 export default function MeterBoxSubAreaSelect({ id, value, onChange, onCreated, subAreas, areaId, canCreate, blockedMessage, error }) {
     const http = useHttp({ name: '' });
@@ -67,26 +65,25 @@ export default function MeterBoxSubAreaSelect({ id, value, onChange, onCreated, 
                 onCreate={canCreate && areaId && !blockedMessage ? startAdding : null}
                 createLabel="إضافة منطقة جديدة"
             />
-            {adding && <div className="space-y-3 rounded-control border border-brand-500/25 bg-brand-500/4 p-3" role="group" aria-label="إضافة منطقة الطبلون">
-                <label htmlFor={`${id}-new`} className="flex items-center gap-2 text-xs font-bold text-brand-600"><Icon name="plus" className="h-4 w-4" />منطقة جديدة ضمن منطقة الفرع المختار</label>
-                <TextInput
-                    id={`${id}-new`}
-                    value={http.data.name}
-                    onChange={(event) => { http.setData('name', event.target.value); http.clearErrors('name'); }}
-                    onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); save(); } }}
-                    disabled={http.processing}
-                    maxLength={255}
-                    autoFocus
-                    placeholder="اسم المنطقة الجديدة"
-                    className="block w-full text-sm"
-                />
-                <InputError message={http.errors.name || http.errors.area_id || (failed ? 'تعذّر إضافة المنطقة. حاول مرة أخرى.' : null)} />
-                <div className="flex flex-wrap gap-2">
-                    <Button data-raw="" variant="ghost" onClick={save} isDisabled={http.processing || !http.data.name.trim()} className="rounded-control bg-brand-500 px-3 py-2 text-xs font-bold text-white transition hover:bg-brand-600 disabled:opacity-50">{http.processing ? 'جارٍ الإضافة...' : 'إضافة واختيار المنطقة'}</Button>
-                    <Button data-raw="" variant="ghost" onClick={() => setAdding(false)} isDisabled={http.processing} className="rounded-control px-3 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100">إلغاء</Button>
+            {adding && <div className="ma-inline-add" role="group" aria-label="إضافة منطقة الطبلون">
+                <FormField id={`${id}-new`} label="منطقة جديدة ضمن منطقة الفرع المختار" error={http.errors.name || http.errors.area_id || (failed ? 'تعذّر إضافة المنطقة. حاول مرة أخرى.' : null)}>
+                    <TextInput
+                        value={http.data.name}
+                        onChange={(event) => { http.setData('name', event.target.value); http.clearErrors('name'); }}
+                        onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); event.stopPropagation(); save(); } }}
+                        disabled={http.processing}
+                        maxLength={255}
+                        autoFocus
+                        placeholder="اسم المنطقة الجديدة"
+                        className="block w-full"
+                    />
+                </FormField>
+                <div className="flex flex-wrap justify-end gap-2">
+                    <SecondaryKey onClick={() => setAdding(false)} disabled={http.processing}>إلغاء</SecondaryKey>
+                    <PrimaryKey type="button" onClick={save} disabled={http.processing || !http.data.name.trim()}>{http.processing ? 'جارٍ الإضافة...' : 'إضافة واختيار المنطقة'}</PrimaryKey>
                 </div>
             </div>}
-            {!adding && subAreas.some((item) => item.isNew && String(item.id) === String(value)) && <p role="status" className="flex items-center gap-2 text-xs font-semibold text-emerald-600"><Icon name="check" className="h-3.5 w-3.5" />أُضيفت المنطقة واختيرت للطبلون.</p>}
+            {!adding && subAreas.some((item) => item.isNew && String(item.id) === String(value)) && <Notice tone="success" role="status">أُضيفت المنطقة واختيرت للطبلون.</Notice>}
         </div>
     );
 }

@@ -54,6 +54,8 @@ class BrandSettingController extends Controller
     {
         $saved = $brand->profile()['logos'];
         $removed = $request->validated('remove_logos', []);
+        $defaults = Brand::defaults()['logos'];
+        $replacesMainLogo = $request->file('logos.main') instanceof UploadedFile;
         $logos = [];
 
         foreach (Brand::LOGOS as $variant) {
@@ -61,6 +63,8 @@ class BrandSettingController extends Controller
             $logos[$variant] = match (true) {
                 $file instanceof UploadedFile => 'data:'.$file->getMimeType().';base64,'.base64_encode($file->getContent()),
                 in_array($variant, $removed, true) => null,
+                // The default logo's dark-background twin doesn't follow a company's own logo.
+                $replacesMainLogo && $variant !== 'main' && $saved[$variant] === $defaults[$variant] => null,
                 default => $saved[$variant],
             };
         }

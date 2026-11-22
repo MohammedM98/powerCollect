@@ -1,7 +1,6 @@
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import Icon from '@/Components/UI/Icon';
 import ChoiceChips from '@/Components/UI/ChoiceChips';
 import { CHANNEL_ICONS, KIND_HINTS, KIND_ICONS, MessageText, renderMessage, withIcons } from './MessageParts';
 import { scopedOptions } from '@/lib/filterGroups';
@@ -10,7 +9,7 @@ import MessageRecipientList from './MessageRecipientList';
 import MessageBodyCard from './MessageBodyCard';
 import MessageRecipientCriteria from './MessageRecipientCriteria';
 import { Card } from './MessageFormParts';
-import { ConfirmDialog } from '@/Components/UI';
+import { ConfirmDialog, Notice } from '@/Components/UI';
 
 /**
  * Write a message to subscriptions: pick what it's about, who gets it, the
@@ -285,13 +284,12 @@ export default function Create({
                     <Card icon="send" title="طريقة الإرسال">
                         <ChoiceChips options={withIcons(channels, CHANNEL_ICONS)} value={channel} onChange={setChannel} label="طريقة الإرسال" />
                         {channel === 'sms' && !smsDeliversMessages && (
-                            <p role="note" className="mt-3 flex items-start gap-2 rounded-control bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-300">
-                                <Icon name="warning" className="mt-1 h-4 w-4 shrink-0" />
+                            <Notice tone="warn" role="note" className="mt-3">
                                 لم تُضبط بوابة الرسائل النصية بعد، فتُسجَّل الرسائل في سجل النظام فقط ولا تصل للمشتركين. اطلب ضبط مزوّد SMS، أو أرسل عبر واتساب.
-                            </p>
+                            </Notice>
                         )}
                         {channel === 'whatsapp' && (
-                            <p className="mt-3 text-sm text-gray-500">
+                            <p className="mt-3 text-sm text-(--ma-muted)">
                                 تُجهَّز الرسائل، ثم ترسلها من صفحة الإرسال: زر لكل مشترك يفتح واتساب والرسالة مكتوبة.
                             </p>
                         )}
@@ -300,8 +298,8 @@ export default function Create({
 
                 <div className="space-y-6">
                     <Card icon="eye" title="معاينة الرسالة" description={previewRecipient ? `كما تصل إلى ${previewRecipient.name}` : 'اعرض المستلمين لترى رسالة كل مشترك.'}>
-                        <div className="whitespace-pre-line rounded-2xl rounded-ss-sm bg-emerald-500/10 px-4 py-3 leading-7 text-gray-900">
-                            {previewText ? <MessageText text={previewText} /> : <span className="text-gray-500">نص الرسالة</span>}
+                        <div className="whitespace-pre-line rounded-2xl rounded-ss-sm bg-(--ma-pay-s) px-4 py-3 leading-7 text-(--ma-ink)">
+                            {previewText ? <MessageText text={previewText} /> : <span className="text-(--ma-muted)">نص الرسالة</span>}
                         </div>
                     </Card>
 

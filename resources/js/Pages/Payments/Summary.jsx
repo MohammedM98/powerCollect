@@ -19,7 +19,7 @@ import {
 import OpenEntriesTable from './OpenEntriesTable';
 import PageHeader from '@/Components/PageHeader';
 import InfoTip from '@/Components/UI/InfoTip';
-import { PrimaryKey } from '@/Components/UI';
+import { Notice, PrimaryKey } from '@/Components/UI';
 
 /**
  * What the user collected today, on the prototype's charcoal card: the
@@ -89,28 +89,28 @@ function RecentDays({ days }) {
 function TodaysPayments({ today }) {
     return (
         <section aria-labelledby="todays-payments" className="mt-8 space-y-4">
-            <h2 id="todays-payments" className="font-sans text-lg font-bold text-gray-900">
+            <h2 id="todays-payments" className="font-sans text-lg font-bold text-(--ma-ink)">
                 آخر دفعاتك اليوم
             </h2>
 
             {today.payments.length > 0 ? (
-                <ul className="divide-y divide-gray-100 overflow-hidden rounded-panel border border-gray-100 bg-surface shadow-card">
+                <ul className="divide-y divide-(--ma-line) overflow-hidden rounded-panel border border-(--ma-line) bg-(--ma-solid) shadow-card">
                     {today.payments.map((payment) => (
                         <li key={payment.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-sm">
-                            <span className="min-w-0 flex-1 basis-48 font-semibold text-gray-900">{payment.subscriptionName}</span>
-                            <span className="text-gray-500">
+                            <span className="min-w-0 flex-1 basis-48 font-semibold text-(--ma-ink)">{payment.subscriptionName}</span>
+                            <span className="text-(--ma-muted)">
                                 {payment.methodLabel}
                                 {payment.bankName && `، ${payment.bankName}`}
                             </span>
                             {payment.voucherNumber && (
-                                <span dir="ltr" className="font-display text-xs text-gray-500">
+                                <span dir="ltr" className="font-display text-xs text-(--ma-muted)">
                                     #{payment.voucherNumber}
                                 </span>
                             )}
-                            <span dir="ltr" className="font-display text-xs text-gray-500">
+                            <span dir="ltr" className="font-display text-xs text-(--ma-muted)">
                                 {payment.time}
                             </span>
-                            <b className="font-display text-base text-emerald-700 dark:text-emerald-400">{formatMoney(payment.amount)} ₪</b>
+                            <b className="font-display text-base text-(--ma-pay)">{formatMoney(payment.amount)} ₪</b>
                             <a
                                 href={payment.receiptUrl}
                                 target="_blank"
@@ -124,7 +124,7 @@ function TodaysPayments({ today }) {
                     ))}
                 </ul>
             ) : (
-                <p className="rounded-panel border border-dashed border-gray-200 bg-surface px-4 py-8 text-center text-sm text-gray-500">لم تسجّل أي دفعة اليوم بعد.</p>
+                <p className="rounded-panel border border-dashed border-(--ma-line) bg-(--ma-solid) px-4 py-8 text-center text-sm text-(--ma-muted)">لم تسجّل أي دفعة اليوم بعد.</p>
             )}
         </section>
     );
@@ -157,22 +157,22 @@ export default function Summary({ today, recentDays = [], cashBox, current, entr
 
     return <AuthenticatedLayout badges={{ '/payments/summary': pendingCount }} header={<PageHeader eyebrow={cashBox.branchName ?? 'حسابك الحالي'} title="ملخص التحصيل" />}>
         <Head title="ملخص التحصيل" />
-        {saved && <p role="status" className="mb-4 rounded-control bg-emerald-500/10 p-4 text-sm text-emerald-700">{saved}</p>}
+        {saved && <Notice tone="success" role="status" className="mb-4">{saved}</Notice>}
         <div className="gl-today-row">
             <TodaysSummary today={today} />
             {recentDays.length > 0 && <RecentDays days={recentDays} />}
         </div>
         {cashBox.started ? <div className="space-y-8">
-            {needsAction.length > 0 && <section className="space-y-3 rounded-panel border border-amber-500/25 bg-amber-500/5 p-4">
-                <h3 className="font-bold text-gray-900">تحتاج إجراء منك</h3>
-                {needsAction.map((box) => <div key={box.id} className="flex flex-wrap items-center justify-between gap-3 border-t border-amber-500/15 pt-3"><div className="flex items-center gap-3"><BoxTypeIcon type={box.type} className="h-10 w-10" /><div className="space-y-2"><Link href={box.urls.show} prefetch className="font-semibold text-gray-900">{boxTypes[box.type]}، <bdi dir="ltr" className="font-display text-xs">{box.number}</bdi></Link><BoxStage box={box} /></div></div><PrimaryKey onClick={() => setSelected({ box, action: boxAction(box) })}>{actionLabel(box)}</PrimaryKey></div>)}
+            {needsAction.length > 0 && <section className="space-y-3 rounded-[18px] bg-(--ma-warn-s) p-4 shadow-(--ma-hl)">
+                <h3 className="font-bold text-(--ma-ink)">تحتاج إجراء منك</h3>
+                {needsAction.map((box) => <div key={box.id} className="flex flex-wrap items-center justify-between gap-3 border-t border-(--ma-line) pt-3"><div className="flex items-center gap-3"><BoxTypeIcon type={box.type} className="h-10 w-10" /><div className="space-y-2"><Link href={box.urls.show} prefetch className="font-semibold text-(--ma-ink)">{boxTypes[box.type]}، <bdi dir="ltr" className="font-display text-xs">{box.number}</bdi></Link><BoxStage box={box} /></div></div><PrimaryKey onClick={() => setSelected({ box, action: boxAction(box) })}>{actionLabel(box)}</PrimaryKey></div>)}
             </section>}
             <CollectorAuditNotes notes={cashBox.auditNotes} onSaved={() => setSaved('أُرسل ردّك إلى الفرع.')} />
             <CollectorDebts debts={cashBox.debts} />
 
             <section aria-labelledby="open-boxes" className="space-y-4">
                 <div className="flex items-center gap-1">
-                    <h3 id="open-boxes" className="text-lg font-bold text-gray-900">صناديقي المفتوحة</h3>
+                    <h3 id="open-boxes" className="text-lg font-bold text-(--ma-ink)">صناديقي المفتوحة</h3>
                     <InfoTip label="عن صناديقي المفتوحة">لكل نوع صندوق خاص به؛ يراجعه الفرع ويؤكد إغلاقه، أو يُغلق عند القطع الأسبوعي.</InfoTip>
                 </div>
                 <div className="grid gap-4 lg:grid-cols-3">
@@ -182,12 +182,12 @@ export default function Summary({ today, recentDays = [], cashBox, current, entr
 
             <section id="open-entries" aria-labelledby="open-entries-title" className="scroll-mt-24 space-y-4">
                 <div className="flex items-center gap-1">
-                    <h3 id="open-entries-title" className="text-lg font-bold text-gray-900">حركاتي المفتوحة</h3>
+                    <h3 id="open-entries-title" className="text-lg font-bold text-(--ma-ink)">حركاتي المفتوحة</h3>
                     <InfoTip label="عن حركاتي المفتوحة">كل ما سجّلته في صناديقك المفتوحة؛ حركات الصناديق المغلقة تجدها داخل كل صندوق في صفحة الصناديق المالية.</InfoTip>
                 </div>
                 <OpenEntriesTable table={table} entries={entries} filters={filters} counts={counts} url={collectionUrls.summary} label="حركاتي المفتوحة" />
             </section>
-        </div> : <p className="rounded-panel border border-dashed border-gray-200 bg-surface p-6 text-sm leading-7 text-gray-500">{cashBox.branchName ? 'تُفتح الصناديق تلقائيًا عند تسجيل أول دفعة أو مقاصة في فرعك.' : 'حسابك غير مرتبط بفرع، لذلك لا يوجد سجل صناديق شخصي.'}</p>}
+        </div> : <p className="rounded-panel border border-dashed border-(--ma-line) bg-(--ma-solid) p-6 text-sm leading-7 text-(--ma-muted)">{cashBox.branchName ? 'تُفتح الصناديق تلقائيًا عند تسجيل أول دفعة أو مقاصة في فرعك.' : 'حسابك غير مرتبط بفرع، لذلك لا يوجد سجل صناديق شخصي.'}</p>}
         <TodaysPayments today={today} />
         {selected && <CashBoxAction key={`${selected.box.id}-${selected.action}`} {...selected} onClose={() => setSelected(null)} onSuccess={() => setSaved('تم تأكيد التسليم.')} />}
     </AuthenticatedLayout>;

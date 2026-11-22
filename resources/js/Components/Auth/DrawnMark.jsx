@@ -9,7 +9,7 @@ const MA_STROKE = 'M193,-30c-16.821,19.011 -33.525,35.552 -50.113,49.624l-1.846,
 
 /** Whether the company's logo is the MA mark, which this screen can draw stroke by stroke. */
 function isMaMark(brand) {
-    return /\/logo-ma\.svg$/.test(brand.logos.light ?? brand.logos.main ?? '');
+    return /\/logo-ma(-light)?\.svg$/.test(brand.logos.light ?? brand.logos.main ?? '');
 }
 
 /**

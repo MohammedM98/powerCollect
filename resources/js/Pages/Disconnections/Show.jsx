@@ -18,9 +18,8 @@ import HistoryModal from './HistoryModal';
 import ResultReport from './ResultReport';
 import PageHeader from '@/Components/PageHeader';
 import { urlWithout } from '@/lib/pageUrl';
-import { AddKey, CheckBox, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, StatusPill, secondaryButtonClass } from '@/Components/UI';
+import { AddKey, CheckBox, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, SelectionBar, SelectionBarKey, StatusPill, secondaryButtonClass } from '@/Components/UI';
 
-const FOCUS_RING = 'focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white';
 
 const PRINT_FIELDS = [
     { key: 'name', label: 'المشترك' },
@@ -32,21 +31,12 @@ const PRINT_FIELDS = [
     { key: 'statusLabel', label: 'الحالة' },
 ];
 
-function BarButton({ icon, label, onClick, className = '' }) {
+function Stat({ label, value, tone = 'text-(--ma-ink)', hint }) {
     return (
-        <Button data-raw="" variant="ghost" onClick={onClick} className={`inline-flex items-center gap-2 whitespace-nowrap rounded-control bg-white/10 px-3 py-2 text-sm font-semibold text-white transition hover:bg-white/20 ${FOCUS_RING} ${className}`}>
-            <Icon name={icon} className="h-4 w-4" />
-            {label}
-        </Button>
-    );
-}
-
-function Stat({ label, value, tone = 'text-gray-900', hint }) {
-    return (
-        <div className="rounded-card border border-gray-100 bg-surface px-4 py-3 shadow-card">
-            <p className="text-[13.5px] font-semibold text-gray-700">{label}</p>
+        <div className="rounded-[18px] bg-(--ma-panel) px-4 py-3 shadow-(--ma-depth) [backdrop-filter:var(--ma-blur)]">
+            <p className="text-[13.5px] font-semibold text-(--ma-muted)">{label}</p>
             <p className={`mt-1 font-display text-2xl font-bold ${tone}`}>{value}</p>
-            {hint && <p className="mt-1 text-xs text-gray-500">{hint}</p>}
+            {hint && <p className="mt-1 text-xs text-(--ma-muted)">{hint}</p>}
         </div>
     );
 }
@@ -184,8 +174,8 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
             {result && <ResultReport result={result} onClose={() => setResult(null)} />}
 
             <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-                <Stat label="بانتظار القطع" value={formatNumber(summary.scheduled)} tone="text-amber-700 dark:text-amber-400" hint={`موعدهم اليوم: ${formatNumber(summary.dueToday)}`} />
-                <Stat label="متأخر — بانتظار إجراء" value={formatNumber(summary.overdue)} tone="text-red-700 dark:text-red-400" hint="لا يُقطع أحد تلقائيًا" />
+                <Stat label="بانتظار القطع" value={formatNumber(summary.scheduled)} tone="text-(--ma-warn)" hint={`موعدهم اليوم: ${formatNumber(summary.dueToday)}`} />
+                <Stat label="متأخر — بانتظار إجراء" value={formatNumber(summary.overdue)} tone="text-(--ma-owe)" hint="لا يُقطع أحد تلقائيًا" />
                 <Stat label="تم قطعهم" value={formatNumber(summary.disconnected)} />
                 <Stat label="أُزيلوا" value={formatNumber(summary.removed)} />
                 <Stat label="إنذارات، تمديدات" value={`${formatNumber(summary.warnings)}، ${formatNumber(summary.extensions)}`} />
@@ -194,7 +184,7 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
 
             <div className="mb-6 flex flex-wrap gap-2 text-xs">
                 {summary.reasons.map((reason) => (
-                    <Button data-raw="" variant="ghost" key={reason.value} onClick={() => setFilter('reason', filterValues.reason === reason.value ? '' : reason.value)} aria-pressed={filterValues.reason === reason.value} className={`rounded-full border px-3 py-1 font-semibold ${filterValues.reason === reason.value ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                    <Button data-raw="" variant="ghost" key={reason.value} onClick={() => setFilter('reason', filterValues.reason === reason.value ? '' : reason.value)} aria-pressed={filterValues.reason === reason.value} className={`rounded-full border px-3 py-1 font-semibold ${filterValues.reason === reason.value ? 'border-(--ma-act) bg-(--ma-act) text-white' : 'border-(--ma-line) text-(--ma-muted) hover:bg-(--ma-tile)'}`}>
                         {reason.label} <b className="font-display">{formatNumber(reason.count)}</b>
                     </Button>
                 ))}
@@ -215,9 +205,9 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
             />
 
             {canSelect && !allMatching && pageIds.length > 0 && pageSelectedCount === pageIds.length && items.total > pageIds.length && (
-                <div role="status" className="flex flex-wrap items-center justify-center gap-2 border-x border-gray-100 bg-brand-500/5 px-4 py-2 text-sm text-gray-700">
+                <div role="status" className="flex flex-wrap items-center justify-center gap-2 bg-(--ma-brand-soft) px-4 py-2 text-sm text-(--ma-ink)">
                     تم تحديد {pageIds.length.toLocaleString('en')} مشترك في هذه الصفحة.
-                    <Button data-raw="" variant="ghost" onClick={() => setAllMatching(true)} className="rounded font-semibold text-brand-600 hover:underline">
+                    <Button data-raw="" variant="ghost" onClick={() => setAllMatching(true)} className="rounded font-semibold text-(--ma-brand) hover:underline">
                         تحديد كل النتائج المطابقة ({items.total.toLocaleString('en')})
                     </Button>
                 </div>
@@ -239,9 +229,9 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
                         <ListColumn id="status" sortable>الحالة</ListColumn>
                         <ListColumn actions />
                     </ListHeader>
-                    <ListBody empty={<span className="text-gray-500">لا يوجد مشتركون مطابقون في هذه القائمة.</span>}>
+                    <ListBody empty={<span className="text-(--ma-muted)">لا يوجد مشتركون مطابقون في هذه القائمة.</span>}>
                         {items.data.map((item) => (
-                            <ListRow key={item.id} id={item.id} className={allMatching || selectedIds.has(item.id) ? 'bg-brand-50' : undefined} {...printRowProps(Object.fromEntries(PRINT_FIELDS.map((field) => [field.key, item[field.key]])))}>
+                            <ListRow key={item.id} id={item.id} className={allMatching || selectedIds.has(item.id) ? 'bg-(--ma-brand-soft)' : undefined} {...printRowProps(Object.fromEntries(PRINT_FIELDS.map((field) => [field.key, item[field.key]])))}>
                                 {canSelect && (
                                     <ListCell>
                                         <CheckBox checked={allMatching || selectedIds.has(item.id)} onChange={() => toggle(item.id)} aria-label={`تحديد ${item.name}`} />
@@ -250,37 +240,37 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
                                 <ListCell data-label="المشترك">
                                     <RowIdentity name={item.name} subtitle={[item.accountNumber, item.meterBoxNumber && `طبلون ${item.meterBoxNumber}`].filter(Boolean).join('، ')} />
                                 </ListCell>
-                                <ListCell data-label="السبب" className="text-gray-700">
+                                <ListCell data-label="السبب" className="text-(--ma-ink)">
                                     {item.reasonLabel}
-                                    {item.note && <span className="block max-w-[16rem] truncate text-xs text-gray-500" title={item.note}>{item.note}</span>}
+                                    {item.note && <span className="block max-w-[16rem] truncate text-xs text-(--ma-muted)" title={item.note}>{item.note}</span>}
                                 </ListCell>
                                 <ListCell data-label="موعد القطع" className="whitespace-nowrap">
-                                    <span dir="ltr" className={item.isOverdue ? 'font-semibold text-red-700 dark:text-red-400' : 'text-gray-700'}>{formatDate(item.scheduledFor)}</span>
-                                    {item.extensionsCount > 0 && <span className="block text-xs text-gray-500">مُدّد {formatNumber(item.extensionsCount)} مرة</span>}
+                                    <span dir="ltr" className={item.isOverdue ? 'font-semibold text-(--ma-owe)' : 'text-(--ma-ink)'}>{formatDate(item.scheduledFor)}</span>
+                                    {item.extensionsCount > 0 && <span className="block text-xs text-(--ma-muted)">مُدّد {formatNumber(item.extensionsCount)} مرة</span>}
                                 </ListCell>
                                 <ListCell data-label="الرصيد" className="whitespace-nowrap">
                                     <Balance value={item.balance} className="font-bold" />
                                     {item.isPaid && item.status === 'scheduled' ? (
                                         <span className="block"><StatusPill tone="green" label="سدّد — تحديث الرصيد" /></span>
                                     ) : item.balanceReduced ? (
-                                        <span className="block text-xs text-gray-500">كان <Balance value={item.balanceWhenAdded} colored={false} /></span>
+                                        <span className="block text-xs text-(--ma-muted)">كان <Balance value={item.balanceWhenAdded} colored={false} /></span>
                                     ) : null}
                                 </ListCell>
-                                <ListCell data-label="الإنذارات" className="text-gray-700">
+                                <ListCell data-label="الإنذارات" className="text-(--ma-ink)">
                                     {item.warningsCount > 0 ? (
                                         <>
                                             <b className="font-display">{formatNumber(item.warningsCount)}</b>
-                                            <span className="block text-xs text-gray-500" dir="ltr">{item.lastWarnedAt}</span>
+                                            <span className="block text-xs text-(--ma-muted)" dir="ltr">{item.lastWarnedAt}</span>
                                         </>
                                     ) : (
-                                        <span className="text-gray-400">—</span>
+                                        <span className="text-(--ma-faint)">—</span>
                                     )}
                                 </ListCell>
                                 <ListCell data-label="الحالة">
                                     <StatusPill tone={itemTone(item)} label={item.isOverdue ? 'متأخر — بانتظار إجراء' : item.statusLabel} />
-                                    {item.status === 'disconnected' && <span className="block text-xs text-gray-500">{item.disconnectedBy}، {formatMoney(item.fee)} ₪</span>}
-                                    {item.status === 'removed' && item.removalReason && <span className="block text-xs text-gray-500">{item.removalReason}</span>}
-                                    {item.status === 'scheduled' && !item.serviceIsActive && <span className="block text-xs text-amber-700">الخدمة: {item.serviceStatusLabel}</span>}
+                                    {item.status === 'disconnected' && <span className="block text-xs text-(--ma-muted)">{item.disconnectedBy}، {formatMoney(item.fee)} ₪</span>}
+                                    {item.status === 'removed' && item.removalReason && <span className="block text-xs text-(--ma-muted)">{item.removalReason}</span>}
+                                    {item.status === 'scheduled' && !item.serviceIsActive && <span className="block text-xs text-(--ma-warn)">الخدمة: {item.serviceStatusLabel}</span>}
                                 </ListCell>
                                 <ListCell data-actions="" className="text-end">
                                     <RowActionsMenu onView={() => openHistory(item)} menu={rowMenu(item)} />
@@ -294,24 +284,12 @@ export default function Show({ list, items, summary, abilities, reasonOptions, c
             <Pagination meta={items} filters={filters} baseUrl={`/disconnection-lists/${list.id}`} />
 
             {canSelect && selectionCount > 0 && !action && (
-                <>
-                    <div className="h-24" aria-hidden="true" />
-                    <div role="region" aria-label="إجراءات على المشتركين المحددين" className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[calc(100%-2rem)] max-w-4xl flex-wrap items-center gap-2 rounded-2xl bg-brand-gradient px-4 py-3 text-white shadow-lift ring-1 ring-white/10">
-                        <span className="me-2 flex items-center gap-2 text-sm" aria-live="polite">
-                            <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-white px-2 font-display text-sm font-bold text-gray-900">{selectionCount.toLocaleString('en')}</span>
-                            {allMatching ? 'مشترك (كل النتائج المطابقة)' : 'مشترك محدد'}
-                        </span>
-                        <div className="flex flex-1 flex-wrap items-center gap-2">
-                            {abilities.manage && <BarButton icon="calendar" label="تمديد / تغيير الموعد" onClick={() => setAction('reschedule')} />}
-                            {abilities.warn && <BarButton icon="send" label="إنذار" onClick={() => setAction('warn')} />}
-                            {abilities.execute && <BarButton icon="power" label="تأكيد القطع" onClick={() => setAction('confirm')} className="bg-red-700/80 hover:bg-red-700" />}
-                            {abilities.manage && <BarButton icon="undo" label="إزالة" onClick={() => setAction('remove')} />}
-                        </div>
-                        <Button data-raw="" variant="ghost" onClick={clearSelection} aria-label="إلغاء التحديد" className={`flex h-9 w-9 items-center justify-center rounded-control text-white/80 hover:bg-white/10 ${FOCUS_RING}`}>
-                            <Icon name="close" className="h-5 w-5" />
-                        </Button>
-                    </div>
-                </>
+                <SelectionBar label="إجراءات على المشتركين المحددين" count={selectionCount} caption={allMatching ? 'مشترك (كل النتائج المطابقة)' : 'مشترك محدد'} onClear={clearSelection}>
+                    {abilities.manage && <SelectionBarKey icon="calendar" label="تمديد / تغيير الموعد" onClick={() => setAction('reschedule')} />}
+                    {abilities.warn && <SelectionBarKey icon="send" label="إنذار" onClick={() => setAction('warn')} />}
+                    {abilities.execute && <SelectionBarKey icon="power" label="تأكيد القطع" tone="danger" onClick={() => setAction('confirm')} />}
+                    {abilities.manage && <SelectionBarKey icon="undo" label="إزالة" onClick={() => setAction('remove')} />}
+                </SelectionBar>
             )}
 
             {action && (

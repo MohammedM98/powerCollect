@@ -8,7 +8,7 @@ import { formatMoney } from '@/lib/format';
 import { isPrintMode } from '@/lib/print';
 import { boxTypes, currencies, dateTime, BoxEntriesTable, BoxStage, BoxTypeChip, BoxTypeIcon, CountSummary, CashBoxAction, boxAction, actionLabel } from './CollectorCashBox';
 import PageHeader, { BackLink } from '@/Components/PageHeader';
-import { PrimaryKey } from '@/Components/UI';
+import { Notice, PrimaryKey } from '@/Components/UI';
 
 /** A link that looks like the quiet outlined button. */
 /** Where each type of box goes when it closes. */
@@ -43,8 +43,8 @@ export default function CashBoxShow({ box, entries, collectionUrls, pendingCount
     />}>
         <Head title={`${boxTypes[box.type]} ${box.number}`} />
         <div className="financial-surface space-y-6">
-            {saved && <p role="status" className="rounded-control bg-emerald-500/10 p-4 text-sm text-emerald-700">{saved}</p>}
-            <section className="space-y-6 rounded-panel border border-gray-100 bg-surface p-4 shadow-card">
+            {saved && <Notice tone="success" role="status">{saved}</Notice>}
+            <section className="space-y-6 rounded-panel border border-(--ma-line) bg-(--ma-solid) p-4 shadow-card">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-2"><BoxTypeChip type={box.type} /><BoxStage box={box} /></div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -54,14 +54,14 @@ export default function CashBoxShow({ box, entries, collectionUrls, pendingCount
                 </div>
                 <ol className={`grid gap-3 sm:grid-cols-2 ${timeline.length > 3 ? 'md:grid-cols-4' : 'md:grid-cols-3'}`} aria-label="مراحل الصندوق">
                     {timeline.map(([label, time, icon]) => (
-                        <li key={label} className={`flex items-center gap-3 rounded-control border p-3 ${time ? 'border-emerald-500/25 bg-emerald-500/5' : 'border-gray-100 bg-gray-50'}`}>
-                            <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${time ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-gray-100 text-gray-400'}`}><Icon name={icon} className="h-4 w-4" /></span>
-                            <div><b className="text-sm text-gray-900">{label}</b><p className="mt-1 text-xs text-gray-500">{time ? dateTime(time) : 'لم يحدث بعد'}</p></div>
+                        <li key={label} className={`flex items-center gap-3 rounded-control border p-3 ${time ? 'border-(--ma-pay) bg-(--ma-pay-s)' : 'border-(--ma-line) bg-(--ma-tile)'}`}>
+                            <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${time ? 'bg-(--ma-pay-s) text-(--ma-pay)' : 'bg-(--ma-tile) text-(--ma-faint)'}`}><Icon name={icon} className="h-4 w-4" /></span>
+                            <div><b className="text-sm text-(--ma-ink)">{label}</b><p className="mt-1 text-xs text-(--ma-muted)">{time ? dateTime(time) : 'لم يحدث بعد'}</p></div>
                         </li>
                     ))}
                 </ol>
-                {box.reason && <p className="text-sm text-gray-600">سبب فرق العدّ: {box.reason}</p>}
-                {box.rejectedCount > 0 && <p className="rounded-control bg-red-500/5 p-3 text-sm leading-7 text-red-700">{box.type === 'clearing' ? 'رفض الفرع بعض المقاصات في هذا الصندوق.' : 'لم يجد الفرع بعض هذه الحوالات في البنك.'} يراجعها مسؤول الفرع وقد يتواصل معك بشأنها؛ لا يلزمك إجراء هنا.</p>}
+                {box.reason && <p className="text-sm text-(--ma-muted)">سبب فرق العدّ: {box.reason}</p>}
+                {box.rejectedCount > 0 && <Notice tone="danger">{box.type === 'clearing' ? 'رفض الفرع بعض المقاصات في هذا الصندوق.' : 'لم يجد الفرع بعض هذه الحوالات في البنك.'} يراجعها مسؤول الفرع وقد يتواصل معك بشأنها؛ لا يلزمك إجراء هنا.</Notice>}
                 {/* The printout reads the page's first table, which must be the entries. */}
                 {cash && !printing && <CountSummary box={box} />}
                 {printing && <p className="data-table-totals">{`صندوق ${box.number}، ${boxTypes[box.type]}، فُتح ${dateTime(box.openedAt)}، أُغلق ${dateTime(box.closedAt)}، ${box.paymentCount} حركات، الإجمالي ${formatMoney(box.totals?.ILS ?? 0)} شيكل، المستلم ${formatMoney(box.receivedAmounts?.ILS ?? 0)} شيكل${box.closedBy ? `، أغلقه ${box.closedBy}` : ''}`}</p>}
@@ -73,7 +73,7 @@ export default function CashBoxShow({ box, entries, collectionUrls, pendingCount
                 <KpiTile icon="lock" label="أغلقه" value={<span className="text-xl">{box.closedBy ?? 'لا يزال مفتوحًا'}</span>} hint={box.status === 'open' ? 'يؤكد الفرع إغلاقه بعد مراجعته، أو يُغلق عند القطع الأسبوعي' : `أُغلق إلى ${destinations[box.type]}`} />
             </div>
             <section className="financial-ledger-section space-y-4">
-                <h3 className="text-lg font-bold text-gray-900">حركات الصندوق</h3>
+                <h3 className="text-lg font-bold text-(--ma-ink)">حركات الصندوق</h3>
                 <BoxEntriesTable type={box.type} boxNumber={box.number} entries={entries} pagination={{ filters: {}, baseUrl: box.urls.show }} />
             </section>
         </div>

@@ -202,18 +202,18 @@ export default function SearchableSelect({
                         ? `flex h-[46px] w-full items-center justify-between gap-2 rounded-control border bg-white/10 px-4 text-start text-base leading-6 text-white transition focus:outline-hidden focus-visible:border-white/50 focus-visible:ring-4 focus-visible:ring-white/15 disabled:cursor-not-allowed disabled:opacity-50 ${
                               open ? 'border-white/50 ring-4 ring-white/15' : active ? 'border-white/35' : 'border-white/15 hover:border-white/35 hover:bg-white/15'
                           }`
-                        : `flex h-(--control-h) w-full items-center justify-between gap-2 rounded-control border bg-surface px-3 text-start text-base leading-6 transition focus:outline-hidden focus-visible:border-brand-500 focus-visible:ring-4 focus-visible:ring-brand-500/15 disabled:cursor-not-allowed disabled:border-dashed disabled:bg-gray-50 disabled:text-gray-500 ${
-                              open ? 'border-brand-500 ring-4 ring-brand-500/15' : active ? 'border-brand-500/60' : 'border-gray-200 hover:border-brand-500/45'
+                        : `flex h-(--control-h) w-full items-center justify-between gap-2 rounded-control border bg-(--ma-solid) px-3 text-start text-base leading-6 transition focus:outline-hidden focus-visible:border-(--ma-brand) focus-visible:ring-4 focus-visible:ring-(--ma-brand)/15 disabled:cursor-not-allowed disabled:border-dashed disabled:bg-(--ma-tile) disabled:text-(--ma-muted) ${
+                              open ? 'border-(--ma-brand) ring-4 ring-(--ma-brand)/15' : active ? 'border-(--ma-brand)' : 'border-(--ma-line) hover:border-(--ma-brand)'
                           }`
                 }
             >
-                <span className={`flex min-w-0 gap-2 ${selected?.icon ? 'items-center' : 'items-baseline'} ${onDark ? (selected ? 'font-bold text-white' : 'text-white/70') : selected ? 'text-gray-900' : 'text-gray-500'}`}>
+                <span className={`flex min-w-0 gap-2 ${selected?.icon ? 'items-center' : 'items-baseline'} ${onDark ? (selected ? 'font-bold text-white' : 'text-white/70') : selected ? 'text-(--ma-ink)' : 'text-(--ma-muted)'}`}>
                     {prefix}
                     {selected?.icon && <span aria-hidden="true" className="inline-flex shrink-0">{selected.icon}</span>}
                     {(selected || placeholder) && <span className="truncate">{selected ? selected.label : placeholder}</span>}
-                    {selected?.hint && <span className={`shrink-0 text-sm ${onDark ? 'text-white/60' : 'text-gray-500'}`}>{selected.hint}</span>}
+                    {selected?.hint && <span className={`shrink-0 text-sm ${onDark ? 'text-white/60' : 'text-(--ma-muted)'}`}>{selected.hint}</span>}
                 </span>
-                <Icon name="chevron-down" className={`h-4 w-4 shrink-0 transition ${onDark ? 'text-white/70' : 'text-gray-400'} ${open ? 'rotate-180' : ''}`} />
+                <Icon name="chevron-down" className={`h-4 w-4 shrink-0 transition ${onDark ? 'text-white/70' : 'text-(--ma-faint)'} ${open ? 'rotate-180' : ''}`} />
             </Button>
 
             {required && (
@@ -234,7 +234,7 @@ export default function SearchableSelect({
             {open && renderPopup(
                 <div ref={popupRef} data-react-aria-top-layer={portal ? '' : undefined} style={portal ? popupStyle : undefined} className="animate-modal-panel absolute z-20 mt-2 flex w-full min-w-48 flex-col overflow-hidden rounded-2xl gl-pop">
                     {searchable && (
-                        <div className="shrink-0 border-b border-gray-100 p-2">
+                        <div className="shrink-0 border-b border-(--ma-line) p-2">
                             <Input
                                 ref={searchRef}
                                 type="text"
@@ -249,7 +249,7 @@ export default function SearchableSelect({
                     {onCreate && <Button
                         variant="ghost"
                         onPress={() => { const name = query.trim(); setOpen(false); setQuery(''); onCreate(name); }}
-                        className="ss-option mx-2 mt-2 flex items-center gap-2 rounded-lg bg-brand-500/10 px-3 py-2 text-start text-sm font-bold text-brand-600 transition hover:bg-brand-500/15 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-brand-500"
+                        className="ss-option mx-2 mt-2 flex items-center gap-2 rounded-lg bg-(--ma-brand-soft) px-3 py-2 text-start text-sm font-bold text-(--ma-brand) transition hover:bg-(--ma-brand-soft) focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-(--ma-brand)"
                     >
                         <Icon name="plus" className="h-4 w-4 shrink-0" />
                         <span className="min-w-0 truncate">{createLabel}{query.trim() && <>: <bdi>{query.trim()}</bdi></>}</span>
@@ -260,18 +260,18 @@ export default function SearchableSelect({
                                 <Button
                                     variant="ghost"
                                     onPress={() => select(null)}
-                                    className="ss-option block w-full rounded-lg px-3 py-2 text-start text-gray-500 hover:bg-gray-50"
+                                    className="ss-option block w-full rounded-lg px-3 py-2 text-start text-(--ma-muted) hover:bg-(--ma-tile)"
                                 >
                                     {placeholder}
                                 </Button>
                             </li>
                         )}
                         {failed ? (
-                            <li className="px-3 py-2 text-red-600">تعذّر تحميل الخيارات، حاول مرة أخرى.</li>
+                            <li className="px-3 py-2 text-(--ma-owe)">تعذّر تحميل الخيارات، حاول مرة أخرى.</li>
                         ) : loading && found === null ? (
-                            <li className="px-3 py-2 text-gray-400">جارٍ التحميل...</li>
+                            <li className="px-3 py-2 text-(--ma-faint)">جارٍ التحميل...</li>
                         ) : filtered.length === 0 ? (
-                            <li className="px-3 py-2 text-gray-400">{emptyLabel}</li>
+                            <li className="px-3 py-2 text-(--ma-faint)">{emptyLabel}</li>
                         ) : (
                             filtered.map((option) => {
                                 const isSelected = String(option.value) === String(value);
@@ -281,8 +281,8 @@ export default function SearchableSelect({
                                         <Button
                                             variant="ghost"
                                             onPress={() => select(option)}
-                                            className={`ss-option flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-start hover:bg-gray-50 ${
-                                                isSelected ? 'font-semibold text-gray-900' : 'text-gray-700'
+                                            className={`ss-option flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-start hover:bg-(--ma-tile) ${
+                                                isSelected ? 'font-semibold text-(--ma-ink)' : 'text-(--ma-ink)'
                                             }`}
                                         >
                                             <span className="flex min-w-0 items-center gap-2">
@@ -290,8 +290,8 @@ export default function SearchableSelect({
                                                 <span className="truncate">{option.label}</span>
                                             </span>
                                             <span className="flex shrink-0 items-center gap-2">
-                                                {option.hint && <span className="text-xs text-gray-500">{option.hint}</span>}
-                                                {isSelected && <Icon name="check" className="h-4 w-4 shrink-0 text-brand-500" strokeWidth={2} />}
+                                                {option.hint && <span className="text-xs text-(--ma-muted)">{option.hint}</span>}
+                                                {isSelected && <Icon name="check" className="h-4 w-4 shrink-0 text-(--ma-brand)" strokeWidth={2} />}
                                             </span>
                                         </Button>
                                     </li>
@@ -300,7 +300,7 @@ export default function SearchableSelect({
                         )}
                     </ul>
                     {loadOptions && hasMore && !failed && (
-                        <p className="border-t border-gray-100 px-3 py-2 text-xs text-gray-500">اكتب للبحث عن المزيد من النتائج.</p>
+                        <p className="border-t border-(--ma-line) px-3 py-2 text-xs text-(--ma-muted)">اكتب للبحث عن المزيد من النتائج.</p>
                     )}
                 </div>
             )}

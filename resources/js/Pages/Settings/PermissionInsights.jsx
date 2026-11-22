@@ -80,8 +80,8 @@ export function PermissionSummary({ employee, sections, selected, template, scop
                     <Icon name="sparkles" className="h-5 w-5" />
                 </span>
                 <div>
-                    <h3 className="text-lg font-bold text-gray-900">ماذا يستطيع {firstName}؟</h3>
-                    <p className="mt-1 text-[13.5px] text-gray-500">
+                    <h3 className="text-lg font-bold text-(--ma-ink)">ماذا يستطيع {firstName}؟</h3>
+                    <p className="mt-1 text-[13.5px] text-(--ma-muted)">
                         {scopedToOwnBranch ? 'المعروض هو ما يمكنك تعديله لموظفي فرعك.' : 'يتحدّث مع كل تغيير، قبل الحفظ.'}
                     </p>
                 </div>
@@ -89,25 +89,25 @@ export function PermissionSummary({ employee, sections, selected, template, scop
 
             <div className="grid grid-cols-3 gap-2">
                 {[
-                    { count: enabled.length, label: 'صلاحية', tone: 'text-gray-900' },
-                    { count: enabled.filter((item) => item.risk === 'sensitive').length, label: 'حساسة', tone: 'text-amber-700 dark:text-amber-400' },
-                    { count: dangerous.length, label: 'خطيرة', tone: 'text-red-700 dark:text-red-400' },
+                    { count: enabled.length, label: 'صلاحية', tone: 'text-(--ma-ink)' },
+                    { count: enabled.filter((item) => item.risk === 'sensitive').length, label: 'حساسة', tone: 'text-(--ma-warn)' },
+                    { count: dangerous.length, label: 'خطيرة', tone: 'text-(--ma-owe)' },
                 ].map((stat) => (
-                    <div key={stat.label} className="rounded-control border border-gray-100 bg-gray-50 px-3 py-2">
+                    <div key={stat.label} className="rounded-control border border-(--ma-line) bg-(--ma-tile) px-3 py-2">
                         <b className={`block font-display text-xl leading-tight ${stat.tone}`}>{stat.count}</b>
-                        <span className="text-xs text-gray-500">{stat.label}</span>
+                        <span className="text-xs text-(--ma-muted)">{stat.label}</span>
                     </div>
                 ))}
             </div>
 
             {template && (
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-(--ma-muted)">
                     {deviations === 0 ? `مطابق لقالب ${template.label}` : `${deviations} اختلاف عن قالب الدور (${template.label})`}
                 </p>
             )}
 
             <ul className="pm-summary-list">
-                {held.length === 0 && <li className="text-gray-500">لا يملك أي صلاحية بعد.</li>}
+                {held.length === 0 && <li className="text-(--ma-muted)">لا يملك أي صلاحية بعد.</li>}
                 {held.map((section) => {
                     const special = matrixExtras(section)
                         .flatMap((group) => group.items)
@@ -119,8 +119,8 @@ export function PermissionSummary({ employee, sections, selected, template, scop
                                 <Icon name={sectionIcon(section.key)} className="h-4 w-4" />
                             </span>
                             <div className="min-w-0 flex-1">
-                                <b className="font-semibold text-gray-900">{section.label}:</b>{' '}
-                                <span className="text-gray-700">{sectionSentence(section, selected)}</span>
+                                <b className="font-semibold text-(--ma-ink)">{section.label}:</b>{' '}
+                                <span className="text-(--ma-ink)">{sectionSentence(section, selected)}</span>
                                 {special.length > 0 && (
                                     <div className="mt-2 flex flex-wrap gap-1">
                                         {special.map((item) => (
@@ -139,13 +139,13 @@ export function PermissionSummary({ employee, sections, selected, template, scop
                         <span className="pm-section-icon is-small">
                             <Icon name="wallet" className="h-4 w-4" />
                         </span>
-                        <span className="text-gray-700">
+                        <span className="text-(--ma-ink)">
                             {ways.length ? `يأخذ الدفعات: ${ways.join(' و')}` : 'لا يأخذ أي دفعة: لم تُختر طريقة دفع'}
                         </span>
                     </li>
                 )}
                 {dangerous.length > 0 && (
-                    <li className="text-red-700 dark:text-red-400">
+                    <li className="text-(--ma-owe)">
                         <span className="pm-section-icon is-small is-danger">
                             <Icon name="alert" className="h-4 w-4" />
                         </span>
@@ -154,8 +154,8 @@ export function PermissionSummary({ employee, sections, selected, template, scop
                 )}
             </ul>
 
-            <div className="border-t border-gray-100 pt-3">
-                <h4 className="text-sm font-bold text-gray-900">الصفحات التي سيراها</h4>
+            <div className="border-t border-(--ma-line) pt-3">
+                <h4 className="text-sm font-bold text-(--ma-ink)">الصفحات التي سيراها</h4>
                 <div className="mt-2 flex flex-wrap gap-2">
                     {['الرئيسية', ...held.map((section) => SECTION_DETAILS[section.key]?.page ?? section.label)].map((page) => (
                         <span key={page} className="pm-pill">
@@ -166,8 +166,8 @@ export function PermissionSummary({ employee, sections, selected, template, scop
             </div>
 
             {notHeld.length > 0 && (
-                <div className="border-t border-gray-100 pt-3">
-                    <h4 className="text-sm font-bold text-gray-900">لا يصل إلى</h4>
+                <div className="border-t border-(--ma-line) pt-3">
+                    <h4 className="text-sm font-bold text-(--ma-ink)">لا يصل إلى</h4>
                     <div className="mt-2 flex flex-wrap gap-2">
                         {notHeld.map((section) => (
                             <span key={section.key} className="pm-pill is-ghost">
@@ -179,8 +179,8 @@ export function PermissionSummary({ employee, sections, selected, template, scop
             )}
 
             {locked.length > 0 && (
-                <p className="rounded-control bg-gray-50 px-3 py-2 text-xs leading-5 text-gray-600">
-                    <b className="text-gray-900">{locked.length} صلاحية خارج نطاق إدارتك، تبقى كما هي:</b> {locked.join('، ')}
+                <p className="rounded-control bg-(--ma-tile) px-3 py-2 text-xs leading-5 text-(--ma-muted)">
+                    <b className="text-(--ma-ink)">{locked.length} صلاحية خارج نطاق إدارتك، تبقى كما هي:</b> {locked.join('، ')}
                 </p>
             )}
         </aside>
@@ -201,7 +201,7 @@ function CompareList({ title, items, tone, empty }) {
                 <b className="font-display">{items.length}</b>
             </h4>
             {items.length === 0 ? (
-                <p className="px-1 py-3 text-sm text-gray-500">{empty}</p>
+                <p className="px-1 py-3 text-sm text-(--ma-muted)">{empty}</p>
             ) : (
                 Object.entries(bySection).map(([section, list]) => (
                     <div key={section} className="pm-compare-group">
@@ -239,15 +239,15 @@ export function PermissionCompare({ employee, sections, selected, colleagues, co
                     <Icon name="repeat" className="h-5 w-5" />
                 </span>
                 <div>
-                    <h3 className="text-lg font-bold text-gray-900">مقارنة {firstName} بزميل</h3>
-                    <p className="mt-1 text-[13.5px] text-gray-500">
+                    <h3 className="text-lg font-bold text-(--ma-ink)">مقارنة {firstName} بزميل</h3>
+                    <p className="mt-1 text-[13.5px] text-(--ma-muted)">
                         اختر موظفًا لترى الفرق بينهما، ثم أضف ما ينقص أو طابِق صلاحياته. لا يُحفظ شيء قبل المراجعة.
                     </p>
                 </div>
             </div>
 
             {colleagues.length === 0 ? (
-                <p className="mt-4 rounded-control bg-gray-50 p-4 text-center text-sm text-gray-500">لا يوجد موظفون آخرون في هذه الصفحة.</p>
+                <p className="mt-4 rounded-control bg-(--ma-tile) p-4 text-center text-sm text-(--ma-muted)">لا يوجد موظفون آخرون في هذه الصفحة.</p>
             ) : (
                 <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="الموظف الذي تقارن به">
                     {colleagues.map((user) => (
@@ -261,7 +261,7 @@ export function PermissionCompare({ employee, sections, selected, colleagues, co
                             <EmployeeAvatar name={user.name} color={colorOf(user.roleLabel)} size="sm" />
                             <span className="min-w-0 text-start">
                                 <b className="block truncate text-sm">{user.name}</b>
-                                <small className="block truncate text-[12px] text-gray-500">{user.roleLabel}</small>
+                                <small className="block truncate text-[12px] text-(--ma-muted)">{user.roleLabel}</small>
                             </span>
                         </Button>
                     ))}
@@ -270,8 +270,8 @@ export function PermissionCompare({ employee, sections, selected, colleagues, co
 
             {result && (
                 <div className="mt-6 space-y-4">
-                    <p className="text-sm text-gray-600">
-                        يشتركان في <b className="font-display text-gray-900">{result.shared.length}</b> {permissionsWord(result.shared.length)}.
+                    <p className="text-sm text-(--ma-muted)">
+                        يشتركان في <b className="font-display text-(--ma-ink)">{result.shared.length}</b> {permissionsWord(result.shared.length)}.
                     </p>
                     <div className="grid gap-3 md:grid-cols-2">
                         <CompareList

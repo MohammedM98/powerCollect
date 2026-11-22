@@ -1,0 +1,668 @@
+/*
+ * ════════════════════════════════════════════════════════════════════════
+ * The MA design: forms. One field look for every form, on its own page
+ * (`.ma-form-page`) and in a window (`.ma-form` inside the window sheet),
+ * and for every other window that is not a money window (those keep their
+ * own: data-ledger-tone, the checkout, the statement).
+ *
+ * A field is open or locked, and says so: an open field is a grey tile
+ * with a hairline that turns white with the company's ring while typed in;
+ * a locked one (disabled or read-only) is hatched, dashed and carries a
+ * lock, so it is never mistaken for one waiting to be filled.
+ * ════════════════════════════════════════════════════════════════════════
+ */
+:root {
+    --ma-field-h: 48px;
+    --ma-field-r: 14px;
+    --ma-lock: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235d646e' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='9' rx='2.5'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E");
+    --ma-hatch: repeating-linear-gradient(135deg, transparent 0 7px, var(--ma-line) 7px 8px);
+    --ma-dash: color-mix(in oklab, var(--ma-ink) 26%, transparent);
+}
+
+.dark {
+    --ma-lock: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a2a9b3' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='11' width='14' height='9' rx='2.5'/%3E%3Cpath d='M8 11V8a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E");
+}
+
+:is(.modal-sheet-panel:not(:has(.gl-sheet[data-ledger-tone], .gl-co, .account-statement)), .ma-form) {
+    /* ── Open: a grey tile with a hairline, the same height for inputs, lists and dates. ── */
+    & :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color'], [type='hidden']), textarea, select),
+    & :is(button.rounded-control.border, .gl-choice-trigger) {
+        min-height: var(--ma-field-h);
+        border: 0 !important;
+        border-radius: var(--ma-field-r);
+        background-color: var(--ma-tile) !important;
+        box-shadow: inset 0 0 0 1px var(--ma-line), inset 0 1px 2px rgb(16 20 26 / 0.04) !important;
+        color: var(--ma-ink);
+        font-size: 16px;
+        transition: box-shadow 0.15s, background-color 0.15s;
+    }
+
+    & :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color'], [type='hidden']), textarea, select) {
+        padding-inline: 16px;
+    }
+
+    & textarea {
+        min-height: 76px;
+    }
+
+    & :is(input, textarea)::placeholder {
+        color: var(--ma-faint);
+        opacity: 1;
+    }
+
+    /* A list's key fills its column like any field, its words at the start and its arrow at the end. */
+    & .gl-choice {
+        display: block;
+        width: 100%;
+    }
+
+    & .gl-choice-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        width: 100%;
+        height: var(--ma-field-h);
+        padding-inline: 16px;
+        text-align: start;
+    }
+
+    & :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color'], [type='hidden']), textarea, select):hover:not(:disabled, [readonly], :focus),
+    & :is(button.rounded-control.border, .gl-choice-trigger):hover:not(:disabled, [aria-disabled='true'], [data-disabled]) {
+        box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ma-ink) 26%, transparent) !important;
+    }
+
+    & :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color'], [type='hidden']), textarea, select):focus:not(:disabled, [readonly]),
+    & :is(button.rounded-control.border, .gl-choice-trigger):is(:focus-visible, [aria-expanded='true'], [data-focus-visible]) {
+        background-color: var(--ma-solid) !important;
+        box-shadow: inset 0 0 0 1.5px var(--ma-brand), 0 0 0 4px color-mix(in oklab, var(--ma-brand) 14%, transparent) !important;
+        outline: none;
+    }
+
+    & :is(input[aria-invalid='true'], textarea[aria-invalid='true'], select[aria-invalid='true']) {
+        box-shadow: inset 0 0 0 1.5px var(--ma-owe) !important;
+    }
+
+    /* ── Locked: hatched, dashed, quiet ink and a lock at its end. ── */
+    & :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color'], [type='hidden']), textarea, select):is(:disabled, [readonly]),
+    & :is(button.rounded-control.border[aria-expanded]:not([class*='tone-']), .gl-choice-trigger):is(:disabled, [aria-disabled='true'], [data-disabled]) {
+        border: 1.5px dashed var(--ma-dash) !important;
+        background-color: transparent !important;
+        background-image: var(--ma-hatch);
+        box-shadow: none !important;
+        color: var(--ma-muted);
+        -webkit-text-fill-color: var(--ma-muted);
+        opacity: 1;
+        cursor: not-allowed;
+    }
+
+    & :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color'], [type='hidden']), textarea):is(:disabled, [readonly]):not(.field-room-end, .field-room-end-unit) {
+        padding-inline-end: var(--room-icon);
+        background-image: var(--ma-lock), var(--ma-hatch);
+        background-repeat: no-repeat, repeat;
+        background-size: 17px 17px, auto;
+        background-position: left 14px center, 0 0;
+    }
+
+    & :is(input, textarea):is(:disabled, [readonly]):not(.field-room-end, .field-room-end-unit):dir(ltr) {
+        background-position: right 14px center, 0 0;
+    }
+
+    & textarea:is(:disabled, [readonly]) {
+        background-position: left 14px top 14px, 0 0;
+    }
+
+    /* A locked list shows the lock where its arrow was (a list's key carries aria-expanded; action keys are left alone). */
+    & :is(button.rounded-control.border[aria-expanded]:not([class*='tone-']), .gl-choice-trigger):is(:disabled, [aria-disabled='true'], [data-disabled]) {
+        background-image: var(--ma-lock), var(--ma-hatch);
+        background-repeat: no-repeat, repeat;
+        background-size: 17px 17px, auto;
+        background-position: left 16px center, 0 0;
+    }
+
+    & :is(button.rounded-control.border[aria-expanded]:not([class*='tone-']), .gl-choice-trigger):is(:disabled, [aria-disabled='true'], [data-disabled]) svg {
+        visibility: hidden;
+    }
+
+    /* ── A field's unit (Affix): a small white key at its end; with a lock on a locked field. ── */
+    & .ma-affix-unit {
+        inset-block: 6px;
+        inset-inline-end: 6px;
+        gap: 4px;
+        padding-inline: 8px;
+        border-radius: 10px;
+        background: var(--ma-solid);
+        box-shadow: var(--ma-hl), 0 0 0 1px var(--ma-line);
+        color: var(--ma-muted);
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    & .ma-affix-unit svg {
+        display: block;
+        width: 15px;
+        height: 15px;
+    }
+
+    & .ma-affix[data-locked] .ma-affix-unit {
+        background: none;
+        box-shadow: none;
+    }
+
+    & .ma-affix[data-locked] input {
+        padding-inline-end: calc(var(--room-unit) + 22px);
+    }
+
+    /* ── Choices of one (status, weekly or monthly): a soft track, the chosen one white and raised. ── */
+    & [role='radiogroup'].flex {
+        min-height: var(--ma-field-h);
+        padding: 4px;
+        border-radius: var(--ma-field-r);
+        background: var(--ma-tile);
+        box-shadow: inset 0 0 0 1px var(--ma-line);
+    }
+}
+
+/* The unit's lock is drawn only where fields carry the look above. */
+.ma-affix-unit svg {
+    display: none;
+}
+
+/* ── A field: its label row (name, open or locked, a key at the end), the control, then guidance or the error. ── */
+.ma-field {
+    display: grid;
+    min-width: 0;
+    align-content: start;
+    gap: 8px;
+}
+
+.ma-field-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 26px;
+}
+
+.ma-field-head .gl-label {
+    flex: none;
+    color: var(--ma-ink);
+    white-space: nowrap;
+}
+
+/* A narrow column keeps the row on one line: the key gives up its words' room first. */
+.ma-field-head .ma-field-action {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.ma-field-req {
+    color: var(--ma-owe);
+}
+
+.ma-field-state {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+    height: 22px;
+    padding-inline: 8px;
+    border-radius: 99px;
+    background: var(--ma-tile);
+    box-shadow: inset 0 0 0 1px var(--ma-line);
+    color: var(--ma-muted);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.ma-field-state svg {
+    width: 13px;
+    height: 13px;
+}
+
+.ma-field-state[data-state='open'] {
+    background: var(--ma-pay-s);
+    box-shadow: none;
+    color: var(--ma-pay);
+}
+
+.ma-field-action {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+    height: 26px;
+    margin-inline-start: auto;
+    padding-inline: 8px;
+    border-radius: 9px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl), inset 0 0 0 1px var(--ma-line);
+    color: var(--ma-ink);
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.ma-field-action:hover {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.ma-field-action:focus-visible {
+    outline: 2px solid var(--ma-brand);
+    outline-offset: 2px;
+}
+
+.ma-field-hint {
+    margin: 0;
+    color: var(--ma-muted);
+    font-size: 12.5px;
+    line-height: 1.7;
+}
+
+.ma-field .gl-error {
+    color: var(--ma-owe);
+    font-size: 12.5px;
+    line-height: 1.7;
+}
+
+/* ── A note in a form or a window (Components/UI/Notice.jsx), in one of the tones. ── */
+.ma-notice {
+    --nt: var(--ma-muted);
+    --nt-s: var(--ma-tile);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--nt-s);
+    box-shadow: var(--ma-hl);
+    color: var(--ma-ink);
+    font-size: 13.5px;
+    line-height: 1.8;
+}
+
+.ma-notice > svg {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin-top: 4px;
+    color: var(--nt);
+}
+
+.ma-notice :is(b, strong) {
+    font-weight: 700;
+}
+
+.ma-notice-title {
+    display: block;
+}
+
+.ma-notice[data-tone='info'] { --nt: var(--ma-clr); --nt-s: var(--ma-clr-s); }
+.ma-notice[data-tone='warn'] { --nt: var(--ma-warn); --nt-s: var(--ma-warn-s); }
+.ma-notice[data-tone='danger'] { --nt: var(--ma-owe); --nt-s: var(--ma-owe-s); }
+.ma-notice[data-tone='success'] { --nt: var(--ma-pay); --nt-s: var(--ma-pay-s); }
+.ma-notice[data-tone='brand'] { --nt: var(--ma-brand); --nt-s: var(--ma-brand-soft); }
+
+/* ── A form's groups: the heading (icon on a soft tile, the name, a line under it) and the fields' grid. ── */
+.ma-form .gl-group-name {
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 16px;
+    color: var(--ma-ink);
+}
+
+.ma-form .gl-group-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl), inset 0 0 0 1px var(--ma-line);
+    color: var(--ma-ink);
+}
+
+.ma-form .gl-group-icon svg {
+    width: 18px;
+    height: 18px;
+    color: currentColor;
+}
+
+.ma-form .gl-group-text span {
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.ma-form .gl-group-text small {
+    color: var(--ma-muted);
+    font-size: 12.5px;
+}
+
+.ma-form .gl-tile.grid {
+    column-gap: 16px;
+    row-gap: 16px;
+}
+
+.ma-form .gl-section + .gl-section,
+.ma-form .gl-fm-body .scroll-mt-4 + .scroll-mt-4 {
+    border-top-color: var(--ma-line);
+}
+
+/* A setting with its switch, inside a form: a soft tile. */
+.ma-form .gl-setting {
+    min-height: 64px;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 16px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl), inset 0 0 0 1px var(--ma-line);
+}
+
+.ma-form .gl-setting-text b {
+    color: var(--ma-ink);
+    font-weight: 700;
+}
+
+.ma-form .gl-setting-text small {
+    color: var(--ma-muted);
+}
+
+/* The record as it will look in the lists (FormPreview). */
+.ma-form .gl-record {
+    border: 0;
+    border-radius: 18px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+/* ── On its own page: each group a glass card, the side index a glass card, the keys on a floating dock. ── */
+.ma-form-page .gl-tile {
+    padding: 24px;
+    border-radius: 20px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+}
+
+.ma-form-page .gl-section + .gl-section,
+.ma-form-page .scroll-mt-4 + .scroll-mt-4 {
+    margin-top: 24px;
+}
+
+.ma-form-page .gl-fp-side {
+    border-radius: 20px;
+    background: var(--ma-panel);
+    -webkit-backdrop-filter: var(--ma-blur);
+    backdrop-filter: var(--ma-blur);
+    box-shadow: var(--ma-depth);
+}
+
+.ma-form-dock {
+    position: sticky;
+    bottom: 16px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 12px 16px;
+    border-radius: 20px;
+    background: var(--ma-pop, var(--ma-solid));
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    backdrop-filter: blur(24px) saturate(1.6);
+    box-shadow: var(--ma-float);
+}
+
+.ma-form-dock :is(.ui-btn-primary, .ma-dock-cancel) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 46px;
+    border: 0;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.ma-form-dock .ui-btn-primary,
+.ma-form-dock .ui-btn-primary:hover:not(:disabled) {
+    min-width: 148px;
+    padding-inline: 24px;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--ma-act) 88%, white), var(--ma-act));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 8px 18px -10px rgb(16 20 26 / 0.6);
+    color: #fff;
+}
+
+.ma-form-dock .ui-btn-primary:hover:not(:disabled) {
+    filter: brightness(1.08);
+}
+
+.ma-form-dock .ma-dock-cancel {
+    padding-inline: 16px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl), inset 0 0 0 1px var(--ma-line);
+    color: var(--ma-ink);
+    text-decoration: none;
+}
+
+.ma-form-dock .ma-dock-cancel:hover {
+    background: color-mix(in oklab, var(--ma-tile) 82%, var(--ma-ink) 7%);
+}
+
+@media (max-width: 639px) {
+    .ma-form-page .gl-tile {
+        padding: 16px;
+    }
+
+    .ma-form-dock {
+        bottom: 8px;
+    }
+
+    /* The keys take the dock's width; the sections' count stays in the side index's place on wider screens. */
+    .ma-form-dock > :is(.gl-fm-progress, .flex-1, .gl-unsaved) {
+        display: none;
+    }
+
+    .ma-form-dock :is(.ui-btn-primary, .ma-dock-cancel) {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+/* A small form opened inside a field (a new job title under its list): a soft tile holding its field and keys. */
+.ma-inline-add {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 16px;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl), inset 0 0 0 1px var(--ma-line);
+}
+
+.ma-inline-add :is(input, textarea):not(:disabled, [readonly]) {
+    background-color: var(--ma-solid) !important;
+}
+
+/* Choosing a file (a bank's logo): its picture on a white tile, its name, and the key that opens the chooser. */
+.ma-file-pick {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+}
+
+.ma-file-pick > div:not(.relative) {
+    flex: 1 1 160px;
+    min-width: 0;
+}
+
+.ma-file-thumb {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-faint);
+}
+
+.ma-file-name {
+    margin: 0;
+    color: var(--ma-ink);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.ma-file-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 40px;
+    padding-inline: 16px;
+    border-radius: 12px;
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+    color: var(--ma-ink);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.ma-file-key[data-disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.peer:focus-visible + .ma-file-key {
+    outline: 2px solid var(--ma-brand);
+    outline-offset: 2px;
+}
+
+/* ── The selection bar (UI/SelectionBar.jsx): floats at the foot of a table while rows are chosen. ── */
+.ma-selection-room {
+    height: 96px;
+}
+
+.ma-selection {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 16px;
+    z-index: 40;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    width: calc(100% - 2rem);
+    max-width: 56rem;
+    margin-inline: auto;
+    padding: 12px 16px;
+    border-radius: 22px;
+    background: var(--ma-pop, var(--ma-solid));
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    backdrop-filter: blur(24px) saturate(1.6);
+    box-shadow: var(--ma-float);
+    color: var(--ma-ink);
+}
+
+.ma-selection[data-narrow] {
+    max-width: 42rem;
+}
+
+.ma-selection-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ma-selection-count bdi {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding-inline: 8px;
+    border-radius: 999px;
+    background: var(--ma-act);
+    color: #fff;
+    font-family: var(--font-display, inherit);
+    font-weight: 700;
+}
+
+.ma-selection-keys {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    min-width: 0;
+}
+
+.ma-selection-keys :is(.ui-btn-secondary, .ui-btn-danger, .ui-btn-primary) {
+    min-height: 40px;
+    height: 40px;
+    padding-inline: 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.ma-selection-keys .ui-btn-secondary:not(.tone-print) {
+    border: 0;
+    background: var(--ma-tile);
+    box-shadow: var(--ma-hl), 0 0 0 1px var(--ma-line);
+    color: var(--ma-ink);
+}
+
+.ma-selection-keys .ui-btn-secondary:not(.tone-print):hover:not(:disabled) {
+    background: color-mix(in oklab, var(--ma-tile) 82%, var(--ma-ink) 7%);
+}
+
+.ma-selection-keys :is(.ui-btn-secondary, .ui-btn-danger, .ui-btn-primary):disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+@media (max-width: 640px) {
+    .ma-selection-room {
+        height: 208px;
+    }
+
+    .ma-selection {
+        bottom: 8px;
+        width: calc(100% - 1rem);
+    }
+
+    /* The count and the clear key share the first row; the keys take the rows under them. */
+    .ma-selection-count {
+        flex: 1;
+    }
+
+    .ma-selection-keys {
+        order: 3;
+        flex-basis: 100%;
+        justify-content: flex-start;
+    }
+}
+
+/* On a form page the open field is white, so it stands off its glass card; windows keep the tile. */
+.ma-form-page :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'], [type='color'], [type='hidden']), textarea, select):not(:disabled, [readonly]),
+.ma-form-page :is(button.rounded-control.border[aria-expanded]:not([class*='tone-']), .gl-choice-trigger):not(:disabled, [aria-disabled='true'], [data-disabled]) {
+    background-color: var(--ma-solid) !important;
+}

@@ -12,6 +12,8 @@
     font-size: 12px;
     font-weight: 700;
     white-space: nowrap;
+    /* Out of the layout until shown, so a tip near the screen's edge never widens the page. */
+    display: none;
     opacity: 0;
     pointer-events: none;
     transform: translate(-50%, 4px);
@@ -19,6 +21,7 @@
 }
 
 .gl-pt-key:is(:hover, [data-focus-visible]) .gl-pt-tip {
+    display: block;
     opacity: 1;
     transform: translate(-50%, 0);
 }

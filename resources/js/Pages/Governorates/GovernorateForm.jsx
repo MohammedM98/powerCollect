@@ -14,7 +14,7 @@ export function governorateFormData(governorate) {
 
 export default function GovernorateForm({ data, setData, errors }) {
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             <FormPreview
                 avatar={<Icon name="map" className="h-6 w-6 text-white/70" />}
                 title={data.name.trim() || 'محافظة جديدة'}
@@ -22,7 +22,7 @@ export default function GovernorateForm({ data, setData, errors }) {
                 total={1}
             />
 
-            <FormSection icon="map" title="بيانات المحافظة" columns={1}>
+            <FormSection icon="map" title="بيانات المحافظة" description="تُجمع تحتها المناطق والفروع" columns={1}>
                 <FormField id="name" label="الاسم" required error={errors.name}>
                     <TextInput className="block w-full" value={data.name} autoFocus onChange={(e) => setData('name', e.target.value)} />
                 </FormField>

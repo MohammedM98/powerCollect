@@ -50,26 +50,26 @@ export default function HierarchyColumn({
     const count = total ?? items?.length ?? 0;
 
     return (
-        <section className={`min-w-0 flex-col border-gray-100 lg:flex lg:border-s lg:first:border-s-0 ${active ? 'flex' : 'hidden'}`}>
+        <section className={`min-w-0 flex-col border-(--ma-line) lg:flex lg:border-s lg:first:border-s-0 ${active ? 'flex' : 'hidden'}`}>
             <div className="flex items-center gap-3 px-4 pb-2 pt-3">
                 {onBack && (
                     <Button data-raw="" variant="ghost"
                         onClick={onBack}
                         aria-label="رجوع"
-                        className="grid h-9 w-9 place-items-center rounded-lg border border-gray-200 bg-surface text-gray-700 lg:hidden"
+                        className="grid h-9 w-9 place-items-center rounded-lg border border-(--ma-line) bg-(--ma-solid) text-(--ma-ink) lg:hidden"
                     >
                         <Icon name="chevron-right" className="h-4 w-4" strokeWidth={2} />
                     </Button>
                 )}
-                <h2 className="font-luxe text-lg font-bold text-gray-900">{title}</h2>
-                {items && <small className="font-display text-[13.5px] font-semibold text-gray-700">{count}</small>}
+                <h2 className="font-luxe text-lg font-bold text-(--ma-ink)">{title}</h2>
+                {items && <small className="font-display text-[13.5px] font-semibold text-(--ma-ink)">{count}</small>}
                 {items && canAdd && (
                     <Button data-raw="" variant="ghost"
                         onClick={() => {
                             setAdding(true);
                             setEditingId(null);
                         }}
-                        className="ms-auto inline-flex h-9 items-center gap-2 rounded-lg border border-teal-600/30 bg-teal-500/5 px-3 text-xs font-bold text-teal-700 transition hover:border-teal-600/50 hover:bg-teal-500/15 dark:text-teal-300"
+                        className="ms-auto inline-flex h-9 items-center gap-2 rounded-lg border border-(--ma-split) bg-(--ma-split-s) px-3 text-xs font-bold text-(--ma-split) transition hover:brightness-95"
                     >
                         <Icon name="plus" className="h-4 w-4" strokeWidth={2} />
                         إضافة
@@ -89,7 +89,7 @@ export default function HierarchyColumn({
                                 onChange={(event) => (searchesOnServer ? onSearchChange : setLocalSearch)(event.target.value)}
                                 placeholder="بحث"
                                 aria-label={`بحث في ${title}`}
-                                className="h-10 w-full rounded-control border-gray-200 bg-gray-50 px-3 text-sm focus:border-brand-500 focus:bg-surface focus:ring-0"
+                                className="h-10 w-full rounded-control border-(--ma-line) bg-(--ma-tile) px-3 text-sm focus:border-(--ma-brand) focus:bg-(--ma-solid) focus:ring-0"
                             />
                         </div>
                     )}
@@ -151,8 +151,8 @@ function Row({ item, selected, onPick, subtitle, onEdit, onDelete }) {
     const pick = () => onPick?.(item);
     const name = (
         <>
-            <b className={`block truncate text-sm font-bold ${selected ? 'text-brand-600' : 'text-gray-900'} ${pickable ? 'group-hover:text-brand-600' : ''}`}>{item.name}</b>
-            {subtitle && <small className="block text-xs text-gray-500">{subtitle}</small>}
+            <b className={`block truncate text-sm font-bold ${selected ? 'text-(--ma-brand)' : 'text-(--ma-ink)'} ${pickable ? 'group-hover:text-(--ma-brand)' : ''}`}>{item.name}</b>
+            {subtitle && <small className="block text-xs text-(--ma-muted)">{subtitle}</small>}
         </>
     );
 
@@ -160,15 +160,15 @@ function Row({ item, selected, onPick, subtitle, onEdit, onDelete }) {
         <div
             className={`group flex w-full items-center gap-3 rounded-control border px-3 py-2 text-start transition ${
                 selected
-                    ? 'border-brand-500/40 bg-brand-500/10 shadow-[inset_-3px_0_0_rgb(var(--brand-500))]'
-                    : `border-transparent ${pickable ? 'cursor-pointer hover:border-brand-500/20 hover:bg-brand-500/5' : ''}`
+                    ? 'border-(--ma-brand) bg-(--ma-brand-soft) shadow-[inset_-3px_0_0_rgb(var(--brand-500))]'
+                    : `border-transparent ${pickable ? 'cursor-pointer hover:border-(--ma-brand) hover:bg-(--ma-brand-soft)' : ''}`
             }`}
         >
             {pickable ? (
                 <Button data-raw="" variant="ghost"
                     aria-pressed={selected}
                     onClick={pick}
-                    className="min-w-0 flex-1 self-stretch rounded text-start focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                    className="min-w-0 flex-1 self-stretch rounded text-start focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ma-brand)"
                 >
                     {name}
                 </Button>
@@ -183,7 +183,7 @@ function Row({ item, selected, onPick, subtitle, onEdit, onDelete }) {
                 {pickable && (
                     <Icon
                         name="chevron-left"
-                        className={`h-4 w-4 ${selected ? 'text-brand-600' : 'text-gray-400 group-hover:text-brand-600'}`}
+                        className={`h-4 w-4 ${selected ? 'text-(--ma-brand)' : 'text-(--ma-faint) group-hover:text-(--ma-brand)'}`}
                         strokeWidth={2}
                     />
                 )}
@@ -202,7 +202,7 @@ function RowIconButton({ label, icon, visible, onClick }) {
                 event.stopPropagation();
                 onClick();
             }}
-            className={`grid h-8 w-8 place-items-center rounded-lg text-gray-500 transition hover:bg-surface hover:text-brand-600 focus:opacity-100 group-hover:opacity-100 max-lg:opacity-100 ${
+            className={`grid h-8 w-8 place-items-center rounded-lg text-(--ma-muted) transition hover:bg-(--ma-solid) hover:text-(--ma-brand) focus:opacity-100 group-hover:opacity-100 max-lg:opacity-100 ${
                 visible ? 'opacity-100' : 'opacity-0'
             }`}
         >
@@ -213,8 +213,8 @@ function RowIconButton({ label, icon, visible, onClick }) {
 
 function Empty({ title, text }) {
     return (
-        <div className="px-4 py-8 text-center text-sm text-gray-500">
-            <b className="mb-1 block text-gray-700">{title}</b>
+        <div className="px-4 py-8 text-center text-sm text-(--ma-muted)">
+            <b className="mb-1 block text-(--ma-ink)">{title}</b>
             {text}
         </div>
     );

@@ -17,43 +17,43 @@ const ACTION_LABELS = {
  */
 export default function ResultReport({ result, onClose }) {
     const failed = result.failed ?? [];
-    const tone = result.succeeded === 0 ? 'border-red-500/30 bg-red-500/5' : failed.length ? 'border-amber-500/30 bg-amber-500/5' : 'border-emerald-500/30 bg-emerald-500/5';
+    const tone = result.succeeded === 0 ? 'bg-(--ma-owe-s)' : failed.length ? 'bg-(--ma-warn-s)' : 'bg-(--ma-pay-s)';
     const heading = result.succeeded === 0 ? 'لم يُطبَّق الإجراء' : failed.length ? 'طُبّق الإجراء جزئيًا' : 'طُبّق الإجراء بنجاح';
 
     return (
-        <section role="status" aria-live="polite" className={`mb-6 rounded-card border p-4 ${tone}`}>
+        <section role="status" aria-live="polite" className={`mb-6 rounded-[18px] p-4 shadow-(--ma-hl) ${tone}`}>
             <div className="flex items-start justify-between gap-3">
                 <div>
-                    <p className="font-bold text-gray-900">
+                    <p className="font-bold text-(--ma-ink)">
                         {ACTION_LABELS[result.action] ?? 'الإجراء'}: {heading}
                     </p>
-                    <p className="mt-1 text-sm text-gray-700">
+                    <p className="mt-1 text-sm text-(--ma-ink)">
                         نجح لـ <b className="font-display">{result.succeeded.toLocaleString('en')}</b> مشترك
                         {failed.length > 0 && <>، لم يُطبَّق على <b className="font-display">{failed.length.toLocaleString('en')}</b></>}
                         {result.action === 'confirm' && result.succeeded > 0 && <>، رسوم القطع المحمّلة <b className="font-display">{formatMoney(result.feesTotal)} ₪</b></>}
                         {result.action === 'warn' && result.batchId && (
                             <>
                                 {'، '}
-                                <a href={`/messages/${result.batchId}`} className="font-semibold text-brand-600 hover:underline">
+                                <a href={`/messages/${result.batchId}`} className="font-semibold text-(--ma-brand) hover:underline">
                                     {result.channel === 'whatsapp' ? 'افتح الرسائل لإرسالها عبر واتساب' : 'تابع حالة الإرسال'}
                                 </a>
                             </>
                         )}
                     </p>
                 </div>
-                <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق التقرير" className="rounded-control p-2 text-gray-500 hover:bg-gray-100">
+                <Button data-raw="" variant="ghost" onClick={onClose} aria-label="إغلاق التقرير" className="gl-ib">
                     <Icon name="close" className="h-4 w-4" />
                 </Button>
             </div>
             {failed.length > 0 && (
-                <ul className="mt-3 max-h-56 divide-y divide-gray-100 overflow-y-auto rounded-control border border-gray-100 bg-surface text-sm">
+                <ul className="mt-3 max-h-56 divide-y divide-(--ma-line) overflow-y-auto rounded-[14px] bg-(--ma-solid) text-sm">
                     {failed.map((item, index) => (
                         <li key={`${item.id ?? item.subscriptionId ?? 'x'}-${index}`} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
                             <span>
-                                <b className="text-gray-900">{item.name}</b>
-                                {item.accountNumber && <bdi dir="ltr" className="ms-2 font-display text-xs text-gray-500">{item.accountNumber}</bdi>}
+                                <b className="text-(--ma-ink)">{item.name}</b>
+                                {item.accountNumber && <bdi dir="ltr" className="ms-2 font-display text-xs text-(--ma-muted)">{item.accountNumber}</bdi>}
                             </span>
-                            <span className="text-xs text-gray-600">{item.reason}</span>
+                            <span className="text-xs text-(--ma-muted)">{item.reason}</span>
                         </li>
                     ))}
                 </ul>

@@ -17,7 +17,7 @@ export default function AreaForm({ data, setData, errors, governorates }) {
     const governorate = governorates.find((option) => String(option.id) === String(data.governorate_id));
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             <FormPreview
                 avatar={<Icon name="map" className="h-6 w-6 text-white/70" />}
                 title={data.name.trim() || 'منطقة جديدة'}
@@ -26,7 +26,7 @@ export default function AreaForm({ data, setData, errors, governorates }) {
                 total={1}
             />
 
-            <FormSection icon="map" title="بيانات المنطقة" columns={2}>
+            <FormSection icon="map" title="بيانات المنطقة" description="اسم المنطقة والمحافظة التابعة لها" columns={2}>
                 <FormField id="name" label="الاسم" required error={errors.name}>
                     <TextInput className="block w-full" value={data.name} autoFocus onChange={(e) => setData('name', e.target.value)} />
                 </FormField>

@@ -6,13 +6,12 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { SaveConfirmDialog } from '@/Components/UI/ConfirmDialog';
 import PageHeader from '@/Components/PageHeader';
 import PrimaryButton from '@/Components/UI/PrimaryButton';
-import { secondaryButtonClass } from '@/Components/UI/SecondaryButton';
 import { clearErrorOnInput, submitOnCtrlEnter, validateFormFields } from '@/lib/formValidation';
 
 /**
  * The standalone Create/Edit page every resource uses: the form's sections
  * (children, each its own card) and, under them, a bar that stays in view
- * holding Cancel and Save, laid out like a dialog's footer. Saving asks for
+ * holding Cancel and Save on a floating dock (ma-forms.css `ma-form-dock`). Saving asks for
  * confirmation first; Ctrl + Enter saves from any field.
  *
  * `form` comes from useResourceForm(); `cancelHref` is where Cancel goes.
@@ -78,7 +77,7 @@ export default function FormPage({ title, form, cancelHref, layout: Layout = Aut
         <Layout header={<PageHeader title={title} />}>
             <Head title={title} />
 
-            <form noValidate onSubmit={submit} onInput={(e) => clearErrorOnInput(e, form)} onKeyDown={submitOnCtrlEnter} className={`rise-in ${outline ? 'gl-fp' : widthClass}`}>
+            <form noValidate onSubmit={submit} onInput={(e) => clearErrorOnInput(e, form)} onKeyDown={submitOnCtrlEnter} className={`ma-form ma-form-page rise-in ${outline ? 'gl-fp' : widthClass}`}>
                 {outline ? (
                     <FormAsideContext value={{ slot: asideSlot }}>
                         <div className="gl-fp-main">{children}</div>
@@ -92,13 +91,17 @@ export default function FormPage({ title, form, cancelHref, layout: Layout = Aut
                     children
                 )}
 
-                <div className={`sticky bottom-4 z-10 mt-6 flex items-center justify-end gap-3 rounded-card border border-gray-100 bg-surface px-4 py-4 shadow-lift ${outline ? 'gl-fp-foot' : ''}`}>
+                <div className={`ma-form-dock ${outline ? 'gl-fp-foot' : ''}`}>
                     {outline && <FormProgress sections={outline} done={done} />}
-                    {outline && <span className="flex-1" />}
-                    <Link href={cancelHref} prefetch className={secondaryButtonClass}>
+                    <span className="flex-1" />
+                    {form.isEdit && form.isDirty && <span className="gl-unsaved" role="status">تغييرات غير محفوظة</span>}
+                    <Link href={cancelHref} prefetch className="ma-dock-cancel">
                         إلغاء
                     </Link>
-                    <PrimaryButton disabled={form.processing}>{form.processing ? 'جارٍ الحفظ...' : 'حفظ'}</PrimaryButton>
+                    <PrimaryButton disabled={form.processing}>
+                        <Icon name="check" className="h-[18px] w-[18px]" />
+                        {form.processing ? 'جارٍ الحفظ...' : 'حفظ'}
+                    </PrimaryButton>
                 </div>
             </form>
 

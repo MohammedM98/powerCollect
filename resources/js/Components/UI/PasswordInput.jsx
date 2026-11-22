@@ -18,7 +18,7 @@ export default function PasswordInput({ className = '', toggleTabIndex = -1, dir
             <Button data-raw="" variant="ghost"
                 tabIndex={toggleTabIndex}
                 onClick={() => setVisible((v) => !v)}
-                className="absolute inset-y-0 inset-e-0 flex items-center px-4 text-gray-400 transition hover:text-gray-900"
+                className="absolute inset-y-0 inset-e-0 flex items-center px-4 text-(--ma-faint) transition hover:text-(--ma-ink)"
                 aria-label={visible ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
             >
                 {visible ? (

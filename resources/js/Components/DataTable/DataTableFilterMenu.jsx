@@ -148,7 +148,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                         {hideable.map((group) => (
                             <label
                                 key={group.key}
-                                className="flex cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                className="flex cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm text-(--ma-ink) hover:bg-(--ma-tile)"
                             >
                                 {group.label}
                                 <input
@@ -160,7 +160,7 @@ export default function DataTableFilterMenu({ tableKey, groups, values, onChange
                                 />
                                 <span
                                     aria-hidden="true"
-                                    className="relative h-5 w-9 shrink-0 rounded-full bg-gray-200 transition after:absolute after:inset-s-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-surface after:shadow-sm after:transition-all peer-checked:bg-brand-500 peer-checked:after:inset-s-[18px] peer-focus-visible:outline-solid peer-focus-visible:outline-2 peer-focus-visible:outline-gray-900"
+                                    className="relative h-5 w-9 shrink-0 rounded-full bg-(--ma-faint)/40 transition after:absolute after:inset-s-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-(--ma-solid) after:shadow-sm after:transition-all peer-checked:bg-(--ma-brand) peer-checked:after:inset-s-[18px] peer-focus-visible:outline-solid peer-focus-visible:outline-2 peer-focus-visible:outline-(--ma-ink)"
                                 />
                             </label>
                         ))}

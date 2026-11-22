@@ -53,6 +53,73 @@ const spacingScale = {
 };
 
 /**
+ * The pages and windows already moved onto the MA parts. On these, colour
+ * comes from the `--ma-*` tokens only and windows from the kit's frames.
+ * Add a file here once it is migrated; never take one out.
+ */
+const MA_MIGRATED = [
+    'resources/js/Pages/Settings/Permission*.jsx',
+    'resources/js/Pages/Settings/AuditAccessCard.jsx',
+    'resources/js/Pages/Branches/BranchForm.jsx',
+    'resources/js/Pages/Subscriptions/{PersonalDetailsModal,ArchiveSubscriptionModal,BulkChangeModal,BulkChanges}.jsx',
+    'resources/js/Pages/MeterReadings/MeterReadingModal.jsx',
+    'resources/js/Pages/Disconnections/{ActionModal,HistoryModal}.jsx',
+    'resources/js/Pages/Messages/{QuickMessageModal,QuickMessageFooter,SubscriptionMessageHistoryModal}.jsx',
+    'resources/js/Pages/CompanyForms/IssueModal.jsx',
+    'resources/js/Pages/ReadingCycles/{DistributionDialog,CycleParts}.jsx',
+    'resources/js/Pages/Settings/PrintTemplates.jsx',
+    'resources/js/Components/UI/SelectionBar.jsx',
+    'resources/js/Pages/Subscriptions/BulkActionBar.jsx',
+    'resources/js/Pages/Disconnections/{Show,Candidates,ResultReport}.jsx',
+    'resources/js/Pages/Payments/CloseBoxesByType.jsx',
+    'resources/js/Pages/Messages/QuickMessage{Kind,Recipients,Body,Channel}.jsx',
+    'resources/js/Components/UI/{TextArea,ChoiceChips,HoldToConfirm}.jsx',
+    'resources/js/Pages/Payments/{CashBoxShow,AuditApprovalDialog,Summary,BranchCashBoxes,Entries}.jsx',
+    'resources/js/Pages/Reports/{ReportParts,Index}.jsx',
+    'resources/js/Pages/Settings/Appearance.jsx',
+    'resources/js/Pages/CompanyForms/{Index,Editor}.jsx',
+    'resources/js/Components/Print/{PrintTemplatesSection,PrintSettingsPanel}.jsx',
+    'resources/js/Components/Settings/SettingsKit.jsx',
+    'resources/js/Pages/ReadingCycles/{Submissions,Show,DistributionSummaryModal,DistributionActionModal,DistributionAreas,DistributionAreaBreakdown}.jsx',
+    'resources/js/Pages/MeterReadings/{ReadingApprovalDialog,EntryWindowNotice}.jsx',
+    'resources/js/Pages/MeterBoxes/MeterBoxSubscriptions.jsx',
+    'resources/js/Components/LastReadingConfirmDialog.jsx',
+    'resources/js/Pages/Messages/{Show,MessageRecipientList,MessageRecipientCriteria,MessageBodyCard}.jsx',
+    'resources/js/Pages/Governorates/HierarchyColumn.jsx',
+    'resources/js/Pages/Branches/{Access,Index}.jsx',
+    'resources/js/Pages/Profile/**/*.jsx',
+    'resources/js/Components/UI/PasswordInput.jsx',
+    'resources/js/Components/DataTable/{DataTableToolbar,DensityToggle,DataTableFilterMenu}.jsx',
+    'resources/js/Components/Layout/NavigationMenu.jsx',
+];
+const RAW_COLOUR = /^(?:\S*?:)*!?(?:(?:bg|text|border|ring|divide|outline|decoration|placeholder|fill|stroke|from|via|to)-(?:gray|slate|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|brand|danger|success|warning|info)-\d{2,3}|(?:bg|border)-(?:white|black|surface))(?:\/\S+)?!?$/;
+
+/** A migrated file names no raw colour class (`bg-gray-50`, `text-red-600`…): its colours are the `--ma-*` tokens. */
+const maColours = {
+    meta: { type: 'problem', schema: [] },
+    create(context) {
+        function checkClasses(node, text) {
+            for (const token of text.split(/\s+/)) {
+                if (RAW_COLOUR.test(token)) {
+                    context.report({ node, message: `«${token}»: use an --ma-* token (for example text-(--ma-muted), bg-(--ma-tile)) or a kit part.` });
+                }
+            }
+        }
+
+        return {
+            Literal(node) {
+                if (typeof node.value === 'string') {
+                    checkClasses(node, node.value);
+                }
+            },
+            TemplateElement(node) {
+                checkClasses(node, node.value.cooked ?? node.value.raw);
+            },
+        };
+    },
+};
+
+/**
  * Lint for the website's React code: the recommended JavaScript, React,
  * hooks and accessibility rules, with Prettier owning the formatting.
  */
@@ -68,7 +135,7 @@ export default [
             ...react.configs.flat.recommended.plugins,
             ...jsxA11y.flatConfigs.recommended.plugins,
             'react-hooks': reactHooks,
-            local: { rules: { 'spacing-scale': spacingScale } },
+            local: { rules: { 'spacing-scale': spacingScale, 'ma-colours': maColours } },
         },
         languageOptions: {
             ecmaVersion: 'latest',
@@ -106,6 +173,14 @@ export default [
             }],
             // Scrolling regions, tables, grids and charts take focus so the keyboard can reach and scroll them.
             'jsx-a11y/no-noninteractive-tabindex': ['error', { tags: [], roles: ['tabpanel', 'region', 'table', 'grid', 'img'], allowExpressionValues: true }],
+        },
+    },
+    {
+        files: MA_MIGRATED,
+        rules: {
+            'local/ma-colours': 'error',
+            // A window is a DialogFrame, FormModal or ConfirmDialog, not a head and foot built by hand over the raw Modal.
+            'no-restricted-imports': ['error', { paths: [{ name: '@/Components/UI/Modal', message: 'Build the window on DialogFrame, FormModal or ConfirmDialog.' }] }],
         },
     },
     prettier,

@@ -45,14 +45,14 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                     <Icon name="key" className="h-5 w-5" />
                 </span>
                 <div className="min-w-0">
-                    <h4 className="flex items-center gap-2 font-bold text-gray-900">
+                    <h4 className="flex items-center gap-2 font-bold text-(--ma-ink)">
                         ماذا يستطيع {firstName} أن يمنح لموظفي فرعه؟
                         <InfoTip label="عن حق المنح">
                             {`المربع الأخضر يعني أن ${firstName} يستطيع منح هذه الصلاحية لموظفي فرعه فقط، ويعمل منحه فورًا ويصلك إشعار به. إذا سحبت منه صلاحية تُسحب ممن منحهم إياها، وإذا أفرغت المربع وحده يبقى ما منحه.`}
                         </InfoTip>
                     </h4>
-                    <p className="text-sm text-gray-500">
-                        يمنح <b className="font-display text-gray-900">{keyed}</b> من <b className="font-display text-gray-900">{held.length}</b>{' '}
+                    <p className="text-sm text-(--ma-muted)">
+                        يمنح <b className="font-display text-(--ma-ink)">{keyed}</b> من <b className="font-display text-(--ma-ink)">{held.length}</b>{' '}
                         صلاحية يملكها
                     </p>
                 </div>
@@ -94,11 +94,11 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
             </div>
 
             {bySection.length === 0 ? (
-                <p className="py-8 text-center text-sm text-gray-500">
+                <p className="py-8 text-center text-sm text-(--ma-muted)">
                     لا يملك {firstName} صلاحيات يمكن منحها بعد. امنحه صلاحيات من تبويب «الصلاحيات» أولًا.
                 </p>
             ) : (
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-(--ma-line)">
                     {bySection.map((section) => {
                         const shown = section.entries.filter((entry) => filter === 'all' || (filter === 'on') === grantable.includes(entry.id));
                         const sectionKeyed = section.entries.filter((entry) => grantable.includes(entry.id)).length;
@@ -110,14 +110,14 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                         return (
                             <div key={section.key} className="py-4 last:pb-0">
                                 <div className="mb-3 flex items-center gap-3">
-                                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-gray-100 bg-gray-50 text-gray-500">
+                                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-(--ma-line) bg-(--ma-tile) text-(--ma-muted)">
                                         <Icon name={sectionIcon(section.key)} className="h-[18px] w-[18px]" />
                                     </span>
-                                    <b className="text-[16px] text-gray-900">{section.label}</b>
-                                    <span className="font-display text-xs font-bold text-gray-400">
+                                    <b className="text-[16px] text-(--ma-ink)">{section.label}</b>
+                                    <span className="font-display text-xs font-bold text-(--ma-faint)">
                                         {sectionKeyed}/{section.entries.length} يمنحها
                                     </span>
-                                    <span className="ms-auto inline-flex items-center gap-2 text-sm font-semibold text-gray-600">
+                                    <span className="ms-auto inline-flex items-center gap-2 text-sm font-semibold text-(--ma-muted)">
                                         الكل
                                         <TriToggle
                                             ids={section.entries.map((entry) => entry.id)}
@@ -143,8 +143,8 @@ export default function GrantRightPanel({ sections, selected, grantable, delegab
                                             >
                                                 <Checkbox.Content className={`pm-grant-row ${on ? 'is-on' : ''}`}>
                                                 <span className="min-w-0 flex-1">
-                                                    <b className="block truncate text-[15px] font-semibold text-gray-900">{entry.label}</b>
-                                                    <small className="flex flex-wrap items-center gap-2 text-[12.5px] text-gray-500">
+                                                    <b className="block truncate text-[15px] font-semibold text-(--ma-ink)">{entry.label}</b>
+                                                    <small className="flex flex-wrap items-center gap-2 text-[12.5px] text-(--ma-muted)">
                                                         {entry.risk && (
                                                             <>
                                                                 <i className={`pm-grant-risk is-${entry.risk}`} aria-hidden="true" />

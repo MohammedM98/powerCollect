@@ -1,7 +1,6 @@
-import { Button, Input, TextArea } from '@heroui/react';
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useForm, useHttp } from '@inertiajs/react';
-import Modal from '@/Components/UI/Modal';
+import DialogFrame from '@/Components/UI/DialogFrame';
 import Icon from '@/Components/UI/Icon';
 import FormField from '@/Components/Form/FormField';
 import ChoiceChips from '@/Components/UI/ChoiceChips';
@@ -9,7 +8,7 @@ import InputError from '@/Components/UI/InputError';
 import CompanyFormPaper from './CompanyFormPaper';
 import useCompanySource from './useCompanySource';
 import DateInput from '@/Components/UI/DateInput';
-import { PrimaryKey, SearchableSelect, SecondaryKey } from '@/Components/UI';
+import { Notice, PrimaryKey, SearchableSelect, SecondaryKey, TextArea, TextInput } from '@/Components/UI';
 
 const MODE_OPTIONS = [{ value: 'blank', label: 'نموذج فارغ', icon: 'document' }, { value: 'filled', label: 'نسخة معبأة', icon: 'user' }];
 const ARCHIVE_LAYOUT = { paper: 'A4', orientation: 'portrait', margin: 16, fontSize: 15, header: { enabled: false }, watermark: { enabled: false }, footer: '', pages: [{ id: 'archive', blocks: [] }], overlays: [] };
@@ -87,36 +86,71 @@ export default function IssueModal({ templateId = null, mode = 'blank', onClose 
     }
     const pages = source?.url ? sourceState.pages : layout?.pages.map(() => null) ?? [];
 
-    return <Modal show onClose={() => { if (!processing) onClose(); }} maxWidth="6xl">
-        <form onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="company-issue-title" className="flex max-h-[88dvh] min-h-0 flex-col">
-            <header className="flex shrink-0 items-start justify-between gap-4 border-b border-gray-100 px-4 py-4 sm:px-6"><div className="flex items-center gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600"><Icon name={archive ? 'history' : 'printer'} /></span><div><h3 id="company-issue-title" className="text-xl font-bold text-gray-900">{archive ? 'أرشفة طلب ورقي' : loaded?.template.name ?? 'تجهيز النموذج'}</h3><p className="mt-1 text-sm text-gray-500">{archive ? 'حفظ الورقة بعد إدخالها يدويًا، مع رقمها وتاريخها.' : 'راجع النسخة قبل حفظها وفتح الطباعة.'}</p></div></div><Button data-raw="" variant="ghost" isDisabled={processing} onClick={onClose} aria-label="إغلاق" className="rounded-control p-2 text-gray-500 hover:bg-gray-100"><Icon name="close" className="h-5 w-5" /></Button></header>
-            <div className="min-h-0 flex-1 overflow-y-auto bg-gray-50 px-4 py-4 sm:px-6">
-                {setupError ? <div role="alert" className="space-y-3 rounded-card bg-surface p-6"><p>{setupError}</p><SecondaryKey onClick={() => setAttempt((old) => old + 1)}>إعادة المحاولة</SecondaryKey></div> : !archive && !loaded ? <div role="status" className="animate-pulse rounded-card bg-surface p-8 text-center text-gray-500">جارٍ تحميل النموذج…</div> : <div className="grid items-start gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
-                    <div className="space-y-6 rounded-card border border-gray-100 bg-surface p-4">
-                        {!archive && <ChoiceChips label="طريقة تعبئة النموذج" options={MODE_OPTIONS} value={data.mode} onChange={changeMode} disabled={processing} />}
-                        {data.mode === 'blank' && <p className="rounded-control bg-gray-50 p-3 text-sm leading-7 text-gray-600">تُطبع الترويسة والنصوص الثابتة، وتبقى بيانات المشترك والتوقيعات فارغة للتعبئة اليدوية.</p>}
-                        {(archive || data.mode === 'filled') && <FormField id="company-issue-subscription" label="الاشتراك" hint="يمكنك تعبئة نموذج لشخص لم يُسجّل بعد."><SearchableSelect value={data.subscription_id ?? ''} options={[]} loadOptions={loadSubscriptions} onChange={(next) => setData({ ...data, subscription_id: next || null, values: next ? {} : loaded?.values ?? {} })} placeholder="ابحث واختر الاشتراك" disabled={processing} /></FormField>}
-                        {contextLoading && <p role="status" className="text-sm text-gray-500">جارٍ تعبئة بيانات الاشتراك…</p>}<InputError message={contextError} />
-                        {data.mode === 'filled' && !contextLoading && <><p className="text-xs text-gray-500">تعديل هذه القيم يخص المستند فقط، وتبقى بيانات المشترك في النظام كما هي.</p>{loaded.fields.map((field) => <FormField key={field.key} id={`company-value-${field.key}`} label={field.label}><Input value={data.values[field.key] ?? ''} onChange={(event) => setData('values', { ...data.values, [field.key]: event.target.value })} className="w-full" maxLength={3000} disabled={processing} /></FormField>)}</>}
-                        {archive && <>
-                            <FormField id="company-archive-title" label="عنوان المستند" required error={errors.title}><Input value={data.title} onChange={(event) => setData('title', event.target.value)} className="w-full" maxLength={150} required /></FormField>
-                            <FormField id="company-paper-reference" label="رقم الطلب الورقي" required error={errors.paper_reference}><Input value={data.paper_reference} onChange={(event) => setData('paper_reference', event.target.value)} className="w-full" maxLength={100} required /></FormField>
-                            <FormField id="company-paper-date" label="تاريخ الطلب الورقي" required error={errors.paper_date}><DateInput name="paper_date" value={data.paper_date} onChange={(value) => setData('paper_date', value)} required /></FormField>
-                            <input ref={fileInput} type="file" className="sr-only" accept=".pdf,.png,.jpg,.jpeg,.webp" onChange={(event) => { selectAttachment(event.target.files?.[0]); event.target.value = ''; }} />
-                            <SecondaryKey onClick={() => fileInput.current.click()}><Icon name="document-plus" className="h-4 w-4" />{data.attachment ? 'استبدال الملف' : 'اختيار صورة الطلب أو PDF'}</SecondaryKey>
-                            <p className="wrap-break-word text-xs text-gray-500">{data.attachment?.name ?? 'حتى 10 ميجابايت و10 صفحات.'}</p><InputError message={errors.attachment || fileError} />
-                        </>}
-                        <FormField id="company-document-notes" label="ملاحظات داخلية" error={errors.notes}><TextArea value={data.notes} onChange={(event) => setData('notes', event.target.value)} className="w-full" rows={3} maxLength={2000} /></FormField>
-                        {Object.entries(errors).filter(([key]) => !['notes', 'title', 'paper_reference', 'paper_date', 'attachment'].includes(key)).map(([key, message]) => <InputError key={key} message={message} />)}
+    const footer = (
+        <>
+            <SecondaryKey disabled={processing} onClick={onClose}>إلغاء</SecondaryKey>
+            <PrimaryKey type="submit" form="company-issue-form" disabled={!ready || processing}>
+                <Icon name={archive ? 'check' : 'printer'} className="h-4 w-4" />
+                {processing ? 'جارٍ الحفظ…' : archive ? 'حفظ الطلب الورقي' : 'حفظ النسخة وفتح الطباعة'}
+            </PrimaryKey>
+        </>
+    );
+
+    return (
+        <DialogFrame
+            show
+            onClose={onClose}
+            title={archive ? 'أرشفة طلب ورقي' : loaded?.template.name ?? 'تجهيز النموذج'}
+            description={archive ? 'حفظ الورقة بعد إدخالها يدويًا، مع رقمها وتاريخها.' : 'راجع النسخة قبل حفظها وفتح الطباعة.'}
+            icon={archive ? 'history' : 'printer'}
+            maxWidth="6xl"
+            busy={processing}
+            footer={footer}
+        >
+            <form id="company-issue-form" onSubmit={submit}>
+                {setupError ? (
+                    <Notice tone="danger" role="alert">
+                        <p>{setupError}</p>
+                        <SecondaryKey className="mt-2" onClick={() => setAttempt((old) => old + 1)}>إعادة المحاولة</SecondaryKey>
+                    </Notice>
+                ) : !archive && !loaded ? (
+                    <div role="status" className="animate-pulse rounded-[18px] bg-(--ma-tile) p-8 text-center text-(--ma-muted)">جارٍ تحميل النموذج…</div>
+                ) : (
+                    <div className="grid items-start gap-6 lg:grid-cols-[340px_minmax(0,1fr)]">
+                        <div className="flex flex-col gap-6">
+                            {!archive && <ChoiceChips label="طريقة تعبئة النموذج" options={MODE_OPTIONS} value={data.mode} onChange={changeMode} disabled={processing} />}
+                            {data.mode === 'blank' && <Notice>تُطبع الترويسة والنصوص الثابتة، وتبقى بيانات المشترك والتوقيعات فارغة للتعبئة اليدوية.</Notice>}
+                            {(archive || data.mode === 'filled') && <FormField id="company-issue-subscription" label="الاشتراك" hint="يمكنك تعبئة نموذج لشخص لم يُسجّل بعد."><SearchableSelect value={data.subscription_id ?? ''} options={[]} loadOptions={loadSubscriptions} onChange={(next) => setData({ ...data, subscription_id: next || null, values: next ? {} : loaded?.values ?? {} })} placeholder="ابحث واختر الاشتراك" disabled={processing} /></FormField>}
+                            {contextLoading && <p role="status" className="text-sm text-(--ma-muted)">جارٍ تعبئة بيانات الاشتراك…</p>}
+                            <InputError message={contextError} />
+                            {data.mode === 'filled' && !contextLoading && (
+                                <>
+                                    <p className="text-xs text-(--ma-muted)">تعديل هذه القيم يخص المستند فقط، وتبقى بيانات المشترك في النظام كما هي.</p>
+                                    {loaded.fields.map((field) => <FormField key={field.key} id={`company-value-${field.key}`} label={field.label}><TextInput value={data.values[field.key] ?? ''} onChange={(event) => setData('values', { ...data.values, [field.key]: event.target.value })} className="w-full" maxLength={3000} disabled={processing} /></FormField>)}
+                                </>
+                            )}
+                            {archive && (
+                                <>
+                                    <FormField id="company-archive-title" label="عنوان المستند" required error={errors.title}><TextInput value={data.title} onChange={(event) => setData('title', event.target.value)} className="w-full" maxLength={150} required /></FormField>
+                                    <FormField id="company-paper-reference" label="رقم الطلب الورقي" required error={errors.paper_reference}><TextInput value={data.paper_reference} onChange={(event) => setData('paper_reference', event.target.value)} className="w-full" maxLength={100} required /></FormField>
+                                    <FormField id="company-paper-date" label="تاريخ الطلب الورقي" required error={errors.paper_date}><DateInput name="paper_date" value={data.paper_date} onChange={(value) => setData('paper_date', value)} required /></FormField>
+                                    <input ref={fileInput} type="file" className="sr-only" accept=".pdf,.png,.jpg,.jpeg,.webp" onChange={(event) => { selectAttachment(event.target.files?.[0]); event.target.value = ''; }} />
+                                    <SecondaryKey onClick={() => fileInput.current.click()}><Icon name="document-plus" className="h-4 w-4" />{data.attachment ? 'استبدال الملف' : 'اختيار صورة الطلب أو PDF'}</SecondaryKey>
+                                    <p className="wrap-break-word text-xs text-(--ma-muted)">{data.attachment?.name ?? 'حتى 10 ميجابايت و10 صفحات.'}</p>
+                                    <InputError message={errors.attachment || fileError} />
+                                </>
+                            )}
+                            <FormField id="company-document-notes" label="ملاحظات داخلية" error={errors.notes}><TextArea value={data.notes} onChange={(event) => setData('notes', event.target.value)} className="w-full" rows={3} maxLength={2000} /></FormField>
+                            {Object.entries(errors).filter(([key]) => !['notes', 'title', 'paper_reference', 'paper_date', 'attachment'].includes(key)).map(([key, message]) => <InputError key={key} message={message} />)}
+                        </div>
+                        <div className="min-w-0 space-y-4 rounded-[18px] bg-(--ma-tile) p-3 shadow-(--ma-hl) sm:p-6">
+                            <h3 className="text-base font-bold text-(--ma-ink)">معاينة النسخة</h3>
+                            {sourceState.loading ? <p role="status" className="py-8 text-center text-sm text-(--ma-muted)">جارٍ تجهيز الصفحات…</p> : sourceState.error ? <Notice tone="danger" role="alert">{sourceState.error}</Notice> : archive && !source ? <p className="py-8 text-center text-sm text-(--ma-muted)">اختر الملف لمعاينة الورقة.</p> : pages.map((sourcePage, index) => <CompanyFormPaper key={index} layout={layout} page={layout.pages[index]} sourcePage={sourcePage} pageIndex={index} blank={data.mode === 'blank'} values={data.values} onOverflow={onOverflow} />)}
+                            {Object.values(overflow).some(Boolean) && <Notice tone="warn" role="alert">المحتوى يتجاوز حدود الورقة. عدّل النموذج أو قصّر القيم قبل إصدار النسخة.</Notice>}
+                        </div>
                     </div>
-                    <div className="min-w-0 rounded-card border border-gray-200 bg-gray-100 p-3 sm:p-6">
-                        <h4 className="mb-4 text-base font-bold text-gray-900">معاينة النسخة</h4>
-                        {sourceState.loading ? <p role="status" className="py-8 text-center text-sm text-gray-500">جارٍ تجهيز الصفحات…</p> : sourceState.error ? <p role="alert" className="text-sm text-brand-600">{sourceState.error}</p> : archive && !source ? <p className="py-8 text-center text-sm text-gray-500">اختر الملف لمعاينة الورقة.</p> : pages.map((sourcePage, index) => <CompanyFormPaper key={index} layout={layout} page={layout.pages[index]} sourcePage={sourcePage} pageIndex={index} blank={data.mode === 'blank'} values={data.values} onOverflow={onOverflow} />)}
-                        {Object.values(overflow).some(Boolean) && <p role="alert" className="rounded-control bg-amber-50 p-3 text-sm text-amber-800">المحتوى يتجاوز حدود الورقة. عدّل النموذج أو قصّر القيم قبل إصدار النسخة.</p>}
-                    </div>
-                </div>}
-            </div>
-            <footer className="flex shrink-0 items-center justify-end gap-3 border-t border-gray-100 bg-surface px-4 py-4 sm:px-6"><SecondaryKey disabled={processing} onClick={onClose}>إلغاء</SecondaryKey><PrimaryKey type="submit" disabled={!ready || processing}><Icon name={archive ? 'check' : 'printer'} className="h-4 w-4" />{processing ? 'جارٍ الحفظ…' : archive ? 'حفظ الطلب الورقي' : 'حفظ النسخة وفتح الطباعة'}</PrimaryKey></footer>
-        </form>
-    </Modal>;
+                )}
+            </form>
+        </DialogFrame>
+    );
 }

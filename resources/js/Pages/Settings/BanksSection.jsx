@@ -9,8 +9,10 @@ import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
 import Pagination from '@/Components/DataTable/Pagination';
 import { BankMark } from '@/Components/Finance/Banks';
-import { SettingSwitch, SettingsHeading } from '@/Components/Settings/SettingsKit';
-import { AddKey, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, StatusPill, TextInput } from '@/Components/UI';
+import SettingRow from '@/Components/Form/SettingRow';
+import InputError from '@/Components/UI/InputError';
+import { SettingsHeading } from '@/Components/Settings/SettingsKit';
+import { AddKey, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, StatusPill, Switch, TextInput } from '@/Components/UI';
 
 function BankLogoInput({ id, file, currentLogo, bankName, onChange, disabled, ...props }) {
     const [preview, setPreview] = useState(null);
@@ -28,17 +30,17 @@ function BankLogoInput({ id, file, currentLogo, bankName, onChange, disabled, ..
 
     const image = preview ?? (!file ? currentLogo : null);
 
-    return <div className="flex flex-wrap items-center gap-4 rounded-row border border-gray-200 bg-gray-50 p-4">
-        <span className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-control border border-gray-100 bg-surface text-gray-400">
+    return <div className="ma-inline-add ma-file-pick">
+        <span className="ma-file-thumb">
             {image ? <img src={image} alt={`شعار ${bankName || 'البنك أو المحفظة'}`} className="h-full w-full object-contain p-1" /> : <Icon name="bank" className="h-7 w-7" />}
         </span>
         <div className="min-w-0 flex-1 basis-40">
-            <p className="text-sm font-semibold text-gray-900">{file ? 'الشعار المختار' : currentLogo ? 'الشعار الحالي' : 'شعار البنك أو المحفظة'}</p>
-            <p className="mt-1 break-all text-xs text-gray-500" dir="auto">{file?.name ?? (currentLogo ? 'سيبقى محفوظًا ما لم تختر صورة أخرى.' : 'لم يتم اختيار صورة بعد.')}</p>
+            <p className="ma-file-name">{file ? 'الشعار المختار' : currentLogo ? 'الشعار الحالي' : 'شعار البنك أو المحفظة'}</p>
+            <p className="ma-field-hint break-all" dir="auto">{file?.name ?? (currentLogo ? 'سيبقى محفوظًا ما لم تختر صورة أخرى.' : 'لم يتم اختيار صورة بعد.')}</p>
         </div>
         <div className="relative shrink-0">
             <input {...props} id={id} name="logo" type="file" accept="image/png,image/jpeg,image/webp" disabled={disabled} className="peer sr-only" onChange={(event) => onChange(event.target.files?.[0] ?? null)} />
-            <label htmlFor={id} className={`inline-flex items-center justify-center gap-2 rounded-control border border-gray-200 bg-surface px-4 py-2 text-sm font-semibold text-gray-900 transition peer-focus-visible:outline-solid peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-gray-900 ${disabled ? 'cursor-not-allowed opacity-40' : 'cursor-pointer hover:border-gray-300 hover:bg-gray-50'}`}>
+            <label htmlFor={id} className="ma-file-key" data-disabled={disabled ? '' : undefined}>
                 <Icon name="plus" className="h-4 w-4" />{file || currentLogo ? 'تغيير الشعار' : 'اختيار الشعار'}
             </label>
         </div>
@@ -50,18 +52,33 @@ function BankModal({ bank, storeUrl, onClose }) {
     const resourceForm = { ...form, isEdit: Boolean(bank), save: (options) => form.post(bank?.updateUrl ?? storeUrl, { ...options, forceFormData: true }) };
 
     return <FormModal show onClose={onClose} form={resourceForm} title={bank ? 'تعديل البنك' : 'إضافة بنك أو محفظة'} icon="bank" maxWidth="3xl">
-        <div className="space-y-4">
+        <div className="space-y-6">
             <FormPreview avatar={<Icon name="bank" className="h-6 w-6 text-white/70" />} dotClass={form.data.is_active ? 'bg-emerald-500' : 'bg-gray-400'} title={form.data.name.trim() || 'بنك أو محفظة جديدة'} chips={[form.data.is_receiver && 'البنك المستلم', form.data.is_sender && 'البنك المرسل', form.data.is_active ? 'نشط' : 'غير نشط'].filter(Boolean)} filled={countFilled(form.data, ['name'])} total={1} />
-            <FormSection icon="bank" title="بيانات البنك أو المحفظة" columns={1}>
+            <FormSection icon="bank" title="بيانات البنك أو المحفظة" description="الاسم والشعار الذي يظهر عند تسجيل الدفعة" columns={1}>
                 <FormField id="bank-name" label="الاسم" required error={form.errors.name}><TextInput name="name" required maxLength={255} className="w-full" value={form.data.name} onChange={(event) => form.setData('name', event.target.value)} /></FormField>
                 <FormField id="bank-logo" label="الشعار" hint="PNG أو JPG أو WebP، بحد أقصى 2 ميجابايت." error={form.errors.logo}>
                     <BankLogoInput file={form.data.logo} currentLogo={bank?.logoUrl} bankName={form.data.name} disabled={form.processing} onChange={(file) => form.setData('logo', file)} />
                 </FormField>
             </FormSection>
-            <FormSection icon="card" title="الاستخدام والحالة" columns={2}>
-                <FormField id="bank-receiver" label="البنك المستلم" error={form.errors.is_receiver}><SettingSwitch isSelected={form.data.is_receiver} onChange={(value) => form.setData('is_receiver', value)} label="متاح لاستلام دفعات المشتركين" /></FormField>
-                <FormField id="bank-sender" label="البنك المرسل" error={form.errors.is_sender}><SettingSwitch isSelected={form.data.is_sender} onChange={(value) => form.setData('is_sender', value)} label="متاح كبنك مرسل" /></FormField>
-                <FormField id="bank-active" label="الحالة" span="sm:col-span-2" error={form.errors.is_active}><SettingSwitch isSelected={form.data.is_active} onChange={(value) => form.setData('is_active', value)} label="نشط ويظهر عند تسجيل دفعة جديدة" /></FormField>
+            <FormSection icon="card" title="الاستخدام والحالة" description="أين يُعرض هذا البنك وهل هو متاح الآن" columns={1}>
+                <div>
+                    <SettingRow title="البنك المستلم" description="متاح لاستلام دفعات المشتركين">
+                        <Switch id="bank-receiver" checked={form.data.is_receiver} onChange={(value) => form.setData('is_receiver', value)} ariaLabel="متاح لاستلام دفعات المشتركين" />
+                    </SettingRow>
+                    <InputError message={form.errors.is_receiver} className="mt-1" />
+                </div>
+                <div>
+                    <SettingRow title="البنك المرسل" description="متاح كبنك مرسل">
+                        <Switch id="bank-sender" checked={form.data.is_sender} onChange={(value) => form.setData('is_sender', value)} ariaLabel="متاح كبنك مرسل" />
+                    </SettingRow>
+                    <InputError message={form.errors.is_sender} className="mt-1" />
+                </div>
+                <div>
+                    <SettingRow title="الحالة" description="نشط ويظهر عند تسجيل دفعة جديدة">
+                        <Switch id="bank-active" checked={form.data.is_active} onChange={(value) => form.setData('is_active', value)} ariaLabel="نشط ويظهر عند تسجيل دفعة جديدة" />
+                    </SettingRow>
+                    <InputError message={form.errors.is_active} className="mt-1" />
+                </div>
             </FormSection>
         </div>
     </FormModal>;

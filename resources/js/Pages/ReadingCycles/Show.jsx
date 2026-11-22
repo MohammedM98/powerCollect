@@ -14,7 +14,7 @@ import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import PrintButton from '@/Components/Print/PrintButton';
 import DistributionBoard, { DistributionMission, DistributionTray } from './DistributionBoard';
 import { AllocationReport, ReadingDayModal } from './CycleParts';
-import { ChoiceSelect, SearchableSelect, SegmentedChoice, StatusPill } from '@/Components/UI';
+import { ChoiceSelect, Notice, SearchableSelect, SegmentedChoice, StatusPill } from '@/Components/UI';
 
 /** Weekly allocations grouped by area, with standing and one-week changes. */
 export default function Show({ cycle, boards, readers, paperSheets, reviewCount, abilities, showBranchSelector = false, today = null }) {
@@ -217,7 +217,7 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                             <Button variant="secondary" onPress={() => router.visit(`/reading-cycles/${cycle.id}/submissions`)}>
                                 <Icon name="list" className="h-4 w-4" />
                                 القراءات الميدانية
-                                {reviewCount > 0 && <span className="rounded-full bg-amber-500 px-2 text-xs font-bold text-white">{formatNumber(reviewCount)}</span>}
+                                {reviewCount > 0 && <span className="rounded-full bg-(--ma-warn-s) px-2 text-xs font-bold text-(--ma-warn)">{formatNumber(reviewCount)}</span>}
                             </Button>
                         )}
                         {abilities.manage && (
@@ -239,7 +239,7 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
             <Head title={`توزيع القراءات — ${formatDate(cycle.readingDate)}`} />
 
             {!actionsOpen && allocationReport}
-            {(errors.box_ids || errors.approve || errors.copy) && !result && <p className="mb-4 rounded-control bg-red-500/10 px-4 py-2 text-sm text-red-700">{errors.box_ids ?? errors.approve ?? errors.copy}</p>}
+            {(errors.box_ids || errors.approve || errors.copy) && !result && <Notice tone="danger" role="alert" className="mb-4">{errors.box_ids ?? errors.approve ?? errors.copy}</Notice>}
 
             <DistributionMission cycle={cycle} boards={boards} readers={readers} staged={staged} today={today} />
 
@@ -270,16 +270,16 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                     onDistribute={abilities.manage || abilities.printSheets ? () => openActions(visibleBoxes) : null} distributionCount={visibleBoxes.length}
                     filter={assignmentFilter} counts={{ all: boards.length, assigned: counters.mobile + counters.paper, available: counters.available }} onFilterChange={(value) => { setAssignmentFilter(value); setPage(1); }} />
                 <div className="flex min-w-0 flex-col gap-4">
-                    {selectedBoxes.length > 0 && <section aria-label="الطبلونات المحددة" className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-brand-500/30 bg-surface p-4">
-                        <div><p role="status" className="text-sm text-gray-700"><b className="font-display text-lg text-brand-600">{formatNumber(selectedTotals.boxes)}</b> طبلون محدد، {formatNumber(selectedTotals.subscribers)} مشترك</p>{hiddenSelected > 0 && <p className="mt-1 text-xs text-amber-700">منها {formatNumber(hiddenSelected)} خارج النتائج الظاهرة.</p>}</div>
+                    {selectedBoxes.length > 0 && <section aria-label="الطبلونات المحددة" className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-(--ma-brand) bg-(--ma-solid) p-4">
+                        <div><p role="status" className="text-sm text-(--ma-ink)"><b className="font-display text-lg text-(--ma-brand)">{formatNumber(selectedTotals.boxes)}</b> طبلون محدد، {formatNumber(selectedTotals.subscribers)} مشترك</p>{hiddenSelected > 0 && <p className="mt-1 text-xs text-(--ma-warn)">منها {formatNumber(hiddenSelected)} خارج النتائج الظاهرة.</p>}</div>
                         <div className="flex flex-wrap items-center gap-3"><Button variant="ghost" isDisabled={busy} onPress={() => setSelected(new Set())}>إلغاء التحديد كله</Button><Button isDisabled={busy} onPress={() => setActionsOpen(true)}>{abilities.manage ? 'توزيع المحدد' : 'إجراء على المحدد'} ({formatNumber(selectedTotals.boxes)})</Button></div>
                     </section>}
                     <div>
                         <DataTableToolbar search={search} onSearchChange={(value) => { setSearch(value); setPage(1); }} placeholder="ابحث باسم المنطقة أو الطبلون أو رقمه..." perPage={perPage} onPerPageChange={(size) => { setPerPage(size); setPage(1); }} total={visibleBoxes.length} printable={false}
-                            filterMenu={<div className="flex w-full flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-3">
+                            filterMenu={<div className="flex w-full flex-wrap items-center justify-between gap-3 border-t border-(--ma-line) pt-3">
                                 <div className="grid w-full min-w-0 flex-1 gap-3 sm:grid-cols-2">
                                     <div className="min-w-0">
-                                        <label htmlFor="assignment-filter" className="mb-2 block text-xs font-semibold text-gray-600">عرض التوزيع</label>
+                                        <label htmlFor="assignment-filter" className="mb-2 block text-xs font-semibold text-(--ma-muted)">عرض التوزيع</label>
                                         <ChoiceSelect id="assignment-filter" value={assignmentFilter} disabled={busy} onChange={(event) => { setAssignmentFilter(event.target.value); setPage(1); }} className="block w-full text-sm">
                                             <option value="">كل حالات التوزيع</option>
                                             <option value="assigned">كل الطبلونات الموزعة</option>
@@ -287,7 +287,7 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                                         </ChoiceSelect>
                                     </div>
                                     <div className="min-w-0">
-                                        <label htmlFor="distribution-box-filter" className="mb-2 block text-xs font-semibold text-gray-600">الطبلون</label>
+                                        <label htmlFor="distribution-box-filter" className="mb-2 block text-xs font-semibold text-(--ma-muted)">الطبلون</label>
                                         <SearchableSelect id="distribution-box-filter" value={boxId} options={boxOptions} disabled={busy} placeholder="كل الطبلونات" searchPlaceholder="ابحث باسم الطبلون أو رقمه..." emptyLabel="لا توجد طبلونات ضمن التصفية الحالية" onChange={(value) => { setBoxId(value); setPage(1); }} />
                                     </div>
                                     {(search || subAreaIds.length > 0 || assignmentFilter || boxId) && <Button variant="ghost" size="sm" isDisabled={busy} onPress={() => { setSearch(''); setSubAreaIds([]); setAssignmentFilter(''); setBoxId(''); setPage(1); }} className="justify-self-start sm:col-span-2">مسح التصفية</Button>}
@@ -297,28 +297,30 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                         />
                         <>
                         <DistributionTable boxes={pageBoxes} allBoxes={visibleBoxes} readers={readers} selected={selected} canSelect={abilities.manage || abilities.printSheets} busy={busy} onToggle={toggle} onToggleGroup={toggleColumn} />
-                        {totalPages > 1 && <nav aria-label="صفحات الطبلونات" className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-gray-500">
+                        {totalPages > 1 && <nav aria-label="صفحات الطبلونات" className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm text-(--ma-muted)">
                             <span>الصفحة {formatNumber(currentPage)} من {formatNumber(totalPages)}، التحديد يشمل جميع صفحات النتائج</span>
                             <div className="flex gap-2"><Button variant="secondary" isDisabled={busy || currentPage === 1} onPress={() => setPage(currentPage - 1)}>السابق</Button><Button variant="secondary" isDisabled={busy || currentPage === totalPages} onPress={() => setPage(currentPage + 1)}>التالي</Button></div>
                         </nav>}
                         </>
                     </div>
 
-                    {remainingBoxes.length > 0 && abilities.manage && <div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm text-gray-700">
-                        <span>{formatNumber(remainingBoxes.length)} طبلون غير موزع ضمن النتائج الحالية.</span>
-                        <Button variant="ghost" size="sm" isDisabled={busy} onPress={() => openActions(remainingBoxes, 'paper')}>تحديد المتبقي للكشوف الورقية</Button>
-                    </div>}
+                    {remainingBoxes.length > 0 && abilities.manage && <Notice tone="warn">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <span><bdi dir="ltr">{formatNumber(remainingBoxes.length)}</bdi> طبلون غير موزع ضمن النتائج الحالية.</span>
+                            <Button variant="ghost" size="sm" isDisabled={busy} onPress={() => openActions(remainingBoxes, 'paper')}>تحديد المتبقي للكشوف الورقية</Button>
+                        </div>
+                    </Notice>}
 
                 </div>
             </div>
             )}
 
             {(abilities.printSheets || paperSheets.length > 0) && (
-                <section className="mt-6 rounded-card border border-gray-100 bg-surface p-4 shadow-card" aria-labelledby="sheets-title">
+                <section className="mt-6 rounded-card border border-(--ma-line) bg-(--ma-solid) p-4 shadow-card" aria-labelledby="sheets-title">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                         <div>
-                            <h3 id="sheets-title" className="font-bold text-gray-900">الكشوف الورقية</h3>
-                            <p className="text-xs text-gray-500">للقرّاء الذين لا يملكون هواتف: حدّد الطبلونات المخصصة للورق والمعتمدة، ثم أنشئ كشفًا للطباعة. تُدخل القراءات لاحقًا من الموقع.</p>
+                            <h3 id="sheets-title" className="font-bold text-(--ma-ink)">الكشوف الورقية</h3>
+                            <p className="text-xs text-(--ma-muted)">للقرّاء الذين لا يملكون هواتف: حدّد الطبلونات المخصصة للورق والمعتمدة، ثم أنشئ كشفًا للطباعة. تُدخل القراءات لاحقًا من الموقع.</p>
                         </div>
                         {abilities.printSheets && (
                             <Button onPress={createSheet} isDisabled={busy || selectedPaperApproved === 0 || selectedPaperApproved > 200}>
@@ -328,16 +330,16 @@ export default function Show({ cycle, boards, readers, paperSheets, reviewCount,
                         )}
                     </div>
                     {paperSheets.length > 0 && (
-                        <ul className="mt-4 divide-y divide-gray-100 rounded-control border border-gray-100 text-sm">
+                        <ul className="mt-4 divide-y divide-(--ma-line) rounded-control border border-(--ma-line) text-sm">
                             {paperSheets.map((sheet) => (
                                 <li key={sheet.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
                                     <span>
                                         <b className="font-display" dir="ltr">{sheet.number}</b>، {formatNumber(sheet.boxes)} طبلون
                                     </span>
-                                    <span className="text-xs text-gray-500">
+                                    <span className="text-xs text-(--ma-muted)">
                                         {sheet.printCount > 0 ? `طُبع ${formatNumber(sheet.printCount)} مرة، آخرها ${sheet.lastPrintedAt} (${sheet.lastPrintedBy})` : 'لم يُطبع بعد'}
                                     </span>
-                                    {abilities.printSheets && <Link href={`/paper-sheets/${sheet.id}?print=1`} className="text-sm font-semibold text-brand-600 hover:underline">طباعة وتخصيص</Link>}
+                                    {abilities.printSheets && <Link href={`/paper-sheets/${sheet.id}?print=1`} className="text-sm font-semibold text-(--ma-brand) hover:underline">طباعة وتخصيص</Link>}
                                 </li>
                             ))}
                         </ul>

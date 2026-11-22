@@ -1,4 +1,4 @@
-import { Button, TextArea } from '@heroui/react';
+import { Button } from '@heroui/react';
 import { useEffect, useRef, useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
@@ -6,16 +6,16 @@ import DataTableToolbar from '@/Components/DataTable/DataTableToolbar';
 import DataTableFilterMenu from '@/Components/DataTable/DataTableFilterMenu';
 import RowIdentity from '@/Components/DataTable/RowIdentity';
 import Pagination from '@/Components/DataTable/Pagination';
-import Modal from '@/Components/UI/Modal';
+import DialogFrame from '@/Components/UI/DialogFrame';
+import FormField from '@/Components/Form/FormField';
 import ChoiceChips from '@/Components/UI/ChoiceChips';
 import InputError from '@/Components/UI/InputError';
-import Icon from '@/Components/UI/Icon';
 import Balance from '@/Components/Finance/Balance';
 import { useDataTable } from '@/hooks/useDataTable';
 import ResultReport from './ResultReport';
 import PageHeader from '@/Components/PageHeader';
 import DateInput from '@/Components/UI/DateInput';
-import { CheckBox, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, PrimaryKey, SecondaryKey, StatusPill } from '@/Components/UI';
+import { CheckBox, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, Notice, PrimaryKey, SecondaryKey, SelectionBar, SelectionBarKey, StatusPill, TextArea } from '@/Components/UI';
 
 /** The reason, note and date for the chosen subscribers, after saying how many. */
 function AddModal({ list, selection, count, reasonOptions, today, onClose, onDone }) {
@@ -31,43 +31,37 @@ function AddModal({ list, selection, count, reasonOptions, today, onClose, onDon
         router.post(`/disconnection-lists/${list.id}/items`, { ...selection, reason, note, scheduled_for: date }, { preserveScroll: true, onSuccess: onDone, onError: (found) => found.ids && onDone(), onFinish: () => setSaving(false) });
     }
 
+    const footer = (
+        <>
+            <SecondaryKey onClick={onClose}>إلغاء</SecondaryKey>
+            <PrimaryKey type="submit" form="add-form" disabled={saving || !reason || !date}>{saving ? 'جارٍ الإضافة…' : `إضافة ${count.toLocaleString('en')} مشترك`}</PrimaryKey>
+        </>
+    );
+
     return (
-        <Modal show onClose={onClose} maxWidth="lg">
-            <form onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="add-title">
-                <div className="flex items-start gap-4 px-6 pb-2 pt-6">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600">
-                        <Icon name="plus" strokeWidth={2} />
-                    </span>
-                    <div>
-                        <h3 id="add-title" className="text-lg font-bold text-gray-900">إضافة إلى «{list.title}»</h3>
-                        <p className="mt-2 text-sm text-gray-600">
-                            <b className="text-gray-900">{count.toLocaleString('en')}</b> مشترك{selection.all ? ' (كل النتائج المطابقة للفلاتر في كل الصفحات)' : ' محدد'}. من لا يمكن إدراجه (مدرج في قائمة أخرى أو خدمته غير فعّالة) يُستثنى ويظهر في التقرير.
-                        </p>
-                    </div>
+        <DialogFrame
+            show
+            onClose={onClose}
+            title={`إضافة إلى «${list.title}»`}
+            description={<><b className="text-(--ma-ink)"><bdi dir="ltr">{count.toLocaleString('en')}</bdi></b> مشترك{selection.all ? ' (كل النتائج المطابقة للفلاتر في كل الصفحات)' : ' محدد'}. من لا يمكن إدراجه (مدرج في قائمة أخرى أو خدمته غير فعّالة) يُستثنى ويظهر في التقرير.</>}
+            icon="plus"
+            maxWidth="lg"
+            busy={saving}
+            footer={footer}
+        >
+            <form id="add-form" onSubmit={submit} className="space-y-4">
+                <div>
+                    <ChoiceChips options={reasonOptions} value={reason} onChange={setReason} label="سبب القطع" showLabel required name="reason" />
+                    <InputError message={errors.reason} className="mt-1" />
                 </div>
-                <div className="space-y-4 px-6 py-4">
-                    <div>
-                        <ChoiceChips options={reasonOptions} value={reason} onChange={setReason} label="سبب القطع" required name="reason" />
-                        <InputError message={errors.reason} className="mt-1" />
-                    </div>
-                    <div>
-                        <label htmlFor="add-note" className="mb-2 block text-sm font-semibold text-gray-700">ملاحظة {reason === 'other' ? '(يُفضّل توضيح السبب)' : '(اختياري)'}</label>
-                        <TextArea id="add-note" value={note} onChange={(event) => setNote(event.target.value)} rows={2} className="block w-full text-sm" maxLength={1000} />
-                        <InputError message={errors.note} className="mt-1" />
-                    </div>
-                    <div>
-                        <label htmlFor="add-date" className="mb-2 block text-sm font-semibold text-gray-700">موعد القطع المخطط</label>
-                        <DateInput id="add-date" name="scheduled_for" min={today} value={date} onChange={setDate} required />
-                        <InputError message={errors.scheduled_for} className="mt-1" />
-                        <p className="mt-1 text-xs text-gray-500">الموعد للتخطيط فقط: لا يُقطع أحد ولا تُرسل رسائل تلقائيًا.</p>
-                    </div>
-                </div>
-                <div className="flex justify-end gap-3 border-t border-gray-100 bg-gray-50 px-6 py-4">
-                    <SecondaryKey onClick={onClose}>إلغاء</SecondaryKey>
-                    <PrimaryKey type="submit" disabled={saving || !reason || !date}>{saving ? 'جارٍ الإضافة…' : `إضافة ${count.toLocaleString('en')} مشترك`}</PrimaryKey>
-                </div>
+                <FormField id="add-note" label={`ملاحظة ${reason === 'other' ? '(يُفضّل توضيح السبب)' : '(اختياري)'}`} error={errors.note}>
+                    <TextArea value={note} onChange={(event) => setNote(event.target.value)} rows={2} className="block w-full text-sm" maxLength={1000} />
+                </FormField>
+                <FormField id="add-date" label="موعد القطع المخطط" required error={errors.scheduled_for} hint="الموعد للتخطيط فقط: لا يُقطع أحد ولا تُرسل رسائل تلقائيًا.">
+                    <DateInput name="scheduled_for" min={today} value={date} onChange={setDate} required />
+                </FormField>
             </form>
-        </Modal>
+        </DialogFrame>
     );
 }
 
@@ -139,7 +133,7 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
             <Head title={`إضافة مشتركين — ${list.title}`} />
 
             {result && <ResultReport result={result} onClose={() => setResult(null)} />}
-            {list.isClosed && <p className="mb-4 rounded-control bg-amber-500/10 px-4 py-3 text-sm text-amber-800">القائمة مغلقة؛ أعد فتحها لإضافة مشتركين.</p>}
+            {list.isClosed && <Notice tone="warn" className="mb-4">القائمة مغلقة؛ أعد فتحها لإضافة مشتركين.</Notice>}
 
             <DataTableToolbar
                 search={search}
@@ -153,10 +147,10 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
             />
 
             {!allMatching && pageIds.length > 0 && pageSelectedCount === pageIds.length && subscriptions.total > pageIds.length && (
-                <div role="status" className="flex flex-wrap items-center justify-center gap-2 border-x border-gray-100 bg-brand-500/5 px-4 py-2 text-sm text-gray-700">
-                    تم تحديد {pageIds.length.toLocaleString('en')} مشترك في هذه الصفحة.
-                    <Button data-raw="" variant="ghost" onClick={() => setAllMatching(true)} className="rounded font-semibold text-brand-600 hover:underline">
-                        تحديد كل النتائج المطابقة ({subscriptions.total.toLocaleString('en')})
+                <div role="status" className="flex flex-wrap items-center justify-center gap-2 bg-(--ma-brand-soft) px-4 py-2 text-sm text-(--ma-ink)">
+                    تم تحديد <bdi dir="ltr">{pageIds.length.toLocaleString('en')}</bdi> مشترك في هذه الصفحة.
+                    <Button data-raw="" variant="ghost" onClick={() => setAllMatching(true)} className="rounded font-semibold text-(--ma-brand) hover:underline">
+                        تحديد كل النتائج المطابقة (<bdi dir="ltr">{subscriptions.total.toLocaleString('en')}</bdi>)
                     </Button>
                 </div>
             )}
@@ -173,18 +167,18 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
                         <ListColumn id="balance" sortable>الرصيد</ListColumn>
                         <ListColumn id="lists">قوائم القطع</ListColumn>
                     </ListHeader>
-                    <ListBody empty={<span className="text-gray-500">لا توجد نتائج مطابقة.</span>}>
+                    <ListBody empty={<span className="text-(--ma-muted)">لا توجد نتائج مطابقة.</span>}>
                         {subscriptions.data.map((row) => (
-                            <ListRow key={row.id} id={row.id} className={allMatching || selectedIds.has(row.id) ? 'bg-brand-50' : undefined}>
+                            <ListRow key={row.id} id={row.id} className={allMatching || selectedIds.has(row.id) ? 'bg-(--ma-brand-soft)' : undefined}>
                                 <ListCell>
                                     <CheckBox slot={null} disabled={Boolean(row.waitingOn)} checked={!row.waitingOn && (allMatching || selectedIds.has(row.id))} onChange={() => toggle(row.id)} aria-label={`تحديد ${row.name}`} />
                                 </ListCell>
                                 <ListCell data-label="المشترك"><RowIdentity name={row.name} subtitle={row.accountNumber} subtitleDir="ltr" /></ListCell>
-                                <ListCell data-label="الطبلون" className="text-gray-600">{row.meterBoxNumber ? <span className="data-chip">{row.meterBoxNumber}</span> : '—'}</ListCell>
-                                <ListCell data-label="منطقة 2" className="text-gray-600">{row.subAreaName ?? '—'}</ListCell>
+                                <ListCell data-label="الطبلون" className="text-(--ma-muted)">{row.meterBoxNumber ? <span className="data-chip">{row.meterBoxNumber}</span> : '—'}</ListCell>
+                                <ListCell data-label="منطقة 2" className="text-(--ma-muted)">{row.subAreaName ?? '—'}</ListCell>
                                 <ListCell data-label="الرصيد" className="whitespace-nowrap font-semibold"><Balance value={row.balance} /></ListCell>
                                 <ListCell data-label="قوائم القطع">
-                                    {row.waitingOn ? <StatusPill tone="amber" label={row.waitingOn.isThisList ? 'في هذه القائمة' : `في «${row.waitingOn.title}»`} /> : <span className="text-gray-400">—</span>}
+                                    {row.waitingOn ? <StatusPill tone="amber" label={row.waitingOn.isThisList ? 'في هذه القائمة' : `في «${row.waitingOn.title}»`} /> : <span className="text-(--ma-faint)">—</span>}
                                 </ListCell>
                             </ListRow>
                         ))}
@@ -195,23 +189,9 @@ export default function Candidates({ list, subscriptions, reasonOptions, today, 
             <Pagination meta={subscriptions} filters={filters} baseUrl={`/disconnection-lists/${list.id}/candidates`} />
 
             {selectionCount > 0 && !list.isClosed && (
-                <>
-                    <div className="h-24" aria-hidden="true" />
-                    <div role="region" aria-label="إضافة المحددين" className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[calc(100%-2rem)] max-w-2xl flex-wrap items-center justify-between gap-2 rounded-2xl bg-brand-gradient px-4 py-3 text-white shadow-lift">
-                        <span className="text-sm" aria-live="polite">
-                            <b className="font-display">{selectionCount.toLocaleString('en')}</b> {allMatching ? 'مشترك (كل النتائج المطابقة)' : 'مشترك محدد'}
-                        </span>
-                        <div className="flex items-center gap-2">
-                            <Button data-raw="" variant="ghost" onClick={() => setAdding(true)} className="inline-flex items-center gap-2 rounded-control bg-white px-4 py-2 text-sm font-bold text-gray-900">
-                                <Icon name="plus" className="h-4 w-4" />
-                                إضافة إلى القائمة
-                            </Button>
-                            <Button data-raw="" variant="ghost" onClick={() => { setSelectedIds(new Set()); setAllMatching(false); }} aria-label="إلغاء التحديد" className="flex h-9 w-9 items-center justify-center rounded-control text-white/80 hover:bg-white/10">
-                                <Icon name="close" className="h-5 w-5" />
-                            </Button>
-                        </div>
-                    </div>
-                </>
+                <SelectionBar label="إضافة المحددين" count={selectionCount} caption={allMatching ? 'مشترك (كل النتائج المطابقة)' : 'مشترك محدد'} onClear={() => { setSelectedIds(new Set()); setAllMatching(false); }} narrow>
+                    <SelectionBarKey icon="plus" label="إضافة إلى القائمة" tone="primary" onClick={() => setAdding(true)} />
+                </SelectionBar>
             )}
 
             {adding && (

@@ -1,9 +1,8 @@
-import { Input } from '@heroui/react';
 import ChoiceChips from '@/Components/UI/ChoiceChips';
 import InputError from '@/Components/UI/InputError';
 import { KIND_HINTS, KIND_ICONS, withIcons } from './MessageParts';
 import { Section } from './MessageFormParts';
-import { ChoiceSelect, Switch } from '@/Components/UI';
+import { ChoiceSelect, Switch, TextInput } from '@/Components/UI';
 
 /** What the quick message is about, and the kind's own choices: the reading week and approved-only, or the least balance. */
 export default function QuickMessageKind({
@@ -26,7 +25,7 @@ export default function QuickMessageKind({
             {kind === 'weekly_reading' && (
                 <div className="flex flex-wrap items-end gap-4">
                     <div className="min-w-[220px] flex-1">
-                        <label htmlFor={`${id}-week`} className="mb-2 block text-sm font-semibold text-gray-700">
+                        <label htmlFor={`${id}-week`} className="mb-2 block text-sm font-semibold text-(--ma-ink)">
                             أسبوع القراءة
                         </label>
                         <ChoiceSelect id={`${id}-week`} value={weekStart} onChange={(e) => setWeekStart(e.target.value)} className="block w-full text-sm">
@@ -45,10 +44,10 @@ export default function QuickMessageKind({
             )}
             {kind === 'balance_reminder' && (
                 <div className="max-w-xs">
-                    <label htmlFor={`${id}-min-balance`} className="mb-2 block text-sm font-semibold text-gray-700">
+                    <label htmlFor={`${id}-min-balance`} className="mb-2 block text-sm font-semibold text-(--ma-ink)">
                         لمن عليه رصيد أكبر من (₪)
                     </label>
-                    <Input
+                    <TextInput
                         id={`${id}-min-balance`}
                         type="number"
                         min="0"

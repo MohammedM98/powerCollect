@@ -4,6 +4,7 @@ import { Input } from '@heroui/react';
 import { useState } from 'react';
 import ChoiceChips from '@/Components/UI/ChoiceChips';
 import Switch from '@/Components/UI/Switch';
+import Notice from '@/Components/UI/Notice';
 import ConfirmDialog from '@/Components/UI/ConfirmDialog';
 import { PAPER_SIZES, applyPrintPreset } from '@/lib/printLayout';
 import { FOCUS_RING, ORIENTATIONS, DENSITIES, BORDERS, ACCENTS } from './printSettingsOptions';
@@ -26,7 +27,7 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
     const [confirming, setConfirming] = useState(null);
     const rows = <Section icon="list" title="الصفوف" open>
         <fieldset disabled={scope.loading}>
-        {scope.allRowsOnly ? <p className="text-sm font-semibold text-gray-700">كل الصفوف المطابقة للتصفية ({scope.total})</p> : <ChoiceChips
+        {scope.allRowsOnly ? <p className="text-sm font-semibold text-(--ma-ink)">كل الصفوف المطابقة للتصفية ({scope.total})</p> : <ChoiceChips
             options={[
                 { value: 'all', label: `كل النتائج${!scope.selected && typeof scope.total === 'number' ? ` (${scope.total.toLocaleString('en')})` : ''}`, icon: 'list' },
                 { value: 'page', label: 'الصفحة المعروضة فقط', icon: 'table' },
@@ -37,15 +38,14 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
             label="الصفوف المطبوعة"
         />}
         </fieldset>
-        <p className="text-xs text-gray-500">بنفس البحث والترتيب والفلاتر التي كانت على الشاشة.</p>
+        <p className="text-xs text-(--ma-muted)">بنفس البحث والترتيب والفلاتر التي كانت على الشاشة.</p>
     </Section>;
 
     if (readOnly) {
         return <div>
-            <div role="note" className="m-6 rounded-control border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
-                <p className="font-semibold text-gray-900">تطبع بقوالب الشركة المحفوظة.</p>
-                <p className="mt-1 text-xs leading-5 text-gray-600">اختر القالب من أعلى الصفحة. تغيير الأعمدة والترتيب والشكل يحتاج صلاحية «تخصيص الطباعة».</p>
-            </div>
+            <Notice role="note" className="m-6" title="تطبع بقوالب الشركة المحفوظة.">
+                اختر القالب من أعلى الصفحة. تغيير الأعمدة والترتيب والشكل يحتاج صلاحية «تخصيص الطباعة».
+            </Notice>
             {rows}
         </div>;
     }
@@ -144,7 +144,7 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
                             max="18"
                             value={layout.fontSize}
                             onChange={(e) => set('fontSize', Number(e.target.value))}
-                            className="w-full accent-brand-600"
+                            className="w-full accent-(--ma-brand)"
                         />
                     )}
                 </Field>
@@ -179,19 +179,19 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
                                 id={accent.value}
                                 aria-label={accent.label}
                                 className={`h-8 w-8 rounded-full border-2 ${
-                                    layout.table.accent.toLowerCase() === accent.value.toLowerCase() ? 'border-gray-900 ring-2 ring-white ring-offset-2 ring-offset-gray-900' : 'border-white shadow-sm'
+                                    layout.table.accent.toLowerCase() === accent.value.toLowerCase() ? 'border-(--ma-ink) ring-2 ring-(--ma-solid) ring-offset-2 ring-offset-(--ma-ink)' : 'border-(--ma-solid) shadow-sm'
                                 } ${FOCUS_RING}`}
                                 style={{ backgroundColor: accent.value }}
                             />
                         ))}
                         </ToggleButtonGroup>
-                        <label className="flex items-center gap-2 text-xs text-gray-600">
+                        <label className="flex items-center gap-2 text-xs text-(--ma-muted)">
                             لون آخر
                             <input
                                 type="color"
                                 value={layout.table.accent}
                                 onChange={(e) => setIn('table', 'accent', e.target.value)}
-                                className="h-8 w-10 cursor-pointer rounded border border-gray-200 p-1"
+                                className="h-8 w-10 cursor-pointer rounded border border-(--ma-line) p-1"
                             />
                         </label>
                     </div>
@@ -208,7 +208,7 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
             <PrintFooterSection layout={layout} setIn={setIn} setSignature={setSignature} />
 
             <Section icon="layers" title="العلامة المائية">
-                <p className="text-xs text-gray-500">نص أو شعار خفيف خلف الجدول يتكرر على كل صفحة، مثل «نسخة القارئ» أو «مسودة».</p>
+                <p className="text-xs text-(--ma-muted)">نص أو شعار خفيف خلف الجدول يتكرر على كل صفحة، مثل «نسخة القارئ» أو «مسودة».</p>
                 <Switch checked={Boolean(layout.watermark?.enabled)} onChange={(value) => setIn('watermark', 'enabled', value)} label="إظهار العلامة المائية" />
                 {layout.watermark?.enabled && <>
                     <Field label="نص العلامة المائية">
@@ -216,7 +216,7 @@ export default function PrintSettingsPanel({ layout, onChange, scope, templates,
                     </Field>
                     <Switch checked={Boolean(layout.watermark.logo)} onChange={(value) => setIn('watermark', 'logo', value)} label="إظهار شعار الشركة في العلامة المائية" />
                     <Field label={`وضوح العلامة المائية: ${Math.round((layout.watermark.opacity ?? 0.08) * 100)}%`}>
-                        {(id) => <input id={id} type="range" min="0.02" max="0.3" step="0.01" value={layout.watermark.opacity ?? 0.08} onChange={(event) => setIn('watermark', 'opacity', Number(event.target.value))} className="w-full accent-brand-600" />}
+                        {(id) => <input id={id} type="range" min="0.02" max="0.3" step="0.01" value={layout.watermark.opacity ?? 0.08} onChange={(event) => setIn('watermark', 'opacity', Number(event.target.value))} className="w-full accent-(--ma-brand)" />}
                     </Field>
                 </>}
             </Section>

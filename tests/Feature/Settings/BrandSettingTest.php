@@ -58,7 +58,7 @@ class BrandSettingTest extends TestCase
             ->assertInertia(fn ($page) => $page
                 ->component('Settings/Appearance')
                 ->where('profile.design.navigation', 'topbar')
-                ->where('profile.ownLogos', ['main', 'icon'])
+                ->where('profile.ownLogos', ['main', 'light', 'icon'])
                 ->where('presets.corporate.design.navStyle', 'solid')
                 ->where('can.manageBrand', true));
     }
@@ -87,6 +87,7 @@ class BrandSettingTest extends TestCase
         $response->assertInertia(fn ($page) => $page
             ->where('brand.name', 'شركة خليل للكهرباء')
             ->where('brand.logos.main', Storage::disk('public')->url($logo[0]))
+            ->where('brand.logos.light', Storage::disk('public')->url($logo[0]))
             ->where('brand.primaryColor', '#0F766E')
             ->where('brand.printColor', '#0F766E')
             ->where('brand.design.navigation', 'topbar')

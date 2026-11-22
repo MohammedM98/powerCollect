@@ -25,7 +25,6 @@ export default function FormSelect({ id, label, value, onChange, options, placeh
                 onCreate={onCreate}
                 createLabel={createLabel}
             /> : <ChoiceSelect
-                className="block w-full disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500"
                 value={value}
                 disabled={message !== null}
                 onChange={(event) => onChange(event.target.value)}

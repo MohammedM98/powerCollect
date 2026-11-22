@@ -57,7 +57,7 @@ export default function PermissionMatrixView({
             <section className="pm-card pm-matrix" aria-label="جدول الصلاحيات">
                 <div className="pm-tools">
                     <div className="pm-search">
-                        <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
+                        <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-[18px] w-[18px] text-(--ma-faint)" />
                         <Input
                             type="search"
                             value={query}
@@ -143,15 +143,15 @@ export default function PermissionMatrixView({
                 <div className={`pm-grid ${explaining ? 'is-explaining' : ''}`}>
                     <MatrixHead />
                     {groups.length === 0 ? (
-                        <div className="px-4 py-8 text-center text-sm text-gray-500">
-                            <Icon name="search" className="mx-auto h-8 w-8 text-gray-300" />
+                        <div className="px-4 py-8 text-center text-sm text-(--ma-muted)">
+                            <Icon name="search" className="mx-auto h-8 w-8 text-(--ma-faint)" />
                             <p className="mt-2">لا توجد صلاحيات تطابق البحث أو التصفية.</p>
                             <Button data-raw="" variant="ghost"
                                 onClick={() => {
                                     search('');
                                     setMode('all');
                                 }}
-                                className="mt-2 font-semibold text-brand-600"
+                                className="mt-2 font-semibold text-(--ma-brand)"
                             >
                                 عرض كل الصلاحيات
                             </Button>

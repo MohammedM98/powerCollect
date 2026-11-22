@@ -1,8 +1,6 @@
-import { Button } from '@heroui/react';
 import { useEffect, useEffectEvent, useId, useRef, useState } from 'react';
 import { router, useHttp } from '@inertiajs/react';
-import Modal from '@/Components/UI/Modal';
-import Icon from '@/Components/UI/Icon';
+import DialogFrame from '@/Components/UI/DialogFrame';
 import { renderMessage } from './MessageParts';
 import QuickMessageBody from './QuickMessageBody';
 import QuickMessageRecipients from './QuickMessageRecipients';
@@ -278,90 +276,14 @@ export default function QuickMessageModal({ subscriptionIds = [], selection = nu
 
     return (
         <>
-            <Modal show onClose={onClose} maxWidth="3xl">
-                <div role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} className="flex max-h-[90vh] flex-col">
-                    <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-                        <div className="flex items-center gap-3">
-                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600">
-                                <Icon name="send" />
-                            </span>
-                            <h3 id={`${id}-title`} className="text-lg font-bold text-gray-900">
-                                رسالة سريعة
-                            </h3>
-                        </div>
-                        <Button data-raw="" variant="ghost"
-                            onClick={onClose}
-                            aria-label="إغلاق"
-                            className="rounded-xl p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-900"
-                        >
-                            <Icon name="close" />
-                        </Button>
-                    </div>
-
-                    {setupFailed || setup === null ? (
-                        <div className="px-6 py-6">
-                            <AsyncState loading={setup === null} error={setupFailed ? 'تعذّر تحميل نافذة الرسائل. أغلقها وحاول مرة أخرى.' : null} />
-                        </div>
-                    ) : (
-                        <div className="flex-1 space-y-6 overflow-y-auto px-6 py-6">
-                            <QuickMessageKind
-                                approvedOnly={approvedOnly}
-                                changeKind={changeKind}
-                                errors={errors}
-                                id={id}
-                                kind={kind}
-                                minBalance={minBalance}
-                                setApprovedOnly={setApprovedOnly}
-                                setMinBalance={setMinBalance}
-                                setWeekStart={setWeekStart}
-                                setup={setup}
-                                weekOptions={weekOptions}
-                                weekStart={weekStart}
-                            />
-
-                            <QuickMessageRecipients
-                                detailsLoaded={detailsLoaded}
-                                errors={errors}
-                                exclusion={exclusion}
-                                id={id}
-                                maxRecipients={maxRecipients}
-                                people={people}
-                                pick={pick}
-                                pickedIds={pickedIds}
-                                previewRow={previewRow}
-                                results={results}
-                                search={search}
-                                searchHttp={searchHttp}
-                                searchRef={searchRef}
-                                selection={selection}
-                                selectionError={selectionError}
-                                setPreviewId={setPreviewId}
-                                setSearch={setSearch}
-                                subscriptionIds={subscriptionIds}
-                                unpick={unpick}
-                            />
-
-                            <QuickMessageBody
-                                body={body}
-                                bodyRef={bodyRef}
-                                channel={channel}
-                                errors={errors}
-                                id={id}
-                                insertPlaceholder={insertPlaceholder}
-                                kind={kind}
-                                kindTemplates={kindTemplates}
-                                pickTemplate={pickTemplate}
-                                previewRow={previewRow}
-                                previewText={previewText}
-                                setBody={setBody}
-                                setup={setup}
-                                templateId={templateId}
-                            />
-
-                            <QuickMessageChannel channel={channel} setChannel={setChannel} setup={setup} />
-                        </div>
-                    )}
-
+            <DialogFrame
+                show
+                onClose={onClose}
+                title="رسالة سريعة"
+                icon="send"
+                tone="blue"
+                maxWidth="3xl"
+                footer={
                     <QuickMessageFooter
                         canSend={canSend}
                         fullPageUrl={fullPageUrl}
@@ -374,8 +296,72 @@ export default function QuickMessageModal({ subscriptionIds = [], selection = nu
                         setConfirming={setConfirming}
                         setup={setup}
                     />
-                </div>
-            </Modal>
+                }
+            >
+                {setupFailed || setup === null ? (
+                    <div>
+                        <AsyncState loading={setup === null} error={setupFailed ? 'تعذّر تحميل نافذة الرسائل. أغلقها وحاول مرة أخرى.' : null} />
+                    </div>
+                ) : (
+                    <div className="space-y-6">
+                        <QuickMessageKind
+                            approvedOnly={approvedOnly}
+                            changeKind={changeKind}
+                            errors={errors}
+                            id={id}
+                            kind={kind}
+                            minBalance={minBalance}
+                            setApprovedOnly={setApprovedOnly}
+                            setMinBalance={setMinBalance}
+                            setWeekStart={setWeekStart}
+                            setup={setup}
+                            weekOptions={weekOptions}
+                            weekStart={weekStart}
+                        />
+
+                        <QuickMessageRecipients
+                            detailsLoaded={detailsLoaded}
+                            errors={errors}
+                            exclusion={exclusion}
+                            id={id}
+                            maxRecipients={maxRecipients}
+                            people={people}
+                            pick={pick}
+                            pickedIds={pickedIds}
+                            previewRow={previewRow}
+                            results={results}
+                            search={search}
+                            searchHttp={searchHttp}
+                            searchRef={searchRef}
+                            selection={selection}
+                            selectionError={selectionError}
+                            setPreviewId={setPreviewId}
+                            setSearch={setSearch}
+                            subscriptionIds={subscriptionIds}
+                            unpick={unpick}
+                        />
+
+                        <QuickMessageBody
+                            body={body}
+                            bodyRef={bodyRef}
+                            channel={channel}
+                            errors={errors}
+                            id={id}
+                            insertPlaceholder={insertPlaceholder}
+                            kind={kind}
+                            kindTemplates={kindTemplates}
+                            pickTemplate={pickTemplate}
+                            previewRow={previewRow}
+                            previewText={previewText}
+                            setBody={setBody}
+                            setup={setup}
+                            templateId={templateId}
+                        />
+
+                        <QuickMessageChannel channel={channel} setChannel={setChannel} setup={setup} />
+                    </div>
+                )}
+            </DialogFrame>
 
             <ConfirmDialog
                 show={confirming}

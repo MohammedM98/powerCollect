@@ -1,28 +1,20 @@
+/* The profile page: the account's dark card, then its sections as the shared form cards (ma-forms.css). */
 .profile-page {
-    --pp-surface: var(--ui-surface);
-    --pp-raised: var(--ui-raised);
-    --pp-sunken: var(--ui-sunken);
-    --pp-line: var(--ui-line);
-    --pp-line2: var(--ui-line2);
-    --pp-ink: var(--ui-ink);
-    --pp-ink2: var(--ui-ink2);
-    --pp-faint: var(--ui-faint);
-    --pp-brand: var(--ui-brand);
-    --pp-success: var(--ui-success);
-    --pp-success-t: var(--ui-success-t);
-    --pp-info: var(--ui-info);
-    --pp-info-t: var(--ui-info-t);
-    --pp-warn: var(--ui-warn);
-    --pp-warn-t: var(--ui-warn-t);
-    --pp-shadow: var(--ui-shadow);
+    --pp-sunken: var(--ma-tile);
+    --pp-line: var(--ma-line);
+    --pp-line2: var(--ma-line);
+    --pp-ink2: var(--ma-ink);
+    --pp-faint: var(--ma-muted);
+    --pp-success: var(--ma-pay);
+    --pp-success-t: var(--ma-pay-s);
+    --pp-info: var(--ma-clr);
+    --pp-info-t: var(--ma-clr-s);
+    --pp-warn: var(--ma-warn);
+    --pp-warn-t: var(--ma-warn-s);
+    --pp-danger: var(--ma-owe);
     --pp-hero: var(--ui-hero);
-    --pp-muted: var(--ui-muted);
-    --pp-danger: var(--ui-danger);
-    --pp-danger-t: var(--ui-danger-t);
-    --pp-focus: var(--ui-focus);
     padding-bottom: var(--room-dock);
-    color: var(--pp-ink);
-    font: 16px/1.6 var(--font-body, 'IBM Plex Sans Arabic'), system-ui, sans-serif;
+    color: var(--ma-ink);
 }
 .profile-page .pp-hero{margin-top:16px;position:relative;overflow:hidden;border-radius:calc(28px * var(--radius-scale, 1));background:var(--pp-hero);color:#fff;padding:24px 24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;box-shadow:0 24px 50px -28px rgb(var(--shadow-ink) / 0.6)}
 .profile-page .pp-hero::before{content:"";position:absolute;inset-inline:0;top:0;height:3px;background:var(--spectrum)}
@@ -39,40 +31,12 @@
 .profile-page .pp-hero .pp-facts small{display:block;font-size:12.5px;color:rgb(var(--silver-600))}
 .profile-page .pp-hero .pp-facts b{display:block;font:700 15px var(--font-body, 'Zain');margin-top:0}
 .profile-page .pp-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;margin-top:16px;align-items:start}
-.profile-page .pp-grid>div{min-width:0;display:grid;gap:16px}
-.profile-page .pp-panel{background:var(--pp-surface);border:1px solid var(--pp-line2);border-radius:calc(24px * var(--radius-scale, 1));box-shadow:var(--pp-shadow);padding:16px 16px}
-.profile-page .pp-panel h3{margin:0;font:700 19px var(--font-heading, 'El Messiri'),serif;display:flex;align-items:center;gap:12px}
-.profile-page .pp-panel h3 .pp-panel-icon{width:32px;height:32px;border-radius:calc(12px * var(--radius-scale, 1));display:grid;place-items:center;background:var(--pp-sunken);color:var(--pp-ink2)}
-.profile-page .pp-panel h3 .pp-panel-icon svg{width:17px;height:17px}
-.profile-page .pp-panel>p{margin:4px 0 0;color:var(--pp-faint);font-size:14px}
-.profile-page .pp-field{margin-top:12px}
-.profile-page .pp-field label.l{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;margin-bottom:8px;color:var(--pp-ink2)}
-.profile-page .pp-field label.l small{margin-inline-start:auto;font-weight:500;font-size:12.5px;color:var(--pp-faint);display:inline-flex;align-items:center;gap:4px}
-.profile-page .pp-field label.l small svg{width:13px;height:13px}
-.profile-page .pp-input{position:relative}
-.profile-page .pp-input input{width:100%;height:44px;border:1px solid var(--pp-line);border-radius:calc(12px * var(--radius-scale, 1));background:var(--pp-surface);padding:0 16px;font-size:15.5px;color:var(--pp-ink);transition:.15s}
-.profile-page .pp-input input:hover:not(:disabled){border-color:rgb(var(--brand-500) / 0.45)}
-.profile-page .pp-input input:focus{outline:none;border-color: rgb(var(--brand-500)); box-shadow: 0 0 0 4px rgb(var(--brand-500) / 0.15);}
-.profile-page .pp-input input:disabled{background:var(--pp-sunken);color:var(--pp-muted);border-style:dashed;cursor:not-allowed}
-.profile-page .pp-input input[dir=ltr]{text-align:end;font-family:var(--font-body, 'Zain')}
-.profile-page .pp-input input[type=password],.profile-page .pp-input input.pw{padding-inline:var(--room-key) 16px;direction:ltr;text-align:end;font-family:var(--font-body, 'Zain');letter-spacing:.5px}
-.profile-page .pp-input .eye{position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;background:transparent;border-radius:calc(12px * var(--radius-scale, 1));display:grid;place-items:center;color:var(--pp-faint);cursor:pointer}
-.profile-page .pp-input .eye:hover{background:var(--pp-sunken);color:var(--pp-ink)}
-.profile-page .pp-input .eye svg{width:18px;height:18px}
-.profile-page .pp-field.bad .pp-input input{border-color:var(--pp-danger)}
-.profile-page .pp-error{color:var(--pp-danger);font-size:13px;font-weight:600;margin-top:8px}
-.profile-page .pp-match{color:var(--pp-success);font-size:13px;font-weight:600;margin-top:8px}
-.profile-page .pp-readonly{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.profile-page .pp-readonly-box{border:1px dashed var(--pp-line);border-radius:calc(18px * var(--radius-scale, 1));padding:8px 12px;background:var(--pp-raised)}
-.profile-page .pp-readonly-box small{display:flex;align-items:center;gap:4px;font-size:12.5px;color:var(--pp-faint)}
-.profile-page .pp-readonly-box small svg{width:13px;height:13px}
-.profile-page .pp-readonly-box b{display:block;font-size:15px;margin-top:0}
-.profile-page .pp-actions{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
-.profile-page .pp-actions .pp-note{font-size:12.5px;color:var(--pp-faint)}
-.profile-page .pp-button:disabled{opacity:.45;cursor:not-allowed;filter:none;box-shadow:none}
-.profile-page .pp-button.primary{margin-inline-start:auto}
-.profile-page .pp-button:not(.primary):not(.danger):hover{border-color:rgb(var(--gray-300));color:var(--pp-ink);background:var(--pp-raised)}
-.profile-page .pp-button svg{width:17px;height:17px}
+.profile-page .pp-grid>div{min-width:0;display:grid;gap:24px}
+/* The column's gap already parts the sections. */
+.profile-page .pp-grid .gl-section+.gl-section{margin-top:0}
+.profile-page .pp-match{color:var(--pp-success);font-weight:600}
+.profile-page .pp-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}
+.profile-page .pp-actions .pp-note{margin-inline-end:auto;font-size:12.5px;color:var(--pp-faint)}
 /* strength */
 .profile-page .pp-strength{margin-top:8px}
 .profile-page .pp-strength .bars{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
@@ -87,15 +51,13 @@
 .profile-page .pp-rules li.on i{background:var(--pp-success);border-color:var(--pp-success);color:#fff}
 .profile-page .pp-rules li.on i svg{opacity:1}
 /* permissions */
-.profile-page .pp-permissions{margin-top:12px;display:grid;gap:12px}
+.profile-page .pp-permissions{display:grid;gap:12px}
 .profile-page .pp-permissions .pp-permission-group{border:1px solid var(--pp-line2);border-radius:calc(18px * var(--radius-scale, 1));padding:8px 12px}
 .profile-page .pp-permissions .pp-permission-group b{display:flex;align-items:center;gap:8px;font-size:14px}
 .profile-page .pp-permissions .pp-permission-group b span{margin-inline-start:auto;font:600 12px var(--font-body, 'Zain');color:var(--pp-faint)}
 .profile-page .pp-permissions .pp-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .profile-page .pp-permissions .pp-chips span{font-size:12.5px;font-weight:600;border-radius:calc(8px * var(--radius-scale, 1));padding:4px 8px;background:var(--pp-success-t);color:var(--pp-success)}
 .profile-page .pp-permissions .pp-chips span.no{background:var(--pp-sunken);color:var(--pp-faint);text-decoration:line-through;font-weight:500}
-.profile-page .pp-permission-note{display:flex;gap:8px;align-items:flex-start;margin-top:8px;font-size:12.5px;color:var(--pp-faint)}
-.profile-page .pp-permission-note svg{width:15px;height:15px;flex:none;margin-top:0}
 /* devices */
 .profile-page .pp-device{display:flex;align-items:center;gap:12px;padding:12px 4px}
 .profile-page .pp-device+.pp-device{border-top:1px solid var(--pp-line2)}
@@ -104,48 +66,30 @@
 .profile-page .pp-device b{display:flex;align-items:center;gap:8px;font-size:14.5px;flex-wrap:wrap}
 .profile-page .pp-device b em{font-style:normal;font-size:12px;font-weight:700;border-radius:calc(8px * var(--radius-scale, 1));padding:0 8px;background:var(--pp-success-t);color:var(--pp-success)}
 .profile-page .pp-device small{display:block;font-size:12.5px;color:var(--pp-faint)}
-.profile-page .pp-device .pp-logout{margin-inline-start:auto;height:32px;border-radius:calc(12px * var(--radius-scale, 1));border:1px solid var(--pp-line);background:var(--pp-surface);padding:0 12px;font-weight:700;font-size:12.5px;cursor:pointer;color:var(--pp-ink2);flex:none}
-.profile-page .pp-device .pp-logout:hover{border-color:color-mix(in srgb,var(--pp-danger) 40%,var(--pp-line));color:var(--pp-danger);background:var(--pp-danger-t)}
 /* activity */
 .profile-page .pp-feed-item{display:flex;gap:12px;padding:8px 4px}
 .profile-page .pp-feed-item+.pp-feed-item{border-top:1px dashed var(--pp-line2)}
 .profile-page .pp-feed-item .pp-feed-icon{width:32px;height:32px;border-radius:calc(12px * var(--radius-scale, 1));display:grid;place-items:center;flex:none}
 .profile-page .pp-feed-item .pp-feed-icon svg{width:15px;height:15px}
-.profile-page .t-ok{background:var(--pp-success-t);color:var(--pp-success)}.t-info{background:var(--pp-info-t);color:var(--pp-info)}.t-warn{background:var(--pp-warn-t);color:var(--pp-warn)}.t-ink{background:var(--pp-sunken);color:var(--pp-ink2)}
 .profile-page .pp-feed-item b{font-size:14px;font-weight:600;display:block}
 .profile-page .pp-feed-item small{font-size:12.5px;color:var(--pp-faint)}
-.profile-page .pp-feed-item .pp-time{margin-inline-start:auto;font:500 12px var(--font-body, 'Zain');color:var(--pp-faint);white-space:nowrap}
-.profile-page .pp-theme{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-.profile-page .pp-theme button{border:1.5px solid var(--pp-line);background:var(--pp-surface);border-radius:calc(18px * var(--radius-scale, 1));padding:8px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:700;font-size:13.5px;color:var(--pp-ink2)}
-.profile-page .pp-theme button:hover{border-color:color-mix(in srgb,var(--pp-brand) 40%,var(--pp-line))}
-.profile-page .pp-theme button[aria-pressed=true]{border-color:var(--pp-brand);background:color-mix(in srgb,var(--pp-brand) 7%,var(--pp-surface));color:var(--pp-brand)}
+.profile-page .pp-theme{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.profile-page .pp-theme button{border:0;background:var(--ma-tile);box-shadow:var(--ma-hl);border-radius:14px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:700;font-size:13.5px;color:var(--ma-muted)}
+.profile-page .pp-theme button:hover{color:var(--ma-ink)}
+.profile-page .pp-theme button[aria-pressed=true]{background:var(--ma-solid);box-shadow:var(--ma-depth);color:var(--ma-ink)}
 .profile-page .pp-theme .sw{width:100%;max-width:90px;height:40px;border-radius:calc(8px * var(--radius-scale, 1));border:1px solid var(--pp-line2);overflow:hidden;display:flex}
 .profile-page .pp-theme .sw i{flex:1}
 
-.profile-page button, .profile-page input { font: inherit; }
-.profile-page :focus-visible { outline: 2px solid var(--pp-focus); outline-offset: 3px; }
-.profile-page .pp-button { height: 44px; border-radius: calc(12px * var(--radius-scale, 1)); padding: 0 16px; font-weight: 600; font-size: 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--pp-line); background: var(--pp-surface); color: var(--pp-ink2); transition: .18s; }
-.profile-page .pp-button.primary { border: 0; color: rgb(var(--brand-ink)); background: linear-gradient(180deg,rgb(var(--brand-hi)),rgb(var(--brand-lo))); box-shadow: 0 10px 24px -12px rgb(var(--brand-solid) / 0.9); }
-.profile-page .pp-button.danger { background: var(--pp-danger-t); border-color: color-mix(in srgb, var(--pp-danger) 40%, transparent); color: var(--pp-danger); margin-inline-start: auto; }
-.profile-page .pp-button.danger:hover:not(:disabled) { background: var(--pp-brand); border-color: var(--pp-brand); color: #fff; }
-.profile-page .pp-button:disabled { opacity: .45; cursor: not-allowed; filter: none; box-shadow: none; }
-.profile-page .pp-input button { position: absolute; inset-inline-end: 6px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; padding: 0; border-radius: calc(12px * var(--radius-scale, 1)); display: grid; place-items: center; color: var(--pp-faint); }
-.profile-page .pp-input button:hover { background: color-mix(in srgb, var(--pp-brand) 8%, transparent); color: var(--pp-brand); }
-.profile-page .pp-input input[type=password], .profile-page .pp-input input[autocomplete=new-password], .profile-page .pp-input input[autocomplete=current-password] { padding-inline: var(--room-key) 16px; direction: ltr; text-align: start; font-family: var(--font-body, 'Zain'), sans-serif; }
 .profile-page .pp-tag i { width: 7px; height: 7px; border-radius: 50%; background: rgb(var(--silver-600)); }
 .profile-page .pp-tag i.active { background: rgb(var(--success-400)); }
-.profile-page .pp-readonly { margin-top: 12px; }
-.profile-page .pp-field > p { color: var(--pp-danger); font-size: 13px; font-weight: 600; margin-top: 8px; }
-.profile-page .pp-field > p.pp-match { color: var(--pp-success); }
 .profile-page .pp-strength { --strength-color: var(--pp-sunken); }
 .profile-page .pp-strength.level-1 { --strength-color: var(--pp-danger); }
 .profile-page .pp-strength.level-2 { --strength-color: var(--pp-warn); }
-.profile-page .pp-strength.level-3 { --strength-color: rgb(var(--success-600)); }
+.profile-page .pp-strength.level-3 { --strength-color: var(--ma-pay); }
 .profile-page .pp-strength.level-4 { --strength-color: var(--pp-success); }
 .profile-page .pp-strength .bars i.filled { background: var(--strength-color); }
 .profile-page .pp-strength .lbl b { color: var(--strength-color); }
 .profile-page .pp-strength.level-0 .lbl b { color: var(--pp-faint); }
-.profile-page .pp-devices, .profile-page .pp-feed { margin-top: 8px; }
 .profile-page .pp-device > div { flex: 1; min-width: 0; }
 .profile-page .pp-feed-item > div { flex: 1; min-width: 0; }
 .profile-page .pp-feed-item time { margin-inline-start: auto; font: 500 12px var(--font-body, 'Zain'), sans-serif; color: var(--pp-faint); white-space: nowrap; }
@@ -159,20 +103,13 @@
 .profile-page .pp-settings-permissions summary > small { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--pp-faint); }
 .profile-page .pp-settings-permissions summary svg { width: 14px; height: 14px; }
 .profile-page .pp-settings-permissions[open] summary svg { transform: rotate(180deg); }
-.profile-page.pp-dialog { padding: 24px; }
-.profile-page.pp-dialog h3 { margin: 0 0 4px; font: 700 20px var(--font-heading, 'El Messiri'), serif; }
-.profile-page.pp-dialog > p { color: var(--pp-faint); font-size: 14px; }
-.dark .profile-page .pp-theme button[aria-pressed=true] { color: var(--ui-brand-ink); }
 @media (max-width:980px) { .profile-page .pp-grid { grid-template-columns:minmax(0,1fr); } .profile-page .pp-hero .pp-facts { margin:0; width:100%; } }
 @media (max-width:640px) {
-    .profile-page .pp-readonly, .profile-page .pp-rules { grid-template-columns:1fr; }
+    .profile-page .pp-rules { grid-template-columns:1fr; }
     .profile-page .pp-hero { padding:16px 16px; gap:16px; }
     .profile-page .pp-avatar { width:62px; height:62px; font-size:22px; border-radius:calc(18px * var(--radius-scale, 1)); }
     .profile-page .pp-hero h2 { font-size:22px; }
     .profile-page .pp-hero .pp-facts { grid-template-columns:1fr 1fr; gap:12px; }
-    .profile-page .pp-panel { padding:16px 16px; }
-    .profile-page .pp-button.primary { width:100%; justify-content:center; margin:0; }
-    .profile-page .pp-button { max-width:100%; height:auto; min-height:44px; padding-block:8px; }
     .profile-page .pp-feed-item { flex-wrap:wrap; }
     /* The time lines up under the entry's text, past its 32px icon and 12px gap (a size, not spacing). */
     .profile-page .pp-feed-item { --pp-feed-indent:calc(32px + 12px); }

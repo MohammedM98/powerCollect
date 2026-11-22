@@ -9,7 +9,7 @@ import Pagination from '@/Components/DataTable/Pagination';
 import { useDataTable } from '@/hooks/useDataTable';
 import { ChannelLabel, DeliveryCounts, KIND_ICONS, MessageStatusPill, MessageText } from './MessageParts';
 import PageHeader, { BackLink } from '@/Components/PageHeader';
-import { ConfirmDialog, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, SecondaryKey } from '@/Components/UI';
+import { ConfirmDialog, ListBody, ListCell, ListColumn, ListHeader, ListRow, ListTable, Notice, SecondaryKey } from '@/Components/UI';
 
 const DATE_TIME_FORMAT = new Intl.DateTimeFormat('ar-EG-u-nu-latn', { dateStyle: 'medium', timeStyle: 'short' });
 
@@ -49,7 +49,7 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
                 <>
                     <PageHeader
                         eyebrow={<BackLink href="/messages">الرسائل</BackLink>}
-                        title={<span className="inline-flex items-center gap-3"><Icon name={KIND_ICONS[batch.kind] ?? 'note'} className="h-7 w-7 shrink-0 text-gray-500" />{batch.kindLabel}</span>}
+                        title={<span className="inline-flex items-center gap-3"><Icon name={KIND_ICONS[batch.kind] ?? 'note'} className="h-7 w-7 shrink-0 text-(--ma-muted)" />{batch.kindLabel}</span>}
                         titleAddon={<span className="text-base font-semibold"><ChannelLabel channel={batch.channel} label={batch.channelLabel} /></span>}
                         meta={`${DATE_TIME_FORMAT.format(new Date(batch.createdAt))} — ${batch.createdBy ?? '—'} — ${batch.branchName}`}
                         actions={
@@ -66,19 +66,18 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
         >
             <Head title={`${batch.kindLabel} — الرسائل`} />
 
-            <section className="mb-6 rounded-card border border-gray-100 bg-surface p-4 shadow-card">
-                <div className="mb-2 text-sm font-semibold text-gray-700">نص الرسالة</div>
-                <p className="whitespace-pre-line leading-7 text-gray-900">
+            <section className="mb-6 rounded-card border border-(--ma-line) bg-(--ma-solid) p-4 shadow-card">
+                <div className="mb-2 text-sm font-semibold text-(--ma-ink)">نص الرسالة</div>
+                <p className="whitespace-pre-line leading-7 text-(--ma-ink)">
                     <MessageText text={batch.body} />
                 </p>
-                <div className="mt-4 border-t border-gray-100 pt-3">
+                <div className="mt-4 border-t border-(--ma-line) pt-3">
                     <DeliveryCounts batch={batch} />
                 </div>
                 {isWhatsApp && batch.pending > 0 && (
-                    <p role="note" className="mt-3 flex items-start gap-2 rounded-control bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-300">
-                        <Icon name="info" className="mt-1 h-4 w-4 shrink-0" />
+                    <Notice role="note" tone="warn" icon="info" className="mt-3">
                         اضغط «إرسال واتساب» بجانب كل مشترك ليفتح المحادثة والرسالة مكتوبة، ثم اضغط إرسال في واتساب. تُسجَّل الرسالة مرسلة عند فتحها.
-                    </p>
+                    </Notice>
                 )}
             </section>
 
@@ -110,24 +109,24 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
                         <ListColumn id="sent_at">وقت الإرسال</ListColumn>
                         {(isWhatsApp || settlesUnconfirmed) && <ListColumn actions />}
                     </ListHeader>
-                    <ListBody empty={<span className="text-gray-500">لا توجد نتائج مطابقة.</span>}>
+                    <ListBody empty={<span className="text-(--ma-muted)">لا توجد نتائج مطابقة.</span>}>
                         {messages.data.map((message) => (
                             <ListRow key={message.id} id={message.id}>
                                 <ListCell>
-                                    <div className="font-semibold text-gray-900">{message.subscriptionName ?? '—'}</div>
-                                    {message.accountNumber && <div className="text-xs text-gray-500">{message.accountNumber}</div>}
+                                    <div className="font-semibold text-(--ma-ink)">{message.subscriptionName ?? '—'}</div>
+                                    {message.accountNumber && <div className="text-xs text-(--ma-muted)">{message.accountNumber}</div>}
                                 </ListCell>
-                                <ListCell dir="ltr" className="text-gray-700">
+                                <ListCell dir="ltr" className="text-(--ma-ink)">
                                     {message.phone}
                                 </ListCell>
-                                <ListCell className="min-w-[260px] max-w-lg whitespace-normal! text-gray-700">{message.body}</ListCell>
+                                <ListCell className="min-w-[260px] max-w-lg whitespace-normal! text-(--ma-ink)">{message.body}</ListCell>
                                 <ListCell>
                                     <MessageStatusPill status={message.status} label={message.statusLabel} />
-                                    {message.error && <div className="mt-1 max-w-xs text-xs text-brand-600">{message.error}</div>}
+                                    {message.error && <div className="mt-1 max-w-xs text-xs text-(--ma-brand)">{message.error}</div>}
                                 </ListCell>
-                                <ListCell className="text-gray-600">
+                                <ListCell className="text-(--ma-muted)">
                                     {message.sentAt ? DATE_TIME_FORMAT.format(new Date(message.sentAt)) : '—'}
-                                    {message.sentBy && <div className="text-xs text-gray-500">{message.sentBy}</div>}
+                                    {message.sentBy && <div className="text-xs text-(--ma-muted)">{message.sentBy}</div>}
                                 </ListCell>
                                 {settlesUnconfirmed && (
                                     <ListCell className="text-end">
@@ -151,10 +150,10 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
                                             onClick={() => openWhatsApp(message)}
                                             aria-label={`${message.status === 'sent' ? 'فتح المحادثة مجددًا مع' : 'إرسال عبر واتساب إلى'} ${message.subscriptionName ?? message.phone}`}
                                             title={message.status === 'sent' ? 'أُرسلت — افتح المحادثة مجددًا' : 'افتح واتساب والرسالة مكتوبة'}
-                                            className={`inline-flex items-center gap-2 whitespace-nowrap rounded-control px-3 py-2 text-xs font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 ${
+                                            className={`inline-flex items-center gap-2 whitespace-nowrap rounded-control px-3 py-2 text-xs font-semibold transition focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ma-ink) ${
                                                 message.status === 'sent'
-                                                    ? 'border border-gray-200 text-gray-600 hover:text-gray-900'
-                                                    : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                                                    ? 'border border-(--ma-line) text-(--ma-muted) hover:text-(--ma-ink)'
+                                                    : 'bg-(--ma-pay-btn) text-white hover:brightness-110'
                                             }`}
                                         >
                                             <Icon name={message.status === 'sent' ? 'repeat' : 'chat'} className="h-3.5 w-3.5" />

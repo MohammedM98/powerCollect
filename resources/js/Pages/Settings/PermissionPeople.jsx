@@ -62,12 +62,12 @@ export default function EmployeeList({
     return (
         <aside className="pm-people rise-in" aria-label="الموظفون">
             <div className="pm-people-head">
-                <h2 className="font-sans flex items-center gap-2 text-lg font-bold text-gray-900">
+                <h2 className="font-sans flex items-center gap-2 text-lg font-bold text-(--ma-ink)">
                     الموظفون
-                    <span className="ms-auto font-display text-sm font-semibold text-gray-500">{users.total.toLocaleString('en')} موظف</span>
+                    <span className="ms-auto font-display text-sm font-semibold text-(--ma-muted)">{users.total.toLocaleString('en')} موظف</span>
                 </h2>
                 <div className="relative mt-3">
-                    <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-[18px] w-[18px] text-gray-400" />
+                    <Icon name="search" className="pointer-events-none absolute inset-y-0 inset-s-3.5 my-auto h-[18px] w-[18px] text-(--ma-faint)" />
                     <Input
                         ref={searchRef}
                         type="text"
@@ -118,7 +118,7 @@ export default function EmployeeList({
 
             <div className="pm-people-list">
                 {users.data.length === 0 ? (
-                    <p className="px-4 py-8 text-center text-sm text-gray-500">لا يوجد موظفون مطابقون.</p>
+                    <p className="px-4 py-8 text-center text-sm text-(--ma-muted)">لا يوجد موظفون مطابقون.</p>
                 ) : (
                     roles.map((role) => (
                         <section key={role} aria-label={role} style={{ '--role': colorOf(role) }}>
@@ -143,22 +143,22 @@ export default function EmployeeList({
                                                 <EmployeeAvatar name={user.name} color={colorOf(role)} />
                                                 <span className="min-w-0 flex-1">
                                                     <span className="flex items-center gap-2">
-                                                        <span className="truncate text-[15px] font-bold text-gray-900">{user.name}</span>
+                                                        <span className="truncate text-[15px] font-bold text-(--ma-ink)">{user.name}</span>
                                                         {isSelected && selectedDirty && <span title="تغييرات لم تُحفظ" className="pm-unsaved" />}
                                                         {user.isActive === false && (
-                                                            <span className="rounded-md bg-gray-100 px-2 text-[12px] font-bold text-gray-500">
+                                                            <span className="rounded-md bg-(--ma-tile) px-2 text-[12px] font-bold text-(--ma-muted)">
                                                                 موقوف
                                                             </span>
                                                         )}
                                                     </span>
-                                                    <span className="mt-1 flex items-center gap-3 text-[13px] text-gray-500">
+                                                    <span className="mt-1 flex items-center gap-3 text-[13px] text-(--ma-muted)">
                                                         <span className="inline-flex items-center gap-1" title="عدد الصلاحيات">
                                                             <Icon name="key" className="h-3.5 w-3.5" />
-                                                            <b className="font-display font-semibold text-gray-700">{stats.total}</b>
+                                                            <b className="font-display font-semibold text-(--ma-ink)">{stats.total}</b>
                                                         </span>
                                                         {stats.danger > 0 && (
                                                             <span
-                                                                className="inline-flex items-center gap-1 text-red-700 dark:text-red-400"
+                                                                className="inline-flex items-center gap-1 text-(--ma-owe)"
                                                                 title="صلاحيات خطيرة"
                                                             >
                                                                 <Icon name="alert" className="h-3.5 w-3.5" />
@@ -182,7 +182,7 @@ export default function EmployeeList({
             </div>
 
             {users.last_page > 1 && (
-                <div className="border-t border-gray-100 p-3">
+                <div className="border-t border-(--ma-line) p-3">
                     <Pagination meta={users} filters={filters} baseUrl="/settings/permissions" extraParams={{ selected: selectedId }} />
                 </div>
             )}

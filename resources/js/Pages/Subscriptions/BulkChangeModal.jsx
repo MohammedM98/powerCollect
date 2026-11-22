@@ -1,12 +1,12 @@
-import { Input } from '@heroui/react';
 import { useCallback, useId, useRef, useState } from 'react';
 import { router, useHttp, usePage } from '@inertiajs/react';
-import Modal from '@/Components/UI/Modal';
+import DialogFrame from '@/Components/UI/DialogFrame';
+import FormField from '@/Components/Form/FormField';
 import Icon from '@/Components/UI/Icon';
 import ChoiceChips from '@/Components/UI/ChoiceChips';
 import InputError from '@/Components/UI/InputError';
 import { normalizeDecimalInput } from '@/lib/format';
-import { PrimaryKey, SearchableSelect, SecondaryKey } from '@/Components/UI';
+import { Notice, PrimaryKey, SearchableSelect, SecondaryKey, TextInput } from '@/Components/UI';
 
 const TITLES = {
     minimum_charge: { title: 'تغيير الحد الأدنى', icon: 'wallet' },
@@ -63,99 +63,85 @@ export default function BulkChangeModal({ field, selection, count, statusOptions
         );
     }
 
+    const footer = (
+        <>
+            <SecondaryKey disabled={saving} onClick={onClose}>إلغاء</SecondaryKey>
+            {reviewing && <SecondaryKey disabled={saving} onClick={() => setReviewing(false)}>تعديل القيمة</SecondaryKey>}
+            <PrimaryKey type="submit" form={id} disabled={saving || !validValue || (needsValue && value === '')} aria-busy={saving}>
+                <Icon name="check" className="h-4 w-4" />
+                {saving ? 'جارٍ التطبيق...' : reviewing ? `تأكيد التطبيق على ${count.toLocaleString('en')} اشتراك` : 'مراجعة التعديل'}
+            </PrimaryKey>
+        </>
+    );
+
+    const reach = (
+        <>
+            يُطبَّق على <bdi dir="ltr" className="font-bold text-(--ma-ink)">{count.toLocaleString('en')}</bdi> اشتراك
+            {selection.all ? ' (كل النتائج المطابقة للبحث والفلاتر)' : ' محدد'}. من كانت قيمته نفسها لا يتغير.
+        </>
+    );
+
     return (
-        <Modal show onClose={() => { if (!saving) onClose(); }} maxWidth="lg" panelClassName={field === 'meter_box_id' ? 'overflow-visible!' : ''}>
-            <form onSubmit={apply} role="dialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-reach`}>
-                <div className="flex items-start gap-4 px-6 pb-2 pt-6">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600">
-                        <Icon name={icon} strokeWidth={2} />
-                    </span>
-                    <div className="min-w-0 pt-1">
-                        <h3 id={`${id}-title`} className="text-lg font-bold text-gray-900">
-                            {title}
-                        </h3>
-                        <p id={`${id}-reach`} className="mt-2 text-sm leading-6 text-gray-600">
-                            يُطبَّق على <b className="text-gray-900">{count.toLocaleString('en')}</b> اشتراك
-                            {selection.all ? ' (كل النتائج المطابقة للبحث والفلاتر)' : ' محدد'}. من كانت قيمته نفسها لا يتغير.
-                        </p>
-                    </div>
-                </div>
-
-                <div className="space-y-4 px-6 py-4">
-                    {selectionLabel && <p className="rounded-control border border-brand-500/15 bg-brand-500/5 px-4 py-3 text-sm text-gray-700">{selectionLabel}</p>}
-                    {reviewing ? (
-                        <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-                            <h4 className="text-base font-bold text-gray-900">مراجعة التعديل</h4>
-                            <p className="mt-3 text-base leading-8 text-gray-700">{field === 'meter_box_id' ? `الطبلون الجديد: ${selectedBox?.label}` : field === 'minimum_charge' ? mode === 'amount' ? `الحد الأدنى الأسبوعي الجديد: ${value} شيكل` : 'الحد الأدنى الجديد: حد القاطع الخاص بكل اشتراك' : `الحالة الجديدة: ${statusOptions.find((option) => option.value === value)?.label}`}</p>
-                            {field === 'meter_box_id' && <p className="mt-1 text-sm text-gray-600">{selectedBox?.hint}</p>}
-                            <p className="mt-2 text-sm leading-7 text-gray-600">سيُحفظ التعديل في سجل التعديلات الجماعية، مع القيمة السابقة والجديدة لكل اشتراك.{field === 'minimum_charge' && ' الفواتير والحركات السابقة تبقى كما هي.'}{field === 'meter_box_id' && ' الأرصدة والقراءات والحركات المالية تبقى كما هي.'}</p>
-                        </div>
-                    ) : field === 'meter_box_id' ? (
-                        <div className="space-y-3">
-                            <label htmlFor={`${id}-box`} className="block text-sm font-semibold text-gray-700">الطبلون الجديد</label>
-                            <SearchableSelect
-                                id={`${id}-box`}
-                                value={value}
-                                onChange={(next, option) => { setValue(next); setSelectedBox(option ?? null); }}
-                                options={selectedBox ? [selectedBox] : []}
-                                loadOptions={loadMeterBoxes}
-                                placeholder="اختر الطبلون الجديد"
-                                searchPlaceholder="ابحث باسم الطبلون أو رقمه..."
-                            />
-                            <InputError message={errors.value} />
-                            <p className="text-sm leading-7 text-gray-600">اختر طبلونًا من فرع الاشتراكات المحددة. الاشتراكات الموجودة فيه بالفعل تبقى كما هي.</p>
-                        </div>
-                    ) : field === 'minimum_charge' ? (
-                        <>
-                            <ChoiceChips options={MINIMUM_MODES} value={mode} onChange={setMode} label="طريقة تحديد الحد الأدنى" />
-                            {mode === 'amount' ? (
-                                <div>
-                                    <label htmlFor={`${id}-value`} className="mb-2 block text-sm font-semibold text-gray-700">
-                                        الحد الأدنى الأسبوعي الجديد (شيكل)
-                                    </label>
-                                    <Input
-                                        id={`${id}-value`}
-                                        type="text"
-                                        inputMode="decimal"
-                                        value={value}
-                                        onChange={(e) => setValue(normalizeDecimalInput(e.target.value))}
-                                        className="block w-full text-sm"
-                                        autoFocus
-                                        aria-invalid={errors.value ? true : undefined}
-                                    />
-                                    <InputError message={errors.value} className="mt-1" />
-                                </div>
-                            ) : (
-                                <p className="rounded-control bg-gray-50 px-3 py-2 text-sm text-gray-600">
-                                    يأخذ كل مشترك الحد الأدنى لقاطعه. من ليس له قاطع لا يتغير.
-                                </p>
-                            )}
-                            <p className="flex items-start gap-2 text-xs text-gray-500">
-                                <Icon name="info" className="mt-1 h-4 w-4 shrink-0" />
-                                يسري على القراءات القادمة فقط؛ القراءات المسجلة تبقى كما هي.
-                            </p>
-                        </>
-                    ) : (
-                        <ChoiceChips
-                            options={statusOptions.map((option) => ({ ...option, icon: STATUS_ICONS[option.value] }))}
+        <DialogFrame show onClose={onClose} title={title} description={reach} icon={icon} maxWidth="lg" busy={saving} footer={footer}>
+            <form id={id} onSubmit={apply} className="ma-form space-y-4">
+                {selectionLabel && <Notice tone="brand">{selectionLabel}</Notice>}
+                {reviewing ? (
+                    <Notice
+                        tone="info"
+                        title="مراجعة التعديل"
+                    >
+                        <p className="text-base leading-8">{field === 'meter_box_id' ? `الطبلون الجديد: ${selectedBox?.label}` : field === 'minimum_charge' ? mode === 'amount' ? `الحد الأدنى الأسبوعي الجديد: ${value} شيكل` : 'الحد الأدنى الجديد: حد القاطع الخاص بكل اشتراك' : `الحالة الجديدة: ${statusOptions.find((option) => option.value === value)?.label}`}</p>
+                        {field === 'meter_box_id' && <p className="text-sm text-(--ma-muted)">{selectedBox?.hint}</p>}
+                        <p className="mt-2 text-sm leading-7 text-(--ma-muted)">سيُحفظ التعديل في سجل التعديلات الجماعية، مع القيمة السابقة والجديدة لكل اشتراك.{field === 'minimum_charge' && ' الفواتير والحركات السابقة تبقى كما هي.'}{field === 'meter_box_id' && ' الأرصدة والقراءات والحركات المالية تبقى كما هي.'}</p>
+                    </Notice>
+                ) : field === 'meter_box_id' ? (
+                    <FormField
+                        id={`${id}-box`}
+                        label="الطبلون الجديد"
+                        error={errors.value}
+                        hint="اختر طبلونًا من فرع الاشتراكات المحددة. الاشتراكات الموجودة فيه بالفعل تبقى كما هي."
+                    >
+                        <SearchableSelect
+                            portal
                             value={value}
-                            onChange={setValue}
-                            label="الحالة الجديدة"
+                            onChange={(next, option) => { setValue(next); setSelectedBox(option ?? null); }}
+                            options={selectedBox ? [selectedBox] : []}
+                            loadOptions={loadMeterBoxes}
+                            placeholder="اختر الطبلون الجديد"
+                            searchPlaceholder="ابحث باسم الطبلون أو رقمه..."
                         />
-                    )}
-                    <InputError message={errors.ids} />
-                    <InputError message={errors.expected_count} />
-                </div>
-
-                <div className="flex flex-wrap items-center justify-end gap-3 rounded-b-panel border-t border-gray-100 bg-gray-50 px-6 py-4">
-                    <SecondaryKey disabled={saving} onClick={onClose}>إلغاء</SecondaryKey>
-                    {reviewing && <SecondaryKey disabled={saving} onClick={() => setReviewing(false)}>تعديل القيمة</SecondaryKey>}
-                    <PrimaryKey type="submit" disabled={saving || !validValue || (needsValue && value === '')} aria-busy={saving}>
-                        <Icon name="check" className="h-4 w-4" />
-                        {saving ? 'جارٍ التطبيق...' : reviewing ? `تأكيد التطبيق على ${count.toLocaleString('en')} اشتراك` : 'مراجعة التعديل'}
-                    </PrimaryKey>
-                </div>
+                    </FormField>
+                ) : field === 'minimum_charge' ? (
+                    <>
+                        <ChoiceChips options={MINIMUM_MODES} value={mode} onChange={setMode} label="طريقة تحديد الحد الأدنى" />
+                        {mode === 'amount' ? (
+                            <FormField id={`${id}-value`} label="الحد الأدنى الأسبوعي الجديد (شيكل)" error={errors.value}>
+                                <TextInput
+                                    type="text"
+                                    inputMode="decimal"
+                                    dir="ltr"
+                                    value={value}
+                                    onChange={(e) => setValue(normalizeDecimalInput(e.target.value))}
+                                    className="block w-full"
+                                    autoFocus
+                                />
+                            </FormField>
+                        ) : (
+                            <Notice>يأخذ كل مشترك الحد الأدنى لقاطعه. من ليس له قاطع لا يتغير.</Notice>
+                        )}
+                        <p className="ma-field-hint">يسري على القراءات القادمة فقط؛ القراءات المسجلة تبقى كما هي.</p>
+                    </>
+                ) : (
+                    <ChoiceChips
+                        options={statusOptions.map((option) => ({ ...option, icon: STATUS_ICONS[option.value] }))}
+                        value={value}
+                        onChange={setValue}
+                        label="الحالة الجديدة"
+                    />
+                )}
+                <InputError message={errors.ids} />
+                <InputError message={errors.expected_count} />
             </form>
-        </Modal>
+        </DialogFrame>
     );
 }
