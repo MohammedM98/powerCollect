@@ -44,7 +44,7 @@ class Brand
     private const DARK_PANELS = ":root:is([data-ui-nav-style='dark'],[data-ui-nav-style='brand']) .tn-bar";
 
     /** The colour theme.css is drawn in; a company in it needs no shades of its own. */
-    public const THEME_PRIMARY = '#20B2A0';
+    public const THEME_PRIMARY = '#E2642A';
 
     /** Where the imported file is kept, on the local disk. */
     private const STORED = 'brand/brand.json';

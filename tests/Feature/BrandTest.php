@@ -77,15 +77,15 @@ class BrandTest extends TestCase
 
         $response->assertInertia(fn ($page) => $page
             ->where('brand.primaryColor', '#E2642A')
-            ->where('brand.design.preset', 'superpower')
+            ->where('brand.design.preset', 'ma')
             ->where('brand.design.navigation', 'topbar')
             ->where('brand.design.cards', 'elevated')
             ->where('brand.design.navStyle', 'solid')
             ->where('brand.design.details', 'modal'));
         $response->assertSee('data-ui-background="graphite"', false);
         $response->assertSee('data-ui-neutral="graphite"', false);
-        // The MA orange is not theme.css's own teal, so its shades are drawn over it.
-        $response->assertSee(':root{--brand-50:', false);
+        // The MA orange is theme.css's own colour, so no shades are drawn over it.
+        $response->assertDontSee(':root{--brand-50:', false);
         // The charcoal look keeps theme.css's own neutral greys: no tinted grey scale is drawn over them.
         $response->assertDontSee('--gray-50:', false);
     }
@@ -281,15 +281,15 @@ class BrandTest extends TestCase
 
     public function test_a_look_saved_with_the_retired_side_panel_opens_details_as_a_popup(): void
     {
-        $design = BrandDesign::normalize(['preset' => 'superpower', 'details' => 'drawer']);
+        $design = BrandDesign::normalize(['preset' => 'ma', 'details' => 'drawer']);
 
         $this->assertSame('modal', $design['details']);
-        $this->assertSame('superpower', $design['preset']);
+        $this->assertSame('ma', $design['preset']);
     }
 
     public function test_a_look_saved_in_the_retired_navy_or_night_blue_shows_in_charcoal(): void
     {
-        foreach (['superpower', 'custom'] as $preset) {
+        foreach (['ma', 'custom'] as $preset) {
             foreach (['navy', 'midnight'] as $background) {
                 $design = BrandDesign::normalize(['preset' => $preset, 'background' => $background, 'neutral' => 'navy']);
 
@@ -298,17 +298,17 @@ class BrandTest extends TestCase
             }
         }
 
-        $this->assertSame('superpower', BrandDesign::normalize(['preset' => 'superpower', 'background' => 'navy', 'neutral' => 'navy'])['preset']);
+        $this->assertSame('ma', BrandDesign::normalize(['preset' => 'ma', 'background' => 'navy', 'neutral' => 'navy'])['preset']);
     }
 
     public function test_a_look_saved_with_the_retired_side_bar_or_glass_shows_the_top_bar_and_solid_panels(): void
     {
-        $design = BrandDesign::normalize(['preset' => 'superpower', 'navigation' => 'sidebar', 'navStyle' => 'glass', 'cards' => 'glass']);
+        $design = BrandDesign::normalize(['preset' => 'ma', 'navigation' => 'sidebar', 'navStyle' => 'glass', 'cards' => 'glass']);
 
         $this->assertSame('topbar', $design['navigation']);
         $this->assertSame('solid', $design['navStyle']);
         $this->assertSame('elevated', $design['cards']);
-        $this->assertSame('superpower', $design['preset']);
+        $this->assertSame('ma', $design['preset']);
     }
 
     public function test_import_rejects_invalid_palette_roles_and_component_choices_without_saving(): void

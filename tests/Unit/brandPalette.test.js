@@ -21,7 +21,7 @@ const PHP_BLUE = {
 };
 
 test('both ends of imported-brand button gradients keep white text readable', () => {
-    for (const color of ['#1E88E5', '#FFD600', '#A51D26', '#FFFFFF', '#20B2A0']) {
+    for (const color of ['#1E88E5', '#FFD600', '#A51D26', '#FFFFFF', '#E2642A']) {
         for (const role of ['hi', 'solid', 'lo']) {
             const channels = brandPalette(color).fixed[role].split(' ').map(Number);
             const hex = '#' + channels.map(channel => channel.toString(16).padStart(2, '0')).join('');

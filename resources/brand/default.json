@@ -25,7 +25,7 @@
         "info": null
     },
     "design": {
-        "preset": "superpower",
+        "preset": "ma",
         "tableVariant": "default",
         "motionStyle": "standard",
         "details": "modal",

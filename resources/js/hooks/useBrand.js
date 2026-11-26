@@ -16,7 +16,7 @@ const DEFAULT_BRAND = {
 };
 
 /** theme.css's own colour, which needs no shades of its own (Brand::THEME_PRIMARY on the server). */
-export const THEME_PRIMARY = '#20B2A0';
+export const THEME_PRIMARY = '#E2642A';
 
 function useSharedBrand() {
     try {

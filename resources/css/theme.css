@@ -13,7 +13,7 @@
  *   1. Brand            the main colour (buttons, links, focus, the logo's colour)
  *   2. Neutrals         page, cards, lines and text; graphite for the dark panels
  *   3. Status           success, warning, danger and info
- *   4. Actions          editing (blue), printing (the identity's teal), exporting to Excel (green)
+ *   4. Actions          editing (blue), printing (the identity's orange), exporting to Excel (green)
  *   5. Accents          extra colours for charts, tags and roles
  *   6. Named colours    what the pages with a stylesheet of their own read
  *   7. Dark navigation  the greys inside a dark or coloured navigation
@@ -36,45 +36,43 @@
     /* ── 1. Brand ─────────────────────────────────────────────────────────── */
 
     /*
-     * Power Collect's identity: a fresh teal-green (#20B2A0, `solid`) with
-     * black and white. As a fill (buttons, badges, the open page's pill) it
-     * carries dark ink (`--brand-ink`, 8:1), never white. Brand text, links
-     * and fills that carry white use 500 and darker (5.5:1 or more on white).
+     * MA's identity: its orange (#E2642A, the logo's A; `solid` 202 78 5
+     * where white sits on it) with black and white. As a fill (buttons,
+     * badges, the open page's pill) it carries white (`--brand-ink`). Brand
+     * text, links and fills that carry white use 500 and darker.
      */
-    --brand-50: 240 253 250;
-    --brand-100: 204 246 239;
-    --brand-200: 153 233 220;
-    --brand-300: 94 214 194;
-    --brand-400: 32 178 160;
-    --brand-500: 15 118 110;
-    --brand-600: 13 100 93;
-    --brand-700: 17 94 89;
-    --brand-800: 19 78 74;
-    --brand-900: 4 47 46;
+    --brand-50: 251 241 238;
+    --brand-100: 248 220 210;
+    --brand-200: 243 200 183;
+    --brand-300: 235 157 126;
+    --brand-400: 224 115 70;
+    --brand-500: 202 78 5;
+    --brand-600: 175 66 4;
+    --brand-700: 145 54 4;
+    --brand-800: 114 41 3;
+    --brand-900: 76 24 0;
 
     /*
      * The brand colour where it must look the same in both themes: the
-     * buttons' teal (solid, with hi and lo for hover and press), the light
-     * teal used as text on dark panels (tint, soft) and the deep teal.
+     * buttons' orange (solid, with hi and lo for hover and press), the light
+     * orange used as text on dark panels (tint, soft) and the deep orange.
      */
-    --brand-tint: 153 233 220;
-    --brand-soft: 94 214 194;
-    --brand-bright: 45 191 170;
-    --brand-glow: 32 178 160;
-    --brand-hi: 45 191 170;
-    --brand-solid: 32 178 160;
-    --brand-lo: 26 158 142;
-    --brand-deep: 15 118 110;
+    --brand-tint: 253 160 123;
+    --brand-soft: 222 119 76;
+    --brand-bright: 207 83 19;
+    --brand-glow: 184 71 8;
+    --brand-hi: 202 78 5;
+    --brand-solid: 202 78 5;
+    --brand-lo: 153 57 1;
+    --brand-deep: 114 41 3;
 
-    /* Text and icons drawn on a fill in the brand colour: a deep teal-black. A company with a colour of its own gets white (Brand::stylesheet). */
-    --brand-ink: 6 32 29;
+    /* Text and icons drawn on a fill in the brand colour: white. */
+    --brand-ink: 255 255 255;
 
-    /* The open page or section in the navigation: the identity's teal with dark ink, in both themes. */
-    --nav-active: 32 178 160;
-    --nav-active-ink: 6 32 29;
-    --nav-active-icon: 6 32 29;
-
-    /* The logo's bolt (Components/SuperPowerMark.jsx); its S takes the text colour. */
+    /* The open page or section in the navigation: the identity's orange with white, in both themes. */
+    --nav-active: var(--brand-solid);
+    --nav-active-ink: 255 255 255;
+    --nav-active-icon: 255 255 255;
 
     /* The on/off switch when on: a familiar green, in both themes. */
     --switch-on: 22 163 74;
@@ -250,14 +248,14 @@
     --blue-lo: 29 78 216;
 
     /*
-     * The identity's teal, for printing, and Excel's own green, for exporting to Excel:
+     * The identity's orange, for printing, and Excel's own green, for exporting to Excel:
      * each action wears its colour on every page so it is found at a glance.
      * 300 is the soft ink on a dark header, 600 the ink on a light tint.
      */
-    --print-300: 94 214 194;
-    --print-500: 15 118 110;
-    --print-600: 13 100 93;
-    --print-700: 17 94 89;
+    --print-300: 235 157 126;
+    --print-500: 202 78 5;
+    --print-600: 175 66 4;
+    --print-700: 145 54 4;
     --excel-300: 134 220 165;
     --excel-500: 31 135 80;
     --excel-600: 33 115 70;
@@ -321,16 +319,16 @@
     --field-shadow: 0 0 #0000;
     --field-hover-ring: rgb(255 255 255 / 0.22);
 
-    --brand-50: 14 32 30;
-    --brand-100: 17 42 39;
-    --brand-200: 19 61 56;
-    --brand-300: 15 118 110;
-    --brand-400: 32 178 160;
-    --brand-500: 15 118 110;
-    --brand-600: 94 214 194;
-    --brand-700: 153 233 220;
-    --brand-800: 204 246 239;
-    --brand-900: 230 251 247;
+    --brand-50: 41 18 8;
+    --brand-100: 57 23 8;
+    --brand-200: 91 32 4;
+    --brand-300: 136 50 2;
+    --brand-400: 194 78 17;
+    --brand-500: 225 88 10;
+    --brand-600: 220 100 46;
+    --brand-700: 234 135 94;
+    --brand-800: 241 169 140;
+    --brand-900: 248 207 191;
 
     --switch-on: 34 197 94;
 
@@ -350,7 +348,7 @@
     --blue-600: 96 165 250;
     --blue-700: 147 197 253;
 
-    --print-600: 94 214 194;
+    --print-600: 220 100 46;
     --excel-500: 26 128 72;
     --excel-600: 110 220 150;
     --excel-700: 20 96 54;
