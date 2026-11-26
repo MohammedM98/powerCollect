@@ -299,15 +299,6 @@
     --nav-role-tint: var(--ui-accent-t, rgb(var(--brand-50)));
 }
 
-:root[data-ui-navigation]:is([data-ui-nav-highlight='secondary'], [data-ui-nav-highlight='accent']) .tn-highlight {
-    background: rgb(var(--nav-role-solid));
-    box-shadow: none;
-}
-
-:root[data-ui-navigation]:is([data-ui-nav-highlight='secondary'], [data-ui-nav-highlight='accent']) :is(.tn-section[data-lit='true'], .tn-section[data-lit='true'] .tn-section-icon) {
-    color: rgb(var(--nav-role-ink));
-}
-
 :root[data-ui-navigation]:is([data-ui-nav-highlight='secondary'], [data-ui-nav-highlight='accent']) .tn-drawer-group:is([aria-expanded='true'], [data-current='true']) {
     background: rgb(var(--nav-role-solid));
     color: rgb(var(--nav-role-ink));
@@ -338,7 +329,6 @@
         scroll-behavior: auto !important;
     }
 }
-
 
 /*
  * ── Tables in the panel look ──────────────────────────────────────────
@@ -604,7 +594,6 @@
     font-variant-numeric: tabular-nums;
 }
 
-
 /* Row actions, export buttons and avatars in the panel look. */
 :root[data-ui-background='graphite'] .row-action {
     width: 34px;
@@ -720,7 +709,6 @@ html:not(.dark)[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg 
     border-color: rgb(var(--panel-bg));
 }
 
-
 /* Cash-box entries and closing tables (financial-boxes.css). */
 :root[data-ui-background='graphite'] .financial-ledger-table th {
     background: rgb(var(--panel-bg));
@@ -739,7 +727,6 @@ html:not(.dark)[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg 
 :root[data-ui-background='graphite'] .financial-ledger-table tbody tr:hover td {
     background: var(--gl-fill);
 }
-
 
 /*
  * The old graphite cards and the grey inner boxes, in the panel look: a card
@@ -760,14 +747,12 @@ html:not(.dark)[data-ui-background='graphite'] .tone-excel:not(.tone-solid) svg 
     background-color: var(--gl-fill-2);
 }
 
-
 /* A chosen chip drawn dark by hand (bg-gray-900 or graphite with light text) takes the company's colour in the panel look. */
 :root[data-ui-background='graphite'] .bg-gray-900:is(.text-surface, .text-white),
 :root[data-ui-background='graphite'] .bg-graphite-800.text-white {
     background-color: rgb(var(--brand-solid));
     color: rgb(var(--brand-ink));
 }
-
 
 :root[data-ui-background='graphite'] [class*='bg-gray-50/']:not(body),
 :root[data-ui-background='graphite'] [class*='bg-gray-100/']:not(body) {

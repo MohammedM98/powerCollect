@@ -14,10 +14,10 @@ import path from 'node:path';
  * Physical sides stay only where a logical one would be wrong:
  * - a table row's outer cells: a cell's own text may run left-to-right, and a
  *   logical side would then follow the cell, not the row;
- * - the top bar's big menu and page-trail line, placed by an x measured from the left;
+ * - the page-trail line, placed by an x measured from the left;
  * - `left: 50%` with a translate, which centres in either direction.
  */
-const PHYSICAL_ALLOWED = /(?:td|th):(?:first|last)-child|\.tn-mega\b|\.tn-subnav-line\b/;
+const PHYSICAL_ALLOWED = /(?:td|th):(?:first|last)-child|\.tn-subnav-line\b/;
 const STEPS_PX = new Set([0, 4, 8, 12, 16, 24, 32]);
 const TAILWIND_STEPS = new Set(['0', '1', '2', '3', '4', '6', '8']);
 const SPACING_PROPERTY = /^(padding|margin|gap|row-gap|column-gap)(-(block|inline)(-(start|end))?|-(top|bottom))?$/;

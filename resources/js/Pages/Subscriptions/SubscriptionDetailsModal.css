@@ -128,6 +128,7 @@
 .sp-statement td { padding: 12px 12px; border-bottom: 1px solid var(--sp-line-soft); }
 .sp-statement tr:hover td { background: var(--sp-raised); }
 .sp-statement .sp-amount-column { text-align: end; white-space: nowrap; }
+.sp-statement .sp-amount { display: inline-flex; align-items: center; gap: 8px; }
 .sp-statement .sp-number { display: inline-block; font-size: 13.5px; }
 .sp-date { display: block; direction: ltr; font: 600 12px/1.6 var(--font-body, 'Zain'), sans-serif; white-space: nowrap; }
 .sp-date small, .sp-cancellation { display: block; color: var(--sp-muted); font-size: 12px; }

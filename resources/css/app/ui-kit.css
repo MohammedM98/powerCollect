@@ -236,26 +236,6 @@
     --tn-graphite-icon: rgb(var(--brand-ink));
 }
 
-:root[data-ui-nav-highlight='brand'] .tn-highlight {
-    background: rgb(var(--brand-solid));
-}
-
-:root[data-ui-nav-highlight='brand'] .tn-section[data-lit='true'],
-:root[data-ui-nav-highlight='brand'] .tn-section[data-lit='true'] .tn-section-icon {
-    color: rgb(var(--brand-ink));
-}
-
-:root[data-ui-nav-highlight='underline'] .tn-highlight {
-    border-radius: 0;
-    background: none;
-    box-shadow: inset 0 -3px 0 rgb(var(--brand-500));
-}
-
-:root[data-ui-nav-highlight='underline'] .tn-section[data-lit='true'],
-:root[data-ui-nav-highlight='underline'] .tn-section[data-lit='true'] .tn-section-icon {
-    color: rgb(var(--brand-600));
-}
-
 :root[data-ui-nav-highlight='underline'] .tn-drawer-group:is([aria-expanded='true'], [data-current='true']) {
     background: none;
     color: rgb(var(--brand-600));

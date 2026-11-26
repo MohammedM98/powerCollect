@@ -25,7 +25,7 @@ const KIND_STYLES = {
     deletion: { icon: 'trash', tone: 'owe' },
 };
 
-/** What a change moved the subscriber's balance by: owed more (red, +), owed less (green, −), or nothing. */
+/** What a change moved the subscriber's balance by, without a sign: owed more (red, على المشترك), owed less (green, لصالح المشترك), or nothing. */
 function Impact({ value }) {
     const amount = Number(value ?? 0);
     if (amount === 0) {
@@ -34,7 +34,7 @@ function Impact({ value }) {
 
     return (
         <span className="gl-au-impact" data-tone={amount > 0 ? 'owe' : 'pay'}>
-            <bdi dir="ltr">{amount > 0 ? '+' : '−'}{formatMoney(Math.abs(amount))}</bdi>
+            <bdi dir="ltr">{formatMoney(Math.abs(amount))}</bdi>
             <small>{amount > 0 ? 'على المشترك' : 'لصالح المشترك'}</small>
         </span>
     );

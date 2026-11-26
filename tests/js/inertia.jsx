@@ -170,6 +170,7 @@ export const router = {
     patch: (url, data, options = {}) => routerVisit('patch', url, data, options),
     delete: (url, options = {}) => routerVisit('delete', url, options.data, options),
     reload: () => {},
+    prefetch: () => {},
     on: () => () => {},
     flushAll: () => {},
     cancelAll: () => {},

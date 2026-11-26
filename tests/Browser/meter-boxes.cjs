@@ -37,17 +37,34 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         await page.screenshot({ path: `${process.env.OUT_DIR}/glass-dark.png` });
         await chooseTheme('فاتح');
         const dock = sidebar.getByRole('navigation', { name: 'أقسام النظام', exact: true });
+        // Wide by default: the current section is open as an accordion, its pages under it.
         const subscribersSection = dock.getByRole('button', { name: /المشتركون/ });
-        await expect(subscribersSection).toHaveAttribute('aria-current', 'true');
-        await subscribersSection.hover();
-        const sectionMenu = page.locator('#tn-mega');
-        await expect(sectionMenu).toHaveClass(/is-open/);
+        await expect(subscribersSection).toHaveAttribute('aria-expanded', 'true');
+        await expect(dock.getByRole('link', { name: 'الطبلونات', exact: true })).toHaveAttribute('aria-current', 'page');
+        // Passing the pointer over the bar changes nothing; only its toggle does.
+        const wideBox = await sidebar.boundingBox();
+        await dock.getByRole('link', { name: 'الرئيسية', exact: true }).hover();
+        await page.mouse.move(wideBox.x - 300, 300);
+        assert.equal((await sidebar.boundingBox()).width, wideBox.width);
+        await subscribersSection.click();
+        await expect(subscribersSection).toHaveAttribute('aria-expanded', 'false');
+        await subscribersSection.click();
+        await dock.screenshot({ path: `${process.env.OUT_DIR}/sidebar-wide.png` });
+        // Compact: icons only; a section's icon opens a drop-down of its pages beside the bar.
+        await sidebar.getByRole('button', { name: 'تصغير الشريط الجانبي', exact: true }).click();
+        await expect(async () => assert.ok((await sidebar.boundingBox()).width < 100)).toPass();
+        await dock.getByRole('button', { name: /المشتركون/ }).click();
+        const sectionMenu = page.getByRole('menu', { name: /^المشتركون/ });
+        await expect(sectionMenu.getByRole('menuitem', { name: 'الطبلونات' })).toBeVisible();
         await expect(async () => {
             const dockBox = await sidebar.boundingBox();
             const menuBox = await sectionMenu.boundingBox();
             assert.ok(menuBox.x + menuBox.width <= dockBox.x);
         }).toPass();
-        await page.mouse.move(30, 30);
+        await page.screenshot({ path: `${process.env.OUT_DIR}/sidebar-compact.png` });
+        await page.keyboard.press('Escape');
+        await sidebar.getByRole('button', { name: 'توسيع الشريط الجانبي', exact: true }).click();
+        await expect(async () => assert.ok((await sidebar.boundingBox()).width > 200)).toPass();
         const sectionTabs = page.getByRole('navigation', { name: 'صفحات المشتركون', exact: true });
         await expect(sectionTabs.getByRole('link')).toHaveCount(6);
         await expect(sectionTabs.getByRole('link', { name: 'الطبلونات', exact: true })).toHaveAttribute('aria-current', 'page');
@@ -358,7 +375,7 @@ const expect = browserExpect.configure({ timeout: 15_000 });
         const limitedDock = limited.getByRole('navigation', { name: 'أقسام النظام', exact: true });
         await expect(limitedDock.getByRole('button', { name: 'المالية والتحصيل', exact: true })).toBeVisible();
         await expect(limitedDock.getByRole('button', { name: 'التقارير والرقابة', exact: true })).toHaveCount(0);
-        await expect(limitedDock.getByRole('button', { name: 'المشتركون', exact: true })).toHaveAttribute('aria-current', 'true');
+        await expect(limitedDock.getByRole('button', { name: 'المشتركون', exact: true })).toHaveAttribute('aria-expanded', 'true');
         assert.equal((await limited.request.get('/meter-readings')).status(), 403);
         await limited.screenshot({ path: `${process.env.OUT_DIR}/limited-sub-navigation.png`, fullPage: true });
         await limited.setViewportSize({ width: 390, height: 844 });

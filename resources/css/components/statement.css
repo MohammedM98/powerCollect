@@ -667,7 +667,7 @@
 }
 
 .gl-st-table .gl-st-cash {
-    width: 128px;
+    width: 156px;
     text-align: end;
     white-space: nowrap;
 }
@@ -675,6 +675,12 @@
 .gl-st-amount {
     display: inline-grid;
     justify-items: end;
+}
+
+.gl-st-amount-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .gl-st-money {
