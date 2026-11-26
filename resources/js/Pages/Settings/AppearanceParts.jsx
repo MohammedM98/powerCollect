@@ -96,7 +96,7 @@ export function ColorField({ id, label, value, onChange, suggestions = [], allow
                 <input
                     type="color"
                     className="ap-color"
-                    value={isHex(value) ? value : '#20B2A0'}
+                    value={isHex(value) ? value : '#E2642A'}
                     onChange={(event) => onChange(event.target.value.toUpperCase())}
                     aria-label={`${label}: اختيار اللون`}
                 />
@@ -105,7 +105,7 @@ export function ColorField({ id, label, value, onChange, suggestions = [], allow
                     dir="ltr"
                     className="w-32 font-mono text-sm uppercase"
                     value={value ?? ''}
-                    placeholder={allowEmpty ? emptyLabel : '#20B2A0'}
+                    placeholder={allowEmpty ? emptyLabel : '#E2642A'}
                     maxLength={7}
                     onChange={(event) => onChange(event.target.value.trim() === '' && allowEmpty ? null : event.target.value.trim().toUpperCase())}
                 />

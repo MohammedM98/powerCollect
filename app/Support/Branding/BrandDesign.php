@@ -272,8 +272,8 @@ class BrandDesign
      * @var array<string, array{label: string, description: string, design: array<string, string>}>
      */
     public const PRESETS = [
-        'superpower' => [
-            'label' => 'Charcoal super power',
+        'ma' => [
+            'label' => 'MA charcoal',
             'description' => 'Solid cards in neutral charcoal greys, light grey in the light theme, a top bar with the section pages under it, tables inside solid panels, gradient buttons and filled fields.',
             'design' => ['background' => 'graphite', 'neutral' => 'graphite', 'tables' => 'boxed', 'tableToolbar' => 'card', 'rowHover' => 'tint', 'focusRing' => 'brand'],
         ],
