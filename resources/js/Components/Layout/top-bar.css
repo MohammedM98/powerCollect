@@ -1243,24 +1243,11 @@ html.tn-locked {
     border-bottom: 1px solid var(--tn-line);
 }
 
-/* The company's name: beside the tools once the page scrolls (the logo already leads the side bar). */
+/* The company's name: always at the top bar's start, scrolled or not (the logo leads the side bar). */
 @media (min-width: 1024px) {
     :root[data-ui-navigation] .tn-brand {
-        max-width: 0;
-        padding-inline: 0;
-        overflow: hidden;
-        opacity: 0;
-        transform: translateY(-10px);
-        pointer-events: none;
-        transition: max-width 0.36s var(--tn-ease), opacity 0.24s, transform 0.32s var(--tn-ease), padding 0.36s var(--tn-ease);
-    }
-
-    :root[data-ui-navigation] .tn-header.is-scrolled .tn-brand {
         max-width: 420px;
         padding-inline: 8px;
-        opacity: 1;
-        transform: none;
-        pointer-events: auto;
     }
 }
 

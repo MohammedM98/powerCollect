@@ -93,8 +93,8 @@ function TeamTable({ team }) {
                                 <ListCell>
                                     <RowIdentity name={member.name} subtitle={member.roleLabel} status={member.isActive ? 'green' : 'gray'} />
                                 </ListCell>
-                                <ListCell className="text-gray-600" dir="ltr">
-                                    {member.username}
+                                <ListCell className="text-gray-600">
+                                    <bdi dir="ltr">{member.username}</bdi>
                                 </ListCell>
                                 <ListCell>
                                     <span className="flex min-w-36 items-center gap-3">

@@ -70,8 +70,8 @@ export default function Submissions({ cycle, submissions, canReview, filters, fi
                                 <ListCell data-label="الطبلون" className="text-(--ma-muted)">{submission.boxLabel}</ListCell>
                                 <ListCell data-label="القارئ" className="text-(--ma-muted)">{submission.readerName}</ListCell>
                                 <ListCell data-label="القراءة" className="font-display font-semibold">{submission.currentReading}</ListCell>
-                                <ListCell data-label="وقت التسجيل" className="whitespace-nowrap text-xs text-(--ma-muted)" dir="ltr">{submission.capturedAt}</ListCell>
-                                <ListCell data-label="وقت الوصول" className="whitespace-nowrap text-xs text-(--ma-muted)" dir="ltr">{submission.receivedAt}</ListCell>
+                                <ListCell data-label="وقت التسجيل" className="whitespace-nowrap text-xs text-(--ma-muted)"><bdi dir="ltr">{submission.capturedAt}</bdi></ListCell>
+                                <ListCell data-label="وقت الوصول" className="whitespace-nowrap text-xs text-(--ma-muted)"><bdi dir="ltr">{submission.receivedAt}</bdi></ListCell>
                                 <ListCell data-label="الحالة">
                                     <StatusPill tone={TONES[submission.status]} label={submission.statusLabel} />
                                     {submission.issue && <span className="mt-1 block max-w-[16rem] text-xs text-(--ma-muted)">{submission.issue}</span>}

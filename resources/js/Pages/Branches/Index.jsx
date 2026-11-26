@@ -71,13 +71,13 @@ export default function Index({ branches, canCreate, filters, filterOptions, gov
                                         status={branch.is_active ? 'green' : 'gray'}
                                     />
                                 </ListCell>
-                                <ListCell className="text-(--ma-muted)" dir="ltr">
-                                    {branch.phone}
+                                <ListCell className="text-(--ma-muted)">
+                                    <bdi dir="ltr">{branch.phone}</bdi>
                                 </ListCell>
                                 <ListCell className="text-(--ma-muted)">{branch.governorate?.name ?? '—'}</ListCell>
                                 <ListCell className="text-(--ma-muted)">{branch.area?.name ?? '—'}</ListCell>
                                 <ListCell onClick={(e) => e.stopPropagation()}><div className="space-y-2">
-                                    {branch.domain ? <><p dir="ltr" className="text-start text-xs text-(--ma-muted)">{branch.domain}</p><StatusPill tone={branch.domain_enabled ? 'green' : 'gray'} label={branch.domain_enabled ? 'الرابط مفعّل' : 'الرابط متوقف'} /></> : <p className="text-(--ma-faint)">لم يُحدد رابط</p>}
+                                    {branch.domain ? <><p className="text-xs text-(--ma-muted)"><bdi dir="ltr">{branch.domain}</bdi></p><StatusPill tone={branch.domain_enabled ? 'green' : 'gray'} label={branch.domain_enabled ? 'الرابط مفعّل' : 'الرابط متوقف'} /></> : <p className="text-(--ma-faint)">لم يُحدد رابط</p>}
                                     <div className="flex flex-wrap gap-3 text-xs font-semibold">{canManageDomains && <Button data-raw="" variant="ghost" onClick={() => setDomainBranch(branch)} className="text-(--ma-brand) hover:underline">إدارة الرابط</Button>}{domainRoutingEnabled && branch.url && <a href={branch.url} className="text-(--ma-ink) hover:underline">فتح الفرع</a>}</div>
                                 </div></ListCell>
                                 <ListCell>

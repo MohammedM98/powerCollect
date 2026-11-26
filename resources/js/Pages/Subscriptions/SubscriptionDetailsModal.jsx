@@ -98,7 +98,7 @@ export function AccountTab({ statement, onOpenStatement, onLoadStatement, loadin
                     <td><span className="sp-date">{formatDate(entry.date.slice(0, 10))}<small>{entry.date.slice(11)}</small></span></td>
                     <td><LineKind entry={entry} /></td>
                     <td>{color && <span className="sp-chain-dot" title="الحركات المرتبطة بنفس اللون" aria-hidden="true" />}{entry.description}{entry.cancellation?.reasonLabel && <small className="sp-cancellation">{entry.cancellation.reasonLabel}</small>}{entry.history?.length > 0 && <Button data-raw="" variant="ghost" className="sp-history-link" onClick={() => chooseView('full')}><Icon name="history" />صُحّحت، {entry.history.length} حركات سابقة</Button>}</td>
-                    <td className="sp-amount-column" data-side={entry.isCredit ? 'credit' : 'debit'}><span className="sp-amount"><LineSide entry={entry} /><b className="sp-number">{number(entry.amount)} {entry.currencyLabel}</b></span></td>
+                    <td className="sp-amount-column" data-side={entry.isCredit ? 'credit' : 'debit'}><span className="sp-amount"><b className="sp-number">{number(entry.amount)} {entry.currencyLabel}</b><LineSide entry={entry} /></span></td>
                     <td className="sp-amount-column"><bdi dir="ltr" className="sp-number" title={BALANCE_HINTS[running.tone]}>{running.signed} ₪</bdi></td>
                 </tr>;
             })}</tbody>

@@ -1,5 +1,6 @@
 import '../css/app.css';
 import { createInertiaApp, router } from '@inertiajs/react';
+import { I18nProvider } from '@heroui/react';
 import { createRoot } from 'react-dom/client';
 import FlashNotifications from '@/Components/Layout/FlashNotifications';
 import NavigationProgress from '@/Components/Layout/NavigationProgress';
@@ -31,12 +32,13 @@ createInertiaApp({
     // Every page sits in the shell, which stays from one page to the next (Layouts/AppShell.jsx).
     layout: () => AppShell,
     setup({ el, App, props }) {
+        // Arabic for every HeroUI part, whatever the browser's own language: its menus, lists and pop-ups open right to left (with Latin digits).
         createRoot(el).render(
-            <>
+            <I18nProvider locale="ar-u-nu-latn-ca-gregory">
                 <NavigationProgress />
                 <App {...props} />
                 <FlashNotifications initialStatus={props.initialPage.props.status} />
-            </>,
+            </I18nProvider>,
         );
     },
     // The top bar draws its own loading line (NavigationProgress).

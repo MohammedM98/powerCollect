@@ -123,7 +123,8 @@ function RailSection({ group, url, badges, isCurrent, open, onOpenChange }) {
 
 /**
  * The desktop side bar, after HeroUI Pro's sidebar, built from HeroUI: the
- * company's logo and the toggle on top, home, then each
+ * company's logo centred on top (its name is in the top bar, once) beside
+ * the toggle, home, then each
  * section. Wide, a section is an accordion whose pages open under it (the
  * current one open); compact, the rail shows icons with tooltips and a
  * section's icon opens a drop-down of its pages. The account sits at its
@@ -131,7 +132,7 @@ function RailSection({ group, url, badges, isCurrent, open, onOpenChange }) {
  */
 export default function AppSidebar({ groups, badges }) {
     const { props, url } = usePage();
-    const { name: companyName, tagline } = useBrand();
+    const { name: companyName } = useBrand();
     const user = props.auth?.user;
     const [mode, setMode] = useSideMode();
     const compact = mode === 'rail';
@@ -182,12 +183,6 @@ export default function AppSidebar({ groups, badges }) {
                 <div className="sb-head">
                     <Link href={HOME_LINK.href} className="sb-brand" aria-label={`${companyName}، الصفحة الرئيسية`}>
                         <BrandLogo alt="" className="sb-logo" />
-                        {!compact && (
-                            <span className="sb-brand-text">
-                                <b dir="auto">{companyName}</b>
-                                <small dir="auto">{user?.branchName ?? tagline}</small>
-                            </span>
-                        )}
                     </Link>
                     <RailTip compact={compact} label="توسيع الشريط">
                         <Button

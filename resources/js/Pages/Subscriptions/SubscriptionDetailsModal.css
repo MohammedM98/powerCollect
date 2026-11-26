@@ -127,8 +127,10 @@
 .sp-statement th { text-align: start; font-size: 12.5px; font-weight: 600; color: var(--sp-muted); padding: 8px 12px; border-bottom: 1px solid var(--sp-line); white-space: nowrap; }
 .sp-statement td { padding: 12px 12px; border-bottom: 1px solid var(--sp-line-soft); }
 .sp-statement tr:hover td { background: var(--sp-raised); }
-.sp-statement .sp-amount-column { text-align: end; white-space: nowrap; }
+.sp-statement .sp-amount-column { text-align: start; white-space: nowrap; }
 .sp-statement .sp-amount { display: inline-flex; align-items: center; gap: 8px; }
+/* The figure in a box of one width, flush with the column's start, so every line's figures and side chips stand under the heading. */
+.sp-statement .sp-amount > .sp-number { min-width: 12ch; text-align: end; }
 .sp-statement .sp-number { display: inline-block; font-size: 13.5px; }
 .sp-date { display: block; direction: ltr; font: 600 12px/1.6 var(--font-body, 'Zain'), sans-serif; white-space: nowrap; }
 .sp-date small, .sp-cancellation { display: block; color: var(--sp-muted); font-size: 12px; }

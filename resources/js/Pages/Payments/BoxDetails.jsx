@@ -251,10 +251,10 @@ function BoxCountSummary({ box }) {
             <ListHeader className="bg-(--ma-tile) text-xs text-(--ma-muted)">{['العملة', 'المتوقع', 'عدّ المحصّل', 'عدّ المستلم', 'الفرق', 'القرار'].map((title, index) => <ListColumn key={title} id={title} isRowHeader={index === 0} className="whitespace-nowrap p-3 text-start">{title}</ListColumn>)}</ListHeader>
             <ListBody>{Object.entries(currencies).map(([currency, label]) => <ListRow key={currency} id={currency} className="border-t border-(--ma-line) text-(--ma-ink)">
                 <ListCell className="p-3">{label}</ListCell>
-                <ListCell className="p-3 font-display" dir="ltr">{money(box.expected_counts[currency])}</ListCell>
-                <ListCell className="p-3 font-display" dir="ltr">{box.collector_counts ? money(box.collector_counts[currency]) : '—'}</ListCell>
-                <ListCell className="p-3 font-display" dir="ltr">{box.head_counts ? money(box.head_counts[currency]) : '—'}</ListCell>
-                <ListCell className="p-3 font-display" dir="ltr">{box.head_counts ? money(Number(box.head_counts[currency]) - Number(box.expected_counts[currency])) : '—'}</ListCell>
+                <ListCell className="p-3 font-display"><bdi dir="ltr">{money(box.expected_counts[currency])}</bdi></ListCell>
+                <ListCell className="p-3 font-display"><bdi dir="ltr">{box.collector_counts ? money(box.collector_counts[currency]) : '—'}</bdi></ListCell>
+                <ListCell className="p-3 font-display"><bdi dir="ltr">{box.head_counts ? money(box.head_counts[currency]) : '—'}</bdi></ListCell>
+                <ListCell className="p-3 font-display"><bdi dir="ltr">{box.head_counts ? money(Number(box.head_counts[currency]) - Number(box.expected_counts[currency])) : '—'}</bdi></ListCell>
                 <ListCell className="p-3">{box.decisions?.[currency] === 'debt' ? 'دين على المحصّل' : box.decisions?.[currency] === 'accepted' ? 'مقبول' : '—'}</ListCell>
             </ListRow>)}</ListBody>
         </ListTable>

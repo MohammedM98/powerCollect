@@ -139,6 +139,27 @@
     background: var(--ma-solid);
 }
 
+/* A HeroUI menu item's leading icon (the «إضافة» menu and others): a tile in its tone, as in the rows' menus. */
+.menu-item > .row-menu-ico {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+}
+
+.menu-item > .row-menu-ico svg {
+    width: 18px;
+    height: 18px;
+}
+
+.menu-item:is(:hover, [data-hovered], [data-focused]) > .row-menu-ico[data-menu-tone] {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--mt-fill) 88%, white), var(--mt-fill)) !important;
+    color: #fff !important;
+}
+
 .row-menu-ico[data-menu-tone] {
     --mt: var(--ma-muted);
     --mt-s: var(--ma-tile);
