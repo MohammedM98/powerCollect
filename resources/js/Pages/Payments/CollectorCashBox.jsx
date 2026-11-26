@@ -112,8 +112,8 @@ export function CountSummary({ box }) {
                         return (
                             <ListRow key={currency} id={currency} className="border-t border-gray-100 text-gray-700">
                                 <ListCell className="p-3">{currencies[currency]}</ListCell>
-                                <ListCell dir="ltr" className="p-3 text-start font-display">{formatMoney(box.expectedCounts?.[currency] ?? 0)}</ListCell>
-                                <ListCell dir="ltr" className="p-3 text-start font-display">{formatMoney(box.receivedCounts[currency] ?? 0)}</ListCell>
+                                <ListCell className="p-3 font-display"><bdi dir="ltr">{formatMoney(box.expectedCounts?.[currency] ?? 0)}</bdi></ListCell>
+                                <ListCell className="p-3 font-display"><bdi dir="ltr">{formatMoney(box.receivedCounts[currency] ?? 0)}</bdi></ListCell>
                                 <ListCell className={`p-3 font-semibold ${difference < 0 ? 'text-red-600' : difference > 0 ? 'text-emerald-600' : 'text-gray-400'}`}>
                                     {difference === 0 ? 'مطابق' : <>{difference < 0 ? 'عجز' : 'زيادة'} <bdi dir="ltr" className="font-display">{formatMoney(Math.abs(difference))}</bdi></>}
                                 </ListCell>
@@ -147,7 +147,7 @@ export function CashBoxAction({ box, onClose, onSuccess }) {
                 <div className="flex items-start justify-between gap-4">
                     <div>
                         <h3 className="text-xl font-bold text-gray-900">تأكيد تسليم صندوقي</h3>
-                        <p dir="ltr" className="mt-1 text-start font-display text-xs text-gray-500">{box.number}</p>
+                        <p className="mt-1 font-display text-xs text-gray-500"><bdi dir="ltr">{box.number}</bdi></p>
                     </div>
                     <Button data-raw="" variant="ghost" onClick={close} isDisabled={form.processing} aria-label="إغلاق" className="rounded-control p-2 text-gray-500 hover:bg-gray-100"><Icon name="close" className="h-5 w-5" /></Button>
                 </div>

@@ -50,7 +50,7 @@ export function LatestPayments({ payments, latestPayments, period, search, onSea
                                         <Button data-raw="" variant="ghost" onClick={(event) => { event.stopPropagation(); onOpenStatement(payment); }} aria-haspopup="dialog" title="كشف الحساب" className="font-semibold">{payment.subscriber}</Button>
                                     ) : <b className="font-semibold">{payment.subscriber}</b>}
                                 </ListCell>
-                                <ListCell className="gl-mono" dir="ltr">{payment.accountNumber}</ListCell>
+                                <ListCell className="gl-mono"><bdi dir="ltr">{payment.accountNumber}</bdi></ListCell>
                                 {scope.company && <ListCell>{payment.branchName ?? '—'}</ListCell>}
                                 <ListCell>{payment.recordedBy ?? '—'}</ListCell>
                                 <ListCell>

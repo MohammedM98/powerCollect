@@ -116,7 +116,7 @@
     font-weight: 800;
 }
 
-/* The search wide at the bar's start, as in the MA top bar; the tools at its end. */
+/* The company's name at the bar's start; the search, the working branch and the tools at its end. */
 @media (min-width: 1024px) {
     :root[data-ui-navigation] .tn-header .tn-bar {
         grid-template-columns: auto minmax(0, 1fr);
@@ -128,13 +128,12 @@
         gap: 8px;
     }
 
+    /* Beside the working branch, the tools gathered at the bar's end. */
     :root[data-ui-navigation] .tn-header .tn-bar .tn-search {
-        order: -1;
-        flex: 1 1 260px;
+        flex: 0 1 360px;
         min-width: 0;
-        max-width: 460px;
         gap: 12px;
-        margin-inline-end: auto;
+        margin-inline-start: auto;
         padding-inline: 16px;
     }
 

@@ -116,8 +116,8 @@ export default function Show({ batch, messages, canUpdate, filters, filterOption
                                     <div className="font-semibold text-(--ma-ink)">{message.subscriptionName ?? '—'}</div>
                                     {message.accountNumber && <div className="text-xs text-(--ma-muted)">{message.accountNumber}</div>}
                                 </ListCell>
-                                <ListCell dir="ltr" className="text-(--ma-ink)">
-                                    {message.phone}
+                                <ListCell className="text-(--ma-ink)">
+                                    <bdi dir="ltr">{message.phone}</bdi>
                                 </ListCell>
                                 <ListCell className="min-w-[260px] max-w-lg whitespace-normal! text-(--ma-ink)">{message.body}</ListCell>
                                 <ListCell>

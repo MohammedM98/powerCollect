@@ -107,6 +107,12 @@ export default function TopBar({ where, onOpenPalette, onOpenDrawer, drawerOpen,
                     </div>
 
                     <div className="tn-tools flex items-center gap-1">
+                        {/* Named by the words it shows, so a voice command that says them reaches it, even when the narrow bar hides them. */}
+                        <Button data-raw="" variant="ghost" className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label={`${searchText} Ctrl K`} aria-keyshortcuts="Control+K" title="بحث وأوامر، Ctrl K">
+                            <Icon name="search" />
+                            <span className="tn-search-text flex-1 text-start">{searchText}</span>
+                            <span className="tn-kbd" dir="ltr">Ctrl K</span>
+                        </Button>
                         {branchChip}
                         {props.can?.recordPayments && (
                             <Link href="/payments" prefetch={shouldPrefetchPage('/payments')} className="tn-pay" aria-keyshortcuts="N" title="تسجيل دفعة، N">
@@ -114,12 +120,6 @@ export default function TopBar({ where, onOpenPalette, onOpenDrawer, drawerOpen,
                                 تسجيل دفعة
                             </Link>
                         )}
-                        {/* Named by the words it shows, so a voice command that says them reaches it, even when the narrow bar hides them. */}
-                        <Button data-raw="" variant="ghost" className="tn-search" data-tour="search" onClick={onOpenPalette} aria-label={`${searchText} Ctrl K`} aria-keyshortcuts="Control+K" title="بحث وأوامر، Ctrl K">
-                            <Icon name="search" />
-                            <span className="tn-search-text flex-1 text-start">{searchText}</span>
-                            <span className="tn-kbd" dir="ltr">Ctrl K</span>
-                        </Button>
                         <QuickActionsMenu onPickSubscriber={onOpenPalette} />
                         <AppearanceMenu onShowShortcuts={onShowShortcuts} onStartTour={onStartTour} />
                         <ActivityBell open={popover === 'bell'} onToggle={() => togglePopover('bell')} onClose={() => setPopover(null)} />

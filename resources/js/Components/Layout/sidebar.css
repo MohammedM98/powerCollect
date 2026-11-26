@@ -42,27 +42,34 @@
     }
 }
 
-/* The logo and the company's name, the toggle at the head's end. */
+/* The logo centred on top, the toggle at the head's end; the company's name is in the top bar. */
 .sb-side .sb-head {
-    display: flex;
+    display: grid;
     flex: none;
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
     align-items: center;
-    gap: 8px;
-    min-height: 60px;
-    padding-inline: 4px;
+    min-height: 64px;
+}
+
+/* An empty first cell, as wide as the toggle, keeps the logo in the true middle. */
+.sb-side .sb-head::before {
+    content: '';
 }
 
 .sb-side[data-compact] .sb-head {
+    display: flex;
     flex-direction: column;
     gap: 8px;
-    padding-inline: 0;
+}
+
+.sb-side[data-compact] .sb-head::before {
+    display: none;
 }
 
 .sb-side .sb-brand {
     display: flex;
-    flex: 1;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
     min-width: 0;
     color: inherit;
     text-decoration: none;
@@ -71,8 +78,8 @@
 .sb-side .sb-logo {
     flex: none;
     width: auto;
-    height: 46px;
-    max-width: 72px;
+    height: 52px;
+    max-width: 150px;
     object-fit: contain;
 }
 
@@ -81,28 +88,13 @@
     max-width: 48px;
 }
 
-.sb-side .sb-brand-text {
-    display: grid;
-    min-width: 0;
-}
-
-.sb-side .sb-brand-text b,
 .sb-side .sb-account-text b {
     overflow: hidden;
-    font: 800 15.5px/1.35 Alexandria, var(--font-body, 'Zain'), sans-serif;
+    font: 800 14px/1.35 Alexandria, var(--font-body, 'Zain'), sans-serif;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-/* The company's name may take two lines rather than be cut. */
-.sb-side .sb-brand-text b {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    white-space: normal;
-}
-
-.sb-side .sb-brand-text small,
 .sb-side .sb-account-text small {
     overflow: hidden;
     color: var(--ma-muted);
@@ -318,10 +310,6 @@
 .sb-side .sb-account-text {
     display: grid;
     min-width: 0;
-}
-
-.sb-side .sb-account-text b {
-    font-size: 14px;
 }
 
 /* A section's pages from the compact rail: HeroUI's drop-down beside the bar. */

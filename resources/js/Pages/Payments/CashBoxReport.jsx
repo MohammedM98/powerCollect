@@ -33,7 +33,7 @@ export default function CashBoxReport({ report }) {
                     <ListBody>{report.rows.map((row) => <ListRow key={row.id} id={row.id} data-print-totals={JSON.stringify(reportRowTotals(row))} data-print-currency={reportCurrency[row.currency] ?? row.currency} className="border-b border-gray-100">
                         <ListCell className="p-3">{row.subscriber ?? '—'}</ListCell>
                         <ListCell className="p-3">{reportDateTime(row.date)}<BankReceivedDate value={row.bankReceivedOn} />{row.paidOn && <div className="mt-1 whitespace-normal text-xs leading-5">تسجيل متأخر، الدفع الفعلي: <bdi dir="ltr">{row.paidOn}</bdi><span className="block">سبب التأخير: {row.lateReason}</span></div>}</ListCell>
-                        <ListCell className="p-3" dir="ltr">{row.reference ?? '—'}</ListCell>
+                        <ListCell className="p-3"><bdi dir="ltr">{row.reference ?? '—'}</bdi></ListCell>
                         <ListCell className="p-3">{reportMoney(row.amount, row.currency)}</ListCell>
                         <ListCell className="p-3">{report.isBank ? row.bankAmount == null ? 'لم تُدقّق' : Number(row.bankAmount) === 0 ? `${reportMoney(0, row.currency)}، لم يصل شيء` : reportMoney(row.bankAmount, row.currency) : 'لا ينطبق'}</ListCell>
                         <ListCell className="p-3">{reportMoney(row.difference, row.currency)}</ListCell>

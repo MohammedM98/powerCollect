@@ -62,8 +62,8 @@ export default function Index({ circuitBreakers, canCreate, filters, filterOptio
                                 <ListCell>
                                     <RowIdentity icon="bolt" name={`${circuitBreaker.ampere}A`} />
                                 </ListCell>
-                                <ListCell className="text-end text-gray-600" dir="ltr">
-                                    {formatShekels(circuitBreaker.minimum_payment)}
+                                <ListCell className="text-gray-600">
+                                    <bdi dir="ltr">{formatShekels(circuitBreaker.minimum_payment)}</bdi>
                                 </ListCell>
                                 <ListCell className="text-end">
                                     {(circuitBreaker.canUpdate || circuitBreaker.canDelete) && (

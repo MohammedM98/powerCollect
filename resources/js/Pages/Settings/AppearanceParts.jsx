@@ -183,9 +183,9 @@ export function SampleTable() {
                     {SAMPLE_ROWS.map(([name, number, area, balance, state], index) => (
                         <ListRow key={number} id={number} className={index === 1 ? 'bg-brand-50' : undefined}>
                             <ListCell className="font-semibold">{name}</ListCell>
-                            <ListCell dir="ltr">{number}</ListCell>
+                            <ListCell><bdi dir="ltr">{number}</bdi></ListCell>
                             <ListCell>{area}</ListCell>
-                            <ListCell dir="ltr">{balance}</ListCell>
+                            <ListCell><bdi dir="ltr">{balance}</bdi></ListCell>
                             <ListCell>
                                 <span
                                     className={`rounded-full px-3 py-1 text-[13px] font-semibold ${state === 'عليه' ? 'bg-brand-50 text-brand-700' : 'bg-success-50 text-success-700'}`}

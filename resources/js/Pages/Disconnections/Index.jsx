@@ -142,7 +142,7 @@ export default function Index({ lists, summary, canCreate, branchOptions, branch
                                     <b className="font-display">{formatNumber(list.scheduledCount)}</b>
                                     {list.overdueCount > 0 && <span className="ms-2"><StatusPill tone="red" label={`${formatNumber(list.overdueCount)} متأخر`} /></span>}
                                 </ListCell>
-                                <ListCell data-label="أقرب موعد" className="whitespace-nowrap text-gray-600" dir="ltr">{list.nextDate ?? '—'}</ListCell>
+                                <ListCell data-label="أقرب موعد" className="whitespace-nowrap text-gray-600"><bdi dir="ltr">{list.nextDate ?? '—'}</bdi></ListCell>
                                 <ListCell data-label="تم قطعهم" className="text-gray-600">{formatNumber(list.disconnectedCount)}</ListCell>
                                 <ListCell data-label="رسوم القطع" className="whitespace-nowrap font-semibold text-gray-700">{formatMoney(list.feesTotal)} ₪</ListCell>
                                 <ListCell data-label="أنشئت" className="whitespace-nowrap text-xs text-gray-500">
