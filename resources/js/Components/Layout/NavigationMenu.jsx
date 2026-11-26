@@ -3,8 +3,17 @@ import { Link, usePage } from '@inertiajs/react';
 import Icon from '@/Components/UI/Icon';
 import { shouldPrefetchPage, HOME_LINK, isActiveLink, lockedLinkProps, sectionLinks } from '@/lib/navigation';
 import { Avatar, LogoutForm } from './AccountMenu';
-import { LockMark } from './MegaMenu';
 import ThemeSegments from './ThemeSegments';
+
+/** The small lock on a page the user may not open; its link opens nothing. */
+function LockMark() {
+    return (
+        <span className="tn-lock" title="لا تملك صلاحية فتح هذه الصفحة">
+            <Icon name="lock" />
+            <span className="sr-only">(بلا صلاحية)</span>
+        </span>
+    );
+}
 
 /** How many things wait in a section's pages, from the page's badges. */
 function badgeOf(group, badges) {

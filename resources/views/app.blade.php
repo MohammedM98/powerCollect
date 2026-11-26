@@ -29,7 +29,8 @@
                     delete document.documentElement.dataset.surface;
                 }
                 // The density chosen in this browser, else the company's (data-ui-density).
-                document.documentElement.dataset.side = ['wide', 'hidden'].includes(localStorage.getItem('side')) ? localStorage.getItem('side') : 'rail';
+                // The side bar wide (the default) or a compact rail, as last chosen (AppSidebar.jsx).
+                document.documentElement.dataset.side = localStorage.getItem('side') === 'rail' ? 'rail' : 'wide';
                 if ((localStorage.getItem('table-density') ?? document.documentElement.dataset.uiDensity) === 'compact') {
                     document.documentElement.dataset.tableDensity = 'compact';
                 }

@@ -1,0 +1,372 @@
+/*
+ * The desktop side bar (AppSidebar.jsx), after HeroUI Pro's sidebar and in
+ * the MA design: a glass panel flush with the screen's edge, wide with the
+ * sections' names (html[data-side="wide"]) or a compact rail of icons
+ * (html[data-side="rail"]). Its width is --tn-dock-width, which the top bar
+ * and the page keep room for (top-bar.css). Only the toggle changes it.
+ */
+.sb-side {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .sb-side {
+        position: fixed;
+        z-index: 46;
+        inset-block: 0;
+        inset-inline-start: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: var(--tn-dock-width);
+        padding: 12px;
+        background: var(--ma-panel);
+        -webkit-backdrop-filter: var(--ma-blur);
+        backdrop-filter: var(--ma-blur);
+        box-shadow: var(--ma-depth);
+        color: var(--ma-ink);
+        font-size: 16px;
+        line-height: 1.5;
+        transition: width 0.22s var(--tn-ease), padding 0.22s var(--tn-ease);
+    }
+
+    .sb-side[data-compact] {
+        align-items: center;
+        padding-inline: 12px;
+    }
+}
+
+@media print {
+    .sb-side {
+        display: none !important;
+    }
+}
+
+/* The logo and the company's name, the toggle at the head's end. */
+.sb-side .sb-head {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    min-height: 60px;
+    padding-inline: 4px;
+}
+
+.sb-side[data-compact] .sb-head {
+    flex-direction: column;
+    gap: 8px;
+    padding-inline: 0;
+}
+
+.sb-side .sb-brand {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+}
+
+.sb-side .sb-logo {
+    flex: none;
+    width: auto;
+    height: 46px;
+    max-width: 72px;
+    object-fit: contain;
+}
+
+.sb-side[data-compact] .sb-logo {
+    height: 40px;
+    max-width: 48px;
+}
+
+.sb-side .sb-brand-text {
+    display: grid;
+    min-width: 0;
+}
+
+.sb-side .sb-brand-text b,
+.sb-side .sb-account-text b {
+    overflow: hidden;
+    font: 800 15.5px/1.35 Alexandria, var(--font-body, 'Zain'), sans-serif;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* The company's name may take two lines rather than be cut. */
+.sb-side .sb-brand-text b {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+}
+
+.sb-side .sb-brand-text small,
+.sb-side .sb-account-text small {
+    overflow: hidden;
+    color: var(--ma-muted);
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sb-side .sb-toggle {
+    flex: none;
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    color: var(--ma-muted);
+}
+
+.sb-side .sb-toggle:hover {
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+}
+
+.sb-side .sb-toggle svg {
+    width: 19px;
+    height: 19px;
+}
+
+/* The sections: one column that scrolls on its own when it is taller than the screen. */
+.sb-side .sb-nav {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 0;
+    overflow-y: auto;
+    margin-inline: -4px;
+    padding: 4px;
+    width: calc(100% + 8px);
+    scrollbar-width: thin;
+}
+
+.sb-side[data-compact] .sb-nav {
+    align-items: center;
+}
+
+.sb-side .sb-heading {
+    padding: 12px 12px 4px;
+    color: var(--ma-faint);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.sb-side .sb-groups,
+.sb-side .sb-group {
+    display: grid;
+    gap: 4px;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+}
+
+/* An item: a section, a page or home. The open page is the raised key; the section holding it is lit. */
+.sb-side .sb-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 14px;
+    background: transparent;
+    color: var(--ma-muted);
+    font: 600 14.5px/1.3 var(--font-body, 'Zain'), sans-serif;
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.sb-side .sb-item:hover {
+    background: var(--ma-tile);
+    color: var(--ma-ink);
+}
+
+.sb-side .sb-item[data-current] {
+    color: var(--ma-ink);
+}
+
+.sb-side .sb-item[data-current] .sb-icon {
+    color: var(--ma-brand);
+}
+
+.sb-side a.sb-item[data-current],
+.sb-side[data-compact] .sb-item[data-current] {
+    background: var(--ma-solid);
+    box-shadow: var(--ma-depth);
+}
+
+.sb-side[data-compact] .sb-item {
+    justify-content: center;
+    width: 48px;
+    min-height: 48px;
+    padding: 0;
+}
+
+.sb-side .sb-icon {
+    flex: none;
+    width: 20px;
+    height: 20px;
+}
+
+.sb-side .sb-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sb-side .sb-chevron {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    color: var(--ma-faint);
+}
+
+/* A section's pages under it, on a guide line. */
+.sb-side .sb-pages {
+    display: grid;
+    gap: 4px;
+    margin-inline-start: 24px;
+    padding: 4px 0 8px;
+    padding-inline-start: 8px;
+    border-inline-start: 1px solid var(--ma-line);
+}
+
+.sb-side .sb-item.is-nested {
+    min-height: 38px;
+    padding-inline: 12px;
+    font-size: 14px;
+}
+
+/* What waits: its count beside the name, a dot on the compact rail. */
+.sb-count.chip {
+    flex: none;
+    min-width: 22px;
+    height: 20px;
+    padding-inline: 8px;
+    border-radius: 999px;
+    background: var(--ma-brand);
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 700;
+    justify-content: center;
+}
+
+.sb-side .sb-dot {
+    position: absolute;
+    inset-block-start: 9px;
+    inset-inline-end: 9px;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--ma-brand);
+    box-shadow: 0 0 0 2px var(--ma-solid);
+}
+
+/* The account at the foot. */
+.sb-side .sb-foot {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding-top: 12px;
+    border-top: 1px solid var(--ma-line);
+}
+
+.sb-side[data-compact] .sb-foot {
+    flex-direction: column;
+}
+
+.sb-side .sb-foot form {
+    display: contents;
+}
+
+.sb-side .sb-account {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 4px 8px;
+    border-radius: 14px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.sb-side[data-compact] .sb-account {
+    flex: none;
+    padding: 4px;
+}
+
+.sb-side .sb-account:hover,
+.sb-side .sb-account[data-current] {
+    background: var(--ma-tile);
+}
+
+.sb-side .sb-account-text {
+    display: grid;
+    min-width: 0;
+}
+
+.sb-side .sb-account-text b {
+    font-size: 14px;
+}
+
+/* A section's pages from the compact rail: HeroUI's drop-down beside the bar. */
+.sb-pop {
+    min-width: 248px;
+}
+
+.sb-pop .sb-pop-head {
+    padding: 8px 12px 4px;
+    color: var(--ma-faint);
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.sb-pop .sb-pop-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 40px;
+    border-radius: 12px;
+    color: var(--ma-ink);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.sb-pop .sb-pop-item .sb-icon {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    color: var(--ma-muted);
+}
+
+.sb-pop .sb-pop-item .sb-label {
+    flex: 1;
+}
+
+.sb-pop .sb-pop-item[data-current] {
+    background: var(--ma-tile);
+}
+
+.sb-pop .sb-pop-item[data-current] .sb-icon {
+    color: var(--ma-brand);
+}
+
+.sb-tip {
+    font-size: 13px;
+    font-weight: 600;
+}

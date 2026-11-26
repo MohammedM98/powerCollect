@@ -3,6 +3,7 @@ import { router, usePage } from '@inertiajs/react';
 import TopBar from '@/Components/Layout/TopBar';
 import { WorkingBranchSelect } from '@/Components/Layout/TopBarMenus';
 import NavigationDrawer from '@/Components/Layout/NavigationDrawer';
+import AppSidebar from '@/Components/Layout/AppSidebar';
 import AppFooter from '@/Components/Layout/AppFooter';
 import { handlePaletteShortcut, pageWindowOpen } from '@/Components/Layout/shortcuts';
 import { useBrandDocument } from '@/hooks/useBrand';
@@ -216,8 +217,8 @@ export function Shell({ children }) {
                 <a href="#main-content" className="fixed inset-s-4 -top-24 z-100 rounded-xl bg-surface px-4 py-3 font-semibold tn-lift focus:top-3">
                     تخطي إلى المحتوى
                 </a>
+                <AppSidebar groups={groups} badges={badges} />
                 <TopBar
-                    groups={groups}
                     branchChip={<WorkingBranchSelect />}
                     badges={badges}
                     where={pastTitle && trail ? { section: trail.group?.shortLabel, page: trail.link.label, scope } : null}

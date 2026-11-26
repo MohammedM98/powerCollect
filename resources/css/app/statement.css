@@ -756,18 +756,7 @@
 }
 
 :root
-    :is(
-        .gl-pop,
-        .tn-mega,
-        .tn-popover,
-        .popover,
-        .dropdown__popover,
-        .select__popover,
-        .combo-box__popover,
-        .autocomplete__popover,
-        .date-picker__popover,
-        .date-range-picker__popover
-    ) {
+    :is(.gl-pop, .tn-popover, .popover, .dropdown__popover, .select__popover, .combo-box__popover, .autocomplete__popover, .date-picker__popover, .date-range-picker__popover) {
     background: var(--ma-pop) !important;
     -webkit-backdrop-filter: var(--ma-pop-blur) !important;
     backdrop-filter: var(--ma-pop-blur) !important;

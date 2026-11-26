@@ -4,10 +4,9 @@ import path from 'node:path';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { rolldown } from 'rolldown';
-import { navigationGroups, pageTrail, topBarItems } from '../../resources/js/lib/navigation.js';
+import { navigationGroups, pageTrail, sectionLinks, topBarItems } from '../../resources/js/lib/navigation.js';
 
 let SectionPages;
-let MegaMenu;
 let hiddenEnds;
 
 before(async () => {
@@ -23,14 +22,14 @@ before(async () => {
                 if ((/^react(?:-dom)?(?:\/|$)/.test(id) || id.startsWith('@heroui/') || id.startsWith('react-aria'))) return { id: import.meta.resolve(id), external: true };
             },
             load(id) {
-                if (id === '\0navigation-components') return `export { SectionPages, hiddenEnds } from ${JSON.stringify(path.resolve(import.meta.dirname, '../../resources/js/Components/Layout/PageTrail.jsx'))}; export { default as MegaMenu } from ${JSON.stringify(path.resolve(import.meta.dirname, '../../resources/js/Components/Layout/MegaMenu.jsx'))};`;
+                if (id === '\0navigation-components') return `export { SectionPages, hiddenEnds } from ${JSON.stringify(path.resolve(import.meta.dirname, '../../resources/js/Components/Layout/PageTrail.jsx'))};`;
                 if (id === '\0inertia-link') return "import { createElement } from 'react'; export function Link({ children, prefetch, ...props }) { return createElement('a', props, children); }";
             },
         }],
     });
     try {
         const { output } = await bundle.generate({ format: 'esm' });
-        ({ SectionPages, MegaMenu, hiddenEnds } = await import(`data:text/javascript;base64,${Buffer.from(output[0].code).toString('base64')}`));
+        ({ SectionPages, hiddenEnds } = await import(`data:text/javascript;base64,${Buffer.from(output[0].code).toString('base64')}`));
     } finally { await bundle.close(); }
 });
 
@@ -57,11 +56,9 @@ test('a section with no permitted pages has no sub-navigation strip', () => {
     assert.equal(render({}, '/ledger'), '');
 });
 
-test('the desktop section menu lists only the pages the user may open, and a section with none is left out', () => {
+test('the side bar lists only the pages the user may open, and a section with none is left out', () => {
     const groups = navigationGroups({ viewSubscriptions: true });
-    const menu = (group) => renderToStaticMarkup(createElement(MegaMenu, { group, url: '/subscriptions', badges: {}, width: 420 }));
-    const subscribers = menu(groups.find((group) => group.id === 'daily'));
-    assert.deepEqual([...subscribers.matchAll(/href="([^"]+)"/g)].map((match) => match[1]), ['/subscriptions']);
+    assert.deepEqual(sectionLinks(groups.find((group) => group.id === 'daily')).map((link) => link.href), ['/subscriptions']);
     assert.equal(groups.find((group) => group.id === 'finance'), undefined);
 });
 
