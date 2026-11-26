@@ -4,6 +4,7 @@ import BankReceivedDate from '@/Components/Finance/BankReceivedDate';
 import Balance from '@/Components/Finance/Balance';
 import Icon from '@/Components/UI/Icon';
 import RowActionsMenu from '@/Components/DataTable/RowActionsMenu';
+import { StatusPill } from '@/Components/UI';
 import SplitPaymentBadge from '@/Pages/Payments/SplitPaymentBadge';
 import { useRowActionsMenu } from '@/hooks/useRowActionsMenu';
 import { chainColor, followsLineAbove, hasLineMenu, lineTone, monthBands, netOfReadingDiscount, rowClass } from '@/lib/accountStatement';
@@ -21,11 +22,18 @@ const HEADINGS = ['#', 'رقم الصندوق', 'رقم السند', 'الرقم
 /** An empty cell, as a quiet dash. */
 const none = <span className="gl-st-none">—</span>;
 
-/** A line's amount in its own column (عليه or له): after a reading's discount, with what it was before; another currency is named under it. */
+/**
+ * A line's amount without a sign, its side named beside it (له or عليه, see
+ * LineSide): after a reading's discount, with what it was before. Only the
+ * balance carries a sign.
+ */
 function LineAmount({ entry }) {
     return (
         <span className="gl-st-amount" data-side={entry.isCredit ? 'credit' : 'debit'}>
-            <bdi dir="ltr" className="gl-st-money ledger-struck">{entry.isCredit ? '−' : '+'}{formatMoney(entry.discountLine ? netOfReadingDiscount(entry) : entry.amount)}</bdi>
+            <span className="gl-st-amount-line">
+                <LineSide entry={entry} />
+                <bdi dir="ltr" className="gl-st-money ledger-struck">{formatMoney(entry.discountLine ? netOfReadingDiscount(entry) : entry.amount)}</bdi>
+            </span>
             {entry.discountLine && (
                 <small title="القراءة − خصم القراءة الأسبوعية">
                     <bdi dir="ltr">{formatMoney(entry.amount)} − {formatMoney(entry.discountLine.amount)}</bdi>
@@ -33,6 +41,11 @@ function LineAmount({ entry }) {
             )}
         </span>
     );
+}
+
+/** Which side of the account a line is on: له (in the subscriber's favour) or عليه (owed), as the kit's status chip. */
+export function LineSide({ entry }) {
+    return <StatusPill tone={entry.isCredit ? 'green' : 'red'} label={entry.isCredit ? 'له' : 'عليه'} />;
 }
 
 /** The line's kind as a HeroUI chip in its colour, with what has happened to it since. */

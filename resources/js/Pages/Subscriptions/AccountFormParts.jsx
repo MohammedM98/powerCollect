@@ -73,7 +73,8 @@ const CELL_COLORS = { owes: 'var(--gl-bad)', credit: 'var(--gl-ok)', settled: 'v
 
 /**
  * The three cells of a movement that changes the balance: the balance now,
- * the movement (`sign` -1 takes it off, 1 adds it on) and the balance it
+ * the movement (`sign` -1 takes it off, 1 adds it on; shown without a sign,
+ * named له or عليه instead) and the balance it
  * leaves, coloured as balances are everywhere. `amount` null counts as
  * nothing yet, so the result starts at the balance now.
  *
@@ -87,7 +88,7 @@ export function balanceCells({ balance, balanceLabel = 'الرصيد الحال�
 
     return [
         { label: balanceLabel, value: balanceText(before), note: before.label, color: CELL_COLORS[before.tone] },
-        { label: moveLabel, value: `${sign < 0 ? '−' : '+'} ${formatMoney(amount ?? 0)} ₪`, note: moveNote, move: true },
+        { label: moveLabel, value: `${formatMoney(amount ?? 0)} ₪`, note: [sign < 0 ? 'له' : 'عليه', moveNote].filter(Boolean).join('، '), move: true },
         { label: afterLabel, value: balanceText(after), note: after.label, color: CELL_COLORS[after.tone], result: true },
     ];
 }
