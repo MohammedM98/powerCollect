@@ -666,15 +666,23 @@
     gap: 8px;
 }
 
+/* Money columns line up with their heading at the column's start, like every other column. */
 .gl-st-table .gl-st-cash {
     width: 156px;
-    text-align: end;
+    text-align: start;
     white-space: nowrap;
 }
 
 .gl-st-amount {
     display: inline-grid;
-    justify-items: end;
+    justify-items: start;
+}
+
+/* The figure in a box of one width, its digits flush with the column's start, so the side chips line up after it. */
+.gl-st-figure {
+    display: inline-block;
+    min-width: 10ch;
+    text-align: end;
 }
 
 .gl-st-amount-line {

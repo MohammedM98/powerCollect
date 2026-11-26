@@ -364,16 +364,26 @@
     background: color-mix(in oklab, var(--ma-tile) 60%, transparent);
 }
 
+/* Pinned to the scroll box's own edge (past its 12px padding), so no scrolled column peeks out beside it. */
 .account-statement .gl-st-table .gl-st-pin {
     position: sticky;
-    inset-inline-start: 0;
+    inset-inline-start: -12px;
     z-index: 1;
     background: var(--ma-solid);
 }
 
 .account-statement .gl-st-table thead .gl-st-pin {
     z-index: 3;
-    background: var(--ma-tile);
+}
+
+/*
+ * The sticky head and the pinned first column stay opaque: the glass tile
+ * is laid over the solid surface, so rows scrolled under them never show
+ * through and their text never overlaps.
+ */
+.account-statement .gl-st-table thead th,
+.account-statement .gl-st-table tr.gl-st-month > td.gl-st-pin {
+    background: linear-gradient(var(--ma-tile), var(--ma-tile)), var(--ma-solid);
 }
 
 .account-statement .gl-st-table tbody tr:not(.gl-st-month):hover > td.gl-st-pin {

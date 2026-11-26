@@ -23,16 +23,17 @@ const HEADINGS = ['#', 'رقم الصندوق', 'رقم السند', 'الرقم
 const none = <span className="gl-st-none">—</span>;
 
 /**
- * A line's amount without a sign, its side named beside it (له or عليه, see
- * LineSide): after a reading's discount, with what it was before. Only the
- * balance carries a sign.
+ * A line's amount without a sign, its side named after it (له or عليه, see
+ * LineSide): after a reading's discount, with what it was before. The
+ * figure keeps a fixed width so every line's figures and sides stand under
+ * one another, under the column's heading. Only the balance carries a sign.
  */
 function LineAmount({ entry }) {
     return (
         <span className="gl-st-amount" data-side={entry.isCredit ? 'credit' : 'debit'}>
             <span className="gl-st-amount-line">
+                <bdi dir="ltr" className="gl-st-money gl-st-figure ledger-struck">{formatMoney(entry.discountLine ? netOfReadingDiscount(entry) : entry.amount)}</bdi>
                 <LineSide entry={entry} />
-                <bdi dir="ltr" className="gl-st-money ledger-struck">{formatMoney(entry.discountLine ? netOfReadingDiscount(entry) : entry.amount)}</bdi>
             </span>
             {entry.discountLine && (
                 <small title="القراءة − خصم القراءة الأسبوعية">
