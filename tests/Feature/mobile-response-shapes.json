@@ -1,0 +1,156 @@
+{
+    "cash-boxes.index": {
+        "boxes": [
+            {
+                "branch_id": "value",
+                "close_reason": "null",
+                "closed_at": "null",
+                "closing_id": "value",
+                "collector_counts": "null",
+                "collector_submitted_at": "null",
+                "confirmed_at": "null",
+                "created_at": "value",
+                "decisions": "null",
+                "expected_counts": "null",
+                "head_counts": "null",
+                "id": "value",
+                "kind": "value",
+                "number": "value",
+                "open_key": "value",
+                "opened_at": "value",
+                "payments": [
+                    {
+                        "amount": "value",
+                        "cash_box_id": "value",
+                        "confirmed_at": "null",
+                        "confirmed_by": "null",
+                        "confirmed_in_closing_id": "null",
+                        "created_at": "value",
+                        "currency": "value",
+                        "id": "value",
+                        "is_late": "value",
+                        "method": "value",
+                        "occurred_at": "value",
+                        "status": "value",
+                        "subscription_transaction_id": "value",
+                        "synced_at": "value",
+                        "transaction": {
+                            "bank_name": "value",
+                            "id": "value",
+                            "notes": "null",
+                            "reference_number": "value",
+                            "sender_bank_name": "null",
+                            "status": "value",
+                            "subscription": {
+                                "account_number": "value",
+                                "full_name": "value",
+                                "id": "value",
+                                "subscription_name": "null"
+                            },
+                            "subscription_id": "value",
+                            "voucher_number": "null"
+                        },
+                        "updated_at": "value"
+                    }
+                ],
+                "reason": "null",
+                "received_at": "null",
+                "received_by": "null",
+                "received_in_closing_id": "null",
+                "send_note": "null",
+                "sent_at": "null",
+                "sent_by": "null",
+                "stage": "value",
+                "status": "value",
+                "totals": {
+                    "ILS": "value",
+                    "JOD": "value",
+                    "USD": "value"
+                },
+                "type": "value",
+                "updated_at": "value",
+                "user_id": "value"
+            }
+        ],
+        "branch_id": "value",
+        "debts": [
+            {
+                "amount": "value",
+                "branch_id": "value",
+                "cash_box_id": "value",
+                "created_at": "value",
+                "currency": "value",
+                "id": "value",
+                "remaining": "value",
+                "updated_at": "value",
+                "user_id": "value"
+            }
+        ],
+        "notes": [
+            {
+                "assigned_to": "value",
+                "body": "value",
+                "cash_box_id": "value",
+                "cash_box_payment_id": "null",
+                "closing_id": "value",
+                "created_at": "value",
+                "difference_decisions": "null",
+                "differences": "null",
+                "id": "value",
+                "status": "value",
+                "updated_at": "value"
+            }
+        ],
+        "started": "value"
+    },
+    "collections.subscriptions.adjustments": {
+        "amount": "value",
+        "balance_after": "value",
+        "id": "value",
+        "type": "value",
+        "voucher_number": "value"
+    },
+    "collections.subscriptions.messages.store": {
+        "error": "null",
+        "id": "value",
+        "phone": "value",
+        "status": "value"
+    },
+    "messages.subscriptions": {
+        "can_send": "value",
+        "can_view_history": "value",
+        "current_page": "value",
+        "data": [
+            {
+                "account_number": "value",
+                "full_name": "value",
+                "id": "value",
+                "phone": "value"
+            }
+        ],
+        "last_page": "value",
+        "sms_available": "value",
+        "total": "value"
+    },
+    "split-payments.store": {
+        "bank_name": "value",
+        "bank_received_on": "null",
+        "id": "value",
+        "notes": "null",
+        "parts": [
+            {
+                "amount": "value",
+                "balance_after": "value",
+                "id": "value",
+                "subscription": "value",
+                "subscription_id": "value",
+                "voucher_number": "null"
+            }
+        ],
+        "reference_number": "value",
+        "sender_bank_name": "null",
+        "sender_name": "value",
+        "status": "value",
+        "total_amount": "value"
+    }
+}
