@@ -6,7 +6,7 @@ use App\Enums\CorrectionReason;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\ClosingLedgerSync;
 use Closure;
 
 /**
@@ -21,9 +21,9 @@ class CorrectLine
      *
      * @param  Closure(Subscription): SubscriptionTransaction  $record
      */
-    public static function correct(SubscriptionTransaction $transaction, User $actor, CorrectionReason $reason, ?string $notes, Closure $record): SubscriptionTransaction
+    public static function correct(SubscriptionTransaction $transaction, User $actor, CorrectionReason $reason, ?string $notes, Closure $record, ClosingLedgerSync $ledgerSync): SubscriptionTransaction
     {
-        return $transaction->withMutationLock(function () use ($actor, $reason, $notes, $record, $transaction): SubscriptionTransaction {
+        return $transaction->withMutationLock(function () use ($actor, $reason, $notes, $record, $transaction, $ledgerSync): SubscriptionTransaction {
             CancelLine::cancelSingle($transaction, $actor, $reason, $notes);
 
             $replacement = $record($transaction->subscription);
@@ -34,7 +34,7 @@ class CorrectLine
                     'late_reason' => $transaction->late_reason,
                 ] : []),
             ]);
-            app(BranchClosingWorkflow::class)->syncCorrectedPayment($transaction, $replacement);
+            $ledgerSync->syncCorrectedPayment($transaction, $replacement);
 
             return $replacement;
         });

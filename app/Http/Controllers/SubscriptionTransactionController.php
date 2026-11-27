@@ -13,6 +13,7 @@ use App\Http\Requests\ForceDeleteSubscriptionTransactionRequest;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Notifications\ActionCompleted;
+use App\Support\Closing\ClosingLedgerSync;
 use App\Support\Ledger\AmendLine;
 use App\Support\Ledger\CancelLine;
 use App\Support\Ledger\CorrectLine;
@@ -76,7 +77,7 @@ class SubscriptionTransactionController extends Controller
      * payment gets a new voucher number, shown on its receipt with the
      * balance it left.
      */
-    public function update(CorrectSubscriptionTransactionRequest $request, Subscription $subscription, SubscriptionTransaction $transaction): RedirectResponse
+    public function update(CorrectSubscriptionTransactionRequest $request, Subscription $subscription, SubscriptionTransaction $transaction, ClosingLedgerSync $ledgerSync): RedirectResponse
     {
         $actor = $request->user();
         $details = $request->safe()->except(['correction_reason', 'correction_notes']);
@@ -96,6 +97,7 @@ class SubscriptionTransactionController extends Controller
                 $transaction->isClearing() => RecordClearing::handle($subscription, $actor, $details['amount'], $details['notes'], $details['manual_voucher_number'] ?? null),
                 default => RecordCharge::handle($subscription, $actor, ChargeType::from($details['type']), $details['amount'], $details['notes'] ?? null),
             },
+            $ledgerSync,
         );
 
         $actor->notify(new ActionCompleted(

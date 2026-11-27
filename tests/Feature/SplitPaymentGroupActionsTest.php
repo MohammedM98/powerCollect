@@ -13,7 +13,8 @@ use App\Models\SplitPayment;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\CashBoxReceiving;
+use App\Support\Closing\ClosingLedgerSync;
 use App\Support\Ledger\CorrectLine;
 use App\Support\Ledger\RecordCharge;
 use App\Support\Ledger\RecordPayment;
@@ -241,7 +242,7 @@ class SplitPaymentGroupActionsTest extends TestCase
         $replacement = CorrectLine::correct($original, $this->actor, CorrectionReason::WrongAmount, 'خطأ', fn (Subscription $subscription): SubscriptionTransaction => RecordPayment::handle($subscription, $this->actor, [
             'amount' => 150, 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين',
             'reference_number' => 'SPLIT-123', 'split_payment_id' => $this->split->id,
-        ]));
+        ]), app(ClosingLedgerSync::class));
 
         $this->actOn($replacement, $action)->assertSessionHasNoErrors();
 
@@ -344,7 +345,7 @@ class SplitPaymentGroupActionsTest extends TestCase
             'user_id' => User::factory()->collector()->for($this->branch)->create()->id,
         ]);
         $part->boxEntry->update(['cash_box_id' => $closedBox->id]);
-        app(BranchClosingWorkflow::class)->receive($closedBox, $this->actor);
+        app(CashBoxReceiving::class)->receive($closedBox, $this->actor);
     }
 
     private function actOn(SubscriptionTransaction $part, string $action): TestResponse

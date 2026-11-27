@@ -14,7 +14,7 @@ use App\Models\User;
 use App\Support\Branches\BranchDomainScope;
 use App\Support\Branches\BranchSettings;
 use App\Support\Branding\Brand;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\ClosingLedgerSync;
 use App\Support\Messaging\LogSmsGateway;
 use App\Support\Messaging\SmsGateway;
 use App\Support\Messaging\SmsGatewayFactory;
@@ -64,17 +64,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         BranchDomainScope::register();
-        SubscriptionTransaction::created(function (SubscriptionTransaction $payment): void {
-            app(BranchClosingWorkflow::class)->capture($payment);
-        });
-        SubscriptionTransaction::updated(function (SubscriptionTransaction $payment): void {
-            if ($payment->wasChanged(['currency', 'currency_amount', 'amount', 'payment_method', 'status'])) {
-                app(BranchClosingWorkflow::class)->syncEditablePayment($payment);
-            }
-        });
-        SubscriptionTransaction::deleting(function (SubscriptionTransaction $payment): void {
-            app(BranchClosingWorkflow::class)->releaseEditablePayment($payment);
-        });
+        SubscriptionTransaction::observe(ClosingLedgerSync::class);
         Event::listen(function (QueueBusy $event): void {
             report(new RuntimeException("The {$event->connectionName}:{$event->queue} queue has {$event->size} jobs waiting."));
             OperationsAlert::notifySuperAdmins('queue-busy', (string) $event->size);

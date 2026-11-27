@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Casts\CurrencyCounts;
 use App\Enums\CashBoxType;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\CashBoxCounts;
 use Carbon\CarbonImmutable;
 use Database\Factories\CashBoxFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -76,7 +76,7 @@ class CashBox extends Model
         $this->loadMissing('payments.transaction');
         $entries = $this->payments->filter(fn (CashBoxPayment $entry): bool => $entry->transaction?->status === SubscriptionTransaction::STATUS_ACTIVE);
 
-        return collect(BranchClosingWorkflow::CURRENCIES)->mapWithKeys(fn (string $currency): array => [
+        return collect(CashBoxCounts::CURRENCIES)->mapWithKeys(fn (string $currency): array => [
             $currency => Closing::money($entries->where('currency', $currency)->sum(fn (CashBoxPayment $entry): int => Closing::cents($entry->amount))),
         ])->all();
     }

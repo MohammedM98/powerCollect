@@ -7,7 +7,7 @@ use App\Enums\DiscountMethod;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMobileAdjustmentRequest;
 use App\Models\SubscriptionTransaction;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\BranchLock;
 use App\Support\Ledger\LinePresenter;
 use App\Support\Ledger\RecordCharge;
 use App\Support\Ledger\RecordClearing;
@@ -19,11 +19,11 @@ use Illuminate\Validation\Validator as ValidationValidator;
 
 class MobileAdjustmentController extends Controller
 {
-    public function store(StoreMobileAdjustmentRequest $request, BranchClosingWorkflow $workflow): JsonResponse
+    public function store(StoreMobileAdjustmentRequest $request): JsonResponse
     {
         $subscription = $request->route('subscription');
         try {
-            $transaction = $workflow->locked($subscription->branch_id, function () use ($request, $subscription): SubscriptionTransaction {
+            $transaction = BranchLock::run($subscription->branch_id, function () use ($request, $subscription): SubscriptionTransaction {
                 if ($existing = $request->existingTransaction()) {
                     abort_unless($request->ownsOperation($existing), 403);
 

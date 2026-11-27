@@ -11,6 +11,7 @@ use App\Models\Permission;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
+use App\Support\Closing\ClosingLedgerSync;
 use App\Support\Ledger\AmendLine;
 use App\Support\Ledger\CancelLine;
 use App\Support\Ledger\CorrectLine;
@@ -191,7 +192,7 @@ class TransactionAuditTest extends TestCase
         $this->travelTo('2026-09-05 12:00:00');
         CancelLine::cancel($cancelled, $canceller, CorrectionReason::Duplicate, 'مكررة');
         $this->travelTo('2026-09-06 12:00:00');
-        CorrectLine::correct($corrected, $this->branchAdmin, CorrectionReason::WrongAmount, 'المبلغ الصحيح 15', fn (Subscription $subscription): SubscriptionTransaction => RecordCharge::handle($subscription, $this->branchAdmin, ChargeType::Penalty, '15', null));
+        CorrectLine::correct($corrected, $this->branchAdmin, CorrectionReason::WrongAmount, 'المبلغ الصحيح 15', fn (Subscription $subscription): SubscriptionTransaction => RecordCharge::handle($subscription, $this->branchAdmin, ChargeType::Penalty, '15', null), app(ClosingLedgerSync::class));
         $this->travelTo('2026-09-07 12:00:00');
         TransactionActions::applyAction($payment, $this->branchAdmin, TransactionAction::Refund, ['correction_notes' => 'سُجّلت بمبلغ خطأ']);
         $this->travelTo('2026-09-08 12:00:00');

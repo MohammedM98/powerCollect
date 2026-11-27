@@ -15,7 +15,7 @@ use App\Models\Closing;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Support\ArabicSearch;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\ClosingLedgerSync;
 use App\Support\Closing\ClosingPeriods;
 use App\Support\Ledger\LinePresenter;
 use App\Support\Ledger\MobileCollectionData;
@@ -156,7 +156,7 @@ class MobileCollectionController extends Controller
         ]);
     }
 
-    public function store(StoreMobileCollectionRequest $request): JsonResponse
+    public function store(StoreMobileCollectionRequest $request, ClosingLedgerSync $ledgerSync): JsonResponse
     {
         if ($existingTransaction = $request->existingTransaction()) {
             return response()->json(new RecordedCollectionResource($existingTransaction), 201);
@@ -167,7 +167,7 @@ class MobileCollectionController extends Controller
         $validated = $request->validated();
 
         try {
-            $transaction = DB::transaction(function () use ($subscription, $request, $validated): SubscriptionTransaction {
+            $transaction = DB::transaction(function () use ($subscription, $request, $validated, $ledgerSync): SubscriptionTransaction {
                 $transaction = RecordPayment::handle($subscription, $request->user(), [
                     'mobile_operation_id' => $validated['mobile_operation_id'],
                     'amount' => $validated['amount'],
@@ -185,7 +185,7 @@ class MobileCollectionController extends Controller
                     'notes' => $validated['notes'] ?? null,
                 ]);
                 if (filled($validated['collected_at'] ?? null)) {
-                    app(BranchClosingWorkflow::class)->syncOriginalTime($transaction, CarbonImmutable::parse($validated['collected_at']));
+                    $ledgerSync->syncOriginalTime($transaction, CarbonImmutable::parse($validated['collected_at']));
                 }
 
                 return $transaction;

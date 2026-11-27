@@ -8,7 +8,7 @@ use App\Models\Bank;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\BranchLock;
 use Illuminate\Support\Str;
 
 /**
@@ -37,7 +37,7 @@ class RecordPayment
         $referenceNumber = $method === PaymentMethod::Cash ? null : trim((string) ($payment['reference_number'] ?? ''));
         $activeReference = PaymentReferences::normalizeReference($referenceNumber);
 
-        return app(BranchClosingWorkflow::class)->locked($subscription->branch_id, function () use ($subscription, $collector, $payment, $currency, $method, $exchangeRate, $inShekels, $referenceNumber, $activeReference): SubscriptionTransaction {
+        return BranchLock::run($subscription->branch_id, function () use ($subscription, $collector, $payment, $currency, $method, $exchangeRate, $inShekels, $referenceNumber, $activeReference): SubscriptionTransaction {
             if (! ($payment['confirm_duplicate_reference'] ?? false)) {
                 PaymentReferences::ensureReferenceIsAvailable($activeReference, $payment['split_payment_id'] ?? null);
             }

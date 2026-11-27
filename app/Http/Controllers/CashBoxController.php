@@ -12,8 +12,10 @@ use App\Models\Subscription;
 use App\Support\Closing\BranchBoxes;
 use App\Support\Closing\BranchClosingAccess;
 use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\BranchLock;
 use App\Support\Closing\CashBoxPage;
 use App\Support\Closing\CashBoxPresenter;
+use App\Support\Closing\CashBoxReceiving;
 use App\Support\Queries\DataTableFilters;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -29,7 +31,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class CashBoxController extends Controller
 {
-    public function __construct(private BranchClosingWorkflow $workflow, private BranchBoxes $branchBoxes) {}
+    public function __construct(private BranchClosingWorkflow $workflow, private CashBoxReceiving $receiving, private BranchBoxes $branchBoxes) {}
 
     /**
      * The financial boxes: for those who close the branch's boxes, every box
@@ -41,7 +43,7 @@ class CashBoxController extends Controller
     {
         $actor = $request->user();
         if (BranchClosingAccess::view($actor)) {
-            return CashBoxPage::branchCashBoxes($request);
+            return CashBoxPage::branchCashBoxes($request, $this->workflow);
         }
         $this->authorize('viewOwnCashBoxes', Subscription::class);
 
@@ -133,8 +135,8 @@ class CashBoxController extends Controller
         $actor = $request->user();
         abort_unless($actor->workBranchId(), 403);
 
-        $this->workflow->locked($actor->workBranchId(), function () use ($actor, $auditNote, $data): void {
-            $this->workflow->collectorReply(CashBoxPresenter::waitingAuditNotes($actor)->findOrFail($auditNote), $actor, $data['body']);
+        BranchLock::run($actor->workBranchId(), function () use ($actor, $auditNote, $data): void {
+            $this->receiving->collectorReply(CashBoxPresenter::waitingAuditNotes($actor)->findOrFail($auditNote), $actor, $data['body']);
         });
 
         return back()->with('status', 'audit-note-replied');

@@ -10,7 +10,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Closing\BankTransferAuditing;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\CashBoxReceiving;
 use App\Support\Ledger\RecordPayment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia;
@@ -36,7 +36,7 @@ class PeriodAuditTest extends TestCase
             'amount' => '100', 'currency' => 'ILS', 'exchange_rate' => '1', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين', 'reference_number' => 'BANK-'.$subscription->id,
         ]);
         $box = $payment->boxEntry->box;
-        app(BranchClosingWorkflow::class)->receive($box, $head);
+        app(CashBoxReceiving::class)->receive($box, $head);
 
         return [$collector, $auditor, $subscription, $payment, $box];
     }

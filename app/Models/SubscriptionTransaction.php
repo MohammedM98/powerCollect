@@ -7,7 +7,7 @@ use App\Enums\CorrectionReason;
 use App\Enums\Currency;
 use App\Enums\DiscountMethod;
 use App\Enums\PaymentMethod;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\BranchLock;
 use App\Support\Ledger\LineHistory;
 use App\Support\Ledger\Money;
 use Closure;
@@ -181,7 +181,7 @@ class SubscriptionTransaction extends Model
     {
         $branchId = self::query()->whereKey($this->getKey())->value('branch_id');
 
-        return app(BranchClosingWorkflow::class)->locked((int) $branchId, $operation);
+        return BranchLock::run((int) $branchId, $operation);
     }
 
     public function ensureMutable(): void

@@ -14,7 +14,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Closing\BankTransferAuditing;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\CashBoxReceiving;
 use App\Support\Ledger\Money;
 use App\Support\Ledger\RecordPayment;
 use App\Support\Ledger\TransactionActions;
@@ -45,7 +45,7 @@ class BankTransferAuditTest extends TestCase
         ]);
         $box = $payment->boxEntry->box;
         if ($closed) {
-            app(BranchClosingWorkflow::class)->receive($box, $head);
+            app(CashBoxReceiving::class)->receive($box, $head);
         }
 
         return [$head, $auditor, $subscription, $payment, $box];
@@ -279,7 +279,7 @@ class BankTransferAuditTest extends TestCase
                 'bank_name' => 'بنك فلسطين', 'reference_number' => 'BANK-BULK-'.$index,
             ]);
         }
-        app(BranchClosingWorkflow::class)->receive($box, $head);
+        app(CashBoxReceiving::class)->receive($box, $head);
         $boxBefore = $box->fresh()->getAttributes();
         $this->actingAs($auditor);
         foreach (['0', '50', '150'] as $index => $amount) {
@@ -310,7 +310,7 @@ class BankTransferAuditTest extends TestCase
             'amount' => '100', 'currency' => 'ILS', 'exchange_rate' => '1', 'payment_method' => 'bank_transfer',
             'bank_name' => 'بنك فلسطين', 'reference_number' => 'BANK-SECOND',
         ]);
-        app(BranchClosingWorkflow::class)->receive($box, $head);
+        app(CashBoxReceiving::class)->receive($box, $head);
         $this->actingAs($auditor);
         foreach ([$first, $second] as $payment) {
             $this->post(route('payments.bank-audits.store', $payment->boxEntry), ['bank_amount' => '0', 'reason' => 'لم تصل'])->assertSessionHasNoErrors();

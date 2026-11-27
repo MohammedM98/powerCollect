@@ -13,12 +13,14 @@ use App\Models\ClosingSetting;
 use App\Models\CollectorDebt;
 use App\Models\Subscription;
 use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\BranchLock;
+use App\Support\Closing\CashBoxReceiving;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class MobileCashBoxController extends Controller
 {
-    public function __construct(private BranchClosingWorkflow $workflow) {}
+    public function __construct(private BranchClosingWorkflow $workflow, private CashBoxReceiving $receiving) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -52,10 +54,10 @@ class MobileCashBoxController extends Controller
         abort_unless($request->integer('branch_id') === $actor->workBranchId(), 404);
         $this->authorize('viewOwnCashBoxes', Subscription::class);
         abort_unless($action === 'confirm', 403);
-        $this->workflow->locked($actor->workBranchId(), function () use ($record, $actor): void {
+        BranchLock::run($actor->workBranchId(), function () use ($record, $actor): void {
             $this->workflow->refresh($actor->workBranchId());
             $box = CashBox::query()->where('branch_id', $actor->workBranchId())->where('user_id', $actor->id)->findOrFail($record);
-            $this->workflow->confirmBox($box, $actor);
+            $this->receiving->confirmBox($box, $actor);
         });
 
         return response()->json(['status' => 'saved']);
@@ -65,9 +67,9 @@ class MobileCashBoxController extends Controller
     {
         $data = $request->validated();
         $actor = $request->user();
-        $this->workflow->locked($actor->workBranchId(), function () use ($actor, $note, $data): void {
+        BranchLock::run($actor->workBranchId(), function () use ($actor, $note, $data): void {
             $item = AuditNote::query()->where('assigned_to', $actor->id)->where('status', 'with_collector')->whereHas('closing', fn ($query) => $query->where('branch_id', $actor->workBranchId()))->findOrFail($note);
-            $this->workflow->collectorReply($item, $actor, $data['body']);
+            $this->receiving->collectorReply($item, $actor, $data['body']);
         });
 
         return response()->json(['status' => 'saved']);

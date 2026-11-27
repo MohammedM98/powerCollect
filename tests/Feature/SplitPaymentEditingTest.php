@@ -10,7 +10,7 @@ use App\Models\SplitPayment;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\CashBoxReceiving;
 use App\Support\Ledger\PaymentReferences;
 use App\Support\Ledger\RecordPayment;
 use App\Support\Ledger\TransactionActions;
@@ -107,7 +107,7 @@ class SplitPaymentEditingTest extends TestCase
         $payload = $this->payload();
         $box = CashBox::factory()->bankTransfer()->create(['branch_id' => $this->actor->branch_id, 'closing_id' => $parts[0]->boxEntry->box->closing_id]);
         $parts[1]->boxEntry->update(['cash_box_id' => $box->id]);
-        app(BranchClosingWorkflow::class)->receive($box, User::factory()->superAdmin()->create());
+        app(CashBoxReceiving::class)->receive($box, User::factory()->superAdmin()->create());
         $this->getJson(route('split-payments.edit', $this->split))->assertUnprocessable()->assertJsonValidationErrors('action');
         $this->patch(route('split-payments.update', $this->split), $payload)->assertSessionHasErrors('action');
         $this->assertSame(['OLD-123'], $this->split->payments()->pluck('reference_number')->unique()->all());

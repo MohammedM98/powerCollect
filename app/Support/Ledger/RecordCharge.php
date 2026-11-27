@@ -6,7 +6,7 @@ use App\Enums\ChargeType;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\BranchLock;
 use Illuminate\Support\Str;
 
 /**
@@ -20,7 +20,7 @@ class RecordCharge
     public static function handle(Subscription $subscription, User $recorder, ChargeType $type, float|string $amount, ?string $notes): SubscriptionTransaction
     {
         // Under the branch lock, as payments are, so each line's balance_after counts the one before it.
-        return app(BranchClosingWorkflow::class)->locked($subscription->branch_id, fn (): SubscriptionTransaction => $subscription->transactions()->create([
+        return BranchLock::run($subscription->branch_id, fn (): SubscriptionTransaction => $subscription->transactions()->create([
             'recorded_by' => $recorder->id,
             'type' => $type->value,
             'source_key' => 'charge:'.Str::ulid(),

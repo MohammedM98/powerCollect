@@ -104,7 +104,7 @@ class CashBoxPage
      */
     public static function closableBoxes(int $branchId, User $actor, ?int $userId): array
     {
-        return app(BranchClosingWorkflow::class)->closableBoxes($branchId, $actor, userId: $userId)->load(['user:id,name', 'payments.transaction:id,status,amount,currency,currency_amount,bank_name,notes'])
+        return CashBoxReceiving::closableBoxes($branchId, $actor, userId: $userId)->load(['user:id,name', 'payments.transaction:id,status,amount,currency,currency_amount,bank_name,notes'])
             ->map(function (CashBox $box): array {
                 $active = $box->payments->filter(fn (CashBoxPayment $entry): bool => $entry->transaction?->status === SubscriptionTransaction::STATUS_ACTIVE);
 
@@ -126,7 +126,7 @@ class CashBoxPage
      *
      * @param  EloquentCollection<int, Branch>  $branches
      */
-    public static function allBranchCashBoxes(Request $request, User $actor, EloquentCollection $branches): InertiaResponse
+    public static function allBranchCashBoxes(Request $request, User $actor, EloquentCollection $branches, BranchClosingWorkflow $workflow): InertiaResponse
     {
         $place = $request->query('place') === 'open' ? 'open' : 'closed';
         $visible = $place === 'open' ? $branches->reject(fn (Branch $item): bool => BranchClosingAccess::closedOnly($actor, $item->id)) : $branches;
@@ -136,7 +136,7 @@ class CashBoxPage
         foreach ($visible as $branch) {
             $branchStarted = ClosingSetting::forBranch($branch->id)->workflow_started_at !== null;
             if ($branchStarted) {
-                app(BranchClosingWorkflow::class)->refresh($branch->id);
+                $workflow->refresh($branch->id);
             }
             $started = $started || $branchStarted;
             $week = $request->filled('week')
@@ -165,16 +165,16 @@ class CashBoxPage
      * Open boxes for branch staff, or closed boxes in a chosen business week.
      * Links to a closed box select its closing week automatically.
      */
-    public static function branchCashBoxes(Request $request): InertiaResponse
+    public static function branchCashBoxes(Request $request, BranchClosingWorkflow $workflow): InertiaResponse
     {
         $actor = $request->user();
         [$branches, $branch] = app(BranchBoxes::class)->branch($request, $actor);
         if ($branches->count() > 1 && (! $request->filled('branch_id') || $request->input('branch_id') === 'all')) {
-            return self::allBranchCashBoxes($request, $actor, $branches);
+            return self::allBranchCashBoxes($request, $actor, $branches, $workflow);
         }
         $started = ClosingSetting::forBranch($branch->id)->workflow_started_at !== null;
         if ($started) {
-            app(BranchClosingWorkflow::class)->refresh($branch->id);
+            $workflow->refresh($branch->id);
         }
         $place = in_array($request->query('place'), BranchBoxes::PLACES, true) ? $request->query('place') : 'closed';
         if (BranchClosingAccess::closedOnly($actor, $branch->id)) {
