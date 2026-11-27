@@ -27,11 +27,7 @@ class RecordDiscount
         return app(BranchClosingWorkflow::class)->locked($subscription->branch_id, function () use ($subscription, $recorder, $method, $value, $notes): SubscriptionTransaction {
             $balance = $subscription->balance();
             Validator::make([], [])->after(fn (ValidationValidator $validator) => StoreSubscriptionDiscountRequest::checkAgainstBalance($validator, $subscription, $balance, $method->value, $value))->validate();
-            $base = match ($method) {
-                DiscountMethod::Percentage => $balance,
-                DiscountMethod::Kilowatt => $subscription->kilowattPrice(),
-                DiscountMethod::Shekel => null,
-            };
+            $base = LedgerAmounts::discountBase($method, $balance, $subscription);
 
             return $subscription->transactions()->create([
                 'recorded_by' => $recorder->id,

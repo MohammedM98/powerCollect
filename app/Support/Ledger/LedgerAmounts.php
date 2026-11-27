@@ -3,6 +3,7 @@
 namespace App\Support\Ledger;
 
 use App\Enums\DiscountMethod;
+use App\Models\Subscription;
 use Brick\Math\RoundingMode;
 use Illuminate\Support\Str;
 
@@ -22,6 +23,21 @@ class LedgerAmounts
             DiscountMethod::Kilowatt => Money::decimal($value)->multipliedBy((string) $base),
             DiscountMethod::Shekel => Money::decimal($value),
         });
+    }
+
+    /**
+     * What a one-off discount is worked out from: the balance owed for a
+     * percentage, the subscription's kilo price for kilowatts, and nothing
+     * for shekels. Shared by checking a discount and recording it, so the
+     * two cannot drift apart.
+     */
+    public static function discountBase(DiscountMethod $method, float|int|string $owed, Subscription $subscription): float|int|string|null
+    {
+        return match ($method) {
+            DiscountMethod::Percentage => $owed,
+            DiscountMethod::Kilowatt => $subscription->kilowattPrice(),
+            DiscountMethod::Shekel => null,
+        };
     }
 
     /**
