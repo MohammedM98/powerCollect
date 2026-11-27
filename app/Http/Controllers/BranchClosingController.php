@@ -10,11 +10,13 @@ use App\Models\ClosingSetting;
 use App\Models\Subscription;
 use App\Support\Closing\BranchClosingAccess;
 use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\BranchLock;
+use App\Support\Closing\CashBoxReceiving;
 use Illuminate\Http\RedirectResponse;
 
 class BranchClosingController extends Controller
 {
-    public function __construct(private BranchClosingWorkflow $workflow) {}
+    public function __construct(private BranchClosingWorkflow $workflow, private CashBoxReceiving $receiving) {}
 
     /**
      * What the branch does with its boxes: start using them, confirm a box
@@ -34,7 +36,7 @@ class BranchClosingController extends Controller
             default => false,
         };
         abort_unless($allowed, 403);
-        $this->workflow->locked($branchId, function () use ($action, $record, $actor, $branchId, $data): void {
+        BranchLock::run($branchId, function () use ($action, $record, $actor, $branchId, $data): void {
             if ($action === 'start') {
                 $this->workflow->start($branchId, $actor);
 
@@ -45,14 +47,14 @@ class BranchClosingController extends Controller
             if (in_array($action, ['receive', 'confirm'], true)) {
                 $box = CashBox::query()->where('branch_id', $branchId)->findOrFail($record);
                 match ($action) {
-                    'receive' => $this->workflow->receive($box, $actor),
-                    'confirm' => $this->workflow->confirmBox($box, $actor),
+                    'receive' => $this->receiving->receive($box, $actor),
+                    'confirm' => $this->receiving->confirmBox($box, $actor),
                 };
             } elseif ($action === 'receive-type') {
-                $this->workflow->receiveType($branchId, $actor, CashBoxType::from($data['type']), array_map('intval', $data['box_ids']));
+                $this->receiving->receiveType($branchId, $actor, CashBoxType::from($data['type']), array_map('intval', $data['box_ids']));
             } else {
                 $payment = CashBoxPayment::query()->whereHas('box', fn ($query) => $query->where('branch_id', $branchId))->findOrFail($record);
-                $this->workflow->reviewEntry($payment, $actor, $data['status']);
+                $this->receiving->reviewEntry($payment, $actor, $data['status']);
             }
         });
 

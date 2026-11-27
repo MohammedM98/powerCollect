@@ -12,6 +12,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\CashBoxReceiving;
 use App\Support\Ledger\RecordClearing;
 use App\Support\Ledger\RecordDiscount;
 use App\Support\Ledger\RecordPayment;
@@ -114,7 +115,7 @@ class FinancialFlowSeeder extends Seeder
                 if (in_array($index, [6, 13], true)) {
                     $boxes = CashBox::query()->where('user_id', $collector->id)->where('status', 'open')->get();
                     foreach ($boxes as $box) {
-                        $workflow->receive($box, $manager);
+                        app(CashBoxReceiving::class)->receive($box, $manager);
                     }
                 }
             }

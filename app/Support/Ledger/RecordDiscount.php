@@ -7,7 +7,7 @@ use App\Http\Requests\StoreSubscriptionDiscountRequest;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\BranchLock;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Validator as ValidationValidator;
@@ -24,14 +24,10 @@ class RecordDiscount
     public static function handle(Subscription $subscription, User $recorder, DiscountMethod $method, float|string $value, ?string $notes): SubscriptionTransaction
     {
         // Under the branch lock, and checked again there, so two discounts at once cannot take the balance below zero.
-        return app(BranchClosingWorkflow::class)->locked($subscription->branch_id, function () use ($subscription, $recorder, $method, $value, $notes): SubscriptionTransaction {
+        return BranchLock::run($subscription->branch_id, function () use ($subscription, $recorder, $method, $value, $notes): SubscriptionTransaction {
             $balance = $subscription->balance();
             Validator::make([], [])->after(fn (ValidationValidator $validator) => StoreSubscriptionDiscountRequest::checkAgainstBalance($validator, $subscription, $balance, $method->value, $value))->validate();
-            $base = match ($method) {
-                DiscountMethod::Percentage => $balance,
-                DiscountMethod::Kilowatt => $subscription->kilowattPrice(),
-                DiscountMethod::Shekel => null,
-            };
+            $base = LedgerAmounts::discountBase($method, $balance, $subscription);
 
             return $subscription->transactions()->create([
                 'recorded_by' => $recorder->id,

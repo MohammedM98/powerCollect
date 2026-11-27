@@ -24,6 +24,15 @@ class ExactMoneyTest extends TestCase
         $this->assertSame('0.01', LedgerAmounts::discountFor(DiscountMethod::Percentage, '50', '0.01'));
     }
 
+    public function test_a_one_off_discount_is_worked_out_from_the_balance_the_kilo_price_or_nothing(): void
+    {
+        $subscription = Subscription::factory()->create(['kilowatt_price' => '2.50']);
+
+        $this->assertSame('120.00', LedgerAmounts::discountBase(DiscountMethod::Percentage, '120.00', $subscription));
+        $this->assertSame('2.50', LedgerAmounts::discountBase(DiscountMethod::Kilowatt, '120.00', $subscription));
+        $this->assertNull(LedgerAmounts::discountBase(DiscountMethod::Shekel, '120.00', $subscription));
+    }
+
     public function test_reading_charges_multiply_and_apply_minimums_as_decimal_strings(): void
     {
         $this->assertSame([

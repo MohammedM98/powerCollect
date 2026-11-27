@@ -5,7 +5,7 @@ namespace App\Support\Ledger;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\BranchLock;
 use Illuminate\Support\Str;
 
 /**
@@ -20,7 +20,7 @@ class RecordClearing
      */
     public static function handle(Subscription $subscription, User $recorder, float|string $amount, string $service, ?string $manualVoucherNumber = null): SubscriptionTransaction
     {
-        return app(BranchClosingWorkflow::class)->locked($subscription->branch_id, fn (): SubscriptionTransaction => $subscription->transactions()->create([
+        return BranchLock::run($subscription->branch_id, fn (): SubscriptionTransaction => $subscription->transactions()->create([
             'recorded_by' => $recorder->id,
             'type' => SubscriptionTransaction::TYPE_CLEARING,
             'source_key' => 'clearing:'.Str::ulid(),

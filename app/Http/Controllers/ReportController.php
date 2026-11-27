@@ -91,7 +91,7 @@ class ReportController extends Controller
         $scopeLabel = $chosen->count() === 1 ? $chosen->first()->name : 'كل الفروع';
         $transactions = $summary
             ? $report->lines($kind)
-                ->with(['subscription.branch', 'subscription.meterBox', 'recordedBy', 'meterReading', 'reverses.meterReading', 'bankTransferAudit', 'referenceTransaction'])
+                ->with(FinancialReportPage::ROW_RELATIONS)
                 ->orderByDesc('subscription_transactions.created_at')
                 ->orderByDesc('subscription_transactions.id')
                 ->paginate($request->boolean('print') ? DataTableFilters::dataTablePerPage($request, self::PER_PAGE) : self::PER_PAGE)

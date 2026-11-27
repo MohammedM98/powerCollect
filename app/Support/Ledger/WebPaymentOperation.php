@@ -8,7 +8,7 @@ use App\Models\SplitPayment;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\BranchLock;
 use Closure;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
@@ -42,8 +42,6 @@ class WebPaymentOperation
         self::DISCOUNT => ['method', 'value', 'notes'],
         self::SPLIT => ['total_amount', 'bank_name', 'sender_bank_name', 'bank_received_on', 'sender_name', 'reference_number', 'notes'],
     ];
-
-    public function __construct(private BranchClosingWorkflow $workflow) {}
 
     /**
      * The `operation_token` rule a charge, clearing, discount or split transfer request adds.
@@ -146,7 +144,7 @@ class WebPaymentOperation
     private function once(string $kind, Subscription $subscription, User $actor, array $data, Closure $recordLine): SubscriptionTransaction
     {
         try {
-            return $this->workflow->locked($subscription->branch_id, function () use ($kind, $subscription, $actor, $data, $recordLine): SubscriptionTransaction {
+            return BranchLock::run($subscription->branch_id, function () use ($kind, $subscription, $actor, $data, $recordLine): SubscriptionTransaction {
                 if ($existing = $this->replay($subscription, $actor, $data, $kind)) {
                     return $existing;
                 }

@@ -6,7 +6,7 @@ use App\Enums\MeterReadingStatus;
 use App\Models\MeterReading;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\BranchLock;
 use App\Support\Ledger\Money;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +39,7 @@ class ApproveReading
             ]);
 
             // The bill lines are written under the branch lock, as payments are, so each line's balance_after counts the one before it.
-            app(BranchClosingWorkflow::class)->locked($reading->subscription->branch_id, function () use ($reading, $approver): void {
+            BranchLock::run($reading->subscription->branch_id, function () use ($reading, $approver): void {
                 ApproveReading::recordChargeLine($reading, $approver);
                 ApproveReading::recordDiscountLine($reading, $approver);
             });

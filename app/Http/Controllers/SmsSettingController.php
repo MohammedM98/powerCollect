@@ -9,9 +9,9 @@ use App\Http\Requests\UpdateSmsSettingRequest;
 use App\Models\SmsSetting;
 use App\Models\SubscriptionMessage;
 use App\Notifications\ActionCompleted;
-use App\Support\Messaging\HttpSmsGateway;
 use App\Support\Messaging\SmsDeliveryFailed;
 use App\Support\Messaging\SmsGateway;
+use App\Support\Messaging\SmsGatewayFactory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -85,11 +85,11 @@ class SmsSettingController extends Controller
      * or not, and say what the provider answered. The outcome is kept with
      * the saved settings, if any, as their last test.
      */
-    public function test(TestSmsSettingRequest $request): RedirectResponse
+    public function test(TestSmsSettingRequest $request, SmsGatewayFactory $gateways): RedirectResponse
     {
         $saved = SmsSetting::query()->first();
         $current = $saved ?? new SmsSetting(SmsSetting::DEFAULTS);
-        $gateway = new HttpSmsGateway($request->gatewayConfig($current), $request->validated('country_code'));
+        $gateway = $gateways->make($request->gatewayConfig($current), $request->validated('country_code'));
         $error = null;
 
         try {

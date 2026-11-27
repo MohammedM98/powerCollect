@@ -15,6 +15,8 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\CashBoxCounts;
+use App\Support\Closing\ClosingLedgerSync;
 use App\Support\Ledger\CancelLine;
 use App\Support\Ledger\TransactionActions;
 use Carbon\CarbonImmutable;
@@ -74,7 +76,7 @@ class BranchClosingWorkflowTest extends TestCase
     public function test_the_weekly_package_and_its_pages_are_gone(): void
     {
         [$branch, $head] = $this->start();
-        $closing = app(BranchClosingWorkflow::class)->current($branch->id);
+        $closing = Closing::currentFor($branch->id);
         $this->travelTo($closing->coverage_until);
 
         $this->get('/weekly-packages')->assertNotFound();
@@ -138,14 +140,14 @@ class BranchClosingWorkflowTest extends TestCase
         $payment = SubscriptionTransaction::withoutEvents(fn () => $this->payment($branch, $collector, method: 'bank_transfer', extra: ['branch_id' => $branch->id]))->refresh();
 
         $this->travel(2)->seconds();
-        $workflow = app(BranchClosingWorkflow::class);
-        $workflow->capture($payment);
+        $ledgerSync = app(ClosingLedgerSync::class);
+        $ledgerSync->capture($payment);
 
         $this->assertDatabaseHas('cash_box_payments', ['subscription_transaction_id' => $payment->id, 'amount' => '100.00']);
         $this->assertSame($late, $payment->fresh()->boxEntry->is_late);
         $this->assertSame($payment->created_at->toDateTimeString(), ClosingSetting::ownFor($branch)->workflow_started_at->toDateTimeString());
-        $workflow->capture($payment);
-        $workflow->refresh($branch->id);
+        $ledgerSync->capture($payment);
+        app(BranchClosingWorkflow::class)->refresh($branch->id);
         $this->assertDatabaseCount('cash_box_payments', 1);
     }
 
@@ -258,7 +260,7 @@ class BranchClosingWorkflowTest extends TestCase
         $this->assertDatabaseCount('bank_transfer_audits', 0);
         $this->assertDatabaseCount('cash_boxes', 2);
         $this->assertDatabaseHas('cash_box_payments', ['subscription_transaction_id' => $next->id, 'cash_box_id' => CashBox::query()->where('status', 'open')->sole()->id]);
-        $this->assertTrue(app(BranchClosingWorkflow::class)->current($branch->id)->coverage_from->equalTo($closing->coverage_until));
+        $this->assertTrue(Closing::currentFor($branch->id)->coverage_from->equalTo($closing->coverage_until));
     }
 
     public function test_a_box_with_cancelled_payment_history_is_retained_at_the_end_of_its_week(): void
@@ -332,7 +334,7 @@ class BranchClosingWorkflowTest extends TestCase
 
         $this->assertSame('received', $box->fresh()->status);
         $this->assertTrue($box->fresh()->closed_at->equalTo(now()));
-        $this->assertSame(1, app(BranchClosingWorkflow::class)->current($branch->id)->workflow_settings['week_starts_on']);
+        $this->assertSame(1, Closing::currentFor($branch->id)->workflow_settings['week_starts_on']);
     }
 
     public function test_a_legacy_box_carried_across_weeks_closes_after_its_last_entry_without_moving_its_payments(): void
@@ -388,7 +390,7 @@ class BranchClosingWorkflowTest extends TestCase
     {
         [$branch, , $collector] = $this->start();
         $this->payment($branch, $collector);
-        $closing = app(BranchClosingWorkflow::class)->current($branch->id);
+        $closing = Closing::currentFor($branch->id);
         $occurred = now()->addHour();
         $this->travelTo($closing->coverage_until->addHour());
 
@@ -439,12 +441,12 @@ class BranchClosingWorkflowTest extends TestCase
         $payment->update(['amount' => '-75.00', 'currency_amount' => '75.00']);
 
         $this->assertSame('75.00', $entry->fresh()->amount);
-        $this->assertSame('75.00', app(BranchClosingWorkflow::class)->expected($entry->box)['ILS']);
+        $this->assertSame('75.00', CashBoxCounts::expected($entry->box)['ILS']);
         CancelLine::cancel($payment, $head, CorrectionReason::PaymentRefunded, 'Refund');
         $this->assertModelExists($entry);
         $this->assertModelExists($payment);
         $this->assertSame(0, CashBoxPayment::visibleInBox()->count());
-        $this->assertSame('0.00', app(BranchClosingWorkflow::class)->expected($entry->box)['ILS']);
+        $this->assertSame('0.00', CashBoxCounts::expected($entry->box)['ILS']);
     }
 
     public function test_closed_session_preserves_payment_history_and_refuses_refunds(): void
@@ -475,7 +477,7 @@ class BranchClosingWorkflowTest extends TestCase
     public function test_offline_mobile_payment_uses_original_time_without_changing_ledger_date_or_retry(): void
     {
         [$branch, $head, $collector] = $this->start();
-        $closing = app(BranchClosingWorkflow::class)->current($branch->id);
+        $closing = Closing::currentFor($branch->id);
         $originalTime = $closing->coverage_until->subMinute();
         $this->travelTo($closing->coverage_until->addMinute());
         $subscription = Subscription::factory()->for($branch)->create();

@@ -25,8 +25,6 @@ use Illuminate\Support\Collection;
  */
 class BranchBoxes
 {
-    public function __construct(private BranchClosingWorkflow $workflow) {}
-
     /**
      * The branches the actor may open (every branch for administrators and auditors, else
      * their own) and the one asked for with `?branch_id=`, else the first.
@@ -60,6 +58,13 @@ class BranchBoxes
     public const PLACES = ['open', 'closed'];
 
     /** Who closed and sent a box, besides its entries, for the boxes page. */
+    private const BOX_DETAILS = [
+        'user:id,name,role,is_active,branch_id',
+        'user.permissions',
+        'payments.transaction:id,subscription_id,type,reference_number,bank_name,sender_bank_name,sender_name,voucher_number,manual_voucher_number,notes,status,currency,currency_amount,exchange_rate,amount',
+        'payments.transaction.subscription:id,account_number,full_name,subscription_name',
+    ];
+
     private const PEOPLE = ['receivedBy:id,name', 'sentBy:id,name', 'audit.auditor:id,name', 'payments.audit.auditor:id,name'];
 
     /**
@@ -75,7 +80,7 @@ class BranchBoxes
         if ($place === 'closed' && $week) {
             $query->inClosingWeek(ClosingPeriods::date($week));
         }
-        $details = [...BranchClosingWorkflow::BOX_DETAILS, ...self::PEOPLE, 'payments' => fn ($entries) => $entries
+        $details = [...self::BOX_DETAILS, ...self::PEOPLE, 'payments' => fn ($entries) => $entries
             ->visibleInBox()
             ->when(BranchClosingAccess::audit($actor), fn (Builder $payments) => $payments
                 ->whereHas('transaction', fn (Builder $transaction) => $transaction->where('status', SubscriptionTransaction::STATUS_ACTIVE)))];
@@ -98,7 +103,7 @@ class BranchBoxes
 
             return [
                 ...$row,
-                'canCount' => $this->workflow->mayReceive($box, $actor),
+                'canCount' => CashBoxReceiving::mayReceive($box, $actor),
                 'isOwn' => $box->user_id === $actor->id,
                 'canAudit' => $canAudit || ($box->status === 'received' && $actor->canAuditAction(AuditAction::ApproveBoxes) && $box->audit === null),
                 'canReviewTransfers' => $canAudit,

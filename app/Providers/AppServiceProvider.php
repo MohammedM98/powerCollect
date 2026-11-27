@@ -14,12 +14,15 @@ use App\Models\User;
 use App\Support\Branches\BranchDomainScope;
 use App\Support\Branches\BranchSettings;
 use App\Support\Branding\Brand;
-use App\Support\Closing\BranchClosingWorkflow;
-use App\Support\Messaging\HttpSmsGateway;
+use App\Support\Closing\ClosingLedgerSync;
 use App\Support\Messaging\LogSmsGateway;
 use App\Support\Messaging\SmsGateway;
+use App\Support\Messaging\SmsGatewayFactory;
 use App\Support\OperationsAlert;
 use App\Support\Reports\ReportCache;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\LazyLoadingViolationException;
 use Illuminate\Queue\Events\QueueBusy;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -42,15 +45,16 @@ class AppServiceProvider extends ServiceProvider
 
         // SMS go out through the provider set up in the dashboard while it is on, else the gateway named in
         // services.sms.driver; until one is set up they're only logged.
-        $this->app->bind(SmsGateway::class, function (): SmsGateway {
+        $this->app->bind(SmsGateway::class, function (Application $app): SmsGateway {
             $setting = SmsSetting::active();
+            $gateways = $app->make(SmsGatewayFactory::class);
 
             if ($setting !== null) {
-                return new HttpSmsGateway($setting->gatewayConfig(), $setting->country_code);
+                return $gateways->make($setting->gatewayConfig(), $setting->country_code);
             }
 
             return match (config('services.sms.driver')) {
-                'http' => new HttpSmsGateway(config('services.sms.http'), (string) config('services.sms.country_code')),
+                'http' => $gateways->make(config('services.sms.http'), (string) config('services.sms.country_code')),
                 default => new LogSmsGateway,
             };
         });
@@ -61,18 +65,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        BranchDomainScope::register();
-        SubscriptionTransaction::created(function (SubscriptionTransaction $payment): void {
-            app(BranchClosingWorkflow::class)->capture($payment);
-        });
-        SubscriptionTransaction::updated(function (SubscriptionTransaction $payment): void {
-            if ($payment->wasChanged(['currency', 'currency_amount', 'amount', 'payment_method', 'status'])) {
-                app(BranchClosingWorkflow::class)->syncEditablePayment($payment);
+        // Outside production a relation loaded row by row (N+1) throws, so tests and local use catch it.
+        // A test reading a relation itself to check a result is not the app's N+1, so it may.
+        Model::preventLazyLoading(! $this->app->isProduction());
+        Model::handleLazyLoadingViolationUsing(function (Model $model, string $relation, LazyLoadingViolationException $violation): void {
+            $caller = collect(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS))
+                ->first(fn (array $frame): bool => isset($frame['file']) && ! str_starts_with($frame['file'], base_path('vendor')));
+
+            if (! str_starts_with($caller['file'] ?? '', base_path('tests'))) {
+                throw $violation;
             }
         });
-        SubscriptionTransaction::deleting(function (SubscriptionTransaction $payment): void {
-            app(BranchClosingWorkflow::class)->releaseEditablePayment($payment);
-        });
+        BranchDomainScope::register();
+        SubscriptionTransaction::observe(ClosingLedgerSync::class);
         Event::listen(function (QueueBusy $event): void {
             report(new RuntimeException("The {$event->connectionName}:{$event->queue} queue has {$event->size} jobs waiting."));
             OperationsAlert::notifySuperAdmins('queue-busy', (string) $event->size);

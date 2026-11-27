@@ -158,7 +158,7 @@ class TransactionHistoryInvariantsTest extends TestCase
 
     private function applyOfferedAction(int $step): void
     {
-        $lines = $this->subscription->transactions()->orderBy('id')->get();
+        $lines = $this->subscription->transactions()->with(['subscription', 'reverses.splitPayment', 'splitPayment'])->orderBy('id')->get();
         $offers = [];
 
         foreach ($lines as $line) {
@@ -229,6 +229,7 @@ class TransactionHistoryInvariantsTest extends TestCase
     {
         $lines = SubscriptionTransaction::query()
             ->where('subscription_id', $this->subscription->id)
+            ->with(['subscription', 'reverses.splitPayment', 'splitPayment'])
             ->orderBy('created_at')
             ->orderBy('id')
             ->get();

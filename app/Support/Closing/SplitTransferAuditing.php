@@ -20,7 +20,7 @@ use Illuminate\Validation\ValidationException;
 
 class SplitTransferAuditing
 {
-    public function __construct(private BranchClosingWorkflow $workflow) {}
+    use RefusesClosingActions;
 
     /** @return Collection<int, SubscriptionTransaction> */
     private function parts(int $splitId, int $branchId, User $actor): Collection
@@ -37,10 +37,10 @@ class SplitTransferAuditing
         abort_if($parts->contains(fn (SubscriptionTransaction $part): bool => $part->subscription === null
             || $part->subscription->branch_id !== $branchId || ! $actor->auditIncludesBranch($part->subscription->branch_id)
             || (BranchDomainContext::id() !== null && $part->subscription->branch_id !== BranchDomainContext::id())), 404);
-        $this->workflow->require(! $parts->contains(fn (SubscriptionTransaction $part): bool => $part->isCancelled() && ! $parts->contains('corrects_id', $part->id)), __('The transfer has a cancelled or refunded part; review the whole transfer before approving it.'));
+        $this->require(! $parts->contains(fn (SubscriptionTransaction $part): bool => $part->isCancelled() && ! $parts->contains('corrects_id', $part->id)), __('The transfer has a cancelled or refunded part; review the whole transfer before approving it.'));
         $active = $parts->reject(fn (SubscriptionTransaction $part): bool => $part->isCancelled())->values();
-        $this->workflow->require($active->isNotEmpty(), __('This transfer has no standing shares.'));
-        $this->workflow->require(! $active->contains(fn (SubscriptionTransaction $part): bool => $part->currency !== Currency::Shekel
+        $this->require($active->isNotEmpty(), __('This transfer has no standing shares.'));
+        $this->require(! $active->contains(fn (SubscriptionTransaction $part): bool => $part->currency !== Currency::Shekel
             || $part->payment_method?->value !== 'bank_transfer' || ! Money::decimal($part->exchange_rate)->isEqualTo('1') || $part->boxEntry?->box?->status !== 'received'
             || $part->boxEntry->box->type !== CashBoxType::BankTransfer), __('Every box holding a share of the split transfer must be closed before it is audited or approved.'));
 
@@ -60,16 +60,16 @@ class SplitTransferAuditing
     /** @param Collection<int, SubscriptionTransaction> $parts */
     private function requireEditable(Collection $parts): void
     {
-        $this->workflow->require(! $parts->contains(fn (SubscriptionTransaction $part): bool => $part->boxEntry->box->audit !== null
+        $this->require(! $parts->contains(fn (SubscriptionTransaction $part): bool => $part->boxEntry->box->audit !== null
             || ($part->boxEntry->audit?->isPosted() ?? false)), __('A part of the transfer was approved; its financial review cannot be changed.'));
     }
 
     /** @return array<string, mixed> */
     public function details(CashBoxPayment $entry, User $actor): array
     {
-        return $this->workflow->locked($entry->box->branch_id, function () use ($entry, $actor): array {
+        return BranchLock::run($entry->box->branch_id, function () use ($entry, $actor): array {
             $parts = $this->parts($entry->transaction->split_payment_id, $entry->box->branch_id, $actor);
-            $this->workflow->require($parts->contains('id', $entry->subscription_transaction_id), __('This share is cancelled or refunded; refresh the page.'));
+            $this->require($parts->contains('id', $entry->subscription_transaction_id), __('This share is cancelled or refunded; refresh the page.'));
             $this->requireEditable($parts);
 
             return [
@@ -93,10 +93,10 @@ class SplitTransferAuditing
      */
     public function record(CashBoxPayment $entry, User $actor, string $total, ?string $reason, array $allocations, ?string $revision, Closure $record): BankTransferAudit
     {
-        return $this->workflow->locked($entry->box->branch_id, function () use ($entry, $actor, $total, $reason, $allocations, $revision, $record): BankTransferAudit {
+        return BranchLock::run($entry->box->branch_id, function () use ($entry, $actor, $total, $reason, $allocations, $revision, $record): BankTransferAudit {
             $parts = $this->parts($entry->transaction->split_payment_id, $entry->box->branch_id, $actor);
-            $this->workflow->require($parts->contains('id', $entry->subscription_transaction_id), __('This share is cancelled or refunded; refresh the page.'));
-            $this->workflow->require(Closing::cents($total) >= 0 && Closing::cents($total) <= 100000000, __('Enter a valid amount received by the bank.'));
+            $this->require($parts->contains('id', $entry->subscription_transaction_id), __('This share is cancelled or refunded; refresh the page.'));
+            $this->require(Closing::cents($total) >= 0 && Closing::cents($total) <= 100000000, __('Enter a valid amount received by the bank.'));
             $amounts = collect($allocations)->keyBy('transaction_id');
             $ids = array_map('intval', $amounts->keys()->all());
             sort($ids);
@@ -135,8 +135,9 @@ class SplitTransferAuditing
     {
         $parts = $this->parts($entry->transaction->split_payment_id, $entry->box->branch_id, $actor);
         $reviewed = $parts->filter(fn (SubscriptionTransaction $part): bool => $part->boxEntry->audit !== null);
-        $this->workflow->require($reviewed->isEmpty() || $reviewed->count() === $parts->count(), __('The split transfer\'s review is incomplete; open the transfer\'s edit and review all its shares before approving.'));
+        $this->require($reviewed->isEmpty() || $reviewed->count() === $parts->count(), __('The split transfer\'s review is incomplete; open the transfer\'s edit and review all its shares before approving.'));
         foreach ($parts as $part) {
+            $part->boxEntry->setRelation('transaction', $part);
             $audit = $part->boxEntry->audit ?? BankTransferAudit::query()->create([
                 'cash_box_payment_id' => $part->boxEntry->id, 'audited_by' => $actor->id,
                 'currency' => $part->currency->value, 'recorded_amount' => Money::amount(Money::decimal($part->amount)->abs()),

@@ -10,13 +10,11 @@ use App\Models\User;
 use App\Notifications\ActionCompleted;
 use App\Notifications\ReadingNeedsReapproval;
 use App\Support\Readings\AdjustLastReading;
-use App\Support\Readings\ApproveCorrectedReading;
 use App\Support\Readings\RepriceReading;
+use App\Support\Readings\UpdateReadingPricing;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Validation\ValidationException;
 
 /**
  * Changes to a reading after the week was entered: editing it as the last
@@ -46,35 +44,15 @@ class MeterReadingAdjustmentController extends Controller
     public function adjustLastReading(AdjustLastReadingRequest $request, MeterReading $meterReading): RedirectResponse
     {
         $actor = $request->user();
-        DB::transaction(function () use ($request, $meterReading, $actor): void {
-            $meterReading->subscription()->lockForUpdate()->firstOrFail();
-            $reading = MeterReading::query()->lockForUpdate()->findOrFail($meterReading->id);
-            $this->authorize('adjustLastReading', $reading);
-            if (round($reading->nextPreviousReading(), 2) !== round($request->float('expected_reading'), 2)) {
-                throw ValidationException::withMessages(['current_reading' => __('The reading changed; refresh the page and review the new value before editing.')]);
-            }
-
-            $newReading = $request->float('current_reading');
-            if (! $request->isMeterChange() && round($newReading, 2) === round($reading->nextPreviousReading(), 2)) {
-                return;
-            }
-
-            if ($request->isMeterChange()) {
-                AdjustLastReading::recordAdjustment($reading, 'baseline_reset', ['previousReading' => $reading->nextPreviousReading()], ['previousReading' => $newReading], $actor, $request->validated('reason'));
-                $reading->update(['next_previous_reading' => $newReading]);
-            } else {
-                $wasApproved = AdjustLastReading::correct($reading, $newReading, $reading->notes, $actor);
-                $reading->update(['next_previous_reading' => null]);
-                if ($wasApproved) {
-                    ApproveCorrectedReading::approveCorrectedLastReading($reading, $actor, $request->boolean('confirm_unusual'));
-                }
-            }
-
-            $next = $reading->subscription->meterReadings()->where('week_start', '>', $reading->week_start)->lockForUpdate()->first();
-            if ($next !== null) {
-                AdjustLastReading::requireCurrentReadingAgain($next, $newReading, $actor);
-            }
-        });
+        AdjustLastReading::handle(
+            $meterReading,
+            $actor,
+            $request->float('expected_reading'),
+            $request->float('current_reading'),
+            $request->isMeterChange(),
+            $request->validated('reason'),
+            $request->boolean('confirm_unusual'),
+        );
 
         $actor->notify(new ActionCompleted('meter-reading-updated', $meterReading->subscription->displayName()));
 
@@ -84,24 +62,7 @@ class MeterReadingAdjustmentController extends Controller
     public function updatePricing(UpdateReadingPricingRequest $request, MeterReading $meterReading): RedirectResponse
     {
         $actor = $request->user();
-        $reopened = DB::transaction(function () use ($request, $meterReading, $actor): bool {
-            $meterReading->subscription()->lockForUpdate()->firstOrFail();
-            $reading = MeterReading::query()->lockForUpdate()->findOrFail($meterReading->id);
-            foreach (['unit_price' => 'updateUnitPrice', 'minimum_payment' => 'updateMinimumPayment'] as $field => $ability) {
-                if ($request->has($field)) {
-                    $this->authorize($ability, $reading);
-                }
-            }
-            $before = $reading->only(['unit_price', 'minimum_payment']);
-            $reading->fill($request->validated());
-            if (! $reading->isDirty(['unit_price', 'minimum_payment'])) {
-                return false;
-            }
-            $reopened = AdjustLastReading::correct($reading, $reading->current_reading, $reading->notes, $actor);
-            AdjustLastReading::recordAdjustment($reading, 'pricing', $before, $reading->only(['unit_price', 'minimum_payment']), $actor);
-
-            return $reopened;
-        });
+        $reopened = UpdateReadingPricing::handle($meterReading, $actor, $request->validated());
         if ($reopened) {
             Notification::send($meterReading->approvers()->reject(fn (User $approver) => $approver->is($actor)), new ReadingNeedsReapproval($meterReading->subscription->displayName(), $actor->name));
         }

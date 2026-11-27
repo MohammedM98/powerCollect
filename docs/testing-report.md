@@ -652,17 +652,20 @@ CI: مهمة `tests-concurrency` مستقلة على `mysql:8.4`.
 
 **فئات أمان سليمة** (لم يجد الفاحص فيها شيئًا): الإسناد الجماعي، حقن SQL عبر الترتيب، XSS، رفع الملفات (عدا البند 13)، التحويلات المفتوحة، الوصول لسجلات الغير (فحص بالعينة)، تخزين كلمات سر SMS (مشفّرة)، ترويسات الأمان (CSP مفروضة في الإنتاج).
 
-#### الجودة و SOLID (المحدِّد 2) — تقرير فقط
+#### الجودة و SOLID (المحدِّد 2)
 
-| # | المبدأ | النتيجة | الموضع |
-|---|---|---|---|
-| 1 | O (مفتوح/مغلق) | حساب طريقة الخصم مكرر بـ`match` في 7 أماكن؛ معاينة الخصم وتسجيله يكرران منطق اختيار الأساس، فقد يختلفان مستقبلًا | `RecordDiscount.php:30`، `StoreSubscriptionDiscountRequest.php:86`، `StandingDiscount.php:42`، `LedgerAmounts.php:20`، `ReadingCharges.php:25`، `LinePresenter.php:60,71` |
-| 2 | S (مسؤولية واحدة) | منطق أعمال داخل المتحكمات (أقفال ومعاملات وكتابة) | `SubscriptionBulkChangeController.php:111-195`، `MeterReadingAdjustmentController.php:49-118`، `MobileAdjustmentController.php:26-47` |
-| 3 | S | أصناف متضخمة: `BranchClosingWorkflow` (532 سطرًا، 21 دالة عامة: سير العمل والقفل ومزامنة القيود والتأكيد)، `User` (30 دالة عامة) | |
-| 4 | D (عكس الاعتماد) | `app(BranchClosingWorkflow::class)` يُستدعى 16 مرة بدل الحقن، منها داخل نموذج؛ و`new HttpSmsGateway` مباشرة في متحكم يتجاوز ربط الحاوية | `SubscriptionTransaction.php:184`، `SmsSettingController.php:92` |
-| 5 | I (فصل الواجهات) | ردود موبايل تُبنى يدويًا في 12 من 27 مسارًا بدل موارد API، وهو سبب فجوات فحص العقد | `MobileCashBoxController.php:33` |
-| 6 | — | طلب GET يكتب في القاعدة (ينشئ دورة قراءة) | `MobileReadingDistributionController.php:36` |
-| 7 | — | كود ميت إضافي: `UserRole::assignableBySuperAdmin`، `CashBoxType::forBook`، `ClosingPeriods::hasEndedInAll`، `LineHistory::isStaleReadingBill`، وخمسة مسارات موبايل لا يستدعيها التطبيق | |
+**عولجت بقرار المالك (2026-11-27، الفرع `claude/gallant-thompson-rvicv3`).** الكود الميت (البند 7) حُذف قبل ذلك. لا تغيير في السلوك ولا في ردود الواجهة والموبايل.
+
+| # | المبدأ | النتيجة | الموضع | الحالة |
+|---|---|---|---|---|
+| 1 | O (مفتوح/مغلق) | حساب طريقة الخصم مكرر بـ`match` في 7 أماكن؛ معاينة الخصم وتسجيله يكرران منطق اختيار الأساس، فقد يختلفان مستقبلًا | `RecordDiscount.php:30`، `StoreSubscriptionDiscountRequest.php:86` | **عولج** (`f31670a`): `LedgerAmounts::discountBase` يستعمله الموضعان. باقي المواضع نصوص عرض أو حساب مختلف عمدًا (`ReadingCharges`) فبقيت |
+| 2 | S (مسؤولية واحدة) | منطق أعمال داخل المتحكمات (أقفال ومعاملات وكتابة) | `SubscriptionBulkChangeController`، `MeterReadingAdjustmentController`، `MobileAdjustmentController` | **عولج** (`638ad97`): `ApplyBulkChange`، `UndoBulkChange`، `AdjustLastReading::handle`، `UpdateReadingPricing`، `RecordMobileAdjustment` |
+| 3 | S | أصناف متضخمة: `BranchClosingWorkflow` (532 سطرًا، 21 دالة عامة) | | **عولج** (`80f5b2b`): قُسّم إلى `BranchLock` و`CashBoxEntries` و`ClosingLedgerSync` و`CashBoxReceiving` و`CashBoxCounts`؛ بقي للفترات وحدها (179 سطرًا). `User` لم يُمس |
+| 4 | D (عكس الاعتماد) | `app(BranchClosingWorkflow::class)` يُستدعى 16 مرة بدل الحقن، منها داخل نموذج؛ و`new HttpSmsGateway` مباشرة في متحكم | `SubscriptionTransaction.php:184`، `SmsSettingController.php:92` | **عولج** (`80f5b2b`، `4da5a4d`): صفر استدعاءات `app()` لأصناف الإقفال في `app/`؛ `ClosingLedgerSync` هو مراقب `SubscriptionTransaction`؛ البوابات عبر `SmsGatewayFactory` |
+| 5 | I (فصل الواجهات) | ردود موبايل تُبنى يدويًا بدل موارد API، وهو سبب فجوات فحص العقد | `MobileCashBoxController.php:33` | **عولج** (`1efad06`، `eb6be8b`): الصناديق والديون وملاحظات التدقيق والتعديلات والتحويل المقسّم والرسائل صارت موارد؛ `MobileResponseShapeTest` يثبّت شكل الردود، ومقارنة كاملة قبل/بعد تطابقت قيمةً بقيمة. بقيت كما هي: قائمة الاشتراكات وتوزيع القراءات (مصفوفات صريحة لا تسرّب أعمدة) وردود التأكيد |
+| 6 | — | طلب GET يكتب في القاعدة (ينشئ دورة قراءة) | `MobileReadingDistributionController.php:36` | لم يُعالج (خارج القائمة المعتمدة) |
+| 7 | — | كود ميت إضافي | | **عولج** سابقًا |
+| 8 | — | لا منع للتحميل الكسول (N+1) في الاختبارات | `AppServiceProvider` | **عولج** (`7f320af`): `preventLazyLoading` خارج الإنتاج، وكشف وأصلح N+1 في كشف الحساب والتقرير المالي والتحويلات المقسّمة وتدقيق الصناديق |
 
 ## ما عُرف قبل البدء (من قراءة المستودع، لم يُتحقق بالتشغيل بعد)
 

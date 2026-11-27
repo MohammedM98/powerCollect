@@ -10,12 +10,52 @@ use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Ledger\CancelLine;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Corrects a subscription's last reading, records the adjustment, and asks for the current reading again when needed.
  */
 class AdjustLastReading
 {
+    /**
+     * Edit a subscription's last reading to `$newReading`, or, for a new
+     * meter, set the reading the next week starts from. Refused when the
+     * reading changed since the page showed `$expectedReading`. The week
+     * after it, once entered, must have its current reading typed again.
+     */
+    public static function handle(MeterReading $meterReading, User $actor, float $expectedReading, float $newReading, bool $isMeterChange, ?string $reason, bool $confirmUnusual): void
+    {
+        DB::transaction(function () use ($meterReading, $actor, $expectedReading, $newReading, $isMeterChange, $reason, $confirmUnusual): void {
+            $meterReading->subscription()->lockForUpdate()->firstOrFail();
+            $reading = MeterReading::query()->lockForUpdate()->findOrFail($meterReading->id);
+            Gate::forUser($actor)->authorize('adjustLastReading', $reading);
+            if (round($reading->nextPreviousReading(), 2) !== round($expectedReading, 2)) {
+                throw ValidationException::withMessages(['current_reading' => __('The reading changed; refresh the page and review the new value before editing.')]);
+            }
+
+            if (! $isMeterChange && round($newReading, 2) === round($reading->nextPreviousReading(), 2)) {
+                return;
+            }
+
+            if ($isMeterChange) {
+                self::recordAdjustment($reading, 'baseline_reset', ['previousReading' => $reading->nextPreviousReading()], ['previousReading' => $newReading], $actor, $reason);
+                $reading->update(['next_previous_reading' => $newReading]);
+            } else {
+                $wasApproved = self::correct($reading, $newReading, $reading->notes, $actor);
+                $reading->update(['next_previous_reading' => null]);
+                if ($wasApproved) {
+                    ApproveCorrectedReading::approveCorrectedLastReading($reading, $actor, $confirmUnusual);
+                }
+            }
+
+            $next = $reading->subscription->meterReadings()->where('week_start', '>', $reading->week_start)->lockForUpdate()->first();
+            if ($next !== null) {
+                self::requireCurrentReadingAgain($next, $newReading, $actor);
+            }
+        });
+    }
+
     /**
      * Correct the reading and recalculate its charges at the prices and
      * standing discount captured when it was recorded. An approved reading

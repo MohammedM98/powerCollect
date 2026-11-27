@@ -7,6 +7,7 @@ use App\Enums\PermissionKey;
 use App\Models\Branch;
 use App\Models\CashBox;
 use App\Models\CashBoxPayment;
+use App\Models\Closing;
 use App\Models\MobileAccessToken;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
@@ -376,7 +377,7 @@ class CollectorBoxTypesTest extends TestCase
     public function test_the_scheduled_processing_attaches_historical_clearings_to_the_open_box_after_their_week_ended(): void
     {
         [$branch, , $collector] = $this->start();
-        $closing = app(BranchClosingWorkflow::class)->current($branch->id);
+        $closing = Closing::currentFor($branch->id);
         $occurred = now();
         $this->travelTo($closing->coverage_until);
         $transaction = SubscriptionTransaction::withoutEvents(fn (): SubscriptionTransaction => SubscriptionTransaction::factory()->for(Subscription::factory()->for($branch))->create(['branch_id' => $branch->id, 'recorded_by' => $collector->id, 'type' => 'clearing', 'status' => SubscriptionTransaction::STATUS_ACTIVE, 'source_key' => 'clearing:'.Str::ulid(), 'amount' => '-20', 'notes' => 'صيانة قديمة', 'created_at' => $occurred]));

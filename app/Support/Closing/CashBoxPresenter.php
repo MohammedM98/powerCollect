@@ -155,7 +155,7 @@ class CashBoxPresenter
             ...($box->received_at && $box->type->isCounted() && $box->head_counts ? [
                 'expectedCounts' => $box->expected_counts,
                 'receivedCounts' => $box->head_counts,
-                'differences' => app(BranchClosingWorkflow::class)->differences($box->head_counts, $box->expected_counts ?? []),
+                'differences' => CashBoxCounts::differences($box->head_counts, $box->expected_counts ?? []),
                 'decisions' => $box->decisions ?: null,
             ] : ['expectedCounts' => null, 'receivedCounts' => null, 'differences' => null, 'decisions' => null]),
             'reason' => $box->reason,
@@ -179,7 +179,7 @@ class CashBoxPresenter
      */
     public static function receivedAmounts(CashBox $box): array
     {
-        $none = array_fill_keys(BranchClosingWorkflow::CURRENCIES, '0.00');
+        $none = array_fill_keys(CashBoxCounts::CURRENCIES, '0.00');
 
         if (! $box->received_at) {
             return $none;

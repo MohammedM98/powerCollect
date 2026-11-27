@@ -8,6 +8,7 @@ use App\Models\SmsSetting;
 use App\Models\SubscriptionMessage;
 use App\Models\User;
 use App\Support\Messaging\SmsGateway;
+use App\Support\Messaging\SmsGatewayFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -143,6 +144,49 @@ class SmsSettingTest extends TestCase
         $this->assertStringContainsString('402', $setting->last_test_error);
         // The test leaves the settings as they were saved: still off, at the old address, not marked as edited.
         $this->assertSame([false, 'https://sms.example.ps/api/send', $updatedAt], [$setting->enabled, $setting->url, $setting->updated_at->toDateTimeString()]);
+    }
+
+    public function test_a_test_message_goes_through_the_gateway_factory_in_the_container(): void
+    {
+        $gateway = new class implements SmsGateway
+        {
+            /** @var array<int, array{string, string}> */
+            public array $sent = [];
+
+            public function send(string $phone, string $body): void
+            {
+                $this->sent[] = [$phone, $body];
+            }
+
+            public function deliversMessages(): bool
+            {
+                return true;
+            }
+        };
+        $factory = new class($gateway) extends SmsGatewayFactory
+        {
+            /** @var array<int, array{array<string, mixed>, string}> */
+            public array $made = [];
+
+            public function __construct(private SmsGateway $gateway) {}
+
+            public function make(array $config, string $countryCode): SmsGateway
+            {
+                $this->made[] = [$config, $countryCode];
+
+                return $this->gateway;
+            }
+        };
+        $this->app->instance(SmsGatewayFactory::class, $factory);
+
+        $this->actingAs($this->superAdmin)->post(route('settings.sms.test'), $this->form(['url' => 'https://sms.new.ps/send', 'country_code' => '972', 'test_phone' => '0599123456', 'test_message' => 'تجربة']))
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('status', 'sms-test-sent');
+
+        $this->assertSame('https://sms.new.ps/send', $factory->made[0][0]['url']);
+        $this->assertSame('972', $factory->made[0][1]);
+        $this->assertSame([['0599123456', 'تجربة']], $gateway->sent);
+        Http::assertNothingSent();
     }
 
     /**

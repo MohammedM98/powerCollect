@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Mobile;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMobileSplitPaymentRequest;
+use App\Http\Resources\Mobile\RecordedSplitPaymentResource;
 use App\Models\Branch;
 use App\Models\SplitPayment;
-use App\Models\SubscriptionTransaction;
-use App\Support\Ledger\LinePresenter;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -48,24 +47,6 @@ class MobileSplitPaymentController extends Controller
             $split = $payment->splitPayment;
         }
 
-        return response()->json([
-            'id' => $split->id,
-            'status' => 'recorded',
-            'total_amount' => $split->total_amount,
-            'reference_number' => $split->reference_number,
-            'bank_name' => $split->bank_name,
-            'sender_bank_name' => $split->sender_bank_name,
-            'sender_name' => $split->sender_name,
-            'notes' => $split->notes,
-            'bank_received_on' => $split->bank_received_on?->toDateString(),
-            'parts' => $split->payments()->with('subscription')->get()->map(fn (SubscriptionTransaction $payment): array => [
-                'id' => $payment->id,
-                'subscription_id' => $payment->subscription_id,
-                'subscription' => $payment->subscription->displayName(),
-                'amount' => $payment->currency_amount,
-                'balance_after' => $payment->subscription->balance(),
-                'voucher_number' => LinePresenter::printedVoucherNumber($payment),
-            ]),
-        ], 201);
+        return response()->json(new RecordedSplitPaymentResource($split), 201);
     }
 }

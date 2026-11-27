@@ -83,11 +83,7 @@ class StoreSubscriptionDiscountRequest extends FormRequest
         }
 
         $method = DiscountMethod::from($method);
-        $discount = LedgerAmounts::discountFor($method, $value, match ($method) {
-            DiscountMethod::Percentage => $owed,
-            DiscountMethod::Kilowatt => $subscription->kilowattPrice(),
-            DiscountMethod::Shekel => null,
-        });
+        $discount = LedgerAmounts::discountFor($method, $value, LedgerAmounts::discountBase($method, $owed, $subscription));
 
         if (Money::decimal($discount)->isLessThan('0.01')) {
             $validator->errors()->add('value', 'قيمة الخصم أقل من أن تُسجَّل.');

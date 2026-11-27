@@ -113,7 +113,7 @@ class LastReadingTest extends TestCase
         $this->assertSame(0, $this->accountant->notifications()->count());
 
         // Recorded in order: both originals cancelled where they were, then their reversals, then last week's new charge before this week's.
-        $lines = SubscriptionTransaction::query()->orderBy('id')->get();
+        $lines = SubscriptionTransaction::query()->with('meterReading')->orderBy('id')->get();
         $this->assertSame(
             [['meter_reading', $lastWeek->id, true], ['meter_reading', $thisWeek->id, true], ['reversal', null, false], ['reversal', null, false], ['meter_reading', $lastWeek->id, false], ['meter_reading', $thisWeek->id, false]],
             $lines->map(fn (SubscriptionTransaction $line): array => [$line->type, $line->meter_reading_id, $line->isCancelled()])->all(),

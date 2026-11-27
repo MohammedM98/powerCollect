@@ -93,7 +93,7 @@ class PaymentController extends Controller
         $this->authorize('viewOwnCashBoxes', Subscription::class);
 
         $actor = $request->user();
-        $cashBox = PaymentPage::ownCashBoxes($actor);
+        $cashBox = PaymentPage::ownCashBoxes($actor, $this->workflow);
 
         return Inertia::render('Payments/Summary', [
             'today' => PaymentPage::todaysPayments($actor),

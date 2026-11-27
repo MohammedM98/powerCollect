@@ -2,13 +2,13 @@
 
 namespace App\Casts;
 
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\CashBoxCounts;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * A box's amounts by currency, stored as JSON and read back in the order
- * BranchClosingWorkflow::CURRENCIES lists them (shekels, dollars, dinars),
+ * CashBoxCounts::CURRENCIES lists them (shekels, dollars, dinars),
  * since MySQL's JSON type does not keep the order the keys were written in.
  * Any other key keeps its place after them.
  *
@@ -34,7 +34,7 @@ class CurrencyCounts implements CastsAttributes
             return null;
         }
 
-        $ordered = array_intersect_key(array_flip(BranchClosingWorkflow::CURRENCIES), $counts);
+        $ordered = array_intersect_key(array_flip(CashBoxCounts::CURRENCIES), $counts);
 
         return array_replace($ordered, $counts);
     }

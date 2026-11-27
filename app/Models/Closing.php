@@ -55,6 +55,18 @@ class Closing extends Model
         return (string) Money::decimal($cents)->dividedBy('100', 2);
     }
 
+    /**
+     * The branch's closing week running now, of the given book or the
+     * combined one.
+     */
+    public static function currentFor(int $branchId, ?string $book = null): self
+    {
+        return self::query()->where('branch_id', $branchId)->whereNotNull('workflow_settings')
+            ->where('coverage_from', '<=', now())->where('coverage_until', '>', now())
+            ->when($book, fn ($query) => $query->whereIn('book', [$book, 'combined']))
+            ->orderByDesc('coverage_from')->orderBy('id')->firstOrFail();
+    }
+
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);

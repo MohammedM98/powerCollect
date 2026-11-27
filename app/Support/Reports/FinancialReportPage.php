@@ -27,6 +27,12 @@ use Illuminate\Validation\ValidationException;
 class FinancialReportPage
 {
     /**
+     * What row() reads from each line, loaded with the lines so a page of
+     * them takes one query per relation, not one per line.
+     */
+    public const ROW_RELATIONS = ['subscription.branch', 'subscription.meterBox', 'recordedBy', 'meterReading', 'reverses.meterReading', 'bankTransferAudit', 'referenceTransaction.meterReading'];
+
+    /**
      * The longest stretch a report covers.
      */
     public const MAX_DAYS = 92;
@@ -145,7 +151,7 @@ class FinancialReportPage
         $debit = 0;
         $credit = 0;
         $transactions = $subscription->transactions()->where('created_at', '>=', $start)->where('created_at', '<', $end)
-            ->with(['subscription.branch', 'subscription.meterBox', 'recordedBy', 'meterReading', 'reverses.meterReading', 'bankTransferAudit', 'referenceTransaction'])
+            ->with(self::ROW_RELATIONS)
             ->orderBy('created_at')->orderBy('id')->get();
         $netted = self::nettedWithinPeriod($transactions);
         $lines = $transactions->map(function (SubscriptionTransaction $line) use (&$balance, &$debit, &$credit, $netted): array {
@@ -225,7 +231,7 @@ class FinancialReportPage
     {
         ['chosen' => $chosen, 'from' => $from, 'to' => $to, 'kind' => $kind] = self::filters($request, FinancialReportAccess::branches($request->user()));
         $lines = (new BranchReport($chosen, $from, $to))->lines($kind)
-            ->with(['subscription.branch', 'subscription.meterBox', 'recordedBy', 'meterReading', 'reverses.meterReading', 'bankTransferAudit', 'referenceTransaction'])
+            ->with(self::ROW_RELATIONS)
             ->orderBy('subscription_transactions.created_at')
             ->orderBy('subscription_transactions.id');
 

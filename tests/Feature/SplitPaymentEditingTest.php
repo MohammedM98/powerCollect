@@ -10,7 +10,7 @@ use App\Models\SplitPayment;
 use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\CashBoxReceiving;
 use App\Support\Ledger\PaymentReferences;
 use App\Support\Ledger\RecordPayment;
 use App\Support\Ledger\TransactionActions;
@@ -107,7 +107,7 @@ class SplitPaymentEditingTest extends TestCase
         $payload = $this->payload();
         $box = CashBox::factory()->bankTransfer()->create(['branch_id' => $this->actor->branch_id, 'closing_id' => $parts[0]->boxEntry->box->closing_id]);
         $parts[1]->boxEntry->update(['cash_box_id' => $box->id]);
-        app(BranchClosingWorkflow::class)->receive($box, User::factory()->superAdmin()->create());
+        app(CashBoxReceiving::class)->receive($box, User::factory()->superAdmin()->create());
         $this->getJson(route('split-payments.edit', $this->split))->assertUnprocessable()->assertJsonValidationErrors('action');
         $this->patch(route('split-payments.update', $this->split), $payload)->assertSessionHasErrors('action');
         $this->assertSame(['OLD-123'], $this->split->payments()->pluck('reference_number')->unique()->all());
@@ -154,7 +154,7 @@ class SplitPaymentEditingTest extends TestCase
     public function test_refunding_after_an_edit_still_returns_the_whole_transfer(): void
     {
         $this->patch(route('split-payments.update', $this->split), $this->payload())->assertSessionHasNoErrors();
-        TransactionActions::applyAction($this->split->payments[0], User::factory()->superAdmin()->create(), TransactionAction::Refund, ['correction_notes' => 'لم تصل']);
+        TransactionActions::applyAction($this->split->payments->load('splitPayment')[0], User::factory()->superAdmin()->create(), TransactionAction::Refund, ['correction_notes' => 'لم تصل']);
         $this->assertSame('0.00', $this->split->standingTotal());
         $this->assertSame(2, SubscriptionTransaction::where('type', 'refund')->count());
     }

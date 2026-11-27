@@ -59,13 +59,13 @@ class PaymentPage
      *
      * @return array{started: bool, branchName: ?string, boxes: array<int, array<string, mixed>>, current: array<string, array<string, mixed>|null>, needsAction: array<int, array<string, mixed>>, auditNotes: array<int, array<string, mixed>>, debts: array<int, array<string, mixed>>}
      */
-    public static function ownCashBoxes(User $actor, bool $includeRecentHistory = true): array
+    public static function ownCashBoxes(User $actor, BranchClosingWorkflow $workflow, bool $includeRecentHistory = true): array
     {
         if (! CashBoxPresenter::boxesStarted($actor)) {
             return ['started' => false, 'branchName' => $actor->workBranch()?->name, 'boxes' => [], 'current' => [], 'needsAction' => [], 'auditNotes' => [], 'debts' => []];
         }
 
-        app(BranchClosingWorkflow::class)->refresh($actor->workBranchId());
+        $workflow->refresh($actor->workBranchId());
         $query = CashBoxPresenter::ownBoxQuery($actor);
         $outstanding = (clone $query)->whereNull('confirmed_at')->get();
         $history = $includeRecentHistory ? (clone $query)->whereNotNull('confirmed_at')->limit(10)->get() : collect();

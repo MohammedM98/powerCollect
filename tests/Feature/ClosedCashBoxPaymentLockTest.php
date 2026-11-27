@@ -14,7 +14,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionTransaction;
 use App\Models\User;
 use App\Support\Branches\BranchSettings;
-use App\Support\Closing\BranchClosingWorkflow;
+use App\Support\Closing\CashBoxReceiving;
 use App\Support\Ledger\AmendLine;
 use App\Support\Ledger\CancelLine;
 use App\Support\Ledger\EraseLine;
@@ -70,7 +70,7 @@ class ClosedCashBoxPaymentLockTest extends TestCase
     public function test_closed_payment_actions_are_refused_for_admins_without_changing_history(string $role, string $action): void
     {
         [, $head, , $subscription, $payment, $box] = $this->payment();
-        app(BranchClosingWorkflow::class)->receive($box, $head);
+        app(CashBoxReceiving::class)->receive($box, $head);
         RecordCharge::handle($subscription, $head, ChargeType::Penalty, '25', null);
         $actor = $role === 'branchAdmin' ? $head : User::factory()->superAdmin()->create();
         $before = $payment->fresh()->getAttributes();
@@ -103,7 +103,7 @@ class ClosedCashBoxPaymentLockTest extends TestCase
     public function test_legacy_routes_cannot_mutate_a_closed_payment_even_when_it_is_last(string $role): void
     {
         [, $head, , $subscription, $payment, $box] = $this->payment();
-        app(BranchClosingWorkflow::class)->receive($box, $head);
+        app(CashBoxReceiving::class)->receive($box, $head);
         $actor = $role === 'branchAdmin' ? $head : User::factory()->superAdmin()->create();
         $before = $payment->fresh()->getAttributes();
 
@@ -138,7 +138,7 @@ class ClosedCashBoxPaymentLockTest extends TestCase
     {
         [$branch, $head, , , $payment, $box] = $this->payment('bank_transfer');
         $payment->load('boxEntry.box', 'closingLine.closing');
-        app(BranchClosingWorkflow::class)->receive($box, $head);
+        app(CashBoxReceiving::class)->receive($box, $head);
         ClosingSetting::query()->where('branch_id', $branch->id)->delete();
         app(BranchSettings::class)->forget(ClosingSetting::class);
         $before = $payment->fresh()->getAttributes();
@@ -174,7 +174,7 @@ class ClosedCashBoxPaymentLockTest extends TestCase
         $payment->update(['amount' => '-75.00', 'currency_amount' => '75.00']);
         $this->assertSame('75.00', $box->fresh()->totals()['ILS']);
 
-        app(BranchClosingWorkflow::class)->receive($box, $head);
+        app(CashBoxReceiving::class)->receive($box, $head);
         $before = $payment->fresh()->getAttributes();
         $next = RecordPayment::handle($subscription, $collector, ['amount' => '40', 'currency' => 'ILS', 'payment_method' => 'cash']);
         $this->assertNotSame($box->id, $next->boxEntry->cash_box_id);
@@ -231,7 +231,7 @@ class ClosedCashBoxPaymentLockTest extends TestCase
         $charge = RecordCharge::handle($subscription, $head, ChargeType::Penalty, '50', null);
         $payment = RecordPayment::handle($subscription, $collector, ['amount' => '100', 'currency' => 'ILS', 'payment_method' => 'cash']);
         TransactionActions::applyAction($charge, $head, TransactionAction::Cancel, []);
-        app(BranchClosingWorkflow::class)->receive($payment->boxEntry->box, $head);
+        app(CashBoxReceiving::class)->receive($payment->boxEntry->box, $head);
         $before = $payment->fresh()->getAttributes();
 
         $this->actingAs($head)->post(route('subscriptions.transactions.actions.store', [$subscription, $charge]), ['action' => 'delete_tree', 'correction_notes' => 'تصحيح'])->assertSessionHasErrors('action');
@@ -247,7 +247,7 @@ class ClosedCashBoxPaymentLockTest extends TestCase
         RecordCharge::handle($subscription, $head, ChargeType::Penalty, '25', null);
         $refund = TransactionActions::applyAction($payment, $head, TransactionAction::Refund, []);
         $refund->load('referenceTransaction.closingLine.closing', 'reverses', 'closingLine.closing');
-        app(BranchClosingWorkflow::class)->receive($box, $head);
+        app(CashBoxReceiving::class)->receive($box, $head);
         $before = $payment->fresh()->getAttributes();
 
         $this->assertSame([], TransactionActions::availableActions($refund, $head));
@@ -262,10 +262,10 @@ class ClosedCashBoxPaymentLockTest extends TestCase
     {
         [, $head, , , , $box] = $this->payment();
         $stale = $box->fresh();
-        app(BranchClosingWorkflow::class)->receive($box, $head);
+        app(CashBoxReceiving::class)->receive($box, $head);
         $before = $box->fresh()->getAttributes();
 
-        $this->assertRefused(fn () => app(BranchClosingWorkflow::class)->receive($stale, $head));
+        $this->assertRefused(fn () => app(CashBoxReceiving::class)->receive($stale, $head));
 
         $this->assertSame($before, $box->fresh()->getAttributes());
     }
@@ -275,8 +275,8 @@ class ClosedCashBoxPaymentLockTest extends TestCase
         [$branch, $head, $collector, $subscription] = $this->payment();
         $clearing = RecordClearing::handle($subscription, $collector, '20', 'خدمة');
         $entry = $clearing->boxEntry;
-        app(BranchClosingWorkflow::class)->reviewEntry($entry, $head, 'rejected');
-        app(BranchClosingWorkflow::class)->receive($entry->box, $head);
+        app(CashBoxReceiving::class)->reviewEntry($entry, $head, 'rejected');
+        app(CashBoxReceiving::class)->receive($entry->box, $head);
         $before = $clearing->fresh()->getAttributes();
         $entryBefore = $entry->fresh()->getAttributes();
 
