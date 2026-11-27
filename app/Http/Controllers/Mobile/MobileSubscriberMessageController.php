@@ -8,6 +8,8 @@ use App\Enums\MessageStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ListMobileSubscriberMessagesRequest;
 use App\Http\Requests\StoreMobileSubscriberMessageRequest;
+use App\Http\Resources\Mobile\MessageRecipientResource;
+use App\Http\Resources\Mobile\SentMessageResource;
 use App\Jobs\SendSubscriptionMessage;
 use App\Models\MessageBatch;
 use App\Models\Subscription;
@@ -28,10 +30,7 @@ class MobileSubscriberMessageController extends Controller
             ->paginate(25, ['id', 'full_name', 'subscription_name', 'account_number', 'phone', 'subscription_phone']);
 
         return response()->json([
-            'data' => $subscribers->getCollection()->map(fn (Subscription $subscriber): array => [
-                'id' => $subscriber->id, 'full_name' => $subscriber->displayName(),
-                'account_number' => $subscriber->account_number, 'phone' => $subscriber->contactPhone(),
-            ]),
+            'data' => MessageRecipientResource::collection($subscribers->getCollection()),
             'current_page' => $subscribers->currentPage(), 'last_page' => $subscribers->lastPage(),
             'total' => $subscribers->total(), 'sms_available' => $gateway->deliversMessages(),
             'can_send' => $request->user()->can('create', MessageBatch::class),
@@ -89,11 +88,6 @@ class MobileSubscriberMessageController extends Controller
 
         $message->refresh();
 
-        return response()->json([
-            'id' => $message->id,
-            'status' => $message->status->value,
-            'phone' => $message->phone,
-            'error' => $message->error,
-        ], 201);
+        return response()->json(new SentMessageResource($message), 201);
     }
 }
