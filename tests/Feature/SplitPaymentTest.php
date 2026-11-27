@@ -207,7 +207,7 @@ class SplitPaymentTest extends TestCase
     public function test_cancelling_one_part_cancels_the_whole_transfer_with_the_same_reason(): void
     {
         $split = $this->recordSplit();
-        $parts = $split->payments;
+        $parts = $split->payments->load('splitPayment');
 
         CancelLine::cancel($parts[1], User::factory()->superAdmin()->create(), CorrectionReason::NotReceived, 'bounced');
 
@@ -248,7 +248,7 @@ class SplitPaymentTest extends TestCase
     public function test_cancelling_the_transfer_releases_its_shared_reference(): void
     {
         $split = $this->recordSplit();
-        $part = $split->payments[0];
+        $part = $split->payments->load('splitPayment')[0];
         CancelLine::cancel($part, User::factory()->superAdmin()->create(), CorrectionReason::Other, 'oops');
 
         $this->assertNull(PaymentReferences::activeReferenceConflict('BOP-558201', null, $split->id));

@@ -68,18 +68,21 @@ class StatementBuilder
                 'reverses.splitPayment',
                 'boxEntry.box:id,number,status',
                 'referenceTransaction.closingLine.closing',
-                'linkedReversals',
+                'linkedReversals.referenceTransaction.meterReading',
                 'corrects.linkedReversals',
                 'correction',
                 'amendments.user',
                 'closingLine.closing',
                 'splitPayment',
-                'bankTransferAudit', 'referenceTransaction',
+                'bankTransferAudit', 'referenceTransaction.meterReading',
             ])
             ->oldest()
             ->orderBy('id')
             ->get()
-            ->each(fn (SubscriptionTransaction $transaction) => $transaction->setRelation('subscription', $subscription));
+            ->each(function (SubscriptionTransaction $transaction) use ($subscription): void {
+                $transaction->setRelation('subscription', $subscription);
+                $transaction->meterReading?->setRelation('subscription', $subscription);
+            });
 
         $firstLineIds = self::firstLineIds($transactions);
         $lineNumbers = $transactions->values()->mapWithKeys(fn (SubscriptionTransaction $transaction, int $index): array => [$transaction->id => $index + 1])->all();

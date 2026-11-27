@@ -178,7 +178,7 @@ class TransactionActions
     {
         $parts = SubscriptionTransaction::query()->acrossBranches()
             ->where('split_payment_id', $splitPaymentId)->where('type', SubscriptionTransaction::TYPE_PAYMENT)->orderBy('id')
-            ->when($lockForUpdate, fn (Builder $query): Builder => $query->lockForUpdate())->get();
+            ->when($lockForUpdate, fn (Builder $query): Builder => $query->lockForUpdate())->with('subscription')->get();
         $standing = $parts->reject(fn (SubscriptionTransaction $part): bool => $part->isCancelled());
         $replaced = fn (SubscriptionTransaction $part): bool => $parts->contains('corrects_id', $part->id);
         $offers = fn (SubscriptionTransaction $line): bool => in_array($action->value, TransactionActions::availableActions($line, $actor, lockForUpdate: $lockForUpdate, withSplitParts: false), true);

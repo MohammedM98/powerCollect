@@ -137,6 +137,7 @@ class SplitTransferAuditing
         $reviewed = $parts->filter(fn (SubscriptionTransaction $part): bool => $part->boxEntry->audit !== null);
         $this->require($reviewed->isEmpty() || $reviewed->count() === $parts->count(), __('The split transfer\'s review is incomplete; open the transfer\'s edit and review all its shares before approving.'));
         foreach ($parts as $part) {
+            $part->boxEntry->setRelation('transaction', $part);
             $audit = $part->boxEntry->audit ?? BankTransferAudit::query()->create([
                 'cash_box_payment_id' => $part->boxEntry->id, 'audited_by' => $actor->id,
                 'currency' => $part->currency->value, 'recorded_amount' => Money::amount(Money::decimal($part->amount)->abs()),

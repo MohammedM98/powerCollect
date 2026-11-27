@@ -73,7 +73,7 @@ class SplitPayment extends Model
             Branch::query()->acrossBranches()->whereIn('id', $branchIds)->orderBy('id')->lockForUpdate()->get();
             self::query()->acrossBranches()->whereKey($this->id)->lockForUpdate()->firstOrFail();
             $this->refresh();
-            $parts = $partsQuery()->lockForUpdate()->get();
+            $parts = $partsQuery()->lockForUpdate()->get()->each(fn (SubscriptionTransaction $part) => $part->setRelation('splitPayment', $this));
             $this->requireAccessibleParts($actor, $parts);
             if ($parts->pluck('subscription.branch_id')->diff($branchIds)->isNotEmpty()) {
                 throw ValidationException::withMessages(['action' => __('The transfer\'s parts changed; refresh the page and try again.')]);

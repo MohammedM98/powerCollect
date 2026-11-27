@@ -21,6 +21,8 @@ use App\Support\Messaging\SmsGatewayFactory;
 use App\Support\OperationsAlert;
 use App\Support\Reports\ReportCache;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\LazyLoadingViolationException;
 use Illuminate\Queue\Events\QueueBusy;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -63,6 +65,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Outside production a relation loaded row by row (N+1) throws, so tests and local use catch it.
+        // A test reading a relation itself to check a result is not the app's N+1, so it may.
+        Model::preventLazyLoading(! $this->app->isProduction());
+        Model::handleLazyLoadingViolationUsing(function (Model $model, string $relation, LazyLoadingViolationException $violation): void {
+            $caller = collect(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS))
+                ->first(fn (array $frame): bool => isset($frame['file']) && ! str_starts_with($frame['file'], base_path('vendor')));
+
+            if (! str_starts_with($caller['file'] ?? '', base_path('tests'))) {
+                throw $violation;
+            }
+        });
         BranchDomainScope::register();
         SubscriptionTransaction::observe(ClosingLedgerSync::class);
         Event::listen(function (QueueBusy $event): void {

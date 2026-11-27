@@ -154,7 +154,7 @@ class SplitPaymentEditingTest extends TestCase
     public function test_refunding_after_an_edit_still_returns_the_whole_transfer(): void
     {
         $this->patch(route('split-payments.update', $this->split), $this->payload())->assertSessionHasNoErrors();
-        TransactionActions::applyAction($this->split->payments[0], User::factory()->superAdmin()->create(), TransactionAction::Refund, ['correction_notes' => 'لم تصل']);
+        TransactionActions::applyAction($this->split->payments->load('splitPayment')[0], User::factory()->superAdmin()->create(), TransactionAction::Refund, ['correction_notes' => 'لم تصل']);
         $this->assertSame('0.00', $this->split->standingTotal());
         $this->assertSame(2, SubscriptionTransaction::where('type', 'refund')->count());
     }

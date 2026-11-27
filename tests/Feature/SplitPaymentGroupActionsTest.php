@@ -238,7 +238,7 @@ class SplitPaymentGroupActionsTest extends TestCase
     #[TestWith(['legacy-delete'])]
     public function test_corrected_shares_are_processed_without_double_refunding_or_reinstating_old_payments(string $action): void
     {
-        $original = $this->split->payments[1];
+        $original = $this->split->payments->load('subscription')[1];
         $replacement = CorrectLine::correct($original, $this->actor, CorrectionReason::WrongAmount, 'خطأ', fn (Subscription $subscription): SubscriptionTransaction => RecordPayment::handle($subscription, $this->actor, [
             'amount' => 150, 'currency' => 'ILS', 'payment_method' => 'bank_transfer', 'bank_name' => 'بنك فلسطين',
             'reference_number' => 'SPLIT-123', 'split_payment_id' => $this->split->id,

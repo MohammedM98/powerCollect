@@ -282,7 +282,7 @@ class BranchOperationsSimulationTest extends TestCase
 
     private function correctReading(int $step): void
     {
-        $reading = $this->pick(MeterReading::query()->where('branch_id', $this->branch->id)->get()
+        $reading = $this->pick(MeterReading::query()->where('branch_id', $this->branch->id)->with('subscription')->get()
             ->filter(fn (MeterReading $candidate): bool => $this->head->can('update', $candidate)
                 && ! MeterReading::query()->where('subscription_id', $candidate->subscription_id)->where('week_start', '>', $candidate->week_start)->exists()));
         if ($reading === null) {
@@ -756,7 +756,7 @@ class BranchOperationsSimulationTest extends TestCase
     private function assertStatementsAgreeWithTheirLines(): void
     {
         foreach ($this->subscriptions()->get() as $subscription) {
-            $lines = $subscription->transactions()->orderBy('created_at')->orderBy('id')->get();
+            $lines = $subscription->transactions()->with(['subscription', 'reverses.splitPayment', 'splitPayment'])->orderBy('created_at')->orderBy('id')->get();
             $byId = $lines->keyBy('id');
             $runningInCents = 0;
 

@@ -110,6 +110,7 @@ class BankTransferAuditing
                     ->whereHas('transaction', fn (Builder $query): Builder => $query->where('type', SubscriptionTransaction::TYPE_PAYMENT)->where('status', SubscriptionTransaction::STATUS_ACTIVE))
                     ->lockForUpdate()->get();
                 foreach ($entries as $entry) {
+                    $entry->setRelation('box', $current);
                     $payment = $entry->transaction;
                     if ($payment->split_payment_id !== null) {
                         $this->splits->complete($entry, $actor, $this->postDecision(...));
