@@ -15,11 +15,12 @@ use App\Support\Branches\BranchDomainScope;
 use App\Support\Branches\BranchSettings;
 use App\Support\Branding\Brand;
 use App\Support\Closing\BranchClosingWorkflow;
-use App\Support\Messaging\HttpSmsGateway;
 use App\Support\Messaging\LogSmsGateway;
 use App\Support\Messaging\SmsGateway;
+use App\Support\Messaging\SmsGatewayFactory;
 use App\Support\OperationsAlert;
 use App\Support\Reports\ReportCache;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Queue\Events\QueueBusy;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -42,15 +43,16 @@ class AppServiceProvider extends ServiceProvider
 
         // SMS go out through the provider set up in the dashboard while it is on, else the gateway named in
         // services.sms.driver; until one is set up they're only logged.
-        $this->app->bind(SmsGateway::class, function (): SmsGateway {
+        $this->app->bind(SmsGateway::class, function (Application $app): SmsGateway {
             $setting = SmsSetting::active();
+            $gateways = $app->make(SmsGatewayFactory::class);
 
             if ($setting !== null) {
-                return new HttpSmsGateway($setting->gatewayConfig(), $setting->country_code);
+                return $gateways->make($setting->gatewayConfig(), $setting->country_code);
             }
 
             return match (config('services.sms.driver')) {
-                'http' => new HttpSmsGateway(config('services.sms.http'), (string) config('services.sms.country_code')),
+                'http' => $gateways->make(config('services.sms.http'), (string) config('services.sms.country_code')),
                 default => new LogSmsGateway,
             };
         });
